@@ -1,0 +1,64 @@
+Bootstrapping MiniPerl6 in Perl5
+
+- Reduce the amount of nodes required to compile MP6::Grammar::Regex
+- Implement the Rul::* nodes using MP6, emit MP6 - that would amount to about 5 or 6 nodes
+
+- Implement the required syntax in MP6::Emitter, such that it can emit Perl 5
+- Check that the emitted code can compile MP6::Grammar::Regex
+
+- Check that all MP6 files compile and run properly
+- Recompile it several times using itself, in order to check the stability of the Bootstrap
+
+- Freeze the project, because it can be useful to bootstrap other VMs
+
+Limitations of the bootstrapping version:
+
+- hash keys are not autoquoted - always use single quotes.
+- there is no precedence of operators - always use parenthesis.
+- there is no string interpolation - always use single quotes; "\n" doesn't work.
+- constructors are called with ::ClassName( 'arg' => 'val', 'arg' => 'val' )
+- 'for' loops need to specify '@{}', as in:  for ( @$a ) {...}
+- all statements need a semicolon
+- 'use v5' is not supported
+- no type annotations
+- no 'state', 'constant'
+
+Limitations of the Token compiler bootstrapping version:
+
+- no quantifiers
+- no variable interpolation
+
+'Token' routines:
+
+  $grammar.parse( $source, $from_pos ) returns ::Match
+
+Built-in token routines:
+
+- namespace: MiniPerl6::Grammar
+- these routines are provided by MP6
+
+  comp_unit() - parses a Class or Grammar
+  parse() - parses a whole source file (several Classes)
+
+Runtime token routines:
+
+  space()
+  digit()
+  word()
+  newline()
+  not_newline()
+  
+Runtime subroutines:
+
+  join()
+  chars()
+  substr()
+  say()
+  print()
+
+Optional subroutines:
+
+- these are nice to have, but they are optional:
+
+  perl()
+  yaml()

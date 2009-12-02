@@ -1,0 +1,28 @@
+1. cp EmitRuleP5Ratchet into EmitRuleP6Rathet and prefix all subs with "use v5"
+2. Use v6.pm to convert EmitRuleP6Ratchet into EmitRuleP5Ratchet 
+3. Port EmitRuleP6Ratchet by hand to MiniPerl 6 (without using P6 Rules or advanced OO stuff)
+
+---- Here We Declare Grammar Engine is Bootstrapped ----
+
+4. Design AST for MP6 by taking Pugs.Exp and kill nodes, or take v6/AST and add nodes.
+5. Write v6/Emit(MiniPerl6->Perl5) and redo step 3 to make an optimized PCR/EmitRuleP5Ratchet
+6. Rewrite v6/Grammar/Expression.pm to port Yapp-dependent parts into a new precedence parser
+written in MP6 that utilizes <%foo> style tokens
+7. Finalize Perl 6 AST by taking MP6 AST and expanding on it. 
+8. Convert all of v6/Grammar/* to MiniPerl6 and emitted to optimized Perl 5 code
+
+---- Here We Declare Perl 6 Parser is Bootstrapped ----
+
+9. Port MO to MiniPerl6
+10. Port Sub::Multi to MiniPerl6
+11. Port builtin Value and Container classes to MiniPerl6
+
+---- Here We Declare Perl 6 Runtime is Bootstrapped ----
+
+NB: The VM is responsible to provide coroutines, threads, sockets, etc etc;
+if it's missing in the VM, it's _not_ our job to emulate them by drastically
+change the emitting strategy to e.g. CPS.  All Value/Container classes do is
+to bridge the native VM API with Perl 6 class/method API.
+
+
+

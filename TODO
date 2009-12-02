@@ -1,0 +1,53 @@
+MiniPerl6 in Perl5
+
+- generate 'my' variables for subroutine signatures;
+  currently depends on autovivification
+
+- Freeze the project, because it can be useful to bootstrap other VMs
+
+Bootstrapping MiniPerl6 in Parrot
+
+- finish OO, class variables
+
+- fix die() parameter handling
+
+- rewrite mp6-parrot.pl in parrot (or mp6)
+
+- Recompile it several times using itself, in order to check the stability of the Bootstrap
+
+- Freeze the project, because it can be useful to bootstrap other VMs
+
+Missing Backends
+
+- Javascript, Haskell
+
+- MO in MP6 (MP6-2)
+
+Missing Features
+
+- detailed syntax errors
+
+- type annotations - FIXED
+
+- autoquote hash keys - FIXED
+
+- double quote interpolation and "\n"
+
+- operator precedence
+
+- all statements need a semicolon
+
+- 'use v5' is not supported
+  (maybe not needed for MP6)
+
+- no 'state', 'constant'
+
+Missing Features of the Token sub-compiler
+
+- no quantifiers
+
+- no variable interpolation
+
+Bugs
+
+- ...

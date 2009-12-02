@@ -1,0 +1,124 @@
+=head1 NAME
+
+MiniPer6 specification
+
+=head1 SYNOPSIS
+
+    sub foo (Int $x) {...}
+    ##################
+    use v6-alpha;
+    my $x = (1,2,3);
+    
+    sub foo (@x) {...}
+    foo($x);
+    
+    ## update: 'use v5' is no longer supported
+    use v5;
+    
+    my $x = SomeInternalFunctionToMakeLockedArrayRef([1,2,3]);
+    sub foo { my ($at_x) = @_; ... }
+    foo($x);
+    ##################
+
+=head1 DESCRIPTION
+
+# The Difference between MP6 and P6 is thus:
+    - Only allow one feed of positional arguments
+    - Allow interpolated positional arguments (|@x)
+    - In Signature, disallow "is slurpy", "is optional", "is named"
+        (*@bad) ($bad?) (:$bad)
+    - But we do allow Hash and Array and Tree unpacking:
+        sub foo ([$a, $b, $c, Tree $top ($left, $right)], {:$x, :$y}) { ... }
+
+## update:
+        sub foo ([$a, $b, $c, ::Tree $top (:$left, :$right)], {:$x, :$y}) { ... }
+
+        foo([1, 2, 3], { x => 1, y => 2 }, Tree({ left => 1, right => 2});
+
+## update:
+        foo([1, 2, 3], { x => 1, y => 2 }, ::Tree( left => 1, right => 2 );
+
+        # This compiles to:
+        sub foo {
+            my perl6::Tree $top;
+            my ($a, $b, $c, $x, $y, $left, $right);
+            ($a, $b, $c, $top)  = @{$_[0]};
+            ($x, $y)            = @{$_[1]}{'x', 'y'};
+            ($left, $right)     = @{$_[0][3]}{'left', right');
+
+## update:
+            ($left, $right) = ($top.left, $top.right);
+
+            ...
+        }
+        foo([1, 2, 3], { x => 1, y => 2 });
+
+    - As a consequence, object constructor calls must be written in
+      coercion form:
+        Foo({x => 1, y => 2});  # NOT Foo.new
+
+## update:
+        ::Foo( x => 1, y => 2 );   # NOT Foo.new
+
+
+## update: 
+    - Signature and Expression reuse the same parser, so this works too:
+        my ::Tree $top (:$left, :$right);
+
+    - Only allow item context
+    - No laziness; all List are Seq
+    - No subtyping (inheritance) or role mixins
+    - No first-class Capture and Signature objects, which means no \$x nor :(foo)
+    - No assignment, only bindings, but don't panic:
+        $x := $x + 1;   # name = IntOp(named(Int))
+        # $x = $x + 1
+      The reason is we have to eliminate one of them to avoid dealing with:
+        $x := $y;
+        $x = 123;
+      Because assignment always involve box(unbox()), so emitting binding to
+      Perl 5 is much more straightforward as $x is always just a Int in
+      ($x := $x + 1), never SomePossiblyTiedScalarContainerType that needs to
+      have special FETCH magic associated with it.
+
+      Also it's inevitable with eliminating list context, because:
+        ($x, $y, $z) := (1, 2); # compile-time error
+        ($x, $y, $z) = (1, 2);  # list-context-undef-fill that we don't want to deal with
+      because infix:<=> almost always imply slurpiness with LHS is not a simple scalar,
+      eliminating it is consistent with eliminating list context.
+
+    - Allow Type annotations. Preserve them Perl 5 emitted code using simple Typed vars:
+        # MiniPerl6
+        my Int $x;
+        my perl5:CGI $x;
+
+        # Compiled Perl 5
+        my perl6::Int $x;
+        my CGI $x;
+      However, the compiler adds no extra assertions so types never slows programs down
+      in MiniPerl6 land.
+
+    - Closures, but no coroutines nor continuations
+    - Declarators: my/state/has/constant.  We don't have "our", and we don't have $Q::Var
+    - Hypotheticals: temp
+    - Fatal is always in effect; "fail" fails immediately
+    - Closed grammatical categories and precedence levels
+    - No macros; no BEGIN blocks!
+    - No multis (for now; may revisit)
+
+
+
+# Not Imported In MiniPerl6
+macro statement_control:<is> {...}
+
+update:
+Implementation-specific limitations in the Perl5 backend:
+
+    - uses "no strict vars" inside subs and methods, because it currently depends on 
+      autovivification of the parameter list variables
+
+update:
+Implementation-specific limitations in the Parrot backend:
+
+    - 'for' variables need to be predeclared
+    - blocks do not create a new lexical pad
+    - variables should never be re-declared (infinite loop in Parrot 0.4.7 release)
