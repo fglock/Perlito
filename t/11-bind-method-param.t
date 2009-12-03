@@ -14,10 +14,10 @@ class Main {
     say 'ok 1 - ', $x;
 
 
-    method subr2( $a, [ $b, $c ] ) { $a + $b + $c };
+    method subr2( $a, $b, $c ) { $a + $b + $c };
 
-    my $x := 0;
-    $x := Main.subr2( 1, [ 2, 4 ] );
+    $x := 0;
+    $x := Main.subr2( 1, 2, 4 );
     if $x != 7 {
         print 'not '
     };

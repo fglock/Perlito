@@ -159,6 +159,13 @@ package Main;
         $s =~ s/'/\\'/g;
         return $s;
     }
+    # Go emitter
+    sub to_go_namespace {
+        my $s = $_[0];
+        my ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
+        $s =~ s/::/__/g;
+        return $s;
+    }
 
 1;
 

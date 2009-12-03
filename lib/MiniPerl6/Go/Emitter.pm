@@ -92,36 +92,65 @@ class CompUnit {
     has %.methods;
     has @.body;
     method emit {
-        my $class_name := Main::to_javascript_namespace($.name);
+        my $class_name := Main::to_go_namespace($.name);
         my $str :=
-              '// class ' ~ $.name ~ Main.newline
-            ~ 'type Class_' ~ $class_name ~ ' struct {' ~ Main.newline;
+              '// instances of class ' ~ $.name ~ Main.newline
+            ~ 'type ' ~ $class_name ~ ' struct {' ~ Main.newline;
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                $str := $str  
-              ~ '  ' ~ 'v_' ~ ($decl.var).name ~ ' Any;' ~ Main.newline
+                $str := $str  ~ '  ' ~ 'v_' ~ ($decl.var).name ~ ' Any;' ~ Main.newline
+            }
+        }
+        $str := $str ~ '}' ~ Main.newline;
+
+        my $str := $str 
+            ~ '// methods in class ' ~ $.name ~ Main.newline
+            ~ 'var Method_' ~ $class_name ~ ' struct {' ~ Main.newline;
+        for @.body -> $decl { 
+            if $decl.isa( 'Method' ) {
+                $str := $str  ~ '  ' ~ 'f_' ~ $decl.name ~ ' func (*' ~ $class_name ~ ', Capture) Any;' ~ Main.newline;
             }
         }
         $str := $str ~ '}' ~ Main.newline;
 
         my $str := $str 
             ~ '// namespace ' ~ $.name ~ Main.newline
-            ~ 'var ' ~ $class_name ~ ' struct {' ~ Main.newline;
+            ~ 'var Namespace_' ~ $class_name ~ ' struct {' ~ Main.newline;
         for @.body -> $decl { 
             if $decl.isa( 'Sub' ) {
-                my $sig      := $decl.sig;
-                my $pos      := $sig.positional;
-                $str := $str 
-                    ~ '  ' ~ 'f_' ~ $decl.name ~ ' Function;' ~ Main.newline;
+                $str := $str  ~ '  ' ~ 'f_' ~ $decl.name ~ ' Function;' ~ Main.newline;
             }
         }
         $str := $str ~ '}' ~ Main.newline;
+
+        my $str := $str 
+            ~ '// method wrappers for ' ~ $.name ~ Main.newline
+        for @.body -> $decl {
+            if $decl.isa( 'Method' ) {
+                $str := $str  
+                    ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ $decl.name ~ ' (v Capture) Any {' ~ Main.newline
+                    ~ '  return Method_' ~ $class_name ~ '.f_' ~ $decl.name ~ '(v_self, v);'~ Main.newline
+                    ~ '}'~ Main.newline;
+            }
+        }
+
+#func (f Main) Bool () Bool { return b_true }
+#func (f Main) Int () Int { panic("converting function to int") }
+#func (f Main) Str () Str { panic("converting function to string") }
+#func (f Main) Array () Array { panic("converting function to array") }
+#func (f Main) Hash () Hash { panic("converting function to hash") }
+#func (f Main) Equal (j Any) Bool { panic("comparing function") }
+
+        my $str := $str 
+            ~ '// prototype of ' ~ $.name ~ Main.newline
+            ~ 'var Proto_' ~ $class_name ~ ' ' ~ $class_name ~ ';' ~ Main.newline;
 
         if $class_name eq 'Main' {
             $str := $str ~ 'func main() {' ~ Main.newline;
         }
         $str := $str 
-            ~ '    this_namespace := &' ~ $class_name ~ ';';
+            ~ '    this_namespace := &Namespace_' ~ $class_name ~ ';' ~ Main.newline
+            ~ '    this_namespace = this_namespace;' ~ Main.newline;
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $str := $str ~ ($decl.var).emit ~ ' := '; 
@@ -143,7 +172,7 @@ class CompUnit {
             }
         }
 
-        # $str := $str ~ 'func ' ~ Main::to_javascript_namespace($.name) ~ '() {' ~ Main.newline;
+        # $str := $str ~ 'func ' ~ Main::to_go_namespace($.name) ~ '() {' ~ Main.newline;
 
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
@@ -156,24 +185,21 @@ class CompUnit {
             }
             if $decl.isa( 'Method' ) {
                 my $sig      := $decl.sig;
-                my $pos      := $sig.positional;
-                my $invocant := $sig.invocant;
                 my $block    := ::MiniPerl6::Go::LexicalBlock( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str := $str 
               ~ '  // method ' ~ $decl.name ~ Main.newline
-              ~ '  (v_self ' ~ $class_name ~ ') f_' ~ $decl.name 
-                    ~ ' = Function{ f : func (v Capture) Any {' ~ Main.newline
+              ~ '  Method_' ~ $class_name ~ '.f_' ~ $decl.name 
+                    ~ ' = func (v_self *' ~ $class_name ~ ', v Capture) Any {' ~ Main.newline
               ~ '    ' ~ $sig.emit_bind ~ Main.newline
               ~ '    ' ~ $block.emit ~ Main.newline
-              ~ '  } };' ~ Main.newline
+              ~ '  };' ~ Main.newline
             }
             if $decl.isa( 'Sub' ) {
                 my $sig      := $decl.sig;
-                my $pos      := $sig.positional;
                 my $block    := ::MiniPerl6::Go::LexicalBlock( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str := $str 
               ~ '  // sub ' ~ $decl.name ~ Main.newline
-              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name 
+              ~ '  Namespace_' ~ $class_name ~ '.f_' ~ $decl.name 
                     ~ ' = Function{ f : func (v Capture) Any {' ~ Main.newline
               ~ '    ' ~ $sig.emit_bind ~ Main.newline
               ~ '    ' ~ $block.emit ~ Main.newline
@@ -181,8 +207,8 @@ class CompUnit {
             }
         }; 
         # $str := $str ~ '}' ~ Main.newline;
-        # $str := $str ~ Main::to_javascript_namespace($.name) 
-        #              ~ ' = new ' ~ Main::to_javascript_namespace($.name) ~ ';' ~ Main.newline;
+        # $str := $str ~ Main::to_go_namespace($.name) 
+        #              ~ ' = new ' ~ Main::to_go_namespace($.name) ~ ';' ~ Main.newline;
         for @.body -> $decl { 
             if    (!( $decl.isa( 'Decl' ) && (( $decl.decl eq 'has' ) || ( $decl.decl eq 'my' )) ))
                && (!( $decl.isa( 'Method'))) 
@@ -299,8 +325,8 @@ class Lit::Object {
             $str := $str 
                 ~ 'm.v_' ~ ($field[0]).buf ~ ' = ' ~ ($field[1]).emit ~ '; ';
         }; 
-        'func() *' ~ Main::to_javascript_namespace($.class) ~ ' { ' 
-            ~ 'var m = new(' ~ Main::to_javascript_namespace($.class) ~ '); '
+        'func() *' ~ Main::to_go_namespace($.class) ~ ' { ' 
+            ~ 'var m = new(' ~ Main::to_go_namespace($.class) ~ '); '
             ~ $str 
             ~ 'return m; '
         ~ '}()';
@@ -342,7 +368,7 @@ class Var {
         };
         my $ns := '';
         if $.namespace {
-            $ns := Main::to_javascript_namespace($.namespace) ~ '.';
+            $ns := Main::to_go_namespace($.namespace) ~ '.';
         }
            ( $.twigil eq '.' )
         ?? ( 'this.v_' ~ $.name ~ '' )
@@ -435,7 +461,12 @@ class Bind {
     
         if $.parameters.isa( 'Call' ) {
             # $var.attr := 3;
-            return '(' ~ ($.parameters.invocant).emit ~ '.v_' ~ $.parameters.method ~ ' = ' ~ $.arguments.emit ~ ')';
+            return 
+                  'func () Any { ' 
+                    ~ 'tmp := ' ~ $.arguments.emit ~ '; '
+                    ~ ($.parameters.invocant).emit ~ '.v_' ~ $.parameters.method ~ ' = tmp; '
+                    ~ 'return tmp; '
+                ~ '}()';
         }
 
         $.parameters.emit ~ '.Bind( ' ~ $.arguments.emit ~ ' )';
@@ -445,7 +476,7 @@ class Bind {
 class Proto {
     has $.name;
     method emit {
-        Main::to_javascript_namespace($.name)        
+        Main::to_go_namespace($.name)        
     }
 }
 
@@ -457,9 +488,9 @@ class Call {
     #has $.hyper;
     method emit {
         my $invocant := $.invocant.emit;
-        if $invocant eq 'self' {
-            $invocant := 'this';
-        };
+        if ($.invocant).isa( 'Proto' ) {
+            $invocant := 'Proto_' ~ $invocant
+        }
 
         if     ($.method eq 'values')
         { 
@@ -537,7 +568,7 @@ class Call {
                     ~ ' })(' ~ $invocant ~ ')'
         }
         else {
-            $invocant ~ '.f_' ~ $meth ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+            $invocant ~ '.f_' ~ $meth ~ '( Capture{ p : []Any{ ' ~ (@.arguments.>>emit).join(', ') ~ ' } } )';
         };
 
     }
@@ -557,7 +588,15 @@ class Apply {
 
         if $code eq 'self'       { return 'this' };
         if $code eq 'false'      { return 'b_false' };
-        if $code eq 'make'       { return '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit).join(', ') ~ ')' };
+        if $code eq 'make'       { 
+            return 
+                  'func () Any { ' 
+                    ~ 'tmp := ' ~ (@.arguments.>>emit).join(', ') ~ '; '
+                    ~ 'v_MATCH.v_capture = tmp; '
+                    ~ 'return tmp; '
+                ~ '}()';
+        };
+
         if $code eq 'say'        { return 'Print( Capture{ p : []Any{ '    
                                         ~ (@.arguments.>>emit).join(', ') 
                                         ~ ', Str{s:"\n"} } } )' };
@@ -628,7 +667,7 @@ class Apply {
         
         $code := 'f_' ~ $.code;
         if $.namespace {
-            $code := Main::to_javascript_namespace($.namespace) ~ '.' ~ $code;
+            $code := 'Namespace_' ~ Main::to_go_namespace($.namespace) ~ '.' ~ $code;
         }
         else {
             $code := 'this_namespace.' ~ $code;

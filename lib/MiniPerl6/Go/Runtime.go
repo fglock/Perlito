@@ -123,6 +123,17 @@ func (f Function) Hash () Hash { panic("converting function to hash") }
 func (f Function) Equal (j Any) Bool { panic("comparing function") }
 func (f Function) Apply (p Capture) Any { return f.f(p) }
 
+type Method struct {
+    f func (Capture) Any;
+}
+func (f Method) Bool () Bool { return b_true }
+func (f Method) Int () Int { panic("converting function to int") }
+func (f Method) Str () Str { panic("converting function to string") }
+func (f Method) Array () Array { panic("converting function to array") }
+func (f Method) Hash () Hash { panic("converting function to hash") }
+func (f Method) Equal (j Any) Bool { panic("comparing function") }
+func (f Method) Apply (p Capture) Any { return f.f(p) }
+
 type Get_celler interface { 
     Get_cell () *Any;
 }
@@ -245,6 +256,7 @@ func (i *Array) Push (j Any) *Array {
 
 type Capture struct {
     p []Any;
+    invocant *Any;
 }
 
 // runtime functions
