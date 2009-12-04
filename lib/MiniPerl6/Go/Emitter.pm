@@ -12,16 +12,16 @@ class MiniPerl6::Go::LexicalBlock {
         for @.block -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 # uninitialized variable
-                $str := $str ~ ($decl.var).emit ~ ' := ';
+                $str := $str ~ ($decl.var).emit ~ ' := new(Scalar);' ~ Main.newline;
                 if ($decl.var).sigil eq '%' {
-                    $str := $str ~ 'new(Scalar).Bind( h_hash() );';
+                    $str := $str ~ ($decl.var).emit ~ '.Bind( h_hash() );' ~ Main.newline;
                 } 
                 else {
                 if ($decl.var).sigil eq '@' {
-                    $str := $str ~ 'new(Scalar).Bind( a_array() );';
+                    $str := $str ~ ($decl.var).emit ~ '.Bind( a_array() );' ~ Main.newline;
                 } 
                 else {
-                    $str := $str ~ 'new(Scalar).Bind( u_undef );';
+                    $str := $str ~ ($decl.var).emit ~ '.Bind( u_undef );' ~ Main.newline;
                 } 
                 }
             }
@@ -103,7 +103,7 @@ class CompUnit {
         }
         $str := $str ~ '}' ~ Main.newline;
 
-        my $str := $str 
+        $str := $str 
             ~ '// methods in class ' ~ $.name ~ Main.newline
             ~ 'var Method_' ~ $class_name ~ ' struct {' ~ Main.newline;
         for @.body -> $decl { 
@@ -113,7 +113,7 @@ class CompUnit {
         }
         $str := $str ~ '}' ~ Main.newline;
 
-        my $str := $str 
+        $str := $str 
             ~ '// namespace ' ~ $.name ~ Main.newline
             ~ 'var Namespace_' ~ $class_name ~ ' struct {' ~ Main.newline;
         for @.body -> $decl { 
@@ -122,8 +122,9 @@ class CompUnit {
             }
         }
         $str := $str ~ '}' ~ Main.newline;
+        $str := $str ~ 'var Run_' ~ $class_name ~ ' func ();' ~ Main.newline;
 
-        my $str := $str 
+        $str := $str 
             ~ '// method wrappers for ' ~ $.name ~ Main.newline
         for @.body -> $decl {
             if $decl.isa( 'Method' ) {
@@ -134,41 +135,45 @@ class CompUnit {
             }
         }
 
-#func (f Main) Bool () Bool { return b_true }
-#func (f Main) Int () Int { panic("converting function to int") }
-#func (f Main) Str () Str { panic("converting function to string") }
-#func (f Main) Array () Array { panic("converting function to array") }
-#func (f Main) Hash () Hash { panic("converting function to hash") }
-#func (f Main) Equal (j Any) Bool { panic("comparing function") }
+        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Bool () Bool { return b_true }' ~ Main.newline;
+        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Int () Int { panic("converting class to int") }' ~ Main.newline;
+        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Str () Str { panic("converting class to string") }' ~ Main.newline;
+        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Array () Array { panic("converting class to array") }' ~ Main.newline;
+        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Hash () Hash { panic("converting class to hash") }' ~ Main.newline;
+        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Equal (j Any) Bool { panic("comparing class") }' ~ Main.newline;
+        $str := $str ~ 'func (v_self *' ~ $class_name ~ ') Fetch () ' ~ $class_name ~ ' { return *v_self }' ~ Main.newline;
 
-        my $str := $str 
-            ~ '// prototype of ' ~ $.name ~ Main.newline
-            ~ 'var Proto_' ~ $class_name ~ ' ' ~ $class_name ~ ';' ~ Main.newline;
-
-        if $class_name eq 'Main' {
-            $str := $str ~ 'func main() {' ~ Main.newline;
-        }
         $str := $str 
-            ~ '    this_namespace := &Namespace_' ~ $class_name ~ ';' ~ Main.newline
-            ~ '    this_namespace = this_namespace;' ~ Main.newline;
+            ~ '// prototype of ' ~ $.name ~ Main.newline
+            ~ 'var Proto_' ~ $class_name ~ ' Scalar;' ~ Main.newline;
+
+        $str := $str ~ 'func Init_' ~ $class_name ~ '() {' ~ Main.newline;
+
+        #if $class_name eq 'Main' {
+        #    $str := $str ~ 'func main() {' ~ Main.newline;
+        #}
+        $str := $str 
+            ~ '  this_namespace := &Namespace_' ~ $class_name ~ ';' ~ Main.newline
+            ~ '  this_namespace = this_namespace;' ~ Main.newline
+            ~ '  Proto_' ~ $class_name ~ '.Bind( new(' ~ $class_name ~ ') );' ~ Main.newline;
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $str := $str ~ ($decl.var).emit ~ ' := '; 
+                $str := $str ~ '  ' ~ ($decl.var).emit ~ ' := new(Scalar);' ~ Main.newline; 
                 if ($decl.var).sigil eq '%' {
-                    $str := $str ~ 'new(Scalar).Bind( h_hash() );';
+                    $str := $str ~ ($decl.var).emit ~ '.Bind( h_hash() );' ~ Main.newline;
                 } 
                 else {
                 if ($decl.var).sigil eq '@' {
-                    $str := $str ~ 'new(Scalar).Bind( a_array() );';
+                    $str := $str ~ ($decl.var).emit ~ '.Bind( a_array() );' ~ Main.newline;
                 } 
                 else {
-                    $str := $str ~ 'new(Scalar).Bind( u_undef );';
+                    $str := $str ~ ($decl.var).emit ~ '.Bind( u_undef );' ~ Main.newline;
                 } 
                 }
                 $str := $str ~ Main.newline;
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                $str := $str ~ (($decl.parameters).var).emit ~ ' := new(Scalar);' ~ Main.newline; 
+                $str := $str ~ '  ' ~ (($decl.parameters).var).emit ~ ' := new(Scalar);' ~ Main.newline; 
             }
         }
 
@@ -189,7 +194,7 @@ class CompUnit {
                 $str := $str 
               ~ '  // method ' ~ $decl.name ~ Main.newline
               ~ '  Method_' ~ $class_name ~ '.f_' ~ $decl.name 
-                    ~ ' = func (v_self *' ~ $class_name ~ ', v Capture) Any {' ~ Main.newline
+                    ~ ' = func (' ~ ($sig.invocant).emit ~ ' *' ~ $class_name ~ ', v Capture) Any {' ~ Main.newline
               ~ '    ' ~ $sig.emit_bind ~ Main.newline
               ~ '    ' ~ $block.emit ~ Main.newline
               ~ '  };' ~ Main.newline
@@ -206,23 +211,22 @@ class CompUnit {
               ~ '  } };' ~ Main.newline;
             }
         }; 
-        # $str := $str ~ '}' ~ Main.newline;
-        # $str := $str ~ Main::to_go_namespace($.name) 
-        #              ~ ' = new ' ~ Main::to_go_namespace($.name) ~ ';' ~ Main.newline;
+
+        $str := $str 
+            ~ '  // main runtime block of ' ~ $.name ~ Main.newline
+            ~ '  Run_' ~ $class_name ~ ' = func () {' ~ Main.newline;
         for @.body -> $decl { 
             if    (!( $decl.isa( 'Decl' ) && (( $decl.decl eq 'has' ) || ( $decl.decl eq 'my' )) ))
                && (!( $decl.isa( 'Method'))) 
                && (!( $decl.isa( 'Sub'))) 
             {
-                $str := $str ~ ($decl).emit ~ ';';
+                $str := $str ~ '    ' ~ ($decl).emit ~ ';' ~ Main.newline;
             }
         }; 
+        $str := $str ~ '  }' ~ Main.newline;
 
-        # $str := $str ~ '}' 
-        #    ~ ')();' ~ Main.newline;
-        if $class_name eq 'Main' {
-            $str := $str ~ '}' ~ Main.newline;
-        }
+        $str := $str ~ '}' ~ Main.newline;
+        return $str;
     }
 
 }
@@ -568,7 +572,7 @@ class Call {
                     ~ ' })(' ~ $invocant ~ ')'
         }
         else {
-            $invocant ~ '.f_' ~ $meth ~ '( Capture{ p : []Any{ ' ~ (@.arguments.>>emit).join(', ') ~ ' } } )';
+            $invocant ~ '.Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '( Capture{ p : []Any{ ' ~ (@.arguments.>>emit).join(', ') ~ ' } } )';
         };
 
     }
