@@ -141,7 +141,7 @@ class CompUnit {
         $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Array () Array { panic("converting class to array") }' ~ Main.newline;
         $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Hash () Hash { panic("converting class to hash") }' ~ Main.newline;
         $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Equal (j Any) Bool { panic("comparing class") }' ~ Main.newline;
-        $str := $str ~ 'func (v_self *' ~ $class_name ~ ') Fetch () ' ~ $class_name ~ ' { return *v_self }' ~ Main.newline;
+        $str := $str ~ 'func (v_self *' ~ $class_name ~ ') Fetch () Any { return *v_self }' ~ Main.newline;
 
         $str := $str 
             ~ '// prototype of ' ~ $.name ~ Main.newline
@@ -512,12 +512,12 @@ class Call {
         { 
             if ($.hyper) {
                 return 
-                    '(func (a_) { '
-                        ~ 'var out = []; ' 
+                    'func (a_ Any) Array { '
+                        ~ 'var out = a_array(); ' 
                         ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
                         ~ 'for(var i = 0; i < a_.length; i++) { '
                             ~ 'out.Push( f_' ~ $.method ~ '(a_[i]) ) } return out;'
-                    ~ ' })(' ~ $invocant ~ ')'
+                    ~ ' }(' ~ $invocant ~ ')'
             }
             return 'f_' ~ $.method ~ '(' 
                     ~ $invocant 
@@ -534,12 +534,12 @@ class Call {
         { 
             if ($.hyper) {
                 return 
-                    '(func (a_) { '
-                        ~ 'var out = []; ' 
+                    'func (a_ Any) Array { '
+                        ~ 'var out = a_array(); ' 
                         ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
                         ~ 'for(var i = 0; i < a_.length; i++) { '
                             ~ 'out.Push( Main.' ~ $.method ~ '(a_[i]) ) } return out;'
-                    ~ ' })(' ~ $invocant ~ ')'
+                    ~ ' }(' ~ $invocant ~ ')'
             }
             else {
                 if defined @.arguments {
@@ -564,12 +564,12 @@ class Call {
         };
         
         if ($.hyper) {
-                    '(func (a_) { '
-                        ~ 'var out = []; ' 
+                    'func (a_) Array { '
+                        ~ 'var out = a_array(); ' 
                         ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
                         ~ 'for(var i = 0; i < a_.length; i++) { '
                             ~ 'out.Push( a_[i].f_' ~ $meth ~ '() ) } return out;'
-                    ~ ' })(' ~ $invocant ~ ')'
+                    ~ ' }(' ~ $invocant ~ ')'
         }
         else {
             $invocant ~ '.Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '( Capture{ p : []Any{ ' ~ (@.arguments.>>emit).join(', ') ~ ' } } )';
@@ -610,13 +610,11 @@ class Apply {
         if $code eq 'warn'       { return 'Print_stderr( Capture{ p : []Any{ '   
                                         ~ (@.arguments.>>emit).join(', ') 
                                         ~ ', Str{s:"\n"} } } )' };
-        # if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit).join(' ')    ~ '}' };
+        # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit).join(' ')    ~ '}' };
         if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ' != null)' };
-        if $code eq 'substr' { 
-            return '(' ~ (@.arguments[0]).emit ~
-                 ').substr(' ~ (@.arguments[1]).emit ~
-                 ', ' ~ (@.arguments[2]).emit ~ ')' 
-        };
+        if $code eq 'substr'     { return 'Substr( Capture{ p : []Any{ ' 
+                                        ~ (@.arguments.>>emit).join(', ') 
+                                        ~ ' } } )'  };
         if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit).join(' ')    ~ ').Str()' };
         if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ').Bool().Not()' };
         if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ').Bool()' };

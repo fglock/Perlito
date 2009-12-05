@@ -254,9 +254,11 @@ func (i *Array) Push (j Any) *Array {
     return i
 }
 
+// Capture is a parameter list, for internal use 
+
 type Capture struct {
     p []Any;
-    invocant *Any;
+    // invocant *Any;
 }
 
 // runtime functions
@@ -270,6 +272,12 @@ func Print_stderr (s Capture) {
     for i, _ := range s.p {
         fmt.Fprint( os.Stderr, s.p[i].Str().s );
     }
+}
+func Substr (s Capture) Str { 
+    var a = s.p[0].Int().i;
+    var b = s.p[1].Int().i;
+    // TODO if b < 0
+    return Str{ s : s.p[0].Str().s[ a : a + b ] } 
 }
 
 // 'return' exception
