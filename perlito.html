@@ -53,7 +53,7 @@ class Main {
                     ast = match.f_scalar();
 		    	    document.getElementById('ast-result').value += ast.f_perl() + ";\n";
 		    	    document.getElementById('log-result').value += "Emitting javascript.\n";
-		    	    document.getElementById('js-result').value += ast.f_emit() + "\n";
+		    	    document.getElementById('js-result').value += ast.f_emit_javascript() + "\n";
                     pos = match.v_to;
 			        document.getElementById('log-result').value += 
                         "Finished compilation unit at pos " + pos + " of " + source.length + "\n";

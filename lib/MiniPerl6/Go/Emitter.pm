@@ -4,7 +4,7 @@ class MiniPerl6::Go::LexicalBlock {
     has @.block;
     has $.needs_return;
     has $.top_level;
-    method emit {
+    method emit_go {
         if !(@.block) {
             return 'null';
         }
@@ -12,21 +12,21 @@ class MiniPerl6::Go::LexicalBlock {
         for @.block -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 # uninitialized variable
-                $str := $str ~ ($decl.var).emit ~ ' := new(Scalar);' ~ Main.newline;
+                $str := $str ~ ($decl.var).emit_go ~ ' := new(Scalar);' ~ Main.newline;
                 if ($decl.var).sigil eq '%' {
-                    $str := $str ~ ($decl.var).emit ~ '.Bind( h_hash() );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( h_hash() );' ~ Main.newline;
                 } 
                 else {
                 if ($decl.var).sigil eq '@' {
-                    $str := $str ~ ($decl.var).emit ~ '.Bind( a_array() );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( a_array() );' ~ Main.newline;
                 } 
                 else {
-                    $str := $str ~ ($decl.var).emit ~ '.Bind( u_undef );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( u_undef );' ~ Main.newline;
                 } 
                 }
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                $str := $str ~ (($decl.parameters).var).emit ~ ' := new(Scalar);'; 
+                $str := $str ~ (($decl.parameters).var).emit_go ~ ' := new(Scalar);'; 
             }
         }
         my $last_statement;
@@ -35,7 +35,7 @@ class MiniPerl6::Go::LexicalBlock {
         }
         for @.block -> $decl { 
             if (!( $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ))) {
-                $str := $str ~ ($decl).emit ~ ';';
+                $str := $str ~ ($decl).emit_go ~ ';';
             }
         }; 
         if $.needs_return && $last_statement {
@@ -54,22 +54,22 @@ class MiniPerl6::Go::LexicalBlock {
                 $body      := ::MiniPerl6::Go::LexicalBlock( block => $body, needs_return => 1 );
                 $otherwise := ::MiniPerl6::Go::LexicalBlock( block => $otherwise, needs_return => 1 );
                 $str := $str 
-                    ~ 'if ( (' ~ $cond.emit ~ ').Bool().b ) { ' 
-                        ~ $body.emit ~ ' } else { ' 
-                        ~ $otherwise.emit ~ ' }';
+                    ~ 'if ( (' ~ $cond.emit_go ~ ').Bool().b ) { ' 
+                        ~ $body.emit_go ~ ' } else { ' 
+                        ~ $otherwise.emit_go ~ ' }';
             }
             else {
             if $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
                 # Return, For - no changes for now 
-                $str := $str ~ $last_statement.emit
+                $str := $str ~ $last_statement.emit_go
             }
             else {
                 # $last_statement := ::Return( result => $last_statement );
                 if $.top_level {
-                    $str := $str ~ 'Return( p, ' ~ $last_statement.emit ~ ')'
+                    $str := $str ~ 'Return( p, ' ~ $last_statement.emit_go ~ ')'
                 }
                 else {
-                    $str := $str ~ 'return(' ~ $last_statement.emit ~ ')'
+                    $str := $str ~ 'return(' ~ $last_statement.emit_go ~ ')'
                 }
             }
             }
@@ -91,7 +91,7 @@ class CompUnit {
     has %.attributes;
     has %.methods;
     has @.body;
-    method emit {
+    method emit_go {
         my $class_name := Main::to_go_namespace($.name);
         my $str :=
               '// instances of class ' ~ $.name ~ Main.newline
@@ -158,22 +158,22 @@ class CompUnit {
             ~ '  Proto_' ~ $class_name ~ '.Bind( new(' ~ $class_name ~ ') );' ~ Main.newline;
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $str := $str ~ '  ' ~ ($decl.var).emit ~ ' := new(Scalar);' ~ Main.newline; 
+                $str := $str ~ '  ' ~ ($decl.var).emit_go ~ ' := new(Scalar);' ~ Main.newline; 
                 if ($decl.var).sigil eq '%' {
-                    $str := $str ~ ($decl.var).emit ~ '.Bind( h_hash() );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( h_hash() );' ~ Main.newline;
                 } 
                 else {
                 if ($decl.var).sigil eq '@' {
-                    $str := $str ~ ($decl.var).emit ~ '.Bind( a_array() );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( a_array() );' ~ Main.newline;
                 } 
                 else {
-                    $str := $str ~ ($decl.var).emit ~ '.Bind( u_undef );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( u_undef );' ~ Main.newline;
                 } 
                 }
                 $str := $str ~ Main.newline;
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                $str := $str ~ '  ' ~ (($decl.parameters).var).emit ~ ' := new(Scalar);' ~ Main.newline; 
+                $str := $str ~ '  ' ~ (($decl.parameters).var).emit_go ~ ' := new(Scalar);' ~ Main.newline; 
             }
         }
 
@@ -194,9 +194,9 @@ class CompUnit {
                 $str := $str 
               ~ '  // method ' ~ $decl.name ~ Main.newline
               ~ '  Method_' ~ $class_name ~ '.f_' ~ $decl.name 
-                    ~ ' = func (' ~ ($sig.invocant).emit ~ ' *' ~ $class_name ~ ', v Capture) Any {' ~ Main.newline
-              ~ '    ' ~ $sig.emit_bind ~ Main.newline
-              ~ '    ' ~ $block.emit ~ Main.newline
+                    ~ ' = func (' ~ ($sig.invocant).emit_go ~ ' *' ~ $class_name ~ ', v Capture) Any {' ~ Main.newline
+              ~ '    ' ~ $sig.emit_go_bind ~ Main.newline
+              ~ '    ' ~ $block.emit_go ~ Main.newline
               ~ '  };' ~ Main.newline
             }
             if $decl.isa( 'Sub' ) {
@@ -206,8 +206,8 @@ class CompUnit {
               ~ '  // sub ' ~ $decl.name ~ Main.newline
               ~ '  Namespace_' ~ $class_name ~ '.f_' ~ $decl.name 
                     ~ ' = Function{ f : func (v Capture) Any {' ~ Main.newline
-              ~ '    ' ~ $sig.emit_bind ~ Main.newline
-              ~ '    ' ~ $block.emit ~ Main.newline
+              ~ '    ' ~ $sig.emit_go_bind ~ Main.newline
+              ~ '    ' ~ $block.emit_go ~ Main.newline
               ~ '  } };' ~ Main.newline;
             }
         }; 
@@ -220,7 +220,7 @@ class CompUnit {
                && (!( $decl.isa( 'Method'))) 
                && (!( $decl.isa( 'Sub'))) 
             {
-                $str := $str ~ '    ' ~ ($decl).emit ~ ';' ~ Main.newline;
+                $str := $str ~ '    ' ~ ($decl).emit_go ~ ';' ~ Main.newline;
             }
         }; 
         $str := $str ~ '  }' ~ Main.newline;
@@ -233,48 +233,48 @@ class CompUnit {
 
 class Val::Int {
     has $.int;
-    method emit { 'Int{i:' ~ $.int ~ '}' }
+    method emit_go { 'Int{i:' ~ $.int ~ '}' }
 }
 
 class Val::Bit {
     has $.bit;
-    method emit { 'Bit{b:' ~ $.bit ~ '}' }
+    method emit_go { 'Bit{b:' ~ $.bit ~ '}' }
 }
 
 class Val::Num {
     has $.num;
-    method emit { 'Num{n:' ~ $.num ~ '}' }
+    method emit_go { 'Num{n:' ~ $.num ~ '}' }
 }
 
 class Val::Buf {
     has $.buf;
-    method emit { 'Str{s:"' ~ Main::lisp_escape_string($.buf) ~ '"}' }
+    method emit_go { 'Str{s:"' ~ Main::lisp_escape_string($.buf) ~ '"}' }
 }
 
 class Val::Undef {
-    method emit { 'u_undef' }
+    method emit_go { 'u_undef' }
 }
 
 class Val::Object {
     has $.class;
     has %.fields;
-    method emit {
+    method emit_go {
         die 'Val::Object - not used yet';
     }
 }
 
 class Lit::Seq {
     has @.seq;
-    method emit {
+    method emit_go {
         '[]Any{ '
-            ~ (@.seq.>>emit).join(', ') 
+            ~ (@.seq.>>emit_go).join(', ') 
         ~ ' }';
     }
 }
 
 class Lit::Array {
     has @.array;
-    method emit {
+    method emit_go {
         my $str := '';
         for @.array -> $item {
             if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
@@ -283,10 +283,10 @@ class Lit::Array {
                 $str := $str 
                     ~ 'func(a_) { ' 
                         ~ 'for i_ := 0; i_ < a_.length ; i_++ { a.Push(a_[i_]) }' 
-                    ~ '}(' ~ $item.emit ~ '); '
+                    ~ '}(' ~ $item.emit_go ~ '); '
             }
             else {
-                $str := $str ~ 'a.Push(' ~ $item.emit ~ '); '
+                $str := $str ~ 'a.Push(' ~ $item.emit_go ~ '); '
             }
         }
         'func () Array { ' 
@@ -299,12 +299,12 @@ class Lit::Array {
 
 class Lit::Hash {
     has @.hash;
-    method emit {
+    method emit_go {
         my $fields := @.hash;
         my $str := ''; 
         for @$fields -> $field { 
             $str := $str 
-                ~ 'm[' ~ ($field[0]).emit ~ '] = ' ~ ($field[1]).emit ~ '; ';
+                ~ 'm[' ~ ($field[0]).emit_go ~ '] = ' ~ ($field[1]).emit ~ '; ';
         }; 
         'func() map[string]Any { ' 
             ~ 'var m = make(map[string]Any); '
@@ -322,12 +322,12 @@ class Lit::Code {
 class Lit::Object {
     has $.class;
     has @.fields;
-    method emit {
+    method emit_go {
         my $fields := @.fields;
         my $str := '';
         for @$fields -> $field { 
             $str := $str 
-                ~ 'm.v_' ~ ($field[0]).buf ~ ' = ' ~ ($field[1]).emit ~ '; ';
+                ~ 'm.v_' ~ ($field[0]).buf ~ ' = ' ~ ($field[1]).emit_go ~ '; ';
         }; 
         'func() *' ~ Main::to_go_namespace($.class) ~ ' { ' 
             ~ 'var m = new(' ~ Main::to_go_namespace($.class) ~ '); '
@@ -340,16 +340,16 @@ class Lit::Object {
 class Index {
     has $.obj;
     has $.index_exp;
-    method emit {
-        $.obj.emit ~ '.Array().Index(' ~ $.index_exp.emit ~ ')';
+    method emit_go {
+        $.obj.emit_go ~ '.Array().Index(' ~ $.index_exp.emit ~ ')';
     }
 }
 
 class Lookup {
     has $.obj;
     has $.index_exp;
-    method emit {
-        $.obj.emit ~ '.Hash().Lookup(' ~ $.index_exp.emit ~ ')';
+    method emit_go {
+        $.obj.emit_go ~ '.Hash().Lookup(' ~ $.index_exp.emit ~ ')';
     }
 }
 
@@ -358,7 +358,7 @@ class Var {
     has $.twigil;
     has $.namespace;
     has $.name;
-    method emit {
+    method emit_go {
         # Normalize the sigil here into $
         # $x    => $x
         # @x    => $List_x
@@ -392,7 +392,7 @@ class Var {
 class Bind {
     has $.parameters;
     has $.arguments;
-    method emit {
+    method emit_go {
         if $.parameters.isa( 'Lit::Array' ) {
             
             #  [$a, [$b, $c]] := [1, [2, 3]]
@@ -401,7 +401,7 @@ class Bind {
             #my $b := $.arguments.array;
             my $str := 
                 'func () Any { '
-                    ~ 'List_tmp := ' ~ $.arguments.emit ~ '; ';
+                    ~ 'List_tmp := ' ~ $.arguments.emit_go ~ '; ';
             my $i := 0;
             for @$a -> $var { 
                 my $bind := ::Bind( 
@@ -411,7 +411,7 @@ class Bind {
                         index_exp  => ::Val::Int( int => $i )
                     )
                 );
-                $str := $str ~ ' ' ~ $bind.emit ~ '; ';
+                $str := $str ~ ' ' ~ $bind.emit_go ~ '; ';
                 $i := $i + 1;
             };
             return $str ~ ' return List_tmp }()';
@@ -436,10 +436,10 @@ class Bind {
                 };
 
                 my $bind := ::Bind( 'parameters' => $var[1], 'arguments' => $arg );
-                $str := $str ~ ' ' ~ $bind.emit ~ '; ';
+                $str := $str ~ ' ' ~ $bind.emit_go ~ '; ';
                 $i := $i + 1;
             };
-            return $str ~ $.parameters.emit ~ ' }';
+            return $str ~ $.parameters.emit_go ~ ' }';
         };
 
         if $.parameters.isa( 'Lit::Object' ) {
@@ -457,29 +457,29 @@ class Bind {
                     'parameters' => $var[1], 
                     'arguments'  => ::Call( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
-                $str := $str ~ ' ' ~ $bind.emit ~ '; ';
+                $str := $str ~ ' ' ~ $bind.emit_go ~ '; ';
                 $i := $i + 1;
             };
-            return $str ~ $.parameters.emit ~ ' }';
+            return $str ~ $.parameters.emit_go ~ ' }';
         };
     
         if $.parameters.isa( 'Call' ) {
             # $var.attr := 3;
             return 
                   'func () Any { ' 
-                    ~ 'tmp := ' ~ $.arguments.emit ~ '; '
-                    ~ ($.parameters.invocant).emit ~ '.v_' ~ $.parameters.method ~ ' = tmp; '
+                    ~ 'tmp := ' ~ $.arguments.emit_go ~ '; '
+                    ~ ($.parameters.invocant).emit_go ~ '.v_' ~ $.parameters.method ~ ' = tmp; '
                     ~ 'return tmp; '
                 ~ '}()';
         }
 
-        $.parameters.emit ~ '.Bind( ' ~ $.arguments.emit ~ ' )';
+        $.parameters.emit_go ~ '.Bind( ' ~ $.arguments.emit ~ ' )';
     }
 }
 
 class Proto {
     has $.name;
-    method emit {
+    method emit_go {
         Main::to_go_namespace($.name)        
     }
 }
@@ -490,8 +490,8 @@ class Call {
     has $.method;
     has @.arguments;
     #has $.hyper;
-    method emit {
-        my $invocant := $.invocant.emit;
+    method emit_go {
+        my $invocant := $.invocant.emit_go;
         if ($.invocant).isa( 'Proto' ) {
             $invocant := 'Proto_' ~ $invocant
         }
@@ -521,11 +521,11 @@ class Call {
             }
             return 'f_' ~ $.method ~ '(' 
                     ~ $invocant 
-                    ~ ( @.arguments ?? ', ' ~ (@.arguments.>>emit).join(', ') !! '' ) 
+                    ~ ( @.arguments ?? ', ' ~ (@.arguments.>>emit_go).join(', ') !! '' ) 
                 ~ ')';
         }
         if ($.method eq 'join') {
-            return $invocant ~ '.' ~ $.method ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+            return $invocant ~ '.' ~ $.method ~ '(' ~ (@.arguments.>>emit_go).join(', ') ~ ')';
         }
 
         if     ($.method eq 'yaml')
@@ -544,7 +544,7 @@ class Call {
             else {
                 if defined @.arguments {
                     return
-                        'Main.' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit).join(', ') ~ ')';
+                        'Main.' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_go).join(', ') ~ ')';
                 }
                 else {
                     return
@@ -559,7 +559,7 @@ class Call {
                 $meth := '';  # ???
             }
             else {
-                return $invocant ~ '.Apply( Capture{ p : []Any{ ' ~ (@.arguments.>>emit).join(', ') ~ ' } } )';
+                return $invocant ~ '.Apply( Capture{ p : []Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
             }
         };
         
@@ -572,7 +572,7 @@ class Call {
                     ~ ' }(' ~ $invocant ~ ')'
         }
         else {
-            $invocant ~ '.Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '( Capture{ p : []Any{ ' ~ (@.arguments.>>emit).join(', ') ~ ' } } )';
+            $invocant ~ '.Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '( Capture{ p : []Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
         };
 
     }
@@ -582,12 +582,12 @@ class Apply {
     has $.code;
     has @.arguments;
     has $.namespace;
-    method emit {
+    method emit_go {
         my $code := $.code;
 
         if $code.isa( 'Str' ) { }
         else {
-            return '(' ~ $.code.emit ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+            return '(' ~ $.code.emit_go ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         };
 
         if $code eq 'self'       { return 'this' };
@@ -595,75 +595,75 @@ class Apply {
         if $code eq 'make'       { 
             return 
                   'func () Any { ' 
-                    ~ 'tmp := ' ~ (@.arguments.>>emit).join(', ') ~ '; '
+                    ~ 'tmp := ' ~ (@.arguments.>>emit_go).join(', ') ~ '; '
                     ~ 'v_MATCH.v_capture = tmp; '
                     ~ 'return tmp; '
                 ~ '}()';
         };
 
         if $code eq 'say'        { return 'Print( Capture{ p : []Any{ '    
-                                        ~ (@.arguments.>>emit).join(', ') 
+                                        ~ (@.arguments.>>emit_go).join(', ') 
                                         ~ ', Str{s:"\n"} } } )' };
         if $code eq 'print'      { return 'Print( Capture{ p : []Any{ '  
-                                        ~ (@.arguments.>>emit).join(', ') 
+                                        ~ (@.arguments.>>emit_go).join(', ') 
                                         ~ ' } } )' };
         if $code eq 'warn'       { return 'Print_stderr( Capture{ p : []Any{ '   
-                                        ~ (@.arguments.>>emit).join(', ') 
+                                        ~ (@.arguments.>>emit_go).join(', ') 
                                         ~ ', Str{s:"\n"} } } )' };
-        # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit).join(' ')    ~ '}' };
-        if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ' != null)' };
+        # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit_go).join(' ')    ~ '}' };
+        if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit_go).join(' ')    ~ ' != null)' };
         if $code eq 'substr'     { return 'Substr( Capture{ p : []Any{ ' 
-                                        ~ (@.arguments.>>emit).join(', ') 
+                                        ~ (@.arguments.>>emit_go).join(', ') 
                                         ~ ' } } )'  };
-        if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit).join(' ')    ~ ').Str()' };
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ').Bool().Not()' };
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ').Bool()' };
-        if $code eq 'prefix:<$>' { return 'f_scalar(' ~ (@.arguments.>>emit).join(' ')    ~ ')' };
-        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit).join(' ')    ~ ')' };  # .f_array()' };
-        if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit).join(' ')    ~ ').f_hash()' };
+        if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_go).join(' ')    ~ ').Str()' };
+        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit_go).join(' ')    ~ ').Bool().Not()' };
+        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_go).join(' ')    ~ ').Bool()' };
+        if $code eq 'prefix:<$>' { return 'f_scalar(' ~ (@.arguments.>>emit_go).join(' ')    ~ ')' };
+        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_go).join(' ')    ~ ')' };  # .f_array()' };
+        if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_go).join(' ')    ~ ').f_hash()' };
 
         if $code eq 'infix:<~>'  { return 'Str{ s: strings.Join( []string{' 
-                                        ~ '(' ~ (@.arguments[0]).emit ~ ').Str().s, ' 
-                                        ~ '(' ~ (@.arguments[1]).emit ~ ').Str().s' 
+                                        ~ '(' ~ (@.arguments[0]).emit_go ~ ').Str().s, ' 
+                                        ~ '(' ~ (@.arguments[1]).emit_go ~ ').Str().s' 
                                     ~ '}, "" ) }' 
                                 };
         if $code eq 'infix:<+>'  { return 'Int{ i:' 
-                                        ~ '(' ~ (@.arguments[0]).emit ~ ').Int().i + '
-                                        ~ '(' ~ (@.arguments[1]).emit ~ ').Int().i ' 
+                                        ~ '(' ~ (@.arguments[0]).emit_go ~ ').Int().i + '
+                                        ~ '(' ~ (@.arguments[1]).emit_go ~ ').Int().i ' 
                                     ~ '}' 
                                 };
         if $code eq 'infix:<->'  { return 'Int{ i:' 
-                                        ~ '(' ~ (@.arguments[0]).emit ~ ').Int().i - '
-                                        ~ '(' ~ (@.arguments[1]).emit ~ ').Int().i '
+                                        ~ '(' ~ (@.arguments[0]).emit_go ~ ').Int().i - '
+                                        ~ '(' ~ (@.arguments[1]).emit_go ~ ').Int().i '
                                     ~ '}' 
                                 };
         if $code eq 'infix:<>>'  { return 'Bool{ b:' 
-                                        ~ '(' ~ (@.arguments[0]).emit ~ ').Int().i > '
-                                        ~ '(' ~ (@.arguments[1]).emit ~ ').Int().i '
+                                        ~ '(' ~ (@.arguments[0]).emit_go ~ ').Int().i > '
+                                        ~ '(' ~ (@.arguments[1]).emit_go ~ ').Int().i '
                                     ~ '}' 
                                 };
 
-        if $code eq 'infix:<&&>' { return '( (' ~ (@.arguments[0]).emit ~ ').Bool()'
-                                      ~ ' && (' ~ (@.arguments[1]).emit ~ ').Bool() )' };
-        if $code eq 'infix:<||>' { return '( (' ~ (@.arguments[0]).emit ~ ').Bool()'
-                                      ~ ' || (' ~ (@.arguments[1]).emit ~ ').Bool() )' };
+        if $code eq 'infix:<&&>' { return '( (' ~ (@.arguments[0]).emit_go ~ ').Bool()'
+                                      ~ ' && (' ~ (@.arguments[1]).emit_go ~ ').Bool() )' };
+        if $code eq 'infix:<||>' { return '( (' ~ (@.arguments[0]).emit_go ~ ').Bool()'
+                                      ~ ' || (' ~ (@.arguments[1]).emit_go ~ ').Bool() )' };
 
-        if $code eq 'infix:<eq>' { return '(' ~ (@.arguments[0]).emit ~ ').Str().Str_equal('
-                                       ~ (@.arguments[1]).emit ~ ')' };
-        if $code eq 'infix:<ne>' { return '(' ~ (@.arguments[0]).emit ~ ').Str().Str_equal('
-                                       ~ (@.arguments[1]).emit ~ ').Not()' };
+        if $code eq 'infix:<eq>' { return '(' ~ (@.arguments[0]).emit_go ~ ').Str().Str_equal('
+                                       ~ (@.arguments[1]).emit_go ~ ')' };
+        if $code eq 'infix:<ne>' { return '(' ~ (@.arguments[0]).emit_go ~ ').Str().Str_equal('
+                                       ~ (@.arguments[1]).emit_go ~ ').Not()' };
  
-        if $code eq 'infix:<==>' { return '(' ~ (@.arguments[0]).emit ~ ').Equal('
-                                       ~ (@.arguments[1]).emit ~ ')' };
-        if $code eq 'infix:<!=>' { return '(' ~ (@.arguments[0]).emit ~ ').Equal('
-                                       ~ (@.arguments[1]).emit ~ ').Not()' };
+        if $code eq 'infix:<==>' { return '(' ~ (@.arguments[0]).emit_go ~ ').Equal('
+                                       ~ (@.arguments[1]).emit_go ~ ')' };
+        if $code eq 'infix:<!=>' { return '(' ~ (@.arguments[0]).emit_go ~ ').Equal('
+                                       ~ (@.arguments[1]).emit_go ~ ').Not()' };
 
         if $code eq 'ternary:<?? !!>' { 
             return 
                 'func () Any { '
-                    ~ 'if (' ~ (@.arguments[0]).emit ~ ').Bool().b ' 
-                    ~ '{ return ' ~ (@.arguments[1]).emit ~ ' }; '
-                    ~ 'return ' ~ (@.arguments[2]).emit ~ ' '
+                    ~ 'if (' ~ (@.arguments[0]).emit_go ~ ').Bool().b ' 
+                    ~ '{ return ' ~ (@.arguments[1]).emit_go ~ ' }; '
+                    ~ 'return ' ~ (@.arguments[2]).emit_go ~ ' '
                 ~ '}()'
         };
         
@@ -674,15 +674,15 @@ class Apply {
         else {
             $code := 'this_namespace.' ~ $code;
         }
-        $code ~ '.Apply( Capture{ p : []Any{ ' ~ (@.arguments.>>emit).join(', ') ~ ' } } )';
+        $code ~ '.Apply( Capture{ p : []Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
     }
 }
 
 class Return {
     has $.result;
-    method emit {
+    method emit_go {
         return
-        'Return( p, ' ~ $.result.emit ~ ')';
+        'Return( p, ' ~ $.result.emit_go ~ ')';
     }
 }
 
@@ -690,23 +690,23 @@ class If {
     has $.cond;
     has @.body;
     has @.otherwise;
-    method emit {
+    method emit_go {
         my $cond := $.cond;
 
         if   $cond.isa( 'Apply' ) 
           && $cond.code eq 'prefix:<!>' 
         {
             my $if := ::If( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
-            return $if.emit;
+            return $if.emit_go;
         }
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
             $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        'if ( (' ~ $cond.emit ~ ').Bool().b ) { ' 
-            ~ (@.body.>>emit).join(';') ~ ' } else { ' 
-            ~ (@.otherwise.>>emit).join(';') ~ ' }';
+        'if ( (' ~ $cond.emit_go ~ ').Bool().b ) { ' 
+            ~ (@.body.>>emit_go).join(';') ~ ' } else { ' 
+            ~ (@.otherwise.>>emit_go).join(';') ~ ' }';
     }
 }
 
@@ -714,12 +714,12 @@ class For {
     has $.cond;
     has @.body;
     has @.topic;
-    method emit {
+    method emit_go {
         'func (a_ Any) { for i_ := 0; i_ < len(a_); i_++ { ' 
-            ~ 'func (' ~ $.topic.emit ~ ' Any) { '
-                ~ (@.body.>>emit).join(';') 
+            ~ 'func (' ~ $.topic.emit_go ~ ' Any) { '
+                ~ (@.body.>>emit_go).join(';') 
             ~ ' }(a_[i_]) } }' 
-        ~ '(' ~ $.cond.emit ~ ')'
+        ~ '(' ~ $.cond.emit_go ~ ')'
     }
 }
 
@@ -727,8 +727,8 @@ class Decl {
     has $.decl;
     has $.type;
     has $.var;
-    method emit {
-        $.var.emit;
+    method emit_go {
+        $.var.emit_go;
     }
 }
 
@@ -736,14 +736,14 @@ class Sig {
     has $.invocant;
     has $.positional;
     has $.named;
-    method emit {
+    method emit_go {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     }
-    method emit_bind {
+    method emit_go_bind {
         my $str := '';
         my $i := 0;
         for @($.positional) -> $decl { 
-            $str := $str ~ $decl.emit ~ ' := v.p[' ~ $i ~ ']; ';
+            $str := $str ~ $decl.emit_go ~ ' := v.p[' ~ $i ~ ']; ';
             $i := $i + 1;
         }
         return $str;
@@ -754,11 +754,11 @@ class Method {
     has $.name;
     has $.sig;
     has @.block;
-    method emit {
+    method emit_go {
         my $invocant := ($.sig).invocant; 
         'func ' ~ $.name ~ '(v Capture) Any { ' 
-              ~ '    ' ~ ($.sig).emit_bind ~ Main.newline
-              ~ '    ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit 
+              ~ '    ' ~ ($.sig).emit_go_bind ~ Main.newline
+              ~ '    ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
         ~ ' }'
     }
 }
@@ -767,28 +767,28 @@ class Sub {
     has $.name;
     has $.sig;
     has @.block;
-    method emit {
+    method emit_go {
         if $.name eq '' { 
             return
                 'Function{ f: func(v Capture) Any { '
-                    ~ '    ' ~ ($.sig).emit_bind ~ Main.newline
-                    ~ '    ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit 
+                    ~ '    ' ~ ($.sig).emit_go_bind ~ Main.newline
+                    ~ '    ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
                     ~ '} '
                 ~ '}'
         }
 
         'func ' ~ $.name ~ '(v Capture) Any { ' 
-              ~ '    ' ~ ($.sig).emit_bind ~ Main.newline
-              ~ '    ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit 
+              ~ '    ' ~ ($.sig).emit_go_bind ~ Main.newline
+              ~ '    ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
         ~ ' }'
     }
 }
 
 class Do {
     has @.block;
-    method emit {
+    method emit_go {
         '(func () Any { ' 
-          ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1 ).emit 
+          ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1 ).emit_go 
           ~ '; return u_undef '
         ~ '})()'
     }
@@ -796,7 +796,7 @@ class Do {
 
 class Use {
     has $.mod;
-    method emit {
+    method emit_go {
         '// use ' ~ $.mod ~ Main.newline
     }
 }
@@ -805,15 +805,15 @@ class Use {
 
 =head1 NAME 
 
-MiniPerl6::Perl5::Emit - Code generator for MiniPerl6-in-Perl5
+MiniPerl6::Go::Emit - Code generator for MiniPerl6-in-Go
 
 =head1 SYNOPSIS
 
-    $program.emit  # generated Perl5 code
+    $program.emit_go  # generated Go code
 
 =head1 DESCRIPTION
 
-This module generates Perl5 code for the MiniPerl6 compiler.
+This module generates Go code for the MiniPerl6 compiler.
 
 =head1 AUTHORS
 

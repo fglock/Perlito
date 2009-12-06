@@ -34,7 +34,7 @@
                (setf p (sv-comp_unit (proto-mp-MiniPerl6-Grammar) source pos))
                ;; (format t "~a~%" (sv-perl p))
                (setf result (concatenate 'string result  
-                    (format nil "~a~%" (sv-emit (sv-capture p)))))
+                    (format nil "~a~%" (sv-emit_lisp (sv-capture p)))))
                ;; (sv-say (list ";; at source pos: " (sv-to p) " source end: " (length source)))
                (setf pos (sv-to p))))
       (setf result (concatenate 'string result (format nil "~a~%" ")")))

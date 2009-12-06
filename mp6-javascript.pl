@@ -25,7 +25,7 @@ while ( $pos < length( $source ) ) {
     #say( "Source code:", $source );
     my $p = MiniPerl6::Grammar->comp_unit($source, $pos);
     #say( Main::perl( $$p ) );
-    say( join( "", (map { $_->emit() } ($$p) )));
+    say( join( "", (map { $_->emit_javascript() } ($$p) )));
     #say( $p->to, " -- ", length($source) );
     $pos = $p->to;
 }

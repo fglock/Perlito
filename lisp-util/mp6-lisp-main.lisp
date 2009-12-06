@@ -17,7 +17,7 @@
           do (progn
              (setf p (sv-comp_unit (proto-mp-MiniPerl6-Grammar) source pos))
              ;; (format t "~a~%" (sv-perl p))
-             (format t "~a~%" (sv-emit (sv-capture p)))
+             (format t "~a~%" (sv-emit_lisp (sv-capture p)))
              ;; (sv-say (list ";; at source pos: " (sv-to p) " source end: " (length source)))
              (setf pos (sv-to p)))))
 

@@ -6,6 +6,7 @@ mkdir lib5-new/MiniPerl6
 mkdir lib5-new/MiniPerl6/Grammar
 mkdir lib5-new/MiniPerl6/Emitter
 mkdir lib5-new/MiniPerl6/Perl5
+mkdir lib5-new/MiniPerl6/Go
 mkdir lib5-new/MiniPerl6/Lisp
 mkdir lib5-new/MiniPerl6/Javascript
 mkdir lib5-new/MiniPerl6/Parrot
@@ -35,6 +36,10 @@ cat lib/MiniPerl6/Grammar/Regex.pm  |   \
 cat lib/MiniPerl6/Grammar.pm        |   \
     perl mp6-perl5.pl      >   \
     lib5-new/MiniPerl6/Grammar.pm
+
+cat lib/MiniPerl6/Go/Emitter.pm  |   \
+    perl mp6-perl5.pl      >   \
+    lib5-new/MiniPerl6/Go/Emitter.pm
 
 cat lib/MiniPerl6/Lisp/Emitter.pm  |   \
     perl mp6-perl5.pl      >   \

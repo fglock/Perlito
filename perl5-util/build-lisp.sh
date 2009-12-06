@@ -4,6 +4,7 @@
 mkdir liblisp
 mkdir liblisp/MiniPerl6
 mkdir liblisp/MiniPerl6/Grammar
+mkdir liblisp/MiniPerl6/Go
 mkdir liblisp/MiniPerl6/Lisp
 mkdir liblisp/MiniPerl6/Emitter
 mkdir liblisp/MiniPerl6/Perl5
@@ -54,4 +55,8 @@ perl mp6-lisp.pl \
 perl mp6-lisp.pl \
     <      lib/MiniPerl6/Perl5/Emitter.pm    \
     >  liblisp/MiniPerl6/Perl5/Emitter.lisp
+
+perl mp6-lisp.pl \
+    <      lib/MiniPerl6/Go/Emitter.pm    \
+    >  liblisp/MiniPerl6/Go/Emitter.lisp
 

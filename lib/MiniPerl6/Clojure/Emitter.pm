@@ -2,7 +2,7 @@ use v6-alpha;
 
 class MiniPerl6::Clojure::LexicalBlock {
     has @.block;
-    method emit {
+    method emit_clojure {
         if !(@.block) {
             return 'nil';
         }
@@ -13,13 +13,13 @@ class MiniPerl6::Clojure::LexicalBlock {
         for @.block -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $has_my_decl := 1;
-                $my_decl := $my_decl ~ '(' ~ ($decl.var).emit ~ ' (sv-undef))'; 
-                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ ($decl.var).emit;
+                $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_clojure ~ ' (sv-undef))'; 
+                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ ($decl.var).emit_clojure;
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $has_my_decl := 1;
-                $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit ~ ' (sv-undef))'; 
-                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ (($decl.parameters).var).emit;
+                $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_clojure ~ ' (sv-undef))'; 
+                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ (($decl.parameters).var).emit_clojure;
             }
         }
         if $has_my_decl {
@@ -34,7 +34,7 @@ class MiniPerl6::Clojure::LexicalBlock {
         };
         for @.block -> $decl { 
             if (!( $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ))) {
-                $str := $str ~ ($decl).emit;
+                $str := $str ~ ($decl).emit_clojure;
             }
         }; 
         return $str ~ ')';
@@ -47,7 +47,7 @@ class CompUnit {
     has %.attributes;
     has %.methods;
     has @.body;
-    method emit {
+    method emit_clojure {
 
         my $class_name := Main::to_lisp_namespace($.name);
         my $str := ';; class ' ~ $.name ~ Main.newline;
@@ -62,13 +62,13 @@ class CompUnit {
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $has_my_decl := 1;
-                $my_decl := $my_decl ~ '(' ~ ($decl.var).emit ~ ' (sv-undef))'; 
-                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ ($decl.var).emit;
+                $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_clojure ~ ' (sv-undef))'; 
+                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ ($decl.var).emit_clojure;
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $has_my_decl := 1;
-                $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit ~ ' (sv-undef))'; 
-                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ (($decl.parameters).var).emit;
+                $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_clojure ~ ' (sv-undef))'; 
+                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ (($decl.parameters).var).emit_clojure;
             }
         }
         if $has_my_decl {
@@ -121,11 +121,11 @@ new-slots))
                 my $sig      := $decl.sig;
                 my $invocant := $sig.invocant; 
                 my $pos      := $sig.positional;
-                my $str_specific := '(' ~ $invocant.emit ~ ' ' ~ $class_name ~ ')';
-                # my $str_generic  :=  $invocant.emit;
+                my $str_specific := '(' ~ $invocant.emit_clojure ~ ' ' ~ $class_name ~ ')';
+                # my $str_generic  :=  $invocant.emit_clojure;
                 my $str_optionals := '';
                 for @$pos -> $field { 
-                    $str_optionals := $str_optionals ~ ' ' ~ $field.emit;
+                    $str_optionals := $str_optionals ~ ' ' ~ $field.emit_clojure;
                 };
                 if ( $str_optionals ) {
                     $str_specific := $str_specific ~ ' &optional' ~ $str_optionals;
@@ -138,14 +138,14 @@ new-slots))
   (defmulti ' ~ Main::to_lisp_identifier($decl.name) ~ ' class)
 (defmethod ' ~ Main::to_lisp_identifier($decl.name) ~ ' [' ~ $str_specific ~ ']
   (block mp6-function
-    ' ~ $block.emit ~ '))
+    ' ~ $block.emit_clojure ~ '))
 
 ';
             }
             if $decl.isa( 'Sub' ) {
                 $str := $str 
                     ~ '(in-package ' ~ $class_name ~ ')' ~ Main.newline
-                    ~ '  ' ~ ($decl).emit ~ Main.newline
+                    ~ '  ' ~ ($decl).emit_clojure ~ Main.newline
                     ~ '(in-package mp-Main)' ~ Main.newline;
             }
         }; 
@@ -162,7 +162,7 @@ new-slots))
                && (!( $decl.isa( 'Method'))) 
                && (!( $decl.isa( 'Sub'))) 
             {
-                $str := $str ~ ($decl).emit ~ Main.newline;
+                $str := $str ~ ($decl).emit_clojure ~ Main.newline;
             }
         }; 
         
@@ -176,54 +176,54 @@ new-slots))
 
 class Val::Int {
     has $.int;
-    method emit { $.int }
+    method emit_clojure { $.int }
 }
 
 class Val::Bit {
     has $.bit;
-    method emit { $.bit }
+    method emit_clojure { $.bit }
 }
 
 class Val::Num {
     has $.num;
-    method emit { $.num }
+    method emit_clojure { $.num }
 }
 
 class Val::Buf {
     has $.buf;
-    method emit { '"' ~ Main::lisp_escape_string($.buf) ~ '"' }
+    method emit_clojure { '"' ~ Main::lisp_escape_string($.buf) ~ '"' }
 }
 
 class Val::Undef {
-    method emit { '(sv-undef)' }
+    method emit_clojure { '(sv-undef)' }
 }
 
 class Val::Object {
     has $.class;
     has %.fields;
-    method emit {
+    method emit_clojure {
         'bless(' ~ %.fields.perl ~ ', ' ~ $.class.perl ~ ')';
     }
 }
 
 class Lit::Seq {
     has @.seq;
-    method emit {
-        '(' ~ (@.seq.>>emit).join(' ') ~ ')';
+    method emit_clojure {
+        '(' ~ (@.seq.>>emit_clojure).join(' ') ~ ')';
     }
 }
 
 class Lit::Array {
     has @.array;
-    method emit {
+    method emit_clojure {
         if @.array {
             my $str := '';
             for @.array -> $elem {
                 if $elem.isa( 'Apply' ) && $elem.code eq 'prefix:<@>' {
-                    $str := $str ~ ' ' ~ $elem.emit;
+                    $str := $str ~ ' ' ~ $elem.emit_clojure;
                 }
                 else {
-                    $str := $str ~ ' (list ' ~ $elem.emit ~ ')';
+                    $str := $str ~ ' (list ' ~ $elem.emit_clojure ~ ')';
                 }
             }
             return '(concatenate \'list ' ~ $str ~ ')';
@@ -236,12 +236,12 @@ class Lit::Array {
 
 class Lit::Hash {
     has @.hash;
-    method emit {
+    method emit_clojure {
         if @.hash {
             my $fields := @.hash;
             my $str := '';
             for @$fields -> $field { 
-                $str := $str ~ '(setf (gethash ' ~ ($field[0]).emit ~ ' h) ' ~ ($field[1]).emit ~ ')';
+                $str := $str ~ '(setf (gethash ' ~ ($field[0]).emit_clojure ~ ' h) ' ~ ($field[1]).emit ~ ')';
             }; 
             return '(let ((h (make-hash-table :test \'equal))) ' ~ $str ~ ' h)';
         }
@@ -258,12 +258,12 @@ class Lit::Code {
 class Lit::Object {
     has $.class;
     has @.fields;
-    method emit {
+    method emit_clojure {
         if @.fields {
             my $fields := @.fields;
             my $str := '';
             for @$fields -> $field { 
-                $str := $str ~ '(setf (' ~ Main::to_lisp_identifier(($field[0]).buf) ~ ' m) ' ~ ($field[1]).emit ~ ')';
+                $str := $str ~ '(setf (' ~ Main::to_lisp_identifier(($field[0]).buf) ~ ' m) ' ~ ($field[1]).emit_clojure ~ ')';
             }; 
             '(let ((m (make-instance \'' ~ Main::to_lisp_namespace($.class) ~ '))) ' ~ $str ~ ' m)'
         }
@@ -276,21 +276,21 @@ class Lit::Object {
 class Index {
     has $.obj;
     has $.index_exp;
-    method emit {
-        return '(elt ' ~ $.obj.emit ~ ' ' ~ $.index_exp.emit ~ ')';
+    method emit_clojure {
+        return '(elt ' ~ $.obj.emit_clojure ~ ' ' ~ $.index_exp.emit ~ ')';
     }
 }
 
 class Lookup {
     has $.obj;
     has $.index_exp;
-    method emit {
+    method emit_clojure {
         if $.obj.isa( 'Var' ) {
             if ($.obj.name eq 'MATCH') || ($.obj.name eq '/') {
-                return '(gethash ' ~ $.index_exp.emit ~ ' (sv-hash ' ~ $.obj.emit ~ '))';
+                return '(gethash ' ~ $.index_exp.emit_clojure ~ ' (sv-hash ' ~ $.obj.emit ~ '))';
             }
         };
-        return '(gethash ' ~ $.index_exp.emit ~ ' ' ~ $.obj.emit ~ ')';
+        return '(gethash ' ~ $.index_exp.emit_clojure ~ ' ' ~ $.obj.emit ~ ')';
     }
 }
 
@@ -299,7 +299,7 @@ class Var {
     has $.twigil;
     has $.namespace;
     has $.name;
-    method emit {
+    method emit_clojure {
         # Normalize the sigil here into $
         # $x    => $x
         # @x    => $List_x
@@ -321,7 +321,7 @@ class Var {
 class Bind {
     has $.parameters;
     has $.arguments;
-    method emit {
+    method emit_clojure {
         if $.parameters.isa( 'Lit::Object' ) {
 
             #  ::Obj(:$a, :$b) := $obj
@@ -337,22 +337,22 @@ class Bind {
                     'parameters' => $var[1], 
                     'arguments'  => ::Call( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
-                $str := $str ~ ' ' ~ $bind.emit ~ ' ';
+                $str := $str ~ ' ' ~ $bind.emit_clojure ~ ' ';
                 $i := $i + 1;
             };
-            return $str ~ $.parameters.emit ~ ' }';
+            return $str ~ $.parameters.emit_clojure ~ ' }';
         };
     
         if $.parameters.isa( 'Decl' ) && ( $.parameters.decl eq 'my' ) {
-            return '(setf ' ~ ($.parameters.var).emit ~ ' ' ~ $.arguments.emit ~ ')';
+            return '(setf ' ~ ($.parameters.var).emit_clojure ~ ' ' ~ $.arguments.emit ~ ')';
         }
-        '(setf ' ~ $.parameters.emit ~ ' ' ~ $.arguments.emit ~ ')';
+        '(setf ' ~ $.parameters.emit_clojure ~ ' ' ~ $.arguments.emit ~ ')';
     }
 }
 
 class Proto {
     has $.name;
-    method emit {
+    method emit_clojure {
         '(proto-' ~ Main::to_lisp_namespace($.name) ~ ')'
     }
 }
@@ -362,14 +362,14 @@ class Call {
     has $.hyper;
     has $.method;
     has @.arguments;
-    method emit {
+    method emit_clojure {
 
         my $arguments := '';
         if @.arguments {
-            $arguments := (@.arguments.>>emit).join(' ');
+            $arguments := (@.arguments.>>emit_clojure).join(' ');
         }
 
-        my $invocant := $.invocant.emit;
+        my $invocant := $.invocant.emit_clojure;
         if $invocant eq 'self' {
             $invocant := 'sv-self';
         };
@@ -433,7 +433,7 @@ class Apply {
     has $.code;
     has @.arguments;
     has $.namespace;
-    method emit {
+    method emit_clojure {
         my $ns := '';
         if $.namespace {
             $ns := Main::to_lisp_namespace( $.namespace ) ~ '::';
@@ -441,7 +441,7 @@ class Apply {
         my $code := $ns ~ $.code;
         my $args := '';
         if @.arguments {
-            $args := (@.arguments.>>emit).join(' ');
+            $args := (@.arguments.>>emit_clojure).join(' ');
         }
 
         if $code eq 'self'       { return 'sv-self' };
@@ -451,7 +451,7 @@ class Apply {
         if $code eq 'say'        { return '(mp-Main::sv-say (list '     ~ $args ~ '))' };
         if $code eq 'print'      { return '(mp-Main::sv-print (list '   ~ $args ~ '))' };
         if $code eq 'infix:<~>'  { 
-            return '(concatenate \'string (sv-string ' ~ (@.arguments[0]).emit ~ ') (sv-string ' ~ (@.arguments[1]).emit ~ '))'; }
+            return '(concatenate \'string (sv-string ' ~ (@.arguments[0]).emit_clojure ~ ') (sv-string ' ~ (@.arguments[1]).emit ~ '))'; }
         if $code eq 'warn'       { 
             return '(write-line (format nil "~{~a~}" (list ' ~ $args ~ ')) *error-output*)' };
         if $code eq 'die'        { 
@@ -480,7 +480,7 @@ class Apply {
         if $code eq 'infix:<!=>' { return '(not (eql '  ~ $args ~ '))' };
 
         if $code eq 'ternary:<?? !!>' { 
-            return '(if (sv-bool ' ~ (@.arguments[0]).emit ~ ') ' ~ (@.arguments[1]).emit ~ ' ' ~ (@.arguments[2]).emit ~ ')';
+            return '(if (sv-bool ' ~ (@.arguments[0]).emit_clojure ~ ') ' ~ (@.arguments[1]).emit ~ ' ' ~ (@.arguments[2]).emit ~ ')';
         } 
         return '(' ~ $ns ~ Main::to_lisp_identifier($.code) ~ ' ' ~ $args ~ ')';
     }
@@ -488,8 +488,8 @@ class Apply {
 
 class Return {
     has $.result;
-    method emit {
-        return '(return-from mp6-function ' ~ $.result.emit ~ ')';
+    method emit_clojure {
+        return '(return-from mp6-function ' ~ $.result.emit_clojure ~ ')';
     }
 }
 
@@ -497,10 +497,10 @@ class If {
     has $.cond;
     has @.body;
     has @.otherwise;
-    method emit {
+    method emit_clojure {
         my $block1 := ::MiniPerl6::Clojure::LexicalBlock( block => @.body );
         my $block2 := ::MiniPerl6::Clojure::LexicalBlock( block => @.otherwise );
-        '(if (sv-bool ' ~ $.cond.emit ~ ') ' ~ $block1.emit ~ ' ' ~ $block2.emit ~ ')';
+        '(if (sv-bool ' ~ $.cond.emit_clojure ~ ') ' ~ $block1.emit ~ ' ' ~ $block2.emit ~ ')';
     }
 }
 
@@ -508,7 +508,7 @@ class For {
     has $.cond;
     has @.body;
     has @.topic;
-    method emit {
+    method emit_clojure {
         my $cond := $.cond;
         my $block := ::MiniPerl6::Clojure::LexicalBlock( block => @.body );
         if   $cond.isa( 'Var' ) 
@@ -516,7 +516,7 @@ class For {
         {
             $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        '(dolist (' ~ $.topic.emit ~ ' ' ~ $cond.emit ~ ') ' ~ $block.emit ~ ')';
+        '(dolist (' ~ $.topic.emit_clojure ~ ' ' ~ $cond.emit ~ ') ' ~ $block.emit ~ ')';
     }
 }
 
@@ -524,7 +524,7 @@ class Decl {
     has $.decl;
     has $.type;
     has $.var;
-    method emit {
+    method emit_clojure {
         my $decl := $.decl;
         my $name := $.var.name;
            ( $decl eq 'has' )
@@ -533,7 +533,7 @@ class Decl {
                 '? ( $_[0]->{' ~ $name ~ '} ) ' ~
                 ': ( $_[0]->{' ~ $name ~ '} = $_[1] ) ' ~
             '}' )
-        !! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit;
+        !! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_clojure;
     }
 }
 
@@ -541,7 +541,7 @@ class Sig {
     has $.invocant;
     has $.positional;
     has $.named;
-    method emit {
+    method emit_clojure {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
 }
@@ -550,7 +550,7 @@ class Method {
     has $.name;
     has $.sig;
     has @.block;
-    method emit {
+    method emit_clojure {
         # unused
     }
 }
@@ -559,14 +559,14 @@ class Sub {
     has $.name;
     has $.sig;
     has @.block;
-    method emit {
+    method emit_clojure {
         my $sig := $.sig;
         my $pos := $sig.positional;
         my $block := ::MiniPerl6::Clojure::LexicalBlock( block => @.block );
         my $str;
         if @$pos {
             for @$pos -> $field { 
-                $str := $str ~ $field.emit ~ ' ';
+                $str := $str ~ $field.emit_clojure ~ ' ';
             }
         }
         if $str {
@@ -575,12 +575,12 @@ class Sub {
 
         if $.name {
             '(defun ' ~ Main::to_lisp_identifier($.name) ~ ' (' ~ $str ~ ')' ~ Main.newline 
-                ~ '  (block mp6-function ' ~ $block.emit 
+                ~ '  (block mp6-function ' ~ $block.emit_clojure 
             ~ '))' ~ Main.newline;
         }
         else {
             '(fn ' ~ $.name ~ ' [' ~ $str ~ ']' ~ Main.newline 
-                ~ '  (block mp6-function ' ~ $block.emit 
+                ~ '  (block mp6-function ' ~ $block.emit_clojure 
             ~ '))' ~ Main.newline;
 
         }
@@ -590,15 +590,15 @@ class Sub {
 
 class Do {
     has @.block;
-    method emit {
+    method emit_clojure {
         my $block := ::MiniPerl6::Clojure::LexicalBlock( block => @.block );
-        return $block.emit;
+        return $block.emit_clojure;
     }
 }
 
 class Use {
     has $.mod;
-    method emit {
+    method emit_clojure {
         Main.newline
         ~ ';; use ' ~ Main::to_lisp_namespace($.mod) ~ Main.newline
     }
@@ -612,7 +612,7 @@ MiniPerl6::Clojure::Emit - Code generator for MiniPerl6-in-Clojure
 
 =head1 SYNOPSIS
 
-    $program.emit  # generated Clojure code
+    $program.emit_clojure  # generated Clojure code
 
 =head1 DESCRIPTION
 
