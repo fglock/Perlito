@@ -1,3 +1,8 @@
+
+- Go language backend
+- new repository at http://github.com/fglock/Perlito
+- new web page at http://www.perlito.org created by nferraz (Nelson Ferraz)
+
 2.0  2009-10-09
 - Javascript (Firefox, V8) bootstrap
 - simplified 'make' inside tokens

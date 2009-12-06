@@ -19,7 +19,7 @@ Bootstrapping MiniPerl6 in Parrot
 
 Missing Backends
 
-- Javascript, Haskell
+- Haskell
 
 - MO in MP6 (MP6-2)
 
@@ -31,7 +31,7 @@ Missing Features
 
 - autoquote hash keys - FIXED
 
-- double quote interpolation and "\n"
+- double quote interpolation 
 
 - operator precedence
 
