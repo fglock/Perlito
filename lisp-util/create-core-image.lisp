@@ -8,9 +8,19 @@
             finally (return lines)))))
 
 (defun compiler-main ()
-  (let (source (pos 0) p (arg1 "") (arg2 "") (result ""))
+  (let (source (pos 0) p (arg1 "") (arg2 "") (arg3 "") (execute t) (result ""))
       (ignore-errors (setf arg1 (elt COMMON-LISP-USER::*posix-argv* 1)))
       (ignore-errors (setf arg2 (elt COMMON-LISP-USER::*posix-argv* 2)))
+      (ignore-errors (setf arg3 (elt COMMON-LISP-USER::*posix-argv* 3)))
+      (if (sv-eq arg1 "-Clisp")
+        (progn
+          (setf execute nil)
+          (setf arg1 arg2)
+          (setf arg2 arg3)
+          (setf arg3 "")))
+
+      ;; (format t "[ execute ~a - ~a - ~a - ~a ]~%" execute arg1 arg2 arg3)
+
       (if (sv-eq arg1 "-e")
           (setf source arg2)
           (setf source (slurp arg1)))
@@ -30,12 +40,12 @@
       (setf result (concatenate 'string result (format nil "~a~%" ")")))
       ;; (format t "~a~%" result)
 
-      ;; (format t "eval:~%")
-      (in-package mp-Main)
-      (ignore-errors (eval (read-from-string result)))
-
-      ;; (format t "funcall:~%")
-      ;; (funcall (read-from-string result))
+      (if execute
+          (progn
+                ;; (format t "eval:~%")
+                (in-package mp-Main)
+                (ignore-errors (eval (read-from-string result))))
+          (format t "~a" result))
 
       (sb-ext:quit)))
 

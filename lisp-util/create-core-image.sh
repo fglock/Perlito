@@ -8,3 +8,6 @@ cat liblisp/MiniPerl6/Lisp/Runtime.lisp \
     liblisp/MiniPerl6/Emitter/Token.lisp   \
     lisp-util/create-core-image.lisp   \
   > mp6-lisp-create-core-image.lisp
+
+sbcl --script  mp6-lisp-create-core-image.lisp 
+
