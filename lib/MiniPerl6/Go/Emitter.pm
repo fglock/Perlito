@@ -110,6 +110,9 @@ class CompUnit {
             if $decl.isa( 'Method' ) {
                 $str := $str  ~ '  ' ~ 'f_' ~ $decl.name ~ ' func (*' ~ $class_name ~ ', Capture) Any;' ~ Main.newline;
             }
+            if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
+                $str := $str  ~ '  ' ~ 'f_' ~ ($decl.var).name ~ ' func (*' ~ $class_name ~ ', Capture) Any;' ~ Main.newline;
+            }
         }
         $str := $str ~ '}' ~ Main.newline;
 
@@ -131,6 +134,12 @@ class CompUnit {
                 $str := $str  
                     ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ $decl.name ~ ' (v Capture) Any {' ~ Main.newline
                     ~ '  return Method_' ~ $class_name ~ '.f_' ~ $decl.name ~ '(v_self, v);'~ Main.newline
+                    ~ '}'~ Main.newline;
+            }
+            if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
+                $str := $str  
+                    ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ ($decl.var).name ~ ' (v Capture) Any {' ~ Main.newline
+                    ~ '  return Method_' ~ $class_name ~ '.f_' ~ ($decl.var).name ~ '(v_self, v);'~ Main.newline
                     ~ '}'~ Main.newline;
             }
         }
@@ -183,10 +192,10 @@ class CompUnit {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str := $str  
               ~ '  // accessor ' ~ ($decl.var).name ~ Main.newline
-              ~ '  ' ~ $class_name ~ '.f_' ~ ($decl.var).name 
-                    ~ ' = Function{ f : func (v Capture) Any {' ~ Main.newline
+              ~ '  Method_' ~ $class_name ~ '.f_' ~ ($decl.var).name 
+                    ~ ' = func (v_self *' ~ $class_name ~ ', v Capture) Any {' ~ Main.newline
               ~ '    ' ~ 'return v_self.v_' ~ ($decl.var).name ~ Main.newline
-              ~ '  } };' ~ Main.newline;
+              ~ '  };' ~ Main.newline;
             }
             if $decl.isa( 'Method' ) {
                 my $sig      := $decl.sig;
