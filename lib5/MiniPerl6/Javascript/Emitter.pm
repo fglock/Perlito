@@ -46,7 +46,7 @@ sub emit_javascript { my $self = shift; my $List__ = \@_; do { [] }; $self->{num
 package Val::Buf;
 sub new { shift; bless { @_ }, "Val::Buf" }
 sub buf { @_ == 1 ? ( $_[0]->{buf} ) : ( $_[0]->{buf} = $_[1] ) };
-sub emit_javascript { my $self = shift; my $List__ = \@_; do { [] }; ('"' . (Main::lisp_escape_string($self->{buf}) . '"')) }
+sub emit_javascript { my $self = shift; my $List__ = \@_; do { [] }; ('"' . (Main::javascript_escape_string($self->{buf}) . '"')) }
 
 
 ;

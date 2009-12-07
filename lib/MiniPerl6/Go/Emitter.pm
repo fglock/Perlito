@@ -185,7 +185,7 @@ class CompUnit {
               ~ '  // accessor ' ~ ($decl.var).name ~ Main.newline
               ~ '  ' ~ $class_name ~ '.f_' ~ ($decl.var).name 
                     ~ ' = Function{ f : func (v Capture) Any {' ~ Main.newline
-              ~ '    ' ~ 'return this.v_' ~ ($decl.var).name ~ Main.newline
+              ~ '    ' ~ 'return v_self.v_' ~ ($decl.var).name ~ Main.newline
               ~ '  } };' ~ Main.newline;
             }
             if $decl.isa( 'Method' ) {
@@ -248,7 +248,7 @@ class Val::Num {
 
 class Val::Buf {
     has $.buf;
-    method emit_go { 'Str{s:"' ~ Main::lisp_escape_string($.buf) ~ '"}' }
+    method emit_go { 'Str{s:"' ~ Main::javascript_escape_string($.buf) ~ '"}' }
 }
 
 class Val::Undef {
@@ -375,7 +375,7 @@ class Var {
             $ns := Main::to_go_namespace($.namespace) ~ '.';
         }
            ( $.twigil eq '.' )
-        ?? ( 'this.v_' ~ $.name ~ '' )
+        ?? ( 'v_self.v_' ~ $.name ~ '' )
         !!  (    ( $.name eq '/' )
             ??   ( $table{$.sigil} ~ 'MATCH' )
             !!   ( $table{$.sigil} ~ $ns ~ $.name )
@@ -590,7 +590,7 @@ class Apply {
             return '(' ~ $.code.emit_go ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         };
 
-        if $code eq 'self'       { return 'this' };
+        if $code eq 'self'       { return 'v_self' };
         if $code eq 'false'      { return 'b_false' };
         if $code eq 'make'       { 
             return 
