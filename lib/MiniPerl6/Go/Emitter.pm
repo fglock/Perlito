@@ -304,7 +304,7 @@ class Lit::Hash {
         my $str := ''; 
         for @$fields -> $field { 
             $str := $str 
-                ~ 'm[' ~ ($field[0]).emit_go ~ '] = ' ~ ($field[1]).emit ~ '; ';
+                ~ 'm[' ~ ($field[0]).emit_go ~ '] = ' ~ ($field[1]).emit_go ~ '; ';
         }; 
         'func() map[string]Any { ' 
             ~ 'var m = make(map[string]Any); '
@@ -341,7 +341,7 @@ class Index {
     has $.obj;
     has $.index_exp;
     method emit_go {
-        $.obj.emit_go ~ '.Array().Index(' ~ $.index_exp.emit ~ ')';
+        $.obj.emit_go ~ '.Array().Index(' ~ $.index_exp.emit_go ~ ')';
     }
 }
 
@@ -349,7 +349,7 @@ class Lookup {
     has $.obj;
     has $.index_exp;
     method emit_go {
-        $.obj.emit_go ~ '.Hash().Lookup(' ~ $.index_exp.emit ~ ')';
+        $.obj.emit_go ~ '.Hash().Lookup(' ~ $.index_exp.emit_go ~ ')';
     }
 }
 
@@ -473,7 +473,7 @@ class Bind {
                 ~ '}()';
         }
 
-        $.parameters.emit_go ~ '.Bind( ' ~ $.arguments.emit ~ ' )';
+        $.parameters.emit_go ~ '.Bind( ' ~ $.arguments.emit_go ~ ' )';
     }
 }
 

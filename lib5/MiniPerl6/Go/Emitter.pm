@@ -85,7 +85,7 @@ sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $str = ''); do
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash { @_ == 1 ? ( $_[0]->{hash} ) : ( $_[0]->{hash} = $_[1] ) };
-sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $fields = $self->{hash}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = ($str . ('m[' . ($field->[0]->emit_go() . ('] = ' . ($field->[1]->emit() . '; ')))))) } }; ('func() map[string]Any { ' . ('var m = make(map[string]Any); ' . ($str . ('return m; ' . '}()')))) }
+sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $fields = $self->{hash}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = ($str . ('m[' . ($field->[0]->emit_go() . ('] = ' . ($field->[1]->emit_go() . '; ')))))) } }; ('func() map[string]Any { ' . ('var m = make(map[string]Any); ' . ($str . ('return m; ' . '}()')))) }
 
 
 ;
@@ -107,7 +107,7 @@ package Index;
 sub new { shift; bless { @_ }, "Index" }
 sub obj { @_ == 1 ? ( $_[0]->{obj} ) : ( $_[0]->{obj} = $_[1] ) };
 sub index_exp { @_ == 1 ? ( $_[0]->{index_exp} ) : ( $_[0]->{index_exp} = $_[1] ) };
-sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; ($self->{obj}->emit_go() . ('.Array().Index(' . ($self->{index_exp}->emit() . ')'))) }
+sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; ($self->{obj}->emit_go() . ('.Array().Index(' . ($self->{index_exp}->emit_go() . ')'))) }
 
 
 ;
@@ -115,7 +115,7 @@ package Lookup;
 sub new { shift; bless { @_ }, "Lookup" }
 sub obj { @_ == 1 ? ( $_[0]->{obj} ) : ( $_[0]->{obj} = $_[1] ) };
 sub index_exp { @_ == 1 ? ( $_[0]->{index_exp} ) : ( $_[0]->{index_exp} = $_[1] ) };
-sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; ($self->{obj}->emit_go() . ('.Hash().Lookup(' . ($self->{index_exp}->emit() . ')'))) }
+sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; ($self->{obj}->emit_go() . ('.Hash().Lookup(' . ($self->{index_exp}->emit_go() . ')'))) }
 
 
 ;
@@ -134,7 +134,7 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { @_ == 1 ? ( $_[0]->{parameters} ) : ( $_[0]->{parameters} = $_[1] ) };
 sub arguments { @_ == 1 ? ( $_[0]->{arguments} ) : ( $_[0]->{arguments} = $_[1] ) };
-sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; do { if (Main::isa($self->{parameters}, 'Lit::Array')) { (my  $a = $self->{parameters}->array());(my  $str = ('func () Any { ' . ('List_tmp := ' . ($self->{arguments}->emit_go() . '; '))));(my  $i = 0);do { for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var,'arguments' => Index->new( 'obj' => Var->new( 'sigil' => '@','twigil' => '','namespace' => '','name' => 'tmp', ),'index_exp' => Val::Int->new( 'int' => $i, ), ), ));($str = ($str . (' ' . ($bind->emit_go() . '; '))));($i = ($i + 1)) } };return(($str . ' return List_tmp }()')) } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Hash')) { (my  $a = $self->{parameters}->hash());(my  $b = $self->{arguments}->hash());(my  $str = 'do { ');(my  $i = 0);my  $arg;do { for my $var ( @{$a} ) { ($arg = Val::Undef->new(  ));do { for my $var2 ( @{$b} ) { do { if (($var2->[0]->buf() eq $var->[0]->buf())) { ($arg = $var2->[1]) } else {  } } } };(my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => $arg, ));($str = ($str . (' ' . ($bind->emit_go() . '; '))));($i = ($i + 1)) } };return(($str . ($self->{parameters}->emit_go() . ' }'))) } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Object')) { (my  $class = $self->{parameters}->class());(my  $a = $self->{parameters}->fields());(my  $b = $self->{arguments});(my  $str = 'do { ');(my  $i = 0);my  $arg;do { for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => Call->new( 'invocant' => $b,'method' => $var->[0]->buf(),'arguments' => [],'hyper' => 0, ), ));($str = ($str . (' ' . ($bind->emit_go() . '; '))));($i = ($i + 1)) } };return(($str . ($self->{parameters}->emit_go() . ' }'))) } else {  } }; do { if (Main::isa($self->{parameters}, 'Call')) { return(('func () Any { ' . ('tmp := ' . ($self->{arguments}->emit_go() . ('; ' . ($self->{parameters}->invocant()->emit_go() . ('.v_' . ($self->{parameters}->method() . (' = tmp; ' . ('return tmp; ' . '}()')))))))))) } else {  } }; ($self->{parameters}->emit_go() . ('.Bind( ' . ($self->{arguments}->emit() . ' )'))) }
+sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; do { if (Main::isa($self->{parameters}, 'Lit::Array')) { (my  $a = $self->{parameters}->array());(my  $str = ('func () Any { ' . ('List_tmp := ' . ($self->{arguments}->emit_go() . '; '))));(my  $i = 0);do { for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var,'arguments' => Index->new( 'obj' => Var->new( 'sigil' => '@','twigil' => '','namespace' => '','name' => 'tmp', ),'index_exp' => Val::Int->new( 'int' => $i, ), ), ));($str = ($str . (' ' . ($bind->emit_go() . '; '))));($i = ($i + 1)) } };return(($str . ' return List_tmp }()')) } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Hash')) { (my  $a = $self->{parameters}->hash());(my  $b = $self->{arguments}->hash());(my  $str = 'do { ');(my  $i = 0);my  $arg;do { for my $var ( @{$a} ) { ($arg = Val::Undef->new(  ));do { for my $var2 ( @{$b} ) { do { if (($var2->[0]->buf() eq $var->[0]->buf())) { ($arg = $var2->[1]) } else {  } } } };(my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => $arg, ));($str = ($str . (' ' . ($bind->emit_go() . '; '))));($i = ($i + 1)) } };return(($str . ($self->{parameters}->emit_go() . ' }'))) } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Object')) { (my  $class = $self->{parameters}->class());(my  $a = $self->{parameters}->fields());(my  $b = $self->{arguments});(my  $str = 'do { ');(my  $i = 0);my  $arg;do { for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => Call->new( 'invocant' => $b,'method' => $var->[0]->buf(),'arguments' => [],'hyper' => 0, ), ));($str = ($str . (' ' . ($bind->emit_go() . '; '))));($i = ($i + 1)) } };return(($str . ($self->{parameters}->emit_go() . ' }'))) } else {  } }; do { if (Main::isa($self->{parameters}, 'Call')) { return(('func () Any { ' . ('tmp := ' . ($self->{arguments}->emit_go() . ('; ' . ($self->{parameters}->invocant()->emit_go() . ('.v_' . ($self->{parameters}->method() . (' = tmp; ' . ('return tmp; ' . '}()')))))))))) } else {  } }; ($self->{parameters}->emit_go() . ('.Bind( ' . ($self->{arguments}->emit_go() . ' )'))) }
 
 
 ;
