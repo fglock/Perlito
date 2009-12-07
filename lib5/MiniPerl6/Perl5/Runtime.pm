@@ -142,6 +142,12 @@ package Main;
         my $s = $_[0];
         $s =~ s/\\/\\\\/g;
         $s =~ s/"/\\"/g;
+        return $s;
+    }
+    sub javascript_escape_string {
+        my $s = $_[0];
+        $s =~ s/\\/\\\\/g;
+        $s =~ s/"/\\"/g;
         $s =~ s/\n/\\n/g;
         return $s;
     }

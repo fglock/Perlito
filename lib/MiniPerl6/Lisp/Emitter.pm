@@ -475,8 +475,8 @@ class Apply {
         if $code eq 'infix:<eq>' { return '(sv-eq '  ~ $args ~ ')' };
         if $code eq 'infix:<ne>' { return '(not (sv-eq '  ~ $args ~ '))' };
  
-        if $code eq 'infix:<==>' { return '(eql '       ~ $args ~ ')' };
-        if $code eq 'infix:<!=>' { return '(not (eql '  ~ $args ~ '))' };
+        if $code eq 'infix:<==>' { return '(sv-eq-int '       ~ $args ~ ')' };
+        if $code eq 'infix:<!=>' { return '(not (sv-eq-int '  ~ $args ~ '))' };
 
         if $code eq 'ternary:<?? !!>' { 
             return '(if (sv-bool ' ~ (@.arguments[0]).emit_lisp ~ ') ' ~ (@.arguments[1]).emit_lisp ~ ' ' ~ (@.arguments[2]).emit_lisp ~ ')';

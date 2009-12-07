@@ -179,7 +179,7 @@ class Val::Num {
 
 class Val::Buf {
     has $.buf;
-    method emit_javascript { '"' ~ Main::lisp_escape_string($.buf) ~ '"' }
+    method emit_javascript { '"' ~ Main::javascript_escape_string($.buf) ~ '"' }
 }
 
 class Val::Undef {

@@ -67,6 +67,17 @@
 (defmethod sv-eq ((x string) (y number)) (equal x (format nil "~a" y)))
 (defmethod sv-eq ((x number) (y string)) (equal (format nil "~a" x) y))
 
+(if (not (ignore-errors (find-method 'sv-eq-int () ())))
+  (defgeneric sv-eq-int (x y)
+      (:documentation "compare int values")))
+;; (defmethod sv-eq (x y) (eql x y))
+(defmethod sv-eq-int (x y)                   (eql x y))
+(defmethod sv-eq-int (x (y string))          (eql x (parse-integer y)))
+(defmethod sv-eq-int ((x string) (y string)) (eql (parse-integer x) (parse-integer y)))
+(defmethod sv-eq-int ((x string) (y number)) (eql (parse-integer x) y))
+(defmethod sv-eq-int ((x number) (y string)) (eql x (parse-integer y)))
+(defmethod sv-eq-int ((x number) (y number)) (eql x y))
+
 (if (not (ignore-errors (find-method 'sv-bool () ())))
   (defgeneric sv-bool (self)
       (:documentation "get a bool value")))
