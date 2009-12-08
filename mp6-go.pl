@@ -115,6 +115,15 @@ for my $comp_unit (@comp_unit) {
                   . " (Capture) Any }" );
             $meth_seen{$meth} = 1;
         }
+        if ( $stmt->isa('Decl') && ( $stmt->{decl} eq 'has' ) && !$meth_seen{ $stmt->{var}{name} } ) {
+            my $meth = $stmt->{var}{name};
+            say(    "type " 
+                  . $meth
+                  . "_er interface { f_"
+                  . $meth
+                  . " (Capture) Any }" );
+            $meth_seen{$meth} = 1;
+        }
     }
 }
 say();

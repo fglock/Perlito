@@ -98,7 +98,7 @@ class CompUnit {
             ~ 'type ' ~ $class_name ~ ' struct {' ~ Main.newline;
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                $str := $str  ~ '  ' ~ 'v_' ~ ($decl.var).name ~ ' Any;' ~ Main.newline
+                $str := $str  ~ '  ' ~ 'v_' ~ ($decl.var).name ~ ' Scalar;' ~ Main.newline
             }
         }
         $str := $str ~ '}' ~ Main.newline;
@@ -336,7 +336,7 @@ class Lit::Object {
         my $str := '';
         for @$fields -> $field { 
             $str := $str 
-                ~ 'm.v_' ~ ($field[0]).buf ~ ' = ' ~ ($field[1]).emit_go ~ '; ';
+                ~ 'm.v_' ~ ($field[0]).buf ~ '.Bind( ' ~ ($field[1]).emit_go ~ ' ); ';
         }; 
         'func() *' ~ Main::to_go_namespace($.class) ~ ' { ' 
             ~ 'var m = new(' ~ Main::to_go_namespace($.class) ~ '); '
@@ -475,9 +475,11 @@ class Bind {
         if $.parameters.isa( 'Call' ) {
             # $var.attr := 3;
             return 
-                  'func () Any { ' 
-                    ~ 'tmp := ' ~ $.arguments.emit_go ~ '; '
-                    ~ ($.parameters.invocant).emit_go ~ '.v_' ~ $.parameters.method ~ ' = tmp; '
+                'func () Any { ' 
+                    ~ 'var tmp Scalar = ' ~ ($.parameters.invocant).emit_go 
+                        ~ '.Fetch().(' ~ $.parameters.method ~ '_er)'
+                        ~ '.f_' ~ $.parameters.method ~ '( Capture{ p : []Any{  } } ).(Scalar); '
+                    ~ 'tmp.Bind( ' ~ $.arguments.emit_go ~ ' ); '
                     ~ 'return tmp; '
                 ~ '}()';
         }
@@ -610,15 +612,27 @@ class Apply {
                 ~ '}()';
         };
 
-        if $code eq 'say'        { return 'Print( Capture{ p : []Any{ '    
-                                        ~ (@.arguments.>>emit_go).join(', ') 
-                                        ~ ', Str{s:"\n"} } } )' };
-        if $code eq 'print'      { return 'Print( Capture{ p : []Any{ '  
-                                        ~ (@.arguments.>>emit_go).join(', ') 
-                                        ~ ' } } )' };
-        if $code eq 'warn'       { return 'Print_stderr( Capture{ p : []Any{ '   
-                                        ~ (@.arguments.>>emit_go).join(', ') 
-                                        ~ ', Str{s:"\n"} } } )' };
+        if $code eq 'say'           { return 'func () Any { '
+                                            ~ 'Print( Capture{ p : []Any{ '    
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ', Str{s:"\n"} } } ); '
+                                            ~ 'return Int{i:1}; '
+                                        ~ '}()';
+                                    }
+        if $code eq 'print'         { return 'func () Any { '
+                                            ~ 'Print( Capture{ p : []Any{ '  
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ' } } ); ' 
+                                            ~ 'return Int{i:1}; '
+                                        ~ '}()';
+                                    }
+        if $code eq 'warn'          { return 'func () Any { '
+                                            ~ 'Print_stderr( Capture{ p : []Any{ '   
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ', Str{s:"\n"} } } ); ' 
+                                            ~ 'return Int{i:1}; '
+                                        ~ '}()';
+                                    }
         # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit_go).join(' ')    ~ '}' };
         if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit_go).join(' ')    ~ ' != null)' };
         if $code eq 'substr'     { return 'Substr( Capture{ p : []Any{ ' 

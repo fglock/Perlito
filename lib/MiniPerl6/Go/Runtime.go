@@ -135,35 +135,42 @@ func (f Method) Equal (j Any) Bool { panic("comparing function") }
 func (f Method) Apply (p Capture) Any { return f.f(p) }
 
 type Get_celler interface { 
-    Get_cell () *Any;
+    Get_cell () *Cell;
 }
 type Fetcher interface { 
     Fetch () Any;
 }
-
-type Scalar struct {
-    s *Any;
+type bind_er interface {
+    Bind (Any) Any;
 }
-func (i Scalar) Bool () Bool { return i.s.Bool() }
-func (i Scalar) Int () Int { return i.s.Int() }
-func (i Scalar) Str () Str { return i.s.Str() }
-func (i Scalar) Array () Array { return i.s.Array() }
+
+type Cell struct {
+    c *Any;
+}
+type Scalar struct {
+    s *Cell;
+}
+func (i Scalar) Bool () Bool { return i.s.c.Bool() }
+func (i Scalar) Int () Int { return i.s.c.Int() }
+func (i Scalar) Str () Str { return i.s.c.Str() }
+func (i Scalar) Array () Array { return i.s.c.Array() }
 func (i Scalar) Push (j Any) *Array {
-    v := (*i.s).(Array);
+    v := (*i.s.c).(Array);
     return v.Push(j) 
 }
-func (i Scalar) Hash () Hash { return i.s.Hash() }
-func (i Scalar) Equal (j Any) Bool { return i.s.Equal(j) }
-func (i Scalar) Apply (p Capture) Any { return (*i.s).(Function).Apply(p) }
-func (i Scalar) Fetch () Any { return *i.s }
-func (i Scalar) Get_cell () *Any { return i.s }
+func (i Scalar) Hash () Hash { return i.s.c.Hash() }
+func (i Scalar) Equal (j Any) Bool { return i.s.c.Equal(j) }
+func (i Scalar) Apply (p Capture) Any { return (*i.s.c).(Function).Apply(p) }
+func (i Scalar) Fetch () Any { return *i.s.c }
+func (i Scalar) Get_cell () *Cell { return i.s }
 func (i *Scalar) Store (j Any) Any { 
     if i1, ok := j.(Fetcher); ok {
         v := i1.Fetch();
-        i.s = &v;
+        i.s.c = &v;
     }
     else {
-        i.s = &j; 
+        if i.s == nil { i.s = new(Cell) };
+        i.s.c = &j; 
     }
     return j 
 }
@@ -172,7 +179,8 @@ func (i *Scalar) Bind (j Any) Any {
         i.s = i1.Get_cell();
     }
     else {
-        i.s = &j; 
+        if i.s == nil { i.s = new(Cell) };
+        i.s.c = &j; 
     }
     return j 
 }
