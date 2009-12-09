@@ -56,6 +56,9 @@ type join_er interface {
 type perl_er interface {
     f_perl (v Capture) Any;
 }
+type scalar_er interface {
+    f_scalar (v Capture) Any;
+}
 
 // constants
 
@@ -221,6 +224,16 @@ func (i *Scalar) Bind (j Any) Any {
     }
     return j 
 }
+func (i Scalar) Defined() Any {
+    if i.s == nil {
+        return b_false;
+    }
+    switch i := (*i.s.c).(type) {
+        case nil:       return b_false;
+        case Undef:     return b_false;
+    }
+    return b_true;
+}
 
 type Hash struct {
     h map[string]*Scalar;
@@ -247,6 +260,9 @@ func (i Hash) Equal (j Any) Bool {
 func (i Hash) Lookup (j Any) *Scalar {
     pos := j.Str().s;
     // TODO laziness
+    if i.h == nil {
+        i.h = make(map[string]*Scalar);
+    }
     item, found := i.h[pos];
     if !found {
         item = new(Scalar);
@@ -344,6 +360,16 @@ type Capture struct {
 
 // runtime functions
 
+func f_scalar(s Capture) Any {
+    var o = s.p[0];
+    if sc, ok := o.(Fetcher); ok {
+        o = sc.Fetch()
+    }
+    if sc, ok := o.(scalar_er); ok {
+        return sc.f_scalar(Capture{})
+    }
+    return o;
+}
 func Print (s Capture) Any {
     for i, _ := range s.p {
         fmt.Print( s.p[i].Str().s );

@@ -19,4 +19,13 @@ class Main {
     else {
         say 'not ok 2';
     }
+
+    $m := MiniPerl6::Grammar.word( 'abcdef', 2 );
+    # say 'match scalar: ', $$m;
+    if ($$m) eq 'c' {
+        say 'ok 3';
+    }
+    else {
+        say 'not ok 3';
+    }
 }

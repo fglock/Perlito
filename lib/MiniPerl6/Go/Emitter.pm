@@ -386,7 +386,7 @@ class Var {
            ( $.twigil eq '.' )
         ?? ( 'v_self.v_' ~ $.name ~ '' )
         !!  (    ( $.name eq '/' )
-            ??   ( $table{$.sigil} ~ 'MATCH' )
+            ??   ( 'Proto_MiniPerl6__Match' )
             !!   ( $table{$.sigil} ~ $ns ~ $.name )
             )
     };
@@ -607,7 +607,7 @@ class Apply {
             return 
                   'func () Any { ' 
                     ~ 'tmp := ' ~ (@.arguments.>>emit_go).join(', ') ~ '; '
-                    ~ 'v_MATCH.v_capture = tmp; '
+                    ~ 'Proto_MiniPerl6__Match.v_capture = tmp; '
                     ~ 'return tmp; '
                 ~ '}()';
         };
@@ -625,16 +625,19 @@ class Apply {
                                                 ~ ', Str{s:"\n"} } } )' 
                                     }
         # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit_go).join(' ')    ~ '}' };
-        if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit_go).join(' ')    ~ ' != null)' };
+        if $code eq 'defined'    { return (@.arguments.>>emit_go).join(' ') ~ '.Defined()' };
         if $code eq 'substr'     { return 'Substr( Capture{ p : []Any{ ' 
                                         ~ (@.arguments.>>emit_go).join(', ') 
                                         ~ ' } } )'  };
-        if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_go).join(' ')    ~ ').Str()' };
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit_go).join(' ')    ~ ').Bool().Not()' };
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_go).join(' ')    ~ ').Bool()' };
-        if $code eq 'prefix:<$>' { return 'f_scalar(' ~ (@.arguments.>>emit_go).join(' ')    ~ ')' };
-        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_go).join(' ')    ~ ')' };  # .f_array()' };
-        if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_go).join(' ')    ~ ').f_hash()' };
+        if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_go).join(', ')    ~ ').Str()' };
+        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit_go).join(', ')    ~ ').Bool().Not()' };
+        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_go).join(', ')    ~ ').Bool()' };
+        if $code eq 'prefix:<$>' { return 'f_scalar( Capture{ p : []Any{ ' 
+                                        ~ (@.arguments.>>emit_go).join(', ')    
+                                    ~ ' } } )' 
+                                };
+        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_go).join(', ')    ~ ')' };  # .f_array()' };
+        if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_go).join(', ')    ~ ').f_hash()' };
 
         if $code eq 'infix:<~>'  { return 'Str{ s: strings.Join( []string{' 
                                         ~ '(' ~ (@.arguments[0]).emit_go ~ ').Str().s, ' 

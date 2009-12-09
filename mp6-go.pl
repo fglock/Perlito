@@ -17,7 +17,10 @@ use MiniPerl6::Go::Emitter;
 use MiniPerl6::Grammar::Regex;
 use MiniPerl6::Emitter::Token;
 
-my $lib_source_filename = 'lib/MiniPerl6/Go/Runtime.go';
+my @lib_source_filename = (
+    'lib/MiniPerl6/Go/Runtime.go',
+    'lib/MiniPerl6/Go/Match.go',
+);
 my $tmp_go_filename = 'tmp';
 
 my @args = @ARGV;
@@ -61,11 +64,15 @@ if ( $execute ) {
       or die "Cannot write to $out\n";
     select( OUT );
 
-    open FILE, $lib_source_filename
-      or die "Cannot read $lib_source_filename\n";
-    local $/ = undef;
-    print <FILE>;
-    close FILE;
+    for my $lib_source_filename ( @lib_source_filename ) {
+        say("// include file: $lib_source_filename");
+        open FILE, $lib_source_filename
+          or die "Cannot read $lib_source_filename\n";
+        local $/ = undef;
+        print <FILE>;
+        close FILE;
+        say("// end include file: $lib_source_filename");
+    }
 }
 
 my $pos = 0;
@@ -128,6 +135,8 @@ for my $comp_unit (@comp_unit) {
 }
 say();
 say("func main () {");
+say( "  Init_MiniPerl6__Match();" );
+
 for my $comp_unit (@comp_unit) {
     say( "  Init_" . Main::to_go_namespace( $comp_unit->{name} ) . "();" );
 }
