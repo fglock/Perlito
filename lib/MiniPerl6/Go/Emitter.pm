@@ -575,12 +575,13 @@ class Call {
         };
         
         if ($.hyper) {
-                    'func (a_) Array { '
+                    'func (a_ Any) Array { '
                         ~ 'var out = a_array(); ' 
-                        ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
-                        ~ 'for(var i = 0; i < a_.length; i++) { '
-                            ~ 'out.Push( a_[i].f_' ~ $meth ~ '() ) } return out;'
-                    ~ ' }(' ~ $invocant ~ ')'
+                        ~ 'var i Array = a_.Array(); '
+                        ~ 'for pos := 0; pos < i.n; pos++ { '
+                            ~ 'out.Push( i.v[pos].Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '(Capture{ p : []Any{}  })) } '
+                        ~ 'return out; '
+                    ~ '}(' ~ $invocant ~ ')'
         }
         else {
             $invocant ~ '.Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '( Capture{ p : []Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';

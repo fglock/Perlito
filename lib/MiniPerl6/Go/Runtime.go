@@ -161,15 +161,20 @@ func (i Scalar) Push (j Any) *Array {
 func (i Scalar) Hash () Hash { return i.s.c.Hash() }
 func (i Scalar) Equal (j Any) Bool { return i.s.c.Equal(j) }
 func (i Scalar) Apply (p Capture) Any { return (*i.s.c).(Function).Apply(p) }
-func (i Scalar) Fetch () Any { return *i.s.c }
+func (i Scalar) Fetch () Any { 
+    if i.s == nil {
+        i.Store(u_undef);
+    }
+    return *i.s.c 
+}
 func (i Scalar) Get_cell () *Cell { return i.s }
 func (i *Scalar) Store (j Any) Any { 
+    if i.s == nil { i.s = new(Cell) };
     if i1, ok := j.(Fetcher); ok {
         v := i1.Fetch();
         i.s.c = &v;
     }
     else {
-        if i.s == nil { i.s = new(Cell) };
         i.s.c = &j; 
     }
     return j 
@@ -233,7 +238,10 @@ func (i Array) Int () Int {
 func (i Array) Str () Str { 
     var s1 string;
     v := i.v;
-    for pos := 0; pos <= i.n; pos++ {
+    if i.n > 0 {
+        s1 = v[0].Str().s 
+    }
+    for pos := 1; pos < i.n; pos++ {
         s1 = strings.Join( []string{ s1, v[pos].Str().s }, " " );
     }
     return Str{s:s1};
@@ -257,7 +265,8 @@ func (i Array) Index (j Any) *Scalar {
     return &i.v[pos];
 }
 func (i *Array) Push (j Any) *Array {
-    (*i).v[(*i).n].Store( j );
+    // (*i).v[(*i).n].Store( j );
+    (*i).v[(*i).n].Bind( j );
     (*i).n++;
     return i
 }

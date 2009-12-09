@@ -2,7 +2,10 @@ use v6-alpha;
 
 class Other {
     has $.a;
-    method subr() { say 'ok ', $.a };
+    method subr() { 
+        say 'ok ', $.a;
+        return $.a 
+    };
 }
 
 class Main {
@@ -12,5 +15,6 @@ class Main {
 
     my $other := [ ::Other( a => 2 ), ::Other( a => 3 ) ];
 
-    $other.>>subr();
+    my @r := $other.>>subr();
+    say '# [', @r, ']';
 }
