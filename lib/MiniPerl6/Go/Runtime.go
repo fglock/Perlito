@@ -30,6 +30,32 @@ import (
     "runtime";
 )
 
+// interfaces used by the runtime
+
+type Any interface {
+    Int()   Int;
+    Bool()  Bool;
+    Str()   Str;
+    Array() Array;
+    Hash()  Hash;
+    Equal(Any) Bool;
+};
+
+type Get_celler interface { 
+    Get_cell () *Cell;
+}
+type Fetcher interface { 
+    Fetch () Any;
+}
+type bind_er interface {
+    Bind (Any) Any;
+}
+type join_er interface {
+    f_join (v Capture) Any;
+}
+
+// constants
+
 var i_1 = Int{i:1};
 var i_0 = Int{i:0};
 var b_true = Bool{b:true};
@@ -44,15 +70,6 @@ func a_array () Array {
 func h_hash () Hash {
     return Hash{ h : make(map[string]*Scalar) }
 }
-
-type Any interface {
-    Int()   Int;
-    Bool()  Bool;
-    Str()   Str;
-    Array() Array;
-    Hash()  Hash;
-    Equal(Any) Bool;
-};
 
 type Undef bool;
 func (i Undef) Bool () Bool { return b_false }
@@ -133,16 +150,6 @@ func (f Method) Array () Array { panic("converting function to array") }
 func (f Method) Hash () Hash { panic("converting function to hash") }
 func (f Method) Equal (j Any) Bool { panic("comparing function") }
 func (f Method) Apply (p Capture) Any { return f.f(p) }
-
-type Get_celler interface { 
-    Get_cell () *Cell;
-}
-type Fetcher interface { 
-    Fetch () Any;
-}
-type bind_er interface {
-    Bind (Any) Any;
-}
 
 type Cell struct {
     c *Any;
@@ -270,6 +277,25 @@ func (i *Array) Push (j Any) *Array {
     (*i).n++;
     return i
 }
+func (i Array) f_join (v1 Capture) Any {
+    var s1 string;
+    var sep string;
+    if len(v1.p) > 0 {
+        sep = v1.p[0].Str().s;
+    }
+    else {
+        sep = "";
+    }
+    v := i.v;
+    if i.n > 0 {
+        s1 = v[0].Str().s
+    }
+    for pos := 1; pos < i.n; pos++ {
+        s1 = strings.Join( []string{ s1, v[pos].Str().s }, sep );
+    }
+    return Str{s:s1};
+}
+
 
 // Capture is a parameter list, for internal use 
 

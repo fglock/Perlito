@@ -535,9 +535,9 @@ class Call {
                     ~ ( @.arguments ?? ', ' ~ (@.arguments.>>emit_go).join(', ') !! '' ) 
                 ~ ')';
         }
-        if ($.method eq 'join') {
-            return $invocant ~ '.' ~ $.method ~ '(' ~ (@.arguments.>>emit_go).join(', ') ~ ')';
-        }
+        # if ($.method eq 'join') {
+        #    return $invocant ~ '.Join( Capture{ p : []Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
+        # }
 
         if     ($.method eq 'yaml')
             || ($.method eq 'say' )
