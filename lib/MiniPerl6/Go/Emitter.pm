@@ -290,9 +290,9 @@ class Lit::Array {
                 || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' ) 
             {
                 $str := $str 
-                    ~ 'func(a_) { ' 
-                        ~ 'for i_ := 0; i_ < a_.length ; i_++ { a.Push(a_[i_]) }' 
-                    ~ '}(' ~ $item.emit_go ~ '); '
+                    ~ 'func(a_ Array) { ' 
+                        ~ 'for i_ := 0; i_ < a_.n; i_++ { a.Push(a_.v[i_]) }' 
+                    ~ '}( ' ~ $item.emit_go ~ '.Fetch().Array() ); '
             }
             else {
                 $str := $str ~ 'a.Push(' ~ $item.emit_go ~ '); '
@@ -517,8 +517,7 @@ class Call {
             }
         };
 
-        if     ($.method eq 'perl')
-            || ($.method eq 'isa')
+        if     ($.method eq 'isa')
             || ($.method eq 'scalar')
         { 
             if ($.hyper) {

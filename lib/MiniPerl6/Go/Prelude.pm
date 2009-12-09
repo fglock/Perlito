@@ -32,16 +32,6 @@ class MiniPerl6::Match {
     }
 }
 
-class Pair {
-    has $.key;
-    has $.value;
-
-    method perl {
-        return $.key ~ ' => ' ~ $.value.perl;
-    }
-
-}
-
 class Main {
 
     sub to_lisp_identifier ( $ident ) {
@@ -60,13 +50,13 @@ class Main {
 
 =head1 NAME 
 
-MiniPerl6::Lisp::Prelude - Runtime for MiniPerl6-in-Lisp
+MiniPerl6::Go::Prelude - Runtime for MiniPerl6-in-Go
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-This module contains MiniPerl6 code for the MiniPerl6-in-Lisp runtime.
+This module contains MiniPerl6 code for the MiniPerl6-in-Go runtime.
 
 =head1 AUTHORS
 

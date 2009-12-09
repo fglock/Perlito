@@ -53,6 +53,9 @@ type bind_er interface {
 type join_er interface {
     f_join (v Capture) Any;
 }
+type perl_er interface {
+    f_perl (v Capture) Any;
+}
 
 // constants
 
@@ -78,6 +81,9 @@ func (i Undef) Str () Str { return s_empty }
 func (i Undef) Array () Array { return a_array() }
 func (i Undef) Hash () Hash { return h_hash() }
 func (i Undef) Equal (j Any) Bool { return i.Str().Str_equal(j) }
+func (i Undef) f_perl (v1 Capture) Any {
+    return Str{ s: "undef" }; 
+}
 
 type Bool struct {
     b bool;
@@ -89,6 +95,9 @@ func (i Bool) Array () Array { panic("converting bool to array") }
 func (i Bool) Hash () Hash { panic("converting bool to hash") }
 func (i Bool) Equal (j Any) Bool { if i.b == j.Bool().b { return b_true }; return b_false }
 func (i Bool) Not () Bool { if i.b { return b_false }; return b_true }
+func (i Bool) f_perl (v1 Capture) Any {
+    return i.Str(); 
+}
 
 type Int struct {
     i int;
@@ -99,6 +108,9 @@ func (i Int) Str () Str { return Str{ s: strconv.Itoa(i.i) } }
 func (i Int) Array () Array { panic("converting int to array") }
 func (i Int) Hash () Hash { panic("converting int to hash") }
 func (i Int) Equal (j Any) Bool { if i.i == j.Int().i { return b_true }; return b_false }
+func (i Int) f_perl (v1 Capture) Any {
+    return i.Str(); 
+}
 
 type Str struct {
     s string;
@@ -128,6 +140,13 @@ func (i Str) Str_equal(j Any) Bool {
     }
     return b_true;
 }
+func (i Str) f_perl (v1 Capture) Any {
+    return Str{ s: 
+        strings.Join( []string{ 
+            "\"",
+            i.s,
+            "\"" }, "" ) };
+}
 
 type Function struct {
     f func (Capture) Any;
@@ -139,6 +158,9 @@ func (f Function) Array () Array { panic("converting function to array") }
 func (f Function) Hash () Hash { panic("converting function to hash") }
 func (f Function) Equal (j Any) Bool { panic("comparing function") }
 func (f Function) Apply (p Capture) Any { return f.f(p) }
+func (i Function) f_perl (v1 Capture) Any {
+    return Str{ s: "sub { ... }" }; 
+}
 
 type Method struct {
     f func (Capture) Any;
@@ -150,6 +172,9 @@ func (f Method) Array () Array { panic("converting function to array") }
 func (f Method) Hash () Hash { panic("converting function to hash") }
 func (f Method) Equal (j Any) Bool { panic("comparing function") }
 func (f Method) Apply (p Capture) Any { return f.f(p) }
+func (i Method) f_perl (v1 Capture) Any {
+    return Str{ s: "method { ... }" }; 
+}
 
 type Cell struct {
     c *Any;
@@ -230,6 +255,13 @@ func (i Hash) Lookup (j Any) *Scalar {
     }
     return item;
 }
+func (i Hash) f_perl (v1 Capture) Any {
+    return Str{ s: 
+        strings.Join( []string{ 
+            "{",
+            "...",
+            "}" }, " " ) };
+}
 
 type Array struct {
     n int;
@@ -295,7 +327,13 @@ func (i Array) f_join (v1 Capture) Any {
     }
     return Str{s:s1};
 }
-
+func (i Array) f_perl (v1 Capture) Any {
+    return Str{ s: 
+        strings.Join( []string{ 
+            "[",
+            i.f_join( Capture{ p : []Any{ Str{s:", "} } } ).Str().s,
+            "]" }, " " ) };
+}
 
 // Capture is a parameter list, for internal use 
 
@@ -324,9 +362,6 @@ func Substr (s Capture) Str {
     // TODO if b < 0
     return Str{ s : s.p[0].Str().s[ a : a + b ] } 
 }
-
-// 'return' exception
-
 func Return (p chan Any, r Any) bool {
     p <- r;
     runtime.Goexit();
