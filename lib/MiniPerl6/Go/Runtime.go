@@ -271,15 +271,17 @@ type Capture struct {
 
 // runtime functions
 
-func Print (s Capture) {
+func Print (s Capture) Any {
     for i, _ := range s.p {
         fmt.Print( s.p[i].Str().s );
     }
+    return b_true;
 }
-func Print_stderr (s Capture) {
+func Print_stderr (s Capture) Any {
     for i, _ := range s.p {
         fmt.Fprint( os.Stderr, s.p[i].Str().s );
     }
+    return b_true;
 }
 func Substr (s Capture) Str { 
     var a = s.p[0].Int().i;

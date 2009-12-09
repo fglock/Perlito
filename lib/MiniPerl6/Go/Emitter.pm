@@ -612,26 +612,17 @@ class Apply {
                 ~ '}()';
         };
 
-        if $code eq 'say'           { return 'func () Any { '
-                                            ~ 'Print( Capture{ p : []Any{ '    
+        if $code eq 'say'           { return 'Print( Capture{ p : []Any{ '    
                                                 ~ (@.arguments.>>emit_go).join(', ') 
-                                                ~ ', Str{s:"\n"} } } ); '
-                                            ~ 'return Int{i:1}; '
-                                        ~ '}()';
+                                                ~ ', Str{s:"\n"} } } )'
                                     }
-        if $code eq 'print'         { return 'func () Any { '
-                                            ~ 'Print( Capture{ p : []Any{ '  
+        if $code eq 'print'         { return 'Print( Capture{ p : []Any{ '  
                                                 ~ (@.arguments.>>emit_go).join(', ') 
-                                                ~ ' } } ); ' 
-                                            ~ 'return Int{i:1}; '
-                                        ~ '}()';
+                                                ~ ' } } )' 
                                     }
-        if $code eq 'warn'          { return 'func () Any { '
-                                            ~ 'Print_stderr( Capture{ p : []Any{ '   
+        if $code eq 'warn'          { return 'Print_stderr( Capture{ p : []Any{ '   
                                                 ~ (@.arguments.>>emit_go).join(', ') 
-                                                ~ ', Str{s:"\n"} } } ); ' 
-                                            ~ 'return Int{i:1}; '
-                                        ~ '}()';
+                                                ~ ', Str{s:"\n"} } } )' 
                                     }
         # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit_go).join(' ')    ~ '}' };
         if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit_go).join(' ')    ~ ' != null)' };
