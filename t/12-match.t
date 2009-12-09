@@ -1,9 +1,9 @@
 use v6-alpha;
 
 class Main {
-    say '1..3';
+    say '1..2';
     my $m := ::MiniPerl6::Match( str => 'abcdef', from => 2, to => 4, bool => 1 );
-    # say 'match scalar: ', $$m;
+    say '# match scalar: ', $$m;
     if ($$m) eq 'cd' {
         say 'ok 1';
     }
@@ -12,7 +12,7 @@ class Main {
     }
 
     $<abc> := 3;
-    # say '# value is [', $<abc>,']';
+    say '# value is [', $<abc>,']';
     if ($<abc>) == 3 {
         say 'ok 2';
     }

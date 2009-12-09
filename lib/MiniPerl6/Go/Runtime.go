@@ -383,8 +383,8 @@ func Print_stderr (s Capture) Any {
     return b_true;
 }
 func Substr (s Capture) Str { 
-    var a = s.p[0].Int().i;
-    var b = s.p[1].Int().i;
+    var a = s.p[1].Int().i;
+    var b = s.p[2].Int().i;
     // TODO if b < 0
     return Str{ s : s.p[0].Str().s[ a : a + b ] } 
 }
