@@ -6,7 +6,7 @@ class MiniPerl6::Go::LexicalBlock {
     has $.top_level;
     method emit_go {
         if !(@.block) {
-            return 'null';
+            return '';
         }
         my $str := '';
         for @.block -> $decl { 
@@ -66,7 +66,7 @@ class MiniPerl6::Go::LexicalBlock {
             else {
                 # $last_statement := ::Return( result => $last_statement );
                 if $.top_level {
-                    $str := $str ~ 'Return( p, ' ~ $last_statement.emit_go ~ ')'
+                    $str := $str ~ 'Go_return( p, ' ~ $last_statement.emit_go ~ ')'
                 }
                 else {
                     $str := $str ~ 'return(' ~ $last_statement.emit_go ~ ')'
@@ -317,10 +317,10 @@ class Lit::Hash {
         my $str := ''; 
         for @$fields -> $field { 
             $str := $str 
-                ~ 'm[' ~ ($field[0]).emit_go ~ '] = ' ~ ($field[1]).emit_go ~ '; ';
+                ~ 'm.Lookup( ' ~ ($field[0]).emit_go ~ ' ).Bind( ' ~ ($field[1]).emit_go ~ ' ); ';
         }; 
-        'func() map[string]Any { ' 
-            ~ 'var m = make(map[string]Any); '
+        'func() Hash { ' 
+            ~ 'm := h_hash(); '
             ~ $str 
             ~ 'return m; '
         ~ '}()';
@@ -607,8 +607,13 @@ class Apply {
                                                 ~ (@.arguments.>>emit_go).join(', ') 
                                                 ~ ', Str{s:"\n"} } } )' 
                                     }
+        if $code eq 'die'           { return 'Die( Capture{ p : []Any{ '   
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ' } } )' 
+                                    }
         # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit_go).join(' ')    ~ '}' };
         if $code eq 'defined'    { return (@.arguments.>>emit_go).join(' ') ~ '.Defined()' };
+        if $code eq 'pop'        { return 'Pop(' ~ (@.arguments.>>emit_go).join(' ') ~ ')' };
         if $code eq 'substr'     { return 'Substr( Capture{ p : []Any{ ' 
                                         ~ (@.arguments.>>emit_go).join(', ') 
                                         ~ ' } } )'  };
@@ -643,10 +648,10 @@ class Apply {
                                     ~ '}' 
                                 };
 
-        if $code eq 'infix:<&&>' { return '( (' ~ (@.arguments[0]).emit_go ~ ').Bool()'
-                                      ~ ' && (' ~ (@.arguments[1]).emit_go ~ ').Bool() )' };
-        if $code eq 'infix:<||>' { return '( (' ~ (@.arguments[0]).emit_go ~ ').Bool()'
-                                      ~ ' || (' ~ (@.arguments[1]).emit_go ~ ').Bool() )' };
+        if $code eq 'infix:<&&>' { return 'Bool{ b: (' ~ (@.arguments[0]).emit_go ~ ').Bool().b'
+                                      ~ ' && (' ~ (@.arguments[1]).emit_go ~ ').Bool().b }' };
+        if $code eq 'infix:<||>' { return 'Bool{ b: (' ~ (@.arguments[0]).emit_go ~ ').Bool().b'
+                                      ~ ' || (' ~ (@.arguments[1]).emit_go ~ ').Bool().b }' };
 
         if $code eq 'infix:<eq>' { return '(' ~ (@.arguments[0]).emit_go ~ ').Str().Str_equal('
                                        ~ (@.arguments[1]).emit_go ~ ')' };
@@ -682,7 +687,7 @@ class Return {
     has $.result;
     method emit_go {
         return
-        'Return( p, ' ~ $.result.emit_go ~ ')';
+        'Go_return( p, ' ~ $.result.emit_go ~ ')';
     }
 }
 
@@ -704,9 +709,16 @@ class If {
         {
             $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        'if ( (' ~ $cond.emit_go ~ ').Bool().b ) { ' 
-            ~ (@.body.>>emit_go).join(';') ~ ' } else { ' 
-            ~ (@.otherwise.>>emit_go).join(';') ~ ' }';
+        my $s := 'if (' ~ $cond.emit_go ~ ').Bool().b { ' 
+                    ~ ::MiniPerl6::Go::LexicalBlock( block => @.body, needs_return => 0 ).emit_go 
+                ~ ' }';
+        if !(@.otherwise) {
+            return $s;
+        }
+        return $s 
+                ~ ' else { ' 
+                    ~ ::MiniPerl6::Go::LexicalBlock( block => @.otherwise, needs_return => 0 ).emit_go 
+                ~ ' }';
     }
 }
 

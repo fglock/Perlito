@@ -95,12 +95,12 @@ func Init_MiniPerl6__Match() {
 		go func() {
 			if (v_self.v_bool).Bool().b {
 				if v_self.v_capture.Defined().Bool().b {
-					Return(p, v_self.v_capture)
+					Go_return(p, v_self.v_capture)
 				} else {
 				}
-				Return(p, Substr(Capture{p: []Any{v_self.v_str, v_self.v_from, Int{i: (v_self.v_to).Int().i - (v_self.v_from).Int().i}}}));
+				Go_return(p, Substr(Capture{p: []Any{v_self.v_str, v_self.v_from, Int{i: (v_self.v_to).Int().i - (v_self.v_from).Int().i}}}));
 			} else {
-				Return(p, Str{s: ""})
+				Go_return(p, Str{s: ""})
 			}
 			return;
 		}();
@@ -114,12 +114,12 @@ func Init_MiniPerl6__Match() {
 		go func() {
 			if (v_self.v_bool).Bool().b {
 				if v_self.v_capture.Defined().Bool().b {
-					Return(p, v_self.v_capture)
+					Go_return(p, v_self.v_capture)
 				} else {
 				}
-				Return(p, Substr(Capture{p: []Any{v_self.v_str, v_self.v_from, Int{i: (v_self.v_to).Int().i - (v_self.v_from).Int().i}}}));
+				Go_return(p, Substr(Capture{p: []Any{v_self.v_str, v_self.v_from, Int{i: (v_self.v_to).Int().i - (v_self.v_from).Int().i}}}));
 			} else {
-				Return(p, Str{s: ""})
+				Go_return(p, Str{s: ""})
 			}
 			return;
 		}();

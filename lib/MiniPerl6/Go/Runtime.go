@@ -337,6 +337,10 @@ func (i *Array) Push (j Any) *Array {
     (*i).n++;
     return i
 }
+func (i *Array) f_pop () Any {
+    (*i).n--;
+    return (*i).v[(*i).n];
+}
 func (i Array) f_join (v1 Capture) Any {
     var s1 string;
     var sep string;
@@ -394,6 +398,14 @@ func f_scalar(s Capture) Any {
     }
     return o;
 }
+func Pop(s Any) Any {
+    var o = s.Array();
+    return o.f_pop()
+}
+func Die(s Capture) Any {
+    var o = s.p[0];
+    panic( o.Str().s );
+}
 func Print (s Capture) Any {
     for i, _ := range s.p {
         fmt.Print( s.p[i].Str().s );
@@ -412,7 +424,7 @@ func Substr (s Capture) Str {
     // TODO if b < 0
     return Str{ s : s.p[0].Str().s[ a : a + b ] } 
 }
-func Return (p chan Any, r Any) bool {
+func Go_return (p chan Any, r Any) bool {
     p <- r;
     runtime.Goexit();
     return false; 
