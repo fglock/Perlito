@@ -59,6 +59,9 @@ type perl_er interface {
 type scalar_er interface {
     f_scalar (v Capture) Any;
 }
+type isa_er interface {
+    f_isa (v Capture) Any;
+}
 
 // constants
 
@@ -360,6 +363,18 @@ type Capture struct {
 
 // runtime functions
 
+func f_isa(s Capture) Any {
+    var o = s.p[0];
+    var name = s.p[1].Str().s;
+    name = name;  // TODO
+    if sc, ok := o.(Fetcher); ok {
+        o = sc.Fetch()
+    }
+    if sc, ok := o.(isa_er); ok {
+        return sc.f_isa(Capture{p: []Any{ s.p[1]} } )
+    }
+    return b_false;
+}
 func f_scalar(s Capture) Any {
     var o = s.p[0];
     if sc, ok := o.(Fetcher); ok {

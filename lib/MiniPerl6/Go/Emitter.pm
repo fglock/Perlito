@@ -152,6 +152,10 @@ class CompUnit {
         $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Equal (j Any) Bool { panic("comparing class") }' ~ Main.newline;
         $str := $str ~ 'func (v_self *' ~ $class_name ~ ') Fetch () Any { return *v_self }' ~ Main.newline;
 
+        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') f_isa (v Capture) Any { '
+                ~ 'return Str{ s : "' ~ $class_name ~ '" }.Str_equal( v.p[0] ) '
+            ~ '}' ~ Main.newline;
+
         $str := $str 
             ~ '// prototype of ' ~ $.name ~ Main.newline
             ~ 'var Proto_' ~ $class_name ~ ' Scalar;' ~ Main.newline;
@@ -517,27 +521,6 @@ class Call {
             }
         };
 
-        if     ($.method eq 'isa')
-            || ($.method eq 'scalar')
-        { 
-            if ($.hyper) {
-                return 
-                    'func (a_ Any) Array { '
-                        ~ 'var out = a_array(); ' 
-                        ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
-                        ~ 'for(var i = 0; i < a_.length; i++) { '
-                            ~ 'out.Push( f_' ~ $.method ~ '(a_[i]) ) } return out;'
-                    ~ ' }(' ~ $invocant ~ ')'
-            }
-            return 'f_' ~ $.method ~ '(' 
-                    ~ $invocant 
-                    ~ ( @.arguments ?? ', ' ~ (@.arguments.>>emit_go).join(', ') !! '' ) 
-                ~ ')';
-        }
-        # if ($.method eq 'join') {
-        #    return $invocant ~ '.Join( Capture{ p : []Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
-        # }
-
         if     ($.method eq 'yaml')
             || ($.method eq 'say' )
             || ($.method eq 'chars')
@@ -732,11 +715,14 @@ class For {
     has @.body;
     has @.topic;
     method emit_go {
-        'func (a_ Any) { for i_ := 0; i_ < len(a_); i_++ { ' 
-            ~ 'func (' ~ $.topic.emit_go ~ ' Any) { '
-                ~ (@.body.>>emit_go).join(';') 
-            ~ ' }(a_[i_]) } }' 
-        ~ '(' ~ $.cond.emit_go ~ ')'
+        'func (a_ Any) { '
+            ~ 'var i Array = a_.Array(); '
+            ~ 'for pos := 0; pos < i.n; pos++ { '
+                ~ 'func (' ~ $.topic.emit_go ~ ' Any) { '
+                    ~ (@.body.>>emit_go).join(';') 
+                ~ ' }(i.v[pos]) '
+            ~ '} '
+        ~ '}(' ~ $.cond.emit_go ~ ')'
     }
 }
 

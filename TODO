@@ -1,3 +1,9 @@
+MiniPerl6 in Go
+
+- rename internal 'Method' class
+- rename internal 'Return' function
+- add Any.Fetch() or workaround
+
 MiniPerl6 in Perl5
 
 - generate 'my' variables for subroutine signatures;
