@@ -39,6 +39,7 @@ type Any interface {
     Array() Array;
     Hash()  Hash;
     Equal(Any) Bool;
+    Fetch() Any;
 };
 
 type Get_celler interface { 
@@ -87,6 +88,7 @@ func (i Undef) Str () Str { return s_empty }
 func (i Undef) Array () Array { return a_array() }
 func (i Undef) Hash () Hash { return h_hash() }
 func (i Undef) Equal (j Any) Bool { return i.Str().Str_equal(j) }
+func (i Undef) Fetch () Any { return i }
 func (i Undef) f_perl (v1 Capture) Any {
     return Str{ s: "undef" }; 
 }
@@ -100,6 +102,7 @@ func (i Bool) Str () Str { if i.b { return s_true }; return s_false }
 func (i Bool) Array () Array { panic("converting bool to array") }
 func (i Bool) Hash () Hash { panic("converting bool to hash") }
 func (i Bool) Equal (j Any) Bool { if i.b == j.Bool().b { return b_true }; return b_false }
+func (i Bool) Fetch () Any { return i }
 func (i Bool) Not () Bool { if i.b { return b_false }; return b_true }
 func (i Bool) f_perl (v1 Capture) Any {
     return i.Str(); 
@@ -114,6 +117,7 @@ func (i Int) Str () Str { return Str{ s: strconv.Itoa(i.i) } }
 func (i Int) Array () Array { panic("converting int to array") }
 func (i Int) Hash () Hash { panic("converting int to hash") }
 func (i Int) Equal (j Any) Bool { if i.i == j.Int().i { return b_true }; return b_false }
+func (i Int) Fetch () Any { return i }
 func (i Int) f_perl (v1 Capture) Any {
     return i.Str(); 
 }
@@ -133,6 +137,7 @@ func (i Str) Str () Str { return i }
 func (i Str) Array () Array { panic("converting string to array") }
 func (i Str) Hash () Hash { panic("converting str to hash") }
 func (i Str) Equal (j Any) Bool { if i.Int().i == j.Int().i { return b_true }; return b_false }
+func (i Str) Fetch () Any { return i }
 func (i Str) Str_equal(j Any) Bool {
     s1 := i.s;
     s2 := j.Str().s;
@@ -163,24 +168,26 @@ func (f Function) Str () Str { panic("converting function to string") }
 func (f Function) Array () Array { panic("converting function to array") }
 func (f Function) Hash () Hash { panic("converting function to hash") }
 func (f Function) Equal (j Any) Bool { panic("comparing function") }
+func (i Function) Fetch () Any { return i }
 func (f Function) Apply (p Capture) Any { return f.f(p) }
 func (i Function) f_perl (v1 Capture) Any {
     return Str{ s: "sub { ... }" }; 
 }
 
-type Method struct {
-    f func (Capture) Any;
-}
-func (f Method) Bool () Bool { return b_true }
-func (f Method) Int () Int { panic("converting function to int") }
-func (f Method) Str () Str { panic("converting function to string") }
-func (f Method) Array () Array { panic("converting function to array") }
-func (f Method) Hash () Hash { panic("converting function to hash") }
-func (f Method) Equal (j Any) Bool { panic("comparing function") }
-func (f Method) Apply (p Capture) Any { return f.f(p) }
-func (i Method) f_perl (v1 Capture) Any {
-    return Str{ s: "method { ... }" }; 
-}
+// type Method struct {
+//     f func (Capture) Any;
+// }
+// func (f Method) Bool () Bool { return b_true }
+// func (f Method) Int () Int { panic("converting function to int") }
+// func (f Method) Str () Str { panic("converting function to string") }
+// func (f Method) Array () Array { panic("converting function to array") }
+// func (f Method) Hash () Hash { panic("converting function to hash") }
+// func (f Method) Equal (j Any) Bool { panic("comparing function") }
+// func (i Method) Fetch () Any { return i }
+// func (f Method) Apply (p Capture) Any { return f.f(p) }
+// func (i Method) f_perl (v1 Capture) Any {
+//     return Str{ s: "method { ... }" }; 
+// }
 
 type Cell struct {
     c *Any;
@@ -260,6 +267,7 @@ func (i Hash) Hash () Hash {
 func (i Hash) Equal (j Any) Bool { 
     return b_false;  // TODO 
 }
+func (i Hash) Fetch () Any { return i }
 func (i Hash) Lookup (j Any) *Scalar {
     pos := j.Str().s;
     // TODO laziness
@@ -313,6 +321,7 @@ func (i Array) Hash () Hash {
 func (i Array) Equal (j Any) Bool { 
     return b_false;  // TODO 
 }
+func (i Array) Fetch () Any { return i }
 func (i Array) Index (j Any) *Scalar {
     pos := j.Int().i;
     // TODO autoextend

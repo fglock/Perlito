@@ -53,7 +53,7 @@ func (v_self MiniPerl6__Match) Hash() Hash	{ return v_self.v_hash }
 func (v_self MiniPerl6__Match) Equal(j Any) Bool {
 	panic("comparing class")
 }
-func (v_self *MiniPerl6__Match) Fetch() Any	{ return *v_self }
+func (v_self MiniPerl6__Match) Fetch() Any	{ return v_self }
 // prototype of MiniPerl6::Match
 var Proto_MiniPerl6__Match Scalar
 

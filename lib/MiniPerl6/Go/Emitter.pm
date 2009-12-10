@@ -150,7 +150,7 @@ class CompUnit {
         $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Array () Array { panic("converting class to array") }' ~ Main.newline;
         $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Hash () Hash { panic("converting class to hash") }' ~ Main.newline;
         $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Equal (j Any) Bool { panic("comparing class") }' ~ Main.newline;
-        $str := $str ~ 'func (v_self *' ~ $class_name ~ ') Fetch () Any { return *v_self }' ~ Main.newline;
+        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Fetch () Any { return v_self }' ~ Main.newline;
 
         $str := $str ~ 'func (v_self ' ~ $class_name ~ ') f_isa (v Capture) Any { '
                 ~ 'return Str{ s : "' ~ $class_name ~ '" }.Str_equal( v.p[0] ) '
