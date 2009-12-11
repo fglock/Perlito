@@ -63,6 +63,9 @@ type scalar_er interface {
 type isa_er interface {
     f_isa (v Capture) Any;
 }
+type values_er interface {
+    f_values (v Capture) Any;
+}
 
 // constants
 
@@ -288,6 +291,13 @@ func (i Hash) f_perl (v1 Capture) Any {
             "{",
             "...",
             "}" }, " " ) };
+}
+func (i Hash) f_values (v1 Capture) Any {
+    a := a_array();
+    for _, value := range i.h { 
+        a.Push( value.Fetch() )
+    }
+    return a
 }
 
 type Array struct {

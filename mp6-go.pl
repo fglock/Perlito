@@ -89,6 +89,9 @@ while ( $pos < length($source) ) {
     $pos = $p->to;
 }
 
+# join classes that have the same name
+# if there are method or accessor collisions, classes declared later have higher priority
+
 my %unit_seen;
 my @tmp_comp_unit;
 for my $comp_unit (@comp_unit) {
@@ -104,6 +107,18 @@ for my $comp_unit (@comp_unit) {
     }
 }
 @comp_unit = @tmp_comp_unit;
+for my $comp_unit (@comp_unit) {
+    for my $stmt ( @{ $comp_unit->{body} } ) {
+        if ( $stmt->isa('Method') ) {
+            $comp_unit->{methods}{ $stmt->{name} } = $stmt;
+        }
+        if ( $stmt->isa('Decl') && ( $stmt->{decl} eq 'has' ) ) {
+            $comp_unit->{attributes}{ $stmt->{var}{name} } = $stmt;
+        }
+    }
+}
+
+# emit the code for all classes
 
 for my $comp_unit (@comp_unit) {
     say( $comp_unit->emit_go() );

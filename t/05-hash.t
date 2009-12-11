@@ -10,4 +10,7 @@ class Main {
         print 'not '
     }
     say 'ok 3 - fetch element # ', %a{'abc'};
+
+    %a{123} := 456;
+    say '# values: ', %a.values;
 }

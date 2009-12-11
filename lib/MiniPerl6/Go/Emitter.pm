@@ -507,16 +507,6 @@ class Call {
             $invocant := 'Proto_' ~ $invocant
         }
 
-        if     ($.method eq 'values')
-        { 
-            if ($.hyper) {
-                die "not implemented";
-            }
-            else {
-                return '@{' ~ $invocant ~ '}';
-            }
-        };
-
         if     ($.method eq 'yaml')
             || ($.method eq 'say' )
             || ($.method eq 'chars')
