@@ -51,8 +51,8 @@ class MiniPerl6::Go::LexicalBlock {
                 if $cond.isa( 'Var' ) && $cond.sigil eq '@' {
                     $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
                 };
-                $body      := ::MiniPerl6::Go::LexicalBlock( block => $body, needs_return => 1 );
-                $otherwise := ::MiniPerl6::Go::LexicalBlock( block => $otherwise, needs_return => 1 );
+                $body      := ::MiniPerl6::Go::LexicalBlock( block => $body, needs_return => 1, top_level => $.top_level );
+                $otherwise := ::MiniPerl6::Go::LexicalBlock( block => $otherwise, needs_return => 1, top_level => $.top_level );
                 $str := $str 
                     ~ 'if ( (' ~ $cond.emit_go ~ ').Bool().b ) { ' 
                         ~ $body.emit_go ~ ' } else { ' 
@@ -73,14 +73,6 @@ class MiniPerl6::Go::LexicalBlock {
                 }
             }
             }
-        }
-        if $.top_level {
-            $str :=  
-'
-    p := make(chan Any);
-    go func () { ' ~ $str ~ '; return }();
-    return <-p;
-';
         }
         return $str;
     }
@@ -209,7 +201,9 @@ class CompUnit {
               ~ '  Method_' ~ $class_name ~ '.f_' ~ $decl.name 
                     ~ ' = func (' ~ ($sig.invocant).emit_go ~ ' *' ~ $class_name ~ ', v Capture) Any {' ~ Main.newline
               ~ '    ' ~ $sig.emit_go_bind ~ Main.newline
-              ~ '    ' ~ $block.emit_go ~ Main.newline
+              ~ '    p := make(chan Any); go func () { ' ~ Main.newline
+              ~ '        ' ~ $block.emit_go ~ '; return }(); ' ~ Main.newline
+              ~ '    return <-p; ' ~ Main.newline
               ~ '  };' ~ Main.newline
             }
             if $decl.isa( 'Sub' ) {
@@ -220,7 +214,9 @@ class CompUnit {
               ~ '  Namespace_' ~ $class_name ~ '.f_' ~ $decl.name 
                     ~ ' = Function{ f : func (v Capture) Any {' ~ Main.newline
               ~ '    ' ~ $sig.emit_go_bind ~ Main.newline
-              ~ '    ' ~ $block.emit_go ~ Main.newline
+              ~ '    p := make(chan Any); go func () { ' ~ Main.newline
+              ~ '        ' ~ $block.emit_go ~ '; return }(); ' ~ Main.newline
+              ~ '    return <-p; ' ~ Main.newline
               ~ '  } };' ~ Main.newline;
             }
         }; 
@@ -773,7 +769,10 @@ class Method {
         my $invocant := ($.sig).invocant; 
         'func ' ~ $.name ~ '(v Capture) Any { ' 
               ~ '    ' ~ ($.sig).emit_go_bind ~ Main.newline
-              ~ '    ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
+              ~ '    p := make(chan Any); go func () { ' ~ Main.newline
+              ~ '        ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
+              ~ '; return }(); ' ~ Main.newline
+              ~ '    return <-p; ' ~ Main.newline
         ~ ' }'
     }
 }
@@ -787,14 +786,20 @@ class Sub {
             return
                 'Function{ f: func(v Capture) Any { '
                     ~ '    ' ~ ($.sig).emit_go_bind ~ Main.newline
-                    ~ '    ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
+                    ~ '    p := make(chan Any); go func () { ' ~ Main.newline
+                    ~ '        ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
+                    ~ '; return }(); ' ~ Main.newline
+                    ~ '    return <-p; ' ~ Main.newline
                     ~ '} '
                 ~ '}'
         }
 
         'func ' ~ $.name ~ '(v Capture) Any { ' 
-              ~ '    ' ~ ($.sig).emit_go_bind ~ Main.newline
-              ~ '    ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
+                    ~ '    ' ~ ($.sig).emit_go_bind ~ Main.newline
+                    ~ '    p := make(chan Any); go func () { ' ~ Main.newline
+                    ~ '        ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
+                    ~ '; return }(); ' ~ Main.newline
+                    ~ '    return <-p; ' ~ Main.newline
         ~ ' }'
     }
 }
