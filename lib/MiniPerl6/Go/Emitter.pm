@@ -98,10 +98,12 @@ class CompUnit {
         $str := $str 
             ~ '// methods in class ' ~ $.name ~ Main.newline
             ~ 'var Method_' ~ $class_name ~ ' struct {' ~ Main.newline;
-        for @.body -> $decl { 
+        for (%.methods).values -> $decl { 
             if $decl.isa( 'Method' ) {
                 $str := $str  ~ '  ' ~ 'f_' ~ $decl.name ~ ' func (*' ~ $class_name ~ ', Capture) Any;' ~ Main.newline;
             }
+        }
+        for (%.attributes).values -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str := $str  ~ '  ' ~ 'f_' ~ ($decl.var).name ~ ' func (*' ~ $class_name ~ ', Capture) Any;' ~ Main.newline;
             }
@@ -121,13 +123,15 @@ class CompUnit {
 
         $str := $str 
             ~ '// method wrappers for ' ~ $.name ~ Main.newline
-        for @.body -> $decl {
+        for (%.methods).values -> $decl { 
             if $decl.isa( 'Method' ) {
                 $str := $str  
                     ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ $decl.name ~ ' (v Capture) Any {' ~ Main.newline
                     ~ '  return Method_' ~ $class_name ~ '.f_' ~ $decl.name ~ '(v_self, v);'~ Main.newline
                     ~ '}'~ Main.newline;
             }
+        }
+        for (%.attributes).values -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str := $str  
                     ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ ($decl.var).name ~ ' (v Capture) Any {' ~ Main.newline
@@ -507,31 +511,6 @@ class Call {
             $invocant := 'Proto_' ~ $invocant
         }
 
-        if     ($.method eq 'yaml')
-            || ($.method eq 'say' )
-            || ($.method eq 'chars')
-        { 
-            if ($.hyper) {
-                return 
-                    'func (a_ Any) Array { '
-                        ~ 'var out = a_array(); ' 
-                        ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
-                        ~ 'for(var i = 0; i < a_.length; i++) { '
-                            ~ 'out.Push( Main.' ~ $.method ~ '(a_[i]) ) } return out;'
-                    ~ ' }(' ~ $invocant ~ ')'
-            }
-            else {
-                if defined @.arguments {
-                    return
-                        'Main.' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_go).join(', ') ~ ')';
-                }
-                else {
-                    return
-                        'Main.' ~ $.method ~ '(' ~ $invocant ~ ')';
-                }
-            }
-        };
-
         my $meth := $.method;
         if  $meth eq 'postcircumfix:<( )>'  {
             if ($.hyper) {
@@ -543,13 +522,13 @@ class Call {
         };
         
         if ($.hyper) {
-                    'func (a_ Any) Array { '
-                        ~ 'var out = a_array(); ' 
-                        ~ 'var i Array = a_.Array(); '
-                        ~ 'for pos := 0; pos < i.n; pos++ { '
-                            ~ 'out.Push( i.v[pos].Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '(Capture{ p : []Any{}  })) } '
-                        ~ 'return out; '
-                    ~ '}(' ~ $invocant ~ ')'
+            'func (a_ Any) Array { '
+                ~ 'var out = a_array(); ' 
+                ~ 'var i Array = a_.Array(); '
+                ~ 'for pos := 0; pos < i.n; pos++ { '
+                    ~ 'out.Push( i.v[pos].Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '(Capture{ p : []Any{}  })) } '
+                ~ 'return out; '
+            ~ '}(' ~ $invocant ~ ')'
         }
         else {
             $invocant ~ '.Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '( Capture{ p : []Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
@@ -597,9 +576,10 @@ class Apply {
                                                 ~ (@.arguments.>>emit_go).join(', ') 
                                                 ~ ' } } )' 
                                     }
-        # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit_go).join(' ')    ~ '}' };
-        if $code eq 'defined'    { return (@.arguments.>>emit_go).join(' ') ~ '.Defined()' };
-        if $code eq 'pop'        { return 'Pop(' ~ (@.arguments.>>emit_go).join(' ') ~ ')' };
+        # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit_go).join(', ')    ~ '}' };
+        if $code eq 'defined'    { return (@.arguments.>>emit_go).join(', ') ~ '.Defined()' };
+        if $code eq 'pop'        { return 'Pop(' ~ (@.arguments.>>emit_go).join(', ') ~ ')' };
+        if $code eq 'index'      { return 'f_index(' ~ (@.arguments.>>emit_go).join(', ') ~ ')' };
         if $code eq 'substr'     { return 'Substr( Capture{ p : []Any{ ' 
                                         ~ (@.arguments.>>emit_go).join(', ') 
                                         ~ ' } } )'  };

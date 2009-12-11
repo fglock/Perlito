@@ -412,6 +412,9 @@ func Pop(s Any) Any {
     var o = s.Array();
     return o.f_pop()
 }
+func f_index(s, sep Any) Any {
+    return Int{ i : strings.Index(s.Str().s, sep.Str().s) };
+}
 func Die(s Capture) Any {
     var o = s.p[0];
     panic( o.Str().s );
