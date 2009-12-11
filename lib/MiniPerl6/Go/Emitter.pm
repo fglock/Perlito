@@ -88,7 +88,7 @@ class CompUnit {
         my $str :=
               '// instances of class ' ~ $.name ~ Main.newline
             ~ 'type ' ~ $class_name ~ ' struct {' ~ Main.newline;
-        for @.body -> $decl { 
+        for (%.attributes).values -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str := $str  ~ '  ' ~ 'v_' ~ ($decl.var).name ~ ' Scalar;' ~ Main.newline
             }
