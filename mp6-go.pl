@@ -20,6 +20,7 @@ use MiniPerl6::Emitter::Token;
 my @lib_source_filename = (
     'lib/MiniPerl6/Go/Runtime.go',
     'lib/MiniPerl6/Go/Match.go',
+    'lib/MiniPerl6/Go/Regex.go',
 );
 my $tmp_go_filename = 'tmp';
 
@@ -122,6 +123,9 @@ for my $comp_unit (@comp_unit) {
 
 for my $comp_unit (@comp_unit) {
     say( $comp_unit->emit_go() );
+}
+if ( ! $unit_seen{"MiniPerl6::Grammar"} ) {
+    say "type MiniPerl6__Grammar struct{}";
 }
 
 say("// interfaces for all methods");

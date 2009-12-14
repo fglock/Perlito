@@ -170,9 +170,6 @@ type capture_er interface {
 type string_er interface {
 	f_string(Capture) Any;
 }
-type f_is_newline interface {
-	f_is_newline(Capture) Any;
-}
 
 // end: MiniPerl6::Match
 
