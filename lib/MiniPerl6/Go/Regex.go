@@ -26,6 +26,21 @@
 type is_newline_er interface {
     f_is_newline(Capture) Any;
 }
+type word_er interface {
+    f_word(Capture) Any;
+}
+type digit_er interface {
+    f_digit(Capture) Any;
+}
+type not_newline_er interface {
+    f_not_newline(Capture) Any;
+}
+type space_er interface {
+    f_space(Capture) Any;
+}
+type newline_er interface {
+    f_newline(Capture) Any;
+}
 
 func (v_grammar *MiniPerl6__Grammar) f_is_newline(v Capture) Any {
     v_str := v.p[0];
@@ -39,6 +54,21 @@ func (v_grammar *MiniPerl6__Grammar) f_is_newline(v Capture) Any {
     m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
     m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});                
     return m;
+}
+func (v_grammar *MiniPerl6__Grammar) f_word(v Capture) Any {
+    panic( "TODO" );
+}
+func (v_grammar *MiniPerl6__Grammar) f_digit(v Capture) Any {
+    panic( "TODO" );
+}
+func (v_grammar *MiniPerl6__Grammar) f_not_newline(v Capture) Any {
+    panic( "TODO" );
+}
+func (v_grammar *MiniPerl6__Grammar) f_space(v Capture) Any {
+    panic( "TODO" );
+}
+func (v_grammar *MiniPerl6__Grammar) f_newline(v Capture) Any {
+    panic( "TODO" );
 }
 
 // end: Regex primitives

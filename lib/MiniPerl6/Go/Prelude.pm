@@ -1,38 +1,10 @@
 use v6-alpha;
 
-class MiniPerl6::Match {
-    has $.from;
-    has $.to;
-    has $.str;
-    has $.bool;
-    has $.capture;
-
-    method scalar {
-        if $.bool {
-            if defined($.capture) {
-                return $.capture;
-            }
-            return substr( $.str, $.from, ( $.to - $.from ) );
-        }
-        else {
-            return '';
-        }
-    }
-
-    method string {
-        if $.bool {
-            if defined($.capture) {
-                return $.capture;
-            }
-            return substr( $.str, $.from, ( $.to - $.from ) );
-        }
-        else {
-            return '';
-        }
-    }
-}
-
 class Main {
+
+    sub to_go_namespace {
+        die "TODO";
+    }
 
     sub to_lisp_identifier ( $ident ) {
         return 'sv-' ~ $ident;
@@ -44,6 +16,25 @@ class Main {
         # return $data[0] ~ '( ' ~ ($data[1]).perl ~ ' )';
     }
 
+    sub to_javascript_namespace {
+        die "TODO";
+    }
+
+    sub javascript_escape_string {
+        die "TODO";
+    }
+
+    sub to_lisp_namespace {
+        die "TODO";
+    }
+
+    sub lisp_escape_string {
+        die "TODO";
+    }
+
+    sub perl_escape_string {
+        die "TODO";
+    }
 }
 
 =begin
