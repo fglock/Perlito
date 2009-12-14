@@ -348,6 +348,7 @@ class Lit::Object {
         my $str := '';
         for @$fields -> $field { 
             $str := $str 
+                ~ 'm.v_' ~ ($field[0]).buf ~ ' = new(Scalar); '
                 ~ 'm.v_' ~ ($field[0]).buf ~ '.(bind_er).Bind( ' ~ ($field[1]).emit_go ~ ' ); ';
         }; 
         'func() *' ~ Main::to_go_namespace($.class) ~ ' { ' 
@@ -598,6 +599,10 @@ class Apply {
         if $code eq 'substr'     { return 'Substr( Capture{ p : []Any{ ' 
                                         ~ (@.arguments.>>emit_go).join(', ') 
                                         ~ ' } } )'  };
+        if $code eq 'scalar'     { return 'f_scalar( Capture{ p : []Any{ ' 
+                                        ~ (@.arguments.>>emit_go).join(', ')    
+                                    ~ ' } } )' 
+                                 };
         if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_go).join(', ')    ~ ').Str()' };
         if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit_go).join(', ')    ~ ').Bool().Not()' };
         if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_go).join(', ')    ~ ').Bool()' };
