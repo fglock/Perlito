@@ -74,7 +74,6 @@ class Lit::Hash {
 
 class Lit::Code {
     # XXX
-    1;
 }
 
 class Lit::Object {

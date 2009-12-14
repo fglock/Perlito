@@ -254,7 +254,6 @@ class Lit::Hash {
 }
 
 class Lit::Code {
-    1;
 }
 
 class Lit::Object {

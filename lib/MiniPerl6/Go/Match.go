@@ -1,14 +1,36 @@
 // MiniPerl6::Match
+// lib/MiniPerl6/Javascript/Match.go
+//
+// Runtime for "Perlito" MiniPerl6-in-Go
+//
+// AUTHORS
+//
+// Flavio Soibelmann Glock  fglock@gmail.com
+//
+// SEE ALSO
+//
+// The Perl 6 homepage at http://dev.perl.org/perl6
+// The Pugs homepage at http://pugscode.org/
+//
+// COPYRIGHT
+//
+// Copyright 2009 by Flavio Soibelmann Glock and others.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the same terms as Perl itself.
+//
+// See http://www.perl.com/perl/misc/Artistic.html
+
 
 // instances of class MiniPerl6::Match
 type MiniPerl6__Match struct {
-	v_from		Scalar;
-	v_to		Scalar;
-	v_str		Scalar;
-	v_bool		Scalar;
-	v_capture	Scalar;
-    v_hash      Hash;
-    v_array     Array;
+	v_from		Any;
+	v_to		Any;
+	v_str		Any;
+	v_bool		Any;
+	v_capture	Any;
+    v_hash      Any;
+    v_array     Any;
 }
 // methods in class MiniPerl6::Match
 var Method_MiniPerl6__Match struct {
@@ -48,20 +70,21 @@ func (v_self *MiniPerl6__Match) f_string(v Capture) Any {
 func (v_self MiniPerl6__Match) Bool() Bool	{ return b_true }
 func (v_self MiniPerl6__Match) Int() Int	{ panic("converting class to int") }
 func (v_self MiniPerl6__Match) Str() Str	{ panic("converting class to string") }
-func (v_self MiniPerl6__Match) Array() Array	{ return v_self.v_array }
-func (v_self MiniPerl6__Match) Hash() Hash	{ return v_self.v_hash }
+func (v_self MiniPerl6__Match) Array() Array	{ return v_self.v_array.Array() }
+func (v_self MiniPerl6__Match) Hash() Hash	{ return v_self.v_hash.Hash() }
 func (v_self MiniPerl6__Match) Equal(j Any) Bool {
 	panic("comparing class")
 }
 func (v_self MiniPerl6__Match) Fetch() Any	{ return v_self }
 // prototype of MiniPerl6::Match
-var Proto_MiniPerl6__Match Scalar
+var Proto_MiniPerl6__Match Any
 
 func Init_MiniPerl6__Match() {
 	this_namespace := &Namespace_MiniPerl6__Match;
 	this_namespace = this_namespace;
 
-    Proto_MiniPerl6__Match.Bind(
+    Proto_MiniPerl6__Match = new(Scalar);
+    Proto_MiniPerl6__Match.(bind_er).Bind(
         func() *MiniPerl6__Match {
             var m = new(MiniPerl6__Match);
             m.v_hash = h_hash();
@@ -94,7 +117,7 @@ func Init_MiniPerl6__Match() {
 		p := make(chan Any);
 		go func() {
 			if (v_self.v_bool).Bool().b {
-				if v_self.v_capture.Defined().Bool().b {
+				if f_defined( v_self.v_capture ).Bool().b {
 					Go_return(p, v_self.v_capture)
 				} else {
 				}
@@ -113,7 +136,7 @@ func Init_MiniPerl6__Match() {
 		p := make(chan Any);
 		go func() {
 			if (v_self.v_bool).Bool().b {
-				if v_self.v_capture.Defined().Bool().b {
+				if f_defined( v_self.v_capture ).Bool().b {
 					Go_return(p, v_self.v_capture)
 				} else {
 				}
@@ -146,6 +169,9 @@ type capture_er interface {
 }
 type string_er interface {
 	f_string(Capture) Any;
+}
+type f_is_newline interface {
+	f_is_newline(Capture) Any;
 }
 
 // end: MiniPerl6::Match

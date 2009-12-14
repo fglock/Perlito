@@ -237,16 +237,6 @@ func (i *Scalar) Bind (j Any) Any {
     }
     return j 
 }
-func (i Scalar) Defined() Any {
-    if i.s == nil {
-        return b_false;
-    }
-    switch i := (*i.s.c).(type) {
-        case nil:       return b_false;
-        case Undef:     return b_false;
-    }
-    return b_true;
-}
 
 type Hash struct {
     h map[string]*Scalar;
@@ -271,7 +261,7 @@ func (i Hash) Equal (j Any) Bool {
     return b_false;  // TODO 
 }
 func (i Hash) Fetch () Any { return i }
-func (i Hash) Lookup (j Any) *Scalar {
+func (i Hash) Lookup (j Any) Any {
     pos := j.Str().s;
     // TODO laziness
     if i.h == nil {
@@ -332,7 +322,7 @@ func (i Array) Equal (j Any) Bool {
     return b_false;  // TODO 
 }
 func (i Array) Fetch () Any { return i }
-func (i Array) Index (j Any) *Scalar {
+func (i Array) Index (j Any) Any {
     pos := j.Int().i;
     // TODO autoextend
     // TODO laziness
@@ -414,6 +404,14 @@ func Pop(s Any) Any {
 }
 func f_index(s, sep Any) Any {
     return Int{ i : strings.Index(s.Str().s, sep.Str().s) };
+}
+func f_defined(s Any) Any {
+    switch i := s.(type) {
+        case nil:       return b_false;
+        case Undef:     return b_false;
+        case Scalar:    return f_defined(i.Fetch());
+    }
+    return b_true;
 }
 func Die(s Capture) Any {
     var o = s.p[0];

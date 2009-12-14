@@ -9,25 +9,29 @@ class MiniPerl6::Go::LexicalBlock {
             return '';
         }
         my $str := '';
-        for @.block -> $decl { 
+        for @.block -> $decl1 { 
+            my $decl := $decl1;
+            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
+                $decl := $decl.parameters;
+            }
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 # uninitialized variable
-                $str := $str ~ ($decl.var).emit_go ~ ' := new(Scalar);' ~ Main.newline;
+                $str := $str ~ 'var ' ~ ($decl.var).emit_go ~ ' Any = new(Scalar);' ~ Main.newline;
                 if ($decl.var).sigil eq '%' {
-                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( h_hash() );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( h_hash() );' ~ Main.newline;
                 } 
                 else {
                 if ($decl.var).sigil eq '@' {
-                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( a_array() );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( a_array() );' ~ Main.newline;
                 } 
                 else {
-                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( u_undef );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( u_undef );' ~ Main.newline;
                 } 
                 }
             }
-            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                $str := $str ~ (($decl.parameters).var).emit_go ~ ' := new(Scalar);'; 
-            }
+            # if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
+            #    $str := $str ~ 'var ' ~ (($decl.parameters).var).emit_go ~ ' Any = new(Scalar);'; 
+            # }
         }
         my $last_statement;
         if $.needs_return {
@@ -90,7 +94,7 @@ class CompUnit {
             ~ 'type ' ~ $class_name ~ ' struct {' ~ Main.newline;
         for (%.attributes).values -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                $str := $str  ~ '  ' ~ 'v_' ~ ($decl.var).name ~ ' Scalar;' ~ Main.newline
+                $str := $str  ~ '  ' ~ 'v_' ~ ($decl.var).name ~ ' Any;' ~ Main.newline
             }
         }
         $str := $str ~ '}' ~ Main.newline;
@@ -154,7 +158,7 @@ class CompUnit {
 
         $str := $str 
             ~ '// prototype of ' ~ $.name ~ Main.newline
-            ~ 'var Proto_' ~ $class_name ~ ' Scalar;' ~ Main.newline;
+            ~ 'var Proto_' ~ $class_name ~ ' Any;' ~ Main.newline;
 
         $str := $str ~ 'func Init_' ~ $class_name ~ '() {' ~ Main.newline;
 
@@ -164,26 +168,31 @@ class CompUnit {
         $str := $str 
             ~ '  this_namespace := &Namespace_' ~ $class_name ~ ';' ~ Main.newline
             ~ '  this_namespace = this_namespace;' ~ Main.newline
-            ~ '  Proto_' ~ $class_name ~ '.Bind( new(' ~ $class_name ~ ') );' ~ Main.newline;
-        for @.body -> $decl { 
+            ~ '  Proto_' ~ $class_name ~ ' = new(Scalar);' ~ Main.newline
+            ~ '  Proto_' ~ $class_name ~ '.(bind_er).Bind( new(' ~ $class_name ~ ') );' ~ Main.newline;
+        for @.body -> $decl1 { 
+            my $decl := $decl1;
+            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
+                $decl := $decl.parameters;
+            }
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $str := $str ~ '  ' ~ ($decl.var).emit_go ~ ' := new(Scalar);' ~ Main.newline; 
+                $str := $str ~ '  var ' ~ ($decl.var).emit_go ~ ' Any = new(Scalar);' ~ Main.newline; 
                 if ($decl.var).sigil eq '%' {
-                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( h_hash() );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( h_hash() );' ~ Main.newline;
                 } 
                 else {
                 if ($decl.var).sigil eq '@' {
-                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( a_array() );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( a_array() );' ~ Main.newline;
                 } 
                 else {
-                    $str := $str ~ ($decl.var).emit_go ~ '.Bind( u_undef );' ~ Main.newline;
+                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( u_undef );' ~ Main.newline;
                 } 
                 }
                 $str := $str ~ Main.newline;
             }
-            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                $str := $str ~ '  ' ~ (($decl.parameters).var).emit_go ~ ' := new(Scalar);' ~ Main.newline; 
-            }
+            # if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
+            #    $str := $str ~ '  ' ~ (($decl.parameters).var).emit_go ~ ' := new(Scalar);' ~ Main.newline; 
+            # }
         }
 
         # $str := $str ~ 'func ' ~ Main::to_go_namespace($.name) ~ '() {' ~ Main.newline;
@@ -317,7 +326,7 @@ class Lit::Hash {
         my $str := ''; 
         for @$fields -> $field { 
             $str := $str 
-                ~ 'm.Lookup( ' ~ ($field[0]).emit_go ~ ' ).Bind( ' ~ ($field[1]).emit_go ~ ' ); ';
+                ~ 'm.Lookup( ' ~ ($field[0]).emit_go ~ ' ).(bind_er).Bind( ' ~ ($field[1]).emit_go ~ ' ); ';
         }; 
         'func() Hash { ' 
             ~ 'm := h_hash(); '
@@ -329,7 +338,6 @@ class Lit::Hash {
 
 class Lit::Code {
     # XXX
-    1;
 }
 
 class Lit::Object {
@@ -340,7 +348,7 @@ class Lit::Object {
         my $str := '';
         for @$fields -> $field { 
             $str := $str 
-                ~ 'm.v_' ~ ($field[0]).buf ~ '.Bind( ' ~ ($field[1]).emit_go ~ ' ); ';
+                ~ 'm.v_' ~ ($field[0]).buf ~ '.(bind_er).Bind( ' ~ ($field[1]).emit_go ~ ' ); ';
         }; 
         'func() *' ~ Main::to_go_namespace($.class) ~ ' { ' 
             ~ 'var m = new(' ~ Main::to_go_namespace($.class) ~ '); '
@@ -488,7 +496,14 @@ class Bind {
                 ~ '}()';
         }
 
-        $.parameters.emit_go ~ '.Bind( ' ~ $.arguments.emit_go ~ ' )';
+        # if $.parameters.isa( 'Var' ) {
+        #    return $.parameters.emit_go ~ '.Bind( ' ~ $.arguments.emit_go ~ ' )';
+        # }
+        # if $.parameters.isa( 'Decl' ) && (($.parameters.decl) eq 'my') {
+        #    return $.parameters.emit_go ~ '.Bind( ' ~ $.arguments.emit_go ~ ' )';
+        # }
+
+        $.parameters.emit_go ~ '.(bind_er).Bind( ' ~ $.arguments.emit_go ~ ' )';
     }
 }
 
@@ -555,7 +570,7 @@ class Apply {
             return 
                   'func () Any { ' 
                     ~ 'tmp := ' ~ (@.arguments.>>emit_go).join(', ') ~ '; '
-                    ~ 'Proto_MiniPerl6__Match.v_capture = tmp; '
+                    ~ 'Proto_MiniPerl6__Match.Fetch().(capture_er).f_capture(Capture{}).(bind_er).Bind(tmp); '
                     ~ 'return tmp; '
                 ~ '}()';
         };
@@ -577,7 +592,7 @@ class Apply {
                                                 ~ ' } } )' 
                                     }
         # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit_go).join(', ')    ~ '}' };
-        if $code eq 'defined'    { return (@.arguments.>>emit_go).join(', ') ~ '.Defined()' };
+        if $code eq 'defined'    { return 'f_defined(' ~ (@.arguments.>>emit_go).join(', ') ~ ')' };
         if $code eq 'pop'        { return 'Pop(' ~ (@.arguments.>>emit_go).join(', ') ~ ')' };
         if $code eq 'index'      { return 'f_index(' ~ (@.arguments.>>emit_go).join(', ') ~ ')' };
         if $code eq 'substr'     { return 'Substr( Capture{ p : []Any{ ' 
@@ -697,11 +712,27 @@ class For {
             ~ 'var i Array = a_.Array(); '
             ~ 'for pos := 0; pos < i.n; pos++ { '
                 ~ 'func (' ~ $.topic.emit_go ~ ' Any) { '
-                    ~ (@.body.>>emit_go).join(';') 
+                    ~ ::MiniPerl6::Go::LexicalBlock( block => @.body, needs_return => 0 ).emit_go 
                 ~ ' }(i.v[pos]) '
             ~ '} '
         ~ '}(' ~ $.cond.emit_go ~ ')'
     }
+}
+
+class When {
+    has @.parameters;
+    has @.body;
+    method emit_go { die "TODO - When" }
+}
+
+class While {
+    has $.cond;
+    has @.body;
+    method emit_go { die "TODO - While" }
+}
+
+class Leave {
+    method emit_go { die "TODO - Leave" }
 }
 
 class Decl {

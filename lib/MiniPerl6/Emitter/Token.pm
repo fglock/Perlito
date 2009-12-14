@@ -226,6 +226,22 @@ class Rul::Capture {
     }
 }
 
+class Rul::CaptureResult {
+    has $.rule_exp;
+    method emit {
+        say "TODO Rul::CaptureResult";
+        die();
+    }
+}
+
+class Rul::After {
+    has $.rule_exp;
+    method emit {
+        say "TODO Rul::After";
+        die();
+    }
+}
+
 =begin
 
 =head1 NAME 

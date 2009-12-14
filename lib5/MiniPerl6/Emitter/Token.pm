@@ -135,4 +135,18 @@ sub emit { my $self = shift; my $List__ = \@_; do { [] }; Main::say('TODO RulCap
 
 
 ;
+package Rul::CaptureResult;
+sub new { shift; bless { @_ }, "Rul::CaptureResult" }
+sub rule_exp { @_ == 1 ? ( $_[0]->{rule_exp} ) : ( $_[0]->{rule_exp} = $_[1] ) };
+sub emit { my $self = shift; my $List__ = \@_; do { [] }; Main::say('TODO Rul::CaptureResult'); die() }
+
+
+;
+package Rul::After;
+sub new { shift; bless { @_ }, "Rul::After" }
+sub rule_exp { @_ == 1 ? ( $_[0]->{rule_exp} ) : ( $_[0]->{rule_exp} = $_[1] ) };
+sub emit { my $self = shift; my $List__ = \@_; do { [] }; Main::say('TODO Rul::After'); die() }
+
+
+;
 1;

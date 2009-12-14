@@ -125,7 +125,20 @@ for my $comp_unit (@comp_unit) {
 }
 
 say("// interfaces for all methods");
-my %meth_seen;
+my %meth_seen = (
+    join => 1,
+    perl => 1,
+    scalar => 1,
+    isa => 1,
+    values => 1,
+    from => 1,
+    to => 1,
+    str => 1,
+    bool => 1,
+    capture => 1,
+    string => 1,
+    bind => 1,
+);
 for my $comp_unit (@comp_unit) {
     for my $stmt ( @{ $comp_unit->{body} } ) {
         if ( $stmt->isa('Method') && !$meth_seen{ $stmt->{name} } ) {
