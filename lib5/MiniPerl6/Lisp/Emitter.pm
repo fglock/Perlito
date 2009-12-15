@@ -113,7 +113,7 @@ sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (@{$self-
 ;
 package Lit::Code;
 sub new { shift; bless { @_ }, "Lit::Code" }
-1
+
 
 
 ;

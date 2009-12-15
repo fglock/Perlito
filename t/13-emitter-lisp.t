@@ -4,8 +4,8 @@ class Main {
     say '1..4';
     my $m := ::Val::Num( num => 123 );
     # say '# Ast is:        ', $m.perl;
-    say '# code is:  ', $m.emit;
-    if ($m.emit) eq '123' {
+    say '# code is:  ', $m.emit_lisp;
+    if ($m.emit_lisp) eq '123' {
         say 'ok 1';
     }
     else {
@@ -13,8 +13,8 @@ class Main {
     }
 
     $m := ::Val::Buf( buf => 'abc' );
-    say '# value is ', $m.emit;
-    if ($m.emit) eq '"abc"' {
+    say '# value is ', $m.emit_lisp;
+    if ($m.emit_lisp) eq '"abc"' {
         say 'ok 2';
     }
     else {
@@ -31,7 +31,7 @@ class Main {
     }
 
     $m := ::Lit::Array( array => [ ::Val::Int( int => 1 ), ::Val::Buf( buf => "2" ) ] );
-    say '# array:  ', $m.emit;
+    say '# array:  ', $m.emit_lisp;
 
 # token
 

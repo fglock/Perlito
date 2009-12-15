@@ -78,7 +78,7 @@ sub emit { my $self = shift; my $List__ = \@_; do { [] }; (my  $fields = $self->
 ;
 package Lit::Code;
 sub new { shift; bless { @_ }, "Lit::Code" }
-1
+
 
 
 ;
@@ -138,7 +138,7 @@ sub invocant { @_ == 1 ? ( $_[0]->{invocant} ) : ( $_[0]->{invocant} = $_[1] ) }
 sub hyper { @_ == 1 ? ( $_[0]->{hyper} ) : ( $_[0]->{hyper} = $_[1] ) };
 sub method { @_ == 1 ? ( $_[0]->{method} ) : ( $_[0]->{method} = $_[1] ) };
 sub arguments { @_ == 1 ? ( $_[0]->{arguments} ) : ( $_[0]->{arguments} = $_[1] ) };
-sub emit { my $self = shift; my $List__ = \@_; do { [] }; (my  $invocant = $self->{invocant}->emit()); do { if (($invocant eq 'self')) { ($invocant = '$self') } else {  } }; do { if (($self->{method} eq 'values')) { do { if ($self->{hyper}) { die('not implemented') } else { return(('(values %{' . ($invocant . '})'))) } } } else {  } }; do { if ((($self->{method} eq 'perl') || (($self->{method} eq 'yaml') || (($self->{method} eq 'say') || (($self->{method} eq 'join') || (($self->{method} eq 'chars') || ($self->{method} eq 'isa'))))))) { do { if ($self->{hyper}) { return(('[ map { Main::' . ($self->{method} . ('( $_, ' . (', ' . (Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . (')' . (' } @{ ' . ($invocant . ' } ]'))))))))) } else { return(('Main::' . ($self->{method} . ('(' . ($invocant . (', ' . (Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')'))))))) } } } else {  } }; (my  $meth = $self->{method}); do { if (($meth eq 'postcircumfix:<( )>')) { ($meth = '') } else {  } }; (my  $call = ('->' . ($meth . ('(' . (Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')'))))); do { if ($self->{hyper}) { ('[ map { $_' . ($call . (' } @{ ' . ($invocant . ' } ]')))) } else { ($invocant . $call) } } }
+sub emit { my $self = shift; my $List__ = \@_; do { [] }; (my  $invocant = $self->{invocant}->emit()); do { if (($invocant eq 'self')) { ($invocant = '$self') } else {  } }; do { if (($self->{method} eq 'values')) { do { if ($self->{hyper}) { die('not implemented') } else { return(('@{' . ($invocant . '}'))) } } } else {  } }; do { if ((($self->{method} eq 'perl') || (($self->{method} eq 'yaml') || (($self->{method} eq 'say') || (($self->{method} eq 'join') || (($self->{method} eq 'chars') || ($self->{method} eq 'isa'))))))) { do { if ($self->{hyper}) { return(('[ map { Main::' . ($self->{method} . ('( $_, ' . (', ' . (Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . (')' . (' } @{ ' . ($invocant . ' } ]'))))))))) } else { return(('Main::' . ($self->{method} . ('(' . ($invocant . (', ' . (Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')'))))))) } } } else {  } }; (my  $meth = $self->{method}); do { if (($meth eq 'postcircumfix:<( )>')) { ($meth = '') } else {  } }; (my  $call = ('->' . ($meth . ('(' . (Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')'))))); do { if ($self->{hyper}) { ('[ map { $_' . ($call . (' } @{ ' . ($invocant . ' } ]')))) } else { ($invocant . $call) } } }
 
 
 ;
