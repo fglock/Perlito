@@ -1,40 +1,37 @@
 use v6-alpha;
 
+class MiniPerl6::Grammar {
+
+    // Note: These tokens are just stubs.
+    //       The actual methods are implemented in Runtime.go
+
+    token is_newline    { . }
+    token word          { . }
+    token digit         { . }
+    token not_newline   { . }
+    token space         { . }
+}
+
 class Main {
 
-    sub to_go_namespace {
-        die "TODO";
-    }
+    method newline { "\n" }
 
     sub to_lisp_identifier ( $ident ) {
         return 'sv-' ~ $ident;
     }
-
     sub lisp_dump_object ( $class_name, $data ) {
         return $class_name ~ '( ' ~ ($data.>>perl).join(', ') ~ ' )';
-        # return $data[0] ~ '( ' ~ (($data[1]).>>perl).join(', ') ~ ' )';
-        # return $data[0] ~ '( ' ~ ($data[1]).perl ~ ' )';
     }
 
-    sub to_javascript_namespace {
-        die "TODO";
-    }
+    // Note: These methods are just stubs.
+    //       The actual methods are implemented in Runtime.go
 
-    sub javascript_escape_string {
-        die "TODO";
-    }
-
-    sub to_lisp_namespace {
-        die "TODO";
-    }
-
-    sub lisp_escape_string {
-        die "TODO";
-    }
-
-    sub perl_escape_string {
-        die "TODO";
-    }
+    sub to_go_namespace          { die "TODO" }
+    sub to_javascript_namespace  { die "TODO" }
+    sub javascript_escape_string { die "TODO" }
+    sub to_lisp_namespace        { die "TODO" }
+    sub lisp_escape_string       { die "TODO" }
+    sub perl_escape_string       { die "TODO" }
 }
 
 =begin

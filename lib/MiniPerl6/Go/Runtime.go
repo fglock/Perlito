@@ -441,5 +441,91 @@ func Go_return (p chan Any, r Any) bool {
     return false; 
 }
 
+// implementation of functions and methods declared in the prelude file
+
+func Init_Prelude () {
+
+    Method_MiniPerl6__Grammar.f_is_newline = func(v_grammar *MiniPerl6__Grammar, v Capture) Any {
+        v_str := v.p[0];
+        v_pos := v.p[1];
+        var s1 = v_str.Str().s;
+        var i1 = v_pos.Int().i;
+        var b1 = ( s1[i1:i1] == "\n" );
+        var m Any = new(MiniPerl6__Match);
+        m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
+        m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
+        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
+        m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});
+        return m;
+    };
+    Method_MiniPerl6__Grammar.f_word = func(v_grammar *MiniPerl6__Grammar, v Capture) Any {
+        panic( "TODO" );
+    };
+    Method_MiniPerl6__Grammar.f_digit = func(v_grammar *MiniPerl6__Grammar, v Capture) Any {
+        panic( "TODO" );
+    };
+    Method_MiniPerl6__Grammar.f_not_newline = func(v_grammar *MiniPerl6__Grammar, v Capture) Any {
+        panic( "TODO" );
+    };
+    Method_MiniPerl6__Grammar.f_space = func(v_grammar *MiniPerl6__Grammar, v Capture) Any {
+        panic( "TODO" );
+    };
+
+    Namespace_Main.f_perl_escape_string = Function{f: func(v Capture) Any {
+        var s string = v.p[0].Str().s;
+        var s1 string = "";
+        for i := 0; i < len(s); i++ {
+            switch {
+                case s[i] == '\\' :
+                    s1 += "\\\\"
+                case s[i] == '\'' :
+                    s1 += "\\'"
+                default:
+                    s1 += s[i : i+1]
+            }
+        }
+        return(Str{s: s1}); 
+    }};
+    Namespace_Main.f_lisp_escape_string = Function{f: func(v Capture) Any {
+        var s string = v.p[0].Str().s;
+        var s1 string = "";
+        for i := 0; i < len(s); i++ {
+            switch {
+                case s[i] == '\\' :
+                    s1 += "\\\\"
+                case s[i] == '"' :
+                    s1 += "\\\""
+                default:
+                    s1 += s[i : i+1]
+            }
+        }
+        return(Str{s: s1}); 
+    }};
+
+}
+// end: Init_Prelude()
+
+func TODO__f_perl_escape_string (v Capture) Any {
+    // s/\\/\\\\/g;
+    // s/'/\\'/g;
+
+    var s string = v.p[0].Str().s;
+    var s1 string = "";
+    for i := 0; i < len(s); i++ {
+        if (i+1) < len(s) && ((s[i] == 13 && s[i+1] == 10) || (s[i] == 10 && s[i+1] == 13)) {
+            s1 += "\\n";
+            i++;
+        } else {
+            switch {
+                case s[i] == 13 || s[i] == 10 :
+                    s1 += "\\n"
+                default:
+                    s1 += s[i : i+1]
+            }
+        }
+    }
+    return(Str{s: s1}); 
+}
+
 // end of the runtime lib
 

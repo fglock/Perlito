@@ -20,7 +20,6 @@ use MiniPerl6::Emitter::Token;
 my @lib_source_filename = (
     'lib/MiniPerl6/Go/Runtime.go',
     'lib/MiniPerl6/Go/Match.go',
-    'lib/MiniPerl6/Go/Regex.go',
 );
 my $tmp_go_filename = 'tmp';
 
@@ -172,6 +171,7 @@ say( "  Init_MiniPerl6__Match();" );
 for my $comp_unit (@comp_unit) {
     say( "  Init_" . Main::to_go_namespace( $comp_unit->{name} ) . "();" );
 }
+say "  Init_Prelude();";
 for my $comp_unit (@comp_unit) {
     say( "  Run_" . Main::to_go_namespace( $comp_unit->{name} ) . "();" );
 }
