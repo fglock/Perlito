@@ -28,6 +28,7 @@ import (
     "os";
     "strings";
     "runtime";
+    "unicode";
 )
 
 // interfaces used by the runtime
@@ -450,7 +451,7 @@ func Init_Prelude () {
         v_pos := v.p[1];
         var s1 = v_str.Str().s;
         var i1 = v_pos.Int().i;
-        var b1 = ( s1[i1:i1] == "\n" );
+        var b1 = ( s1[i1] == 13 || s1[i1] == 10 );
         var m Any = new(MiniPerl6__Match);
         m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
         m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
@@ -459,16 +460,65 @@ func Init_Prelude () {
         return m;
     };
     Method_MiniPerl6__Grammar.f_word = func(v_grammar *MiniPerl6__Grammar, v Capture) Any {
-        panic( "TODO" );
+        v_str := v.p[0];
+        v_pos := v.p[1];
+        var s1 = v_str.Str().s;
+        var i1 = v_pos.Int().i;
+
+        var ch = int( s1[i1] );
+        var b1 = unicode.IsLetter( ch );
+
+        var m Any = new(MiniPerl6__Match);
+        m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
+        m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
+        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
+        m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});
+        return m;
     };
     Method_MiniPerl6__Grammar.f_digit = func(v_grammar *MiniPerl6__Grammar, v Capture) Any {
-        panic( "TODO" );
+        v_str := v.p[0];
+        v_pos := v.p[1];
+        var s1 = v_str.Str().s;
+        var i1 = v_pos.Int().i;
+
+        var ch = int( s1[i1] );
+        var b1 = unicode.IsDigit( ch );
+
+        var m Any = new(MiniPerl6__Match);
+        m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
+        m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
+        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
+        m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});
+        return m;
     };
     Method_MiniPerl6__Grammar.f_not_newline = func(v_grammar *MiniPerl6__Grammar, v Capture) Any {
-        panic( "TODO" );
+        v_str := v.p[0];
+        v_pos := v.p[1];
+        var s1 = v_str.Str().s;
+        var i1 = v_pos.Int().i;
+        var b1 = ( s1[i1] != 13 && s1[i1] != 10 );
+        var m Any = new(MiniPerl6__Match);
+        m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
+        m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
+        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
+        m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});
+        return m;
     };
     Method_MiniPerl6__Grammar.f_space = func(v_grammar *MiniPerl6__Grammar, v Capture) Any {
-        panic( "TODO" );
+        v_str := v.p[0];
+        v_pos := v.p[1];
+        var s1 = v_str.Str().s;
+        var i1 = v_pos.Int().i;
+
+        var ch = int( s1[i1] );
+        var b1 = unicode.IsSpace( ch );
+
+        var m Any = new(MiniPerl6__Match);
+        m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
+        m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
+        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
+        m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});
+        return m;
     };
 
     Namespace_Main.f_perl_escape_string = Function{f: func(v Capture) Any {
@@ -506,9 +556,6 @@ func Init_Prelude () {
 // end: Init_Prelude()
 
 func TODO__f_perl_escape_string (v Capture) Any {
-    // s/\\/\\\\/g;
-    // s/'/\\'/g;
-
     var s string = v.p[0].Str().s;
     var s1 string = "";
     for i := 0; i < len(s); i++ {
