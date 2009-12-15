@@ -444,7 +444,32 @@ func Go_return (p chan Any, r Any) bool {
 
 // implementation of functions and methods declared in the prelude file
 
+func (v_self MiniPerl6__Match) Bool() Bool	{ return b_true }
+func (v_self MiniPerl6__Match) Int() Int	{ panic("converting class to int") }
+func (v_self MiniPerl6__Match) Str() Str	{ panic("converting class to string") }
+func (v_self MiniPerl6__Match) Array() Array	{ return v_self.v_array.Array() }
+func (v_self MiniPerl6__Match) Hash() Hash	{ return v_self.v_hash.Hash() }
+
 func Init_Prelude () {
+
+	Method_MiniPerl6__Match.f_scalar = func(v_self *MiniPerl6__Match, v Capture) Any {
+		if (v_self.v_bool).Bool().b {
+			if f_defined( v_self.v_capture ).Bool().b {
+				return(v_self.v_capture)
+			}
+			return(Substr(Capture{p: []Any{v_self.v_str, v_self.v_from, Int{i: (v_self.v_to).Int().i - (v_self.v_from).Int().i}}}));
+		}
+		return(Str{s: ""})
+	};
+	Method_MiniPerl6__Match.f_string = func(v_self *MiniPerl6__Match, v Capture) Any {
+		if (v_self.v_bool).Bool().b {
+			if f_defined( v_self.v_capture ).Bool().b {
+				return(v_self.v_capture)
+			}
+			return(Substr(Capture{p: []Any{v_self.v_str, v_self.v_from, Int{i: (v_self.v_to).Int().i - (v_self.v_from).Int().i}}}));
+		}
+		return(Str{s: ""})
+	};
 
     Method_MiniPerl6__Grammar.f_is_newline = func(v_grammar *MiniPerl6__Grammar, v Capture) Any {
         v_str := v.p[0];

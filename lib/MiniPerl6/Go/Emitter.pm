@@ -144,11 +144,13 @@ class CompUnit {
             }
         }
 
-        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Bool () Bool { return b_true }' ~ Main.newline;
-        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Int () Int { panic("converting class to int") }' ~ Main.newline;
-        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Str () Str { panic("converting class to string") }' ~ Main.newline;
-        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Array () Array { panic("converting class to array") }' ~ Main.newline;
-        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Hash () Hash { panic("converting class to hash") }' ~ Main.newline;
+        if $class_name ne 'MiniPerl6__Match' {
+            $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Bool () Bool { return b_true }' ~ Main.newline;
+            $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Int () Int { panic("converting class to int") }' ~ Main.newline;
+            $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Str () Str { panic("converting class to string") }' ~ Main.newline;
+            $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Array () Array { panic("converting class to array") }' ~ Main.newline;
+            $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Hash () Hash { panic("converting class to hash") }' ~ Main.newline;
+        }
         $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Equal (j Any) Bool { panic("comparing class") }' ~ Main.newline;
         $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Fetch () Any { return v_self }' ~ Main.newline;
 
@@ -203,6 +205,10 @@ class CompUnit {
               ~ '  // accessor ' ~ ($decl.var).name ~ Main.newline
               ~ '  Method_' ~ $class_name ~ '.f_' ~ ($decl.var).name 
                     ~ ' = func (v_self *' ~ $class_name ~ ', v Capture) Any {' ~ Main.newline
+              ~ '    ' ~ 'if v_self.v_' ~ ($decl.var).name ~ ' == nil {' ~ Main.newline
+              ~ '      ' ~ 'var p = new(Scalar);' ~ Main.newline 
+              ~ '      ' ~ 'v_self.v_' ~ ($decl.var).name ~ ' = p;' ~ Main.newline
+              ~ '    ' ~ '}' ~ Main.newline
               ~ '    ' ~ 'return v_self.v_' ~ ($decl.var).name ~ Main.newline
               ~ '  };' ~ Main.newline;
             }
@@ -489,10 +495,10 @@ class Bind {
             # $var.attr := 3;
             return 
                 'func () Any { ' 
-                    ~ 'var tmp Scalar = ' ~ ($.parameters.invocant).emit_go 
+                    ~ 'var tmp = ' ~ ($.parameters.invocant).emit_go 
                         ~ '.Fetch().(' ~ $.parameters.method ~ '_er)'
-                        ~ '.f_' ~ $.parameters.method ~ '( Capture{ p : []Any{  } } ).(Scalar); '
-                    ~ 'tmp.Bind( ' ~ $.arguments.emit_go ~ ' ); '
+                        ~ '.f_' ~ $.parameters.method ~ '( Capture{ p : []Any{  } } ); '
+                    ~ 'tmp.(bind_er).Bind( ' ~ $.arguments.emit_go ~ ' ); '
                     ~ 'return tmp; '
                 ~ '}()';
         }

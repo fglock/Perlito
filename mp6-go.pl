@@ -19,7 +19,6 @@ use MiniPerl6::Emitter::Token;
 
 my @lib_source_filename = (
     'lib/MiniPerl6/Go/Runtime.go',
-    'lib/MiniPerl6/Go/Match.go',
 );
 my $tmp_go_filename = 'tmp';
 
@@ -134,12 +133,6 @@ my %meth_seen = (
     scalar => 1,
     isa => 1,
     values => 1,
-    from => 1,
-    to => 1,
-    str => 1,
-    bool => 1,
-    capture => 1,
-    string => 1,
     bind => 1,
 );
 for my $comp_unit (@comp_unit) {

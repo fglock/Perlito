@@ -1,9 +1,25 @@
 use v6-alpha;
 
+class MiniPerl6::Match {
+    has $.from;
+    has $.to;
+    has $.str;
+    has $.bool;
+    has $.capture;
+    has $.hash;
+    has $.array;
+
+    # Note: These methods are just stubs.
+    #       The actual methods are implemented in Runtime.go
+
+    method string       { die "TODO" }
+    method scalar       { die "TODO" }
+}
+
 class MiniPerl6::Grammar {
 
-    // Note: These tokens are just stubs.
-    //       The actual methods are implemented in Runtime.go
+    # Note: These tokens are just stubs.
+    #       The actual methods are implemented in Runtime.go
 
     token is_newline    { . }
     token word          { . }
@@ -23,8 +39,8 @@ class Main {
         return $class_name ~ '( ' ~ ($data.>>perl).join(', ') ~ ' )';
     }
 
-    // Note: These methods are just stubs.
-    //       The actual methods are implemented in Runtime.go
+    # Note: These methods are just stubs.
+    #       The actual methods are implemented in Runtime.go
 
     sub to_go_namespace          { die "TODO" }
     sub to_javascript_namespace  { die "TODO" }
@@ -53,9 +69,9 @@ The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
 
 =head1 SEE ALSO
 
-The Perl 6 homepage at L<http://dev.perl.org/perl6>.
+The Perl 6 homepage at L<http:#dev.perl.org/perl6>.
 
-The Pugs homepage at L<http://pugscode.org/>.
+The Pugs homepage at L<http:#pugscode.org/>.
 
 =head1 COPYRIGHT
 
