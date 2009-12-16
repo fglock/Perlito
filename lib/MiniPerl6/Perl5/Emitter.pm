@@ -245,7 +245,7 @@ class Call {
                 die "not implemented";
             }
             else {
-                return '@{' ~ $invocant ~ '}';
+                return 'values( %{' ~ $invocant ~ '} )';
             }
         };
 
