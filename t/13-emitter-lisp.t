@@ -50,8 +50,8 @@ class Main {
     token num2 { 5 { make 123 } }
     $m := Main.num2( '5', 0 );
     say '# match scalar: ', $$m;
-    say '# match capture: ', $m.capture;
-    if ($m.capture) == 123 {
+    # say '# match capture: ', $m.capture;
+    if ($$m) == 123 {
         say 'ok 5';
     }
     else {
@@ -63,7 +63,7 @@ class Main {
     token num3 { 5 <MiniPerl6::Grammar.word> 2 }
     $m := Main.num3( '5x2', 0 );
     say '# match scalar: ', $$m;
-    say '# match capture: ', $m.capture;
+    # say '# match capture: ', $m.capture;
     my $cap := scalar( ($m.hash){'MiniPerl6::Grammar.word'} );
     say '# match named capture: ', $cap;
     say '# bool value (true): ', ?$m;

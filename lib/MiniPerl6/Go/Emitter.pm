@@ -640,10 +640,21 @@ class Apply {
                                     ~ '}' 
                                 };
 
-        if $code eq 'infix:<&&>' { return 'Bool{ b: (' ~ (@.arguments[0]).emit_go ~ ').Bool().b'
-                                      ~ ' && (' ~ (@.arguments[1]).emit_go ~ ').Bool().b }' };
-        if $code eq 'infix:<||>' { return 'Bool{ b: (' ~ (@.arguments[0]).emit_go ~ ').Bool().b'
-                                      ~ ' || (' ~ (@.arguments[1]).emit_go ~ ').Bool().b }' };
+        if $code eq 'infix:<&&>' { 
+            return 
+                'f_and( '
+                    ~ 'func () Any { return ' ~ (@.arguments[0]).emit_go ~ ' }, ' 
+                    ~ 'func () Any { return ' ~ (@.arguments[1]).emit_go ~ ' } ' 
+                ~ ')'
+        };
+
+        if $code eq 'infix:<||>' { 
+            return 
+                'f_or( '
+                    ~ 'func () Any { return ' ~ (@.arguments[0]).emit_go ~ ' }, ' 
+                    ~ 'func () Any { return ' ~ (@.arguments[1]).emit_go ~ ' } ' 
+                ~ ')'
+        };
 
         if $code eq 'infix:<eq>' { return '(' ~ (@.arguments[0]).emit_go ~ ').Str().Str_equal('
                                        ~ (@.arguments[1]).emit_go ~ ')' };

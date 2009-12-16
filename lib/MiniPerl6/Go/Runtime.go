@@ -464,6 +464,16 @@ func Go_return (p chan Any, r Any) bool {
     runtime.Goexit();
     return false; 
 }
+func f_and(f1, f2 func() Any) Any {
+    var tmp = f1();
+    if tmp.Bool().b { return f2() };
+    return tmp;
+}
+func f_or(f1, f2 func() Any) Any {
+    var tmp = f1();
+    if tmp.Bool().b { return tmp };
+    return f2();
+}
 
 // implementation of functions and methods declared in the prelude file
 
