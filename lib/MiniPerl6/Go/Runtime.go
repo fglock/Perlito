@@ -201,14 +201,37 @@ type Scalar struct {
 }
 func (i Scalar) Bool () Bool { return i.s.c.Bool() }
 func (i Scalar) Int () Int { return i.s.c.Int() }
-func (i Scalar) Str () Str { return i.s.c.Str() }
-func (i Scalar) Array () Array { return i.s.c.Array() }
+func (i Scalar) Str () Str { 
+    if i.s == nil {
+        i.Bind( u_undef );
+    }
+    return i.s.c.Str() 
+}
+func (i Scalar) Array () Array { 
+    if i.s == nil {
+        i.Bind( a_array() );
+    }
+    return i.s.c.Array() 
+}
 func (i Scalar) Push (j Any) *Array {
+    if i.s == nil {
+        i.Bind( a_array() );
+    }
     v := (*i.s.c).(Array);
     return v.Push(j) 
 }
-func (i Scalar) Hash () Hash { return i.s.c.Hash() }
-func (i Scalar) Equal (j Any) Bool { return i.s.c.Equal(j) }
+func (i Scalar) Hash () Hash { 
+    if i.s == nil {
+        i.Bind( h_hash() );
+    }
+    return i.s.c.Hash() 
+}
+func (i Scalar) Equal (j Any) Bool { 
+    if i.s == nil {
+        i.Bind( u_undef );
+    }
+    return i.s.c.Equal(j) 
+}
 func (i Scalar) Apply (p Capture) Any { return (*i.s.c).(Function).Apply(p) }
 func (i Scalar) Fetch () Any { 
     if i.s == nil {
