@@ -509,11 +509,24 @@ func Init_Prelude () {
         v_pos := v.p[1];
         var s1 = v_str.Str().s;
         var i1 = v_pos.Int().i;
-        var b1 = ( s1[i1] == 13 || s1[i1] == 10 );
+        var b1 = false;
+
+        var to = i1;
+        if (i1+1) < len(s1) && ((s1[i1] == 13 && s1[i1+1] == 10) || (s1[i1] == 10 && s1[i1+1] == 13)) {
+            to += 2;
+            b1 = true;
+        } 
+        else {
+            if s1[i1] == 13 || s1[i1] == 10 {
+                to += 1;
+                b1 = true;
+            }
+        }
+
         var m Any = new(MiniPerl6__Match);
         m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
         m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
-        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
+        m.(to_er).f_to(Capture{}).(bind_er).Bind( Int{ i : to } );
         m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});
         return m;
     };
@@ -525,11 +538,18 @@ func Init_Prelude () {
 
         var ch = int( s1[i1] );
         var b1 = unicode.IsLetter( ch );
+        var v_to Any;
+        if b1 { 
+            v_to = Int{ i : i1 + 1 } 
+        } 
+        else { 
+            v_to = v_pos 
+        }
 
         var m Any = new(MiniPerl6__Match);
         m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
         m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
-        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
+        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_to);
         m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});
         return m;
     };
@@ -541,11 +561,18 @@ func Init_Prelude () {
 
         var ch = int( s1[i1] );
         var b1 = unicode.IsDigit( ch );
+        var v_to Any;
+        if b1 { 
+            v_to = Int{ i : i1 + 1 }
+        } 
+        else { 
+            v_to = v_pos
+        }
 
         var m Any = new(MiniPerl6__Match);
         m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
         m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
-        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
+        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_to);
         m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});
         return m;
     };
@@ -555,10 +582,19 @@ func Init_Prelude () {
         var s1 = v_str.Str().s;
         var i1 = v_pos.Int().i;
         var b1 = ( s1[i1] != 13 && s1[i1] != 10 );
+
+        var v_to Any;
+        if b1 {
+            v_to = Int{ i : i1 + 1 }
+        }
+        else {
+            v_to = v_pos
+        }
+
         var m Any = new(MiniPerl6__Match);
         m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
         m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
-        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
+        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_to);
         m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});
         return m;
     };
@@ -570,11 +606,18 @@ func Init_Prelude () {
 
         var ch = int( s1[i1] );
         var b1 = unicode.IsSpace( ch );
+        var v_to Any;
+        if b1 { 
+            v_to = Int{ i : i1 + 1 }
+        } 
+        else { 
+            v_to = v_pos
+        }
 
         var m Any = new(MiniPerl6__Match);
         m.(str_er).f_str(Capture{}).(bind_er).Bind(v_str);
         m.(from_er).f_from(Capture{}).(bind_er).Bind(v_pos);
-        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_pos);
+        m.(to_er).f_to(Capture{}).(bind_er).Bind(v_to);
         m.(bool_er).f_bool(Capture{}).(bind_er).Bind(Bool{b: b1});
         return m;
     };
@@ -612,25 +655,6 @@ func Init_Prelude () {
 
 }
 // end: Init_Prelude()
-
-func TODO__f_perl_escape_string (v Capture) Any {
-    var s string = v.p[0].Str().s;
-    var s1 string = "";
-    for i := 0; i < len(s); i++ {
-        if (i+1) < len(s) && ((s[i] == 13 && s[i+1] == 10) || (s[i] == 10 && s[i+1] == 13)) {
-            s1 += "\\n";
-            i++;
-        } else {
-            switch {
-                case s[i] == 13 || s[i] == 10 :
-                    s1 += "\\n"
-                default:
-                    s1 += s[i : i+1]
-            }
-        }
-    }
-    return(Str{s: s1}); 
-}
 
 // end of the runtime lib
 
