@@ -467,11 +467,21 @@ func Go_return (p chan Any, r Any) bool {
 
 // implementation of functions and methods declared in the prelude file
 
-func (v_self MiniPerl6__Match) Bool() Bool	{ return b_true }
-func (v_self MiniPerl6__Match) Int() Int	{ panic("converting class to int") }
-func (v_self MiniPerl6__Match) Str() Str	{ panic("converting class to string") }
-func (v_self MiniPerl6__Match) Array() Array	{ return v_self.v_array.Array() }
-func (v_self MiniPerl6__Match) Hash() Hash	{ return v_self.v_hash.Hash() }
+func (v_self MiniPerl6__Match) Bool() Bool { 
+    return v_self.f_bool(Capture{}).Bool()
+}
+func (v_self MiniPerl6__Match) Int() Int { 
+    return v_self.f_string(Capture{}).Int()
+}
+func (v_self MiniPerl6__Match) Str() Str { 
+    return v_self.f_string(Capture{}).Str()
+}
+func (v_self MiniPerl6__Match) Array() Array { 
+    return v_self.f_array(Capture{}).Array() 
+}
+func (v_self MiniPerl6__Match) Hash() Hash { 
+    return v_self.f_hash(Capture{}).Hash()
+}
 
 func Init_Prelude () {
 
