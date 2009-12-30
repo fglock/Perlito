@@ -6,8 +6,8 @@ class MiniPerl6::Match {
     has $.str;
     has $.bool;
     has $.capture;
-    has $.hash;
-    has $.array;
+    has %.hash;
+    has @.array;
 
     # Note: These methods are just stubs.
     #       The actual methods are implemented in Runtime.go

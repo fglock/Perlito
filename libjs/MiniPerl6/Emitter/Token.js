@@ -357,3 +357,41 @@ if (typeof Rul$Capture != 'object') {
   Rul$Capture.f_emit;  // v8 bug workaround
 })();
 
+// class Rul::CaptureResult
+if (typeof Rul$CaptureResult != 'object') {
+  Rul$CaptureResult = function() {};
+  Rul$CaptureResult = new Rul$CaptureResult;
+  Rul$CaptureResult.f_isa = function (s) { return s == 'Rul::CaptureResult' };
+  Rul$CaptureResult.f_perl = function () { return '::Rul::CaptureResult(' + Main._dump(this) + ')' };
+}
+(function () {
+  // accessor rule_exp
+  Rul$CaptureResult.v_rule_exp = null;
+  Rul$CaptureResult.f_rule_exp = function () { return this.v_rule_exp }
+  // method emit
+  Rul$CaptureResult.f_emit = function () {
+    var v_self = this;
+    try { say("TODO Rul::CaptureResult");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+  }
+  Rul$CaptureResult.f_emit;  // v8 bug workaround
+})();
+
+// class Rul::After
+if (typeof Rul$After != 'object') {
+  Rul$After = function() {};
+  Rul$After = new Rul$After;
+  Rul$After.f_isa = function (s) { return s == 'Rul::After' };
+  Rul$After.f_perl = function () { return '::Rul::After(' + Main._dump(this) + ')' };
+}
+(function () {
+  // accessor rule_exp
+  Rul$After.v_rule_exp = null;
+  Rul$After.f_rule_exp = function () { return this.v_rule_exp }
+  // method emit
+  Rul$After.f_emit = function () {
+    var v_self = this;
+    try { say("TODO Rul::After");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+  }
+  Rul$After.f_emit;  // v8 bug workaround
+})();
+

@@ -64,15 +64,15 @@ sub emit { my $self = shift; my $List__ = \@_; do { [] }; ('(' . (Main::join([ m
 ;
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
-sub array { @_ == 1 ? ( $_[0]->{array} ) : ( $_[0]->{array} = $_[1] ) };
-sub emit { my $self = shift; my $List__ = \@_; do { [] }; ('[' . (Main::join([ map { $_->emit() } @{ $self->{array} } ], ', ') . ']')) }
+sub array1 { @_ == 1 ? ( $_[0]->{array1} ) : ( $_[0]->{array1} = $_[1] ) };
+sub emit { my $self = shift; my $List__ = \@_; do { [] }; ('[' . (Main::join([ map { $_->emit() } @{ $self->{array1} } ], ', ') . ']')) }
 
 
 ;
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
-sub hash { @_ == 1 ? ( $_[0]->{hash} ) : ( $_[0]->{hash} = $_[1] ) };
-sub emit { my $self = shift; my $List__ = \@_; do { [] }; (my  $fields = $self->{hash}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = ($str . ($field->[0]->emit() . (' => ' . ($field->[1]->emit() . ','))))) } }; ('{ ' . ($str . ' }')) }
+sub hash1 { @_ == 1 ? ( $_[0]->{hash1} ) : ( $_[0]->{hash1} = $_[1] ) };
+sub emit { my $self = shift; my $List__ = \@_; do { [] }; (my  $fields = $self->{hash1}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = ($str . ($field->[0]->emit() . (' => ' . ($field->[1]->emit() . ','))))) } }; ('{ ' . ($str . ' }')) }
 
 
 ;

@@ -788,3 +788,81 @@ new-slots))
 
 
 
+;; class Rul::CaptureResult
+(defpackage mp-Rul-CaptureResult
+  (:use common-lisp mp-Main))
+;; (in-package mp-Rul-CaptureResult)
+(if (not (ignore-errors (find-class 'mp-Rul-CaptureResult)))
+  (defclass mp-Rul-CaptureResult () ()))
+
+(let (x) 
+  (setq x (make-instance 'mp-Rul-CaptureResult))
+  (defun proto-mp-Rul-CaptureResult () x))
+;; has $.rule_exp
+(let ((new-slots (list (list :name 'sv-rule_exp
+  :readers '(sv-rule_exp)
+  :writers '((setf sv-rule_exp))
+  :initform '(sv-undef)
+  :initfunction (constantly (sv-undef))))))
+(dolist (slot-defn (sb-mop:class-direct-slots (find-class 'mp-Rul-CaptureResult)))
+(push (list :name (sb-mop:slot-definition-name slot-defn)
+  :readers (sb-mop:slot-definition-readers slot-defn)
+  :writers (sb-mop:slot-definition-writers slot-defn)
+  :initform (sb-mop:slot-definition-initform slot-defn)
+  :initfunction (sb-mop:slot-definition-initfunction slot-defn))
+new-slots))
+(sb-mop:ensure-class 'mp-Rul-CaptureResult :direct-slots new-slots))
+
+;; method emit
+(if (not (ignore-errors (find-method 'sv-emit () ())))
+  (defgeneric sv-emit (sv-self)
+      (:documentation "a method")))
+(defmethod sv-emit ((sv-self mp-Rul-CaptureResult))
+  (block mp6-function
+    (progn (mp-Main::sv-say (list "TODO Rul::CaptureResult"))(progn (write-line (format nil "~{~a~}" (list )) *error-output*) (sb-ext:quit)))))
+
+(defmethod sv-perl ((self mp-Rul-CaptureResult))
+  (mp-Main::sv-lisp_dump_object "::Rul::CaptureResult" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "rule_exp") (setf (sv-value m) (sv-rule_exp self)) m) )))
+
+
+
+
+;; class Rul::After
+(defpackage mp-Rul-After
+  (:use common-lisp mp-Main))
+;; (in-package mp-Rul-After)
+(if (not (ignore-errors (find-class 'mp-Rul-After)))
+  (defclass mp-Rul-After () ()))
+
+(let (x) 
+  (setq x (make-instance 'mp-Rul-After))
+  (defun proto-mp-Rul-After () x))
+;; has $.rule_exp
+(let ((new-slots (list (list :name 'sv-rule_exp
+  :readers '(sv-rule_exp)
+  :writers '((setf sv-rule_exp))
+  :initform '(sv-undef)
+  :initfunction (constantly (sv-undef))))))
+(dolist (slot-defn (sb-mop:class-direct-slots (find-class 'mp-Rul-After)))
+(push (list :name (sb-mop:slot-definition-name slot-defn)
+  :readers (sb-mop:slot-definition-readers slot-defn)
+  :writers (sb-mop:slot-definition-writers slot-defn)
+  :initform (sb-mop:slot-definition-initform slot-defn)
+  :initfunction (sb-mop:slot-definition-initfunction slot-defn))
+new-slots))
+(sb-mop:ensure-class 'mp-Rul-After :direct-slots new-slots))
+
+;; method emit
+(if (not (ignore-errors (find-method 'sv-emit () ())))
+  (defgeneric sv-emit (sv-self)
+      (:documentation "a method")))
+(defmethod sv-emit ((sv-self mp-Rul-After))
+  (block mp6-function
+    (progn (mp-Main::sv-say (list "TODO Rul::After"))(progn (write-line (format nil "~{~a~}" (list )) *error-output*) (sb-ext:quit)))))
+
+(defmethod sv-perl ((self mp-Rul-After))
+  (mp-Main::sv-lisp_dump_object "::Rul::After" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "rule_exp") (setf (sv-value m) (sv-rule_exp self)) m) )))
+
+
+
+

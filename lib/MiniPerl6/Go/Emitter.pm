@@ -15,23 +15,8 @@ class MiniPerl6::Go::LexicalBlock {
                 $decl := $decl.parameters;
             }
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                # uninitialized variable
-                $str := $str ~ 'var ' ~ ($decl.var).emit_go ~ ' Any = new(Scalar);' ~ Main.newline;
-                if ($decl.var).sigil eq '%' {
-                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( h_hash() );' ~ Main.newline;
-                } 
-                else {
-                if ($decl.var).sigil eq '@' {
-                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( a_array() );' ~ Main.newline;
-                } 
-                else {
-                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( u_undef );' ~ Main.newline;
-                } 
-                }
+                $str := $str ~ $decl.emit_go_init;
             }
-            # if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-            #    $str := $str ~ 'var ' ~ (($decl.parameters).var).emit_go ~ ' Any = new(Scalar);'; 
-            # }
         }
         my $last_statement;
         if $.needs_return {
@@ -58,7 +43,7 @@ class MiniPerl6::Go::LexicalBlock {
                 $body      := ::MiniPerl6::Go::LexicalBlock( block => $body, needs_return => 1, top_level => $.top_level );
                 $otherwise := ::MiniPerl6::Go::LexicalBlock( block => $otherwise, needs_return => 1, top_level => $.top_level );
                 $str := $str 
-                    ~ 'if ( (' ~ $cond.emit_go ~ ').Bool().b ) { ' 
+                    ~ 'if tobool( ' ~ Call::emit_go_call( $cond, 'bool' ) ~ ' ) { ' 
                         ~ $body.emit_go ~ ' } else { ' 
                         ~ $otherwise.emit_go ~ ' }';
             }
@@ -68,12 +53,12 @@ class MiniPerl6::Go::LexicalBlock {
                 $str := $str ~ $last_statement.emit_go
             }
             else {
-                # $last_statement := ::Return( result => $last_statement );
+                $last_statement := ::Return( result => $last_statement );
                 if $.top_level {
-                    $str := $str ~ 'Go_return( p, ' ~ $last_statement.emit_go ~ ')'
+                    $str := $str ~ $last_statement.emit_go
                 }
                 else {
-                    $str := $str ~ 'return(' ~ $last_statement.emit_go ~ ')'
+                    $str := $str ~ $last_statement.emit_go_simple
                 }
             }
             }
@@ -90,170 +75,162 @@ class CompUnit {
     method emit_go {
         my $class_name := Main::to_go_namespace($.name);
         my $str :=
-              '// instances of class ' ~ $.name ~ Main.newline
-            ~ 'type ' ~ $class_name ~ ' struct {' ~ Main.newline;
+              '// instances of class ' ~ $.name ~ "\n"
+            ~ 'type ' ~ $class_name ~ ' struct {' ~ "\n";
         for (%.attributes).values -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                $str := $str  ~ '  ' ~ 'v_' ~ ($decl.var).name ~ ' Any;' ~ Main.newline
+                $str := $str  ~ '  ' ~ 'v_' ~ ($decl.var).name ~ ' *Any;' ~ "\n"
             }
         }
-        $str := $str ~ '}' ~ Main.newline;
+        $str := $str ~ '}' ~ "\n";
 
         $str := $str 
-            ~ '// methods in class ' ~ $.name ~ Main.newline
-            ~ 'var Method_' ~ $class_name ~ ' struct {' ~ Main.newline;
+            ~ '// methods in class ' ~ $.name ~ "\n"
+            ~ 'var Method_' ~ $class_name ~ ' struct {' ~ "\n";
         for (%.methods).values -> $decl { 
             if $decl.isa( 'Method' ) {
-                $str := $str  ~ '  ' ~ 'f_' ~ $decl.name ~ ' func (*' ~ $class_name ~ ', Capture) Any;' ~ Main.newline;
+                $str := $str  ~ '  ' ~ 'f_' ~ $decl.name ~ ' func (*' ~ $class_name ~ ', Capture) *Any;' ~ "\n";
             }
         }
         for (%.attributes).values -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                $str := $str  ~ '  ' ~ 'f_' ~ ($decl.var).name ~ ' func (*' ~ $class_name ~ ', Capture) Any;' ~ Main.newline;
+                $str := $str  ~ '  ' ~ 'f_' ~ ($decl.var).name ~ ' func (*' ~ $class_name ~ ', Capture) *Any;' ~ "\n";
             }
         }
-        $str := $str ~ '}' ~ Main.newline;
+        $str := $str ~ '}' ~ "\n";
 
         $str := $str 
-            ~ '// namespace ' ~ $.name ~ Main.newline
-            ~ 'var Namespace_' ~ $class_name ~ ' struct {' ~ Main.newline;
+            ~ '// namespace ' ~ $.name ~ "\n"
+            ~ 'var Namespace_' ~ $class_name ~ ' struct {' ~ "\n";
         for @.body -> $decl { 
             if $decl.isa( 'Sub' ) {
-                $str := $str  ~ '  ' ~ 'f_' ~ $decl.name ~ ' Function;' ~ Main.newline;
+                $str := $str  ~ '  ' ~ 'f_' ~ $decl.name ~ ' Function;' ~ "\n";
             }
         }
-        $str := $str ~ '}' ~ Main.newline;
-        $str := $str ~ 'var Run_' ~ $class_name ~ ' func ();' ~ Main.newline;
+        $str := $str ~ '}' ~ "\n";
+        $str := $str ~ 'var Run_' ~ $class_name ~ ' func ();' ~ "\n";
 
         $str := $str 
-            ~ '// method wrappers for ' ~ $.name ~ Main.newline
+            ~ '// method wrappers for ' ~ $.name ~ "\n"
         for (%.methods).values -> $decl { 
             if $decl.isa( 'Method' ) {
                 $str := $str  
-                    ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ $decl.name ~ ' (v Capture) Any {' ~ Main.newline
-                    ~ '  return Method_' ~ $class_name ~ '.f_' ~ $decl.name ~ '(v_self, v);'~ Main.newline
-                    ~ '}'~ Main.newline;
+                    ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ $decl.name ~ ' (v Capture) *Any {' ~ "\n"
+                    ~ '  return Method_' ~ $class_name ~ '.f_' ~ $decl.name ~ '(v_self, v);'~ "\n"
+                    ~ '}'~ "\n";
             }
         }
         for (%.attributes).values -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str := $str  
-                    ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ ($decl.var).name ~ ' (v Capture) Any {' ~ Main.newline
-                    ~ '  return Method_' ~ $class_name ~ '.f_' ~ ($decl.var).name ~ '(v_self, v);'~ Main.newline
-                    ~ '}'~ Main.newline;
+                    ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ ($decl.var).name ~ ' (v Capture) *Any {' ~ "\n"
+                    ~ '  return Method_' ~ $class_name ~ '.f_' ~ ($decl.var).name ~ '(v_self, v);'~ "\n"
+                    ~ '}'~ "\n";
             }
         }
-
-        if $class_name ne 'MiniPerl6__Match' {
-            $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Bool () Bool { return b_true }' ~ Main.newline;
-            $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Int () Int { panic("converting class to int") }' ~ Main.newline;
-            $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Str () Str { panic("converting class to string") }' ~ Main.newline;
-            $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Array () Array { panic("converting class to array") }' ~ Main.newline;
-            $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Hash () Hash { panic("converting class to hash") }' ~ Main.newline;
+        if !( (%.methods){'isa'} ) {
+            $str := $str ~ 'func (v_self *' ~ $class_name ~ ') f_isa (v Capture) *Any { '
+                    ~ 'return toBool( "' ~ $.name ~ '" == tostr( v.p[0] ) ) '
+                ~ '}' ~ "\n";
         }
-        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Equal (j Any) Bool { panic("comparing class") }' ~ Main.newline;
-        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') Fetch () Any { return v_self }' ~ Main.newline;
-
-        $str := $str ~ 'func (v_self ' ~ $class_name ~ ') f_isa (v Capture) Any { '
-                ~ 'return Str{ s : "' ~ $class_name ~ '" }.Str_equal( v.p[0] ) '
-            ~ '}' ~ Main.newline;
 
         $str := $str 
-            ~ '// prototype of ' ~ $.name ~ Main.newline
-            ~ 'var Proto_' ~ $class_name ~ ' Any;' ~ Main.newline;
+            ~ '// prototype of ' ~ $.name ~ "\n"
+            ~ 'var Proto_' ~ $class_name ~ ' *Any;' ~ "\n";
 
-        $str := $str ~ 'func Init_' ~ $class_name ~ '() {' ~ Main.newline;
+        $str := $str ~ 'func Init_' ~ $class_name ~ '() {' ~ "\n";
 
-        #if $class_name eq 'Main' {
-        #    $str := $str ~ 'func main() {' ~ Main.newline;
-        #}
         $str := $str 
-            ~ '  this_namespace := &Namespace_' ~ $class_name ~ ';' ~ Main.newline
-            ~ '  this_namespace = this_namespace;' ~ Main.newline
-            ~ '  Proto_' ~ $class_name ~ ' = new(Scalar);' ~ Main.newline
-            ~ '  Proto_' ~ $class_name ~ '.(bind_er).Bind( new(' ~ $class_name ~ ') );' ~ Main.newline;
+            ~ '  this_namespace := &Namespace_' ~ $class_name ~ ';' ~ "\n"
+            ~ '  this_namespace = this_namespace;' ~ "\n";
+        $str := $str  
+            ~ '  Proto_' ~ $class_name ~ ' = '
+                ~ 'func() *Any { '
+                    ~ 'var m = new(' ~ $class_name ~ '); '
+                    ~ 'var m1 Any = m; '
+                    ~ 'return &m1; '
+                ~ '}();' ~ "\n";
+
         for @.body -> $decl1 { 
             my $decl := $decl1;
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $decl := $decl.parameters;
             }
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $str := $str ~ '  var ' ~ ($decl.var).emit_go ~ ' Any = new(Scalar);' ~ Main.newline; 
-                if ($decl.var).sigil eq '%' {
-                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( h_hash() );' ~ Main.newline;
-                } 
-                else {
-                if ($decl.var).sigil eq '@' {
-                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( a_array() );' ~ Main.newline;
-                } 
-                else {
-                    $str := $str ~ ($decl.var).emit_go ~ '.(bind_er).Bind( u_undef );' ~ Main.newline;
-                } 
-                }
-                $str := $str ~ Main.newline;
+                $str := $str ~ $decl.emit_go_init;
             }
-            # if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-            #    $str := $str ~ '  ' ~ (($decl.parameters).var).emit_go ~ ' := new(Scalar);' ~ Main.newline; 
-            # }
         }
-
-        # $str := $str ~ 'func ' ~ Main::to_go_namespace($.name) ~ '() {' ~ Main.newline;
 
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str := $str  
-              ~ '  // accessor ' ~ ($decl.var).name ~ Main.newline
+              ~ '  // accessor ' ~ ($decl.var).name ~ "\n"
               ~ '  Method_' ~ $class_name ~ '.f_' ~ ($decl.var).name 
-                    ~ ' = func (v_self *' ~ $class_name ~ ', v Capture) Any {' ~ Main.newline
-              ~ '    ' ~ 'if v_self.v_' ~ ($decl.var).name ~ ' == nil {' ~ Main.newline
-              ~ '      ' ~ 'var p = new(Scalar);' ~ Main.newline 
-              ~ '      ' ~ 'v_self.v_' ~ ($decl.var).name ~ ' = p;' ~ Main.newline
-              ~ '    ' ~ '}' ~ Main.newline
-              ~ '    ' ~ 'return v_self.v_' ~ ($decl.var).name ~ Main.newline
-              ~ '  };' ~ Main.newline;
+                    ~ ' = func (v_self *' ~ $class_name ~ ', v Capture) *Any {' ~ "\n"
+              ~ '    ' ~ 'if v_self.v_' ~ ($decl.var).name ~ ' == nil {' ~ "\n";
+                $str := $str  
+              ~ '      ' ~ ::Decl(  
+                                decl => 'my',
+                                type => undef,
+                                var => ::Var( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ),
+                            ).emit_go_init;
+                $str := $str  
+              ~ '      ' ~ 'v_self.v_' ~ ($decl.var).name ~ ' = ' 
+                                ~ ::Var( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ).emit_go ~ ';' ~ "\n"
+              ~ '    ' ~ '}' ~ "\n";
+                $str := $str  
+              ~ '    ' ~ 'return v_self.v_' ~ ($decl.var).name ~ "\n"
+              ~ '  };' ~ "\n";
             }
             if $decl.isa( 'Method' ) {
                 my $sig      := $decl.sig;
                 my $block    := ::MiniPerl6::Go::LexicalBlock( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str := $str 
-              ~ '  // method ' ~ $decl.name ~ Main.newline
+              ~ '  // method ' ~ $decl.name ~ "\n"
               ~ '  Method_' ~ $class_name ~ '.f_' ~ $decl.name 
-                    ~ ' = func (' ~ ($sig.invocant).emit_go ~ ' *' ~ $class_name ~ ', v Capture) Any {' ~ Main.newline
-              ~ '    ' ~ $sig.emit_go_bind ~ Main.newline
-              ~ '    p := make(chan Any); go func () { ' ~ Main.newline
-              ~ '        ' ~ $block.emit_go ~ '; return }(); ' ~ Main.newline
-              ~ '    return <-p; ' ~ Main.newline
-              ~ '  };' ~ Main.newline
+                    ~ ' = func (self *' ~ $class_name ~ ', v Capture) *Any {' ~ "\n";
+                $str := $str  
+              ~ '    var self1 Any = self;' ~ "\n"
+              ~ '    var ' ~ ($sig.invocant).emit_go ~ ' *Any = &self1;' ~ "\n"
+              ~ '    ' ~ ($sig.invocant).emit_go ~ ' = ' ~ ($sig.invocant).emit_go ~ ';' ~ "\n"
+              ~ '    ' ~ $sig.emit_go_bind ~ "\n";
+                $str := $str  
+              ~ '    p := make(chan *Any); go func () { ' ~ "\n"
+              ~ '        ' ~ $block.emit_go ~ '; return }(); ' ~ "\n"
+              ~ '    return <-p; ' ~ "\n"
+              ~ '  };' ~ "\n"
             }
             if $decl.isa( 'Sub' ) {
                 my $sig      := $decl.sig;
                 my $block    := ::MiniPerl6::Go::LexicalBlock( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str := $str 
-              ~ '  // sub ' ~ $decl.name ~ Main.newline
+              ~ '  // sub ' ~ $decl.name ~ "\n"
               ~ '  Namespace_' ~ $class_name ~ '.f_' ~ $decl.name 
-                    ~ ' = Function{ f : func (v Capture) Any {' ~ Main.newline
-              ~ '    ' ~ $sig.emit_go_bind ~ Main.newline
-              ~ '    p := make(chan Any); go func () { ' ~ Main.newline
-              ~ '        ' ~ $block.emit_go ~ '; return }(); ' ~ Main.newline
-              ~ '    return <-p; ' ~ Main.newline
-              ~ '  } };' ~ Main.newline;
+                    ~ ' = Function( func (v Capture) *Any {' ~ "\n";
+                $str := $str  
+              ~ '    ' ~ $sig.emit_go_bind ~ "\n"
+              ~ '    p := make(chan *Any); go func () { ' ~ "\n"
+              ~ '        ' ~ $block.emit_go ~ '; return }(); ' ~ "\n";
+                $str := $str  
+              ~ '    return <-p; ' ~ "\n"
+              ~ '  } );' ~ "\n";
             }
         }; 
 
         $str := $str 
-            ~ '  // main runtime block of ' ~ $.name ~ Main.newline
-            ~ '  Run_' ~ $class_name ~ ' = func () {' ~ Main.newline;
+            ~ '  // main runtime block of ' ~ $.name ~ "\n"
+            ~ '  Run_' ~ $class_name ~ ' = func () {' ~ "\n";
         for @.body -> $decl { 
             if    (!( $decl.isa( 'Decl' ) && (( $decl.decl eq 'has' ) || ( $decl.decl eq 'my' )) ))
                && (!( $decl.isa( 'Method'))) 
                && (!( $decl.isa( 'Sub'))) 
             {
-                $str := $str ~ '    ' ~ ($decl).emit_go ~ ';' ~ Main.newline;
+                $str := $str ~ '    ' ~ ($decl).emit_go ~ ';' ~ "\n";
             }
         }; 
-        $str := $str ~ '  }' ~ Main.newline;
+        $str := $str ~ '  }' ~ "\n";
 
-        $str := $str ~ '}' ~ Main.newline;
+        $str := $str ~ '}' ~ "\n";
         return $str;
     }
 
@@ -261,26 +238,26 @@ class CompUnit {
 
 class Val::Int {
     has $.int;
-    method emit_go { 'Int{i:' ~ $.int ~ '}' }
+    method emit_go { 'toInt(' ~ $.int ~ ')' }
 }
 
 class Val::Bit {
     has $.bit;
-    method emit_go { 'Bit{b:' ~ $.bit ~ '}' }
+    method emit_go { 'toBit(' ~ $.bit ~ ')' }
 }
 
 class Val::Num {
     has $.num;
-    method emit_go { 'Num{n:' ~ $.num ~ '}' }
+    method emit_go { 'toNum(' ~ $.num ~ ')' }
 }
 
 class Val::Buf {
     has $.buf;
-    method emit_go { 'Str{s:"' ~ Main::javascript_escape_string($.buf) ~ '"}' }
+    method emit_go { 'toStr("' ~ Main::javascript_escape_string($.buf) ~ '")' }
 }
 
 class Val::Undef {
-    method emit_go { 'u_undef' }
+    method emit_go { 'u_undef()' }
 }
 
 class Val::Object {
@@ -294,30 +271,30 @@ class Val::Object {
 class Lit::Seq {
     has @.seq;
     method emit_go {
-        '[]Any{ '
+        '[]*Any{ '
             ~ (@.seq.>>emit_go).join(', ') 
         ~ ' }';
     }
 }
 
 class Lit::Array {
-    has @.array;
+    has @.array1;
     method emit_go {
         my $str := '';
-        for @.array -> $item {
+        for @.array1 -> $item {
             if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
                 || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' ) 
             {
                 $str := $str 
                     ~ 'func(a_ Array) { ' 
-                        ~ 'for i_ := 0; i_ < a_.n; i_++ { a.Push(a_.v[i_]) }' 
-                    ~ '}( ' ~ $item.emit_go ~ '.Fetch().Array() ); '
+                        ~ 'for i_ := 0; i_ < a_.n; i_++ { (*a).(push_er).f_push( Capture{ p: []*Any{ a_.v[i_] } } ) } ' 
+                    ~ '}( (*' ~ Call::emit_go_call( $item, 'array' ) ~ ').(Array) ); '
             }
             else {
-                $str := $str ~ 'a.Push(' ~ $item.emit_go ~ '); '
+                $str := $str ~ '(*a).(push_er).f_push( Capture{ p: []*Any{ ' ~ $item.emit_go ~ ' } } ); '
             }
         }
-        'func () Array { ' 
+        'func () *Any { ' 
                 ~ 'a := a_array(); '
                 ~ $str 
                 ~ 'return a; '
@@ -326,15 +303,15 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash;
+    has @.hash1;
     method emit_go {
-        my $fields := @.hash;
+        my $fields := @.hash1;
         my $str := ''; 
         for @$fields -> $field { 
             $str := $str 
-                ~ 'm.Lookup( ' ~ ($field[0]).emit_go ~ ' ).(bind_er).Bind( ' ~ ($field[1]).emit_go ~ ' ); ';
+                ~ '*(*m).(lookup_er).f_lookup( Capture{ p : []*Any{ ' ~ ($field[0]).emit_go ~ ' }} ) = *(' ~ ($field[1]).emit_go ~ '); ';
         }; 
-        'func() Hash { ' 
+        'func() *Any { ' 
             ~ 'm := h_hash(); '
             ~ $str 
             ~ 'return m; '
@@ -354,13 +331,19 @@ class Lit::Object {
         my $str := '';
         for @$fields -> $field { 
             $str := $str 
-                ~ 'm.v_' ~ ($field[0]).buf ~ ' = new(Scalar); '
-                ~ 'm.v_' ~ ($field[0]).buf ~ '.(bind_er).Bind( ' ~ ($field[1]).emit_go ~ ' ); ';
+
+                ~ 'if m.v_' ~ ($field[0]).buf ~ ' == nil {' 
+                ~     'var p Any; ' 
+                ~     'm.v_' ~ ($field[0]).buf ~ ' = &p; '
+                ~ '}' 
+
+                ~ '*m.v_' ~ ($field[0]).buf ~ ' = *' ~ ($field[1]).emit_go ~ '; ';
         }; 
-        'func() *' ~ Main::to_go_namespace($.class) ~ ' { ' 
+        'func() *Any { ' 
             ~ 'var m = new(' ~ Main::to_go_namespace($.class) ~ '); '
             ~ $str 
-            ~ 'return m; '
+            ~ 'var m1 Any = m; '
+            ~ 'return &m1; '
         ~ '}()';
     }
 }
@@ -369,7 +352,8 @@ class Index {
     has $.obj;
     has $.index_exp;
     method emit_go {
-        $.obj.emit_go ~ '.Array().Index(' ~ $.index_exp.emit_go ~ ')';
+        '(*(*' ~ $.obj.emit_go ~ ').(array_er).f_array(Capture{}))' 
+        ~ '.(index_er).f_index( Capture{ p : []*Any{ ' ~ $.index_exp.emit_go ~ ' }} )';
     }
 }
 
@@ -377,7 +361,8 @@ class Lookup {
     has $.obj;
     has $.index_exp;
     method emit_go {
-        $.obj.emit_go ~ '.Hash().Lookup(' ~ $.index_exp.emit_go ~ ')';
+        '(*(*' ~ $.obj.emit_go ~ ').(hash_er).f_hash(Capture{}))' 
+        ~ '.(lookup_er).f_lookup( Capture{ p : []*Any{ ' ~ $.index_exp.emit_go ~ ' }} )';
     }
 }
 
@@ -403,7 +388,7 @@ class Var {
             $ns := Main::to_go_namespace($.namespace) ~ '.';
         }
            ( $.twigil eq '.' )
-        ?? ( 'v_self.v_' ~ $.name ~ '' )
+        ?? ( '(*v_self).(' ~ $.name ~ '_er).f_' ~ $.name ~ '(Capture{})' )
         !!  (    ( $.name eq '/' )
             ??   ( 'Proto_MiniPerl6__Match' )
             !!   ( $table{$.sigil} ~ $ns ~ $.name )
@@ -425,10 +410,10 @@ class Bind {
             
             #  [$a, [$b, $c]] := [1, [2, 3]]
             
-            my $a := $.parameters.array;
-            #my $b := $.arguments.array;
+            my $a := $.parameters.array1;
+            #my $b := $.arguments.array1;
             my $str := 
-                'func () Any { '
+                'func () *Any { '
                     ~ 'List_tmp := ' ~ $.arguments.emit_go ~ '; ';
             my $i := 0;
             for @$a -> $var { 
@@ -448,8 +433,8 @@ class Bind {
 
             #  {:$a, :$b} := { a => 1, b => [2, 3]}
 
-            my $a := $.parameters.hash;
-            my $b := $.arguments.hash;
+            my $a := $.parameters.hash1;
+            my $b := $.arguments.hash1;
             my $str := 'do { ';
             my $i := 0;
             my $arg;
@@ -494,23 +479,14 @@ class Bind {
         if $.parameters.isa( 'Call' ) {
             # $var.attr := 3;
             return 
-                'func () Any { ' 
-                    ~ 'var tmp = ' ~ ($.parameters.invocant).emit_go 
-                        ~ '.Fetch().(' ~ $.parameters.method ~ '_er)'
-                        ~ '.f_' ~ $.parameters.method ~ '( Capture{ p : []Any{  } } ); '
-                    ~ 'tmp.(bind_er).Bind( ' ~ $.arguments.emit_go ~ ' ); '
+                'func () *Any { ' 
+                    ~ 'var tmp = ' ~ Call::emit_go_call( $.parameters.invocant, $.parameters.method ) ~ '; '
+                    ~ '*tmp = *( ' ~ $.arguments.emit_go ~ ' ); '
                     ~ 'return tmp; '
                 ~ '}()';
         }
 
-        # if $.parameters.isa( 'Var' ) {
-        #    return $.parameters.emit_go ~ '.Bind( ' ~ $.arguments.emit_go ~ ' )';
-        # }
-        # if $.parameters.isa( 'Decl' ) && (($.parameters.decl) eq 'my') {
-        #    return $.parameters.emit_go ~ '.Bind( ' ~ $.arguments.emit_go ~ ' )';
-        # }
-
-        $.parameters.emit_go ~ '.(bind_er).Bind( ' ~ $.arguments.emit_go ~ ' )';
+        '*' ~ $.parameters.emit_go ~ ' = *(' ~ $.arguments.emit_go ~ ')';
     }
 }
 
@@ -539,23 +515,34 @@ class Call {
                 $meth := '';  # ???
             }
             else {
-                return $invocant ~ '.Apply( Capture{ p : []Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
+                return $invocant ~ '( Capture{ p : []*Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
             }
         };
         
         if ($.hyper) {
-            'func (a_ Any) Array { '
-                ~ 'var out = a_array(); ' 
-                ~ 'var i Array = a_.Array(); '
-                ~ 'for pos := 0; pos < i.n; pos++ { '
-                    ~ 'out.Push( i.v[pos].Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '(Capture{ p : []Any{}  })) } '
-                ~ 'return out; '
-            ~ '}(' ~ $invocant ~ ')'
+            return
+                'func (a_ *Any) *Any { '
+                    ~ 'var out = a_array(); ' 
+                    ~ 'var i = (*(*a_).(array_er).f_array(Capture{})).(Array); '
+                    ~ 'for pos := 0; pos <= i.n; pos++ { '
+                        ~ '(*out).(push_er).f_push( Capture{p: []*Any{ (*i.v[pos]).(' ~ $meth ~ '_er).f_' ~ $meth ~ '(Capture{ p : []*Any{}  }) }} ) } '
+                    ~ 'return out; '
+                ~ '}(' ~ $invocant ~ ')'
         }
-        else {
-            $invocant ~ '.Fetch().(' ~ $meth ~ '_er).f_' ~ $meth ~ '( Capture{ p : []Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
-        };
+        return
+            '(*' ~ $invocant ~ ').(' ~ $meth ~ '_er).f_' ~ $meth 
+                    ~ '( Capture{ p : []*Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
 
+    }
+    
+    sub emit_go_call ( $invocant, $meth_name ) {
+        my $invocant1 := $invocant.emit_go;
+        if ($invocant).isa( 'Proto' ) {
+            $invocant1 := 'Proto_' ~ $invocant1
+        }
+        my $meth := $meth_name;
+        return
+            '(*' ~ $invocant1 ~ ').(' ~ $meth ~ '_er).f_' ~ $meth ~ '(Capture{})';
     }
 }
 
@@ -572,104 +559,125 @@ class Apply {
         };
 
         if $code eq 'self'       { return 'v_self' };
-        if $code eq 'false'      { return 'b_false' };
+        if $code eq 'false'      { return 'b_false()' };
         if $code eq 'make'       { 
             return 
-                  'func () Any { ' 
+                  'func () *Any { ' 
                     ~ 'tmp := ' ~ (@.arguments.>>emit_go).join(', ') ~ '; '
-                    ~ 'Proto_MiniPerl6__Match.Fetch().(capture_er).f_capture(Capture{}).(bind_er).Bind(tmp); '
+                    ~ '*(*v_MATCH).(capture_er).f_capture(Capture{}) = *tmp; '
                     ~ 'return tmp; '
                 ~ '}()';
         };
 
-        if $code eq 'say'           { return 'Print( Capture{ p : []Any{ '    
+        if $code eq 'say'           { return 'f_print( Capture{ p : []*Any{ '    
                                                 ~ (@.arguments.>>emit_go).join(', ') 
-                                                ~ ', Str{s:"\n"} } } )'
+                                                ~ ', toStr("\n") } } )'
                                     }
-        if $code eq 'print'         { return 'Print( Capture{ p : []Any{ '  
-                                                ~ (@.arguments.>>emit_go).join(', ') 
-                                                ~ ' } } )' 
-                                    }
-        if $code eq 'warn'          { return 'Print_stderr( Capture{ p : []Any{ '   
-                                                ~ (@.arguments.>>emit_go).join(', ') 
-                                                ~ ', Str{s:"\n"} } } )' 
-                                    }
-        if $code eq 'die'           { return 'Die( Capture{ p : []Any{ '   
+        if $code eq 'print'         { return 'f_print( Capture{ p : []*Any{ '  
                                                 ~ (@.arguments.>>emit_go).join(', ') 
                                                 ~ ' } } )' 
                                     }
-        # if $code eq 'array'    { return '@{' ~ (@.arguments.>>emit_go).join(', ')    ~ '}' };
-        if $code eq 'defined'    { return 'f_defined(' ~ (@.arguments.>>emit_go).join(', ') ~ ')' };
-        if $code eq 'pop'        { return 'Pop(' ~ (@.arguments.>>emit_go).join(', ') ~ ')' };
-        if $code eq 'index'      { return 'f_index(' ~ (@.arguments.>>emit_go).join(', ') ~ ')' };
-        if $code eq 'substr'     { return 'Substr( Capture{ p : []Any{ ' 
-                                        ~ (@.arguments.>>emit_go).join(', ') 
-                                        ~ ' } } )'  };
-        if $code eq 'scalar'     { return 'f_scalar( Capture{ p : []Any{ ' 
-                                        ~ (@.arguments.>>emit_go).join(', ')    
-                                    ~ ' } } )' 
-                                 };
-        if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_go).join(', ')    ~ ').Str()' };
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit_go).join(', ')    ~ ').Bool().Not()' };
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_go).join(', ')    ~ ').Bool()' };
-        if $code eq 'prefix:<$>' { return 'f_scalar( Capture{ p : []Any{ ' 
-                                        ~ (@.arguments.>>emit_go).join(', ')    
-                                    ~ ' } } )' 
-                                };
-        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_go).join(', ')    ~ ')' };  # .f_array()' };
-        if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_go).join(', ')    ~ ').f_hash()' };
+        if $code eq 'warn'          { return 'f_print_stderr( Capture{ p : []*Any{ '   
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ', toStr("\n") } } )' 
+                                    }
+        if $code eq 'die'           { return 'f_die( Capture{ p : []*Any{ '   
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ' } } )' 
+                                    }
+        if $code eq 'defined'       { return 'f_defined( Capture{ p : []*Any{ '  
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ' } } )' 
+                                    }
+        if $code eq 'pop'           { return 'f_pop( Capture{ p : []*Any{ '  
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ' } } )' 
+                                    }
+        if $code eq 'index'         { return 'f_index( Capture{ p : []*Any{ '  
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ' } } )' 
+                                    }
+        if $code eq 'substr'        { return 'f_substr( Capture{ p : []*Any{ ' 
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ' } } )'  
+                                    }
+        if $code eq 'scalar'        { return 'f_scalar( Capture{ p : []*Any{ ' 
+                                                ~ (@.arguments.>>emit_go).join(', ')    
+                                                ~ ' } } )' 
+                                    }
+        if $code eq 'prefix:<~>'    { return Call::emit_go_call( @.arguments[0], 'str' ) }
+        if $code eq 'prefix:<!>'    { return 'toBool(!tobool(' ~ ( @.arguments[0]).emit_go ~ '))' };
+        if $code eq 'prefix:<?>'    { return Call::emit_go_call( @.arguments[0], 'bool') } 
+        if $code eq 'prefix:<$>'    { return 'f_scalar( Capture{ p : []*Any{ ' 
+                                                ~ (@.arguments.>>emit_go).join(', ')    
+                                                ~ ' } } )' 
+                                    }
+        if $code eq 'prefix:<@>'    { return Call::emit_go_call( @.arguments[0], 'array' ) }
+        if $code eq 'prefix:<%>'    { return Call::emit_go_call( @.arguments[0], 'hash' ) }
 
-        if $code eq 'infix:<~>'  { return 'Str{ s: strings.Join( []string{' 
-                                        ~ '(' ~ (@.arguments[0]).emit_go ~ ').Str().s, ' 
-                                        ~ '(' ~ (@.arguments[1]).emit_go ~ ').Str().s' 
-                                    ~ '}, "" ) }' 
-                                };
-        if $code eq 'infix:<+>'  { return 'Int{ i:' 
-                                        ~ '(' ~ (@.arguments[0]).emit_go ~ ').Int().i + '
-                                        ~ '(' ~ (@.arguments[1]).emit_go ~ ').Int().i ' 
-                                    ~ '}' 
-                                };
-        if $code eq 'infix:<->'  { return 'Int{ i:' 
-                                        ~ '(' ~ (@.arguments[0]).emit_go ~ ').Int().i - '
-                                        ~ '(' ~ (@.arguments[1]).emit_go ~ ').Int().i '
-                                    ~ '}' 
-                                };
-        if $code eq 'infix:<>>'  { return 'Bool{ b:' 
-                                        ~ '(' ~ (@.arguments[0]).emit_go ~ ').Int().i > '
-                                        ~ '(' ~ (@.arguments[1]).emit_go ~ ').Int().i '
-                                    ~ '}' 
-                                };
+        if $code eq 'infix:<~>'     { return 'toStr( ' 
+                                                ~ 'tostr(' ~ (@.arguments[0]).emit_go ~ ') + ' 
+                                                ~ 'tostr(' ~ (@.arguments[1]).emit_go ~ ') ' 
+                                                ~ ')' 
+                                    };
+        if $code eq 'infix:<+>'     { return 'toInt( ' 
+                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') + '
+                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') ' 
+                                        ~ ')' 
+                                    };
+        if $code eq 'infix:<->'     { return 'toInt( ' 
+                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') - '
+                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
+                                        ~ ')' 
+                                    };
+        if $code eq 'infix:<>>'     { return 'toBool( ' 
+                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') > '
+                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
+                                        ~ ')' 
+                                    };
 
         if $code eq 'infix:<&&>' { 
             return 
                 'f_and( '
-                    ~ 'func () Any { return ' ~ (@.arguments[0]).emit_go ~ ' }, ' 
-                    ~ 'func () Any { return ' ~ (@.arguments[1]).emit_go ~ ' } ' 
+                    ~ 'func () *Any { return ' ~ (@.arguments[0]).emit_go ~ ' }, ' 
+                    ~ 'func () *Any { return ' ~ (@.arguments[1]).emit_go ~ ' } ' 
                 ~ ')'
         };
 
         if $code eq 'infix:<||>' { 
             return 
                 'f_or( '
-                    ~ 'func () Any { return ' ~ (@.arguments[0]).emit_go ~ ' }, ' 
-                    ~ 'func () Any { return ' ~ (@.arguments[1]).emit_go ~ ' } ' 
+                    ~ 'func () *Any { return ' ~ (@.arguments[0]).emit_go ~ ' }, ' 
+                    ~ 'func () *Any { return ' ~ (@.arguments[1]).emit_go ~ ' } ' 
                 ~ ')'
         };
 
-        if $code eq 'infix:<eq>' { return '(' ~ (@.arguments[0]).emit_go ~ ').Str().Str_equal('
-                                       ~ (@.arguments[1]).emit_go ~ ')' };
-        if $code eq 'infix:<ne>' { return '(' ~ (@.arguments[0]).emit_go ~ ').Str().Str_equal('
-                                       ~ (@.arguments[1]).emit_go ~ ').Not()' };
+        if $code eq 'infix:<eq>'    { return 'toBool(' 
+                                        ~ 'tostr(' ~ (@.arguments[0]).emit_go ~ ') == '
+                                        ~ 'tostr(' ~ (@.arguments[1]).emit_go ~ ')' 
+                                        ~ ')' 
+                                    };
+        if $code eq 'infix:<ne>'    { return 'toBool(' 
+                                        ~ 'tostr(' ~ (@.arguments[0]).emit_go ~ ') != '
+                                        ~ 'tostr(' ~ (@.arguments[1]).emit_go ~ ')' 
+                                        ~ ')' 
+                                    };
  
-        if $code eq 'infix:<==>' { return '(' ~ (@.arguments[0]).emit_go ~ ').Equal('
-                                       ~ (@.arguments[1]).emit_go ~ ')' };
-        if $code eq 'infix:<!=>' { return '(' ~ (@.arguments[0]).emit_go ~ ').Equal('
-                                       ~ (@.arguments[1]).emit_go ~ ').Not()' };
+        if $code eq 'infix:<==>' { return 'toBool(' 
+                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') == '
+                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
+                                    ~ ')' 
+                                };
+        if $code eq 'infix:<!=>' { return 'toBool(' 
+                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') != '
+                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
+                                    ~ ')' 
+                                };
 
         if $code eq 'ternary:<?? !!>' { 
             return 
-                'func () Any { '
-                    ~ 'if (' ~ (@.arguments[0]).emit_go ~ ').Bool().b ' 
+                'func () *Any { '
+                    ~ 'if tobool( ' ~ Call::emit_go_call( @.arguments[0], 'bool' ) ~ ' ) ' 
                     ~ '{ return ' ~ (@.arguments[1]).emit_go ~ ' }; '
                     ~ 'return ' ~ (@.arguments[2]).emit_go ~ ' '
                 ~ '}()'
@@ -682,15 +690,40 @@ class Apply {
         else {
             $code := 'this_namespace.' ~ $code;
         }
-        $code ~ '.Apply( Capture{ p : []Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
+        $code ~ '( Capture{ p : []*Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
     }
 }
 
 class Return {
     has $.result;
     method emit_go {
+        if ($.result).isa( 'Bind' ) {
+            my $tmp := ($.result).parameters;
+            return 
+                '(func () *Any { '
+                    ~ ($.result).emit_go ~ '; ' 
+                    ~ 'Go_return(p, ' ~ $tmp.emit_go ~ '); '
+                    ~ 'return u_undef(); '
+                ~ '}())'
+        }
         return
-        'Go_return( p, ' ~ $.result.emit_go ~ ')';
+                '(func () *Any { '
+                    ~ 'var tmp *Any = ' ~ ($.result).emit_go ~ '; '
+                    ~ 'Go_return(p, tmp); '
+                    ~ 'return u_undef(); '
+                ~ '}())'
+    }
+    method emit_go_simple {
+        if ($.result).isa( 'Bind' ) {
+            my $tmp := ($.result).parameters;
+            return 
+                'return (func () *Any { '
+                    ~ ($.result).emit_go ~ '; ' 
+                    ~ 'return ' ~ $tmp.emit_go ~ '; '
+                ~ '}())'
+        }
+        return
+            'return( ' ~ $.result.emit_go ~ ')';
     }
 }
 
@@ -712,7 +745,7 @@ class If {
         {
             $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        my $s := 'if (' ~ $cond.emit_go ~ ').Bool().b { ' 
+        my $s := 'if tobool( ' ~ Call::emit_go_call( $cond, 'bool' ) ~ ' ) { ' 
                     ~ ::MiniPerl6::Go::LexicalBlock( block => @.body, needs_return => 0 ).emit_go 
                 ~ ' }';
         if !(@.otherwise) {
@@ -730,10 +763,10 @@ class For {
     has @.body;
     has @.topic;
     method emit_go {
-        'func (a_ Any) { '
-            ~ 'var i Array = a_.Array(); '
-            ~ 'for pos := 0; pos < i.n; pos++ { '
-                ~ 'func (' ~ $.topic.emit_go ~ ' Any) { '
+        'func (a_ *Any) { '
+            ~ 'var i = (*(*a_).(array_er).f_array(Capture{})).(Array); '
+            ~ 'for pos := 0; pos <= i.n; pos++ { '
+                ~ 'func (' ~ $.topic.emit_go ~ ' *Any) { '
                     ~ ::MiniPerl6::Go::LexicalBlock( block => @.body, needs_return => 0 ).emit_go 
                 ~ ' }(i.v[pos]) '
             ~ '} '
@@ -764,6 +797,28 @@ class Decl {
     method emit_go {
         $.var.emit_go;
     }
+    method emit_go_init {
+        if $.decl eq 'my' {
+            my $str := "";
+            $str := $str ~ 'var ' ~ ($.var).emit_go ~ ' *Any;' ~ "\n";
+            $str := $str ~ ($.var).emit_go ~ ' = ' ~ ($.var).emit_go ~ ';' ~ "\n";
+            if ($.var).sigil eq '%' {
+                $str := $str ~ ($.var).emit_go ~ ' = h_hash();' ~ "\n";
+            }
+            else {
+            if ($.var).sigil eq '@' {
+                $str := $str ~ ($.var).emit_go ~ ' = a_array();' ~ "\n";
+            }
+            else {
+                $str := $str ~ ($.var).emit_go ~ ' = u_undef();' ~ "\n";
+            }
+            }
+            return $str;
+        }
+        else {
+            die "not implemented: Decl '" ~ $.decl ~ "'";
+        }
+    }
 }
 
 class Sig {
@@ -790,12 +845,12 @@ class Method {
     has @.block;
     method emit_go {
         my $invocant := ($.sig).invocant; 
-        'func ' ~ $.name ~ '(v Capture) Any { ' 
-              ~ '    ' ~ ($.sig).emit_go_bind ~ Main.newline
-              ~ '    p := make(chan Any); go func () { ' ~ Main.newline
+        'func ' ~ $.name ~ '(v Capture) *Any { ' 
+              ~ '    ' ~ ($.sig).emit_go_bind ~ "\n"
+              ~ '    p := make(chan *Any); go func () { ' ~ "\n"
               ~ '        ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
-              ~ '; return }(); ' ~ Main.newline
-              ~ '    return <-p; ' ~ Main.newline
+              ~ '; return }(); ' ~ "\n"
+              ~ '    return <-p; ' ~ "\n"
         ~ ' }'
     }
 }
@@ -807,22 +862,22 @@ class Sub {
     method emit_go {
         if $.name eq '' { 
             return
-                'Function{ f: func(v Capture) Any { '
-                    ~ '    ' ~ ($.sig).emit_go_bind ~ Main.newline
-                    ~ '    p := make(chan Any); go func () { ' ~ Main.newline
+                'Function( func(v Capture) *Any { '
+                    ~ '    ' ~ ($.sig).emit_go_bind ~ "\n"
+                    ~ '    p := make(chan *Any); go func () { ' ~ "\n"
                     ~ '        ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
-                    ~ '; return }(); ' ~ Main.newline
-                    ~ '    return <-p; ' ~ Main.newline
+                    ~ '; return }(); ' ~ "\n"
+                    ~ '    return <-p; ' ~ "\n"
                     ~ '} '
-                ~ '}'
+                ~ ')'
         }
 
-        'func ' ~ $.name ~ '(v Capture) Any { ' 
-                    ~ '    ' ~ ($.sig).emit_go_bind ~ Main.newline
-                    ~ '    p := make(chan Any); go func () { ' ~ Main.newline
+        'func ' ~ $.name ~ '(v Capture) *Any { ' 
+                    ~ '    ' ~ ($.sig).emit_go_bind ~ "\n"
+                    ~ '    p := make(chan *Any); go func () { ' ~ "\n"
                     ~ '        ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
-                    ~ '; return }(); ' ~ Main.newline
-                    ~ '    return <-p; ' ~ Main.newline
+                    ~ '; return }(); ' ~ "\n"
+                    ~ '    return <-p; ' ~ "\n"
         ~ ' }'
     }
 }
@@ -830,9 +885,9 @@ class Sub {
 class Do {
     has @.block;
     method emit_go {
-        '(func () Any { ' 
+        '(func () *Any { ' 
           ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1 ).emit_go 
-          ~ '; return u_undef '
+          ~ '; return u_undef() '
         ~ '})()'
     }
 }
@@ -840,7 +895,7 @@ class Do {
 class Use {
     has $.mod;
     method emit_go {
-        '// use ' ~ $.mod ~ Main.newline
+        '// use ' ~ $.mod ~ "\n"
     }
 }
 

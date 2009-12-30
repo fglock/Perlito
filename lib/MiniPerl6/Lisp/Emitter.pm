@@ -216,11 +216,11 @@ class Lit::Seq {
 }
 
 class Lit::Array {
-    has @.array;
+    has @.array1;
     method emit_lisp {
-        if @.array {
+        if @.array1 {
             my $str := '';
-            for @.array -> $elem {
+            for @.array1 -> $elem {
                 if $elem.isa( 'Apply' ) && $elem.code eq 'prefix:<@>' {
                     $str := $str ~ ' ' ~ $elem.emit_lisp;
                 }
@@ -237,10 +237,10 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash;
+    has @.hash1;
     method emit_lisp {
-        if @.hash {
-            my $fields := @.hash;
+        if @.hash1 {
+            my $fields := @.hash1;
             my $str := '';
             for @$fields -> $field { 
                 $str := $str ~ '(setf (gethash ' ~ ($field[0]).emit_lisp ~ ' h) ' ~ ($field[1]).emit_lisp ~ ')';

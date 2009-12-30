@@ -30,7 +30,7 @@ class Main {
         say 'not ok 3';
     }
 
-    $m := ::Lit::Array( array => [ ::Val::Int( int => 1 ), ::Val::Buf( buf => "2" ) ] );
+    $m := ::Lit::Array( array1 => [ ::Val::Int( int => 1 ), ::Val::Buf( buf => "2" ) ] );
     say '# array:  ', $m.emit_lisp;
 
 # token

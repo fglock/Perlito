@@ -64,15 +64,15 @@ sub emit { my $self = shift; my $List__ = \@_; do { [] }; die('Lit::Seq - not us
 ;
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
-sub array { @_ == 1 ? ( $_[0]->{array} ) : ( $_[0]->{array} = $_[1] ) };
-sub emit { my $self = shift; my $List__ = \@_; do { [] }; (my  $a = $self->{array}); my  $item; (my  $s = ('  save $P1' . (Main::newline() . ('  $P1 = new .ResizablePMCArray' . Main::newline())))); do { for my $item ( @{$a} ) { ($s = ($s . $item->emit()));($s = ($s . ('  push $P1, $P0' . Main->newline()))) } }; (my  $s = ($s . ('  $P0 = $P1' . (Main::newline() . ('  restore $P1' . Main::newline()))))); return($s) }
+sub array1 { @_ == 1 ? ( $_[0]->{array1} ) : ( $_[0]->{array1} = $_[1] ) };
+sub emit { my $self = shift; my $List__ = \@_; do { [] }; (my  $a = $self->{array1}); my  $item; (my  $s = ('  save $P1' . (Main::newline() . ('  $P1 = new .ResizablePMCArray' . Main::newline())))); do { for my $item ( @{$a} ) { ($s = ($s . $item->emit()));($s = ($s . ('  push $P1, $P0' . Main->newline()))) } }; (my  $s = ($s . ('  $P0 = $P1' . (Main::newline() . ('  restore $P1' . Main::newline()))))); return($s) }
 
 
 ;
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
-sub hash { @_ == 1 ? ( $_[0]->{hash} ) : ( $_[0]->{hash} = $_[1] ) };
-sub emit { my $self = shift; my $List__ = \@_; do { [] }; (my  $a = $self->{hash}); my  $item; (my  $s = ('  save $P1' . (Main::newline() . ('  save $P2' . (Main::newline() . ('  $P1 = new .Hash' . Main::newline())))))); do { for my $item ( @{$a} ) { ($s = ($s . $item->[0]->emit()));($s = ($s . ('  $P2 = $P0' . Main->newline())));($s = ($s . $item->[1]->emit()));($s = ($s . ('  set $P1[$P2], $P0' . Main->newline()))) } }; (my  $s = ($s . ('  $P0 = $P1' . (Main::newline() . ('  restore $P2' . (Main::newline() . ('  restore $P1' . Main::newline()))))))); return($s) }
+sub hash1 { @_ == 1 ? ( $_[0]->{hash1} ) : ( $_[0]->{hash1} = $_[1] ) };
+sub emit { my $self = shift; my $List__ = \@_; do { [] }; (my  $a = $self->{hash1}); my  $item; (my  $s = ('  save $P1' . (Main::newline() . ('  save $P2' . (Main::newline() . ('  $P1 = new .Hash' . Main::newline())))))); do { for my $item ( @{$a} ) { ($s = ($s . $item->[0]->emit()));($s = ($s . ('  $P2 = $P0' . Main->newline())));($s = ($s . $item->[1]->emit()));($s = ($s . ('  set $P1[$P2], $P0' . Main->newline()))) } }; (my  $s = ($s . ('  $P0 = $P1' . (Main::newline() . ('  restore $P2' . (Main::newline() . ('  restore $P1' . Main::newline()))))))); return($s) }
 
 
 ;

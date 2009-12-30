@@ -214,11 +214,11 @@ class Lit::Seq {
 }
 
 class Lit::Array {
-    has @.array;
+    has @.array1;
     method emit_clojure {
-        if @.array {
+        if @.array1 {
             my $str := '';
-            for @.array -> $elem {
+            for @.array1 -> $elem {
                 if $elem.isa( 'Apply' ) && $elem.code eq 'prefix:<@>' {
                     $str := $str ~ ' ' ~ $elem.emit_clojure;
                 }
@@ -235,10 +235,10 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash;
+    has @.hash1;
     method emit_clojure {
-        if @.hash {
-            my $fields := @.hash;
+        if @.hash1 {
+            my $fields := @.hash1;
             my $str := '';
             for @$fields -> $field { 
                 $str := $str ~ '(setf (gethash ' ~ ($field[0]).emit_clojure ~ ' h) ' ~ ($field[1]).emit ~ ')';

@@ -154,9 +154,9 @@ class Lit::Seq {
 }
 
 class Lit::Array {
-    has @.array;
+    has @.array1;
     method emit {
-        my $a := @.array;
+        my $a := @.array1;
         my $item;
         my $s := 
             '  save $P1' ~ Main::newline() ~
@@ -174,9 +174,9 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash;
+    has @.hash1;
     method emit {
-        my $a := @.hash;
+        my $a := @.hash1;
         my $item;
         my $s := 
             '  save $P1' ~ Main::newline() ~

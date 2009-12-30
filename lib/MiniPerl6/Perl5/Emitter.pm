@@ -54,16 +54,16 @@ class Lit::Seq {
 }
 
 class Lit::Array {
-    has @.array;
+    has @.array1;
     method emit {
-        '[' ~ (@.array.>>emit).join(', ') ~ ']';
+        '[' ~ (@.array1.>>emit).join(', ') ~ ']';
     }
 }
 
 class Lit::Hash {
-    has @.hash;
+    has @.hash1;
     method emit {
-        my $fields := @.hash;
+        my $fields := @.hash1;
         my $str := '';
         for @$fields -> $field { 
             $str := $str ~ ($field[0]).emit ~ ' => ' ~ ($field[1]).emit ~ ',';
@@ -151,8 +151,8 @@ class Bind {
             
             #  [$a, [$b, $c]] := [1, [2, 3]]
             
-            my $a := $.parameters.array;
-            #my $b := $.arguments.array;
+            my $a := $.parameters.array1;
+            #my $b := $.arguments.array1;
             my $str := 'do { ';
             my $i := 0;
             for @$a -> $var { 
@@ -173,8 +173,8 @@ class Bind {
 
             #  {:$a, :$b} := { a => 1, b => [2, 3]}
 
-            my $a := $.parameters.hash;
-            my $b := $.arguments.hash;
+            my $a := $.parameters.hash1;
+            my $b := $.arguments.hash1;
             my $str := 'do { ';
             my $i := 0;
             my $arg;
@@ -429,7 +429,7 @@ class Method {
         # TODO - follow recursively
         for @$pos -> $field { 
             if ( $field.isa('Lit::Array') ) {
-                $str := $str ~ 'my (' ~ (($field.array).>>emit).join(', ') ~ '); ';
+                $str := $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
             }
             else {
                 $str := $str ~ 'my ' ~ $field.emit ~ '; ';
@@ -437,7 +437,7 @@ class Method {
         };
 
         my $bind := ::Bind( 
-            'parameters' => ::Lit::Array( array => $sig.positional ), 
+            'parameters' => ::Lit::Array( array1 => $sig.positional ), 
             'arguments'  => ::Var( sigil => '@', twigil => '', name => '_' )
         );
         $str := $str ~ $bind.emit ~ '; ';
@@ -462,7 +462,7 @@ class Sub {
         # TODO - follow recursively
         for @$pos -> $field { 
             if ( $field.isa('Lit::Array') ) {
-                $str := $str ~ 'my (' ~ (($field.array).>>emit).join(', ') ~ '); ';
+                $str := $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
             }
             else {
                 $str := $str ~ 'my ' ~ $field.emit ~ '; ';
@@ -470,7 +470,7 @@ class Sub {
         };
 
         my $bind := ::Bind( 
-            'parameters' => ::Lit::Array( array => $sig.positional ), 
+            'parameters' => ::Lit::Array( array1 => $sig.positional ), 
             'arguments'  => ::Var( sigil => '@', twigil => '', name => '_' )
         );
         $str := $str ~ $bind.emit ~ '; ';

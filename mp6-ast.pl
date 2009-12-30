@@ -29,7 +29,7 @@ $source = "class Main { $source }" if $source !~ /class/;
 # Kludge - remove "use v6-alpha;", which mp6 doesn't understand.
 $source =~ s/\buse\s*v6-alpha;//;
 
-my $perl5code = "";
+my $perl5code = "[\n";
 
 use Data::Dumper;
 sub perl {
@@ -43,9 +43,10 @@ sub perl {
 while ( $pos < length( $source ) ) {
     my $p = MiniPerl6::Grammar->comp_unit($source, $pos);
     $perl5code .= perl( $$p ); 
-    $perl5code .= ";";
+    $perl5code .= ",\n";
     $pos = $p->to;
 }
+$perl5code .= "\n]\n";
 
 print $perl5code;
 

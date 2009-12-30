@@ -52,16 +52,16 @@ class Lit::Seq {
 }
 
 class Lit::Array {
-    has @.array;
+    has @.array1;
     method emit {
-        '[' ~ (@.array.>>emit).join(', ') ~ ']';
+        '[' ~ (@.array1.>>emit).join(', ') ~ ']';
     }
 }
 
 class Lit::Hash {
-    has @.hash;
+    has @.hash1;
     method emit {
-        my $fields := @.hash;
+        my $fields := @.hash1;
         my $str := '';
         for @$fields -> $field { 
             $str := $str ~ ($field[0]).emit ~ ' => ' ~ ($field[1]).emit ~ ',';

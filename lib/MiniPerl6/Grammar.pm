@@ -281,9 +281,9 @@ token exp_term {
     | \( <.opt_ws> <exp> <.opt_ws> \)
         { make $$<exp> }   # ( exp )
     | \{ <.opt_ws> <exp_mapping> <.opt_ws> \}
-        { make ::Lit::Hash( 'hash' => $$<exp_mapping> ) }   # { exp => exp, ... }
+        { make ::Lit::Hash( 'hash1' => $$<exp_mapping> ) }   # { exp => exp, ... }
     | \[ <.opt_ws> <exp_seq> <.opt_ws> \]
-        { make ::Lit::Array( 'array' => $$<exp_seq> ) }   # [ exp, ... ]
+        { make ::Lit::Array( 'array1' => $$<exp_seq> ) }   # [ exp, ... ]
     | \$ \< <sub_or_method_name> \>
         { make ::Lookup( 
             'obj'   => ::Var( 'sigil' => '$', 'twigil' => '', 'name' => '/' ), 

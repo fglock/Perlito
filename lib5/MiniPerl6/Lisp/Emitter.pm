@@ -99,15 +99,15 @@ sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; ('(' . (Main::joi
 ;
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
-sub array { @_ == 1 ? ( $_[0]->{array} ) : ( $_[0]->{array} = $_[1] ) };
-sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (@{$self->{array}}) { (my  $str = '');do { for my $elem ( @{$self->{array}} ) { do { if ((Main::isa($elem, 'Apply') && ($elem->code() eq 'prefix:<@>'))) { ($str = ($str . (' ' . $elem->emit_lisp()))) } else { ($str = ($str . (' (list ' . ($elem->emit_lisp() . ')')))) } } } };return(('(concatenate \'list ' . ($str . ')'))) } else { return('nil') } } }
+sub array1 { @_ == 1 ? ( $_[0]->{array1} ) : ( $_[0]->{array1} = $_[1] ) };
+sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (@{$self->{array1}}) { (my  $str = '');do { for my $elem ( @{$self->{array1}} ) { do { if ((Main::isa($elem, 'Apply') && ($elem->code() eq 'prefix:<@>'))) { ($str = ($str . (' ' . $elem->emit_lisp()))) } else { ($str = ($str . (' (list ' . ($elem->emit_lisp() . ')')))) } } } };return(('(concatenate \'list ' . ($str . ')'))) } else { return('nil') } } }
 
 
 ;
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
-sub hash { @_ == 1 ? ( $_[0]->{hash} ) : ( $_[0]->{hash} = $_[1] ) };
-sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (@{$self->{hash}}) { (my  $fields = $self->{hash});(my  $str = '');do { for my $field ( @{$fields} ) { ($str = ($str . ('(setf (gethash ' . ($field->[0]->emit_lisp() . (' h) ' . ($field->[1]->emit_lisp() . ')')))))) } };return(('(let ((h (make-hash-table :test \'equal))) ' . ($str . ' h)'))) } else { return('(make-hash-table :test \'equal)') } } }
+sub hash1 { @_ == 1 ? ( $_[0]->{hash1} ) : ( $_[0]->{hash1} = $_[1] ) };
+sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (@{$self->{hash1}}) { (my  $fields = $self->{hash1});(my  $str = '');do { for my $field ( @{$fields} ) { ($str = ($str . ('(setf (gethash ' . ($field->[0]->emit_lisp() . (' h) ' . ($field->[1]->emit_lisp() . ')')))))) } };return(('(let ((h (make-hash-table :test \'equal))) ' . ($str . ' h)'))) } else { return('(make-hash-table :test \'equal)') } } }
 
 
 ;

@@ -202,10 +202,10 @@ class Lit::Seq {
 }
 
 class Lit::Array {
-    has @.array;
+    has @.array1;
     method emit_javascript {
         my $needs_interpolation := 0;
-        for @.array -> $item {
+        for @.array1 -> $item {
             if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
                 || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' ) 
             {
@@ -214,7 +214,7 @@ class Lit::Array {
         }
         if $needs_interpolation {
             my $s := '';
-            for @.array -> $item {
+            for @.array1 -> $item {
                 if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
                     || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' ) 
                 {
@@ -232,15 +232,15 @@ class Lit::Array {
             ~ ' return a })()';
         }
         else {
-            '[' ~ (@.array.>>emit_javascript).join(', ') ~ ']';
+            '[' ~ (@.array1.>>emit_javascript).join(', ') ~ ']';
         }
     }
 }
 
 class Lit::Hash {
-    has @.hash;
+    has @.hash1;
     method emit_javascript {
-        my $fields := @.hash;
+        my $fields := @.hash1;
         my $str := '';
         for @$fields -> $field { 
             $str := $str ~ ($field[0]).emit_javascript ~ ':' ~ ($field[1]).emit_javascript ~ ',';
@@ -326,8 +326,8 @@ class Bind {
             
             #  [$a, [$b, $c]] := [1, [2, 3]]
             
-            my $a := $.parameters.array;
-            #my $b := $.arguments.array;
+            my $a := $.parameters.array1;
+            #my $b := $.arguments.array1;
             my $str := 'do { ';
             my $i := 0;
             for @$a -> $var { 
@@ -348,8 +348,8 @@ class Bind {
 
             #  {:$a, :$b} := { a => 1, b => [2, 3]}
 
-            my $a := $.parameters.hash;
-            my $b := $.arguments.hash;
+            my $a := $.parameters.hash1;
+            my $b := $.arguments.hash1;
             my $str := 'do { ';
             my $i := 0;
             my $arg;
