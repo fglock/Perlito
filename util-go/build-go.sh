@@ -9,6 +9,6 @@ lib/MiniPerl6/Lisp/Emitter.pm \
 lib/MiniPerl6/Perl5/Emitter.pm \
 lib/MiniPerl6/Go/Emitter.pm \
 lib/MiniPerl6/Go/Prelude.pm \
-go-util/mp6-go-main.pm \
+util-go/mp6-go-main.pm \
 > tmp_build_go.pm
 

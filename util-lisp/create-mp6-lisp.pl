@@ -15,7 +15,7 @@ my @files = (
 	'liblisp/MiniPerl6/Grammar/Mapping.lisp',
 	'liblisp/MiniPerl6/Grammar/Regex.lisp',
 	'liblisp/MiniPerl6/Emitter/Token.lisp',
-	'lisp-util/create-core-image.lisp',
+	'util-lisp/create-core-image.lisp',
 );
 
 my $outfilename = "mp6-lisp-create-core-image.lisp"; 

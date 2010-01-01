@@ -340,6 +340,10 @@ func f_pop(s Capture) *Any {
 	return o;
 	//return o.f_pop()
 }
+func f_push(s Capture) *Any {
+	var o = (*(*s.p[0]).(array_er).f_array(Capture{})).(push_er).f_push( Capture{ p : []*Any{ s.p[1] } } );
+	return o;
+}
 func f_index(v Capture) *Any {
 	var s = tostr(v.p[0]);
 	var sep = tostr(v.p[1]);

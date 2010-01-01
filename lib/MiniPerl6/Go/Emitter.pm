@@ -234,6 +234,100 @@ class CompUnit {
         return $str;
     }
 
+    sub emit_go_program( $comp_units ) {
+        my $str := '';
+
+        # join classes that have the same name
+        # if there are method or accessor collisions, classes declared later have higher priority
+        
+        my %unit_seen;
+        my @tmp_comp_unit;
+        for @($comp_units) -> $comp_unit {
+            my $name := $comp_unit.name;
+            if %unit_seen{$name} {
+                for @( $comp_unit.body ) -> $stmt {
+                    push (%unit_seen{$name}).body, $stmt;
+                }
+            }
+            else {
+                %unit_seen{$name} := $comp_unit;
+                push @tmp_comp_unit, $comp_unit;
+            }
+        }
+
+        $comp_units := @tmp_comp_unit;
+        for @($comp_units) -> $comp_unit {
+            for @( $comp_unit.body ) -> $stmt {
+                if $stmt.isa('Method') {
+                    ($comp_unit.methods){ $stmt.name } := $stmt;
+                }
+                if $stmt.isa('Decl') && ( $stmt.decl eq 'has' ) {
+                    ($comp_unit.attributes){ ($stmt.var).name } := $stmt;
+                }
+            }
+        }
+        
+        # emit the code for all classes
+
+        for @($comp_units) -> $comp_unit {
+            $str := $str ~ $comp_unit.emit_go;
+        }
+        if !(%unit_seen{"MiniPerl6::Grammar"}) {
+            $str := $str ~ "type MiniPerl6__Grammar struct{}\n";
+        }
+        $str := $str ~ "// interfaces for all methods\n";
+        my %meth_seen := {
+            join => 1,
+            perl => 1,
+            scalar => 1,
+            isa => 1,
+            values => 1,
+            bind => 1,
+            int => 1,
+            str => 1,
+            bool => 1,
+            array => 1,
+            hash => 1,
+            push => 1,
+            lookup => 1,
+            index => 1,
+        };
+        for @($comp_units) -> $comp_unit {
+            for @( $comp_unit.body ) -> $stmt {
+                if $stmt.isa('Method') && !(%meth_seen{ $stmt.name }) {
+                    my $meth := $stmt.name;
+                    $str := $str ~ "type "
+                          ~ $meth
+                          ~ "_er interface { f_"
+                          ~ $meth
+                          ~ " (Capture) *Any }\n";
+                    %meth_seen{$meth} := 1;
+                }
+                if $stmt.isa('Decl') && ( $stmt.decl eq 'has' ) && !(%meth_seen{ ($stmt.var).name }) {
+                    my $meth := ($stmt.var).name;
+                    $str := $str ~ "type "
+                          ~ $meth
+                          ~ "_er interface { f_"
+                          ~ $meth
+                          ~ " (Capture) *Any }\n";
+                    %meth_seen{$meth} := 1;
+                }
+            }
+        }
+
+        $str := $str ~ "\n"
+            ~ "func main () {\n"
+            ~ "  Init_MiniPerl6__Match();\n";
+        for @($comp_units) -> $comp_unit {
+            $str := $str ~ "  Init_" ~ Main::to_go_namespace( $comp_unit.name ) ~ "();\n"
+        }
+        $str := $str ~ "  Init_Prelude();\n";
+        for @($comp_units) -> $comp_unit {
+            $str := $str ~ "  Run_" ~ Main::to_go_namespace( $comp_unit.name ) ~ "();\n"
+        }
+        $str := $str ~ '}' ~ "\n";
+        return $str;
+    }
 }
 
 class Val::Int {
@@ -590,6 +684,10 @@ class Apply {
                                                 ~ ' } } )' 
                                     }
         if $code eq 'pop'           { return 'f_pop( Capture{ p : []*Any{ '  
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ' } } )' 
+                                    }
+        if $code eq 'push'          { return 'f_push( Capture{ p : []*Any{ '  
                                                 ~ (@.arguments.>>emit_go).join(', ') 
                                                 ~ ' } } )' 
                                     }

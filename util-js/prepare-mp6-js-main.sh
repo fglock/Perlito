@@ -6,5 +6,5 @@ cat libjs/MiniPerl6/Javascript/Runtime.js \
     libjs/MiniPerl6/Grammar/Mapping.js \
     libjs/MiniPerl6/Grammar/Regex.js   \
     libjs/MiniPerl6/Emitter/Token.js   \
-    js-util/mp6-js-main.js   \
+    util-js/mp6-js-main.js   \
   > mp6-js.js
