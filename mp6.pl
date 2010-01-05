@@ -1,6 +1,7 @@
 package main;
 
-use lib 'lib5';
+use FindBin '$Bin';
+use lib ("$Bin/lib5");
 use strict;
 
 BEGIN {
@@ -61,6 +62,13 @@ while (@args) {
         require MiniPerl6::Go::Emitter;
         redo;
     }
+    if ( $args[0] eq '-Cast-perl5' ) {
+        my $switch = shift @args;
+        $backend = 'ast-perl5';
+        $execute = 0;
+        require MiniPerl6::Perl5::Emitter;
+        redo;
+    }
     last;
 }
 if ( !$backend ) {
@@ -84,6 +92,9 @@ else {
     local $/ = undef;
     $source = <STDIN>;
 }
+
+# Kludge - make an implicit Main explicit.
+$source = "class Main { $source }" if $source !~ /class/;
 
 my $pos = 0;
 
@@ -115,5 +126,21 @@ if ( $backend eq 'perl5' ) {
         $pos = $p->to;
     }
     say( "1;" );
+}
+if ( $backend eq 'ast-perl5' ) {
+    say( "[" );
+    require Data::Dumper;
+    while ( $pos < length( $source ) ) {
+        my $p = MiniPerl6::Grammar->comp_unit($source, $pos);
+        local $Data::Dumper::Terse    = 1;
+        local $Data::Dumper::Sortkeys = 1;
+        local $Data::Dumper::Pad      = '  ';
+        local $Data::Dumper::Indent   = 1;
+        my $code = Data::Dumper::Dumper( $$p );
+        $code =~ s/\n$/,/;
+        say( $code );
+        $pos = $p->to;
+    }
+    say( "]" );
 }
 
