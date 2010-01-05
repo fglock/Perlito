@@ -1,4 +1,4 @@
-# Compile MiniPerl6 to lisp, using mp6-lisp.pl
+# Compile MiniPerl6 to lisp, using mp6.pl -Clisp
 
 #rm -rf liblisp
 mkdir liblisp
@@ -16,47 +16,47 @@ mkdir liblisp/MiniPerl6/Javascript
 
 cp lib/MiniPerl6/Lisp/Runtime.lisp liblisp/MiniPerl6/Lisp/
 
-perl mp6-lisp.pl \
+perl mp6.pl -Clisp \
     <      lib/MiniPerl6/Lisp/Prelude.pm    \
     >  liblisp/MiniPerl6/Lisp/Prelude.lisp
 
-perl mp6-lisp.pl \
+perl mp6.pl -Clisp \
     <      lib/MiniPerl6/Lisp/Emitter.pm    \
     >  liblisp/MiniPerl6/Lisp/Emitter.lisp
 
-perl mp6-lisp.pl \
+perl mp6.pl -Clisp \
     <      lib/Test.pm    \
     >  liblisp/Test.lisp
 
-# perl mp6-lisp.pl \
+# perl mp6.pl -Clisp \
 #    <      lib/MiniPerl6/AST/CompUnit.pm    \
 #    >  liblisp/MiniPerl6/AST/CompUnit.lisp
 
-perl mp6-lisp.pl \
+perl mp6.pl -Clisp \
     <      lib/MiniPerl6/Grammar.pm    \
     >  liblisp/MiniPerl6/Grammar.lisp
 
-perl mp6-lisp.pl \
+perl mp6.pl -Clisp \
     <      lib/MiniPerl6/Grammar/Control.pm    \
     >  liblisp/MiniPerl6/Grammar/Control.lisp
 
-perl mp6-lisp.pl \
+perl mp6.pl -Clisp \
     <      lib/MiniPerl6/Grammar/Mapping.pm    \
     >  liblisp/MiniPerl6/Grammar/Mapping.lisp
 
-perl mp6-lisp.pl \
+perl mp6.pl -Clisp \
     <      lib/MiniPerl6/Grammar/Regex.pm    \
     >  liblisp/MiniPerl6/Grammar/Regex.lisp
 
-perl mp6-lisp.pl \
+perl mp6.pl -Clisp \
     <      lib/MiniPerl6/Emitter/Token.pm    \
     >  liblisp/MiniPerl6/Emitter/Token.lisp
 
-perl mp6-lisp.pl \
+perl mp6.pl -Clisp \
     <      lib/MiniPerl6/Perl5/Emitter.pm    \
     >  liblisp/MiniPerl6/Perl5/Emitter.lisp
 
-perl mp6-lisp.pl \
+perl mp6.pl -Clisp \
     <      lib/MiniPerl6/Go/Emitter.pm    \
     >  liblisp/MiniPerl6/Go/Emitter.lisp
 
