@@ -124,7 +124,16 @@ if ( $backend eq 'go' ) {
     $result .= CompUnit::emit_go_program( \@comp_unit );
 
     if ( $execute ) {
-        die "execute Go not implemented\n";
+        open( OUT, '>', $tmp_filename . '.go' )
+          or die "Cannot write to ${tmp_filename}.go\n";
+        print OUT $result;
+        close(OUT);
+        unlink $tmp_filename . '.6';
+        unlink '6.out';
+        `6g $tmp_filename.go`;
+        `6l $tmp_filename.6`;
+        exec "./6.out"
+            or die "can't execute";
     }
 }
 if ( $backend eq 'perl5' ) {
@@ -154,3 +163,4 @@ if ( $backend eq 'ast-perl5' ) {
 if ( !$execute ) {
     print $result;
 }
+
