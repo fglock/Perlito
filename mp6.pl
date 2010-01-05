@@ -78,6 +78,16 @@ if ( $source_filename =~ /\.p5ast$/ ) {
 else {
     # Kludge - make an implicit Main explicit.
     $source = "class Main { $source }" if $source !~ /class/;
+
+    if ( $backend eq 'go' ) {
+        my $lib_source_filename = 'lib/MiniPerl6/Go/Prelude.pm';
+        open FILE, $lib_source_filename
+          or die "Cannot read $lib_source_filename\n";
+        local $/ = undef;
+        $source = <FILE> . "\n" . $source;
+        close FILE;
+    }
+
     my $pos = 0;
     while ( $pos < length($source) ) {
         my $p = MiniPerl6::Grammar->comp_unit( $source, $pos );
