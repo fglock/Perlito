@@ -64,7 +64,9 @@ while (@args) {
     last;
 }
 if ( !$backend ) {
-    die "please specify a target backend: -Cperl5, -Clisp, -Cjs, ...\n";
+    $backend = 'perl5';
+    $execute = 0;
+    require MiniPerl6::Perl5::Emitter;
 }
 $source_filename = shift @args if @args;
 
@@ -112,5 +114,6 @@ if ( $backend eq 'perl5' ) {
         say( "{\n" . join( "", (map { $_->emit() } ($$p) )) . "}\n" );
         $pos = $p->to;
     }
+    say( "1;" );
 }
 

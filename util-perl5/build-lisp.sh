@@ -1,4 +1,4 @@
-# Compile MiniPerl6 to lisp, using mp6-perl5.pl
+# Compile MiniPerl6 to lisp, using mp6-lisp.pl
 
 #rm -rf liblisp
 mkdir liblisp

@@ -10,8 +10,8 @@ sub backup {
 }
 sub compile {
     my ($in,$out) = @_;
-    print("perl mp6-perl5.pl $in > $out\n");
-    system("perl mp6-perl5.pl $in > $out");
+    print("perl mp6.pl -Cperl5 $in > $out\n");
+    system("perl mp6.pl -Cperl5 $in > $out");
 }
 sub make {
     my ($source,$old,$new) = @_;
