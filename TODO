@@ -1,6 +1,14 @@
+MiniPerl6 in Rakudo
+
+- Rakudo should be able to execute MiniPerl6 directly. What do we need to fix in both sides?
+
+MiniPerl6 in Lisp
+
+- implement command line switches '-C' and '-B'
+
 MiniPerl6 in Go
 
-...
+- implement 'use'
 
 MiniPerl6 in Perl5
 
@@ -15,7 +23,7 @@ Bootstrapping MiniPerl6 in Parrot
 
 - fix die() parameter handling
 
-- rewrite mp6-parrot.pl in parrot (or mp6)
+- write "mp6 -Cparrot" in parrot (or mp6)
 
 - Recompile it several times using itself, in order to check the stability of the Bootstrap
 
@@ -26,6 +34,10 @@ Missing Backends
 - Haskell
 
 - MO in MP6 (MP6-2)
+
+- Python
+
+- Clojure
 
 Missing Features
 
@@ -39,7 +51,7 @@ Missing Features
 
 - operator precedence
 
-- all statements need a semicolon
+- all statements need a semicolon - FIXED but hack
 
 - 'use v5' is not supported
   (maybe not needed for MP6)
