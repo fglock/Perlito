@@ -102,22 +102,70 @@ else {
     }
 
     if ( $backend eq 'go' ) {
-        # TODO - reuse Prelude AST if available
-        my $lib_source_filename = 'lib/MiniPerl6/Go/Prelude.pm';
-        open FILE, $::Bin . '/' . $lib_source_filename
-          or die "Cannot read $::Bin/$lib_source_filename\n";
-        local $/ = undef;
-        $source = <FILE> . "\n" . $source;
-        close FILE;
-        warn "included Go Prelude.pm\n" if $verbose;
+        # TODO - recursive 'use'
+        my %module;
+        my $precompiled;
+        my $load_module = sub {
+            my $module_name = shift;
+            warn "load module: $module_name\n" if $verbose;
+            return 1 if $module{$module_name};
+            my $filename = $module_name;
+            $filename =~ s{::}{/}g;
+            $filename = $::Bin . "/libast-perl5/${filename}.p5ast";
+            for (1) {
+                my $has_ast = open FILE, $filename;
+                if ( $has_ast ) {
+                    # reuse Prelude AST if available
+                    local $/ = undef;
+                    my $ast = <FILE>;
+                    close FILE;
+                    if ( length($ast) ) {
+                        push @comp_unit, @{ eval $ast };
+                        warn "Error loading $filename: $@" if $@;
+                        warn "included $module_name ast\n" if $verbose;
+                    }
+                    else {
+                        $has_ast = 0;
+                        close(FILE);
+                        warn "$filename is empty, removing broken file";
+                        unlink $filename;
+                    }
+                }
+                else {
+                    if ( !$precompiled) {
+                        warn "now compiling MiniPerl6 source code to AST\n" if $verbose;
+                        system( ". util-perl5/update-ast-perl5.sh" );
+                        $precompiled = 1;
+                        redo;
+                    }
+                    die "can't load module $module_name. Looking in: $filename\n";
+                }
+            }
+            return 1;
+        };
+        my $pos = 0;
+        $load_module->( "MiniPerl6::Go::Prelude" );
+        while ( $pos < length($source) ) {
+            warn "parsing at pos $pos\n" if $verbose;
+            my $p = MiniPerl6::Grammar->comp_unit( $source, $pos );
+            for my $use (  
+                map  { $_->{mod} } 
+                grep { $_->isa("Use") } @{$$p->{body}} )
+            {
+                $load_module->($use);
+            }
+            push @comp_unit, $$p;
+            $pos = $p->to;
+        }
     }
-
-    my $pos = 0;
-    while ( $pos < length($source) ) {
-        warn "parsing at pos $pos\n" if $verbose;
-        my $p = MiniPerl6::Grammar->comp_unit( $source, $pos );
-        push @comp_unit, $$p;
-        $pos = $p->to;
+    else {
+        my $pos = 0;
+        while ( $pos < length($source) ) {
+            warn "parsing at pos $pos\n" if $verbose;
+            my $p = MiniPerl6::Grammar->comp_unit( $source, $pos );
+            push @comp_unit, $$p;
+            $pos = $p->to;
+        }
     }
 }
 
