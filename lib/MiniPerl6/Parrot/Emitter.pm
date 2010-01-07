@@ -5,7 +5,7 @@ class CompUnit {
     has %.attributes;
     has %.methods;
     has @.body;
-    method emit {
+    method emit_parrot {
         my $a := @.body;
         my $item;
         
@@ -25,7 +25,7 @@ class CompUnit {
             if    ( $item.isa( 'Decl' ) )
                && ( $item.decl ne 'has' ) 
             {
-                $s := $s ~ $item.emit;
+                $s := $s ~ $item.emit_parrot;
             }
         };
         $s := $s ~
@@ -37,7 +37,7 @@ class CompUnit {
             if   $item.isa( 'Sub'    ) 
               || $item.isa( 'Method' )
             {
-                $s := $s ~ $item.emit;
+                $s := $s ~ $item.emit_parrot;
             }
         };
 
@@ -74,7 +74,7 @@ class CompUnit {
             if    ( $item.isa( 'Decl' ) )
                && ( $item.decl eq 'has' ) 
             {
-                $s := $s ~ $item.emit;
+                $s := $s ~ $item.emit_parrot;
             };
             if   $item.isa( 'Decl'   ) 
               || $item.isa( 'Sub'    ) 
@@ -83,7 +83,7 @@ class CompUnit {
                 # already done - ignore
             }
             else {
-                $s := $s ~ $item.emit;
+                $s := $s ~ $item.emit_parrot;
             }
         };
         $s := $s ~ 
@@ -100,7 +100,7 @@ class CompUnit {
 
 class Val::Int {
     has $.int;
-    method emit {
+    method emit_parrot {
         '  $P0 = new .Integer' ~ Main::newline() ~
         '  $P0 = ' ~ $.int ~ Main::newline()
     }
@@ -108,7 +108,7 @@ class Val::Int {
 
 class Val::Bit {
     has $.bit;
-    method emit {
+    method emit_parrot {
         '  $P0 = new "Integer"' ~ Main::newline() ~
         '  $P0 = ' ~ $.bit ~ Main::newline()
     }
@@ -116,7 +116,7 @@ class Val::Bit {
 
 class Val::Num {
     has $.num;
-    method emit {
+    method emit_parrot {
         '  $P0 = new "Float"' ~ Main::newline ~
         '  $P0 = ' ~ $.num ~ Main::newline
     }
@@ -124,14 +124,14 @@ class Val::Num {
 
 class Val::Buf {
     has $.buf;
-    method emit {
+    method emit_parrot {
         '  $P0 = new "String"' ~ Main::newline ~
         '  $P0 = ' ~ Main::quote ~ $.buf ~ Main::quote ~ Main::newline
     }
 }
 
 class Val::Undef {
-    method emit {
+    method emit_parrot {
         '  $P0 = new .Undef' ~ Main::newline
     }
 }
@@ -139,7 +139,7 @@ class Val::Undef {
 class Val::Object {
     has $.class;
     has %.fields;
-    method emit {
+    method emit_parrot {
         die 'Val::Object - not used yet';
         # 'bless(' ~ %.fields.perl ~ ', ' ~ $.class.perl ~ ')';
     }
@@ -147,22 +147,22 @@ class Val::Object {
 
 class Lit::Seq {
     has @.seq;
-    method emit {
+    method emit_parrot {
         die 'Lit::Seq - not used yet';
-        # '(' ~ (@.seq.>>emit).join('') ~ ')';
+        # '(' ~ (@.seq.>>emit_parrot).join('') ~ ')';
     }
 }
 
 class Lit::Array {
     has @.array1;
-    method emit {
+    method emit_parrot {
         my $a := @.array1;
         my $item;
         my $s := 
             '  save $P1' ~ Main::newline() ~
             '  $P1 = new .ResizablePMCArray' ~ Main::newline();
         for @$a -> $item {
-            $s := $s ~ $item.emit;
+            $s := $s ~ $item.emit_parrot;
             $s := $s ~ 
             '  push $P1, $P0' ~ Main.newline;
         };
@@ -175,7 +175,7 @@ class Lit::Array {
 
 class Lit::Hash {
     has @.hash1;
-    method emit {
+    method emit_parrot {
         my $a := @.hash1;
         my $item;
         my $s := 
@@ -183,10 +183,10 @@ class Lit::Hash {
             '  save $P2' ~ Main::newline() ~
             '  $P1 = new .Hash' ~ Main::newline();
         for @$a -> $item {
-            $s := $s ~ ($item[0]).emit;
+            $s := $s ~ ($item[0]).emit_parrot;
             $s := $s ~ 
             '  $P2 = $P0' ~ Main.newline;
-            $s := $s ~ ($item[1]).emit;
+            $s := $s ~ ($item[1]).emit_parrot;
             $s := $s ~ 
             '  set $P1[$P2], $P0' ~ Main.newline;
         };
@@ -199,7 +199,7 @@ class Lit::Hash {
 }
 
 class Lit::Code {
-    method emit {
+    method emit_parrot {
         die 'Lit::Code - not used yet';
     }
 }
@@ -207,7 +207,7 @@ class Lit::Code {
 class Lit::Object {
     has $.class;
     has @.fields;
-    method emit {
+    method emit_parrot {
         # ::Type( 'value' => 42 )
         my $fields := @.fields;
         my $str := '';        
@@ -217,9 +217,9 @@ class Lit::Object {
             '  $P1 = new ' ~ Main::quote ~ $.class ~ Main::quote ~ Main::newline();
         for @$fields -> $field {
             $str := $str ~ 
-                ($field[0]).emit ~ 
+                ($field[0]).emit_parrot ~ 
                 '  $S2 = $P0'    ~ Main::newline() ~
-                ($field[1]).emit ~ 
+                ($field[1]).emit_parrot ~ 
                 '  setattribute $P1, $S2, $P0' ~ Main::newline();
         };
         $str := $str ~ 
@@ -233,13 +233,13 @@ class Lit::Object {
 class Index {
     has $.obj;
     has $.index;
-    method emit {
+    method emit_parrot {
         my $s := 
             '  save $P1'  ~ Main::newline();
-        $s := $s ~ $.obj.emit;
+        $s := $s ~ $.obj.emit_parrot;
         $s := $s ~ 
             '  $P1 = $P0' ~ Main.newline();
-        $s := $s ~ $.index.emit;
+        $s := $s ~ $.index.emit_parrot;
         $s := $s ~ 
             '  $P0 = $P1[$P0]' ~ Main.newline();
         my $s := $s ~ 
@@ -251,13 +251,13 @@ class Index {
 class Lookup {
     has $.obj;
     has $.index;
-    method emit {
+    method emit_parrot {
         my $s := 
             '  save $P1'  ~ Main::newline();
-        $s := $s ~ $.obj.emit;
+        $s := $s ~ $.obj.emit_parrot;
         $s := $s ~ 
             '  $P1 = $P0' ~ Main.newline;
-        $s := $s ~ $.index.emit;
+        $s := $s ~ $.index.emit_parrot;
         $s := $s ~ 
             '  $P0 = $P1[$P0]' ~ Main.newline;
         my $s := $s ~ 
@@ -277,7 +277,7 @@ class Var {
     has $.sigil;
     has $.twigil;
     has $.name;
-    method emit {
+    method emit_parrot {
            ( $.twigil eq '.' )
         ?? ( 
              '  $P0 = getattribute self, \'' ~ $.name ~ '\'' ~ Main::newline() 
@@ -316,7 +316,7 @@ class Var {
 class Bind {
     has $.parameters;
     has $.arguments;
-    method emit {
+    method emit_parrot {
         if $.parameters.isa( 'Lit::Array' ) {
 
             #  [$a, [$b, $c]] := [1, [2, 3]]
@@ -327,10 +327,10 @@ class Bind {
             my $i := 0;
             for @$a -> $var {
                 my $bind := ::Bind( 'parameters' => $var, 'arguments' => ($b[$i]) );
-                $str := $str ~ $bind.emit;
+                $str := $str ~ $bind.emit_parrot;
                 $i := $i + 1;
             };
-            return $str ~ $.parameters.emit;
+            return $str ~ $.parameters.emit_parrot;
         };
         if $.parameters.isa( 'Lit::Hash' ) {
 
@@ -349,10 +349,10 @@ class Bind {
                     }
                 };
                 my $bind := ::Bind( 'parameters' => $var[1], 'arguments' => $arg );
-                $str := $str ~ $bind.emit;
+                $str := $str ~ $bind.emit_parrot;
                 $i := $i + 1;
             };
-            return $str ~ $.parameters.emit;
+            return $str ~ $.parameters.emit_parrot;
         };
         if $.parameters.isa( 'Lit::Object' ) {
 
@@ -372,19 +372,19 @@ class Bind {
                         hyper     => 0 
                     )
                 );
-                $str := $str ~ $bind.emit;
+                $str := $str ~ $bind.emit_parrot;
             };
-            return $str ~ $.parameters.emit;
+            return $str ~ $.parameters.emit_parrot;
         };
         if $.parameters.isa( 'Var' ) {
             return
-                $.arguments.emit ~
+                $.arguments.emit_parrot ~
                 '  ' ~ $.parameters.full_name ~ ' = $P0' ~ Main::newline();
                 #'  store_lex \'' ~ $.parameters.full_name ~ '\', $P0' ~ Main::newline();
         };
         if $.parameters.isa( 'Decl' ) {
             return
-                $.arguments.emit ~
+                $.arguments.emit_parrot ~
                 '  .local pmc ' ~ (($.parameters).var).full_name     ~ Main::newline() ~
                 '  ' ~ (($.parameters).var).full_name ~ ' = $P0'     ~ Main::newline() ~
                 '  .lex \'' ~ (($.parameters).var).full_name ~ '\', $P0' ~ Main::newline();
@@ -395,13 +395,13 @@ class Bind {
             my $obj   := $param.obj;
             my $index := $param.index;
             return
-                $.arguments.emit ~
+                $.arguments.emit_parrot ~
                 '  save $P2'  ~ Main::newline() ~
                 '  $P2 = $P0' ~ Main::newline() ~
                 '  save $P1'  ~ Main::newline() ~
-                $obj.emit     ~
+                $obj.emit_parrot     ~
                 '  $P1 = $P0' ~ Main::newline() ~
-                $index.emit   ~
+                $index.emit_parrot   ~
                 '  $P1[$P0] = $P2' ~ Main::newline() ~
                 '  restore $P1' ~ Main::newline() ~
                 '  restore $P2' ~ Main::newline();
@@ -411,24 +411,24 @@ class Bind {
             my $obj   := $param.obj;
             my $index := $param.index;
             return
-                $.arguments.emit ~
+                $.arguments.emit_parrot ~
                 '  save $P2'  ~ Main::newline() ~
                 '  $P2 = $P0' ~ Main::newline() ~
                 '  save $P1'  ~ Main::newline() ~
-                $obj.emit     ~
+                $obj.emit_parrot     ~
                 '  $P1 = $P0' ~ Main::newline() ~
-                $index.emit   ~
+                $index.emit_parrot   ~
                 '  $P1[$P0] = $P2' ~ Main::newline() ~
                 '  restore $P1' ~ Main::newline() ~
                 '  restore $P2' ~ Main::newline();
         };
-        die 'Not implemented binding: ' ~ $.parameters ~ Main::newline() ~ $.parameters.emit;
+        die 'Not implemented binding: ' ~ $.parameters ~ Main::newline() ~ $.parameters.emit_parrot;
     }
 }
 
 class Proto {
     has $.name;
-    method emit {
+    method emit_parrot {
         '  $P0 = ' ~ $.name ~ Main::newline()
     }
 }
@@ -439,7 +439,7 @@ class Call {
     has $.method;
     has @.arguments;
     #has $.hyper;
-    method emit {
+    method emit_parrot {
         if     ($.method eq 'perl')
             || ($.method eq 'yaml')
             || ($.method eq 'say' )
@@ -449,11 +449,11 @@ class Call {
         {
             if ($.hyper) {
                 return
-                    '[ map { Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit).join('') ~ ')' ~ ' } @{ ' ~ $.invocant.emit ~ ' } ]';
+                    '[ map { Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit_parrot).join('') ~ ')' ~ ' } @{ ' ~ $.invocant.emit_parrot ~ ' } ]';
             }
             else {
                 return
-                    'Main::' ~ $.method ~ '(' ~ $.invocant.emit ~ ', ' ~ (@.arguments.>>emit).join('') ~ ')';
+                    'Main::' ~ $.method ~ '(' ~ $.invocant.emit_parrot ~ ', ' ~ (@.arguments.>>emit_parrot).join('') ~ ')';
             }
         };
 
@@ -462,13 +462,13 @@ class Call {
              $meth := '';
         };
 
-        my $call := '->' ~ $meth ~ '(' ~ (@.arguments.>>emit).join('') ~ ')';
+        my $call := '->' ~ $meth ~ '(' ~ (@.arguments.>>emit_parrot).join('') ~ ')';
         if ($.hyper) {
-            return '[ map { $_' ~ $call ~ ' } @{ ' ~ $.invocant.emit ~ ' } ]';
+            return '[ map { $_' ~ $call ~ ' } @{ ' ~ $.invocant.emit_parrot ~ ' } ]';
         };
 
         # TODO - arguments
-        #$.invocant.emit ~
+        #$.invocant.emit_parrot ~
         #'  $P0.' ~ $meth ~ '()' ~ Main.newline;
 
         my @args := @.arguments;
@@ -480,11 +480,11 @@ class Call {
         };
         my $i := 10;
         for @args -> $arg {
-            $str := $str ~ $arg.emit ~
+            $str := $str ~ $arg.emit_parrot ~
                 '  $P' ~ $i ~ ' = $P0' ~ Main::newline();
             $i := $i + 1;
         };
-        $str := $str ~ $.invocant.emit ~
+        $str := $str ~ $.invocant.emit_parrot ~
             '  $P0 = $P0.' ~ $meth ~ '('; 
         #$str := $str ~ '  ' ~ $.code ~ '(';
         $i := 0;
@@ -506,7 +506,7 @@ class Apply {
     has $.code;
     has @.arguments;
     my $label := 100;
-    method emit {
+    method emit_parrot {
 
         my $code := $.code;
 
@@ -519,13 +519,13 @@ class Apply {
 
         if $code eq 'say'        {
             return
-                (@.arguments.>>emit).join( '  print $P0' ~ Main::newline() ) ~
+                (@.arguments.>>emit_parrot).join( '  print $P0' ~ Main::newline() ) ~
                 '  print $P0' ~ Main::newline() ~
                 '  print ' ~ Main::quote ~ '\\' ~ 'n' ~ Main::quote ~ Main::newline()
         };
         if $code eq 'print'      {
             return
-                (@.arguments.>>emit).join( '  print $P0' ~ Main::newline() ) ~
+                (@.arguments.>>emit_parrot).join( '  print $P0' ~ Main::newline() ) ~
                 '  print $P0' ~ Main::newline() 
         };
         if $code eq 'array'      { 
@@ -534,7 +534,7 @@ class Apply {
 
         if $code eq 'prefix:<~>' { 
             return 
-                (@.arguments[0]).emit ~
+                (@.arguments[0]).emit_parrot ~
                 '  $S0 = $P0'    ~ Main::newline() ~
                 '  $P0 = $S0'    ~ Main::newline();
         };
@@ -543,14 +543,14 @@ class Apply {
                 ( ::If( cond      => @.arguments[0],
                         body      => [ ::Val::Bit( bit => 0 ) ],
                         otherwise => [ ::Val::Bit( bit => 1 ) ] 
-                ) ).emit;
+                ) ).emit_parrot;
         };
         if $code eq 'prefix:<?>' {  
             return 
                 ( ::If( cond      => @.arguments[0],
                         body      => [ ::Val::Bit( bit => 1 ) ],
                         otherwise => [ ::Val::Bit( bit => 0 ) ] 
-                ) ).emit;
+                ) ).emit_parrot;
         };
 
         if $code eq 'prefix:<$>' { 
@@ -565,10 +565,10 @@ class Apply {
         
         if $code eq 'infix:<~>'  { 
             return 
-                (@.arguments[0]).emit ~
+                (@.arguments[0]).emit_parrot ~
                 '  $S0 = $P0'    ~ Main::newline() ~
                 '  save $S0'     ~ Main::newline() ~
-                (@.arguments[1]).emit ~
+                (@.arguments[1]).emit_parrot ~
                 '  $S1 = $P0'    ~ Main::newline() ~
                 '  restore $S0'  ~ Main::newline() ~
                 '  $S0 = concat $S0, $S1' ~ Main::newline() ~
@@ -577,18 +577,18 @@ class Apply {
         if $code eq 'infix:<+>'  { 
             return 
                 '  save $P1'        ~ Main::newline() ~
-                (@.arguments[0]).emit ~
+                (@.arguments[0]).emit_parrot ~
                 '  $P1 = $P0'       ~ Main::newline() ~
-                (@.arguments[1]).emit ~
+                (@.arguments[1]).emit_parrot ~
                 '  $P0 = $P1 + $P0' ~ Main::newline() ~
                 '  restore $P1'     ~ Main::newline()
         };
         if $code eq 'infix:<->'  { 
             return 
                 '  save $P1'        ~ Main::newline() ~
-                (@.arguments[0]).emit ~
+                (@.arguments[0]).emit_parrot ~
                 '  $P1 = $P0'       ~ Main::newline() ~
-                (@.arguments[1]).emit ~
+                (@.arguments[1]).emit_parrot ~
                 '  $P0 = $P1 - $P0' ~ Main::newline() ~
                 '  restore $P1'     ~ Main::newline()
         };
@@ -598,7 +598,7 @@ class Apply {
                 ( ::If( cond => @.arguments[0],
                         body => [@.arguments[1]],
                         otherwise => [ ]
-                ) ).emit;
+                ) ).emit_parrot;
         };
 
         if $code eq 'infix:<||>' {  
@@ -606,17 +606,17 @@ class Apply {
                 ( ::If( cond => @.arguments[0],
                         body => [ ],
                         otherwise => [@.arguments[1]] 
-                ) ).emit;
+                ) ).emit_parrot;
         };
 
         if $code eq 'infix:<eq>' { 
             $label := $label + 1;
             my $id := $label;
             return
-                (@.arguments[0]).emit ~
+                (@.arguments[0]).emit_parrot ~
                 '  $S0 = $P0'    ~ Main::newline() ~
                 '  save $S0'     ~ Main::newline() ~
-                (@.arguments[1]).emit ~
+                (@.arguments[1]).emit_parrot ~
                 '  $S1 = $P0'    ~ Main::newline() ~
                 '  restore $S0'  ~ Main::newline() ~
                 '  if $S0 == $S1 goto eq' ~ $id ~ Main::newline() ~
@@ -630,10 +630,10 @@ class Apply {
             $label := $label + 1;
             my $id := $label;
             return
-                (@.arguments[0]).emit ~
+                (@.arguments[0]).emit_parrot ~
                 '  $S0 = $P0'    ~ Main::newline() ~
                 '  save $S0'     ~ Main::newline() ~
-                (@.arguments[1]).emit ~
+                (@.arguments[1]).emit_parrot ~
                 '  $S1 = $P0'    ~ Main::newline() ~
                 '  restore $S0'  ~ Main::newline() ~
                 '  if $S0 == $S1 goto eq' ~ $id ~ Main::newline() ~
@@ -648,9 +648,9 @@ class Apply {
             my $id := $label;
             return
                 '  save $P1'     ~ Main::newline() ~
-                (@.arguments[0]).emit ~
+                (@.arguments[0]).emit_parrot ~
                 '  $P1 = $P0'    ~ Main::newline() ~
-                (@.arguments[1]).emit ~
+                (@.arguments[1]).emit_parrot ~
                 '  if $P0 == $P1 goto eq' ~ $id ~ Main::newline() ~
                 '  $P0 = 0'      ~ Main::newline() ~
                 '  goto eq_end' ~ $id ~ Main::newline() ~
@@ -664,9 +664,9 @@ class Apply {
             my $id := $label;
             return
                 '  save $P1'     ~ Main::newline() ~
-                (@.arguments[0]).emit ~
+                (@.arguments[0]).emit_parrot ~
                 '  $P1 = $P0'    ~ Main::newline() ~
-                (@.arguments[1]).emit ~
+                (@.arguments[1]).emit_parrot ~
                 '  if $P0 == $P1 goto eq' ~ $id ~ Main::newline() ~
                 '  $P0 = 1'      ~ Main::newline() ~
                 '  goto eq_end' ~ $id ~ Main::newline() ~
@@ -681,25 +681,25 @@ class Apply {
                 ( ::If( cond => @.arguments[0],
                         body => [@.arguments[1]],
                         otherwise => [@.arguments[2]] 
-                ) ).emit;
+                ) ).emit_parrot;
         };
 
         if $code eq 'defined'  { 
             return 
-                (@.arguments[0]).emit ~
+                (@.arguments[0]).emit_parrot ~
                 '  $I0 = defined $P0' ~ Main::newline() ~
                 '  $P0 = $I0' ~ Main::newline();
         };
 
         if $code eq 'substr'  { 
             return 
-                (@.arguments[0]).emit ~
+                (@.arguments[0]).emit_parrot ~
                 '  $S0 = $P0'    ~ Main::newline() ~
                 '  save $S0'     ~ Main::newline() ~
-                (@.arguments[1]).emit ~
+                (@.arguments[1]).emit_parrot ~
                 '  $I0 = $P0'    ~ Main::newline() ~
                 '  save $I0'     ~ Main::newline() ~
-                (@.arguments[2]).emit ~
+                (@.arguments[2]).emit_parrot ~
                 '  $I1 = $P0'    ~ Main::newline() ~
                 '  restore $I0'  ~ Main::newline() ~
                 '  restore $S0'  ~ Main::newline() ~
@@ -707,7 +707,7 @@ class Apply {
                 '  $P0 = $S0'    ~ Main::newline();
         };
 
-        #(@.arguments.>>emit).join('') ~
+        #(@.arguments.>>emit_parrot).join('') ~
         #'  ' ~ $.code ~ '( $P0 )' ~ Main::newline();
         
         my @args := @.arguments;
@@ -720,7 +720,7 @@ class Apply {
         };
         my $i := 10;
         for @args -> $arg {
-            $str := $str ~ $arg.emit ~
+            $str := $str ~ $arg.emit_parrot ~
                 '  $P' ~ $i ~ ' = $P0' ~ Main::newline();
             $i := $i + 1;
         };
@@ -742,8 +742,8 @@ class Apply {
 
 class Return {
     has $.result;
-    method emit {
-        $.result.emit ~ 
+    method emit_parrot {
+        $.result.emit_parrot ~ 
         '  .return( $P0 )' ~ Main::newline();
     }
 }
@@ -753,16 +753,16 @@ class If {
     has @.body;
     has @.otherwise;
     my $label := 100;
-    method emit {
+    method emit_parrot {
         $label := $label + 1;
         my $id := $label;
         return
-            $.cond.emit ~ 
+            $.cond.emit_parrot ~ 
             '  unless $P0 goto ifelse' ~ $id ~ Main::newline() ~
-                (@.body.>>emit).join('') ~ 
+                (@.body.>>emit_parrot).join('') ~ 
             '  goto ifend' ~ $id ~ Main::newline() ~
             'ifelse' ~ $id ~ ':' ~ Main::newline() ~
-                (@.otherwise.>>emit).join('') ~ 
+                (@.otherwise.>>emit_parrot).join('') ~ 
             'ifend'  ~ $id ~ ':'  ~ Main::newline();
     }
 }
@@ -772,7 +772,7 @@ class For {
     has @.body;
     has @.topic;
     my $label := 100;
-    method emit {
+    method emit_parrot {
         my $cond := $.cond;
         $label := $label + 1;
         my $id := $label;
@@ -783,7 +783,7 @@ class For {
         };
         return
             '' ~ 
-            $cond.emit ~
+            $cond.emit_parrot ~
             '  save $P1' ~ Main::newline() ~
             '  save $P2' ~ Main::newline() ~
             '  $P1 = new .Iterator, $P0' ~ Main::newline() ~
@@ -791,7 +791,7 @@ class For {
             '  unless $P1 goto iter_done'  ~ $id ~ Main::newline() ~
             '  $P2 = shift $P1' ~ Main::newline() ~
             '  store_lex \'' ~ $.topic.full_name ~ '\', $P2' ~ Main::newline() ~
-            (@.body.>>emit).join('') ~
+            (@.body.>>emit_parrot).join('') ~
             '  goto test_iter'  ~ $id ~ Main::newline() ~
             ' iter_done'  ~ $id ~ ':' ~ Main::newline() ~
             '  restore $P2' ~ Main::newline() ~
@@ -804,12 +804,12 @@ class Decl {
     has $.decl;
     has $.type;
     has $.var;
-    method emit {
+    method emit_parrot {
         my $decl := $.decl;
         my $name := $.var.name;
            ( $decl eq 'has' )
         ?? ( '  addattribute self, ' ~ Main::quote ~ $name ~ Main::quote ~ Main::newline() )
-        !! #$.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit;
+        !! #$.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_parrot;
            ( '  .local pmc ' ~ ($.var).full_name ~ ' ' ~ Main::newline() ~
              '  .lex \'' ~ ($.var).full_name ~ '\', ' ~ ($.var).full_name ~ ' ' ~ Main::newline() 
            );
@@ -820,7 +820,7 @@ class Sig {
     has $.invocant;
     has $.positional;
     has $.named;
-    method emit {
+    method emit_parrot {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
     method invocant {
@@ -835,7 +835,7 @@ class Method {
     has $.name;
     has $.sig;
     has @.block;
-    method emit {
+    method emit_parrot {
         my $sig := $.sig;
         my $invocant := $sig.invocant;
         my $pos := $sig.positional;
@@ -854,7 +854,7 @@ class Method {
             '  .param pmc params  :slurpy'  ~ Main::newline() ~
             '  .lex \'' ~ $invocant.full_name ~ '\', self' ~ Main::newline() ~
             $str ~
-            (@.block.>>emit).join('') ~ 
+            (@.block.>>emit_parrot).join('') ~ 
             '.end' ~ Main::newline() ~ Main::newline();
     }
 }
@@ -863,7 +863,7 @@ class Sub {
     has $.name;
     has $.sig;
     has @.block;
-    method emit {
+    method emit_parrot {
         my $sig := $.sig;
         my $invocant := $sig.invocant;
         my $pos := $sig.positional;
@@ -881,22 +881,22 @@ class Sub {
                 ' :outer(' ~ Main::quote ~ '_class_vars_' ~ Main::quote ~ ')' ~ Main::newline() ~
             '  .param pmc params  :slurpy'  ~ Main::newline() ~
             $str ~
-            (@.block.>>emit).join('') ~ 
+            (@.block.>>emit_parrot).join('') ~ 
             '.end' ~ Main::newline() ~ Main::newline();
     }
 }
 
 class Do {
     has @.block;
-    method emit {
+    method emit_parrot {
         # TODO - create a new lexical pad
-        (@.block.>>emit).join('') 
+        (@.block.>>emit_parrot).join('') 
     }
 }
 
 class Use {
     has $.mod;
-    method emit {
+    method emit_parrot {
         '  .include ' ~ Main::quote ~ $.mod ~ Main::quote ~ Main::newline()
     }
 }
@@ -909,7 +909,7 @@ MiniPerl6::Parrot::Emit - Code generator for MiniPerl6-in-Parrot
 
 =head1 SYNOPSIS
 
-    $program.emit  # generated Perl5 code
+    $program.emit_parrot  # generated Parrot code
 
 =head1 DESCRIPTION
 

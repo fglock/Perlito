@@ -22,6 +22,11 @@ elsif ( $target_switch eq '-Cjs' ) {
     $target_dir = 'libjs';
     $target_suffix = '.js';
 }
+elsif ( $target_switch eq '-Cparrot' ) {
+    $backend    = 'parrot';    
+    $target_dir = 'libparrot';
+    $target_suffix = '.pir';
+}
 elsif ( $target_switch eq '-Cast-perl5' ) {
     $backend    = 'ast-perl5';    
     $target_dir = 'libast-perl5';
