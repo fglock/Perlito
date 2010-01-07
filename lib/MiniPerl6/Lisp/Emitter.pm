@@ -437,6 +437,13 @@ class Apply {
             $ns := Main::to_lisp_namespace( $.namespace ) ~ '::';
         }
         my $code := $ns ~ $.code;
+
+        if $code eq 'infix:<~>'  { 
+            return '(concatenate \'string (sv-string ' ~ (@.arguments[0]).emit_lisp ~ ') (sv-string ' ~ (@.arguments[1]).emit_lisp ~ '))'; }
+        if $code eq 'ternary:<?? !!>' { 
+            return '(if (sv-bool ' ~ (@.arguments[0]).emit_lisp ~ ') ' ~ (@.arguments[1]).emit_lisp ~ ' ' ~ (@.arguments[2]).emit_lisp ~ ')';
+        } 
+
         my $args := '';
         if @.arguments {
             $args := (@.arguments.>>emit_lisp).join(' ');
@@ -448,8 +455,6 @@ class Apply {
         if $code eq 'substr'     { return '(sv-substr '                 ~ $args ~ ')' };
         if $code eq 'say'        { return '(mp-Main::sv-say (list '     ~ $args ~ '))' };
         if $code eq 'print'      { return '(mp-Main::sv-print (list '   ~ $args ~ '))' };
-        if $code eq 'infix:<~>'  { 
-            return '(concatenate \'string (sv-string ' ~ (@.arguments[0]).emit_lisp ~ ') (sv-string ' ~ (@.arguments[1]).emit_lisp ~ '))'; }
         if $code eq 'warn'       { 
             return '(write-line (format nil "~{~a~}" (list ' ~ $args ~ ')) *error-output*)' };
         if $code eq 'die'        { 
@@ -477,9 +482,6 @@ class Apply {
         if $code eq 'infix:<==>' { return '(sv-eq-int '       ~ $args ~ ')' };
         if $code eq 'infix:<!=>' { return '(not (sv-eq-int '  ~ $args ~ '))' };
 
-        if $code eq 'ternary:<?? !!>' { 
-            return '(if (sv-bool ' ~ (@.arguments[0]).emit_lisp ~ ') ' ~ (@.arguments[1]).emit_lisp ~ ' ' ~ (@.arguments[2]).emit_lisp ~ ')';
-        } 
         return '(' ~ $ns ~ Main::to_lisp_identifier($.code) ~ ' ' ~ $args ~ ')';
     }
 }
