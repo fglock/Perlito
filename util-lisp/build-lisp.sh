@@ -52,7 +52,7 @@ sbcl --script mp6-lisp.lisp \
                lib/MiniPerl6/Javascript/Emitter.pm    \
     >  liblisp-new/MiniPerl6/Javascript/Emitter.lisp
 
-# sbcl --script mp6-lisp.lisp \
-#               lib/MiniPerl6/Go/Emitter.pm    \
-#    >  liblisp-new/MiniPerl6/Go/Emitter.lisp
+sbcl --script mp6-lisp.lisp \
+               lib/MiniPerl6/Go/Emitter.pm    \
+    >  liblisp-new/MiniPerl6/Go/Emitter.lisp
 
