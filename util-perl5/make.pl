@@ -22,6 +22,11 @@ elsif ( $target_switch eq '-Cjs' ) {
     $target_dir = 'libjs';
     $target_suffix = '.js';
 }
+elsif ( $target_switch eq '-Cast-perl5' ) {
+    $backend    = 'ast-perl5';    
+    $target_dir = 'libast-perl5';
+    $target_suffix = '.p5ast';
+}
 else {
     die "invalid option: $target_switch\n";
 }
@@ -54,6 +59,7 @@ sub make {
     for my $dir (`find $source -type d`) {
         chomp($dir);
         $dir =~ s/^\Q$source\/\E//;
+        next if $dir eq 'lib';
         print("mkdir $new/$dir\n");
         mkdir("$new/$dir");
     }
@@ -67,7 +73,27 @@ sub make {
         my $new_file = $file;
         $new_file =~ s/\.pm$/$target_suffix/;
 
-        compile("$source/$file","$new/$new_file");
+        my $ast_file = $file;
+        $ast_file =~ s/\.pm$/.p5ast/;
+        $ast_file = "libast-perl5/$ast_file";
+        my $date_ast = -M $ast_file;
+        my $date_src = -M "$source/$file";
+        # warn " src $date_src ast $ast_file $date_ast ", ( $date_ast && $date_ast < $date_src && -s $ast_file ? "ok" : "not ok" ), "\n";
+        if ( $date_ast && $date_ast < $date_src && -s $ast_file ) {
+            # warn "ast looks ok\n";
+            if ( $backend eq 'ast-perl5' ) {
+                # skip
+                print("cp '$ast_file' '$new/$new_file'\n");
+                system("cp '$ast_file' '$new/$new_file'");
+            }
+            else {
+                compile( $ast_file, "$new/$new_file" );
+            }
+        }
+        else {
+            # warn "ast is outdated\n";
+            compile("$source/$file","$new/$new_file");
+        }
         $seen{$file} = 1;
     }
     for my $file (`find $source -name '*.*'`) {
