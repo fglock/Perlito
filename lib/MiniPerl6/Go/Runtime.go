@@ -257,12 +257,10 @@ func (i Array) f_bool(Capture) *Any {
 func (i Array) f_int(Capture) *Any	{ return toInt(i.n + 1) }
 func (i Array) f_str(Capture) *Any	{ return i.f_join(Capture{p: []*Any{toStr(" ")}}) }
 func (i *Array) f_array(Capture) *Any	{ 
-    var v Any = *i; 
-    return &v
-    // var p Any;
-    // var j *Any = &p;
-    // *j = i;
-    // return j;
+    var p Any;
+    var j *Any = &p;
+    *j = i;
+    return j;
 }
 func (i Array) f_hash(Capture) *Any {
 	return h_hash()	// TODO
@@ -272,7 +270,9 @@ func (i *Array) f_index(v Capture) *Any {
 	// TODO autoextend
 	// TODO laziness
 	if i.v[pos] == nil {
-		i.v[pos] = u_undef()	// is this needed?
+        var j *Any = u_undef();
+        i.v[pos] = j;
+        return j;
 	}
 	return i.v[pos];
 }

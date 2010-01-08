@@ -387,9 +387,9 @@ class Lit::Array {
                 || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' ) 
             {
                 $str := $str 
-                    ~ 'func(a_ Array) { ' 
+                    ~ 'func(a_ *Array) { ' 
                         ~ 'for i_ := 0; i_ < a_.n; i_++ { (*a).(push_er).f_push( Capture{ p: []*Any{ a_.v[i_] } } ) } ' 
-                    ~ '}( (*' ~ Call::emit_go_call( $item, 'array' ) ~ ').(Array) ); '
+                    ~ '}( (*' ~ Call::emit_go_call( $item, 'array' ) ~ ').(*Array) ); '
             }
             else {
                 $str := $str ~ '(*a).(push_er).f_push( Capture{ p: []*Any{ ' ~ $item.emit_go ~ ' } } ); '
@@ -624,7 +624,7 @@ class Call {
             return
                 'func (a_ *Any) *Any { '
                     ~ 'var out = a_array(); ' 
-                    ~ 'var i = (*(*a_).(array_er).f_array(Capture{})).(Array); '
+                    ~ 'var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); '
                     ~ 'for pos := 0; pos <= i.n; pos++ { '
                         ~ '(*out).(push_er).f_push( Capture{p: []*Any{ (*i.v[pos]).(' ~ $meth ~ '_er).f_' ~ $meth ~ '(Capture{ p : []*Any{}  }) }} ) } '
                     ~ 'return out; '
@@ -869,7 +869,7 @@ class For {
     has @.topic;
     method emit_go {
         'func (a_ *Any) { '
-            ~ 'var i = (*(*a_).(array_er).f_array(Capture{})).(Array); '
+            ~ 'var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); '
             ~ 'for pos := 0; pos <= i.n; pos++ { '
                 ~ 'func (' ~ $.topic.emit_go ~ ' *Any) { '
                     ~ ::MiniPerl6::Go::LexicalBlock( block => @.body, needs_return => 0 ).emit_go 

@@ -145,7 +145,7 @@ sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; '[]*Any{ ' . Main::
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { @_ == 1 ? ( $_[0]->{array1} ) : ( $_[0]->{array1} = $_[1] ) };
-sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $str = ''); do { for my $item ( @{$self->{array1}} ) { do { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { ($str = $str . 'func(a_ Array) { ' . 'for i_ := 0; i_ < a_.n; i_++ { (*a).(push_er).f_push( Capture{ p: []*Any{ a_.v[i_] } } ) } ' . '}( (*' . Call::emit_go_call($item, 'array') . ').(Array) ); ') } else { ($str = $str . '(*a).(push_er).f_push( Capture{ p: []*Any{ ' . $item->emit_go() . ' } } ); ') } } } }; 'func () *Any { ' . 'a := a_array(); ' . $str . 'return a; ' . '}()' }
+sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $str = ''); do { for my $item ( @{$self->{array1}} ) { do { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { ($str = $str . 'func(a_ *Array) { ' . 'for i_ := 0; i_ < a_.n; i_++ { (*a).(push_er).f_push( Capture{ p: []*Any{ a_.v[i_] } } ) } ' . '}( (*' . Call::emit_go_call($item, 'array') . ').(*Array) ); ') } else { ($str = $str . '(*a).(push_er).f_push( Capture{ p: []*Any{ ' . $item->emit_go() . ' } } ); ') } } } }; 'func () *Any { ' . 'a := a_array(); ' . $str . 'return a; ' . '}()' }
 
 }
 {
@@ -218,7 +218,7 @@ sub invocant { @_ == 1 ? ( $_[0]->{invocant} ) : ( $_[0]->{invocant} = $_[1] ) }
 sub hyper { @_ == 1 ? ( $_[0]->{hyper} ) : ( $_[0]->{hyper} = $_[1] ) };
 sub method { @_ == 1 ? ( $_[0]->{method} ) : ( $_[0]->{method} = $_[1] ) };
 sub arguments { @_ == 1 ? ( $_[0]->{arguments} ) : ( $_[0]->{arguments} = $_[1] ) };
-sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $invocant = $self->{invocant}->emit_go()); do { if (Main::isa($self->{invocant}, 'Proto')) { ($invocant = 'Proto_' . $invocant) } else {  } }; (my  $meth = $self->{method}); do { if (($meth eq 'postcircumfix:<( )>')) { do { if ($self->{hyper}) { ($meth = '') } else { return($invocant . '( Capture{ p : []*Any{ ' . Main::join([ map { $_->emit_go() } @{ $self->{arguments} } ], ', ') . ' } } )') } } } else {  } }; do { if ($self->{hyper}) { return('func (a_ *Any) *Any { ' . 'var out = a_array(); ' . 'var i = (*(*a_).(array_er).f_array(Capture{})).(Array); ' . 'for pos := 0; pos <= i.n; pos++ { ' . '(*out).(push_er).f_push( Capture{p: []*Any{ (*i.v[pos]).(' . $meth . '_er).f_' . $meth . '(Capture{ p : []*Any{}  }) }} ) } ' . 'return out; ' . '}(' . $invocant . ')') } else {  } }; return('(*' . $invocant . ').(' . $meth . '_er).f_' . $meth . '( Capture{ p : []*Any{ ' . Main::join([ map { $_->emit_go() } @{ $self->{arguments} } ], ', ') . ' } } )') };
+sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $invocant = $self->{invocant}->emit_go()); do { if (Main::isa($self->{invocant}, 'Proto')) { ($invocant = 'Proto_' . $invocant) } else {  } }; (my  $meth = $self->{method}); do { if (($meth eq 'postcircumfix:<( )>')) { do { if ($self->{hyper}) { ($meth = '') } else { return($invocant . '( Capture{ p : []*Any{ ' . Main::join([ map { $_->emit_go() } @{ $self->{arguments} } ], ', ') . ' } } )') } } } else {  } }; do { if ($self->{hyper}) { return('func (a_ *Any) *Any { ' . 'var out = a_array(); ' . 'var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); ' . 'for pos := 0; pos <= i.n; pos++ { ' . '(*out).(push_er).f_push( Capture{p: []*Any{ (*i.v[pos]).(' . $meth . '_er).f_' . $meth . '(Capture{ p : []*Any{}  }) }} ) } ' . 'return out; ' . '}(' . $invocant . ')') } else {  } }; return('(*' . $invocant . ').(' . $meth . '_er).f_' . $meth . '( Capture{ p : []*Any{ ' . Main::join([ map { $_->emit_go() } @{ $self->{arguments} } ], ', ') . ' } } )') };
 sub emit_go_call { my $List__ = \@_; my $invocant; my $meth_name; do {  ($invocant = $List__->[0]);  ($meth_name = $List__->[1]); [$invocant, $meth_name] }; (my  $invocant1 = $invocant->emit_go()); do { if (Main::isa($invocant, 'Proto')) { ($invocant1 = 'Proto_' . $invocant1) } else {  } }; (my  $meth = $meth_name); return('(*' . $invocant1 . ').(' . $meth . '_er).f_' . $meth . '(Capture{})') }
 
 }
@@ -254,7 +254,7 @@ sub new { shift; bless { @_ }, "For" }
 sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
 sub topic { @_ == 1 ? ( $_[0]->{topic} ) : ( $_[0]->{topic} = $_[1] ) };
-sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; 'func (a_ *Any) { ' . 'var i = (*(*a_).(array_er).f_array(Capture{})).(Array); ' . 'for pos := 0; pos <= i.n; pos++ { ' . 'func (' . $self->{topic}->emit_go() . ' *Any) { ' . MiniPerl6::Go::LexicalBlock->new( 'block' => $self->{body},'needs_return' => 0, )->emit_go() . ' }(i.v[pos]) ' . '} ' . '}(' . $self->{cond}->emit_go() . ')' }
+sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; 'func (a_ *Any) { ' . 'var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); ' . 'for pos := 0; pos <= i.n; pos++ { ' . 'func (' . $self->{topic}->emit_go() . ' *Any) { ' . MiniPerl6::Go::LexicalBlock->new( 'block' => $self->{body},'needs_return' => 0, )->emit_go() . ' }(i.v[pos]) ' . '} ' . '}(' . $self->{cond}->emit_go() . ')' }
 
 }
 {
