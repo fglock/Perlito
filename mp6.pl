@@ -225,8 +225,12 @@ elsif ( $backend eq 'go' ) {
         close(OUT);
         unlink $tmp_filename . '.6';
         unlink '6.out';
-        `6g $tmp_filename.go`;
-        `6l $tmp_filename.6`;
+        warn "calling go compiler\n" if $verbose;
+        my $result = `6g $tmp_filename.go`;
+        warn "go compiler: $result\n" if $verbose && $result;
+        $result = `6l $tmp_filename.6`;
+        warn "go linker: $result\n" if $verbose && $result;
+        warn "now executing\n" if $verbose;
         exec "./6.out"
             or die "can't execute";
     }

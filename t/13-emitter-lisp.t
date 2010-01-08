@@ -1,6 +1,8 @@
 use v6-alpha;
 
 class Main {
+    use MiniPerl6::Lisp::Emitter;
+
     say '1..4';
     my $m := ::Val::Num( num => 123 );
     # say '# Ast is:        ', $m.perl;

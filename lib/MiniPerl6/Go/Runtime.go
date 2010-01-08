@@ -469,10 +469,13 @@ func Init_Prelude() {
 	Method_MiniPerl6__Grammar.f_word = func(v_grammar *MiniPerl6__Grammar, v Capture) *Any {
 		var s1 = tostr(v.p[0]);
 		var i1 = toint(v.p[1]);
-		var ch = int(s1[i1]);
-		var b1 = unicode.IsLetter(ch);
-		if b1 {
-			i1++
+        var b1 = false;
+        if i1 < len(s1) { 
+		    var ch = int(s1[i1]);
+		    b1 = unicode.IsLetter(ch);
+		    if b1 {
+			    i1++
+            }
 		}
 		var m Any = new(MiniPerl6__Match);
 		*m.(str_er).f_str(Capture{}) = *v.p[0];
@@ -484,10 +487,13 @@ func Init_Prelude() {
 	Method_MiniPerl6__Grammar.f_digit = func(v_grammar *MiniPerl6__Grammar, v Capture) *Any {
 		var s1 = tostr(v.p[0]);
 		var i1 = toint(v.p[1]);
-		var ch = int(s1[i1]);
-		var b1 = unicode.IsDigit(ch);
-		if b1 {
-			i1++
+        var b1 = false;
+        if i1 < len(s1) { 
+		    var ch = int(s1[i1]);
+		    b1 = unicode.IsDigit(ch);
+		    if b1 {
+			    i1++
+            }
 		}
 		var m Any = new(MiniPerl6__Match);
 		*m.(str_er).f_str(Capture{}) = *v.p[0];
@@ -513,10 +519,13 @@ func Init_Prelude() {
 	Method_MiniPerl6__Grammar.f_space = func(v_grammar *MiniPerl6__Grammar, v Capture) *Any {
 		var s1 = tostr(v.p[0]);
 		var i1 = toint(v.p[1]);
-		var ch = int(s1[i1]);
-		var b1 = unicode.IsSpace(ch);
-		if b1 {
-			i1++
+        var b1 = false;
+        if i1 < len(s1) { 
+		    var ch = int(s1[i1]);
+		    b1 = unicode.IsSpace(ch);
+		    if b1 {
+			    i1++
+            }
 		}
 		var m Any = new(MiniPerl6__Match);
 		*m.(str_er).f_str(Capture{}) = *v.p[0];
