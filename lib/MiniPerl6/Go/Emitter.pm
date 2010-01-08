@@ -289,6 +289,7 @@ class CompUnit {
             scalar => 1,
             isa => 1,
             values => 1,
+            keys => 1,
             bind => 1,
             int => 1,
             str => 1,

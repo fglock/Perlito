@@ -51,6 +51,9 @@ type isa_er interface {
 type values_er interface {
 	f_values(v Capture) *Any;
 }
+type keys_er interface {
+	f_keys(v Capture) *Any;
+}
 type int_er interface {
 	f_int(v Capture) *Any;
 }
@@ -195,7 +198,15 @@ func (i Str) f_str_equal(v Capture) *Any {
 	}
 	return b_true();
 }
-func (i Str) f_perl(Capture) *Any	{ return toStr("\"" + string(i) + "\"") }
+func (i Str) f_perl(Capture) *Any	{ 
+    var s Any = i;
+    return toStr(
+          "'" 
+        + tostr( Namespace_Main.f_perl_escape_string(Capture{ p : []*Any{ &s } }) )
+        + "'"
+    ) 
+}
+
 
 type Function func (Capture) *Any
 
@@ -234,11 +245,27 @@ func (i *Hash) f_lookup(v Capture) *Any {
 	}
 	return item;
 }
-func (i Hash) f_perl(Capture) *Any	{ return toStr("{" + "..." + "}") }
+func (i Hash) f_perl(Capture) *Any	{ 
+    var s = "{";
+    var sep = "";
+	for key, value := range i.h {
+        s = s + sep + key + " => " + tostr( (*value).(perl_er).f_perl(Capture{}) );
+        sep = ", ";
+	}
+    s = s + "}";
+    return toStr(s) 
+}
 func (i Hash) f_values(v1 Capture) *Any {
 	a := a_array();
 	for _, value := range i.h {
 		(*a).(push_er).f_push(Capture{p: []*Any{value}})
+	}
+	return a;
+}
+func (i *Hash) f_keys(v1 Capture) *Any {
+	a := a_array();
+	for key, _ := range i.h {
+		(*a).(push_er).f_push(Capture{p: []*Any{ toStr(key) }})
 	}
 	return a;
 }
@@ -299,17 +326,23 @@ func (i Array) f_join(v1 Capture) *Any {
 		sep = ""
 	}
 	v := i.v;
-	if i.n > 0 {
+	if i.n >= 0 {
 		s1 = tostr(v[0])
 	}
-	for pos := 1; pos < i.n; pos++ {
+	for pos := 1; pos <= i.n; pos++ {
 		s1 = s1 + sep + tostr(v[pos])
 	}
 	return toStr(s1);
 }
 func (i Array) f_perl(v1 Capture) *Any {
-	var s1 = i.f_join(Capture{p: []*Any{toStr(", ")}});
-	return toStr("[" + tostr(s1) + "]");
+    var s = "[";
+    var sep = "";
+	for pos := 0; pos <= i.n; pos++ {
+        s = s + sep + tostr( (*i.v[pos]).(perl_er).f_perl(Capture{}) );
+        sep = ", ";
+	}
+    s = s + "]";
+    return toStr(s) 
 }
 
 // Capture is a parameter list, for internal use
