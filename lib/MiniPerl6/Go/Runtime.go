@@ -375,13 +375,17 @@ func f_print_stderr(s Capture) *Any {
 }
 func f_substr(s Capture) *Any {
     var s1 = tostr(s.p[0]);
-	var a = toint(s.p[1]);
-	var b = toint(s.p[2]);
-	// TODO if b < 0
+    var a = toint(s.p[1]);
+    var b = toint(s.p[2]);
     if a >= len(s1) {
-        return toStr("");
+        return toStr("")
     }
-	return toStr(s1[a : a+b]);
+    var c = a + b;
+    // TODO if b < 0
+    if c >= len(s1) {
+        c = len(s1) - 1
+    }
+    return toStr(s1[a : c]);
 }
 func Go_return(p chan *Any, r *Any) bool {
 	p <- r;

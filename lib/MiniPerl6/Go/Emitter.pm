@@ -133,6 +133,13 @@ class CompUnit {
                     ~ 'return toBool( "' ~ $.name ~ '" == tostr( v.p[0] ) ) '
                 ~ '}' ~ "\n";
         }
+        if     (!( (%.methods){'bool'} ))
+            && (!( (%.attributes){'bool'} )) 
+        {
+            $str := $str ~ 'func (v_self *' ~ $class_name ~ ') f_bool (v Capture) *Any { '
+                    ~ 'return b_true() '
+                ~ '}' ~ "\n";
+        }
 
         $str := $str 
             ~ '// prototype of ' ~ $.name ~ "\n"
