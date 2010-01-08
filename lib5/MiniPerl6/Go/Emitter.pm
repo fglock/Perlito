@@ -192,7 +192,7 @@ sub sigil { @_ == 1 ? ( $_[0]->{sigil} ) : ( $_[0]->{sigil} = $_[1] ) };
 sub twigil { @_ == 1 ? ( $_[0]->{twigil} ) : ( $_[0]->{twigil} = $_[1] ) };
 sub namespace { @_ == 1 ? ( $_[0]->{namespace} ) : ( $_[0]->{namespace} = $_[1] ) };
 sub name { @_ == 1 ? ( $_[0]->{name} ) : ( $_[0]->{name} = $_[1] ) };
-sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $table = { '$' => 'v_','@' => 'List_','%' => 'Hash_','&' => 'Code_', }); (my  $ns = ''); do { if ($self->{namespace}) { ($ns = Main::to_go_namespace($self->{namespace}) . '.') } else {  } }; (($self->{twigil} eq '.') ? '(*v_self).(' . $self->{name} . '_er).f_' . $self->{name} . '(Capture{})' : (($self->{name} eq '/') ? 'Proto_MiniPerl6__Match' : $table->{$self->{sigil}} . $ns . $self->{name})) };
+sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $table = { '$' => 'v_','@' => 'List_','%' => 'Hash_','&' => 'Code_', }); (my  $ns = ''); do { if ($self->{namespace}) { ($ns = Main::to_go_namespace($self->{namespace}) . '.') } else {  } }; (($self->{twigil} eq '.') ? '(*v_self).(' . $self->{name} . '_er).f_' . $self->{name} . '(Capture{})' : (($self->{name} eq '/') ? 'v_MATCH' : $table->{$self->{sigil}} . $ns . $self->{name})) };
 sub plain_name { my $self = shift; my $List__ = \@_; do { [] }; do { if ($self->{namespace}) { return($self->{namespace} . '.' . $self->{name}) } else {  } }; return($self->{name}) }
 
 }

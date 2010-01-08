@@ -491,7 +491,7 @@ class Var {
            ( $.twigil eq '.' )
         ?? ( '(*v_self).(' ~ $.name ~ '_er).f_' ~ $.name ~ '(Capture{})' )
         !!  (    ( $.name eq '/' )
-            ??   ( 'Proto_MiniPerl6__Match' )
+            ??   ( 'v_MATCH' )
             !!   ( $table{$.sigil} ~ $ns ~ $.name )
             )
     };
