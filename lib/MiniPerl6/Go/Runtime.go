@@ -228,9 +228,9 @@ func (i *Hash) f_lookup(v Capture) *Any {
 	}
 	item, found := i.h[pos];
 	if !found {
-		var item Any;
-		i.h[pos] = &item;
-		return &item;
+        var j *Any = u_undef();
+		i.h[pos] = j;
+		return j;
 	}
 	return item;
 }
