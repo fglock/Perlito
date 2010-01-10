@@ -23,7 +23,7 @@ class MiniPerl6::Match {
     # Note: These methods are just stubs.
     #       The actual methods are implemented in Runtime.go
 
-    method string       { die "TODO" }
+    method Str          { die "TODO" }
     method scalar       { die "TODO" }
 }
 

@@ -60,6 +60,9 @@ type int_er interface {
 type str_er interface {
 	f_str(v Capture) *Any;
 }
+type Str_er interface {
+	f_Str(v Capture) *Any;
+}
 type bool_er interface {
 	f_bool(v Capture) *Any;
 }
@@ -117,7 +120,7 @@ type Undef bool
 
 func (i Undef) f_bool(Capture) *Any	{ return b_false() }
 func (i Undef) f_int(Capture) *Any	{ return i_0 }
-func (i Undef) f_str(Capture) *Any	{ return s_empty }
+func (i Undef) f_Str(Capture) *Any	{ return s_empty }
 func (i Undef) f_array(Capture) *Any	{ return a_array() }
 func (i Undef) f_hash(Capture) *Any	{ return h_hash() }
 func (i Undef) f_perl(Capture) *Any	{ return s_undef }
@@ -136,7 +139,7 @@ func (i Bool) f_int(Capture) *Any {
 	}
 	return i_0;
 }
-func (i Bool) f_str(Capture) *Any {
+func (i Bool) f_Str(Capture) *Any {
 	if i {
 		return s_true
 	}
@@ -150,7 +153,7 @@ func (i Bool) f_not(Capture) *Any {
 	}
 	return b_true();
 }
-func (i Bool) f_perl(Capture) *Any	{ return i.f_str(Capture{}) }
+func (i Bool) f_perl(Capture) *Any	{ return i.f_Str(Capture{}) }
 
 type Int int
 
@@ -166,10 +169,10 @@ func (i Int) f_bool(Capture) *Any {
 	return b_true();
 }
 func (i Int) f_int(Capture) *Any	{ var v Any = i; return &v }
-func (i Int) f_str(Capture) *Any	{ return toStr(strconv.Itoa(int(i))) }
+func (i Int) f_Str(Capture) *Any	{ return toStr(strconv.Itoa(int(i))) }
 func (i Int) f_array(Capture) *Any	{ panic("converting int to array") }
 func (i Int) f_hash(Capture) *Any	{ panic("converting int to hash") }
-func (i Int) f_perl(Capture) *Any	{ return i.f_str(Capture{}) }
+func (i Int) f_perl(Capture) *Any	{ return i.f_Str(Capture{}) }
 
 type Str string
 
@@ -177,7 +180,7 @@ func toStr(i string) *Any {
 	var r Any = Str(i);
 	return &r;
 }
-func tostr(v *Any) string	{ return string((*((*v).(str_er).f_str(Capture{}))).(Str)) }
+func tostr(v *Any) string	{ return string((*((*v).(Str_er).f_Str(Capture{}))).(Str)) }
 func (i Str) f_bool(Capture) *Any {
 	if i == "" || i == "0" {
 		return b_false()
@@ -188,7 +191,7 @@ func (i Str) f_int(Capture) *Any {
 	n, _ := strconv.Atoi(string(i));
 	return toInt(n);
 }
-func (i Str) f_str(Capture) *Any   { var j Any = i; return &j }
+func (i Str) f_Str(Capture) *Any   { var j Any = i; return &j }
 func (i Str) f_array(Capture) *Any	{ panic("converting string to array") }
 func (i Str) f_hash(Capture) *Any	{ panic("converting str to hash") }
 func (i Str) f_str_equal(v Capture) *Any {
@@ -221,7 +224,7 @@ func (i Hash) f_bool(Capture) *Any {
 	return b_true();
 }
 func (i Hash) f_int(Capture) *Any	{ return toInt(len(i.h)) }
-func (i Hash) f_str(Capture) *Any	{ return toStr("TODO: hash.Str") }
+func (i Hash) f_Str(Capture) *Any	{ return toStr("TODO: hash.Str") }
 func (i Hash) f_array(Capture) *Any {
 	return a_array()	// TODO
 }
@@ -282,7 +285,7 @@ func (i Array) f_bool(Capture) *Any {
 	return b_true();
 }
 func (i Array) f_int(Capture) *Any	{ return toInt(i.n + 1) }
-func (i Array) f_str(Capture) *Any	{ return i.f_join(Capture{p: []*Any{toStr(" ")}}) }
+func (i Array) f_Str(Capture) *Any	{ return i.f_join(Capture{p: []*Any{toStr(" ")}}) }
 func (i *Array) f_array(Capture) *Any	{ 
     var p Any;
     var j *Any = &p;
@@ -442,15 +445,9 @@ func f_or(f1, f2 func() *Any) *Any {
 
 // implementation of functions and methods declared in the prelude file
 
-//func (v_self MiniPerl6__Match) f_bool(Capture) *Any {
-//    return (*v_self.f_bool(Capture{})).(bool_er).f_bool(Capture{})
-//}
 func (v_self MiniPerl6__Match) f_int(Capture) *Any {
-    return (*v_self.f_string(Capture{})).(int_er).f_int(Capture{})
+    return (*v_self.f_Str(Capture{})).(int_er).f_int(Capture{})
 }
-//func (v_self MiniPerl6__Match) f_str(Capture) *Any {
-//    return (*v_self.f_string(Capture{})).(str_er).f_str(Capture{})
-//}
 
 func Init_Prelude() {
 
@@ -470,7 +467,7 @@ func Init_Prelude() {
 		}
 		return toStr("");
 	};
-	Method_MiniPerl6__Match.f_string = func(v_self *MiniPerl6__Match, v Capture) *Any {
+	Method_MiniPerl6__Match.f_Str = func(v_self *MiniPerl6__Match, v Capture) *Any {
         if v_self.v_bool == nil {
             v_self.v_bool = toBool(false);       
         }

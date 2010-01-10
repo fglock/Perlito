@@ -305,6 +305,7 @@ class CompUnit {
             bind => 1,
             int => 1,
             str => 1,
+            Str => 1,
             bool => 1,
             array => 1,
             hash => 1,
@@ -723,7 +724,7 @@ class Apply {
                                                 ~ (@.arguments.>>emit_go).join(', ')    
                                                 ~ ' } } )' 
                                     }
-        if $code eq 'prefix:<~>'    { return Call::emit_go_call( @.arguments[0], 'str' ) }
+        if $code eq 'prefix:<~>'    { return Call::emit_go_call( @.arguments[0], 'Str' ) }
         if $code eq 'prefix:<!>'    { return 'toBool(!tobool(' ~ ( @.arguments[0]).emit_go ~ '))' };
         if $code eq 'prefix:<?>'    { return Call::emit_go_call( @.arguments[0], 'bool') } 
         if $code eq 'prefix:<$>'    { return 'f_scalar( Capture{ p : []*Any{ ' 
