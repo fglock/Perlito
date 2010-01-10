@@ -11,11 +11,11 @@ class MiniPerl6::Match {
 
     method perl {
         return "::Match("
-            ~ "from => " ~ $.from.perl
-            ~ ", to => " ~ $.from.perl
-            ~ ", bool => " ~ $.bool.perl
+            ~ "from => "    ~ $.from.perl
+            ~ ", to => "    ~ $.to.perl
+            ~ ", bool => "  ~ $.bool.perl
             ~ ", capture => " ~ $.capture.perl
-            ~ ", hash => " ~ $.hash.perl
+            ~ ", hash => "  ~ $.hash.perl
             ~ ", array => " ~ $.array.perl
             ~ ")";
     }

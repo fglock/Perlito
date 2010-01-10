@@ -186,17 +186,29 @@ class CompUnit {
               ~ '  // accessor ' ~ ($decl.var).name ~ "\n"
               ~ '  Method_' ~ $class_name ~ '.f_' ~ ($decl.var).name 
                     ~ ' = func (v_self *' ~ $class_name ~ ', v Capture) *Any {' ~ "\n"
-              ~ '    ' ~ 'if v_self.v_' ~ ($decl.var).name ~ ' == nil {' ~ "\n";
+
                 $str := $str  
+              ~ '    ' ~ 'if v_self.v_' ~ ($decl.var).name ~ ' == nil {' ~ "\n"
               ~ '      ' ~ ::Decl(  
                                 decl => 'my',
                                 type => undef,
                                 var => ::Var( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ),
-                            ).emit_go_init;
-                $str := $str  
+                            ).emit_go_init
               ~ '      ' ~ 'v_self.v_' ~ ($decl.var).name ~ ' = ' 
                                 ~ ::Var( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ).emit_go ~ ';' ~ "\n"
               ~ '    ' ~ '}' ~ "\n";
+
+                $str := $str  
+              ~ '    ' ~ 'if *v_self.v_' ~ ($decl.var).name ~ ' == nil {' ~ "\n"
+              ~ '      ' ~ ::Decl(  
+                                decl => 'my',
+                                type => undef,
+                                var => ::Var( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ),
+                            ).emit_go_init
+              ~ '      ' ~ 'v_self.v_' ~ ($decl.var).name ~ ' = ' 
+                                ~ ::Var( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ).emit_go ~ ';' ~ "\n"
+              ~ '    ' ~ '}' ~ "\n";
+
                 $str := $str  
               ~ '    ' ~ 'return v_self.v_' ~ ($decl.var).name ~ "\n"
               ~ '  };' ~ "\n";

@@ -11,4 +11,5 @@ class Main {
     # my $m := MiniPerl6::Grammar.ident_digit( 'abc.123', 0 );
     # my $m := MiniPerl6::Grammar.word( 'abc', 0 );
     say "result: ", $m.bool, " ", $m.from, " ", $m.to, " ", $$m;
+    say "result: ", $m.perl;
 }
