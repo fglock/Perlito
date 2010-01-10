@@ -133,6 +133,18 @@ class CompUnit {
                     ~ 'return toBool( "' ~ $.name ~ '" == tostr( v.p[0] ) ) '
                 ~ '}' ~ "\n";
         }
+        if !( (%.methods){'perl'} ) {
+            $str := $str ~ 'func (v_self *' ~ $class_name ~ ') f_perl (v Capture) *Any { '
+                    ~ 'return toStr( "::' ~ $.name ~ '(" ';
+            for (%.attributes).values -> $decl { 
+                if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
+                    $str := $str  
+                        ~ '+ "' ~ ($decl.var).name ~ ' => "' 
+                        ~ '+ tostr((*(*v_self).f_' ~ ($decl.var).name ~ '(Capture{})).(perl_er).f_perl(Capture{})) '
+                }
+            }
+            $str := $str ~ '+ ")" ) }' ~ "\n";
+        }
         if     (!( (%.methods){'bool'} ))
             && (!( (%.attributes){'bool'} )) 
         {

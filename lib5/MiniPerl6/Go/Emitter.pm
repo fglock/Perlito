@@ -41,6 +41,7 @@ sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $class_name = 
 ' . '  return Method_' . $class_name . '.f_' . $decl->var()->name() . '(v_self, v);' . '
 ' . '}' . '
 ') } else {  } } } }; do { if ($self->{methods}->{'isa'}) {  } else { ($str = $str . 'func (v_self *' . $class_name . ') f_isa (v Capture) *Any { ' . 'return toBool( "' . $self->{name} . '" == tostr( v.p[0] ) ) ' . '}' . '
+') } }; do { if ($self->{methods}->{'perl'}) {  } else { ($str = $str . 'func (v_self *' . $class_name . ') f_perl (v Capture) *Any { ' . 'return toStr( "::' . $self->{name} . '(" ');do { for my $decl ( values( %{$self->{attributes}} ) ) { do { if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'has'))) { ($str = $str . '+ "' . $decl->var()->name() . ' => "' . '+ tostr((*(*v_self).f_' . $decl->var()->name() . '(Capture{})).(perl_er).f_perl(Capture{})) ') } else {  } } } };($str = $str . '+ ")" ) }' . '
 ') } }; do { if ((($self->{methods}->{'bool'} ? 0 : 1) && ($self->{attributes}->{'bool'} ? 0 : 1))) { ($str = $str . 'func (v_self *' . $class_name . ') f_bool (v Capture) *Any { ' . 'return b_true() ' . '}' . '
 ') } else {  } }; ($str = $str . '// prototype of ' . $self->{name} . '
 ' . 'var Proto_' . $class_name . ' *Any;' . '

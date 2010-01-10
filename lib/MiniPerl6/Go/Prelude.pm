@@ -9,6 +9,17 @@ class MiniPerl6::Match {
     has %.hash;
     has @.array;
 
+    method perl {
+        return "::Match("
+            ~ "from => " ~ $.from.perl
+            ~ ", to => " ~ $.from.perl
+            ~ ", bool => " ~ $.bool.perl
+            ~ ", capture => " ~ $.capture.perl
+            ~ ", hash => " ~ $.hash.perl
+            ~ ", array => " ~ $.array.perl
+            ~ ")";
+    }
+
     # Note: These methods are just stubs.
     #       The actual methods are implemented in Runtime.go
 
