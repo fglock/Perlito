@@ -180,7 +180,14 @@ func toStr(i string) *Any {
 	var r Any = Str(i);
 	return &r;
 }
-func tostr(v *Any) string	{ return string((*((*v).(Str_er).f_Str(Capture{}))).(Str)) }
+// func tostr(v *Any) string	{ return string((*((*v).(Str_er).f_Str(Capture{}))).(Str)) }
+func tostr(v *Any) string   { 
+    s, ok := (*v).(Str_er);
+    if ok {
+        return string((*s.f_Str(Capture{})).(Str))
+    }
+    return "<Object can't .Str>";
+}
 func (i Str) f_bool(Capture) *Any {
 	if i == "" || i == "0" {
 		return b_false()

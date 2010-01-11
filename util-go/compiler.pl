@@ -15,4 +15,5 @@ class Main {
     # my $m := MiniPerl6::Grammar.word( 'abc', 0 );
     say "result: ", $m.bool, " ", $m.from, " ", $m.to, " ", $$m;
     say "result: ", $m.perl;
+    say ($$m).emit_go;
 }

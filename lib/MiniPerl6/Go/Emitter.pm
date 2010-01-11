@@ -136,11 +136,14 @@ class CompUnit {
         if !( (%.methods){'perl'} ) {
             $str := $str ~ 'func (v_self *' ~ $class_name ~ ') f_perl (v Capture) *Any { '
                     ~ 'return toStr( "::' ~ $.name ~ '(" ';
+            my $sep := '';
             for (%.attributes).values -> $decl { 
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                    $str := $str  
+                    $str := $str 
+                        ~ $sep 
                         ~ '+ "' ~ ($decl.var).name ~ ' => "' 
                         ~ '+ tostr((*(*v_self).f_' ~ ($decl.var).name ~ '(Capture{})).(perl_er).f_perl(Capture{})) '
+                    $sep := '+ ", " ';
                 }
             }
             $str := $str ~ '+ ")" ) }' ~ "\n";
