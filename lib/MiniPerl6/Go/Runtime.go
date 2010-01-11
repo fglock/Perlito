@@ -124,6 +124,7 @@ func (i Undef) f_Str(Capture) *Any	{ return s_empty }
 func (i Undef) f_array(Capture) *Any	{ return a_array() }
 func (i Undef) f_hash(Capture) *Any	{ return h_hash() }
 func (i Undef) f_perl(Capture) *Any	{ return s_undef }
+func (i Undef) f_isa (v Capture) *Any { return toBool( "Undef" == tostr( v.p[0] ) ) }
 
 type Bool bool
 
@@ -154,6 +155,7 @@ func (i Bool) f_not(Capture) *Any {
 	return b_true();
 }
 func (i Bool) f_perl(Capture) *Any	{ return i.f_Str(Capture{}) }
+func (i Bool) f_isa (v Capture) *Any { return toBool( "Bool" == tostr( v.p[0] ) ) }
 
 type Int int
 
@@ -173,6 +175,7 @@ func (i Int) f_Str(Capture) *Any	{ return toStr(strconv.Itoa(int(i))) }
 func (i Int) f_array(Capture) *Any	{ panic("converting int to array") }
 func (i Int) f_hash(Capture) *Any	{ panic("converting int to hash") }
 func (i Int) f_perl(Capture) *Any	{ return i.f_Str(Capture{}) }
+func (i Int) f_isa (v Capture) *Any { return toBool( "Int" == tostr( v.p[0] ) ) }
 
 type Str string
 
@@ -216,6 +219,7 @@ func (i Str) f_perl(Capture) *Any	{
         + "'"
     ) 
 }
+func (i Str) f_isa (v Capture) *Any { return toBool( "Str" == tostr( v.p[0] ) ) }
 
 
 type Function func (Capture) *Any
@@ -265,6 +269,7 @@ func (i Hash) f_perl(Capture) *Any	{
     s = s + "}";
     return toStr(s) 
 }
+func (i Hash) f_isa (v Capture) *Any { return toBool( "Hash" == tostr( v.p[0] ) ) }
 func (i Hash) f_values(v1 Capture) *Any {
 	a := a_array();
 	for _, value := range i.h {
@@ -354,6 +359,7 @@ func (i Array) f_perl(v1 Capture) *Any {
     s = s + "]";
     return toStr(s) 
 }
+func (i Array) f_isa (v Capture) *Any { return toBool( "Array" == tostr( v.p[0] ) ) }
 
 // Capture is a parameter list, for internal use
 

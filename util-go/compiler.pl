@@ -16,4 +16,7 @@ class Main {
     say "result: ", $m.bool, " ", $m.from, " ", $m.to, " ", $$m;
     say "result: ", $m.perl;
     say ($$m).emit_go;
+    my $comp_units := [ $$m ];
+    say CompUnit::emit_go_program( $comp_units );
 }
+
