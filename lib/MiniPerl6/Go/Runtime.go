@@ -419,7 +419,7 @@ func f_substr(s Capture) *Any {
     var c = a + b;
     // TODO if b < 0
     if c >= len(s1) {
-        c = len(s1) - 1
+        c = len(s1)
     }
     return toStr(s1[a : c]);
 }
@@ -492,7 +492,7 @@ func Init_Prelude() {
 			i1 += 2;
 			b1 = true;
 		} else {
-			if s1[i1] == 13 || s1[i1] == 10 {
+            if i1 < len(s1) && (s1[i1] == 13 || s1[i1] == 10) {
 				i1 += 1;
 				b1 = true;
 			}
