@@ -20,6 +20,8 @@ class MiniPerl6::Match {
             ~ ")";
     }
 
+    method Bool         { $.bool.Bool }
+
     # Note: These methods are just stubs.
     #       The actual methods are implemented in Runtime.go
 

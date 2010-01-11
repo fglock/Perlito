@@ -66,6 +66,9 @@ type Str_er interface {
 type bool_er interface {
 	f_bool(v Capture) *Any;
 }
+type Bool_er interface {
+	f_Bool(v Capture) *Any;
+}
 type array_er interface {
 	f_array(v Capture) *Any;
 }
@@ -118,7 +121,7 @@ func h_hash() *Any {
 
 type Undef bool
 
-func (i Undef) f_bool(Capture) *Any	{ return b_false() }
+func (i Undef) f_Bool(Capture) *Any	{ return b_false() }
 func (i Undef) f_int(Capture) *Any	{ return i_0 }
 func (i Undef) f_Str(Capture) *Any	{ return s_empty }
 func (i Undef) f_array(Capture) *Any	{ return a_array() }
@@ -132,8 +135,8 @@ func toBool(i bool) *Any {
 	var r Any = Bool(i);
 	return &r;
 }
-func tobool(v *Any) bool		{ return bool((*((*v).(bool_er).f_bool(Capture{}))).(Bool)) }
-func (i Bool) f_bool(Capture) *Any	{ var v Any = i; return &v }
+func tobool(v *Any) bool		{ return bool((*((*v).(Bool_er).f_Bool(Capture{}))).(Bool)) }
+func (i Bool) f_Bool(Capture) *Any	{ var v Any = i; return &v }
 func (i Bool) f_int(Capture) *Any {
 	if i {
 		return i_1
@@ -164,7 +167,7 @@ func toInt(i int) *Any {
 	return &r;
 }
 func toint(v *Any) int	{ return int((*((*v).(int_er).f_int(Capture{}))).(Int)) }
-func (i Int) f_bool(Capture) *Any {
+func (i Int) f_Bool(Capture) *Any {
 	if i == 0 {
 		return b_false()
 	}
@@ -191,7 +194,7 @@ func tostr(v *Any) string   {
     }
     return "<Object can't .Str>";
 }
-func (i Str) f_bool(Capture) *Any {
+func (i Str) f_Bool(Capture) *Any {
 	if i == "" || i == "0" {
 		return b_false()
 	}
@@ -228,7 +231,7 @@ type Hash struct {
 	h map[string]*Any;
 }
 
-func (i Hash) f_bool(Capture) *Any {
+func (i Hash) f_Bool(Capture) *Any {
 	if len(i.h) == 0 {
 		return b_false()
 	}
@@ -290,7 +293,7 @@ type Array struct {
 	v	[]*Any;
 }
 
-func (i Array) f_bool(Capture) *Any {
+func (i Array) f_Bool(Capture) *Any {
 	if i.n < 0 {
 		return b_false()
 	}
@@ -610,6 +613,33 @@ func Init_Prelude() {
 				s1 += "\\\\"
 			case s[i] == '"':
 				s1 += "\\\""
+			default:
+				s1 += s[i : i+1]
+			}
+		}
+		return toStr(s1);
+	};
+	Namespace_Main.f_javascript_escape_string = func(v Capture) *Any {
+		var s string = tostr(v.p[0]);
+		var s1 string = "";
+		for i := 0; i < len(s); i++ {
+			switch {
+			case s[i] == '\\':
+				s1 += "\\\\"
+			case s[i] == '"':
+				s1 += "\\\""
+			case s[i] == 13:
+				s1 += "\\n";
+                i1 := i + 1;
+                if i1 < len(s) && s[i1] == 10 {
+				    i = i1;
+			    }
+			case s[i] == 10:
+				s1 += "\\n";
+                i1 := i + 1;
+                if i1 < len(s) && s[i1] == 13 {
+				    i = i1;
+			    }
 			default:
 				s1 += s[i : i+1]
 			}

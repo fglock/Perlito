@@ -43,7 +43,7 @@ class MiniPerl6::Go::LexicalBlock {
                 $body      := ::MiniPerl6::Go::LexicalBlock( block => $body, needs_return => 1, top_level => $.top_level );
                 $otherwise := ::MiniPerl6::Go::LexicalBlock( block => $otherwise, needs_return => 1, top_level => $.top_level );
                 $str := $str 
-                    ~ 'if tobool( ' ~ Call::emit_go_call( $cond, 'bool' ) ~ ' ) { ' 
+                    ~ 'if tobool( ' ~ Call::emit_go_call( $cond, 'Bool' ) ~ ' ) { ' 
                         ~ $body.emit_go ~ ' } else { ' 
                         ~ $otherwise.emit_go ~ ' }';
             }
@@ -148,10 +148,10 @@ class CompUnit {
             }
             $str := $str ~ '+ ")" ) }' ~ "\n";
         }
-        if     (!( (%.methods){'bool'} ))
-            && (!( (%.attributes){'bool'} )) 
+        if     (!( (%.methods){'Bool'} ))
+            && (!( (%.attributes){'Bool'} )) 
         {
-            $str := $str ~ 'func (v_self *' ~ $class_name ~ ') f_bool (v Capture) *Any { '
+            $str := $str ~ 'func (v_self *' ~ $class_name ~ ') f_Bool (v Capture) *Any { '
                     ~ 'return b_true() '
                 ~ '}' ~ "\n";
         }
@@ -322,6 +322,7 @@ class CompUnit {
             str => 1,
             Str => 1,
             bool => 1,
+            Bool => 1,
             array => 1,
             hash => 1,
             push => 1,
@@ -741,7 +742,7 @@ class Apply {
                                     }
         if $code eq 'prefix:<~>'    { return Call::emit_go_call( @.arguments[0], 'Str' ) }
         if $code eq 'prefix:<!>'    { return 'toBool(!tobool(' ~ ( @.arguments[0]).emit_go ~ '))' };
-        if $code eq 'prefix:<?>'    { return Call::emit_go_call( @.arguments[0], 'bool') } 
+        if $code eq 'prefix:<?>'    { return Call::emit_go_call( @.arguments[0], 'Bool') } 
         if $code eq 'prefix:<$>'    { return 'f_scalar( Capture{ p : []*Any{ ' 
                                                 ~ (@.arguments.>>emit_go).join(', ')    
                                                 ~ ' } } )' 
@@ -811,7 +812,7 @@ class Apply {
         if $code eq 'ternary:<?? !!>' { 
             return 
                 'func () *Any { '
-                    ~ 'if tobool( ' ~ Call::emit_go_call( @.arguments[0], 'bool' ) ~ ' ) ' 
+                    ~ 'if tobool( ' ~ Call::emit_go_call( @.arguments[0], 'Bool' ) ~ ' ) ' 
                     ~ '{ return ' ~ (@.arguments[1]).emit_go ~ ' }; '
                     ~ 'return ' ~ (@.arguments[2]).emit_go ~ ' '
                 ~ '}()'
@@ -879,7 +880,7 @@ class If {
         {
             $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        my $s := 'if tobool( ' ~ Call::emit_go_call( $cond, 'bool' ) ~ ' ) { ' 
+        my $s := 'if tobool( ' ~ Call::emit_go_call( $cond, 'Bool' ) ~ ' ) { ' 
                     ~ ::MiniPerl6::Go::LexicalBlock( block => @.body, needs_return => 0 ).emit_go 
                 ~ ' }';
         if !(@.otherwise) {

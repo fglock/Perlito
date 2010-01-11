@@ -8,9 +8,7 @@ class Main {
 
     # say "MiniPerl6 compiler";
     my $m := MiniPerl6::Grammar.parse( 
-        'class X { has $.abc; 123; say 123 } class X2 { my $v := 1 }', 
-        # 'class X { has $.abc; 123; say \'hello, World!\' } class X2 { my $v := 1 }', 
-        # 'class X { has $.abc; 123; say "hello, World!" } class X2 { my $v := 1 }', 
+        'class X { has $.abc; 123; say "hello, World!" } class X2 { my $v := 1 }', 
         0, 
     );
     my $comp_units := $$m;
