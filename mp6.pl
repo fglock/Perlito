@@ -258,6 +258,16 @@ elsif ( $backend eq 'ast-perl5' ) {
     local $Data::Dumper::Indent   = 1;
     $result .=  Data::Dumper::Dumper( \@comp_unit );
 }
+elsif ( $backend eq 'ast-json' ) {
+    require JSON;
+    *UNIVERSAL::TO_JSON = sub {
+        return { 'bless' => ref($_[0]), %{ $_[0] } };
+    };
+    $result .= JSON->new->allow_blessed->convert_blessed->encode( \@comp_unit ) . "\n";
+}
+else {
+    die "it seems backend '$backend' is not supported";
+}
 
 if ( !$execute ) {
     print $result;

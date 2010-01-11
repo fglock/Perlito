@@ -1,3 +1,6 @@
+
+- build Ast cache using JSON (we currently use Perl5 Data::Dumper)
+
 MiniPerl6 in Rakudo
 
 - Rakudo should be able to execute MiniPerl6 directly. What do we need to fix in both sides?
