@@ -32,6 +32,11 @@ elsif ( $target_switch eq '-Cast-perl5' ) {
     $target_dir = 'libast-perl5';
     $target_suffix = '.p5ast';
 }
+elsif ( $target_switch eq '-Cast-json' ) {
+    $backend    = 'ast-json';    
+    $target_dir = 'libast-json';
+    $target_suffix = '.json';
+}
 else {
     die "invalid option: $target_switch\n";
 }
