@@ -610,6 +610,19 @@ func Init_Prelude() {
 		}
 		return toStr(s1);
 	};
+	Namespace_Main.f_to_go_namespace = func(v Capture) *Any {
+		var s string = tostr(v.p[0]);
+		var s1 string = "";
+		for i := 0; i < len(s); i++ {
+			switch {
+			case s[i] == ':':
+				s1 += "_"
+			default:
+				s1 += s[i : i+1]
+			}
+		}
+		return toStr(s1);
+	};
 
 }
 // end: Init_Prelude()
