@@ -417,7 +417,7 @@ class Lit::Array {
             {
                 $str := $str 
                     ~ 'func(a_ *Array) { ' 
-                        ~ 'for i_ := 0; i_ < a_.n; i_++ { (*a).(push_er).f_push( Capture{ p: []*Any{ a_.v[i_] } } ) } ' 
+                        ~ 'for i_ := 0; i_ <= a_.n; i_++ { (*a).(push_er).f_push( Capture{ p: []*Any{ a_.v[i_] } } ) } ' 
                     ~ '}( (*' ~ Call::emit_go_call( $item, 'array' ) ~ ').(*Array) ); '
             }
             else {

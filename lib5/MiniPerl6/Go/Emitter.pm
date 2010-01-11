@@ -149,7 +149,7 @@ sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; '[]*Any{ ' . Main::
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { @_ == 1 ? ( $_[0]->{array1} ) : ( $_[0]->{array1} = $_[1] ) };
-sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $str = ''); do { for my $item ( @{$self->{array1}} ) { do { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { ($str = $str . 'func(a_ *Array) { ' . 'for i_ := 0; i_ < a_.n; i_++ { (*a).(push_er).f_push( Capture{ p: []*Any{ a_.v[i_] } } ) } ' . '}( (*' . Call::emit_go_call($item, 'array') . ').(*Array) ); ') } else { ($str = $str . '(*a).(push_er).f_push( Capture{ p: []*Any{ ' . $item->emit_go() . ' } } ); ') } } } }; 'func () *Any { ' . 'a := a_array(); ' . $str . 'return a; ' . '}()' }
+sub emit_go { my $self = shift; my $List__ = \@_; do { [] }; (my  $str = ''); do { for my $item ( @{$self->{array1}} ) { do { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { ($str = $str . 'func(a_ *Array) { ' . 'for i_ := 0; i_ <= a_.n; i_++ { (*a).(push_er).f_push( Capture{ p: []*Any{ a_.v[i_] } } ) } ' . '}( (*' . Call::emit_go_call($item, 'array') . ').(*Array) ); ') } else { ($str = $str . '(*a).(push_er).f_push( Capture{ p: []*Any{ ' . $item->emit_go() . ' } } ); ') } } } }; 'func () *Any { ' . 'a := a_array(); ' . $str . 'return a; ' . '}()' }
 
 }
 {

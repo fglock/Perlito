@@ -13,7 +13,7 @@ class MiniPerl6::Match {
         return "::Match("
             ~ "from => "    ~ $.from.perl
             ~ ", to => "    ~ $.to.perl
-            ~ ", bool => "  ~ $.bool.perl
+            ~ ", bool => "  ~ ($.bool.bool).perl
             ~ ", capture => " ~ $.capture.perl
             ~ ", hash => "  ~ $.hash.perl
             ~ ", array => " ~ $.array.perl
