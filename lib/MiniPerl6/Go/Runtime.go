@@ -467,7 +467,17 @@ func (v_self MiniPerl6__Match) f_int(Capture) *Any {
     return (*v_self.f_Str(Capture{})).(int_er).f_int(Capture{})
 }
 
+var List_ARGS *Any;  // @*ARGS
+
 func Init_Prelude() {
+
+    // initialize @*ARGS
+    List_ARGS = a_array();
+	for i, _ := range os.Args {
+        if i > 0 {
+            (*List_ARGS).(push_er).f_push( Capture{ p: []*Any{ toStr( os.Args[i] ) } } ); 
+        }
+    }
 
 	Method_MiniPerl6__Match.f_scalar = func(v_self *MiniPerl6__Match, v Capture) *Any {
         if v_self.v_bool == nil {

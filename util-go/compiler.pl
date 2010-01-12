@@ -17,5 +17,6 @@ class Main {
 
     # my $s := IO::slurp("lib/Test.pm");
     # say $s;
+    say "ARGS: ", @*ARGS.perl;
 }
 
