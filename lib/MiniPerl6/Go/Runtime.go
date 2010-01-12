@@ -325,6 +325,13 @@ func (i *Array) f_index(v Capture) *Any {
 }
 func (i *Array) f_push(v Capture) *Any {
     i.n++;
+    if i.n >= len(i.v) {
+        v2 := make([]*Any, len(i.v) + len(i.v));
+        for i, x := range i.v {
+            v2[i] = x
+        }
+        i.v = v2;
+    }
     if i.v[i.n] == nil {
         var v Any;
         i.v[i.n] = &v;
