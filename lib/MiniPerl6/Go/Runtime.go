@@ -673,6 +673,23 @@ func Init_Prelude() {
 		}
 		return toStr(s1);
 	};
+	Namespace_Main.f_to_lisp_namespace = func(v Capture) *Any {
+		var s string = tostr(v.p[0]);
+		var s1 string = "";
+		for i := 0; i < len(s); i++ {
+			switch {
+			case s[i] == ':':
+				s1 += "-";
+                i1 := i + 1;
+                if i1 < len(s) && s[i1] == ':' {
+				    i = i1;
+			    }
+			default:
+				s1 += s[i : i+1]
+			}
+		}
+		return toStr( "mp-" + s1 );
+	};
 	Namespace_Main.f_to_go_namespace = func(v Capture) *Any {
 		var s string = tostr(v.p[0]);
 		var s1 string = "";

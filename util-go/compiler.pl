@@ -1,5 +1,6 @@
 class Main {
     use MiniPerl6::Go::Emitter;
+    use MiniPerl6::Lisp::Emitter;
     use MiniPerl6::Grammar;
     use MiniPerl6::Grammar::Control;
     use MiniPerl6::Grammar::Mapping;
@@ -23,6 +24,10 @@ class Main {
     );
     my $comp_units := $$m;
     # say "result: ", $comp_units.perl;
-    say CompUnit::emit_go_program( $comp_units );
+    # say CompUnit::emit_go_program( $comp_units );
+
+    for @($comp_units) -> $c {
+        say $c.emit_lisp;
+    }
 }
 
