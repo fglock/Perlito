@@ -14,5 +14,8 @@ class Main {
     my $comp_units := $$m;
     # say "result: ", $comp_units.perl;
     say CompUnit::emit_go_program( $comp_units );
+
+    # my $s := IO::slurp("lib/Test.pm");
+    # say $s;
 }
 

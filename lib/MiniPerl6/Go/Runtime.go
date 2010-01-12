@@ -30,6 +30,8 @@ import (
 	"runtime";
 	"unicode";
     // "reflect";
+    "io";
+    "utf8";
 )
 
 // interfaces used by the runtime
@@ -660,6 +662,30 @@ func Init_Prelude() {
 		return toStr(s1);
 	};
 
+    Namespace_IO.f_slurp = func (cap Capture) *Any {
+        var filename = tostr(cap.p[0]);
+        s, error := io.ReadFile(filename);
+        if error != nil {
+            return u_undef();
+        }
+        b := make([]byte, len(s));
+        w := 0;
+        for r := 0; r < len(s); {
+            switch {
+            // ASCII
+            case s[r] < utf8.RuneSelf:
+                b[w] = s[r];
+                r++;
+                w++;
+            // Coerce to well-formed UTF-8.
+            default:
+                rune, size := utf8.DecodeRune(s[r:len(s)-1]);
+                r = r + size;
+                w = w + utf8.EncodeRune(rune, b[w:len(b)-1]);
+            }
+        }
+        return toStr(string(b[0:w]));
+    }
 }
 // end: Init_Prelude()
 

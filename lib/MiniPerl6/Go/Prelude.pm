@@ -41,9 +41,13 @@ class MiniPerl6::Grammar {
     token space         { . }
 }
 
+class IO {
+    sub slurp           { die "stub" }
+}
+
 class Main {
 
-    method newline { "\n" }
+    method newline      { "\n" }
 
     sub to_lisp_identifier ( $ident ) {
         return 'sv-' ~ $ident;
