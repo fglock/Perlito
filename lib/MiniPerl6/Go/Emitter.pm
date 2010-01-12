@@ -326,6 +326,7 @@ class CompUnit {
             array => 1,
             hash => 1,
             push => 1,
+            pop => 1,
             lookup => 1,
             index => 1,
         };

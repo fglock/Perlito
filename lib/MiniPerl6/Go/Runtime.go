@@ -80,6 +80,9 @@ type hash_er interface {
 type push_er interface {
 	f_push(v Capture) *Any;
 }
+type pop_er interface {
+	f_pop(v Capture) *Any;
+}
 type lookup_er interface {
 	f_lookup(v Capture) *Any;
 }
@@ -225,6 +228,14 @@ func (i Str) f_perl(Capture) *Any	{
     ) 
 }
 func (i Str) f_isa (v Capture) *Any { return toBool( "Str" == tostr( v.p[0] ) ) }
+func (i Str) f_chars (v Capture) *Any {
+	a := a_array();
+	for _, value := range string(i) {
+        cc := string(value);
+		(*a).(push_er).f_push(Capture{p: []*Any{ toStr(cc) }})
+	}
+	return a;
+}
 
 
 type Function func (Capture) *Any
@@ -340,7 +351,7 @@ func (i *Array) f_push(v Capture) *Any {
     var v2 Any = i; 
     return &v2
 }
-func (i *Array) f_pop() *Any {
+func (i *Array) f_pop(Capture) *Any {
 	i.n--;
 	return i.v[i.n + 1];
 }
@@ -396,10 +407,7 @@ func f_scalar(s Capture) *Any {
 	return s.p[0];
 }
 func f_pop(s Capture) *Any {
-	var o = (*s.p[0]).(array_er).f_array(Capture{});
-	panic("TODO - Pop");
-	return o;
-	//return o.f_pop()
+	return  (*(*s.p[0]).(array_er).f_array(Capture{})).(pop_er).f_pop(Capture{})
 }
 func f_push(s Capture) *Any {
 	var o = (*(*s.p[0]).(array_er).f_array(Capture{})).(push_er).f_push( Capture{ p : []*Any{ s.p[1] } } );
