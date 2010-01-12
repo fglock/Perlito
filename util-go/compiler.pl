@@ -6,17 +6,23 @@ class Main {
     use MiniPerl6::Grammar::Regex;
     use MiniPerl6::Emitter::Token;
 
-    # say "MiniPerl6 compiler";
+    my $source;
+    if @*ARGS[0] eq '-e' {
+        $source := @*ARGS[1];
+    }
+    else {
+        $source := IO::slurp( @*ARGS[0] );
+    }
+
+    say "// MiniPerl6 compiler";
+    say "// ARGS: ", @*ARGS.perl;
+
     my $m := MiniPerl6::Grammar.parse( 
-        'class X { has $.abc; 123; say "hello, World!" } class X2 { my $v := 1 }', 
+        $source, 
         0, 
     );
     my $comp_units := $$m;
     # say "result: ", $comp_units.perl;
     say CompUnit::emit_go_program( $comp_units );
-
-    # my $s := IO::slurp("lib/Test.pm");
-    # say $s;
-    say "ARGS: ", @*ARGS.perl;
 }
 
