@@ -180,7 +180,6 @@ if ( $backend eq 'lisp' ) {
     if ( $execute ) {
         open( OUT, '>', $tmp_filename . '.lisp' )
           or die "Cannot write to ${tmp_filename}.lisp\n";
-
         open FILE, "lib/MiniPerl6/Lisp/Runtime.lisp";
         local $/ = undef;
         my $lib = <FILE>;
@@ -199,7 +198,13 @@ elsif ( $backend eq 'parrot' ) {
     }
 
     if ( $execute ) {
-        die "execute Parrot not implemented\n";
+        open( OUT, '>', $tmp_filename . '.pir' )
+          or die "Cannot write to ${tmp_filename}.pir\n";
+        print OUT $result;
+        close(OUT);
+        warn "calling parrot compiler\n" if $verbose;
+        exec "parrot $tmp_filename.pir"
+            or die "can't execute";
     }
 }
 elsif ( $backend eq 'js' ) {
