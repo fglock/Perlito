@@ -1,0 +1,65 @@
+MiniPerl6 "Perlito" compiler
+
+Go backend
+
+    ...
+
+    The Go release from about 11 Nov 2009 is required. Newer versions may not work.
+
+    See also: Go homepage at http://golang.org
+
+Javascript backend
+
+    Open the file 'perlito.html' in a browser, or browse to:
+
+    http://perlcabal.org/~fglock/perlito.html
+
+    Executing from the command line requires the V8 javascript compiler:
+
+    perl mp6.pl -Bparrot -e 'class Main { say "hello, World!" }'
+
+    See also: V8 homepage at http://code.google.com/apis/v8
+
+Lisp backend
+
+    ... (see util-lisp directory)
+
+Parrot backend
+
+    The parrot backend is not bootstrapped. 
+    The perl 5 backend can be used to compile MiniPerl6 to parrot:
+
+    perl mp6.pl -Bparrot -e 'class Main { say "hello, World!" }'
+
+    See also: Parrot homepage at http://www.parrot.org
+
+Perl 5 backend
+
+    perl mp6.pl -e 'class Main { say "hello, World!" }'
+
+    See also: Perl 5 homepage at http://www.perl.org
+
+AST output
+
+    ...
+
+AUTHORS
+
+Flavio Soibelmann Glock - fglock@gmail.com
+The Pugs Team - perl6-compiler@perl.org
+
+SEE ALSO
+
+The Perl 6 homepage at http://dev.perl.org/perl6
+The Pugs homepage at http://pugscode.org
+The Perlito homepage at http://perlito.org
+
+COPYRIGHT
+
+Copyright 2006, 2009, 2010 by Flavio Soibelmann Glock, Audrey Tang and others.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+See http://www.perl.com/perl/misc/Artistic.html
+
