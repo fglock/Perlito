@@ -9,13 +9,18 @@ class MiniPerl6::Go::LexicalBlock {
             return '';
         }
         my $str := '';
+        my %decl_seen;
         for @.block -> $decl1 { 
             my $decl := $decl1;
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $decl := $decl.parameters;
             }
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $str := $str ~ $decl.emit_go_init;
+                my $var_name := (($decl).var).emit_go;
+                if !(%decl_seen{ $var_name }) {
+                    $str := $str ~ $decl.emit_go_init;
+                    %decl_seen{ $var_name } := 1;
+                }
             }
         }
         my $last_statement;
@@ -639,7 +644,12 @@ class Call {
     method emit_go {
         my $invocant := $.invocant.emit_go;
         if ($.invocant).isa( 'Proto' ) {
-            $invocant := 'Proto_' ~ $invocant
+            if $.invocant.name eq 'self' {
+                $invocant := 'v_self'
+            }
+            else {
+                $invocant := 'Proto_' ~ $invocant
+            }
         }
 
         my $meth := $.method;
