@@ -71,9 +71,7 @@ class Main {
         say "use MiniPerl6::Perl5::Runtime;";
         say "use MiniPerl6::Perl5::Match;";
         for @($comp_units) -> $c {
-            say "{";
-            say $c.emit;
-            say "}";
+            say "{\n", $c.emit, "}";
         }
         say "1;";
     }
