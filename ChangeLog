@@ -1,4 +1,5 @@
 
+- the compiler command line script is now written in MiniPerl6
 - Go language backend
 - new repository at http://github.com/fglock/Perlito
 - new web page at http://www.perlito.org created by nferraz (Nelson Ferraz)
@@ -11,7 +12,7 @@
 - Lisp (SBCL) bootstrap
 - Changed accessors to lvalue
 
-date?  -
+[intermission]
 
 - Perl5 emitter: fixed Array inside signature:  method ( $a, [ $b, $c ] ) ...
 - Perl5 emitter: implemented "warn"

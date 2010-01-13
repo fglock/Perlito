@@ -310,6 +310,12 @@ class Var {
         if $.namespace {
             $ns := Main::to_lisp_namespace( $.namespace ) ~ '::';
         }
+        else {
+            if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
+                return 'COMMON-LISP-USER::*posix-argv*'
+            }
+        }
+
            ( $.twigil eq '.' )
         ?? ( '(' ~ Main::to_lisp_identifier( $.name ) ~ ' sv-self)' )
         !!  (    ( $.name eq '/' )

@@ -18,6 +18,8 @@
         #:sv-defined))
 (in-package mp-Main)
 
+(setf COMMON-LISP-USER::*posix-argv* (cdr COMMON-LISP-USER::*posix-argv*))
+
 ;; "undef"
 
 (if (not (ignore-errors (find-class 'mp-Undef)))

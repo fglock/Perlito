@@ -148,7 +148,7 @@ sub sigil { @_ == 1 ? ( $_[0]->{sigil} ) : ( $_[0]->{sigil} = $_[1] ) };
 sub twigil { @_ == 1 ? ( $_[0]->{twigil} ) : ( $_[0]->{twigil} = $_[1] ) };
 sub namespace { @_ == 1 ? ( $_[0]->{namespace} ) : ( $_[0]->{namespace} = $_[1] ) };
 sub name { @_ == 1 ? ( $_[0]->{name} ) : ( $_[0]->{name} = $_[1] ) };
-sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; (my  $ns = ''); do { if ($self->{namespace}) { ($ns = Main::to_lisp_namespace($self->{namespace}) . '::') } else {  } }; (($self->{twigil} eq '.') ? '(' . Main::to_lisp_identifier($self->{name}) . ' sv-self)' : (($self->{name} eq '/') ? Main::to_lisp_identifier('MATCH') : $ns . Main::to_lisp_identifier($self->{name}))) }
+sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; (my  $ns = ''); do { if ($self->{namespace}) { ($ns = Main::to_lisp_namespace($self->{namespace}) . '::') } else { do { if ((($self->{sigil} eq '@') && (($self->{twigil} eq '*') && ($self->{name} eq 'ARGS')))) { return('COMMON-LISP-USER::*posix-argv*') } else {  } } } }; (($self->{twigil} eq '.') ? '(' . Main::to_lisp_identifier($self->{name}) . ' sv-self)' : (($self->{name} eq '/') ? Main::to_lisp_identifier('MATCH') : $ns . Main::to_lisp_identifier($self->{name}))) }
 
 }
 {

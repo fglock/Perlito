@@ -178,7 +178,17 @@ if ( $backend eq 'lisp' ) {
     }
 
     if ( $execute ) {
-        die "execute Lisp not implemented\n";
+        open( OUT, '>', $tmp_filename . '.lisp' )
+          or die "Cannot write to ${tmp_filename}.lisp\n";
+
+        open FILE, "lib/MiniPerl6/Lisp/Runtime.lisp";
+        local $/ = undef;
+        my $lib = <FILE>;
+        print OUT $lib, "\n", $result;
+        close(OUT);
+        warn "calling lisp compiler\n" if $verbose;
+        exec "sbcl --script $tmp_filename.lisp"
+            or die "can't execute";
     }
 }
 elsif ( $backend eq 'parrot' ) {
