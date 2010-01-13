@@ -26,10 +26,14 @@ my $execute = 1;
 my $verbose = 0;
 my @args = @ARGV;
 while (@args) {
-    if ( $args[0] eq '--verbose' ) {
+    if ( $args[0] eq '-v' || $args[0] eq '--verbose' ) {
         $verbose = 1;
         shift @args;
         redo;
+    }
+    if ( $args[0] eq '-V' || $args[0] eq '--version' ) {
+        print "$::_V6_COMPILER_NAME $::_V6_COMPILER_VERSION\n";
+        exit;
     }
     if ( $args[0] eq '-B' || $args[0] eq '-C' ) {
         if ( @args > 1 ) {
@@ -215,7 +219,13 @@ elsif ( $backend eq 'js' ) {
     }
 
     if ( $execute ) {
-        die "execute Javascript not implemented\n";
+        open( OUT, '>', $tmp_filename . '.js' )
+          or die "Cannot write to ${tmp_filename}.js\n";
+        print OUT $result;
+        close(OUT);
+        warn "calling javascript compiler\n" if $verbose;
+        exec "v8 lib/MiniPerl6/Javascript/Runtime.js $tmp_filename.js"
+            or die "can't execute";
     }
 }
 elsif ( $backend eq 'go' ) {
