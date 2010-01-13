@@ -70,6 +70,18 @@ BEGIN {
         $MATCH;
     }
     
+package IO;
+
+    sub slurp {
+        my $source_filename = shift;
+        open FILE, $source_filename
+          or die "Cannot read $source_filename\n";
+        local $/ = undef;
+        $source = <FILE>;
+        close FILE;
+        return $source;
+    }
+
 package Main;
 
     sub print { print join( '', @_ ) }

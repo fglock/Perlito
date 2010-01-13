@@ -128,12 +128,18 @@ class Var {
         if $.namespace {
             $ns := $.namespace ~ '::';
         }
-           ( $.twigil eq '.' )
-        ?? ( '$self->{' ~ $.name ~ '}' )
-        !!  (    ( $.name eq '/' )
-            ??   ( $table{$.sigil} ~ 'MATCH' )
-            !!   ( $table{$.sigil} ~ $ns ~ $.name )
-            )
+        else {
+            if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
+                return '\\@ARGV'
+            }
+            if $.twigil eq '.' {
+                return '$self->{' ~ $.name ~ '}' 
+            }
+            if $.name eq '/' {
+                return $table{$.sigil} ~ 'MATCH' 
+            }
+        }
+        return $table{$.sigil} ~ $ns ~ $.name 
     };
     method plain_name {
         if $.namespace {
@@ -239,6 +245,16 @@ class Call {
             $invocant := '$self';
         };
 
+        if     ($.method eq 'shift')
+        { 
+            if ($.hyper) {
+                die "not implemented";
+            }
+            else {
+                return 'shift( @{' ~ $invocant ~ '} )';
+            }
+        };
+
         if     ($.method eq 'values')
         { 
             if ($.hyper) {
@@ -311,6 +327,7 @@ class Apply {
         if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit).join(' ')    ~ '}' };
         if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>emit).join(' ')    ~ '} )' };
         if $code eq 'push'       { return 'push( @{' ~ (@.arguments[0]).emit ~ '}, '~ (@.arguments[1]).emit ~ ' )' };
+        if $code eq 'shift'      { return 'shift( @{' ~ (@.arguments.>>emit).join(' ')    ~ '} )' };
 
         if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit).join(' ') ~ ')' };
         if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ' ? 0 : 1)' };

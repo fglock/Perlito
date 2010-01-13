@@ -178,7 +178,7 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { @_ == 1 ? ( $_[0]->{parameters} ) : ( $_[0]->{parameters} = $_[1] ) };
 sub arguments { @_ == 1 ? ( $_[0]->{arguments} ) : ( $_[0]->{arguments} = $_[1] ) };
-sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; do { if (Main::isa($self->{parameters}, 'Lit::Array')) { (my  $a = $self->{parameters}->array());(my  $b = $self->{arguments}->array());(my  $str = '');(my  $i = 0);do { for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var,'arguments' => $b->[$i], ));($str = $str . $bind->emit_parrot());($i = ($i + 1)) } };return($str . $self->{parameters}->emit_parrot()) } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Hash')) { (my  $a = $self->{parameters}->hash());(my  $b = $self->{arguments}->hash());(my  $str = '');(my  $i = 0);my  $arg;do { for my $var ( @{$a} ) { ($arg = Val::Undef->new(  ));do { for my $var2 ( @{$b} ) { do { if (($var2->[0]->buf() eq $var->[0]->buf())) { ($arg = $var2->[1]) } else {  } } } };(my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => $arg, ));($str = $str . $bind->emit_parrot());($i = ($i + 1)) } };return($str . $self->{parameters}->emit_parrot()) } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Object')) { (my  $class = $self->{parameters}->class());(my  $a = $self->{parameters}->fields());(my  $b = $self->{arguments});(my  $str = '');do { for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => Call->new( 'invocant' => $b,'method' => $var->[0]->buf(),'arguments' => [],'hyper' => 0, ), ));($str = $str . $bind->emit_parrot()) } };return($str . $self->{parameters}->emit_parrot()) } else {  } }; do { if (Main::isa($self->{parameters}, 'Var')) { return($self->{arguments}->emit_parrot() . '  ' . $self->{parameters}->full_name() . ' = $P0' . '
+sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; do { if (Main::isa($self->{parameters}, 'Lit::Array')) { (my  $a = $self->{parameters}->array1());(my  $b = $self->{arguments}->array1());(my  $str = '');(my  $i = 0);do { for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var,'arguments' => $b->[$i], ));($str = $str . $bind->emit_parrot());($i = ($i + 1)) } };return($str . $self->{parameters}->emit_parrot()) } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Hash')) { (my  $a = $self->{parameters}->hash());(my  $b = $self->{arguments}->hash());(my  $str = '');(my  $i = 0);my  $arg;do { for my $var ( @{$a} ) { ($arg = Val::Undef->new(  ));do { for my $var2 ( @{$b} ) { do { if (($var2->[0]->buf() eq $var->[0]->buf())) { ($arg = $var2->[1]) } else {  } } } };(my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => $arg, ));($str = $str . $bind->emit_parrot());($i = ($i + 1)) } };return($str . $self->{parameters}->emit_parrot()) } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Object')) { (my  $class = $self->{parameters}->class());(my  $a = $self->{parameters}->fields());(my  $b = $self->{arguments});(my  $str = '');do { for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => Call->new( 'invocant' => $b,'method' => $var->[0]->buf(),'arguments' => [],'hyper' => 0, ), ));($str = $str . $bind->emit_parrot()) } };return($str . $self->{parameters}->emit_parrot()) } else {  } }; do { if (Main::isa($self->{parameters}, 'Var')) { return($self->{arguments}->emit_parrot() . '  ' . $self->{parameters}->full_name() . ' = $P0' . '
 ') } else {  } }; do { if (Main::isa($self->{parameters}, 'Decl')) { return($self->{arguments}->emit_parrot() . '  .local pmc ' . $self->{parameters}->var()->full_name() . '
 ' . '  ' . $self->{parameters}->var()->full_name() . ' = $P0' . '
 ' . '  .lex \'' . $self->{parameters}->var()->full_name() . '\', $P0' . '
@@ -341,7 +341,7 @@ sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
 sub topic { @_ == 1 ? ( $_[0]->{topic} ) : ( $_[0]->{topic} = $_[1] ) };
 (my  $label = 100);
-sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $cond = $self->{cond}); ($label = ($label + 1)); (my  $id = $label); do { if ((Main::isa($cond, 'Var') && ($cond->sigil() ne '@'))) { ($cond = Lit::Array->new( 'array' => [$cond], )) } else {  } }; return('' . $cond->emit_parrot() . '  save $P1' . '
+sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $cond = $self->{cond}); ($label = ($label + 1)); (my  $id = $label); do { if ((Main::isa($cond, 'Var') && ($cond->sigil() ne '@'))) { ($cond = Lit::Array->new( 'array1' => [$cond], )) } else {  } }; return('' . $cond->emit_parrot() . '  save $P1' . '
 ' . '  save $P2' . '
 ' . '  $P1 = new .Iterator, $P0' . '
 ' . ' test_iter' . $id . ':' . '
@@ -373,9 +373,7 @@ sub new { shift; bless { @_ }, "Sig" }
 sub invocant { @_ == 1 ? ( $_[0]->{invocant} ) : ( $_[0]->{invocant} = $_[1] ) };
 sub positional { @_ == 1 ? ( $_[0]->{positional} ) : ( $_[0]->{positional} = $_[1] ) };
 sub named { @_ == 1 ? ( $_[0]->{named} ) : ( $_[0]->{named} = $_[1] ) };
-sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; ' print \'Signature - TODO\'; die \'Signature - TODO\'; ' };
-sub invocant { my $self = shift; my $List__ = \@_; do { [] }; $self->{invocant} };
-sub positional { my $self = shift; my $List__ = \@_; do { [] }; $self->{positional} }
+sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; ' print \'Signature - TODO\'; die \'Signature - TODO\'; ' }
 
 }
 {
