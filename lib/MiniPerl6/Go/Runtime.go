@@ -83,6 +83,9 @@ type push_er interface {
 type pop_er interface {
 	f_pop(v Capture) *Any;
 }
+type shift_er interface {
+	f_shift(v Capture) *Any;
+}
 type lookup_er interface {
 	f_lookup(v Capture) *Any;
 }
@@ -355,6 +358,14 @@ func (i *Array) f_pop(Capture) *Any {
 	i.n--;
 	return i.v[i.n + 1];
 }
+func (i *Array) f_shift(v Capture) *Any {
+    r := i.v[0];
+    i.n--;
+	for pos := 0; pos <= i.n; pos++ {
+        i.v[pos] = i.v[pos+1]
+    }
+    return r
+}
 func (i Array) f_join(v1 Capture) *Any {
 	var s1 string;
 	var sep string;
@@ -412,6 +423,9 @@ func f_pop(s Capture) *Any {
 func f_push(s Capture) *Any {
 	var o = (*(*s.p[0]).(array_er).f_array(Capture{})).(push_er).f_push( Capture{ p : []*Any{ s.p[1] } } );
 	return o;
+}
+func f_shift(s Capture) *Any {
+	return  (*(*s.p[0]).(array_er).f_array(Capture{})).(shift_er).f_shift(Capture{})
 }
 func f_index(v Capture) *Any {
 	var s = tostr(v.p[0]);

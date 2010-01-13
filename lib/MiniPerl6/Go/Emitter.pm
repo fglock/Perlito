@@ -327,6 +327,7 @@ class CompUnit {
             hash => 1,
             push => 1,
             pop => 1,
+            shift => 1,
             lookup => 1,
             index => 1,
         };
@@ -726,6 +727,10 @@ class Apply {
                                                 ~ ' } } )' 
                                     }
         if $code eq 'push'          { return 'f_push( Capture{ p : []*Any{ '  
+                                                ~ (@.arguments.>>emit_go).join(', ') 
+                                                ~ ' } } )' 
+                                    }
+        if $code eq 'shift'         { return 'f_shift( Capture{ p : []*Any{ '  
                                                 ~ (@.arguments.>>emit_go).join(', ') 
                                                 ~ ' } } )' 
                                     }
