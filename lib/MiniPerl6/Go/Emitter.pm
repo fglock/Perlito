@@ -116,7 +116,7 @@ class CompUnit {
         $str := $str ~ 'var Run_' ~ $class_name ~ ' func ();' ~ "\n";
 
         $str := $str 
-            ~ '// method wrappers for ' ~ $.name ~ "\n"
+            ~ '// method wrappers for ' ~ $.name ~ "\n";
         for (%.methods).values -> $decl { 
             if $decl.isa( 'Method' ) {
                 $str := $str  
@@ -147,7 +147,7 @@ class CompUnit {
                     $str := $str 
                         ~ $sep 
                         ~ '+ "' ~ ($decl.var).name ~ ' => "' 
-                        ~ '+ tostr((*(*v_self).f_' ~ ($decl.var).name ~ '(Capture{})).(perl_er).f_perl(Capture{})) '
+                        ~ '+ tostr((*(*v_self).f_' ~ ($decl.var).name ~ '(Capture{})).(perl_er).f_perl(Capture{})) ';
                     $sep := '+ ", " ';
                 }
             }
@@ -193,7 +193,7 @@ class CompUnit {
                 $str := $str  
               ~ '  // accessor ' ~ ($decl.var).name ~ "\n"
               ~ '  Method_' ~ $class_name ~ '.f_' ~ ($decl.var).name 
-                    ~ ' = func (v_self *' ~ $class_name ~ ', v Capture) *Any {' ~ "\n"
+                    ~ ' = func (v_self *' ~ $class_name ~ ', v Capture) *Any {' ~ "\n";
 
                 $str := $str  
               ~ '    ' ~ 'if v_self.v_' ~ ($decl.var).name ~ ' == nil {' ~ "\n"
