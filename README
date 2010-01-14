@@ -2,21 +2,29 @@ MiniPerl6 "Perlito" compiler
 
 Go backend
 
-    ...
+    Compiling to Go currently requires Perl 5:
+
+    perl mp6.pl -Bgo t/04-op.t
 
     The Go release from about 11 Nov 2009 is required. Newer versions may not work.
 
     See also: Go homepage at http://golang.org
 
-Javascript backend
+Javascript backend - browser
 
-    Open the file 'perlito.html' in a browser, or browse to:
+    Open the file 'perlito.html' in a browser (Firefox, Chrome, or Safari).
+
+    Alternately, browse to:
 
     http://perlcabal.org/~fglock/perlito.html
 
-    Executing from the command line requires the V8 javascript compiler:
+Javascript backend - command line
 
-    perl mp6.pl -Bparrot -e 'class Main { say "hello, World!" }'
+    Executing from the command line requires Perl 5 and a javascript compiler (V8 or Rhino):
+
+    perl mp6.pl -Bv8 -e 'class Main { say "hello, World!" }'
+
+    perl mp6.pl -Brhino -e 'class Main { say "hello, World!" }'
 
     See also: V8 homepage at http://code.google.com/apis/v8
 
@@ -26,7 +34,8 @@ Lisp backend
 
 Parrot backend
 
-    The parrot backend is not bootstrapped. 
+    The parrot backend is not bootstrapped, and it doesn't pass all tests.
+
     The perl 5 backend can be used to compile MiniPerl6 to parrot:
 
     perl mp6.pl -Bparrot -e 'class Main { say "hello, World!" }'
@@ -41,7 +50,7 @@ Perl 5 backend
 
 AST output
 
-    ...
+    perl mp6.pl -Cast-json -e 'class Main { say "hello, World!" }'
 
 AUTHORS
 

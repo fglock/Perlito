@@ -44,7 +44,10 @@ mp6 [switches] [programfile]
     -v --verbose
     -V --version
     -e program      one line of program (omit programfile)
-    -Ctarget        compile to target backend: go, js, lisp, parrot, perl5, ast-perl6
+    -Ctarget        compile to target backend: go, js, lisp, parrot, perl5
+        additional options:
+        -Cast-json
+        -Cast-perl5
     -Btarget        run in target backend: go, js, lisp, parrot, perl5
         additional options:
         -Brhino     run in Rhino (javascript)
