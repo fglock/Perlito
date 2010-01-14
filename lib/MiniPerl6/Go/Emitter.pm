@@ -470,18 +470,18 @@ class Lit::Object {
         for @$fields -> $field { 
             $str := $str 
 
-                ~ 'if m.v_' ~ ($field[0]).buf ~ ' == nil {' 
-                ~     'var p Any; ' 
-                ~     'm.v_' ~ ($field[0]).buf ~ ' = &p; '
-                ~ '}' 
+                ~ 'if m.v_' ~ ($field[0]).buf ~ ' == nil {' ~ "\n"
+                ~     'var p Any; ' ~ "\n"
+                ~     'm.v_' ~ ($field[0]).buf ~ ' = &p; ' ~ "\n"
+                ~ '}' ~ "\n"
 
-                ~ '*m.v_' ~ ($field[0]).buf ~ ' = *' ~ ($field[1]).emit_go ~ '; ';
+                ~ '*m.v_' ~ ($field[0]).buf ~ ' = *' ~ ($field[1]).emit_go ~ '; ' ~ "\n";
         }; 
-        'func() *Any { ' 
-            ~ 'var m = new(' ~ Main::to_go_namespace($.class) ~ '); '
-            ~ $str 
-            ~ 'var m1 Any = m; '
-            ~ 'return &m1; '
+          'func() *Any { ' ~ "\n"
+        ~ '  var m = new(' ~ Main::to_go_namespace($.class) ~ '); ' ~ "\n"
+        ~ '  ' ~ $str ~ "\n"
+        ~ '  var m1 Any = m; ' ~ "\n"
+        ~ '  return &m1; ' ~ "\n"
         ~ '}()';
     }
 }
@@ -664,12 +664,13 @@ class Call {
         
         if ($.hyper) {
             return
-                'func (a_ *Any) *Any { '
-                    ~ 'var out = a_array(); ' 
-                    ~ 'var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); '
-                    ~ 'for pos := 0; pos <= i.n; pos++ { '
-                        ~ '(*out).(push_er).f_push( Capture{p: []*Any{ (*i.v[pos]).(' ~ $meth ~ '_er).f_' ~ $meth ~ '(Capture{ p : []*Any{}  }) }} ) } '
-                    ~ 'return out; '
+                  'func (a_ *Any) *Any { ' ~ "\n"
+                ~ '  var out = a_array(); ' ~ "\n"
+                ~ '  var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); ' ~ "\n"
+                ~ '  for pos := 0; pos <= i.n; pos++ { ' ~ "\n"
+                ~ '    (*out).(push_er).f_push( Capture{p: []*Any{ (*i.v[pos]).(' ~ $meth ~ '_er).f_' ~ $meth ~ '(Capture{ p : []*Any{}  }) }} )' ~ "\n"
+                ~ '  } ' ~ "\n"
+                ~ '  return out; ' ~ "\n"
                 ~ '}(' ~ $invocant ~ ')'
         }
         return
@@ -914,13 +915,13 @@ class For {
     has @.body;
     has @.topic;
     method emit_go {
-        'func (a_ *Any) { '
-            ~ 'var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); '
-            ~ 'for pos := 0; pos <= i.n; pos++ { '
-                ~ 'func (' ~ $.topic.emit_go ~ ' *Any) { '
-                    ~ ::MiniPerl6::Go::LexicalBlock( block => @.body, needs_return => 0 ).emit_go 
-                ~ ' }(i.v[pos]) '
-            ~ '} '
+          'func (a_ *Any) { ' ~ "\n"
+        ~ '  var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); ' ~ "\n"
+        ~ '  for pos := 0; pos <= i.n; pos++ { ' ~ "\n"
+        ~ '    func (' ~ $.topic.emit_go ~ ' *Any) { ' ~ "\n"
+        ~ '      ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.body, needs_return => 0 ).emit_go ~ "\n"
+        ~ '    }(i.v[pos]) ' ~ "\n"
+        ~ '  } ' ~ "\n"
         ~ '}(' ~ $.cond.emit_go ~ ')'
     }
 }

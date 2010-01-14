@@ -30,7 +30,7 @@ import (
 	"runtime";
 	"unicode";
     // "reflect";
-    "io";
+    "io/ioutil";
     "utf8";
 )
 
@@ -224,11 +224,7 @@ func (i Str) f_str_equal(v Capture) *Any {
 }
 func (i Str) f_perl(Capture) *Any	{ 
     var s Any = i;
-    return toStr(
-          "'" 
-        + tostr( Namespace_Main.f_perl_escape_string(Capture{ p : []*Any{ &s } }) )
-        + "'"
-    ) 
+    return toStr( "'" + tostr( Namespace_Main.f_perl_escape_string(Capture{ p : []*Any{ &s } }) ) + "'" ) 
 }
 func (i Str) f_isa (v Capture) *Any { return toBool( "Str" == tostr( v.p[0] ) ) }
 func (i Str) f_chars (v Capture) *Any {
@@ -737,7 +733,7 @@ func Init_Prelude() {
     };
     Namespace_IO.f_slurp = func (cap Capture) *Any {
         var filename = tostr(cap.p[0]);
-        s, error := io.ReadFile(filename);
+        s, error := ioutil.ReadFile(filename);
         if error != nil {
             return u_undef();
         }

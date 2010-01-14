@@ -6,8 +6,6 @@ Go backend
 
     perl mp6.pl -Bgo t/04-op.t
 
-    The Go release from about 11 Nov 2009 is required. Newer versions may not work.
-
     See also: Go homepage at http://golang.org
 
 Javascript backend - browser
