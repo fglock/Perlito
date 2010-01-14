@@ -512,7 +512,7 @@ class Apply {
         if $code eq 'false'      { return '0' };
         if $code eq 'make'       { return '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
         if $code eq 'say'        { return 'say('    ~ (@.arguments.>>emit_javascript).join(' + ') ~ ')' };
-        if $code eq 'print'      { return 'print('  ~ (@.arguments.>>emit_javascript).join(' + ') ~ ')' };
+        if $code eq 'print'      { return 'f_print('  ~ (@.arguments.>>emit_javascript).join(' + ') ~ ')' };
         if $code eq 'warn'       { return 'warn('   ~ (@.arguments.>>emit_javascript).join(' + ') ~ ')' };
         # if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit_javascript).join(' ')    ~ '}' };
         if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ' != null)' };

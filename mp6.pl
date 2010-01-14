@@ -22,6 +22,7 @@ my ( @switch_e, $source, $source_filename, $result );
 my @comp_unit;
 my $backend = 'perl5';
 my $tmp_filename = 'tmp';
+my $cmd = '';
 my $execute = 1;
 my $verbose = 0;
 my @args = @ARGV;
@@ -33,6 +34,22 @@ while (@args) {
     }
     if ( $args[0] eq '-V' || $args[0] eq '--version' ) {
         print "$::_V6_COMPILER_NAME $::_V6_COMPILER_VERSION\n";
+        exit;
+    }
+    if ( $args[0] eq '-h' || $args[0] eq '--help') {
+        print "$::_V6_COMPILER_NAME $::_V6_COMPILER_VERSION
+mp6 [switches] [programfile]
+  switches:
+    -h --help
+    -v --verbose
+    -V --version
+    -e program      one line of program (omit programfile)
+    -Ctarget        compile to target backend: go, js, lisp, parrot, perl5, ast-perl6
+    -Btarget        run in target backend: go, js, lisp, parrot, perl5
+        additional options:
+        -Brhino     run in Rhino (javascript)
+        -Bv8        run in V8 (javascript)
+";
         exit;
     }
     if ( $args[0] eq '-B' || $args[0] eq '-C' ) {
@@ -64,6 +81,18 @@ while (@args) {
     last;
 }
 
+if ( $backend eq 'js'    ) { 
+    $cmd = 'v8' 
+}
+if ( $backend eq 'rhino' ) { 
+    $cmd = 'java org.mozilla.javascript.tools.shell.Main'; 
+    $backend = 'js' 
+}
+if ( $backend eq 'v8'    ) { 
+    $cmd = 'v8';    
+    $backend = 'js' 
+}
+
 $source_filename = shift @args if @args;
 
 if ( $verbose ) {
@@ -73,6 +102,7 @@ if ( $verbose ) {
     warn "\texecute         '$execute'\n";
     warn "\tsource_filename '$source_filename'\n";
     warn "\tBin             '$::Bin'\n";
+    warn "\tcmd             '$cmd'\n";
     warn "\te               '${_}'\n" for @switch_e;
 }
 
@@ -221,10 +251,20 @@ elsif ( $backend eq 'js' ) {
     if ( $execute ) {
         open( OUT, '>', $tmp_filename . '.js' )
           or die "Cannot write to ${tmp_filename}.js\n";
-        print OUT $result;
+
+        my $lib_source_filename = 'lib/MiniPerl6/Javascript/Runtime.js';
+        my $inc = "// include file: $lib_source_filename\n";
+        open FILE, $::Bin . '/' . $lib_source_filename
+          or die "Cannot read $::Bin/$lib_source_filename\n";
+        local $/ = undef;
+        $inc .= <FILE>;
+        close FILE;
+        $inc .= "\n// end include file: $lib_source_filename\n";
+
+        print OUT $inc, $result;
         close(OUT);
-        warn "calling javascript compiler\n" if $verbose;
-        exec "v8 lib/MiniPerl6/Javascript/Runtime.js $tmp_filename.js"
+        warn "calling javascript compiler: $cmd\n" if $verbose;
+        exec "$cmd $tmp_filename.js"
             or die "can't execute";
     }
 }

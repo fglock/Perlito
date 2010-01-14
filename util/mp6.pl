@@ -31,6 +31,7 @@ class Main {
 mp6 [switches] [programfile]
   switches:
     -h --help
+    -v --verbose
     -V --version
     -e program      one line of program (omit programfile)
     -Ctarget        target backend: go, js, lisp, parrot, perl5, ast-perl6
