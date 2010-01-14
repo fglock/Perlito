@@ -1,5 +1,5 @@
 
-use v6-alpha;
+use v6;
 
 grammar MiniPerl6::Grammar::Regex {
 

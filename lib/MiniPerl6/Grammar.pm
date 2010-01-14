@@ -1,4 +1,4 @@
-use v6-alpha;
+use v6;
 
 grammar MiniPerl6::Grammar {
 
@@ -89,7 +89,10 @@ token parse {
 
 token comp_unit {
     <.opt_ws> [\; <.opt_ws> | '' ]
-    [ <'use'> <.ws> <'v6-'> <ident> <.opt_ws> \; <.ws>  |  '' ]
+    [ <'use'> <.ws> <'v6-'> <ident> <.opt_ws> \; <.ws>  
+    | <'use'> <.ws> <'v6'> <.opt_ws> \; <.ws>  
+    |  '' 
+    ]
     
     [ <'class'> | <'grammar'> ]  <.opt_ws> <full_ident> <.opt_ws> 
     <'{'>

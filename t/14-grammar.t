@@ -1,4 +1,4 @@
-use v6-alpha;
+use v6;
 
 class Main {
     say '1..4';

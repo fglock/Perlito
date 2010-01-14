@@ -1,5 +1,5 @@
 
-use v6-alpha;
+use v6;
 
 # See also: parrot/compilers/pge/PGE/Match.pir
 

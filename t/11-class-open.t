@@ -1,4 +1,4 @@
-use v6-alpha;
+use v6;
 
 class Other {
     method subr( $a, $b ) { $a + $b };
