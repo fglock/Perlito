@@ -2,7 +2,7 @@ use v6-alpha;
 
 class Main {
 
-    say '1..2';
+    say '1..3';
 
     my $x := "abcd";
     if substr($x,1,1) ne "b" {
@@ -14,4 +14,9 @@ class Main {
         print 'not '
     };
     say 'ok 2 - index ', index($x,"c");
+
+    if substr($x,3,1) ne "d" {
+        print 'not '
+    };
+    say 'ok 3 - substr ', substr($x,3,1);
 }

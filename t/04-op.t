@@ -2,7 +2,7 @@ use v6-alpha;
 
 class Main {
 
-    say '1..10';
+    say '1..11';
 
     my $x := 1;
     if $x != "1" {
@@ -46,4 +46,11 @@ class Main {
         print 'not '
     };
     say 'ok 10 - undef to str';
+
+    $x := 2;
+    if !(($x + 2) eq 4) {
+        print 'not '
+    };
+    say 'ok 11 - plus with string';
+
 }
