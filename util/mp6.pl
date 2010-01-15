@@ -19,6 +19,11 @@ class Main {
     my $comp_units  := [];
     my $perl6lib    := './lib';
 
+    if $verbose {
+        warn "// MiniPerl6 compiler";
+        warn "// ARGS: ", @*ARGS.perl;
+    }
+
     my %module_seen;
 
 token module_name {
@@ -32,7 +37,9 @@ sub modulename_to_filename ($s) {
     return ($$ident).join("/");
 }
 sub add_comp_unit ($comp_unit) {
-    # say "comp_unit use:"; 
+    if $verbose {
+        warn "parsed comp_unit: '", $comp_unit.name, "'"; 
+    }
     for @( $comp_unit.body ) -> $stmt {
         if $stmt.isa('Use') {
             my $module_name := $stmt.mod;
@@ -113,9 +120,8 @@ mp6 [switches] [programfile]
         }
 
         if $verbose {
-            warn "// MiniPerl6 compiler";
-            warn "// ARGS: ", @*ARGS.perl;
             warn "// backend: ", $backend;
+            warn "now parsing";
         }
 
         my $m := Main.parse($source, 0);
