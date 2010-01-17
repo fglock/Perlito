@@ -65,7 +65,7 @@ token ctrl_leave {
 };
 
 token ctrl_return {
-    return [ <before <'('> > | <.ws> ] <exp>
+    return [ <before '(' > | <.ws> ] <exp>
     { make Return.new( 'result' => $$<exp> ) }
     |
     return 

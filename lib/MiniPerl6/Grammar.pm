@@ -24,19 +24,19 @@ token ident {
 
 token full_ident {
     <.ident>
-    [   <'::'> <.full_ident>
+    [   '::' <.full_ident>
     |   ''
     ]    
 }
 
 token namespace_before_ident {
-    <.ident> <before <'::'> >
-        [   <'::'> <.namespace_before_ident>
+    <.ident> <before '::' >
+        [   '::' <.namespace_before_ident>
         |   ''
         ]   
 }
 token optional_namespace_before_ident {
-    | <namespace_before_ident> <'::'> 
+    | <namespace_before_ident> '::' 
         { make ~$<namespace_before_ident> }
     | ''  
         { make '' }
@@ -48,24 +48,24 @@ token to_line_end {
 }
 
 token pod_begin {
-    |   \n <'=end'> <.to_line_end>
+    |   \n '=end' <.to_line_end>
     |   . <.to_line_end> <.pod_begin>
 }
 
 token pod_other {
-    |   \n <'=cut'> <.to_line_end>
+    |   \n '=cut' <.to_line_end>
     |   . <.to_line_end> <.pod_other>
 }
 
 token ws {
     [
-    |    <'#'> <.to_line_end>
+    |    '#' <.to_line_end>
     |    \n [
-            |  <'=begin'>  <.pod_begin>
-            |  <'=kwid'>   <.pod_other>
-            |  <'=pod'>    <.pod_other>
-            |  <'=for'>    <.pod_other>
-            |  <'=head1'>  <.pod_other>
+            |  '=begin'  <.pod_begin>
+            |  '=kwid'   <.pod_other>
+            |  '=pod'    <.pod_other>
+            |  '=for'    <.pod_other>
+            |  '=head1'  <.pod_other>
             |  ''
             ]
     |    \s
@@ -89,18 +89,18 @@ token parse {
 
 token comp_unit {
     <.opt_ws> [\; <.opt_ws> | '' ]
-    [ <'use'> <.ws> <'v6-'> <ident> <.opt_ws> \; <.ws>  
-    | <'use'> <.ws> <'v6'> <.opt_ws> \; <.ws>  
+    [ 'use' <.ws> 'v6-' <ident> <.opt_ws> \; <.ws>  
+    | 'use' <.ws> 'v6' <.opt_ws> \; <.ws>  
     |  '' 
     ]
     
-    [ <'class'> | <'grammar'> ]  <.opt_ws> <full_ident> <.opt_ws> 
-    <'{'>
+    [ 'class' | 'grammar' ]  <.opt_ws> <full_ident> <.opt_ws> 
+    '{'
         { $Class_name := ~$<full_ident> }
         <.opt_ws>
         <exp_stmts>
         <.opt_ws>
-    <'}'>
+    '}'
     <.opt_ws> [\; <.opt_ws> | '' ]
     {
         make CompUnit.new(
@@ -113,21 +113,21 @@ token comp_unit {
 }
 
 token infix_op {
-    <'+'> | <'-'> | <'*'> | <'/'> | eq | ne | <'=='> | <'!='> | <'&&'> | <'||'> | <'~~'> | <'~'> | '>'
+    '+' | '-' | '*' | '/' | eq | ne | '==' | '!=' | '&&' | '||' | '~~' | '~' | '>'
     | 'x'
 }
 
 token hyper_op {
-    <'>>'> | ''
+    '>>' | ''
 }
 
 token prefix_op {
-    [ <'$'> | <'@'> | <'%'> | <'?'> | <'!'> | <'++'> | <'--'> | <'+'> | <'-'> | <'~'> ] 
-    <before <'('> | <'$'> >
+    [ '$' | '@' | '%' | '?' | '!' | '++' | '--' | '+' | '-' | '~' ] 
+    <before '(' | '$' >
 }
 
 token declarator {
-     <'my'> | <'state'> | <'has'> 
+     'my' | 'state' | 'has' 
 }
 
 token exp2 { <exp> { make $$<exp> } }
@@ -143,10 +143,10 @@ token exp {
     <term_meth> 
     [
         <.opt_ws>
-        <'??'>
+        '??'
         [
           <.opt_ws>  <exp>
-          <.opt_ws>  <'!!'>
+          <.opt_ws>  '!!'
           <.opt_ws>
           <exp2>
           { make Apply.new(
@@ -166,7 +166,7 @@ token exp {
             'code'      => 'infix:<' ~ $<infix_op> ~ '>',
             'arguments' => [ $$<term_meth>, $$<exp> ],
           ) }
-    | <.opt_ws> <':='> <.opt_ws> <exp>
+    | <.opt_ws> ':=' <.opt_ws> <exp>
         { make Bind.new( 'parameters' => $$<term_meth>, 'arguments' => $$<exp>) }
     |   { make $$<term_meth> }
     ]
@@ -269,7 +269,7 @@ token sub_or_method_name {
 }
 
 token opt_type {
-    |   [ <'::'> | '' ]  <full_ident>   { make $$<full_ident> }
+    |   [ '::' | '' ]  <full_ident>   { make $$<full_ident> }
     |   ''                              { make '' }
 }
 
@@ -321,7 +321,7 @@ token var_sigil { \$ |\% |\@ |\& }
 
 token var_twigil { [ \. | \! | \^ | \* ] | '' }
 
-token var_name { <full_ident> | <'/'> | <digit> }
+token var_name { <full_ident> | '/' | <digit> }
 
 token var_ident {
     <var_sigil> <var_twigil> <optional_namespace_before_ident> <var_name>
@@ -451,7 +451,7 @@ token lit_hash  {  XXX { make 'TODO: lit_hash'   } }
 token lit_code  {  XXX { make 'TODO - Lit::Code' } }
 
 token lit_object {
-    <'::'>
+    '::'
     <full_ident>
     \( 
     [
@@ -468,7 +468,7 @@ token lit_object {
 }
 
 token bind {
-    <exp>  <.opt_ws> <':='> <.opt_ws>  <exp2>
+    <exp>  <.opt_ws> ':=' <.opt_ws>  <exp2>
     {
         make Bind.new(
             'parameters' => $$<exp>,

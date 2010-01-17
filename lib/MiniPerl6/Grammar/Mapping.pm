@@ -4,7 +4,7 @@ use v6;
 grammar MiniPerl6::Grammar {
 
 token pair_key { 
-    |  <ident> <before <'=>'> | <.ws> > 
+    |  <ident> <before '=>' | <.ws> > 
        { make Val::Buf.new( 'buf' => ~$<ident> ) }  # autoquote
     |  <exp>   
        { make $$<exp> } 
@@ -12,7 +12,7 @@ token pair_key {
 
 token pair {
     |   <pair_key> 
-        <.opt_ws> <'=>'> <.opt_ws>
+        <.opt_ws> '=>' <.opt_ws>
         <exp>
         { make [ $$<pair_key>, $$<exp> ] }
     |   \: <var_sigil> <ident>                  #  :$var

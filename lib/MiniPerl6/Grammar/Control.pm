@@ -46,7 +46,7 @@ token when {
 };
 
 token for {
-    for <.ws> <exp> <.opt_ws> <'->'> <.opt_ws> <var_ident> <.ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
+    for <.ws> <exp> <.opt_ws> '->' <.opt_ws> <var_ident> <.ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
     { make For.new( 'cond' => $$<exp>, 'topic' => $$<var_ident>, 'body' => $$<exp_stmts> ) }
 };
 
@@ -61,7 +61,7 @@ token ctrl_leave {
 };
 
 token ctrl_return {
-    return [ <before <'('> > | <.ws> ] <exp>
+    return [ <before '(' > | <.ws> ] <exp>
     { make Return.new( 'result' => $$<exp> ) }
     |
     return 

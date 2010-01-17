@@ -230,7 +230,7 @@ token rule_term {
     |  
        # { say 'matching variables' } 
        <variables>
-       [  <.ws>? <':='> <.ws>? <named_capture_body>
+       [  <.ws>? ':=' <.ws>? <named_capture_body>
           { 
             make Rul::NamedCapture.new(
                 'rule_exp' =>  $$<named_capture_body>,
@@ -254,7 +254,7 @@ token rule_term {
 }
 
 token quant_exp {
-    |   <'**'> <.MiniPerl6::Grammar.opt_ws> \{  <parsed_code>  \}
+    |   '**' <.MiniPerl6::Grammar.opt_ws> \{  <parsed_code>  \}
         { make { 'closure' => $$<parsed_code> } }
     |   [  \? | \* | \+  ]
 }
@@ -306,7 +306,7 @@ token concat_exp {
 token or_list_exp {
     <concat_exp>
     [
-        <'|'>
+        '|'
         <or_list_exp> 
         { make [ $$<concat_exp>, @($$<or_list_exp>) ] }
     |
