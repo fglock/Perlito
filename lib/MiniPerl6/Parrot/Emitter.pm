@@ -208,7 +208,7 @@ class Lit::Object {
     has $.class;
     has @.fields;
     method emit_parrot {
-        # ::Type( 'value' => 42 )
+        # Type.new( 'value' => 42 )
         my $fields := @.fields;
         my $str := '';        
         $str := 
@@ -326,7 +326,7 @@ class Bind {
             my $str := '';
             my $i := 0;
             for @$a -> $var {
-                my $bind := ::Bind( 'parameters' => $var, 'arguments' => ($b[$i]) );
+                my $bind := Bind.new( 'parameters' => $var, 'arguments' => ($b[$i]) );
                 $str := $str ~ $bind.emit_parrot;
                 $i := $i + 1;
             };
@@ -342,13 +342,13 @@ class Bind {
             my $i := 0;
             my $arg;
             for @$a -> $var {
-                $arg := ::Val::Undef();
+                $arg := Val::Undef.new();
                 for @$b -> $var2 {
                     if ($var2[0]).buf eq ($var[0]).buf {
                         $arg := $var2[1];
                     }
                 };
-                my $bind := ::Bind( 'parameters' => $var[1], 'arguments' => $arg );
+                my $bind := Bind.new( 'parameters' => $var[1], 'arguments' => $arg );
                 $str := $str ~ $bind.emit_parrot;
                 $i := $i + 1;
             };
@@ -356,16 +356,16 @@ class Bind {
         };
         if $.parameters.isa( 'Lit::Object' ) {
 
-            #  ::Obj(:$a, :$b) := $obj
+            #  Obj.new(:$a, :$b) := $obj
 
             my $class := $.parameters.class;
             my $a     := $.parameters.fields;
             my $b     := $.arguments;
             my $str   := '';
             for @$a -> $var {
-                my $bind := ::Bind( 
+                my $bind := Bind.new( 
                     'parameters' => $var[1], 
-                    'arguments'  => ::Call( 
+                    'arguments'  => Call.new( 
                         invocant  => $b, 
                         method    => ($var[0]).buf, 
                         arguments => [ ], 
@@ -540,16 +540,16 @@ class Apply {
         };
         if $code eq 'prefix:<!>' {  
             return 
-                ( ::If( cond      => @.arguments[0],
-                        body      => [ ::Val::Bit( bit => 0 ) ],
-                        otherwise => [ ::Val::Bit( bit => 1 ) ] 
+                ( If.new( cond      => @.arguments[0],
+                        body      => [ Val::Bit.new( bit => 0 ) ],
+                        otherwise => [ Val::Bit.new( bit => 1 ) ] 
                 ) ).emit_parrot;
         };
         if $code eq 'prefix:<?>' {  
             return 
-                ( ::If( cond      => @.arguments[0],
-                        body      => [ ::Val::Bit( bit => 1 ) ],
-                        otherwise => [ ::Val::Bit( bit => 0 ) ] 
+                ( If.new( cond      => @.arguments[0],
+                        body      => [ Val::Bit.new( bit => 1 ) ],
+                        otherwise => [ Val::Bit.new( bit => 0 ) ] 
                 ) ).emit_parrot;
         };
 
@@ -595,7 +595,7 @@ class Apply {
 
         if $code eq 'infix:<&&>' {  
             return 
-                ( ::If( cond => @.arguments[0],
+                ( If.new( cond => @.arguments[0],
                         body => [@.arguments[1]],
                         otherwise => [ ]
                 ) ).emit_parrot;
@@ -603,7 +603,7 @@ class Apply {
 
         if $code eq 'infix:<||>' {  
             return 
-                ( ::If( cond => @.arguments[0],
+                ( If.new( cond => @.arguments[0],
                         body => [ ],
                         otherwise => [@.arguments[1]] 
                 ) ).emit_parrot;
@@ -678,7 +678,7 @@ class Apply {
 
         if $code eq 'ternary:<?? !!>' { 
             return 
-                ( ::If( cond => @.arguments[0],
+                ( If.new( cond => @.arguments[0],
                         body => [@.arguments[1]],
                         otherwise => [@.arguments[2]] 
                 ) ).emit_parrot;
@@ -779,7 +779,7 @@ class For {
         if   $cond.isa( 'Var' )
           && $cond.sigil ne '@'
         {
-            $cond := ::Lit::Array( array1 => [ $cond ] );
+            $cond := Lit::Array.new( array1 => [ $cond ] );
         };
         return
             '' ~ 

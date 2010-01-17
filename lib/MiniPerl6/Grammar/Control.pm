@@ -23,7 +23,7 @@ token if {
         else <.opt_ws> 
         \{ <.opt_ws> <exp_stmts2> <.opt_ws> \}
         { 
-            make ::If( 
+            make If.new( 
                 'cond' => $$<exp>, 
                 'body' => $$<exp_stmts>, 
                 'otherwise' => $$<exp_stmts2>,
@@ -31,7 +31,7 @@ token if {
         }
     |
         { 
-            make ::If( 
+            make If.new( 
                 'cond' => $$<exp>, 
                 'body' => $$<exp_stmts>, 
                 'otherwise' => [ ],
@@ -42,30 +42,30 @@ token if {
 
 token when {
     when <.ws> <exp_seq> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
-    { make ::When( 'parameters' => $$<exp_seq>, 'body' => $$<exp_stmts> ) }
+    { make When.new( 'parameters' => $$<exp_seq>, 'body' => $$<exp_stmts> ) }
 };
 
 token for {
     for <.ws> <exp> <.opt_ws> <'->'> <.opt_ws> <var_ident> <.ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
-    { make ::For( 'cond' => $$<exp>, 'topic' => $$<var_ident>, 'body' => $$<exp_stmts> ) }
+    { make For.new( 'cond' => $$<exp>, 'topic' => $$<var_ident>, 'body' => $$<exp_stmts> ) }
 };
 
 token while {
     while <.ws> <exp> <.ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
-    { make ::While( 'cond' => $$<exp>, 'body' => $$<exp_stmts> ) }
+    { make While.new( 'cond' => $$<exp>, 'body' => $$<exp_stmts> ) }
 };
 
 token ctrl_leave {
     leave
-    { make ::Leave() }
+    { make Leave.new() }
 };
 
 token ctrl_return {
     return [ <before <'('> > | <.ws> ] <exp>
-    { make ::Return( 'result' => $$<exp> ) }
+    { make Return.new( 'result' => $$<exp> ) }
     |
     return 
-    { make ::Return( 'result' => ::Val::Undef() ) }
+    { make Return.new( 'result' => Val::Undef.new() ) }
 };
 
 }

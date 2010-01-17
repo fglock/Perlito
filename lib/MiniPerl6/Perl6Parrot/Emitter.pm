@@ -146,12 +146,12 @@ class Bind {
             my $str := 'do { ';
             my $i := 0;
             for @$a -> $var { 
-                my $bind := ::Bind( 
+                my $bind := Bind.new( 
                     'parameters' => $var, 
                     # 'arguments' => ($b[$i]) );
-                    'arguments'  => ::Index(
+                    'arguments'  => Index.new(
                         obj    => $.arguments,
-                        index_exp  => ::Val::Int( int => $i )
+                        index_exp  => Val::Int.new( int => $i )
                     )
                 );
                 $str := $str ~ ' ' ~ $bind.emit ~ '; ';
@@ -170,7 +170,7 @@ class Bind {
             my $arg;
             for @$a -> $var {
 
-                $arg := ::Val::Undef();
+                $arg := Val::Undef.new();
                 for @$b -> $var2 {
                     #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
                     if ($var2[0]).buf eq ($var[0]).buf {
@@ -178,7 +178,7 @@ class Bind {
                     }
                 };
 
-                my $bind := ::Bind( 'parameters' => $var[1], 'arguments' => $arg );
+                my $bind := Bind.new( 'parameters' => $var[1], 'arguments' => $arg );
                 $str := $str ~ ' ' ~ $bind.emit ~ '; ';
                 $i := $i + 1;
             };
@@ -187,7 +187,7 @@ class Bind {
 
         if $.parameters.isa( 'Lit::Object' ) {
 
-            #  ::Obj(:$a, :$b) := $obj
+            #  Obj.new(:$a, :$b) := $obj
 
             my $class := $.parameters.class;
             my $a     := $.parameters.fields;
@@ -196,9 +196,9 @@ class Bind {
             my $i     := 0;
             my $arg;
             for @$a -> $var {
-                my $bind := ::Bind( 
+                my $bind := Bind.new( 
                     'parameters' => $var[1], 
-                    'arguments'  => ::Call( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
+                    'arguments'  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
                 $str := $str ~ ' ' ~ $bind.emit ~ '; ';
                 $i := $i + 1;
@@ -337,7 +337,7 @@ class For {
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
-            $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
+            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
         'do { for my ' ~ $.topic.emit ~ ' ( ' ~ $cond.emit ~ ' ) { ' ~ (@.body.>>emit).join(';') ~ ' } }';
     }

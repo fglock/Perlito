@@ -103,7 +103,7 @@ token comp_unit {
     <'}'>
     <.opt_ws> [\; <.opt_ws> | '' ]
     {
-        make ::CompUnit(
+        make CompUnit.new(
             'name'        => $$<full_ident>,
             'attributes'  => { },
             'methods'     => { },
@@ -149,7 +149,7 @@ token exp {
           <.opt_ws>  <'!!'>
           <.opt_ws>
           <exp2>
-          { make ::Apply(
+          { make Apply.new(
             'namespace' => '',
             'code'      => 'ternary:<?? !!>',
             'arguments' => [ $$<term_meth>, $$<exp>, $$<exp2> ],
@@ -161,13 +161,13 @@ token exp {
         <infix_op>
         <.opt_ws>
         <exp>
-          { make ::Apply(
+          { make Apply.new(
             'namespace' => '',
             'code'      => 'infix:<' ~ $<infix_op> ~ '>',
             'arguments' => [ $$<term_meth>, $$<exp> ],
           ) }
     | <.opt_ws> <':='> <.opt_ws> <exp>
-        { make ::Bind( 'parameters' => $$<term_meth>, 'arguments' => $$<exp>) }
+        { make Bind.new( 'parameters' => $$<term_meth>, 'arguments' => $$<exp>) }
     |   { make $$<term_meth> }
     ]
 }
@@ -186,7 +186,7 @@ token term_meth {
  	                <.opt_ws> <exp_mapping> <.opt_ws> \) 
  	                { 
  	                    # say 'Parsing Lit::Object ', $$<full_ident>, ($$<exp_mapping>).perl; 
- 	                    make ::Lit::Object( 
+ 	                    make Lit::Object.new( 
  	                        'class'  => $$<full_ident>, 
  	                        'fields' => $$<exp_mapping> 
  	                    ) 
@@ -200,8 +200,8 @@ token term_meth {
             [ \( <.opt_ws> <exp_seq> <.opt_ws> \)
                 # { say 'found parameter list: ', $<exp_seq>.perl }
                 {
-                    make ::Call(
-                        'invocant'  => ::Proto( 'name' => ~$<full_ident> ),
+                    make Call.new(
+                        'invocant'  => Proto.new( 'name' => ~$<full_ident> ),
                         'method'    => $$<ident>,
                         'arguments' => $$<exp_seq>,
                         'hyper'     => $$<hyper_op>,
@@ -209,8 +209,8 @@ token term_meth {
                 }
             | \: <.ws> <exp_seq> <.opt_ws>
                 {
-                    make ::Call(
-                        'invocant'  => ::Proto( 'name' => ~$<full_ident> ),
+                    make Call.new(
+                        'invocant'  => Proto.new( 'name' => ~$<full_ident> ),
                         'method'    => $$<ident>,
                         'arguments' => $$<exp_seq>,
                         'hyper'     => $$<hyper_op>,
@@ -218,8 +218,8 @@ token term_meth {
                 }
             |
                 {
-                    make ::Call(
-                        'invocant'  => ::Proto( 'name' => ~$<full_ident> ),
+                    make Call.new(
+                        'invocant'  => Proto.new( 'name' => ~$<full_ident> ),
                         'method'    => $$<ident>,
                         'arguments' => [],
                         'hyper'     => $$<hyper_op>,
@@ -240,7 +240,7 @@ token term_meth {
             | \: <.ws> <exp_seq> <.opt_ws>
             |
                 {
-                    make ::Call(
+                    make Call.new(
                         'invocant'  => $$<exp_term>,
                         'method'    => $$<opt_ident>,
                         'arguments' => [],
@@ -249,7 +249,7 @@ token term_meth {
                 }
             ]
             {
-                make ::Call(
+                make Call.new(
                     'invocant'  => $$<exp_term>,
                     'method'    => $$<opt_ident>,
                     'arguments' => $$<exp_seq>,
@@ -257,9 +257,9 @@ token term_meth {
                 )
             }
     | \[ <.opt_ws> <exp> <.opt_ws> \]
-         { make ::Index(  'obj' => $$<exp_term>, 'index_exp' => $$<exp> ) }   # $a[exp]
+         { make Index.new(  'obj' => $$<exp_term>, 'index_exp' => $$<exp> ) }   # $a[exp]
     | \{ <.opt_ws> <exp> <.opt_ws> \}
-         { make ::Lookup( 'obj' => $$<exp_term>, 'index_exp' => $$<exp> ) }   # $a{exp}
+         { make Lookup.new( 'obj' => $$<exp_term>, 'index_exp' => $$<exp> ) }   # $a{exp}
     |    { make $$<exp_term> }
     ]
 }
@@ -276,7 +276,7 @@ token opt_type {
 token exp_term {
     | <var_ident>     { make $$<var_ident> }     # $variable
     | <prefix_op> <exp> 
-          { make ::Apply(
+          { make Apply.new(
             'namespace' => '',
             'code'      => 'prefix:<' ~ $<prefix_op> ~ '>',
             'arguments' => [ $$<exp> ],
@@ -284,20 +284,20 @@ token exp_term {
     | \( <.opt_ws> <exp> <.opt_ws> \)
         { make $$<exp> }   # ( exp )
     | \{ <.opt_ws> <exp_mapping> <.opt_ws> \}
-        { make ::Lit::Hash( 'hash1' => $$<exp_mapping> ) }   # { exp => exp, ... }
+        { make Lit::Hash.new( 'hash1' => $$<exp_mapping> ) }   # { exp => exp, ... }
     | \[ <.opt_ws> <exp_seq> <.opt_ws> \]
-        { make ::Lit::Array( 'array1' => $$<exp_seq> ) }   # [ exp, ... ]
+        { make Lit::Array.new( 'array1' => $$<exp_seq> ) }   # [ exp, ... ]
     | \$ \< <sub_or_method_name> \>
-        { make ::Lookup( 
-            'obj'   => ::Var( 'sigil' => '$', 'twigil' => '', 'name' => '/' ), 
-            'index_exp' => ::Val::Buf( 'buf' => $$<sub_or_method_name> ) 
+        { make Lookup.new( 
+            'obj'   => Var.new( 'sigil' => '$', 'twigil' => '', 'name' => '/' ), 
+            'index_exp' => Val::Buf.new( 'buf' => $$<sub_or_method_name> ) 
         ) }   # $<ident>
     | do <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
-        { make ::Do( 'block' => $$<exp_stmts> ) }   # do { stmt; ... }
+        { make Do.new( 'block' => $$<exp_stmts> ) }   # do { stmt; ... }
     | <declarator> <.ws> <opt_type> <.opt_ws> <var_ident>   # my Int $variable
-        { make ::Decl( 'decl' => $$<declarator>, 'type' => $$<opt_type>, 'var' => $$<var_ident> ) }
+        { make Decl.new( 'decl' => $$<declarator>, 'type' => $$<opt_type>, 'var' => $$<var_ident> ) }
     | use <.ws> <full_ident>  [ - <ident> | '' ]
-        { make ::Use( 'mod' => $$<full_ident> ) }
+        { make Use.new( 'mod' => $$<full_ident> ) }
     | <val>     { make $$<val> }     # 'value'
     | <lit>     { make $$<lit> }     # [literal construct]
 #   | <bind>    { make $$<bind>   }  # $lhs := $rhs
@@ -326,7 +326,7 @@ token var_name { <full_ident> | <'/'> | <digit> }
 token var_ident {
     <var_sigil> <var_twigil> <optional_namespace_before_ident> <var_name>
     {
-        make ::Var(
+        make Var.new(
             'sigil'  => ~$<var_sigil>,
             'twigil' => ~$<var_twigil>,
             'namespace' => $$<optional_namespace_before_ident>,
@@ -345,8 +345,8 @@ token val {
 }
 
 token val_bit {
-    | True  { make ::Val::Bit( 'bit' => 1 ) }
-    | False { make ::Val::Bit( 'bit' => 0 ) }
+    | True  { make Val::Bit.new( 'bit' => 1 ) }
+    | False { make Val::Bit.new( 'bit' => 0 ) }
 }
 
 
@@ -357,7 +357,7 @@ grammar MiniPerl6::Grammar {
 
 token val_undef {
     undef <!before \w >
-    { make ::Val::Undef( ) }
+    { make Val::Undef.new( ) }
 }
 
 token val_num {  
@@ -395,15 +395,15 @@ token double_quoted_unescape {
 }
 
 token val_buf {
-    | \" <double_quoted_unescape>  \" { make ::Val::Buf( 'buf' => $$<double_quoted_unescape> ) }
-    | \' <single_quoted_unescape>  \' { make ::Val::Buf( 'buf' => $$<single_quoted_unescape> ) }
+    | \" <double_quoted_unescape>  \" { make Val::Buf.new( 'buf' => $$<double_quoted_unescape> ) }
+    | \' <single_quoted_unescape>  \' { make Val::Buf.new( 'buf' => $$<single_quoted_unescape> ) }
 }
 
 token digits {  \d  [ <digits> | '' ]  }
 
 token val_int {
     <digits>
-    { make ::Val::Int( 'int' => ~$/ ) }
+    { make Val::Int.new( 'int' => ~$/ ) }
 }
 
 token exp_stmts {
@@ -442,7 +442,7 @@ token lit {
     #| <lit_array>  { make $$<lit_array>  }  # [a, b, c]
     #| <lit_hash>   { make $$<lit_hash>   }  # {a => x, b => y}
     #| <lit_code>   { make $$<lit_code>   }  # sub $x {...}
-    | <lit_object> { make $$<lit_object> }  # ::Tree(a => x, b => y);
+    | <lit_object> { make $$<lit_object> }  # Tree.new(a => x, b => y);
 }
 
 token lit_seq   {  XXX { make 'TODO: lit_seq'    } }
@@ -458,7 +458,7 @@ token lit_object {
         <.opt_ws> <exp_mapping> <.opt_ws> \)
         {
             # say 'Parsing Lit::Object ', $$<full_ident>, ($$<exp_mapping>).perl;
-            make ::Lit::Object(
+            make Lit::Object.new(
                 'class'  => $$<full_ident>,
                 'fields' => $$<exp_mapping>
             )
@@ -470,7 +470,7 @@ token lit_object {
 token bind {
     <exp>  <.opt_ws> <':='> <.opt_ws>  <exp2>
     {
-        make ::Bind(
+        make Bind.new(
             'parameters' => $$<exp>,
             'arguments'  => $$<exp2>,
         )
@@ -480,7 +480,7 @@ token bind {
 token call {
     <exp> \. <ident> \( <.opt_ws> <exp_seq> <.opt_ws> \)
     {
-        make ::Call(
+        make Call.new(
             'invocant'  => $$<exp>,
             'method'    => $$<ident>,
             'arguments' => $$<exp_seq>,
@@ -496,7 +496,7 @@ token apply {
         | <.ws> <exp_seq> <.opt_ws>
         ]
         {
-            make ::Apply(
+            make Apply.new(
                 'namespace' => $$<optional_namespace_before_ident>,
                 'code'      => $$<full_ident>,
                 'arguments' => $$<exp_seq>,
@@ -504,7 +504,7 @@ token apply {
         }
     |
         {
-            make ::Apply(
+            make Apply.new(
                 'namespace' => $$<optional_namespace_before_ident>,
                 'code'      => $$<full_ident>,
                 'arguments' => [],
@@ -518,7 +518,7 @@ token opt_name {  <ident> | ''  }
 
 token var_invocant {
     |  <var_ident> \:    { make $$<var_ident> }
-    |  { make ::Var( 
+    |  { make Var.new( 
             'sigil'  => '$',
             'twigil' => '',
             'name'   => 'self',
@@ -534,15 +534,15 @@ token args_sig {
         {
             # say ' invocant: ', ($$<var_invocant>).perl;
             # say ' positional: ', ($$<exp_seq>).perl;
-            make ::Sig( 'invocant' => $$<var_invocant>, 'positional' => $$<exp_seq>, 'named' => { } );
+            make Sig.new( 'invocant' => $$<var_invocant>, 'positional' => $$<exp_seq>, 'named' => { } );
         }
 }
 
 token method_sig {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
         { make $$<args_sig> }
-    |   { make ::Sig( 
-            'invocant' => ::Var( 
+    |   { make Sig.new( 
+            'invocant' => Var.new( 
                 'sigil'  => '$',
                 'twigil' => '',
                 'name'   => 'self' ), 
@@ -562,7 +562,7 @@ token method_def {
     [   \}     | { say '*** Syntax Error in method \'', get_class_name(), '.', $$<name>, '\' near pos=', $/.to; die 'error in Block'; } ]
     {
         # say ' block: ', ($$<exp_stmts>).perl;
-        make ::Method( 'name' => $$<opt_name>, 'sig' => $$<method_sig>, 'block' => $$<exp_stmts> );
+        make Method.new( 'name' => $$<opt_name>, 'sig' => $$<method_sig>, 'block' => $$<exp_stmts> );
     }
 }
 
@@ -573,7 +573,7 @@ token sub_def {
     <.opt_ws> \{ <.opt_ws>  
           <exp_stmts> <.opt_ws> 
     [   \}     | { say '*** Syntax Error in sub \'', $$<name>, '\''; die 'error in Block'; } ]
-    { make ::Sub( 'name' => $$<opt_name>, 'sig' => $$<method_sig>, 'block' => $$<exp_stmts> ) }
+    { make Sub.new( 'name' => $$<opt_name>, 'sig' => $$<method_sig>, 'block' => $$<exp_stmts> ) }
 }
 
 }
@@ -589,7 +589,7 @@ token token {
     {
         #say 'Token was compiled into: ', ($$<MiniPerl6::Grammar::Regex.rule>).perl;
         my $source := 'method ' ~ $<opt_name> ~ ' ( $grammar: $str, $pos ) { ' ~
-            'my $MATCH; $MATCH := ::MiniPerl6::Match( \'str\' => $str, \'from\' => $pos, \'to\' => $pos, \'bool\' => 1 ); ' ~ 
+            'my $MATCH; $MATCH := MiniPerl6::Match.new( \'str\' => $str, \'from\' => $pos, \'to\' => $pos, \'bool\' => 1 ); ' ~ 
             '$MATCH.bool := ( ' ~
                 ($$<MiniPerl6::Grammar::Regex.rule>).emit ~
             '); ' ~

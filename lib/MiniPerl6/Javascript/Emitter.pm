@@ -37,10 +37,10 @@ class MiniPerl6::Javascript::LexicalBlock {
                     $otherwise := $last_statement.body;
                 }
                 if $cond.isa( 'Var' ) && $cond.sigil eq '@' {
-                    $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
+                    $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
                 };
-                $body      := ::MiniPerl6::Javascript::LexicalBlock( block => $body, needs_return => 1 );
-                $otherwise := ::MiniPerl6::Javascript::LexicalBlock( block => $otherwise, needs_return => 1 );
+                $body      := MiniPerl6::Javascript::LexicalBlock.new( block => $body, needs_return => 1 );
+                $otherwise := MiniPerl6::Javascript::LexicalBlock.new( block => $otherwise, needs_return => 1 );
                 $str := $str 
                     ~ 'if ( f_bool(' ~ $cond.emit_javascript ~ ') ) { ' 
                         ~ $body.emit_javascript ~ ' } else { ' 
@@ -52,7 +52,7 @@ class MiniPerl6::Javascript::LexicalBlock {
                 $str := $str ~ $last_statement.emit_javascript
             }
             else {
-                # $last_statement := ::Return( result => $last_statement );
+                # $last_statement := Return.new( result => $last_statement );
                 $str := $str ~ 'return(' ~ $last_statement.emit_javascript ~ ')'
             }
             }
@@ -117,7 +117,7 @@ class CompUnit {
                 my $sig      := $decl.sig;
                 my $pos      := $sig.positional;
                 my $invocant := $sig.invocant;
-                my $block    := ::MiniPerl6::Javascript::LexicalBlock( block => $decl.block, needs_return => 1, top_level => 1 );
+                my $block    := MiniPerl6::Javascript::LexicalBlock.new( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str := $str 
               ~ '  // method ' ~ $decl.name ~ Main.newline
               ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name;
@@ -133,7 +133,7 @@ class CompUnit {
             if $decl.isa( 'Sub' ) {
                 my $sig      := $decl.sig;
                 my $pos      := $sig.positional;
-                my $block    := ::MiniPerl6::Javascript::LexicalBlock( block => $decl.block, needs_return => 1, top_level => 1 );
+                my $block    := MiniPerl6::Javascript::LexicalBlock.new( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str := $str 
               ~ '  // sub ' ~ $decl.name ~ Main.newline
               ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name;
@@ -331,12 +331,12 @@ class Bind {
             my $str := 'do { ';
             my $i := 0;
             for @$a -> $var { 
-                my $bind := ::Bind( 
+                my $bind := Bind.new( 
                     'parameters' => $var, 
                     # 'arguments' => ($b[$i]) );
-                    'arguments'  => ::Index(
+                    'arguments'  => Index.new(
                         obj    => $.arguments,
-                        index_exp  => ::Val::Int( int => $i )
+                        index_exp  => Val::Int.new( int => $i )
                     )
                 );
                 $str := $str ~ ' ' ~ $bind.emit_javascript ~ '; ';
@@ -355,7 +355,7 @@ class Bind {
             my $arg;
             for @$a -> $var {
 
-                $arg := ::Val::Undef();
+                $arg := Val::Undef.new();
                 for @$b -> $var2 {
                     #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
                     if ($var2[0]).buf eq ($var[0]).buf {
@@ -363,7 +363,7 @@ class Bind {
                     }
                 };
 
-                my $bind := ::Bind( 'parameters' => $var[1], 'arguments' => $arg );
+                my $bind := Bind.new( 'parameters' => $var[1], 'arguments' => $arg );
                 $str := $str ~ ' ' ~ $bind.emit_javascript ~ '; ';
                 $i := $i + 1;
             };
@@ -372,7 +372,7 @@ class Bind {
 
         if $.parameters.isa( 'Lit::Object' ) {
 
-            #  ::Obj(:$a, :$b) := $obj
+            #  Obj.new(:$a, :$b) := $obj
 
             my $class := $.parameters.class;
             my $a     := $.parameters.fields;
@@ -381,9 +381,9 @@ class Bind {
             my $i     := 0;
             my $arg;
             for @$a -> $var {
-                my $bind := ::Bind( 
+                my $bind := Bind.new( 
                     'parameters' => $var[1], 
-                    'arguments'  => ::Call( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
+                    'arguments'  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
                 $str := $str ~ ' ' ~ $bind.emit_javascript ~ '; ';
                 $i := $i + 1;
@@ -581,13 +581,13 @@ class If {
         if   $cond.isa( 'Apply' ) 
           && $cond.code eq 'prefix:<!>' 
         {
-            my $if := ::If( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
+            my $if := If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
             return $if.emit_javascript;
         }
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
-            $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
+            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
         'if ( f_bool(' ~ $cond.emit_javascript ~ ') ) { ' 
             ~ (@.body.>>emit_javascript).join(';') ~ ' } else { ' 
@@ -636,7 +636,7 @@ class Method {
         my $pos := $sig.positional;
         my $str := ((@$pos).>>emit_javascript).join(', ');  
         'function ' ~ $.name ~ '(' ~ $str ~ ') { ' ~ 
-          ::MiniPerl6::Javascript::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_javascript ~ 
+          (MiniPerl6::Javascript::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript ~ 
         ' }'
     }
 }
@@ -650,7 +650,7 @@ class Sub {
         my $pos := $sig.positional;
         my $str := ((@$pos).>>emit_javascript).join(', ');  
         'function ' ~ $.name ~ '(' ~ $str ~ ') { ' ~ 
-          ::MiniPerl6::Javascript::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_javascript ~ 
+          (MiniPerl6::Javascript::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript ~ 
         ' }'
     }
 }
@@ -659,7 +659,7 @@ class Do {
     has @.block;
     method emit_javascript {
         '(function () { ' ~ 
-          ::MiniPerl6::Javascript::LexicalBlock( block => @.block, needs_return => 1 ).emit_javascript ~ 
+          (MiniPerl6::Javascript::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_javascript ~ 
         ' })()'
     }
 }

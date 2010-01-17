@@ -64,7 +64,7 @@ token named_capture_body {
     | \(  <rule>        \)  { make { 'capturing_group' => $$<rule> ,} } 
     | \[  <rule>        \]  { make $$<rule> } 
     | \<  <metasyntax_exp>  \>  
-            { make ::Rul::Subrule( 'metasyntax' => $$<metasyntax_exp> ) }
+            { make Rul::Subrule.new( 'metasyntax' => $$<metasyntax_exp> ) }
     | { die 'invalid alias syntax' }
 }
 
@@ -83,7 +83,7 @@ token variables {
         <MiniPerl6::Grammar.var_twigil> 
         <MiniPerl6::Grammar.full_ident> 
         {
-            make ::Rul::Var( 
+            make Rul::Var.new( 
                     'sigil'  => ~$<MiniPerl6::Grammar.var_sigil>,
                     'twigil' => ~$<MiniPerl6::Grammar.var_twigil>,
                     'name'   => ~$<MiniPerl6::Grammar.full_ident>
@@ -94,19 +94,19 @@ token variables {
 token rule_terms {
     |   '('
         <rule> \)
-        { make ::Rul::Capture( 'rule_exp' => $$<rule> ) }
+        { make Rul::Capture.new( 'rule_exp' => $$<rule> ) }
     |   '<('
         <rule>  ')>'
-        { make ::Rul::CaptureResult( 'rule_exp' => $$<rule> ) }
+        { make Rul::CaptureResult.new( 'rule_exp' => $$<rule> ) }
     |   '<after'
         <.ws> <rule> \> 
-        { make ::Rul::After( 'rule_exp' => $$<rule> ) }
+        { make Rul::After.new( 'rule_exp' => $$<rule> ) }
     |   '<before'
         <.ws> <rule> \> 
-        { make ::Rul::Before( 'rule_exp' => $$<rule> ) }
+        { make Rul::Before.new( 'rule_exp' => $$<rule> ) }
     |   '<!before'
         <.ws> <rule> \> 
-        { make ::Rul::NotBefore( 'rule_exp' => $$<rule> ) }
+        { make Rul::NotBefore.new( 'rule_exp' => $$<rule> ) }
     |   '<!'
         # TODO
         <metasyntax_exp> \> 
@@ -114,61 +114,61 @@ token rule_terms {
     |   '<+'
         # TODO
         <char_class>  \> 
-        { make ::Rul::CharClass( 'chars' => ~$<char_class> ) }
+        { make Rul::CharClass.new( 'chars' => ~$<char_class> ) }
     |   '<-'
         # TODO
         <char_class> \>
-        { make ::Rul::NegateCharClass( 'chars' => ~$<char_class> ) }
+        { make Rul::NegateCharClass.new( 'chars' => ~$<char_class> ) }
     |   \'
         <literal> \'
-        { make ::Rul::Constant( 'constant' => $$<literal> ) }
+        { make Rul::Constant.new( 'constant' => $$<literal> ) }
     |   # XXX - obsolete syntax
         \< \'
         <literal> \' \>
-        { make ::Rul::Constant( 'constant' => $$<literal> ) }
+        { make Rul::Constant.new( 'constant' => $$<literal> ) }
     |   \< 
         [  
             <variables>   \>
             # { say 'matching < variables ...' }
             {
                 # say 'found < hash-variable >';
-                make ::Rul::InterpolateVar( 'var' => $$<variables> )
+                make Rul::InterpolateVar.new( 'var' => $$<variables> )
             }
         |
             \?
             # TODO 
             <metasyntax_exp>  \>
-            { make ::Rul::SubruleNoCapture( 'metasyntax' => $$<metasyntax_exp> ) }
+            { make Rul::SubruleNoCapture.new( 'metasyntax' => $$<metasyntax_exp> ) }
         |
             \.
             <metasyntax_exp>  \>
-            { make ::Rul::SubruleNoCapture( 'metasyntax' => $$<metasyntax_exp> ) }
+            { make Rul::SubruleNoCapture.new( 'metasyntax' => $$<metasyntax_exp> ) }
         |
             # TODO
             <metasyntax_exp>  \>
-            { make ::Rul::Subrule( 'metasyntax' => $$<metasyntax_exp> ) }
+            { make Rul::Subrule.new( 'metasyntax' => $$<metasyntax_exp> ) }
         ]
     |   \{ 
         <parsed_code>  \}
-        { make ::Rul::Block( 'closure' => $$<parsed_code> ) }
+        { make Rul::Block.new( 'closure' => $$<parsed_code> ) }
     |   \\  
         [
 # TODO
 #        | [ x | X ] <[ 0..9 a..f A..F ]]>+
 #          #  \x0021    \X0021
-#          { make ::Rul::SpecialChar( char => '\\' ~ $/ ) }
+#          { make Rul::SpecialChar.new( char => '\\' ~ $/ ) }
 #        | [ o | O ] <[ 0..7 ]>+
 #          #  \x0021    \X0021
-#          { make ::Rul::SpecialChar( char => '\\' ~ $/ ) }
+#          { make Rul::SpecialChar.new( char => '\\' ~ $/ ) }
 #        | ( x | X | o | O ) \[ (<-[ \] ]>*) \]
 #          #  \x[0021]  \X[0021]
-#          { make ::Rul::SpecialChar( char => '\\' ~ $0 ~ $1 ) }
+#          { make Rul::SpecialChar.new( char => '\\' ~ $0 ~ $1 ) }
         | <any>
           #  \e  \E
-          { make ::Rul::SpecialChar( 'char' => $$<any> ) }
+          { make Rul::SpecialChar.new( 'char' => $$<any> ) }
         ]
     |   \. 
-        { make ::Rul::Dot() }
+        { make Rul::Dot.new() }
     |   '[' 
         <rule> ']' 
         { make $$<rule> }
@@ -232,7 +232,7 @@ token rule_term {
        <variables>
        [  <.ws>? <':='> <.ws>? <named_capture_body>
           { 
-            make ::Rul::NamedCapture(
+            make Rul::NamedCapture.new(
                 'rule_exp' =>  $$<named_capture_body>,
                 'capture_ident' => $$<variables>
             ); 
@@ -250,7 +250,7 @@ token rule_term {
             make $$<rule_terms> 
         }
     |  <!before \] | \} | \) | \> | \: | \? | \+ | \* | \| | \& | \/ > <any>   # TODO - <...>* - optimize!
-        { make ::Rul::Constant( 'constant' => $$<any> ) }
+        { make Rul::Constant.new( 'constant' => $$<any> ) }
 }
 
 token quant_exp {
@@ -272,7 +272,7 @@ token quantifier {
         [
             <quant_exp> <greedy_exp>
             <.MiniPerl6::Grammar.opt_ws3>
-            { make ::Rul::Quantifier(
+            { make Rul::Quantifier.new(
                     'term'    => $$<rule_term>,
                     'quant'   => $$<quant_exp>,
                     'greedy'  => $$<greedy_exp>,
@@ -300,7 +300,7 @@ token concat_list {
 
 token concat_exp {
     <concat_list>
-    { make ::Rul::Concat( 'concat' => $$<concat_list> ) }
+    { make Rul::Concat.new( 'concat' => $$<concat_list> ) }
 }
 
 token or_list_exp {
@@ -322,7 +322,7 @@ token rule {
     <or_list_exp>
     { 
         # say 'found Rule';
-        make ::Rul::Or( 'or_list' => $$<or_list_exp> ) 
+        make Rul::Or.new( 'or_list' => $$<or_list_exp> ) 
     }
 }
 

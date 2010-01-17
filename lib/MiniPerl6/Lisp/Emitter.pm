@@ -131,7 +131,7 @@ new-slots))
                     $str_specific := $str_specific ~ ' &optional' ~ $str_optionals;
                     $str_generic  := $str_generic  ~ ' &optional' ~ $str_optionals;
                 }
-                my $block    := ::MiniPerl6::Lisp::LexicalBlock( block => $decl.block );
+                my $block    := MiniPerl6::Lisp::LexicalBlock.new( block => $decl.block );
                 $str := $str ~
 ';; method ' ~ $decl.name ~ '
 (if (not (ignore-errors (find-method \'' ~ Main::to_lisp_identifier($decl.name) ~ ' () ())))
@@ -331,7 +331,7 @@ class Bind {
     method emit_lisp {
         if $.parameters.isa( 'Lit::Object' ) {
 
-            #  ::Obj(:$a, :$b) := $obj
+            #  Obj.new(:$a, :$b) := $obj
 
             my $class := $.parameters.class;
             my $a     := $.parameters.fields;
@@ -340,9 +340,9 @@ class Bind {
             my $i     := 0;
             my $arg;
             for @$a -> $var {
-                my $bind := ::Bind( 
+                my $bind := Bind.new( 
                     'parameters' => $var[1], 
-                    'arguments'  => ::Call( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
+                    'arguments'  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
                 $str := $str ~ ' ' ~ $bind.emit_lisp ~ ' ';
                 $i := $i + 1;
@@ -504,8 +504,8 @@ class If {
     has @.body;
     has @.otherwise;
     method emit_lisp {
-        my $block1 := ::MiniPerl6::Lisp::LexicalBlock( block => @.body );
-        my $block2 := ::MiniPerl6::Lisp::LexicalBlock( block => @.otherwise );
+        my $block1 := MiniPerl6::Lisp::LexicalBlock.new( block => @.body );
+        my $block2 := MiniPerl6::Lisp::LexicalBlock.new( block => @.otherwise );
         '(if (sv-bool ' ~ $.cond.emit_lisp ~ ') ' ~ $block1.emit_lisp ~ ' ' ~ $block2.emit_lisp ~ ')';
     }
 }
@@ -516,11 +516,11 @@ class For {
     has @.topic;
     method emit_lisp {
         my $cond := $.cond;
-        my $block := ::MiniPerl6::Lisp::LexicalBlock( block => @.body );
+        my $block := MiniPerl6::Lisp::LexicalBlock.new( block => @.body );
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
-            $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
+            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
         '(dolist (' ~ $.topic.emit_lisp ~ ' ' ~ $cond.emit_lisp ~ ') ' ~ $block.emit_lisp ~ ')';
     }
@@ -568,7 +568,7 @@ class Sub {
     method emit_lisp {
         my $sig := $.sig;
         my $pos := $sig.positional;
-        my $block := ::MiniPerl6::Lisp::LexicalBlock( block => @.block );
+        my $block := MiniPerl6::Lisp::LexicalBlock.new( block => @.block );
         my $str;
         if @$pos {
             for @$pos -> $field { 
@@ -597,7 +597,7 @@ class Sub {
 class Do {
     has @.block;
     method emit_lisp {
-        my $block := ::MiniPerl6::Lisp::LexicalBlock( block => @.block );
+        my $block := MiniPerl6::Lisp::LexicalBlock.new( block => @.block );
         return $block.emit_lisp;
     }
 }

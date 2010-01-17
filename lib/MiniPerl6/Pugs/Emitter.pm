@@ -160,12 +160,12 @@ class Bind {
             my $str := 'do { ';
             my $i := 0;
             for @$a -> $var { 
-                my $bind := ::Bind( 
+                my $bind := Bind.new( 
                     'parameters' => $var, 
                     # 'arguments' => ($b[$i]) );
-                    'arguments'  => ::Index(
+                    'arguments'  => Index.new(
                         obj    => $.arguments,
-                        index  => ::Val::Int( int => $i )
+                        index  => Val::Int.new( int => $i )
                     )
                 );
                 $str := $str ~ ' ' ~ $bind.emit ~ '; ';
@@ -184,7 +184,7 @@ class Bind {
             my $arg;
             for @$a -> $var {
 
-                $arg := ::Val::Undef();
+                $arg := Val::Undef.new();
                 for @$b -> $var2 {
                     #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
                     if ($var2[0]).buf eq ($var[0]).buf {
@@ -192,7 +192,7 @@ class Bind {
                     }
                 };
 
-                my $bind := ::Bind( 'parameters' => $var[1], 'arguments' => $arg );
+                my $bind := Bind.new( 'parameters' => $var[1], 'arguments' => $arg );
                 $str := $str ~ ' ' ~ $bind.emit ~ '; ';
                 $i := $i + 1;
             };
@@ -201,7 +201,7 @@ class Bind {
 
         if $.parameters.isa( 'Lit::Object' ) {
 
-            #  ::Obj(:$a, :$b) := $obj
+            #  Obj.new(:$a, :$b) := $obj
 
             my $class := $.parameters.class;
             my $a     := $.parameters.fields;
@@ -210,9 +210,9 @@ class Bind {
             my $i     := 0;
             my $arg;
             for @$a -> $var {
-                my $bind := ::Bind( 
+                my $bind := Bind.new( 
                     'parameters' => $var[1], 
-                    'arguments'  => ::Call( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
+                    'arguments'  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
                 $str := $str ~ ' ' ~ $bind.emit ~ '; ';
                 $i := $i + 1;
@@ -351,7 +351,7 @@ class For {
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
-            $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
+            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
         'do { for ( ' ~ $cond.emit ~ ' ) -> ' ~ $.topic.emit ~ ' { ' ~ (@.body.>>emit).join(';') ~ ' } }';
     }
@@ -405,9 +405,9 @@ class Method {
             $str := $str ~ 'my ' ~ $field.emit ~ '; ';
         };
 
-        my $bind := ::Bind( 
-            'parameters' => ::Lit::Array( array => $sig.positional ), 
-            'arguments'  => ::Var( sigil => '@', twigil => '', name => '_' )
+        my $bind := Bind.new( 
+            'parameters' => Lit::Array.new( array => $sig.positional ), 
+            'arguments'  => Var.new( sigil => '@', twigil => '', name => '_' )
         );
         $str := $str ~ $bind.emit ~ '; ';
 
@@ -445,19 +445,19 @@ class Sub {
             $str := $str ~ 'my ' ~ $field.emit ~ '; ';
         };
 
-        my $bind := ::Bind( 
-            'parameters' => ::Lit::Array( array => $sig.positional ), 
-            'arguments'  => ::Var( sigil => '@', twigil => '', name => '_' )
+        my $bind := Bind.new( 
+            'parameters' => Lit::Array.new( array => $sig.positional ), 
+            'arguments'  => Var.new( sigil => '@', twigil => '', name => '_' )
         );
         $str := $str ~ $bind.emit ~ '; ';
 
 #        my $i := 0;
 #        for @$pos -> $field { 
-#            my $bind := ::Bind( 
+#            my $bind := Bind.new( 
 #                'parameters' => $field, 
-#                'arguments'  => ::Index(
-#                        obj    => ::Var( sigil => '@', twigil => '', name => '_' ),
-#                        index  => ::Val::Int( int => $i )
+#                'arguments'  => Index.new(
+#                        obj    => Var.new( sigil => '@', twigil => '', name => '_' ),
+#                        index  => Val::Int.new( int => $i )
 #                    ),
 #                );
 #            $str := $str ~ $bind.emit ~ '; ';

@@ -123,22 +123,22 @@ class Rul::SpecialChar {
     method emit {
         my $char := $.char;
         if $char eq 'n' {
-            my $rul := ::Rul::SubruleNoCapture( 'metasyntax' => 'is_newline' );
+            my $rul := Rul::SubruleNoCapture.new( 'metasyntax' => 'is_newline' );
             $rul := $rul.emit;
             return $rul;
         };
         if $char eq 'N' {
-            my $rul := ::Rul::SubruleNoCapture( 'metasyntax' => 'not_newline' );
+            my $rul := Rul::SubruleNoCapture.new( 'metasyntax' => 'not_newline' );
             $rul := $rul.emit;
             return $rul;
         };
         if $char eq 'd' {
-            my $rul := ::Rul::SubruleNoCapture( 'metasyntax' => 'digit' );
+            my $rul := Rul::SubruleNoCapture.new( 'metasyntax' => 'digit' );
             $rul := $rul.emit;
             return $rul;
         };
         if $char eq 's' {
-            my $rul := ::Rul::SubruleNoCapture( 'metasyntax' => 'space' );
+            my $rul := Rul::SubruleNoCapture.new( 'metasyntax' => 'space' );
             $rul := $rul.emit;
             return $rul;
         };
@@ -175,7 +175,7 @@ class Rul::Before {
     method emit {
         'do { ' ~
             'my $tmp := $MATCH; ' ~
-            '$MATCH := ::MiniPerl6::Match( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' ~
+            '$MATCH := MiniPerl6::Match.new( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' ~
             '$MATCH.bool := ' ~
                 $.rule_exp.emit ~
             '; ' ~
@@ -191,7 +191,7 @@ class Rul::NotBefore {
     method emit {
         'do { ' ~
             'my $tmp := $MATCH; ' ~
-            '$MATCH := ::MiniPerl6::Match( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' ~
+            '$MATCH := MiniPerl6::Match.new( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' ~
             '$MATCH.bool := ' ~
                 $.rule_exp.emit ~
             '; ' ~

@@ -10,7 +10,7 @@ class MiniPerl6::Match {
     has @.array;
 
     method perl {
-        return "::Match("
+        return "Match.new("
             ~ "from => "    ~ $.from.perl
             ~ ", to => "    ~ $.to.perl
             ~ ", bool => "  ~ ($.bool.bool).perl

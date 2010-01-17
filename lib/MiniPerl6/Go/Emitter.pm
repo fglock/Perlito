@@ -43,10 +43,10 @@ class MiniPerl6::Go::LexicalBlock {
                     $otherwise := $last_statement.body;
                 }
                 if $cond.isa( 'Var' ) && $cond.sigil eq '@' {
-                    $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
+                    $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
                 };
-                $body      := ::MiniPerl6::Go::LexicalBlock( block => $body, needs_return => 1, top_level => $.top_level );
-                $otherwise := ::MiniPerl6::Go::LexicalBlock( block => $otherwise, needs_return => 1, top_level => $.top_level );
+                $body      := MiniPerl6::Go::LexicalBlock.new( block => $body, needs_return => 1, top_level => $.top_level );
+                $otherwise := MiniPerl6::Go::LexicalBlock.new( block => $otherwise, needs_return => 1, top_level => $.top_level );
                 $str := $str 
                     ~ 'if tobool( ' ~ Call::emit_go_call( $cond, 'Bool' ) ~ ' ) { ' 
                         ~ $body.emit_go ~ ' } else { ' 
@@ -58,7 +58,7 @@ class MiniPerl6::Go::LexicalBlock {
                 $str := $str ~ $last_statement.emit_go
             }
             else {
-                $last_statement := ::Return( result => $last_statement );
+                $last_statement := Return.new( result => $last_statement );
                 if $.top_level {
                     $str := $str ~ $last_statement.emit_go
                 }
@@ -197,24 +197,24 @@ class CompUnit {
 
                 $str := $str  
               ~ '    ' ~ 'if v_self.v_' ~ ($decl.var).name ~ ' == nil {' ~ "\n"
-              ~ '      ' ~ ::Decl(  
+              ~ '      ' ~ (Decl.new(  
                                 decl => 'my',
                                 type => undef,
-                                var => ::Var( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ),
-                            ).emit_go_init
+                                var => Var.new( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ),
+                            )).emit_go_init
               ~ '      ' ~ 'v_self.v_' ~ ($decl.var).name ~ ' = ' 
-                                ~ ::Var( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ).emit_go ~ ';' ~ "\n"
+                                ~ (Var.new( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' )).emit_go ~ ';' ~ "\n"
               ~ '    ' ~ '}' ~ "\n";
 
                 $str := $str  
               ~ '    ' ~ 'if *v_self.v_' ~ ($decl.var).name ~ ' == nil {' ~ "\n"
-              ~ '      ' ~ ::Decl(  
+              ~ '      ' ~ (Decl.new(  
                                 decl => 'my',
                                 type => undef,
-                                var => ::Var( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ),
-                            ).emit_go_init
+                                var => Var.new( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ),
+                            )).emit_go_init
               ~ '      ' ~ 'v_self.v_' ~ ($decl.var).name ~ ' = ' 
-                                ~ ::Var( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' ).emit_go ~ ';' ~ "\n"
+                                ~ (Var.new( sigil => ($decl.var).sigil, twigil => '', namespace => '', name => 'tmp' )).emit_go ~ ';' ~ "\n"
               ~ '    ' ~ '}' ~ "\n";
 
                 $str := $str  
@@ -223,7 +223,7 @@ class CompUnit {
             }
             if $decl.isa( 'Method' ) {
                 my $sig      := $decl.sig;
-                my $block    := ::MiniPerl6::Go::LexicalBlock( block => $decl.block, needs_return => 1, top_level => 1 );
+                my $block    := MiniPerl6::Go::LexicalBlock.new( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str := $str 
               ~ '  // method ' ~ $decl.name ~ "\n"
               ~ '  Method_' ~ $class_name ~ '.f_' ~ $decl.name 
@@ -241,7 +241,7 @@ class CompUnit {
             }
             if $decl.isa( 'Sub' ) {
                 my $sig      := $decl.sig;
-                my $block    := ::MiniPerl6::Go::LexicalBlock( block => $decl.block, needs_return => 1, top_level => 1 );
+                my $block    := MiniPerl6::Go::LexicalBlock.new( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str := $str 
               ~ '  // sub ' ~ $decl.name ~ "\n"
               ~ '  Namespace_' ~ $class_name ~ '.f_' ~ $decl.name 
@@ -555,11 +555,11 @@ class Bind {
                     ~ 'List_tmp := ' ~ $.arguments.emit_go ~ '; ';
             my $i := 0;
             for @$a -> $var { 
-                my $bind := ::Bind( 
+                my $bind := Bind.new( 
                     'parameters' => $var, 
-                    'arguments'  => ::Index(
-                        obj        => ::Var( sigil => '@', twigil => '', namespace => '', name => 'tmp' ),
-                        index_exp  => ::Val::Int( int => $i )
+                    'arguments'  => Index.new(
+                        obj        => Var.new( sigil => '@', twigil => '', namespace => '', name => 'tmp' ),
+                        index_exp  => Val::Int.new( int => $i )
                     )
                 );
                 $str := $str ~ ' ' ~ $bind.emit_go ~ '; ';
@@ -578,7 +578,7 @@ class Bind {
             my $arg;
             for @$a -> $var {
 
-                $arg := ::Val::Undef();
+                $arg := Val::Undef.new();
                 for @$b -> $var2 {
                     #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
                     if ($var2[0]).buf eq ($var[0]).buf {
@@ -586,7 +586,7 @@ class Bind {
                     }
                 };
 
-                my $bind := ::Bind( 'parameters' => $var[1], 'arguments' => $arg );
+                my $bind := Bind.new( 'parameters' => $var[1], 'arguments' => $arg );
                 $str := $str ~ ' ' ~ $bind.emit_go ~ '; ';
                 $i := $i + 1;
             };
@@ -595,7 +595,7 @@ class Bind {
 
         if $.parameters.isa( 'Lit::Object' ) {
 
-            #  ::Obj(:$a, :$b) := $obj
+            #  Obj.new(:$a, :$b) := $obj
 
             my $class := $.parameters.class;
             my $a     := $.parameters.fields;
@@ -604,9 +604,9 @@ class Bind {
             my $i     := 0;
             my $arg;
             for @$a -> $var {
-                my $bind := ::Bind( 
+                my $bind := Bind.new( 
                     'parameters' => $var[1], 
-                    'arguments'  => ::Call( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
+                    'arguments'  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
                 $str := $str ~ ' ' ~ $bind.emit_go ~ '; ';
                 $i := $i + 1;
@@ -889,23 +889,23 @@ class If {
         if   $cond.isa( 'Apply' ) 
           && $cond.code eq 'prefix:<!>' 
         {
-            my $if := ::If( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
+            my $if := If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
             return $if.emit_go;
         }
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
-            $cond := ::Apply( code => 'prefix:<@>', arguments => [ $cond ] );
+            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
         my $s := 'if tobool( ' ~ Call::emit_go_call( $cond, 'Bool' ) ~ ' ) { ' 
-                    ~ ::MiniPerl6::Go::LexicalBlock( block => @.body, needs_return => 0 ).emit_go 
+                    ~ (MiniPerl6::Go::LexicalBlock.new( block => @.body, needs_return => 0 )).emit_go 
                 ~ ' }';
         if !(@.otherwise) {
             return $s;
         }
         return $s 
                 ~ ' else { ' 
-                    ~ ::MiniPerl6::Go::LexicalBlock( block => @.otherwise, needs_return => 0 ).emit_go 
+                    ~ (MiniPerl6::Go::LexicalBlock.new( block => @.otherwise, needs_return => 0 )).emit_go 
                 ~ ' }';
     }
 }
@@ -919,7 +919,7 @@ class For {
         ~ '  var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); ' ~ "\n"
         ~ '  for pos := 0; pos <= i.n; pos++ { ' ~ "\n"
         ~ '    func (' ~ $.topic.emit_go ~ ' *Any) { ' ~ "\n"
-        ~ '      ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.body, needs_return => 0 ).emit_go ~ "\n"
+        ~ '      ' ~ (MiniPerl6::Go::LexicalBlock.new( block => @.body, needs_return => 0 )).emit_go ~ "\n"
         ~ '    }(i.v[pos]) ' ~ "\n"
         ~ '  } ' ~ "\n"
         ~ '}(' ~ $.cond.emit_go ~ ')'
@@ -1000,7 +1000,7 @@ class Method {
         'func ' ~ $.name ~ '(v Capture) *Any { ' 
               ~ '    ' ~ ($.sig).emit_go_bind ~ "\n"
               ~ '    p := make(chan *Any); go func () { ' ~ "\n"
-              ~ '        ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
+              ~ '        ' ~ (MiniPerl6::Go::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_go 
               ~ '; return }(); ' ~ "\n"
               ~ '    return <-p; ' ~ "\n"
         ~ ' }'
@@ -1017,7 +1017,7 @@ class Sub {
                 'Function( func(v Capture) *Any { '
                     ~ '    ' ~ ($.sig).emit_go_bind ~ "\n"
                     ~ '    p := make(chan *Any); go func () { ' ~ "\n"
-                    ~ '        ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
+                    ~ '        ' ~ (MiniPerl6::Go::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_go 
                     ~ '; return }(); ' ~ "\n"
                     ~ '    return <-p; ' ~ "\n"
                     ~ '} '
@@ -1027,7 +1027,7 @@ class Sub {
         'func ' ~ $.name ~ '(v Capture) *Any { ' 
                     ~ '    ' ~ ($.sig).emit_go_bind ~ "\n"
                     ~ '    p := make(chan *Any); go func () { ' ~ "\n"
-                    ~ '        ' ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1, top_level => 1 ).emit_go 
+                    ~ '        ' ~ (MiniPerl6::Go::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_go 
                     ~ '; return }(); ' ~ "\n"
                     ~ '    return <-p; ' ~ "\n"
         ~ ' }'
@@ -1038,7 +1038,7 @@ class Do {
     has @.block;
     method emit_go {
         '(func () *Any { ' 
-          ~ ::MiniPerl6::Go::LexicalBlock( block => @.block, needs_return => 1 ).emit_go 
+          ~ (MiniPerl6::Go::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_go 
           ~ '; return u_undef() '
         ~ '})()'
     }

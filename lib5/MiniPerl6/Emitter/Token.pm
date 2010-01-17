@@ -104,14 +104,14 @@ sub emit { my $self = shift; my $List__ = \@_; do { [] }; Main::say('# TODO: nam
 package Rul::Before;
 sub new { shift; bless { @_ }, "Rul::Before" }
 sub rule_exp { @_ == 1 ? ( $_[0]->{rule_exp} ) : ( $_[0]->{rule_exp} = $_[1] ) };
-sub emit { my $self = shift; my $List__ = \@_; do { [] }; 'do { ' . 'my $tmp := $MATCH; ' . '$MATCH := ::MiniPerl6::Match( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' . '$MATCH.bool := ' . $self->{rule_exp}->emit() . '; ' . '$tmp.bool := ?$MATCH; ' . '$MATCH := $tmp; ' . '?$MATCH; ' . '}' }
+sub emit { my $self = shift; my $List__ = \@_; do { [] }; 'do { ' . 'my $tmp := $MATCH; ' . '$MATCH := MiniPerl6::Match.new( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' . '$MATCH.bool := ' . $self->{rule_exp}->emit() . '; ' . '$tmp.bool := ?$MATCH; ' . '$MATCH := $tmp; ' . '?$MATCH; ' . '}' }
 
 }
 {
 package Rul::NotBefore;
 sub new { shift; bless { @_ }, "Rul::NotBefore" }
 sub rule_exp { @_ == 1 ? ( $_[0]->{rule_exp} ) : ( $_[0]->{rule_exp} = $_[1] ) };
-sub emit { my $self = shift; my $List__ = \@_; do { [] }; 'do { ' . 'my $tmp := $MATCH; ' . '$MATCH := ::MiniPerl6::Match( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' . '$MATCH.bool := ' . $self->{rule_exp}->emit() . '; ' . '$tmp.bool := !$MATCH; ' . '$MATCH := $tmp; ' . '?$MATCH; ' . '}' }
+sub emit { my $self = shift; my $List__ = \@_; do { [] }; 'do { ' . 'my $tmp := $MATCH; ' . '$MATCH := MiniPerl6::Match.new( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' . '$MATCH.bool := ' . $self->{rule_exp}->emit() . '; ' . '$tmp.bool := !$MATCH; ' . '$MATCH := $tmp; ' . '?$MATCH; ' . '}' }
 
 }
 {
