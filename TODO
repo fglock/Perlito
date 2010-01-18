@@ -1,5 +1,14 @@
+Command line compiler (util/mp6)
 
-- build Ast cache using JSON (we currently use Perl5 Data::Dumper)
+- build Ast cache using JSON (we currently use Perl5 Data::Dumper) or XML (Go has XML and JSON input)
+
+- option to build binaries (Lisp, Java, Go) or modules (Perl, Lisp, Javascript)
+
+- add "make" capabilities (test file dates, etc)
+
+- does it need a config file? (lib location, make details)
+
+- impl 'make test' or 'prove' (move TODO tests away)
 
 MiniPerl6 in Rakudo
 
@@ -7,30 +16,24 @@ MiniPerl6 in Rakudo
 
 MiniPerl6 in Lisp
 
-- implement command line switches '-C' and '-B'
+- implement command line switches '-C' and '-B' (use util/mp6)
+
+- fix warnings
 
 MiniPerl6 in Go
 
-- implement 'use'
+- very slow in bootstrap mode; Ast cache might help.
 
 MiniPerl6 in Perl5
 
 - generate 'my' variables for subroutine signatures;
   currently depends on autovivification
 
-- Freeze the project, because it can be useful to bootstrap other VMs
-
-Bootstrapping MiniPerl6 in Parrot
+MiniPerl6 in Parrot
 
 - finish OO, class variables
 
 - fix die() parameter handling
-
-- write "mp6 -Cparrot" in parrot (or mp6)
-
-- Recompile it several times using itself, in order to check the stability of the Bootstrap
-
-- Freeze the project, because it can be useful to bootstrap other VMs
 
 Missing Backends
 
@@ -67,6 +70,14 @@ Missing Features of the Token sub-compiler
 
 - no variable interpolation
 
-Bugs
+Nice to Have
 
-- ...
+- replace := with = everywhere. Alternately, impl both := and = in all backends
+
+- impl 'while', 'elsif'
+
+- 'mp6-format' script (see gofmt and perltidy)
+
+- run some tests from the standard test suite
+
+
