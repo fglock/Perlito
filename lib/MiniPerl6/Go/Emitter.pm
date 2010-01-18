@@ -556,8 +556,8 @@ class Bind {
             my $i := 0;
             for @$a -> $var { 
                 my $bind := Bind.new( 
-                    'parameters' => $var, 
-                    'arguments'  => Index.new(
+                    parameters => $var, 
+                    arguments  => Index.new(
                         obj        => Var.new( sigil => '@', twigil => '', namespace => '', name => 'tmp' ),
                         index_exp  => Val::Int.new( int => $i )
                     )
@@ -586,7 +586,7 @@ class Bind {
                     }
                 };
 
-                my $bind := Bind.new( 'parameters' => $var[1], 'arguments' => $arg );
+                my $bind := Bind.new( parameters => $var[1], arguments => $arg );
                 $str := $str ~ ' ' ~ $bind.emit_go ~ '; ';
                 $i := $i + 1;
             };
@@ -605,8 +605,8 @@ class Bind {
             my $arg;
             for @$a -> $var {
                 my $bind := Bind.new( 
-                    'parameters' => $var[1], 
-                    'arguments'  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
+                    parameters => $var[1], 
+                    arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
                 $str := $str ~ ' ' ~ $bind.emit_go ~ '; ';
                 $i := $i + 1;

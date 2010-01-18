@@ -5,7 +5,7 @@ grammar MiniPerl6::Grammar {
 
 token pair_key { 
     |  <ident> <before '=>' | <.ws> > 
-       { make Val::Buf.new( 'buf' => ~$<ident> ) }  # autoquote
+       { make Val::Buf.new( buf => ~$<ident> ) }  # autoquote
     |  <exp>   
        { make $$<exp> } 
 };
@@ -18,8 +18,8 @@ token pair {
     |   \: <var_sigil> <ident>                  #  :$var
         { 
             make [ 
-                Val::Buf.new( 'buf' => ~$<ident> ), 
-                Var.new( 'sigil' => ~$$<var_sigil>, 'twigil' => '', 'name' => $$<ident> ) ] 
+                Val::Buf.new( buf => ~$<ident> ), 
+                Var.new( sigil => ~$$<var_sigil>, twigil => '', name => $$<ident> ) ] 
         } 
 };
 

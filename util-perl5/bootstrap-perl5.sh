@@ -10,6 +10,7 @@ mv lib5-new lib5
 
 echo 'Compiling with new version'
 rm -rf libast-perl5
+perl util-perl5/make.pl -Cast-perl5
 perl util-perl5/make.pl
 mv lib5 lib5-tmp
 mv lib5-new lib5

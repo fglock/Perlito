@@ -9,7 +9,7 @@ package MiniPerl6::Grammar;
         my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
         my $MATCH; 
         $MATCH = MiniPerl6::Match->new( 
-            'str' => $str,'from' => $pos,'to' => $pos, ); 
+            str => $str,from => $pos,to => $pos, ); 
         $MATCH->bool(
             substr($str, $MATCH->to()) =~ m/^([[:space:]])/
             ? ( 1 + ($MATCH->to = ( length( $1 ) + $MATCH->to() )))
@@ -20,7 +20,7 @@ package MiniPerl6::Grammar;
     sub digit { 
         my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
         my $MATCH; $MATCH = MiniPerl6::Match->new( 
-            'str' => $str,'from' => $pos,'to' => $pos, ); 
+            str => $str,from => $pos,to => $pos, ); 
         $MATCH->bool(
             substr($str, $MATCH->to()) =~ m/^([[:digit:]])/
             ? ( 1 + ($MATCH->to = ( length( $1 ) + $MATCH->to() )))
@@ -35,7 +35,7 @@ BEGIN {
         *word = sub { 
             my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
             my $MATCH; $MATCH = MiniPerl6::Match->new( 
-                'str' => $str,'from' => $pos,'to' => $pos, ); 
+                str => $str,from => $pos,to => $pos, ); 
             $MATCH->bool(
                 substr($str, $MATCH->to()) =~ m/^([[:word:]])/
                 ? ( 1 + ($MATCH->to = ( length( $1 ) + $MATCH->to() )))
@@ -49,7 +49,7 @@ BEGIN {
     sub is_newline { 
         my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
         my $MATCH; $MATCH = MiniPerl6::Match->new( 
-            'str' => $str,'from' => $pos,'to' => $pos, ); 
+            str => $str,from => $pos,to => $pos, ); 
         return $MATCH unless ord( substr($str, $MATCH->to()) ) == 10
             || ord( substr($str, $MATCH->to()) ) == 13;
         $MATCH->bool(
@@ -62,7 +62,7 @@ BEGIN {
     sub not_newline { 
         my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
         my $MATCH; $MATCH = MiniPerl6::Match->new( 
-            'str' => $str,'from' => $pos,'to' => $pos, 'bool' => 0 ); 
+            str => $str,from => $pos,to => $pos, bool => 0 ); 
         return $MATCH if ord( substr($str, $MATCH->to()) ) == 10
             || ord( substr($str, $MATCH->to()) ) == 13;
         $MATCH->to = ( 1 + $MATCH->to );

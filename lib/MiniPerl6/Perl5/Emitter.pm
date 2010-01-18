@@ -163,9 +163,9 @@ class Bind {
             my $i := 0;
             for @$a -> $var { 
                 my $bind := Bind.new( 
-                    'parameters' => $var, 
-                    # 'arguments' => ($b[$i]) );
-                    'arguments'  => Index.new(
+                    parameters => $var, 
+                    # arguments => ($b[$i]) );
+                    arguments  => Index.new(
                         obj    => $.arguments,
                         index_exp  => Val::Int.new( int => $i )
                     )
@@ -194,7 +194,7 @@ class Bind {
                     }
                 };
 
-                my $bind := Bind.new( 'parameters' => $var[1], 'arguments' => $arg );
+                my $bind := Bind.new( parameters => $var[1], arguments => $arg );
                 $str := $str ~ ' ' ~ $bind.emit ~ '; ';
                 $i := $i + 1;
             };
@@ -213,8 +213,8 @@ class Bind {
             my $arg;
             for @$a -> $var {
                 my $bind := Bind.new( 
-                    'parameters' => $var[1], 
-                    'arguments'  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
+                    parameters => $var[1], 
+                    arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
                 $str := $str ~ ' ' ~ $bind.emit ~ '; ';
                 $i := $i + 1;
@@ -455,8 +455,8 @@ class Method {
         };
 
         my $bind := Bind.new( 
-            'parameters' => Lit::Array.new( array1 => $sig.positional ), 
-            'arguments'  => Var.new( sigil => '@', twigil => '', name => '_' )
+            parameters => Lit::Array.new( array1 => $sig.positional ), 
+            arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
         );
         $str := $str ~ $bind.emit ~ '; ';
 
@@ -488,8 +488,8 @@ class Sub {
         };
 
         my $bind := Bind.new( 
-            'parameters' => Lit::Array.new( array1 => $sig.positional ), 
-            'arguments'  => Var.new( sigil => '@', twigil => '', name => '_' )
+            parameters => Lit::Array.new( array1 => $sig.positional ), 
+            arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
         );
         $str := $str ~ $bind.emit ~ '; ';
 

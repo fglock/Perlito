@@ -14,7 +14,7 @@ my %_data;
 use overload (
     '@{}'    => \&array,
     '%{}'    => \&hash,
-    'bool'   => sub { $_data{refaddr $_[0]}{bool} },
+    bool   => sub { $_data{refaddr $_[0]}{bool} },
     '&{}'    => \&code,
     '${}'    => \&scalar,
     '""'     => \&flat,

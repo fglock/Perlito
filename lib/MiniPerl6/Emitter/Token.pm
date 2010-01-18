@@ -123,22 +123,22 @@ class Rul::SpecialChar {
     method emit {
         my $char := $.char;
         if $char eq 'n' {
-            my $rul := Rul::SubruleNoCapture.new( 'metasyntax' => 'is_newline' );
+            my $rul := Rul::SubruleNoCapture.new( metasyntax => 'is_newline' );
             $rul := $rul.emit;
             return $rul;
         };
         if $char eq 'N' {
-            my $rul := Rul::SubruleNoCapture.new( 'metasyntax' => 'not_newline' );
+            my $rul := Rul::SubruleNoCapture.new( metasyntax => 'not_newline' );
             $rul := $rul.emit;
             return $rul;
         };
         if $char eq 'd' {
-            my $rul := Rul::SubruleNoCapture.new( 'metasyntax' => 'digit' );
+            my $rul := Rul::SubruleNoCapture.new( metasyntax => 'digit' );
             $rul := $rul.emit;
             return $rul;
         };
         if $char eq 's' {
-            my $rul := Rul::SubruleNoCapture.new( 'metasyntax' => 'space' );
+            my $rul := Rul::SubruleNoCapture.new( metasyntax => 'space' );
             $rul := $rul.emit;
             return $rul;
         };

@@ -290,7 +290,7 @@ class Lit::Object {
     has $.class;
     has @.fields;
     method emit {
-        # Type.new( 'value' => 42 )
+        # Type.new( value => 42 )
         my $fields := @.fields;
         my $str := '';
         $str :=
@@ -408,7 +408,7 @@ class Bind {
             my $str := '';
             my $i := 0;
             for @$a -> $var {
-                my $bind := Bind.new( 'parameters' => $var, 'arguments' => ($b[$i]) );
+                my $bind := Bind.new( parameters => $var, arguments => ($b[$i]) );
                 $str := $str ~ $bind.emit;
                 $i := $i + 1;
             };
@@ -430,7 +430,7 @@ class Bind {
                         $arg := $var2[1];
                     }
                 };
-                my $bind := Bind.new( 'parameters' => $var[1], 'arguments' => $arg );
+                my $bind := Bind.new( parameters => $var[1], arguments => $arg );
                 $str := $str ~ $bind.emit;
                 $i := $i + 1;
             };
@@ -446,8 +446,8 @@ class Bind {
             my $str   := '';
             for @$a -> $var {
                 my $bind := Bind.new(
-                    'parameters' => $var[1],
-                    'arguments'  => Call.new(
+                    parameters => $var[1],
+                    arguments  => Call.new(
                         invocant  => $b,
                         method    => ($var[0]).buf,
                         arguments => [ ],
