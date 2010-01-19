@@ -46,12 +46,13 @@ mp6 [switches] [programfile]
     -e program      one line of program (omit programfile)
     -Ctarget        compile to target backend: go, js, lisp, parrot, perl5
         additional options:
-        -Cast-json
-        -Cast-perl5
+        -Cast-json    dump the ast in JSON format
+        -Cast-perl5   dump the ast in perl 5 format
     -Btarget        run in target backend: go, js, lisp, parrot, perl5
         additional options:
-        -Brhino     run in Rhino (javascript)
-        -Bv8        run in V8 (javascript)
+        -Brhino       run in Rhino (javascript)
+        -Bv8          run in V8 (javascript)
+        -Bjava-class  create a Java .class 
 ";
         exit;
     }
