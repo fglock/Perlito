@@ -168,6 +168,8 @@ token exp {
           ) }
     | <.opt_ws> ':=' <.opt_ws> <exp>
         { make Bind.new( parameters => $$<term_meth>, arguments => $$<exp>) }
+    | <.opt_ws> '=' <.opt_ws> <exp>
+        { die '*** Error in assignment operation: infix<=> not implemented; use infix<:=> instead' }
     |   { make $$<term_meth> }
     ]
 }
