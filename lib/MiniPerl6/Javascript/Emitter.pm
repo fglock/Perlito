@@ -447,7 +447,8 @@ class Call {
                     ~ ( @.arguments ?? ', ' ~ (@.arguments.>>emit_javascript).join(', ') !! '' ) 
                 ~ ')';
         }
-        if ($.method eq 'join') {
+        if    ($.method eq 'join') 
+           || ($.method eq 'shift') {
             return $invocant ~ '.' ~ $.method ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
         }
 
