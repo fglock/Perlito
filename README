@@ -8,6 +8,11 @@ Go backend
 
     See also: Go homepage at http://golang.org
 
+Java class backend
+
+    perl mp6.pl -Bjava-class -e 'class Main { say "hello, World!" }'
+    java tmp
+
 Javascript backend - browser
 
     Open the file 'perlito.html' in a browser (Firefox, Chrome, or Safari).
@@ -28,7 +33,10 @@ Javascript backend - command line
 
 Lisp backend
 
-    ... (see util-lisp directory)
+    perl mp6.pl -Blisp -e 'class Main { say "hello, World!" }'
+    # lots of warnings from SBCL!
+
+    (see more in util-lisp directory)
 
 Parrot backend
 
