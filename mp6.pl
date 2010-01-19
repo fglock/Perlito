@@ -87,6 +87,10 @@ mp6 [switches] [programfile]
 if ( $backend eq 'js'    ) { 
     $cmd = 'v8' 
 }
+if ( $backend eq 'java-class' ) { 
+    $cmd = 'java org.mozilla.javascript.tools.jsc.Main -opt 9 ';
+    $backend = 'js' 
+}
 if ( $backend eq 'rhino' ) { 
     $cmd = 'java org.mozilla.javascript.tools.shell.Main'; 
     $backend = 'js' 
