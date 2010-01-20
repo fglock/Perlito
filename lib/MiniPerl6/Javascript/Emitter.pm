@@ -523,7 +523,7 @@ class Apply {
         if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ' != null)' };
         if $code eq 'substr' { 
             return '(' ~ (@.arguments[0]).emit_javascript ~
-                 ').substr(' ~ (@.arguments[1]).emit_javascript ~
+                 ' || "").substr(' ~ (@.arguments[1]).emit_javascript ~
                  ', ' ~ (@.arguments[2]).emit_javascript ~ ')' 
         };
         if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').f_string()' };
