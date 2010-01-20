@@ -262,7 +262,11 @@ class Lit::Object {
         for @$fields -> $field { 
             $str := $str ~ 'v_' ~ ($field[0]).buf ~ ': ' ~ ($field[1]).emit_javascript ~ ',';
         }; 
-        '{ __proto__:' ~ Main::to_javascript_namespace($.class) ~ ', ' ~ $str ~ '}';
+          'function () { ' 
+        ~   'var tmp = {' ~ $str ~ '}; '
+        ~   'tmp.__proto__ = ' ~ Main::to_javascript_namespace($.class) ~ '; '
+        ~   'return tmp '
+        ~ '}()'
     }
 }
 

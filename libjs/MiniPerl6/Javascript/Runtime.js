@@ -83,7 +83,8 @@ if (typeof MiniPerl6$Match != 'object') {
   MiniPerl6$Match.f_isa = function (s) { return s == 'MiniPerl6::Match' };
   MiniPerl6$Match.f_perl = function () { return '::MiniPerl6::Match(' + Main._dump(this) + ')' };
 }
-v_MATCH = { __proto__:MiniPerl6$Match };
+v_MATCH = {};
+v_MATCH.__proto__ = MiniPerl6$Match;
 MiniPerl6$Match.f_hash = function () { return this }
 
 if (typeof f_print != 'function') {
@@ -186,49 +187,54 @@ if (typeof MiniPerl6$Grammar != 'object') {
   MiniPerl6$Grammar = new MiniPerl6$Grammar;
 }
 MiniPerl6$Grammar.f_word = function (v_str, v_pos) { 
-    return {           
-            __proto__:MiniPerl6$Match, 
+    var tmp = {           
             v_str:  v_str,
             v_from: v_pos, 
             v_to:   v_pos + 1,
             v_bool: v_str.substr(v_pos, 1).match(/\w/) != null
         };
+    tmp.__proto__ = MiniPerl6$Match;
+    return tmp;
 } 
 MiniPerl6$Grammar.f_digit = function (v_str, v_pos) { 
-    return {           
-            __proto__:MiniPerl6$Match, 
+    var tmp = {           
             v_str:  v_str,
             v_from: v_pos, 
             v_to:   v_pos + 1,
             v_bool: v_str.substr(v_pos, 1).match(/\d/) != null
         };
+    tmp.__proto__ = MiniPerl6$Match;
+    return tmp;
 } 
 MiniPerl6$Grammar.f_space = function (v_str, v_pos) { 
-    return {           
-            __proto__:MiniPerl6$Match, 
+    var tmp = {           
             v_str:  v_str,
             v_from: v_pos, 
             v_to:   v_pos + 1,
             v_bool: v_str.substr(v_pos, 1).match(/\s/) != null
         };
+    tmp.__proto__ = MiniPerl6$Match;
+    return tmp;
 } 
 MiniPerl6$Grammar.f_is_newline = function (v_str, v_pos) { 
     var m_ = v_str.substr(v_pos).match(/^(\r\n?|\n\r?)/);
-    return {           
-            __proto__:MiniPerl6$Match, 
+    var tmp = {           
             v_str:  v_str,
             v_from: v_pos, 
             v_to:   m_ != null ? v_pos + m_[0].length : v_pos,
             v_bool: m_ != null,
         };
+    tmp.__proto__ = MiniPerl6$Match;
+    return tmp;
 } 
 MiniPerl6$Grammar.f_not_newline = function (v_str, v_pos) { 
-    return {           
-            __proto__:MiniPerl6$Match, 
+    var tmp = {           
             v_str:  v_str,
             v_from: v_pos, 
             v_to:   v_pos + 1,
             v_bool: v_str.substr(v_pos, 1).match(/[^\r\n]/) != null
         };
+    tmp.__proto__ = MiniPerl6$Match;
+    return tmp;
 } 
 

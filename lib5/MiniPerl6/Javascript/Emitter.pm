@@ -96,7 +96,7 @@ package Lit::Object;
 sub new { shift; bless { @_ }, "Lit::Object" }
 sub class { @_ == 1 ? ( $_[0]->{class} ) : ( $_[0]->{class} = $_[1] ) };
 sub fields { @_ == 1 ? ( $_[0]->{fields} ) : ( $_[0]->{fields} = $_[1] ) };
-sub emit_javascript { my $self = shift; my $List__ = \@_; do { [] }; (my  $fields = $self->{fields}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = $str . 'v_' . $field->[0]->buf() . ': ' . $field->[1]->emit_javascript() . ',') } }; '{ __proto__:' . Main::to_javascript_namespace($self->{class}) . ', ' . $str . '}' }
+sub emit_javascript { my $self = shift; my $List__ = \@_; do { [] }; (my  $fields = $self->{fields}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = $str . 'v_' . $field->[0]->buf() . ': ' . $field->[1]->emit_javascript() . ',') } }; 'function () { ' . 'var tmp = {' . $str . '}; ' . 'tmp.__proto__ = ' . Main::to_javascript_namespace($self->{class}) . '; ' . 'return tmp ' . '}()' }
 
 }
 {
