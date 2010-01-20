@@ -259,15 +259,17 @@ elsif ( $backend eq 'js' ) {
     if ( $execute ) {
         open( OUT, '>', $tmp_filename . '.js' )
           or die "Cannot write to ${tmp_filename}.js\n";
+        my $inc;
 
-        my $lib_source_filename = 'lib/MiniPerl6/Javascript/Runtime.js';
-        my $inc = "// include file: $lib_source_filename\n";
-        open FILE, $::Bin . '/' . $lib_source_filename
-          or die "Cannot read $::Bin/$lib_source_filename\n";
-        local $/ = undef;
-        $inc .= <FILE>;
-        close FILE;
-        $inc .= "\n// end include file: $lib_source_filename\n";
+        for my $lib_source_filename ( 'lib/MiniPerl6/Javascript/Runtime.js', 'libjs/MiniPerl6/Javascript/Prelude.js' ) {
+            $inc .= "// include file: $lib_source_filename\n";
+            open FILE, $::Bin . '/' . $lib_source_filename
+              or die "Cannot read $::Bin/$lib_source_filename\n";
+            local $/ = undef;
+            $inc .= <FILE>;
+            close FILE;
+            $inc .= "\n// end include file: $lib_source_filename\n";
+        }
 
         print OUT $inc, $result;
         close(OUT);

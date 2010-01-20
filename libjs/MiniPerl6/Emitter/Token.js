@@ -276,7 +276,7 @@ if (typeof Rul$Before != 'object') {
   // method emit
   Rul$Before.f_emit = function () {
     var v_self = this;
-    try { return(( f_string("do { ") + f_string(( f_string("my $tmp := $MATCH; ") + f_string(( f_string("$MATCH := ::MiniPerl6::Match( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string(( f_string("$MATCH.bool := ") + f_string(( f_string(this.v_rule_exp.f_emit()) + f_string(( f_string("; ") + f_string(( f_string("$tmp.bool := ?$MATCH; ") + f_string(( f_string("$MATCH := $tmp; ") + f_string(( f_string("?$MATCH; ") + f_string("}") )) )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(( f_string("do { ") + f_string(( f_string("my $tmp := $MATCH; ") + f_string(( f_string("$MATCH := MiniPerl6::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string(( f_string("$MATCH.bool := ") + f_string(( f_string(this.v_rule_exp.f_emit()) + f_string(( f_string("; ") + f_string(( f_string("$tmp.bool := ?$MATCH; ") + f_string(( f_string("$MATCH := $tmp; ") + f_string(( f_string("?$MATCH; ") + f_string("}") )) )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Before.f_emit;  // v8 bug workaround
 })();
@@ -295,7 +295,7 @@ if (typeof Rul$NotBefore != 'object') {
   // method emit
   Rul$NotBefore.f_emit = function () {
     var v_self = this;
-    try { return(( f_string("do { ") + f_string(( f_string("my $tmp := $MATCH; ") + f_string(( f_string("$MATCH := ::MiniPerl6::Match( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string(( f_string("$MATCH.bool := ") + f_string(( f_string(this.v_rule_exp.f_emit()) + f_string(( f_string("; ") + f_string(( f_string("$tmp.bool := !$MATCH; ") + f_string(( f_string("$MATCH := $tmp; ") + f_string(( f_string("?$MATCH; ") + f_string("}") )) )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(( f_string("do { ") + f_string(( f_string("my $tmp := $MATCH; ") + f_string(( f_string("$MATCH := MiniPerl6::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string(( f_string("$MATCH.bool := ") + f_string(( f_string(this.v_rule_exp.f_emit()) + f_string(( f_string("; ") + f_string(( f_string("$tmp.bool := !$MATCH; ") + f_string(( f_string("$MATCH := $tmp; ") + f_string(( f_string("?$MATCH; ") + f_string("}") )) )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$NotBefore.f_emit;  // v8 bug workaround
 })();

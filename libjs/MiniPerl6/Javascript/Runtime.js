@@ -21,6 +21,22 @@
 // 
 // See http://www.perl.com/perl/misc/Artistic.html
 
+List_ARGS = [];
+if (typeof arguments == 'object' ) {
+    List_ARGS = arguments;
+}
+
+// class IO
+if (typeof IO != 'object') {
+  IO = function() {};
+  IO = new IO;
+}
+IO.f_slurp = function (filename) {
+    if (typeof readFile == 'function' ) {
+        return readFile(filename);
+    }
+    f_die("IO.slurp() not implemented");    
+}
 
 // class Main
 if (typeof Main != 'object') {
@@ -152,6 +168,9 @@ f_bool = function (o) {
 }
 f_pop = function (o) {
   return o.pop();
+}
+f_shift = function (o) {
+  return o.shift();
 }
 f_index = function (o, s) {
   return o.indexOf(s);

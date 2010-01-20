@@ -3,15 +3,23 @@ rm -rf lib5-old
 rm -rf lib5-tmp
 
 echo 'Compiling with old version'
+
 rm -rf libast-perl5
 perl util-perl5/make.pl
+rm -rf lib5-old
 mv lib5 lib5-old
+rm -rf lib5
 mv lib5-new lib5
 
 echo 'Compiling with new version'
+
 rm -rf libast-perl5
 perl util-perl5/make.pl -Cast-perl5
+rm -rf libast-perl5
+mv libast-perl5-new libast-perl5
+
 perl util-perl5/make.pl
+rm -rf lib5-tmp
 mv lib5 lib5-tmp
 mv lib5-new lib5
 
