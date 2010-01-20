@@ -7,11 +7,11 @@ if (typeof Test != 'object') {
   Test.f_perl = function () { return '::Test(' + Main._dump(this) + ')' };
 }
 (function () {
-  var v_num_of_tests_run = null;
-  var v_num_of_tests_failed = null;
-  var v_num_of_tests_badpass = null;
-  var v_num_of_tests_planned = null;
-  var v_testing_started = null;
+var v_num_of_tests_run = null;
+var v_num_of_tests_failed = null;
+var v_num_of_tests_badpass = null;
+var v_num_of_tests_planned = null;
+var v_testing_started = null;
   // sub plan
   Test.f_plan = function (v_number_of_tests) {
     try { (v_testing_started = 1);(v_num_of_tests_planned = v_number_of_tests);return(say(( f_string("1..") + f_string(v_number_of_tests) ))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 

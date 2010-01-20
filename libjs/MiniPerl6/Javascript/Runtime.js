@@ -118,6 +118,25 @@ if (typeof f_warn != 'function') {
     print("Warning: " + s + "\n")
   }
 }
+f_values = function (o) {
+  if ( o == null ) { return [] };
+  if ( typeof o.f_values == 'function' ) { return o.f_values() }
+  if ( typeof o == 'object' && (o instanceof Array) ) {
+    return o;
+  }
+  switch (typeof o){
+    case "string":   return [o];
+    case "function": return [o]; 
+    case "number":   return [o];
+    case "boolean":  return [o];
+    case "undefined": return [];
+  }
+    var out = [];
+    for(var i in o) { 
+      out.push( o[i] ) 
+    }
+    return out;
+}
 f_perl = function (o) {
   if ( o == null ) { return 'undef' };
   if ( typeof o.f_perl == 'function' ) { return o.f_perl() }

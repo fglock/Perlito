@@ -11,7 +11,7 @@ class MiniPerl6::Javascript::LexicalBlock {
         my $str := '';
         for @.block -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $str := $str ~ 'var ' ~ ($decl.var).emit_javascript ~ ' = null;'; 
+                $str := $str ~ $decl.emit_javascript_init; 
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $str := $str ~ 'var ' ~ (($decl.parameters).var).emit_javascript ~ ';'; 
@@ -94,7 +94,7 @@ class CompUnit {
 
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $str := $str ~ '  var ' ~ ($decl.var).emit_javascript ~ ' = null;' ~ Main.newline; 
+                $str := $str ~ $decl.emit_javascript_init; 
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $str := $str ~ '  var ' ~ (($decl.parameters).var).emit_javascript ~ ';' ~ Main.newline; 
@@ -429,7 +429,7 @@ class Call {
                 die "not implemented";
             }
             else {
-                return '@{' ~ $invocant ~ '}';
+                return 'f_values(' ~ $invocant ~ ')';
             }
         };
 
@@ -619,6 +619,27 @@ class Decl {
     has $.var;
     method emit_javascript {
         $.var.emit_javascript;
+    }
+    method emit_javascript_init {
+        if $.decl eq 'my' {
+            my $str := "";
+            $str := $str ~ 'var ' ~ ($.var).emit_javascript ~ ' = ';
+            if ($.var).sigil eq '%' {
+                $str := $str ~ '{};' ~ "\n";
+            }
+            else {
+            if ($.var).sigil eq '@' {
+                $str := $str ~ '[];' ~ "\n";
+            }
+            else {
+                $str := $str ~ 'null;' ~ "\n";
+            }
+            }
+            return $str;
+        }
+        else {
+            die "not implemented: Decl '" ~ $.decl ~ "'";
+        }
     }
 }
 

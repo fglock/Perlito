@@ -25,6 +25,7 @@ my $tmp_filename = 'tmp';
 my $cmd = '';
 my $execute = 1;
 my $verbose = 0;
+my $lib_spec = '';
 my @args = @ARGV;
 while (@args) {
     if ( $args[0] eq '-v' || $args[0] eq '--verbose' ) {
@@ -86,19 +87,26 @@ mp6 [switches] [programfile]
 }
 
 if ( $backend eq 'js'    ) { 
-    $cmd = 'v8' 
+    $cmd = 'v8'; 
+    $lib_spec = 'Javascript';
 }
 if ( $backend eq 'java-class' ) { 
     $cmd = 'java org.mozilla.javascript.tools.jsc.Main -opt 9 ';
-    $backend = 'js' 
+    $backend = 'js';
+    $lib_spec = 'Javascript';
 }
 if ( $backend eq 'rhino' ) { 
     $cmd = 'java org.mozilla.javascript.tools.shell.Main'; 
-    $backend = 'js' 
+    $backend = 'js';
+    $lib_spec = 'Javascript';
 }
 if ( $backend eq 'v8'    ) { 
     $cmd = 'v8';    
-    $backend = 'js' 
+    $backend = 'js';
+    $lib_spec = 'Javascript';
+}
+if ( $backend eq 'go' ) {
+    $lib_spec = 'Go';
 }
 
 $source_filename = shift @args if @args;
@@ -111,6 +119,7 @@ if ( $verbose ) {
     warn "\tsource_filename '$source_filename'\n";
     warn "\tBin             '$::Bin'\n";
     warn "\tcmd             '$cmd'\n";
+    warn "\tlibspec         '$lib_spec'\n";
     warn "\te               '${_}'\n" for @switch_e;
 }
 
@@ -143,7 +152,10 @@ else {
         $source = "class Main { $source }" if $source !~ /class/;
     }
 
-    if ( $backend eq 'go' ) {
+    if  (  $backend eq 'go' 
+        || $backend eq 'js'
+        ) 
+    {
         # TODO - recursive 'use'
         my %module;
         my $precompiled;
@@ -186,7 +198,7 @@ else {
             return 1;
         };
         my $pos = 0;
-        $load_module->( "MiniPerl6::Go::Prelude" );
+        $load_module->( "MiniPerl6::${lib_spec}::Prelude" );
         while ( $pos < length($source) ) {
             warn "parsing at pos $pos\n" if $verbose;
             my $p = MiniPerl6::Grammar->comp_unit( $source, $pos );
