@@ -192,6 +192,9 @@ f_pop = function (o) {
 f_shift = function (o) {
   return o.shift();
 }
+f_push = function (o) {
+  return o.push();
+}
 f_index = function (o, s) {
   return o.indexOf(s);
 }

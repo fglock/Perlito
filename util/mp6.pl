@@ -18,6 +18,7 @@ class Main {
     my $verbose     := 0;
     my $comp_units  := [];
     my $perl6lib    := './lib';
+    my $expand_use  := 1;
 
     if $verbose {
         warn "// MiniPerl6 compiler";
@@ -41,7 +42,7 @@ sub add_comp_unit ($comp_unit) {
         warn "parsed comp_unit: '", $comp_unit.name, "'"; 
     }
     for @( $comp_unit.body ) -> $stmt {
-        if $stmt.isa('Use') {
+        if $expand_use && $stmt.isa('Use') {
             my $module_name := $stmt.mod;
             if !(%module_seen{$module_name}) {
                 %module_seen{$module_name} := 1;
@@ -95,9 +96,19 @@ mp6 [switches] [programfile]
     -h --help
     -v --verbose
     -V --version
-    -e program      one line of program (omit programfile)
+    --expand_use --noexpand_use
+                    expand 'use' statements at compile time
     -Ctarget        target backend: go, js, lisp, parrot, perl5, ast-perl6
+    -e program      one line of program (omit programfile)
 ";
+        shift @*ARGS;
+    }
+    if @*ARGS[0] eq '--expand_use' {
+        $expand_use := 1;
+        shift @*ARGS;
+    }
+    if @*ARGS[0] eq '--noexpand_use' {
+        $expand_use := 0;
         shift @*ARGS;
     }
     if substr(@*ARGS[0], 0, 2) eq '-C' {

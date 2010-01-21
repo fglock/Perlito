@@ -7,6 +7,7 @@ if (typeof MiniPerl6$Grammar != 'object') {
   MiniPerl6$Grammar.f_perl = function () { return '::MiniPerl6::Grammar(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = MiniPerl6$Grammar;
   // method pair_key
   MiniPerl6$Grammar.f_pair_key = function (v_str, v_pos) {
     var v_grammar = this;

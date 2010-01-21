@@ -7,6 +7,7 @@ if (typeof MiniPerl6$Match != 'object') {
   MiniPerl6$Match.f_perl = function () { return '::MiniPerl6::Match(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = MiniPerl6$Match;
   // accessor from
   MiniPerl6$Match.v_from = null;
   MiniPerl6$Match.f_from = function () { return this.v_from }
@@ -44,6 +45,7 @@ if (typeof Pair != 'object') {
   Pair.f_perl = function () { return '::Pair(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Pair;
   // accessor key
   Pair.v_key = null;
   Pair.f_key = function () { return this.v_key }
@@ -66,6 +68,7 @@ if (typeof Main != 'object') {
   Main.f_perl = function () { return '::Main(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Main;
   // sub to_lisp_identifier
   Main.f_to_lisp_identifier = function (v_ident) {
     try { throw(( f_string("sv-") + f_string(v_ident) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 

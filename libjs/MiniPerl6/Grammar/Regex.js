@@ -7,6 +7,7 @@ if (typeof MiniPerl6$Grammar$Regex != 'object') {
   MiniPerl6$Grammar$Regex.f_perl = function () { return '::MiniPerl6::Grammar::Regex(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = MiniPerl6$Grammar$Regex;
 var Hash_rule_terms = {};
   // method ws
   MiniPerl6$Grammar$Regex.f_ws = function (v_str, v_pos) {

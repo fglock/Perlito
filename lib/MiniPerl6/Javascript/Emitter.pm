@@ -90,7 +90,8 @@ class CompUnit {
             ~ '  ' ~ $class_name ~ '.f_perl = function () { return \'::' ~ $.name ~ '(\' + Main._dump(this) + \')\' };' ~ Main.newline;
         $str := $str  
             ~ '}' ~ Main.newline
-            ~ '(function () {' ~ Main.newline;
+            ~ '(function () {' ~ Main.newline
+            ~ '  var v__NAMESPACE = ' ~ $class_name ~ ';' ~ "\n";
 
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
@@ -452,7 +453,10 @@ class Call {
                 ~ ')';
         }
         if    ($.method eq 'join') 
-           || ($.method eq 'shift') {
+           || ($.method eq 'shift') 
+           || ($.method eq 'push') 
+           || ($.method eq 'pop') 
+        {
             return $invocant ~ '.' ~ $.method ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
         }
 
@@ -563,6 +567,16 @@ class Apply {
         $code := 'f_' ~ $.code;
         if $.namespace {
             $code := Main::to_javascript_namespace($.namespace) ~ '.' ~ $code;
+        }
+        else {
+            if     ($code ne 'f_index') 
+                && ($code ne 'f_die') 
+                && ($code ne 'f_pop') 
+                && ($code ne 'f_shift') 
+                && ($code ne 'f_push') 
+            {
+                $code := 'v__NAMESPACE.' ~ $code;
+            }
         }
         $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
     }

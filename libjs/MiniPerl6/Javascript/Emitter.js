@@ -7,6 +7,7 @@ if (typeof MiniPerl6$Javascript$LexicalBlock != 'object') {
   MiniPerl6$Javascript$LexicalBlock.f_perl = function () { return '::MiniPerl6::Javascript::LexicalBlock(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = MiniPerl6$Javascript$LexicalBlock;
   // accessor block
   MiniPerl6$Javascript$LexicalBlock.v_block = null;
   MiniPerl6$Javascript$LexicalBlock.f_block = function () { return this.v_block }
@@ -33,6 +34,7 @@ if (typeof CompUnit != 'object') {
   CompUnit.f_perl = function () { return '::CompUnit(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = CompUnit;
   // accessor name
   CompUnit.v_name = null;
   CompUnit.f_name = function () { return this.v_name }
@@ -48,7 +50,7 @@ if (typeof CompUnit != 'object') {
   // method emit_javascript
   CompUnit.f_emit_javascript = function () {
     var v_self = this;
-    try { var v_class_name;var v_str;(v_class_name = Main.f_to_javascript_namespace(this.v_name));(v_str = ( f_string("// class ") + f_string(( f_string(this.v_name) + f_string(( f_string(Main.f_newline()) + f_string(( f_string("if (typeof ") + f_string(( f_string(v_class_name) + f_string(( f_string(" != 'object') {") + f_string(Main.f_newline()) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(" = function() {};") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(" = new ") + f_string(( f_string(v_class_name) + f_string(( f_string(";") + f_string(Main.f_newline()) )) )) )) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_isa = function (s) { return s == '") + f_string(( f_string(this.v_name) + f_string(( f_string("' };") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_perl = function () { return '::") + f_string(( f_string(this.v_name) + f_string(( f_string("(' + Main._dump(this) + ')' };") + f_string(Main.f_newline()) )) )) )) )) )) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("}") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("(function () {") + f_string(Main.f_newline()) )) )) )) ));(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) { if ( f_bool(( f_bool(f_isa(v_decl, "Decl")) && f_bool((v_decl.f_decl() == "my")) )) ) { (v_str = ( f_string(v_str) + f_string(v_decl.f_emit_javascript_init()) )) } else {  };if ( f_bool(( f_bool(f_isa(v_decl, "Bind")) && f_bool(( f_bool(f_isa(v_decl.f_parameters(), "Decl")) && f_bool((v_decl.f_parameters().f_decl() == "my")) )) )) ) { (v_str = ( f_string(v_str) + f_string(( f_string("  var ") + f_string(( f_string(v_decl.f_parameters().f_var().f_emit_javascript()) + f_string(( f_string(";") + f_string(Main.f_newline()) )) )) )) )) } else {  } })(a_[i_]) } })(this.v_body);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) { if ( f_bool(( f_bool(f_isa(v_decl, "Decl")) && f_bool((v_decl.f_decl() == "has")) )) ) { (v_str = ( f_string(v_str) + f_string(( f_string("  // accessor ") + f_string(( f_string(v_decl.f_var().f_name()) + f_string(Main.f_newline()) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".v_") + f_string(( f_string(v_decl.f_var().f_name()) + f_string(( f_string(" = null;") + f_string(Main.f_newline()) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_") + f_string(( f_string(v_decl.f_var().f_name()) + f_string(( f_string(" = function () { return this.v_") + f_string(( f_string(v_decl.f_var().f_name()) + f_string(( f_string(" }") + f_string(Main.f_newline()) )) )) )) )) )) )) )) )) } else {  };if ( f_bool(f_isa(v_decl, "Method")) ) { (v_sig = v_decl.f_sig());(v_pos = v_sig.f_positional());(v_invocant = v_sig.f_invocant());(v_block = function () { var tmp = {v_block: v_decl.f_block(),v_needs_return: 1,v_top_level: 1,}; tmp.__proto__ = MiniPerl6$Javascript$LexicalBlock; return tmp }());(v_str = ( f_string(v_str) + f_string(( f_string("  // method ") + f_string(( f_string(v_decl.f_name()) + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_") + f_string(v_decl.f_name()) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string(" = function (") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })((v_pos)).join(", ")) + f_string(( f_string(") {") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("    var ") + f_string(( f_string(v_invocant.f_emit_javascript()) + f_string(( f_string(" = this;") + f_string(Main.f_newline()) )) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("    ") + f_string(( f_string(v_block.f_emit_javascript()) + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  }") + f_string(Main.f_newline()) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_") + f_string(( f_string(v_decl.f_name()) + f_string(( f_string(";  // v8 bug workaround") + f_string(Main.f_newline()) )) )) )) )) )) )) } else {  };if ( f_bool(f_isa(v_decl, "Sub")) ) { (v_sig = v_decl.f_sig());(v_pos = v_sig.f_positional());(v_block = function () { var tmp = {v_block: v_decl.f_block(),v_needs_return: 1,v_top_level: 1,}; tmp.__proto__ = MiniPerl6$Javascript$LexicalBlock; return tmp }());(v_str = ( f_string(v_str) + f_string(( f_string("  // sub ") + f_string(( f_string(v_decl.f_name()) + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_") + f_string(v_decl.f_name()) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string(" = function (") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })((v_pos)).join(", ")) + f_string(( f_string(") {") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("    ") + f_string(( f_string(v_block.f_emit_javascript()) + f_string(Main.f_newline()) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  }") + f_string(Main.f_newline()) )) )) } else {  } })(a_[i_]) } })(this.v_body);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) { if ( f_bool(( f_bool(( f_bool(( f_bool(f_isa(v_decl, "Decl")) && f_bool(( f_bool((v_decl.f_decl() == "has")) || f_bool((v_decl.f_decl() == "my")) )) )) ? false : true)) && f_bool(( f_bool(( f_bool(f_isa(v_decl, "Method")) ? false : true)) && f_bool(( f_bool(f_isa(v_decl, "Sub")) ? false : true)) )) )) ) { (v_str = ( f_string(v_str) + f_string(( f_string(v_decl.f_emit_javascript()) + f_string(";") )) )) } else {  } })(a_[i_]) } })(this.v_body);return((v_str = ( f_string(v_str) + f_string(( f_string("}") + f_string(( f_string(")();") + f_string(Main.f_newline()) )) )) ))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_class_name;var v_str;(v_class_name = Main.f_to_javascript_namespace(this.v_name));(v_str = ( f_string("// class ") + f_string(( f_string(this.v_name) + f_string(( f_string(Main.f_newline()) + f_string(( f_string("if (typeof ") + f_string(( f_string(v_class_name) + f_string(( f_string(" != 'object') {") + f_string(Main.f_newline()) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(" = function() {};") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(" = new ") + f_string(( f_string(v_class_name) + f_string(( f_string(";") + f_string(Main.f_newline()) )) )) )) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_isa = function (s) { return s == '") + f_string(( f_string(this.v_name) + f_string(( f_string("' };") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_perl = function () { return '::") + f_string(( f_string(this.v_name) + f_string(( f_string("(' + Main._dump(this) + ')' };") + f_string(Main.f_newline()) )) )) )) )) )) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("}") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("(function () {") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  var v__NAMESPACE = ") + f_string(( f_string(v_class_name) + f_string(( f_string(";") + f_string("\n") )) )) )) )) )) )) )) ));(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) { if ( f_bool(( f_bool(f_isa(v_decl, "Decl")) && f_bool((v_decl.f_decl() == "my")) )) ) { (v_str = ( f_string(v_str) + f_string(v_decl.f_emit_javascript_init()) )) } else {  };if ( f_bool(( f_bool(f_isa(v_decl, "Bind")) && f_bool(( f_bool(f_isa(v_decl.f_parameters(), "Decl")) && f_bool((v_decl.f_parameters().f_decl() == "my")) )) )) ) { (v_str = ( f_string(v_str) + f_string(( f_string("  var ") + f_string(( f_string(v_decl.f_parameters().f_var().f_emit_javascript()) + f_string(( f_string(";") + f_string(Main.f_newline()) )) )) )) )) } else {  } })(a_[i_]) } })(this.v_body);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) { if ( f_bool(( f_bool(f_isa(v_decl, "Decl")) && f_bool((v_decl.f_decl() == "has")) )) ) { (v_str = ( f_string(v_str) + f_string(( f_string("  // accessor ") + f_string(( f_string(v_decl.f_var().f_name()) + f_string(Main.f_newline()) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".v_") + f_string(( f_string(v_decl.f_var().f_name()) + f_string(( f_string(" = null;") + f_string(Main.f_newline()) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_") + f_string(( f_string(v_decl.f_var().f_name()) + f_string(( f_string(" = function () { return this.v_") + f_string(( f_string(v_decl.f_var().f_name()) + f_string(( f_string(" }") + f_string(Main.f_newline()) )) )) )) )) )) )) )) )) } else {  };if ( f_bool(f_isa(v_decl, "Method")) ) { (v_sig = v_decl.f_sig());(v_pos = v_sig.f_positional());(v_invocant = v_sig.f_invocant());(v_block = function () { var tmp = {v_block: v_decl.f_block(),v_needs_return: 1,v_top_level: 1,}; tmp.__proto__ = MiniPerl6$Javascript$LexicalBlock; return tmp }());(v_str = ( f_string(v_str) + f_string(( f_string("  // method ") + f_string(( f_string(v_decl.f_name()) + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_") + f_string(v_decl.f_name()) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string(" = function (") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })((v_pos)).join(", ")) + f_string(( f_string(") {") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("    var ") + f_string(( f_string(v_invocant.f_emit_javascript()) + f_string(( f_string(" = this;") + f_string(Main.f_newline()) )) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("    ") + f_string(( f_string(v_block.f_emit_javascript()) + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  }") + f_string(Main.f_newline()) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_") + f_string(( f_string(v_decl.f_name()) + f_string(( f_string(";  // v8 bug workaround") + f_string(Main.f_newline()) )) )) )) )) )) )) } else {  };if ( f_bool(f_isa(v_decl, "Sub")) ) { (v_sig = v_decl.f_sig());(v_pos = v_sig.f_positional());(v_block = function () { var tmp = {v_block: v_decl.f_block(),v_needs_return: 1,v_top_level: 1,}; tmp.__proto__ = MiniPerl6$Javascript$LexicalBlock; return tmp }());(v_str = ( f_string(v_str) + f_string(( f_string("  // sub ") + f_string(( f_string(v_decl.f_name()) + f_string(( f_string(Main.f_newline()) + f_string(( f_string("  ") + f_string(( f_string(v_class_name) + f_string(( f_string(".f_") + f_string(v_decl.f_name()) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string(" = function (") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })((v_pos)).join(", ")) + f_string(( f_string(") {") + f_string(( f_string(Main.f_newline()) + f_string(( f_string("    ") + f_string(( f_string(v_block.f_emit_javascript()) + f_string(Main.f_newline()) )) )) )) )) )) )) ));(v_str = ( f_string(v_str) + f_string(( f_string("  }") + f_string(Main.f_newline()) )) )) } else {  } })(a_[i_]) } })(this.v_body);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) { if ( f_bool(( f_bool(( f_bool(( f_bool(f_isa(v_decl, "Decl")) && f_bool(( f_bool((v_decl.f_decl() == "has")) || f_bool((v_decl.f_decl() == "my")) )) )) ? false : true)) && f_bool(( f_bool(( f_bool(f_isa(v_decl, "Method")) ? false : true)) && f_bool(( f_bool(f_isa(v_decl, "Sub")) ? false : true)) )) )) ) { (v_str = ( f_string(v_str) + f_string(( f_string(v_decl.f_emit_javascript()) + f_string(";") )) )) } else {  } })(a_[i_]) } })(this.v_body);return((v_str = ( f_string(v_str) + f_string(( f_string("}") + f_string(( f_string(")();") + f_string(Main.f_newline()) )) )) ))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   CompUnit.f_emit_javascript;  // v8 bug workaround
 })();
@@ -61,6 +63,7 @@ if (typeof Val$Int != 'object') {
   Val$Int.f_perl = function () { return '::Val::Int(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Int;
   // accessor int
   Val$Int.v_int = null;
   Val$Int.f_int = function () { return this.v_int }
@@ -80,6 +83,7 @@ if (typeof Val$Bit != 'object') {
   Val$Bit.f_perl = function () { return '::Val::Bit(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Bit;
   // accessor bit
   Val$Bit.v_bit = null;
   Val$Bit.f_bit = function () { return this.v_bit }
@@ -99,6 +103,7 @@ if (typeof Val$Num != 'object') {
   Val$Num.f_perl = function () { return '::Val::Num(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Num;
   // accessor num
   Val$Num.v_num = null;
   Val$Num.f_num = function () { return this.v_num }
@@ -118,6 +123,7 @@ if (typeof Val$Buf != 'object') {
   Val$Buf.f_perl = function () { return '::Val::Buf(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Buf;
   // accessor buf
   Val$Buf.v_buf = null;
   Val$Buf.f_buf = function () { return this.v_buf }
@@ -137,6 +143,7 @@ if (typeof Val$Undef != 'object') {
   Val$Undef.f_perl = function () { return '::Val::Undef(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Undef;
   // method emit_javascript
   Val$Undef.f_emit_javascript = function () {
     var v_self = this;
@@ -153,6 +160,7 @@ if (typeof Val$Object != 'object') {
   Val$Object.f_perl = function () { return '::Val::Object(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Object;
   // accessor class
   Val$Object.v_class = null;
   Val$Object.f_class = function () { return this.v_class }
@@ -175,6 +183,7 @@ if (typeof Lit$Seq != 'object') {
   Lit$Seq.f_perl = function () { return '::Lit::Seq(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lit$Seq;
   // accessor seq
   Lit$Seq.v_seq = null;
   Lit$Seq.f_seq = function () { return this.v_seq }
@@ -194,6 +203,7 @@ if (typeof Lit$Array != 'object') {
   Lit$Array.f_perl = function () { return '::Lit::Array(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lit$Array;
   // accessor array1
   Lit$Array.v_array1 = null;
   Lit$Array.f_array1 = function () { return this.v_array1 }
@@ -213,6 +223,7 @@ if (typeof Lit$Hash != 'object') {
   Lit$Hash.f_perl = function () { return '::Lit::Hash(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lit$Hash;
   // accessor hash1
   Lit$Hash.v_hash1 = null;
   Lit$Hash.f_hash1 = function () { return this.v_hash1 }
@@ -232,6 +243,7 @@ if (typeof Lit$Code != 'object') {
   Lit$Code.f_perl = function () { return '::Lit::Code(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lit$Code;
 })();
 
 // class Lit::Object
@@ -242,6 +254,7 @@ if (typeof Lit$Object != 'object') {
   Lit$Object.f_perl = function () { return '::Lit::Object(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lit$Object;
   // accessor class
   Lit$Object.v_class = null;
   Lit$Object.f_class = function () { return this.v_class }
@@ -264,6 +277,7 @@ if (typeof Index != 'object') {
   Index.f_perl = function () { return '::Index(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Index;
   // accessor obj
   Index.v_obj = null;
   Index.f_obj = function () { return this.v_obj }
@@ -286,6 +300,7 @@ if (typeof Lookup != 'object') {
   Lookup.f_perl = function () { return '::Lookup(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lookup;
   // accessor obj
   Lookup.v_obj = null;
   Lookup.f_obj = function () { return this.v_obj }
@@ -308,6 +323,7 @@ if (typeof Var != 'object') {
   Var.f_perl = function () { return '::Var(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Var;
   // accessor sigil
   Var.v_sigil = null;
   Var.f_sigil = function () { return this.v_sigil }
@@ -342,6 +358,7 @@ if (typeof Bind != 'object') {
   Bind.f_perl = function () { return '::Bind(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Bind;
   // accessor parameters
   Bind.v_parameters = null;
   Bind.f_parameters = function () { return this.v_parameters }
@@ -364,6 +381,7 @@ if (typeof Proto != 'object') {
   Proto.f_perl = function () { return '::Proto(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Proto;
   // accessor name
   Proto.v_name = null;
   Proto.f_name = function () { return this.v_name }
@@ -383,6 +401,7 @@ if (typeof Call != 'object') {
   Call.f_perl = function () { return '::Call(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Call;
   // accessor invocant
   Call.v_invocant = null;
   Call.f_invocant = function () { return this.v_invocant }
@@ -398,7 +417,7 @@ if (typeof Call != 'object') {
   // method emit_javascript
   Call.f_emit_javascript = function () {
     var v_self = this;
-    try { var v_invocant;var v_meth;(v_invocant = this.v_invocant.f_emit_javascript());if ( f_bool((v_invocant == "self")) ) { (v_invocant = "this") } else {  };if ( f_bool((this.v_method == "values")) ) { if ( f_bool(this.v_hyper) ) { f_die("not implemented") } else { throw(( f_string("f_values(") + f_string(( f_string(v_invocant) + f_string(")") )) )) } } else {  };if ( f_bool(( f_bool((this.v_method == "perl")) || f_bool(( f_bool((this.v_method == "isa")) || f_bool((this.v_method == "scalar")) )) )) ) { if ( f_bool(this.v_hyper) ) { throw(( f_string("(function (a_) { ") + f_string(( f_string("var out = []; ") + f_string(( f_string("if ( typeof a_ == 'undefined' ) { return out }; ") + f_string(( f_string("for(var i = 0; i < a_.length; i++) { ") + f_string(( f_string("out.push( f_") + f_string(( f_string(this.v_method) + f_string(( f_string("(a_[i]) ) } return out;") + f_string(( f_string(" })(") + f_string(( f_string(v_invocant) + f_string(")") )) )) )) )) )) )) )) )) )) } else {  };throw(( f_string("f_") + f_string(( f_string(this.v_method) + f_string(( f_string("(") + f_string(( f_string(v_invocant) + f_string(( f_string(( f_bool(this.v_arguments) ? ( f_string(", ") + f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) ) : "")) + f_string(")") )) )) )) )) )) } else {  };if ( f_bool(( f_bool((this.v_method == "join")) || f_bool((this.v_method == "shift")) )) ) { throw(( f_string(v_invocant) + f_string(( f_string(".") + f_string(( f_string(this.v_method) + f_string(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) )) )) )) } else {  };if ( f_bool(( f_bool((this.v_method == "yaml")) || f_bool(( f_bool((this.v_method == "say")) || f_bool((this.v_method == "chars")) )) )) ) { if ( f_bool(this.v_hyper) ) { throw(( f_string("(function (a_) { ") + f_string(( f_string("var out = []; ") + f_string(( f_string("if ( typeof a_ == 'undefined' ) { return out }; ") + f_string(( f_string("for(var i = 0; i < a_.length; i++) { ") + f_string(( f_string("out.push( Main.") + f_string(( f_string(this.v_method) + f_string(( f_string("(a_[i]) ) } return out;") + f_string(( f_string(" })(") + f_string(( f_string(v_invocant) + f_string(")") )) )) )) )) )) )) )) )) )) } else { if ( f_bool((this.v_arguments != null)) ) { throw(( f_string("Main.") + f_string(( f_string(this.v_method) + f_string(( f_string("(") + f_string(( f_string(v_invocant) + f_string(( f_string(", ") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) )) )) )) )) } else { throw(( f_string("Main.") + f_string(( f_string(this.v_method) + f_string(( f_string("(") + f_string(( f_string(v_invocant) + f_string(")") )) )) )) )) } } } else {  };(v_meth = this.v_method);if ( f_bool((v_meth == "postcircumfix:<( )>")) ) { (v_meth = "") } else {  };if ( f_bool(this.v_hyper) ) { return(( f_string("(function (a_) { ") + f_string(( f_string("var out = []; ") + f_string(( f_string("if ( typeof a_ == 'undefined' ) { return out }; ") + f_string(( f_string("for(var i = 0; i < a_.length; i++) { ") + f_string(( f_string("out.push( a_[i].f_") + f_string(( f_string(v_meth) + f_string(( f_string("() ) } return out;") + f_string(( f_string(" })(") + f_string(( f_string(v_invocant) + f_string(")") )) )) )) )) )) )) )) )) )) } else { return(( f_string(v_invocant) + f_string(( f_string(".f_") + f_string(( f_string(v_meth) + f_string(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) )) )) )) } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_invocant;var v_meth;(v_invocant = this.v_invocant.f_emit_javascript());if ( f_bool((v_invocant == "self")) ) { (v_invocant = "this") } else {  };if ( f_bool((this.v_method == "values")) ) { if ( f_bool(this.v_hyper) ) { f_die("not implemented") } else { throw(( f_string("f_values(") + f_string(( f_string(v_invocant) + f_string(")") )) )) } } else {  };if ( f_bool(( f_bool((this.v_method == "perl")) || f_bool(( f_bool((this.v_method == "isa")) || f_bool((this.v_method == "scalar")) )) )) ) { if ( f_bool(this.v_hyper) ) { throw(( f_string("(function (a_) { ") + f_string(( f_string("var out = []; ") + f_string(( f_string("if ( typeof a_ == 'undefined' ) { return out }; ") + f_string(( f_string("for(var i = 0; i < a_.length; i++) { ") + f_string(( f_string("out.push( f_") + f_string(( f_string(this.v_method) + f_string(( f_string("(a_[i]) ) } return out;") + f_string(( f_string(" })(") + f_string(( f_string(v_invocant) + f_string(")") )) )) )) )) )) )) )) )) )) } else {  };throw(( f_string("f_") + f_string(( f_string(this.v_method) + f_string(( f_string("(") + f_string(( f_string(v_invocant) + f_string(( f_string(( f_bool(this.v_arguments) ? ( f_string(", ") + f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) ) : "")) + f_string(")") )) )) )) )) )) } else {  };if ( f_bool(( f_bool((this.v_method == "join")) || f_bool(( f_bool((this.v_method == "shift")) || f_bool(( f_bool((this.v_method == "push")) || f_bool((this.v_method == "pop")) )) )) )) ) { throw(( f_string(v_invocant) + f_string(( f_string(".") + f_string(( f_string(this.v_method) + f_string(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) )) )) )) } else {  };if ( f_bool(( f_bool((this.v_method == "yaml")) || f_bool(( f_bool((this.v_method == "say")) || f_bool((this.v_method == "chars")) )) )) ) { if ( f_bool(this.v_hyper) ) { throw(( f_string("(function (a_) { ") + f_string(( f_string("var out = []; ") + f_string(( f_string("if ( typeof a_ == 'undefined' ) { return out }; ") + f_string(( f_string("for(var i = 0; i < a_.length; i++) { ") + f_string(( f_string("out.push( Main.") + f_string(( f_string(this.v_method) + f_string(( f_string("(a_[i]) ) } return out;") + f_string(( f_string(" })(") + f_string(( f_string(v_invocant) + f_string(")") )) )) )) )) )) )) )) )) )) } else { if ( f_bool((this.v_arguments != null)) ) { throw(( f_string("Main.") + f_string(( f_string(this.v_method) + f_string(( f_string("(") + f_string(( f_string(v_invocant) + f_string(( f_string(", ") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) )) )) )) )) } else { throw(( f_string("Main.") + f_string(( f_string(this.v_method) + f_string(( f_string("(") + f_string(( f_string(v_invocant) + f_string(")") )) )) )) )) } } } else {  };(v_meth = this.v_method);if ( f_bool((v_meth == "postcircumfix:<( )>")) ) { (v_meth = "") } else {  };if ( f_bool(this.v_hyper) ) { return(( f_string("(function (a_) { ") + f_string(( f_string("var out = []; ") + f_string(( f_string("if ( typeof a_ == 'undefined' ) { return out }; ") + f_string(( f_string("for(var i = 0; i < a_.length; i++) { ") + f_string(( f_string("out.push( a_[i].f_") + f_string(( f_string(v_meth) + f_string(( f_string("() ) } return out;") + f_string(( f_string(" })(") + f_string(( f_string(v_invocant) + f_string(")") )) )) )) )) )) )) )) )) )) } else { return(( f_string(v_invocant) + f_string(( f_string(".f_") + f_string(( f_string(v_meth) + f_string(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) )) )) )) } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Call.f_emit_javascript;  // v8 bug workaround
 })();
@@ -411,6 +430,7 @@ if (typeof Apply != 'object') {
   Apply.f_perl = function () { return '::Apply(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Apply;
   // accessor code
   Apply.v_code = null;
   Apply.f_code = function () { return this.v_code }
@@ -423,7 +443,7 @@ if (typeof Apply != 'object') {
   // method emit_javascript
   Apply.f_emit_javascript = function () {
     var v_self = this;
-    try { var v_code;(v_code = this.v_code);if ( f_bool(f_isa(v_code, "Str")) ) {  } else { throw(( f_string("(") + f_string(( f_string(this.v_code.f_emit_javascript()) + f_string(( f_string(")->(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) )) )) };if ( f_bool((v_code == "self")) ) { throw("this") } else {  };if ( f_bool((v_code == "false")) ) { throw("0") } else {  };if ( f_bool((v_code == "make")) ) { throw(( f_string("(v_MATCH.v_capture = ") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "say")) ) { throw(( f_string("say(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" + ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "print")) ) { throw(( f_string("f_print(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" + ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "warn")) ) { throw(( f_string("f_warn(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" + ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "defined")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(" != null)") )) )) } else {  };if ( f_bool((v_code == "substr")) ) { throw(( f_string("(") + f_string(( f_string(this.v_arguments[0].f_emit_javascript()) + f_string(( f_string(" || \"\").substr(") + f_string(( f_string(this.v_arguments[1].f_emit_javascript()) + f_string(( f_string(", ") + f_string(( f_string(this.v_arguments[2].f_emit_javascript()) + f_string(")") )) )) )) )) )) )) } else {  };if ( f_bool((v_code == "prefix:<~>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(").f_string()") )) )) } else {  };if ( f_bool((v_code == "prefix:<!>")) ) { throw(( f_string("( f_bool(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(") ? false : true)") )) )) } else {  };if ( f_bool((v_code == "prefix:<?>")) ) { throw(( f_string("( f_bool(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(") ? true : false)") )) )) } else {  };if ( f_bool((v_code == "prefix:<$>")) ) { throw(( f_string("f_scalar(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "prefix:<@>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "prefix:<%>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(").f_hash()") )) )) } else {  };if ( f_bool((v_code == "infix:<~>")) ) { throw(( f_string("( f_string(") + f_string(( f_string(this.v_arguments[0].f_emit_javascript()) + f_string(( f_string(")") + f_string(( f_string(" + f_string(") + f_string(( f_string(this.v_arguments[1].f_emit_javascript()) + f_string(") )") )) )) )) )) )) } else {  };if ( f_bool((v_code == "infix:<+>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" + ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<->")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" - ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<>>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" > ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<&&>")) ) { throw(( f_string("( f_bool(") + f_string(( f_string(this.v_arguments[0].f_emit_javascript()) + f_string(( f_string(")") + f_string(( f_string(" && f_bool(") + f_string(( f_string(this.v_arguments[1].f_emit_javascript()) + f_string(") )") )) )) )) )) )) } else {  };if ( f_bool((v_code == "infix:<||>")) ) { throw(( f_string("( f_bool(") + f_string(( f_string(this.v_arguments[0].f_emit_javascript()) + f_string(( f_string(")") + f_string(( f_string(" || f_bool(") + f_string(( f_string(this.v_arguments[1].f_emit_javascript()) + f_string(") )") )) )) )) )) )) } else {  };if ( f_bool((v_code == "infix:<eq>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" == ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<ne>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" != ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<==>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" == ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<!=>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" != ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "ternary:<?? !!>")) ) { throw(( f_string("( f_bool(") + f_string(( f_string(this.v_arguments[0].f_emit_javascript()) + f_string(( f_string(")") + f_string(( f_string(" ? ") + f_string(( f_string(this.v_arguments[1].f_emit_javascript()) + f_string(( f_string(" : ") + f_string(( f_string(this.v_arguments[2].f_emit_javascript()) + f_string(")") )) )) )) )) )) )) )) } else {  };(v_code = ( f_string("f_") + f_string(this.v_code) ));if ( f_bool(this.v_namespace) ) { (v_code = ( f_string(Main.f_to_javascript_namespace(this.v_namespace)) + f_string(( f_string(".") + f_string(v_code) )) )) } else {  };return(( f_string(v_code) + f_string(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_code;(v_code = this.v_code);if ( f_bool(f_isa(v_code, "Str")) ) {  } else { throw(( f_string("(") + f_string(( f_string(this.v_code.f_emit_javascript()) + f_string(( f_string(")->(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) )) )) };if ( f_bool((v_code == "self")) ) { throw("this") } else {  };if ( f_bool((v_code == "false")) ) { throw("0") } else {  };if ( f_bool((v_code == "make")) ) { throw(( f_string("(v_MATCH.v_capture = ") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "say")) ) { throw(( f_string("say(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" + ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "print")) ) { throw(( f_string("f_print(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" + ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "warn")) ) { throw(( f_string("f_warn(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" + ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "defined")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(" != null)") )) )) } else {  };if ( f_bool((v_code == "substr")) ) { throw(( f_string("(") + f_string(( f_string(this.v_arguments[0].f_emit_javascript()) + f_string(( f_string(" || \"\").substr(") + f_string(( f_string(this.v_arguments[1].f_emit_javascript()) + f_string(( f_string(", ") + f_string(( f_string(this.v_arguments[2].f_emit_javascript()) + f_string(")") )) )) )) )) )) )) } else {  };if ( f_bool((v_code == "prefix:<~>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(").f_string()") )) )) } else {  };if ( f_bool((v_code == "prefix:<!>")) ) { throw(( f_string("( f_bool(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(") ? false : true)") )) )) } else {  };if ( f_bool((v_code == "prefix:<?>")) ) { throw(( f_string("( f_bool(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(") ? true : false)") )) )) } else {  };if ( f_bool((v_code == "prefix:<$>")) ) { throw(( f_string("f_scalar(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "prefix:<@>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "prefix:<%>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" ")) + f_string(").f_hash()") )) )) } else {  };if ( f_bool((v_code == "infix:<~>")) ) { throw(( f_string("( f_string(") + f_string(( f_string(this.v_arguments[0].f_emit_javascript()) + f_string(( f_string(")") + f_string(( f_string(" + f_string(") + f_string(( f_string(this.v_arguments[1].f_emit_javascript()) + f_string(") )") )) )) )) )) )) } else {  };if ( f_bool((v_code == "infix:<+>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" + ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<->")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" - ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<>>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" > ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<&&>")) ) { throw(( f_string("( f_bool(") + f_string(( f_string(this.v_arguments[0].f_emit_javascript()) + f_string(( f_string(")") + f_string(( f_string(" && f_bool(") + f_string(( f_string(this.v_arguments[1].f_emit_javascript()) + f_string(") )") )) )) )) )) )) } else {  };if ( f_bool((v_code == "infix:<||>")) ) { throw(( f_string("( f_bool(") + f_string(( f_string(this.v_arguments[0].f_emit_javascript()) + f_string(( f_string(")") + f_string(( f_string(" || f_bool(") + f_string(( f_string(this.v_arguments[1].f_emit_javascript()) + f_string(") )") )) )) )) )) )) } else {  };if ( f_bool((v_code == "infix:<eq>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" == ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<ne>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" != ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<==>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" == ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "infix:<!=>")) ) { throw(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(" != ")) + f_string(")") )) )) } else {  };if ( f_bool((v_code == "ternary:<?? !!>")) ) { throw(( f_string("( f_bool(") + f_string(( f_string(this.v_arguments[0].f_emit_javascript()) + f_string(( f_string(")") + f_string(( f_string(" ? ") + f_string(( f_string(this.v_arguments[1].f_emit_javascript()) + f_string(( f_string(" : ") + f_string(( f_string(this.v_arguments[2].f_emit_javascript()) + f_string(")") )) )) )) )) )) )) )) } else {  };(v_code = ( f_string("f_") + f_string(this.v_code) ));if ( f_bool(this.v_namespace) ) { (v_code = ( f_string(Main.f_to_javascript_namespace(this.v_namespace)) + f_string(( f_string(".") + f_string(v_code) )) )) } else { if ( f_bool(( f_bool((v_code != "f_index")) && f_bool(( f_bool((v_code != "f_die")) && f_bool(( f_bool((v_code != "f_pop")) && f_bool(( f_bool((v_code != "f_shift")) && f_bool((v_code != "f_push")) )) )) )) )) ) { (v_code = ( f_string("v__NAMESPACE.") + f_string(v_code) )) } else {  } };return(( f_string(v_code) + f_string(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(this.v_arguments).join(", ")) + f_string(")") )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Apply.f_emit_javascript;  // v8 bug workaround
 })();
@@ -436,6 +456,7 @@ if (typeof Return != 'object') {
   Return.f_perl = function () { return '::Return(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Return;
   // accessor result
   Return.v_result = null;
   Return.f_result = function () { return this.v_result }
@@ -455,6 +476,7 @@ if (typeof If != 'object') {
   If.f_perl = function () { return '::If(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = If;
   // accessor cond
   If.v_cond = null;
   If.f_cond = function () { return this.v_cond }
@@ -480,6 +502,7 @@ if (typeof For != 'object') {
   For.f_perl = function () { return '::For(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = For;
   // accessor cond
   For.v_cond = null;
   For.f_cond = function () { return this.v_cond }
@@ -505,6 +528,7 @@ if (typeof Decl != 'object') {
   Decl.f_perl = function () { return '::Decl(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Decl;
   // accessor decl
   Decl.v_decl = null;
   Decl.f_decl = function () { return this.v_decl }
@@ -536,6 +560,7 @@ if (typeof Sig != 'object') {
   Sig.f_perl = function () { return '::Sig(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Sig;
   // accessor invocant
   Sig.v_invocant = null;
   Sig.f_invocant = function () { return this.v_invocant }
@@ -561,6 +586,7 @@ if (typeof Method != 'object') {
   Method.f_perl = function () { return '::Method(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Method;
   // accessor name
   Method.v_name = null;
   Method.f_name = function () { return this.v_name }
@@ -586,6 +612,7 @@ if (typeof Sub != 'object') {
   Sub.f_perl = function () { return '::Sub(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Sub;
   // accessor name
   Sub.v_name = null;
   Sub.f_name = function () { return this.v_name }
@@ -611,6 +638,7 @@ if (typeof Do != 'object') {
   Do.f_perl = function () { return '::Do(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Do;
   // accessor block
   Do.v_block = null;
   Do.f_block = function () { return this.v_block }
@@ -630,6 +658,7 @@ if (typeof Use != 'object') {
   Use.f_perl = function () { return '::Use(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Use;
   // accessor mod
   Use.v_mod = null;
   Use.f_mod = function () { return this.v_mod }

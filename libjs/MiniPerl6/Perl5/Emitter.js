@@ -7,6 +7,7 @@ if (typeof CompUnit != 'object') {
   CompUnit.f_perl = function () { return '::CompUnit(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = CompUnit;
   // accessor name
   CompUnit.v_name = null;
   CompUnit.f_name = function () { return this.v_name }
@@ -35,6 +36,7 @@ if (typeof Val$Int != 'object') {
   Val$Int.f_perl = function () { return '::Val::Int(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Int;
   // accessor int
   Val$Int.v_int = null;
   Val$Int.f_int = function () { return this.v_int }
@@ -54,6 +56,7 @@ if (typeof Val$Bit != 'object') {
   Val$Bit.f_perl = function () { return '::Val::Bit(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Bit;
   // accessor bit
   Val$Bit.v_bit = null;
   Val$Bit.f_bit = function () { return this.v_bit }
@@ -73,6 +76,7 @@ if (typeof Val$Num != 'object') {
   Val$Num.f_perl = function () { return '::Val::Num(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Num;
   // accessor num
   Val$Num.v_num = null;
   Val$Num.f_num = function () { return this.v_num }
@@ -92,6 +96,7 @@ if (typeof Val$Buf != 'object') {
   Val$Buf.f_perl = function () { return '::Val::Buf(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Buf;
   // accessor buf
   Val$Buf.v_buf = null;
   Val$Buf.f_buf = function () { return this.v_buf }
@@ -111,6 +116,7 @@ if (typeof Val$Undef != 'object') {
   Val$Undef.f_perl = function () { return '::Val::Undef(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Undef;
   // method emit
   Val$Undef.f_emit = function () {
     var v_self = this;
@@ -127,6 +133,7 @@ if (typeof Val$Object != 'object') {
   Val$Object.f_perl = function () { return '::Val::Object(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Val$Object;
   // accessor class
   Val$Object.v_class = null;
   Val$Object.f_class = function () { return this.v_class }
@@ -149,6 +156,7 @@ if (typeof Lit$Seq != 'object') {
   Lit$Seq.f_perl = function () { return '::Lit::Seq(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lit$Seq;
   // accessor seq
   Lit$Seq.v_seq = null;
   Lit$Seq.f_seq = function () { return this.v_seq }
@@ -168,6 +176,7 @@ if (typeof Lit$Array != 'object') {
   Lit$Array.f_perl = function () { return '::Lit::Array(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lit$Array;
   // accessor array1
   Lit$Array.v_array1 = null;
   Lit$Array.f_array1 = function () { return this.v_array1 }
@@ -187,6 +196,7 @@ if (typeof Lit$Hash != 'object') {
   Lit$Hash.f_perl = function () { return '::Lit::Hash(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lit$Hash;
   // accessor hash1
   Lit$Hash.v_hash1 = null;
   Lit$Hash.f_hash1 = function () { return this.v_hash1 }
@@ -206,6 +216,7 @@ if (typeof Lit$Code != 'object') {
   Lit$Code.f_perl = function () { return '::Lit::Code(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lit$Code;
 })();
 
 // class Lit::Object
@@ -216,6 +227,7 @@ if (typeof Lit$Object != 'object') {
   Lit$Object.f_perl = function () { return '::Lit::Object(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lit$Object;
   // accessor class
   Lit$Object.v_class = null;
   Lit$Object.f_class = function () { return this.v_class }
@@ -238,6 +250,7 @@ if (typeof Index != 'object') {
   Index.f_perl = function () { return '::Index(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Index;
   // accessor obj
   Index.v_obj = null;
   Index.f_obj = function () { return this.v_obj }
@@ -260,6 +273,7 @@ if (typeof Lookup != 'object') {
   Lookup.f_perl = function () { return '::Lookup(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Lookup;
   // accessor obj
   Lookup.v_obj = null;
   Lookup.f_obj = function () { return this.v_obj }
@@ -282,6 +296,7 @@ if (typeof Var != 'object') {
   Var.f_perl = function () { return '::Var(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Var;
   // accessor sigil
   Var.v_sigil = null;
   Var.f_sigil = function () { return this.v_sigil }
@@ -316,6 +331,7 @@ if (typeof Bind != 'object') {
   Bind.f_perl = function () { return '::Bind(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Bind;
   // accessor parameters
   Bind.v_parameters = null;
   Bind.f_parameters = function () { return this.v_parameters }
@@ -338,6 +354,7 @@ if (typeof Proto != 'object') {
   Proto.f_perl = function () { return '::Proto(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Proto;
   // accessor name
   Proto.v_name = null;
   Proto.f_name = function () { return this.v_name }
@@ -357,6 +374,7 @@ if (typeof Call != 'object') {
   Call.f_perl = function () { return '::Call(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Call;
   // accessor invocant
   Call.v_invocant = null;
   Call.f_invocant = function () { return this.v_invocant }
@@ -385,6 +403,7 @@ if (typeof Apply != 'object') {
   Apply.f_perl = function () { return '::Apply(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Apply;
   // accessor code
   Apply.v_code = null;
   Apply.f_code = function () { return this.v_code }
@@ -410,6 +429,7 @@ if (typeof Return != 'object') {
   Return.f_perl = function () { return '::Return(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Return;
   // accessor result
   Return.v_result = null;
   Return.f_result = function () { return this.v_result }
@@ -429,6 +449,7 @@ if (typeof If != 'object') {
   If.f_perl = function () { return '::If(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = If;
   // accessor cond
   If.v_cond = null;
   If.f_cond = function () { return this.v_cond }
@@ -454,6 +475,7 @@ if (typeof For != 'object') {
   For.f_perl = function () { return '::For(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = For;
   // accessor cond
   For.v_cond = null;
   For.f_cond = function () { return this.v_cond }
@@ -479,6 +501,7 @@ if (typeof Decl != 'object') {
   Decl.f_perl = function () { return '::Decl(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Decl;
   // accessor decl
   Decl.v_decl = null;
   Decl.f_decl = function () { return this.v_decl }
@@ -504,6 +527,7 @@ if (typeof Sig != 'object') {
   Sig.f_perl = function () { return '::Sig(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Sig;
   // accessor invocant
   Sig.v_invocant = null;
   Sig.f_invocant = function () { return this.v_invocant }
@@ -529,6 +553,7 @@ if (typeof Method != 'object') {
   Method.f_perl = function () { return '::Method(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Method;
   // accessor name
   Method.v_name = null;
   Method.f_name = function () { return this.v_name }
@@ -554,6 +579,7 @@ if (typeof Sub != 'object') {
   Sub.f_perl = function () { return '::Sub(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Sub;
   // accessor name
   Sub.v_name = null;
   Sub.f_name = function () { return this.v_name }
@@ -579,6 +605,7 @@ if (typeof Do != 'object') {
   Do.f_perl = function () { return '::Do(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Do;
   // accessor block
   Do.v_block = null;
   Do.f_block = function () { return this.v_block }
@@ -598,6 +625,7 @@ if (typeof Use != 'object') {
   Use.f_perl = function () { return '::Use(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Use;
   // accessor mod
   Use.v_mod = null;
   Use.f_mod = function () { return this.v_mod }

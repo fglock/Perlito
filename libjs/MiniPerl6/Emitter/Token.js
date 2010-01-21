@@ -7,6 +7,7 @@ if (typeof Rul != 'object') {
   Rul.f_perl = function () { return '::Rul(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul;
   // sub constant
   Rul.f_constant = function (v_str) {
     try { var v_len;(v_len = Main.chars(v_str));if ( f_bool((v_str == "\\")) ) { (v_str = "\\\\") } else {  };if ( f_bool((v_str == "'")) ) { (v_str = "\\'") } else {  };if ( f_bool(v_len) ) { return(( f_string("( ( '") + f_string(( f_string(v_str) + f_string(( f_string("' eq substr( $str, $MATCH.to, ") + f_string(( f_string(v_len) + f_string(( f_string(")) ") + f_string(( f_string("  ?? (1 + ( $MATCH.to := ") + f_string(( f_string(v_len) + f_string(( f_string(" + $MATCH.to ))") + f_string(( f_string("  !! false ") + f_string(")") )) )) )) )) )) )) )) )) )) } else { throw("1") } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
@@ -21,6 +22,7 @@ if (typeof Rul$Quantifier != 'object') {
   Rul$Quantifier.f_perl = function () { return '::Rul::Quantifier(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$Quantifier;
   // accessor term
   Rul$Quantifier.v_term = null;
   Rul$Quantifier.f_term = function () { return this.v_term }
@@ -55,6 +57,7 @@ if (typeof Rul$Or != 'object') {
   Rul$Or.f_perl = function () { return '::Rul::Or(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$Or;
   // accessor or_list
   Rul$Or.v_or_list = null;
   Rul$Or.f_or_list = function () { return this.v_or_list }
@@ -74,6 +77,7 @@ if (typeof Rul$Concat != 'object') {
   Rul$Concat.f_perl = function () { return '::Rul::Concat(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$Concat;
   // accessor concat
   Rul$Concat.v_concat = null;
   Rul$Concat.f_concat = function () { return this.v_concat }
@@ -93,6 +97,7 @@ if (typeof Rul$Subrule != 'object') {
   Rul$Subrule.f_perl = function () { return '::Rul::Subrule(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$Subrule;
   // accessor metasyntax
   Rul$Subrule.v_metasyntax = null;
   Rul$Subrule.f_metasyntax = function () { return this.v_metasyntax }
@@ -112,6 +117,7 @@ if (typeof Rul$SubruleNoCapture != 'object') {
   Rul$SubruleNoCapture.f_perl = function () { return '::Rul::SubruleNoCapture(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$SubruleNoCapture;
   // accessor metasyntax
   Rul$SubruleNoCapture.v_metasyntax = null;
   Rul$SubruleNoCapture.f_metasyntax = function () { return this.v_metasyntax }
@@ -131,6 +137,7 @@ if (typeof Rul$Var != 'object') {
   Rul$Var.f_perl = function () { return '::Rul::Var(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$Var;
   // accessor sigil
   Rul$Var.v_sigil = null;
   Rul$Var.f_sigil = function () { return this.v_sigil }
@@ -156,6 +163,7 @@ if (typeof Rul$Constant != 'object') {
   Rul$Constant.f_perl = function () { return '::Rul::Constant(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$Constant;
   // accessor constant
   Rul$Constant.v_constant = null;
   Rul$Constant.f_constant = function () { return this.v_constant }
@@ -175,6 +183,7 @@ if (typeof Rul$Dot != 'object') {
   Rul$Dot.f_perl = function () { return '::Rul::Dot(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$Dot;
   // method emit
   Rul$Dot.f_emit = function () {
     var v_self = this;
@@ -191,6 +200,7 @@ if (typeof Rul$SpecialChar != 'object') {
   Rul$SpecialChar.f_perl = function () { return '::Rul::SpecialChar(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$SpecialChar;
   // accessor char
   Rul$SpecialChar.v_char = null;
   Rul$SpecialChar.f_char = function () { return this.v_char }
@@ -210,6 +220,7 @@ if (typeof Rul$Block != 'object') {
   Rul$Block.f_perl = function () { return '::Rul::Block(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$Block;
   // accessor closure
   Rul$Block.v_closure = null;
   Rul$Block.f_closure = function () { return this.v_closure }
@@ -229,6 +240,7 @@ if (typeof Rul$InterpolateVar != 'object') {
   Rul$InterpolateVar.f_perl = function () { return '::Rul::InterpolateVar(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$InterpolateVar;
   // accessor var
   Rul$InterpolateVar.v_var = null;
   Rul$InterpolateVar.f_var = function () { return this.v_var }
@@ -248,6 +260,7 @@ if (typeof Rul$NamedCapture != 'object') {
   Rul$NamedCapture.f_perl = function () { return '::Rul::NamedCapture(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$NamedCapture;
   // accessor rule_exp
   Rul$NamedCapture.v_rule_exp = null;
   Rul$NamedCapture.f_rule_exp = function () { return this.v_rule_exp }
@@ -270,6 +283,7 @@ if (typeof Rul$Before != 'object') {
   Rul$Before.f_perl = function () { return '::Rul::Before(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$Before;
   // accessor rule_exp
   Rul$Before.v_rule_exp = null;
   Rul$Before.f_rule_exp = function () { return this.v_rule_exp }
@@ -289,6 +303,7 @@ if (typeof Rul$NotBefore != 'object') {
   Rul$NotBefore.f_perl = function () { return '::Rul::NotBefore(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$NotBefore;
   // accessor rule_exp
   Rul$NotBefore.v_rule_exp = null;
   Rul$NotBefore.f_rule_exp = function () { return this.v_rule_exp }
@@ -308,6 +323,7 @@ if (typeof Rul$NegateCharClass != 'object') {
   Rul$NegateCharClass.f_perl = function () { return '::Rul::NegateCharClass(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$NegateCharClass;
   // accessor chars
   Rul$NegateCharClass.v_chars = null;
   Rul$NegateCharClass.f_chars = function () { return this.v_chars }
@@ -327,6 +343,7 @@ if (typeof Rul$CharClass != 'object') {
   Rul$CharClass.f_perl = function () { return '::Rul::CharClass(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$CharClass;
   // accessor chars
   Rul$CharClass.v_chars = null;
   Rul$CharClass.f_chars = function () { return this.v_chars }
@@ -346,6 +363,7 @@ if (typeof Rul$Capture != 'object') {
   Rul$Capture.f_perl = function () { return '::Rul::Capture(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$Capture;
   // accessor rule_exp
   Rul$Capture.v_rule_exp = null;
   Rul$Capture.f_rule_exp = function () { return this.v_rule_exp }
@@ -365,6 +383,7 @@ if (typeof Rul$CaptureResult != 'object') {
   Rul$CaptureResult.f_perl = function () { return '::Rul::CaptureResult(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$CaptureResult;
   // accessor rule_exp
   Rul$CaptureResult.v_rule_exp = null;
   Rul$CaptureResult.f_rule_exp = function () { return this.v_rule_exp }
@@ -384,6 +403,7 @@ if (typeof Rul$After != 'object') {
   Rul$After.f_perl = function () { return '::Rul::After(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Rul$After;
   // accessor rule_exp
   Rul$After.v_rule_exp = null;
   Rul$After.f_rule_exp = function () { return this.v_rule_exp }

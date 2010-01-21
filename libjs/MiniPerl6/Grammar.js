@@ -7,6 +7,7 @@ if (typeof MiniPerl6$Grammar != 'object') {
   MiniPerl6$Grammar.f_perl = function () { return '::MiniPerl6::Grammar(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = MiniPerl6$Grammar;
 var v_Class_name = null;
   // sub get_class_name
   MiniPerl6$Grammar.f_get_class_name = function () {
@@ -165,6 +166,7 @@ if (typeof MiniPerl6$Grammar != 'object') {
   MiniPerl6$Grammar.f_perl = function () { return '::MiniPerl6::Grammar(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = MiniPerl6$Grammar;
   // method exp
   MiniPerl6$Grammar.f_exp = function (v_str, v_pos) {
     var v_grammar = this;
@@ -217,6 +219,7 @@ if (typeof MiniPerl6$Grammar != 'object') {
   MiniPerl6$Grammar.f_perl = function () { return '::MiniPerl6::Grammar(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = MiniPerl6$Grammar;
   // method var_sigil
   MiniPerl6$Grammar.f_var_sigil = function (v_str, v_pos) {
     var v_grammar = this;
@@ -269,6 +272,7 @@ if (typeof MiniPerl6$Grammar != 'object') {
   MiniPerl6$Grammar.f_perl = function () { return '::MiniPerl6::Grammar(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = MiniPerl6$Grammar;
   // method val_undef
   MiniPerl6$Grammar.f_val_undef = function (v_str, v_pos) {
     var v_grammar = this;
@@ -349,6 +353,7 @@ if (typeof MiniPerl6$Grammar != 'object') {
   MiniPerl6$Grammar.f_perl = function () { return '::MiniPerl6::Grammar(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = MiniPerl6$Grammar;
   // method lit
   MiniPerl6$Grammar.f_lit = function (v_str, v_pos) {
     var v_grammar = this;
@@ -444,7 +449,7 @@ if (typeof MiniPerl6$Grammar != 'object') {
   MiniPerl6$Grammar.f_method_def = function (v_str, v_pos) {
     var v_grammar = this;
     try { var v_MATCH = null;
-(v_MATCH = function () { var tmp = {v_str: v_str,v_from: v_pos,v_to: v_pos,v_bool: 1,}; tmp.__proto__ = MiniPerl6$Match; return tmp }());(v_MATCH.v_bool = (function () { var v_pos1;(v_pos1 = v_MATCH.f_to());return((function () { return(( f_bool(( f_bool(("m" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool(( f_bool(("e" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool(( f_bool(("t" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool(( f_bool(("h" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool(( f_bool(("o" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool(( f_bool(("d" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_opt_name(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());(v_MATCH["opt_name"] = v_m2);return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_opt_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_method_sig(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());(v_MATCH["method_sig"] = v_m2);return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_opt_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());return(1) } else { return(0) } })()) && f_bool(( f_bool(( f_bool(("{" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_opt_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_exp_stmts(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());(v_MATCH["exp_stmts"] = v_m2);return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_opt_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_pos1;(v_pos1 = v_MATCH.f_to());return(( f_bool((function () { return(( f_bool(("}" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) })()) || f_bool((function () { (v_MATCH.v_to = v_pos1);return(( f_bool((function () { say("*** Syntax Error in method '" + f_get_class_name() + "." + f_scalar(v_MATCH["name"]) + "' near pos=" + v_MATCH.f_to());return(f_die("error in Block")) })()) || f_bool(1) )) })()) )) })()) && f_bool(( f_bool((function () { return((v_MATCH.v_capture = function () { var tmp = {v_name: f_scalar(v_MATCH["opt_name"]),v_sig: f_scalar(v_MATCH["method_sig"]),v_block: f_scalar(v_MATCH["exp_stmts"]),}; tmp.__proto__ = Method; return tmp }())) })()) || f_bool(1) )) )) )) )) )) )) )) )) )) )) )) )) )) )) )) )) )) })()) })());return(v_MATCH) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+(v_MATCH = function () { var tmp = {v_str: v_str,v_from: v_pos,v_to: v_pos,v_bool: 1,}; tmp.__proto__ = MiniPerl6$Match; return tmp }());(v_MATCH.v_bool = (function () { var v_pos1;(v_pos1 = v_MATCH.f_to());return((function () { return(( f_bool(( f_bool(("m" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool(( f_bool(("e" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool(( f_bool(("t" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool(( f_bool(("h" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool(( f_bool(("o" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool(( f_bool(("d" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_opt_name(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());(v_MATCH["opt_name"] = v_m2);return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_opt_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_method_sig(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());(v_MATCH["method_sig"] = v_m2);return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_opt_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());return(1) } else { return(0) } })()) && f_bool(( f_bool(( f_bool(("{" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_opt_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_exp_stmts(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());(v_MATCH["exp_stmts"] = v_m2);return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_m2;(v_m2 = v_grammar.f_opt_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { (v_MATCH.v_to = v_m2.f_to());return(1) } else { return(0) } })()) && f_bool(( f_bool((function () { var v_pos1;(v_pos1 = v_MATCH.f_to());return(( f_bool((function () { return(( f_bool(("}" == (v_str || "").substr(v_MATCH.f_to(), 1))) ? (1 + (v_MATCH.v_to = (1 + v_MATCH.f_to()))) : 0)) })()) || f_bool((function () { (v_MATCH.v_to = v_pos1);return(( f_bool((function () { say("*** Syntax Error in method '" + v__NAMESPACE.f_get_class_name() + "." + f_scalar(v_MATCH["name"]) + "' near pos=" + v_MATCH.f_to());return(f_die("error in Block")) })()) || f_bool(1) )) })()) )) })()) && f_bool(( f_bool((function () { return((v_MATCH.v_capture = function () { var tmp = {v_name: f_scalar(v_MATCH["opt_name"]),v_sig: f_scalar(v_MATCH["method_sig"]),v_block: f_scalar(v_MATCH["exp_stmts"]),}; tmp.__proto__ = Method; return tmp }())) })()) || f_bool(1) )) )) )) )) )) )) )) )) )) )) )) )) )) )) )) )) )) })()) })());return(v_MATCH) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   MiniPerl6$Grammar.f_method_def;  // v8 bug workaround
   // method sub_def
@@ -464,6 +469,7 @@ if (typeof MiniPerl6$Grammar != 'object') {
   MiniPerl6$Grammar.f_perl = function () { return '::MiniPerl6::Grammar(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = MiniPerl6$Grammar;
   // method token
   MiniPerl6$Grammar.f_token = function (v_str, v_pos) {
     var v_grammar = this;

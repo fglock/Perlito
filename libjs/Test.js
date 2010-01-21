@@ -7,6 +7,7 @@ if (typeof Test != 'object') {
   Test.f_perl = function () { return '::Test(' + Main._dump(this) + ')' };
 }
 (function () {
+  var v__NAMESPACE = Test;
 var v_num_of_tests_run = null;
 var v_num_of_tests_failed = null;
 var v_num_of_tests_badpass = null;
