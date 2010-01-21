@@ -6,7 +6,7 @@ use strict;
 
 BEGIN {
     $::_V6_COMPILER_NAME    = 'MiniPerl6';
-    $::_V6_COMPILER_VERSION = '2.0';
+    $::_V6_COMPILER_VERSION = '3.0';
 }
 
 use MiniPerl6::Perl5::Runtime;
@@ -334,6 +334,7 @@ elsif ( $backend eq 'perl5' ) {
     $result .=  "1;\n";
 
     if ( $execute ) {
+        local @ARGV = @args;
         eval $result;
         warn $@ if $@;
     }

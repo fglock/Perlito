@@ -130,7 +130,7 @@ class Var {
         }
         else {
             if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
-                return '\\@ARGV'
+                return '(\\@ARGV)'
             }
             if $.twigil eq '.' {
                 return '$self->{' ~ $.name ~ '}' 

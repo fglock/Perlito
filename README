@@ -13,6 +13,11 @@ Java class backend
     perl mp6.pl -Bjava-class -e 'class Main { say "hello, World!" }'
     java tmp
 
+    perl mp6.pl -v -Bjava-class util/mp6.pl
+    java tmp -Cjs t/04-op.t
+
+    Requires Rhino's js.jar in CLASSPATH, see also: http://www.mozilla.org/rhino
+
 Javascript backend - browser
 
     Open the file 'perlito.html' in a browser (Firefox, Chrome, or Safari).
@@ -29,14 +34,25 @@ Javascript backend - command line
 
     perl mp6.pl -Brhino -e 'class Main { say "hello, World!" }'
 
-    See also: V8 homepage at http://code.google.com/apis/v8
+    See also: 
+
+        V8 homepage at http://code.google.com/apis/v8
+
+        Rhino homepage at http://www.mozilla.org/rhino
 
 Lisp backend
 
     perl mp6.pl -Blisp -e 'class Main { say "hello, World!" }'
     # lots of warnings from SBCL!
 
-    (see more in util-lisp directory)
+    Creating an executable image:
+
+    . util-lisp/create-core-image.sh
+    ./mp6-lisp t/04-op.t
+
+    See more utilities in util-lisp directory.
+
+    See also: SBCL homepage at http://www.sbcl.org
 
 Parrot backend
 
