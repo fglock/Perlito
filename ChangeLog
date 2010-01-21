@@ -1,7 +1,7 @@
-
-- Java-class backend
-- the compiler command line script is now written in MiniPerl6
-- Go language backend
+3.0  2010-01-21
+- Go language backend; using Go: http://golang.org
+- Java-class backend; using Rhino: http://www.mozilla.org/rhino
+- util/mp6.pl - compiler command line script written in MiniPerl6
 - new repository at http://github.com/fglock/Perlito
 - new web page at http://www.perlito.org created by nferraz (Nelson Ferraz)
 
