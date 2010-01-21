@@ -187,6 +187,7 @@ f_bool = function (o) {
   return o;
 }
 f_pop = function (o) {
+  if (o.length == null ) { return null }
   return o.pop();
 }
 f_shift = function (o) {
