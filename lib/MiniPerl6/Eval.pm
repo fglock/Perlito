@@ -83,10 +83,8 @@ class Lit::Object {
     has @.fields;
     method eval {
         warn "Interpreter TODO: Lit::Object";
-        # $.class ~ '->new( ' ~ @.fields.>>eval.join(', ') ~ ' )';
         my $fields := @.fields;
         my $str := '';
-        # say @fields.map(sub { $_[0].eval ~ ' => ' ~ $_[1].eval}).join(', ') ~ ')';
         for @$fields -> $field { 
             $str := $str ~ ($field[0]).eval ~ ' => ' ~ ($field[1]).eval ~ ',';
         }; 
@@ -115,119 +113,66 @@ class Var {
     has $.twigil;
     has $.namespace;
     has $.name;
-    method eval {
-        warn "Interpreter TODO: Var";
-        # Normalize the sigil here into $
-        # $x    => $x
-        # @x    => $List_x
-        # %x    => $Hash_x
-        # &x    => $Code_x
-        my $table := {
-            '$' => '$',
-            '@' => '$List_',
-            '%' => '$Hash_',
-            '&' => '$Code_',
-        };
+    method eval ( $env ) {
         my $ns := '';
         if $.namespace {
             $ns := $.namespace ~ '::';
         }
         else {
             if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
-                return '(\\@ARGV)'
+                return @*ARGS
             }
             if $.twigil eq '.' {
+                warn 'Interpreter TODO: $.' ~ $.name;
                 return '$self->{' ~ $.name ~ '}' 
             }
             if $.name eq '/' {
-                return $table{$.sigil} ~ 'MATCH' 
+                warn 'Interpreter TODO: $/';
+                return $.sigil ~ 'MATCH' 
             }
         }
-        return $table{$.sigil} ~ $ns ~ $.name 
+
+        my $name := $.sigil ~ $ns ~ $.name;
+        for @($env) -> $e {
+            if exists( $e{ $name } ) {
+                return $e{ $name };
+            }
+        }
+        warn "Interpreter runtime error: variable '", $name, "' not found";
     };
     method plain_name {
         if $.namespace {
-            return $.namespace ~ '::' ~ $.name
+            return $.sigil ~ $.namespace ~ '::' ~ $.name
         }
-        return $.name
+        return $.sigil ~ $.name
     };
 }
 
 class Bind {
     has $.parameters;
     has $.arguments;
-    method eval {
-        warn "Interpreter TODO: Bind";
+    method eval ( $env ) {
         if $.parameters.isa( 'Lit::Array' ) {
-            
-            #  [$a, [$b, $c]] := [1, [2, 3]]
-            
-            my $a := $.parameters.array1;
-            #my $b := $.arguments.array1;
-            my $str := 'do { ';
-            my $i := 0;
-            for @$a -> $var { 
-                my $bind := Bind.new( 
-                    parameters => $var, 
-                    # arguments => ($b[$i]) );
-                    arguments  => Index.new(
-                        obj    => $.arguments,
-                        index_exp  => Val::Int.new( int => $i )
-                    )
-                );
-                $str := $str ~ ' ' ~ $bind.eval ~ '; ';
-                $i := $i + 1;
-            };
-            return $str ~ $.parameters.eval ~ ' }';
-        };
+            warn "Interpreter TODO: Bind";
+        }
         if $.parameters.isa( 'Lit::Hash' ) {
-
-            #  {:$a, :$b} := { a => 1, b => [2, 3]}
-
-            my $a := $.parameters.hash1;
-            my $b := $.arguments.hash1;
-            my $str := 'do { ';
-            my $i := 0;
-            my $arg;
-            for @$a -> $var {
-
-                $arg := Val::Undef.new();
-                for @$b -> $var2 {
-                    #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
-                    if ($var2[0]).buf eq ($var[0]).buf {
-                        $arg := $var2[1];
-                    }
-                };
-
-                my $bind := Bind.new( parameters => $var[1], arguments => $arg );
-                $str := $str ~ ' ' ~ $bind.eval ~ '; ';
-                $i := $i + 1;
-            };
-            return $str ~ $.parameters.eval ~ ' }';
-        };
-
+            warn "Interpreter TODO: Bind";
+        }
         if $.parameters.isa( 'Lit::Object' ) {
-
-            #  Obj.new(:$a, :$b) := $obj
-
-            my $class := $.parameters.class;
-            my $a     := $.parameters.fields;
-            my $b     := $.arguments;
-            my $str   := 'do { ';
-            my $i     := 0;
-            my $arg;
-            for @$a -> $var {
-                my $bind := Bind.new( 
-                    parameters => $var[1], 
-                    arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
-                );
-                $str := $str ~ ' ' ~ $bind.eval ~ '; ';
-                $i := $i + 1;
-            };
-            return $str ~ $.parameters.eval ~ ' }';
-        };
-    
-        '(' ~ $.parameters.eval ~ ' = ' ~ $.arguments.eval ~ ')';
+            warn "Interpreter TODO: Bind";
+        }
+        if $.parameters.isa( 'Decl' ) {
+            $.parameters.eval( $env );
+        }
+        my $name := $.parameters.plain_name;
+        my $value := $.arguments.eval;
+        for @($env) -> $e {
+            if exists( $e{ $name } ) {
+                $e{ $name } := $value;
+                return $value;
+            }
+        }
+        warn "Interpreter Bind: variable '" ~ $name ~ "' not found";
     }
 }
 
@@ -283,7 +228,6 @@ class Return {
     method eval {
         warn "Interpreter TODO: Return";
         return
-        #'do { print Main::perl(caller(),' ~ $.result.eval ~ '); return(' ~ $.result.eval ~ ') }';
         'return(' ~ $.result.eval ~ ')';
     }
 }
@@ -307,7 +251,7 @@ class If {
         {
             $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        'do { if (' ~ $cond.eval ~ ') { ' ~ (@.body.>>eval).join(';') ~ ' } else { ' ~ (@.otherwise.>>eval).join(';') ~ ' } }';
+        'if (' ~ $cond.eval ~ ') { ' ~ (@.body.>>eval).join(';') ~ ' } else { ' ~ (@.otherwise.>>eval).join(';') ~ ' }';
     }
 }
 
@@ -323,7 +267,7 @@ class For {
         {
             $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        'do { for my ' ~ $.topic.eval ~ ' ( ' ~ $cond.eval ~ ' ) { ' ~ (@.body.>>eval).join(';') ~ ' } }';
+        'for my ' ~ $.topic.eval ~ ' ( ' ~ $cond.eval ~ ' ) { ' ~ (@.body.>>eval).join(';') ~ ' }';
     }
 }
 
@@ -331,17 +275,19 @@ class Decl {
     has $.decl;
     has $.type;
     has $.var;
-    method eval {
-        warn "Interpreter TODO: Decl";
+    method eval ( $env ) {
         my $decl := $.decl;
         my $name := $.var.plain_name;
-           ( $decl eq 'has' )
-        ?? ( 'sub ' ~ $name ~ ' { ' ~
-            '@_ == 1 ' ~
-                '? ( $_[0]->{' ~ $name ~ '} ) ' ~
-                ': ( $_[0]->{' ~ $name ~ '} = $_[1] ) ' ~
-            '}' )
-        !! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.eval;
+        if $decl eq 'has' {
+            warn "Interpreter TODO: has";
+        }
+        if !( exists ($env[0]){ $name } ) {
+            ($env[0]){ $name } := undef;
+        }
+        return undef;
+    }
+    method plain_name {
+        $.var.plain_name;
     }
 }
 
@@ -424,11 +370,10 @@ class Sub {
 
 class Do {
     has @.block;
-    method eval {
-        warn "Interpreter TODO: Do";
-        'do { ' ~ 
-          (@.block.>>eval).join('; ') ~ 
-        ' }'
+    method eval ( $env ) {
+        for @.block -> $stmt {
+            $stmt.eval( $env );
+        }
     }
 }
 

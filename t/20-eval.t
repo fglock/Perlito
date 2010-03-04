@@ -68,4 +68,15 @@ class Main {
     );
     ($$m).eval( $env );
 
+    $m := MiniPerl6::Grammar.comp_unit( 
+        '
+            class Testing { 
+                my $a := 3;
+                say "# ok eval-string ", $a;
+            }
+        ', 
+        0
+    );
+    ($$m).eval( $env );
+
 }
