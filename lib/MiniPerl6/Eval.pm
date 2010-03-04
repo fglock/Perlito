@@ -302,74 +302,18 @@ class Apply {
     has $.code;
     has @.arguments;
     has $.namespace;
-    method eval {
-        
+    method eval ($env) {
         my $ns := '';
         if $.namespace {
             $ns := $.namespace ~ '::';
         }
         my $code := $ns ~ $.code;
-
-        if $code.isa( 'Str' ) { }
-        else {
-            return '(' ~ $.code.eval ~ ')->(' ~ (@.arguments.>>eval).join(', ') ~ ')';
-        };
-
-        if $code eq 'self'       { return '$self' };
-        if $code eq 'false'      { return '0' };
-
-        if $code eq 'make'       { return '($MATCH->capture = ('   ~ (@.arguments.>>eval).join(', ') ~ '))' };
-
-        if $code eq 'say'        {
-                for @.arguments -> $v {
-                    print $v.eval;     
-                }
-                print "\n";
-                return 1;
-            };
-        if $code eq 'print'      { 
-                for @.arguments -> $v {
-                    print $v.eval;     
-                }
-                return 1;
-            };
-        if $code eq 'warn'       { return warn(  @.arguments.>>eval ) };
-
-        if $code eq 'array'      { return '@{' ~ (@.arguments.>>eval).join(' ')    ~ '}' };
-        if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>eval).join(' ')    ~ '} )' };
-        if $code eq 'push'       { return 'push( @{' ~ (@.arguments[0]).eval ~ '}, '~ (@.arguments[1]).eval ~ ' )' };
-        if $code eq 'shift'      { return 'shift( @{' ~ (@.arguments.>>eval).join(' ')    ~ '} )' };
-
-        if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>eval).join(' ') ~ ')' };
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>eval).join(' ')    ~ ' ? 0 : 1)' };
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>eval).join(' ')    ~ ' ? 1 : 0)' };
-
-        if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>eval).join(' ')    ~ '}' };
-        if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>eval).join(' ')    ~ '}' };
-        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>eval).join(' ')    ~ '}' };
-
-        if $code eq 'infix:<~>'  { return ''   ~ (@.arguments.>>eval).join(' . ')  ~ '' };
-        if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>eval).join(' + ')  ~ ')' };
-        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>eval).join(' - ')  ~ ')' };
-        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>eval).join(' > ')  ~ ')' };
-        if $code eq 'infix:<x>'  { return '('  ~ (@.arguments.>>eval).join(' x ')  ~ ')' };
-        
-        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>eval).join(' && ') ~ ')' };
-        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>eval).join(' || ') ~ ')' };
-        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>eval).join(' eq ') ~ ')' };
-        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>eval).join(' ne ') ~ ')' };
- 
-        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>eval).join(' == ') ~ ')' };
-        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>eval).join(' != ') ~ ')' };
-
-        if $code eq 'ternary:<?? !!>' { 
-            return '(' ~ (@.arguments[0]).eval ~
-                 ' ? ' ~ (@.arguments[1]).eval ~
-                 ' : ' ~ (@.arguments[2]).eval ~
-                  ')' };
-        
-        $code ~ '(' ~ (@.arguments.>>eval).join(', ') ~ ')';
-        # '(' ~ $.code.eval ~ ')->(' ~ @.arguments.>>eval.join(', ') ~ ')';
+        for @($env) -> $e {
+            if exists( $e{ $code } ) {
+                return $e{ $code }.eval( $env, @.arguments );
+            }
+        }
+        warn "Interpreter runtime error: '", $code, "()' not found";
     }
 }
 
