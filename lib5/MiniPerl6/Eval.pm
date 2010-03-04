@@ -4,6 +4,13 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 use MiniPerl6::Perl5::Match;
 {
+package EvalFunction;
+sub new { shift; bless { @_ }, "EvalFunction" }
+sub func { @_ == 1 ? ( $_[0]->{func} ) : ( $_[0]->{func} = $_[1] ) };
+sub apply { my $self = shift; my $List__ = \@_; my $env; my $args; do {  ($env = $List__->[0]);  ($args = $List__->[1]); [$env, $args] }; $self->{func}->($env, $args) }
+
+}
+{
 package CompUnit;
 sub new { shift; bless { @_ }, "CompUnit" }
 sub name { @_ == 1 ? ( $_[0]->{name} ) : ( $_[0]->{name} = $_[1] ) };
@@ -148,7 +155,7 @@ sub new { shift; bless { @_ }, "Apply" }
 sub code { @_ == 1 ? ( $_[0]->{code} ) : ( $_[0]->{code} = $_[1] ) };
 sub arguments { @_ == 1 ? ( $_[0]->{arguments} ) : ( $_[0]->{arguments} = $_[1] ) };
 sub namespace { @_ == 1 ? ( $_[0]->{namespace} ) : ( $_[0]->{namespace} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $ns = ''); do { if ($self->{namespace}) { ($ns = $self->{namespace} . '::') } else {  } }; (my  $code = $ns . $self->{code}); do { for my $e ( @{$env} ) { do { if (exists($e->{$code})) { return($e->{$code})->eval($env, $self->{arguments}) } else {  } } } }; warn('Interpreter runtime error: subroutine \'', $code, '()\' not found') }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $ns = ''); do { if ($self->{namespace}) { ($ns = $self->{namespace} . '::') } else {  } }; (my  $code = $ns . $self->{code}); do { for my $e ( @{$env} ) { do { if (exists($e->{$code})) { return($e->{$code})->apply($env, $self->{arguments}) } else {  } } } }; warn('Interpreter runtime error: subroutine \'', $code, '()\' not found') }
 
 }
 {
@@ -210,7 +217,7 @@ sub new { shift; bless { @_ }, "Sub" }
 sub name { @_ == 1 ? ( $_[0]->{name} ) : ( $_[0]->{name} = $_[1] ) };
 sub sig { @_ == 1 ? ( $_[0]->{sig} ) : ( $_[0]->{sig} = $_[1] ) };
 sub block { @_ == 1 ? ( $_[0]->{block} ) : ( $_[0]->{block} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Sub'); (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $str = 'my $List__ = \\@_; '); do { for my $field ( @{$pos} ) { do { if (Main::isa($field, 'Lit::Array')) { ($str = $str . 'my (' . Main::join([ map { $_->eval() } @{ $field->array1() } ], ', ') . '); ') } else { ($str = $str . 'my ' . $field->eval() . '; ') } } } }; (my  $bind = Bind->new( 'parameters' => Lit::Array->new( 'array1' => $sig->positional(), ),'arguments' => Var->new( 'sigil' => '@','twigil' => '','name' => '_', ), )); ($str = $str . $bind->eval() . '; '); 'sub ' . $self->{name} . ' { ' . $str . Main::join([ map { $_->eval() } @{ $self->{block} } ], '; ') . ' }' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; my  $List_param_name; do { for my $field ( @{$self->{sig}->positional()} ) { push( @{$List_param_name}, $field->plain_name() ) } }; (my  $sub = EvalFunction->new( 'func' => sub  { my $List__ = \@_; my $env; my $args; do {  ($env = $List__->[0]);  ($args = $List__->[1]); [$env, $args] }; my  $Hash_context; (my  $n = 0); ($Hash_context->{'@_'} = $args); do { for my $name ( @{$List_param_name} ) { ($Hash_context->{$name} = $args->[$n]->eval($env));($n = ($n + 1)) } }; (my  $env1 = [$Hash_context, @{$env}]); my  $r; do { for my $stmt ( @{$self->{block}} ) { ($r = $stmt->eval($env1)) } }; return($r) }, )); do { if ($self->{name}) { ($env->[0]->{$self->{name}} = $sub) } else {  } }; return($sub) }
 
 }
 {

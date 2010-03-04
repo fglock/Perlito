@@ -1,5 +1,13 @@
 use v6;
 
+class EvalFunction {
+    has $.func;
+
+    method apply ( $env, $args ) {
+        $.func.( $env, $args );
+    }
+}
+
 class CompUnit {
     has $.name;
     has %.attributes;
@@ -221,7 +229,7 @@ class Apply {
         # warn "Apply ", $env.perl, " code: '", $code, "'";
         for @($env) -> $e {
             if exists( $e{ $code } ) {
-                return $e{ $code }.eval( $env, @.arguments );
+                return $e{ $code }.apply( $env, @.arguments );
             }
         }
         warn "Interpreter runtime error: subroutine '", $code, "()' not found";
@@ -363,31 +371,32 @@ class Sub {
     has $.sig;
     has @.block;
     method eval ($env) {
-        warn "Interpreter TODO: Sub";
-        my $sig := $.sig;
-        my $pos := $sig.positional;
-        my $str := 'my $List__ = \\@_; ';  
-
-        # TODO - follow recursively
-        for @$pos -> $field { 
-            if ( $field.isa('Lit::Array') ) {
-                $str := $str ~ 'my (' ~ (($field.array1).>>eval).join(', ') ~ '); ';
-            }
-            else {
-                $str := $str ~ 'my ' ~ $field.eval ~ '; ';
-            }
+        my @param_name;
+        for @( $.sig.positional ) -> $field { 
+            push( @param_name, $field.plain_name );
         }
-
-        my $bind := Bind.new( 
-            parameters => Lit::Array.new( array1 => $sig.positional ), 
-            arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
-        );
-        $str := $str ~ $bind.eval ~ '; ';
-
-        'sub ' ~ $.name ~ ' { ' ~ 
-          $str ~
-          (@.block.>>eval).join('; ') ~ 
-        ' }'
+        my $sub :=  
+            ::EvalFunction(
+                func => sub ( $env, $args ) {
+                    my %context;
+                    my $n := 0;
+                    %context{'@_'} := $args;
+                    for @param_name -> $name {
+                        %context{$name} := ($args[$n]).eval($env);
+                        $n := $n + 1;
+                    }
+                    my $env1 := [ %context, @$env ];
+                    my $r;
+                    for @.block -> $stmt {
+                        $r := $stmt.eval($env1);
+                    }
+                    return $r;
+                },
+            );
+        if $.name {
+            ($env[0]){$.name} := $sub;
+        }
+        return $sub;
     }
 }
 

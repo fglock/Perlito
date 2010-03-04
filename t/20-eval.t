@@ -1,23 +1,15 @@
 use v6;
 
-class BuiltinFunction {
-    has $.func;
-
-    method eval ( $env, $args ) {
-        $.func.( $env, $args );
-    }
-}
-
 class Main {
     use MiniPerl6::Grammar;
     use MiniPerl6::Eval;
 
-    say '1..5';
+    say '1..6';
 
     my $env := 
         [
             {
-                'print' => ::BuiltinFunction(
+                'print' => ::EvalFunction(
                         func => sub ( $env, $args ) { 
                                     for @($args) -> $v {
                                         print $v.eval($env);
@@ -25,7 +17,7 @@ class Main {
                                     return 1;
                                 }, 
                     ),
-                'say' => ::BuiltinFunction(
+                'say' => ::EvalFunction(
                         func => sub ( $env, $args ) { 
                                     for @($args) -> $v {
                                         print $v.eval($env);
@@ -34,12 +26,12 @@ class Main {
                                     return 1;
                                 }, 
                     ),
-                'infix:<+>' => ::BuiltinFunction(
+                'infix:<+>' => ::EvalFunction(
                         func => sub ( $env, $args ) { 
                                     ($args[0]).eval($env) + ($args[1]).eval($env)
                                 },
                     ),
-                'infix:<==>' => ::BuiltinFunction(
+                'infix:<==>' => ::EvalFunction(
                         func => sub ( $env, $args ) {
                                     ($args[0]).eval($env) == ($args[1]).eval($env)
                                 },
@@ -117,4 +109,17 @@ class Main {
     # say ($$m).perl;
     ($$m).eval( $env );
 
+    $m := MiniPerl6::Grammar.comp_unit( 
+        '
+            class Testing { 
+
+                sub add2 ($v) { $v + 2 } 
+
+                say "ok ", add2(4), " # eval-string named sub";
+            }
+        ', 
+        0
+    );
+    # say ($$m).perl;
+    ($$m).eval( $env );
 }
