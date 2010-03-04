@@ -66,7 +66,7 @@ sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { @_ == 1 ? ( $_[0]->{array1} ) : ( $_[0]->{array1} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Lit::Array'); '[' . Main::join([ map { $_->eval() } @{ $self->{array1} } ], ', ') . ']' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; my  $List_a; do { for my $v ( @{$self->{array1}} ) { push( @{$List_a}, $v->eval($env) ) } }; return($List_a) }
 
 }
 {
@@ -164,7 +164,7 @@ sub new { shift; bless { @_ }, "If" }
 sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
 sub otherwise { @_ == 1 ? ( $_[0]->{otherwise} ) : ( $_[0]->{otherwise} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $cond = $self->{cond}); do { if ((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>'))) { (my  $if = If->new( 'cond' => $cond->arguments()->[0],'body' => $self->{otherwise},'otherwise' => $self->{body}, ));return($if->eval($env)) } else {  } }; do { if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  } }; do { if ($cond->eval($env)) { do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env) } } } else { do { for my $stmt ( @{$self->{otherwise}} ) { $stmt->eval($env) } } } }; return((undef)) }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $cond = $self->{cond}); do { if ((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>'))) { (my  $if = If->new( 'cond' => $cond->arguments()->[0],'body' => $self->{otherwise},'otherwise' => $self->{body}, ));return($if->eval($env)) } else {  } }; do { if ($cond->eval($env)) { do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env) } } } else { do { for my $stmt ( @{$self->{otherwise}} ) { $stmt->eval($env) } } } }; return((undef)) }
 
 }
 {
@@ -173,7 +173,7 @@ sub new { shift; bless { @_ }, "For" }
 sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
 sub topic { @_ == 1 ? ( $_[0]->{topic} ) : ( $_[0]->{topic} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: For'); (my  $cond = $self->{cond}); do { if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  } }; 'for my ' . $self->{topic}->eval() . ' ( ' . $cond->eval() . ' ) { ' . Main::join([ map { $_->eval() } @{ $self->{body} } ], ';') . ' }' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $cond = $self->{cond}); (my  $topic_name = $self->{topic}->plain_name()); do { for my $topic ( @{$cond->eval($env)} ) { ($env->[0]->{$topic_name} = $topic);do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env) } } } }; return((undef)) }
 
 }
 {

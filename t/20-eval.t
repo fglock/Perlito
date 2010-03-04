@@ -12,7 +12,7 @@ class Main {
     use MiniPerl6::Grammar;
     use MiniPerl6::Eval;
 
-    say '1..1';
+    say '1..4';
 
     my $env := 
         [
@@ -94,6 +94,20 @@ class Main {
                     print "not ";
                 }
                 say "ok 2 # eval-string ", $a;
+            }
+        ', 
+        0
+    );
+    # say ($$m).perl;
+    ($$m).eval( $env );
+
+    $m := MiniPerl6::Grammar.comp_unit( 
+        '
+            class Testing { 
+                my @a := [ 3, 4 ];
+                for @a -> $x {
+                    say "ok ", $x, " # eval-string ";
+                }
             }
         ', 
         0

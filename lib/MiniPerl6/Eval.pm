@@ -56,8 +56,11 @@ class Lit::Seq {
 class Lit::Array {
     has @.array1;
     method eval ($env) {
-        warn "Interpreter TODO: Lit::Array";
-        '[' ~ (@.array1.>>eval).join(', ') ~ ']';
+        my @a;
+        for @.array1 -> $v {
+            push( @a, $v.eval($env) );
+        }
+        return @a;
     }
 }
 
@@ -246,11 +249,11 @@ class If {
             my $if := If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
             return $if.eval($env);
         }
-        if   $cond.isa( 'Var' ) 
-          && $cond.sigil eq '@' 
-        {
-            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-        };
+        # if   $cond.isa( 'Var' ) 
+        #  && $cond.sigil eq '@' 
+        # {
+        #    $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+        # }
         if $cond.eval($env) { 
             for @.body -> $stmt {
                 $stmt.eval($env);
@@ -270,14 +273,20 @@ class For {
     has @.body;
     has @.topic;
     method eval ($env) {
-        warn "Interpreter TODO: For";
         my $cond := $.cond;
-        if   $cond.isa( 'Var' ) 
-          && $cond.sigil eq '@' 
-        {
-            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+        # if   $cond.isa( 'Var' ) 
+        #  && $cond.sigil eq '@' 
+        # {
+        #    $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+        # }
+        my $topic_name := $.topic.plain_name;
+        for @( $cond.eval($env) ) -> $topic {
+            ($env[0]){$topic_name} := $topic;
+            for @.body -> $stmt {
+                $stmt.eval($env);
+            }
         }
-        'for my ' ~ $.topic.eval ~ ' ( ' ~ $cond.eval ~ ' ) { ' ~ (@.body.>>eval).join(';') ~ ' }';
+        return undef;
     }
 }
 
