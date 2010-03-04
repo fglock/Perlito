@@ -58,7 +58,6 @@ class Lit::Seq {
     has @.seq;
     method eval ($env) {
         warn "Interpreter TODO: Lit::Seq";
-        '(' ~ (@.seq.>>eval).join(', ') ~ ')';
     }
 }
 
@@ -76,18 +75,12 @@ class Lit::Array {
 class Lit::Hash {
     has @.hash1;
     method eval ($env) {
-        warn "Interpreter TODO: Lit::Hash";
-        my $fields := @.hash1;
-        my $str := '';
-        for @$fields -> $field { 
-            $str := $str ~ ($field[0]).eval ~ ' => ' ~ ($field[1]).eval ~ ',';
+        my %h;
+        for @.hash1 -> $field { 
+            %h{ ($field[0]).eval($env) } := ($field[1]).eval($env);
         }; 
-        '{ ' ~ $str ~ ' }';
+        return %h;
     }
-}
-
-class Lit::Code {
-    # XXX
 }
 
 class Lit::Object {
@@ -342,27 +335,7 @@ class Method {
         my $pos := $sig.positional;
         my $str := 'my $List__ = \\@_; ';   
 
-        # TODO - follow recursively
-        for @$pos -> $field { 
-            if ( $field.isa('Lit::Array') ) {
-                $str := $str ~ 'my (' ~ (($field.array1).>>eval).join(', ') ~ '); ';
-            }
-            else {
-                $str := $str ~ 'my ' ~ $field.eval ~ '; ';
-            }
-        }
-
-        my $bind := Bind.new( 
-            parameters => Lit::Array.new( array1 => $sig.positional ), 
-            arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
-        );
-        $str := $str ~ $bind.eval ~ '; ';
-
-        'sub ' ~ $.name ~ ' { ' ~ 
-          'my ' ~ $invocant.eval ~ ' = shift; ' ~
-          $str ~
-          (@.block.>>eval).join('; ') ~ 
-        ' }'
+        # ...
     }
 }
 

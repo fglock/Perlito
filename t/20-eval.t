@@ -4,7 +4,7 @@ class Main {
     use MiniPerl6::Grammar;
     use MiniPerl6::Eval;
 
-    say '1..6';
+    say '1..8';
 
     my $env := 
         [
@@ -122,4 +122,19 @@ class Main {
     );
     # say ($$m).perl;
     ($$m).eval( $env );
+
+    $m := MiniPerl6::Grammar.comp_unit( 
+        '
+            class Testing { 
+                my %v := { a => 5, b => 6, c => 7 }; 
+                my @x := [ 5, 6, 7, 8, 9, 10 ];
+                say "ok ", %v{"c"}, " # eval-string hash literal and lookup";
+                say "ok ", @x[3], " # eval-string array literal and lookup";
+            }
+        ', 
+        0
+    );
+    # say ($$m).perl;
+    ($$m).eval( $env );
+
 }
