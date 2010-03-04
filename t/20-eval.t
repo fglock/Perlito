@@ -9,6 +9,7 @@ class BuiltinFunction {
 }
 
 class Main {
+    use MiniPerl6::Grammar;
     use MiniPerl6::Eval;
 
     say '1..1';
@@ -33,6 +34,11 @@ class Main {
                                     return 1;
                                 }, 
                     ),
+                'infix:<+>' => ::BuiltinFunction(
+                        func => sub ( $env, $args ) { 
+                                    ($args[0]).eval($env) + ($args[1]).eval($env)
+                                },
+                    ),
 
             }
         ];
@@ -48,8 +54,18 @@ class Main {
     $m := ::Apply(
                 code      => 'say',
                 namespace => '',
-                arguments => [ ::Val::Buf( buf => '# ok print()' ) ],
+                arguments => [ ::Val::Buf( buf => '# ok eval-ast' ) ],
             );
     $m.eval( $env );
+
+    $m := MiniPerl6::Grammar.comp_unit( 
+        '
+            class Testing { 
+                say "# ok eval-string ", (3+4), "==7";
+            }
+        ', 
+        0
+    );
+    ($$m).eval( $env );
 
 }

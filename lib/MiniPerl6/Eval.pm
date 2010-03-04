@@ -5,12 +5,10 @@ class CompUnit {
     has %.attributes;
     has %.methods;
     has @.body;
-    method eval {
-          'package ' ~ $.name ~ ";" ~ Main.newline 
-        ~ 'sub new { shift; bless { @_ }, "' ~ $.name ~ '" }'  ~ Main.newline 
-        ~ (@.body.>>eval).join( ";" ~ Main.newline )
-        ~ Main.newline
-        ~ Main.newline
+    method eval ( $env ) {
+        for @.body -> $stmt {
+            $stmt.eval( $env );
+        }
     }
 }
 
@@ -42,6 +40,7 @@ class Val::Object {
     has $.class;
     has %.fields;
     method eval {
+        warn "Interpreter TODO: Val::Object";
         'bless(' ~ %.fields.perl ~ ', ' ~ $.class.perl ~ ')';
     }
 }
@@ -49,6 +48,7 @@ class Val::Object {
 class Lit::Seq {
     has @.seq;
     method eval {
+        warn "Interpreter TODO: Lit::Seq";
         '(' ~ (@.seq.>>eval).join(', ') ~ ')';
     }
 }
@@ -56,6 +56,7 @@ class Lit::Seq {
 class Lit::Array {
     has @.array1;
     method eval {
+        warn "Interpreter TODO: Lit::Array";
         '[' ~ (@.array1.>>eval).join(', ') ~ ']';
     }
 }
@@ -63,6 +64,7 @@ class Lit::Array {
 class Lit::Hash {
     has @.hash1;
     method eval {
+        warn "Interpreter TODO: Lit::Hash";
         my $fields := @.hash1;
         my $str := '';
         for @$fields -> $field { 
@@ -80,6 +82,7 @@ class Lit::Object {
     has $.class;
     has @.fields;
     method eval {
+        warn "Interpreter TODO: Lit::Object";
         # $.class ~ '->new( ' ~ @.fields.>>eval.join(', ') ~ ' )';
         my $fields := @.fields;
         my $str := '';
@@ -113,6 +116,7 @@ class Var {
     has $.namespace;
     has $.name;
     method eval {
+        warn "Interpreter TODO: Var";
         # Normalize the sigil here into $
         # $x    => $x
         # @x    => $List_x
@@ -153,6 +157,7 @@ class Bind {
     has $.parameters;
     has $.arguments;
     method eval {
+        warn "Interpreter TODO: Bind";
         if $.parameters.isa( 'Lit::Array' ) {
             
             #  [$a, [$b, $c]] := [1, [2, 3]]
@@ -238,63 +243,19 @@ class Call {
     has $.hyper;
     has $.method;
     has @.arguments;
-    #has $.hyper;
     method eval {
+        warn "Interpreter TODO: Call";
         my $invocant := $.invocant.eval;
         if $invocant eq 'self' {
             $invocant := '$self';
-        };
-
-        if     ($.method eq 'shift')
-        { 
-            if ($.hyper) {
-                die "not implemented";
-            }
-            else {
-                return 'shift( @{' ~ $invocant ~ '} )';
-            }
-        };
-
-        if     ($.method eq 'values')
-        { 
-            if ($.hyper) {
-                die "not implemented";
-            }
-            else {
-                return 'values( %{' ~ $invocant ~ '} )';
-            }
-        };
-
-        if     ($.method eq 'perl')
-            || ($.method eq 'yaml')
-            || ($.method eq 'say' )
-            || ($.method eq 'join')
-            || ($.method eq 'chars')
-            || ($.method eq 'isa')
-        { 
-            if ($.hyper) {
-                return 
-                    '[ map { Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments.>>eval).join(', ') ~ ')' ~ ' } @{ ' ~ $invocant ~ ' } ]';
-            }
-            else {
-                return
-                    'Main::' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>eval).join(', ') ~ ')';
-            }
-        };
-
-        my $meth := $.method;
-        if  $meth eq 'postcircumfix:<( )>'  {
-             $meth := '';  
-        };
-        
-        my $call := '->' ~ $meth ~ '(' ~ (@.arguments.>>eval).join(', ') ~ ')';
+        }
         if ($.hyper) {
-            '[ map { $_' ~ $call ~ ' } @{ ' ~ $invocant ~ ' } ]';
+            # '[ map { $_' ~ $call ~ ' } @{ ' ~ $invocant ~ ' } ]';
         }
         else {
-            $invocant ~ $call;
-        };
-
+            # $invocant.$meth( @.arguments );
+        }
+        warn "Interpreter runtime error: method '", $.method, "()' not found";
     }
 }
 
@@ -313,13 +274,14 @@ class Apply {
                 return $e{ $code }.eval( $env, @.arguments );
             }
         }
-        warn "Interpreter runtime error: '", $code, "()' not found";
+        warn "Interpreter runtime error: subroutine '", $code, "()' not found";
     }
 }
 
 class Return {
     has $.result;
     method eval {
+        warn "Interpreter TODO: Return";
         return
         #'do { print Main::perl(caller(),' ~ $.result.eval ~ '); return(' ~ $.result.eval ~ ') }';
         'return(' ~ $.result.eval ~ ')';
@@ -331,6 +293,7 @@ class If {
     has @.body;
     has @.otherwise;
     method eval {
+        warn "Interpreter TODO: If";
         my $cond := $.cond;
 
         if   $cond.isa( 'Apply' ) 
@@ -353,6 +316,7 @@ class For {
     has @.body;
     has @.topic;
     method eval {
+        warn "Interpreter TODO: For";
         my $cond := $.cond;
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
@@ -368,6 +332,7 @@ class Decl {
     has $.type;
     has $.var;
     method eval {
+        warn "Interpreter TODO: Decl";
         my $decl := $.decl;
         my $name := $.var.plain_name;
            ( $decl eq 'has' )
@@ -385,7 +350,7 @@ class Sig {
     has $.positional;
     has $.named;
     method eval {
-        ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
+        warn "Interpreter TODO: Sig";
     };
 }
 
@@ -394,6 +359,7 @@ class Method {
     has $.sig;
     has @.block;
     method eval {
+        warn "Interpreter TODO: Method";
         my $sig := $.sig;
         my $invocant := $sig.invocant; 
         my $pos := $sig.positional;
@@ -428,6 +394,7 @@ class Sub {
     has $.sig;
     has @.block;
     method eval {
+        warn "Interpreter TODO: Sub";
         my $sig := $.sig;
         my $pos := $sig.positional;
         my $str := 'my $List__ = \\@_; ';  
@@ -458,6 +425,7 @@ class Sub {
 class Do {
     has @.block;
     method eval {
+        warn "Interpreter TODO: Do";
         'do { ' ~ 
           (@.block.>>eval).join('; ') ~ 
         ' }'
@@ -467,6 +435,7 @@ class Do {
 class Use {
     has $.mod;
     method eval {
+        warn "Interpreter TODO: Use";
         'use ' ~ $.mod
     }
 }
