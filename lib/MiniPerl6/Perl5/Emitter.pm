@@ -329,6 +329,9 @@ class Apply {
         if $code eq 'push'       { return 'push( @{' ~ (@.arguments[0]).emit ~ '}, '~ (@.arguments[1]).emit ~ ' )' };
         if $code eq 'shift'      { return 'shift( @{' ~ (@.arguments.>>emit).join(' ')    ~ '} )' };
 
+        if $code eq 'Int'        { return '(0+' ~ (@.arguments[0]).emit ~ ')' };
+        if $code eq 'Num'        { return '(0+' ~ (@.arguments[0]).emit ~ ')' };
+
         if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit).join(' ') ~ ')' };
         if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ' ? 0 : 1)' };
         if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ' ? 1 : 0)' };

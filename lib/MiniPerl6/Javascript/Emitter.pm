@@ -533,6 +533,9 @@ class Apply {
                  ' || "").substr(' ~ (@.arguments[1]).emit_javascript ~
                  ', ' ~ (@.arguments[2]).emit_javascript ~ ')' 
         };
+        if $code eq 'Int'        { return 'parseInt(' ~ (@.arguments[0]).emit_javascript ~ ')' };
+        if $code eq 'Num'        { return 'parseFloat(' ~ (@.arguments[0]).emit_javascript ~ ')' };
+
         if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').f_string()' };
         if $code eq 'prefix:<!>' { return '( f_bool('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ') ? false : true)' };
         if $code eq 'prefix:<?>' { return '( f_bool('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ') ? true : false)' };

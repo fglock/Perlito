@@ -24,7 +24,7 @@ sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[
 package Val::Int;
 sub new { shift; bless { @_ }, "Val::Int" }
 sub int { @_ == 1 ? ( $_[0]->{int} ) : ( $_[0]->{int} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; $self->{int} }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (0+$self->{int}) }
 
 }
 {
@@ -38,7 +38,7 @@ sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[
 package Val::Num;
 sub new { shift; bless { @_ }, "Val::Num" }
 sub num { @_ == 1 ? ( $_[0]->{num} ) : ( $_[0]->{num} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; $self->{num} }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (0+$self->{num}) }
 
 }
 {
@@ -175,6 +175,28 @@ sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
 sub topic { @_ == 1 ? ( $_[0]->{topic} ) : ( $_[0]->{topic} = $_[1] ) };
 sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $cond = $self->{cond}); (my  $topic_name = $self->{topic}->plain_name()); (my  $env1 = [{  }, @{$env}]); do { for my $topic ( @{$cond->eval($env)} ) { ($env1->[0] = { $topic_name => $topic, });do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env1) } } } }; return((undef)) }
+
+}
+{
+package When;
+sub new { shift; bless { @_ }, "When" }
+sub parameters { @_ == 1 ? ( $_[0]->{parameters} ) : ( $_[0]->{parameters} = $_[1] ) };
+sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
+sub eval { my $self = shift; my $List__ = \@_; do { [] }; die('TODO - When') }
+
+}
+{
+package While;
+sub new { shift; bless { @_ }, "While" }
+sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
+sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
+sub eval { my $self = shift; my $List__ = \@_; do { [] }; die('TODO - While') }
+
+}
+{
+package Leave;
+sub new { shift; bless { @_ }, "Leave" }
+sub eval { my $self = shift; my $List__ = \@_; do { [] }; die('TODO - Leave') }
 
 }
 {

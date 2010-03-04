@@ -23,7 +23,7 @@ class CompUnit {
 
 class Val::Int {
     has $.int;
-    method eval ($env) { $.int }
+    method eval ($env) { Int( $.int ) }
 }
 
 class Val::Bit {
@@ -33,7 +33,7 @@ class Val::Bit {
 
 class Val::Num {
     has $.num;
-    method eval ($env) { $.num }
+    method eval ($env) { Num( $.num ) }
 }
 
 class Val::Buf {
