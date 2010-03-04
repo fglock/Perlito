@@ -13,4 +13,11 @@ class Main {
         say 'not ok 1';
     }
 
+    $m := ::Apply(
+                code      => 'say',
+                namespace => '',
+                arguments => [ ::Val::Buf( buf => '# ok print()' ) ],
+            );
+    $m.eval;
+
 }

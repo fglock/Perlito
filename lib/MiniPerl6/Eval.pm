@@ -95,7 +95,7 @@ class Index {
     has $.obj;
     has $.index_exp;
     method eval {
-        $.obj.eval ~ '->[' ~ $.index_exp.eval ~ ']';
+        ( $.obj.eval )[ $.index_exp.eval ];
     }
 }
 
@@ -103,7 +103,7 @@ class Lookup {
     has $.obj;
     has $.index_exp;
     method eval {
-        $.obj.eval ~ '->{' ~ $.index_exp.eval ~ '}';
+        ( $.obj.eval ){ $.index_exp.eval };
     }
 }
 
@@ -320,9 +320,20 @@ class Apply {
 
         if $code eq 'make'       { return '($MATCH->capture = ('   ~ (@.arguments.>>eval).join(', ') ~ '))' };
 
-        if $code eq 'say'        { return 'Main::say('   ~ (@.arguments.>>eval).join(', ') ~ ')' };
-        if $code eq 'print'      { return 'Main::print(' ~ (@.arguments.>>eval).join(', ') ~ ')' };
-        if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>eval).join(', ') ~ ')' };
+        if $code eq 'say'        {
+                for @.arguments -> $v {
+                    print $v.eval;     
+                }
+                print "\n";
+                return 1;
+            };
+        if $code eq 'print'      { 
+                for @.arguments -> $v {
+                    print $v.eval;     
+                }
+                return 1;
+            };
+        if $code eq 'warn'       { return warn(  @.arguments.>>eval ) };
 
         if $code eq 'array'      { return '@{' ~ (@.arguments.>>eval).join(' ')    ~ '}' };
         if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>eval).join(' ')    ~ '} )' };
