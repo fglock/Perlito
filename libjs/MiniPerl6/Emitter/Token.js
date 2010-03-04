@@ -44,7 +44,7 @@ if (typeof Rul$Quantifier != 'object') {
   // method emit
   Rul$Quantifier.f_emit = function () {
     var v_self = this;
-    try { return(this.v_term.f_emit()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(v_self.v_term.f_emit()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Quantifier.f_emit;  // v8 bug workaround
 })();
@@ -64,7 +64,7 @@ if (typeof Rul$Or != 'object') {
   // method emit
   Rul$Or.f_emit = function () {
     var v_self = this;
-    try { return(( f_string("do { ") + f_string(( f_string("my $pos1 := $MATCH.to; do{ ") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) } return out; })(this.v_or_list).join("} || do { $MATCH.to := $pos1; ")) + f_string("} }") )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(( f_string("do { ") + f_string(( f_string("my $pos1 := $MATCH.to; do{ ") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) } return out; })(v_self.v_or_list).join("} || do { $MATCH.to := $pos1; ")) + f_string("} }") )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Or.f_emit;  // v8 bug workaround
 })();
@@ -84,7 +84,7 @@ if (typeof Rul$Concat != 'object') {
   // method emit
   Rul$Concat.f_emit = function () {
     var v_self = this;
-    try { return(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) } return out; })(this.v_concat).join(" && ")) + f_string(")") )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) } return out; })(v_self.v_concat).join(" && ")) + f_string(")") )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Concat.f_emit;  // v8 bug workaround
 })();
@@ -104,7 +104,7 @@ if (typeof Rul$Subrule != 'object') {
   // method emit
   Rul$Subrule.f_emit = function () {
     var v_self = this;
-    try { var v_meth;(v_meth = ( f_bool((1 + f_index(this.v_metasyntax, "."))) ? this.v_metasyntax : ( f_string("$grammar.") + f_string(this.v_metasyntax) )));return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string("if $m2 { $MATCH.to := $m2.to; $MATCH{'") + f_string(( f_string(this.v_metasyntax) + f_string(( f_string("'} := $m2; 1 } else { false } ") + f_string("}") )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_meth;(v_meth = ( f_bool((1 + f_index(v_self.v_metasyntax, "."))) ? v_self.v_metasyntax : ( f_string("$grammar.") + f_string(v_self.v_metasyntax) )));return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string("if $m2 { $MATCH.to := $m2.to; $MATCH{'") + f_string(( f_string(v_self.v_metasyntax) + f_string(( f_string("'} := $m2; 1 } else { false } ") + f_string("}") )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Subrule.f_emit;  // v8 bug workaround
 })();
@@ -124,7 +124,7 @@ if (typeof Rul$SubruleNoCapture != 'object') {
   // method emit
   Rul$SubruleNoCapture.f_emit = function () {
     var v_self = this;
-    try { var v_meth;(v_meth = ( f_bool((1 + f_index(this.v_metasyntax, "."))) ? this.v_metasyntax : ( f_string("$grammar.") + f_string(this.v_metasyntax) )));return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string("if $m2 { $MATCH.to := $m2.to; 1 } else { false } ") + f_string("}") )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_meth;(v_meth = ( f_bool((1 + f_index(v_self.v_metasyntax, "."))) ? v_self.v_metasyntax : ( f_string("$grammar.") + f_string(v_self.v_metasyntax) )));return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string("if $m2 { $MATCH.to := $m2.to; 1 } else { false } ") + f_string("}") )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$SubruleNoCapture.f_emit;  // v8 bug workaround
 })();
@@ -150,7 +150,7 @@ if (typeof Rul$Var != 'object') {
   // method emit
   Rul$Var.f_emit = function () {
     var v_self = this;
-    try { var v_table;(v_table = { "$":"$","@":"$List_","%":"$Hash_","&":"$Code_", });return(( f_string(v_table[this.v_sigil]) + f_string(this.v_name) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_table;(v_table = { "$":"$","@":"$List_","%":"$Hash_","&":"$Code_", });return(( f_string(v_table[v_self.v_sigil]) + f_string(v_self.v_name) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Var.f_emit;  // v8 bug workaround
 })();
@@ -170,7 +170,7 @@ if (typeof Rul$Constant != 'object') {
   // method emit
   Rul$Constant.f_emit = function () {
     var v_self = this;
-    try { var v_str;(v_str = this.v_constant);return(Rul.f_constant(v_str)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_str;(v_str = v_self.v_constant);return(Rul.f_constant(v_str)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Constant.f_emit;  // v8 bug workaround
 })();
@@ -207,7 +207,7 @@ if (typeof Rul$SpecialChar != 'object') {
   // method emit
   Rul$SpecialChar.f_emit = function () {
     var v_self = this;
-    try { var v_char;(v_char = this.v_char);if ( f_bool((v_char == "n")) ) { (v_rul = function () { var tmp = {v_metasyntax: "is_newline",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul) } else {  };if ( f_bool((v_char == "N")) ) { (v_rul = function () { var tmp = {v_metasyntax: "not_newline",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul) } else {  };if ( f_bool((v_char == "d")) ) { (v_rul = function () { var tmp = {v_metasyntax: "digit",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul) } else {  };if ( f_bool((v_char == "s")) ) { (v_rul = function () { var tmp = {v_metasyntax: "space",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul) } else {  };throw(Rul.f_constant(v_char)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_char;(v_char = v_self.v_char);if ( f_bool((v_char == "n")) ) { (v_rul = function () { var tmp = {v_metasyntax: "is_newline",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul) } else {  };if ( f_bool((v_char == "N")) ) { (v_rul = function () { var tmp = {v_metasyntax: "not_newline",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul) } else {  };if ( f_bool((v_char == "d")) ) { (v_rul = function () { var tmp = {v_metasyntax: "digit",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul) } else {  };if ( f_bool((v_char == "s")) ) { (v_rul = function () { var tmp = {v_metasyntax: "space",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul) } else {  };throw(Rul.f_constant(v_char)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$SpecialChar.f_emit;  // v8 bug workaround
 })();
@@ -227,7 +227,7 @@ if (typeof Rul$Block != 'object') {
   // method emit
   Rul$Block.f_emit = function () {
     var v_self = this;
-    try { return(( f_string("(do { ") + f_string(( f_string(this.v_closure) + f_string(" } || 1)") )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(( f_string("(do { ") + f_string(( f_string(v_self.v_closure) + f_string(" } || 1)") )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Block.f_emit;  // v8 bug workaround
 })();
@@ -247,7 +247,7 @@ if (typeof Rul$InterpolateVar != 'object') {
   // method emit
   Rul$InterpolateVar.f_emit = function () {
     var v_self = this;
-    try { say(( f_string("# TODO: interpolate var ") + f_string(( f_string(this.v_var.f_emit()) + f_string("") )) ));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { say(( f_string("# TODO: interpolate var ") + f_string(( f_string(v_self.v_var.f_emit()) + f_string("") )) ));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$InterpolateVar.f_emit;  // v8 bug workaround
 })();
@@ -270,7 +270,7 @@ if (typeof Rul$NamedCapture != 'object') {
   // method emit
   Rul$NamedCapture.f_emit = function () {
     var v_self = this;
-    try { say(( f_string("# TODO: named capture ") + f_string(( f_string(this.v_capture_ident) + f_string(( f_string(" := ") + f_string(( f_string(this.v_rule_exp.f_emit()) + f_string("") )) )) )) ));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { say(( f_string("# TODO: named capture ") + f_string(( f_string(v_self.v_capture_ident) + f_string(( f_string(" := ") + f_string(( f_string(v_self.v_rule_exp.f_emit()) + f_string("") )) )) )) ));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$NamedCapture.f_emit;  // v8 bug workaround
 })();
@@ -290,7 +290,7 @@ if (typeof Rul$Before != 'object') {
   // method emit
   Rul$Before.f_emit = function () {
     var v_self = this;
-    try { return(( f_string("do { ") + f_string(( f_string("my $tmp := $MATCH; ") + f_string(( f_string("$MATCH := MiniPerl6::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string(( f_string("$MATCH.bool := ") + f_string(( f_string(this.v_rule_exp.f_emit()) + f_string(( f_string("; ") + f_string(( f_string("$tmp.bool := ?$MATCH; ") + f_string(( f_string("$MATCH := $tmp; ") + f_string(( f_string("?$MATCH; ") + f_string("}") )) )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(( f_string("do { ") + f_string(( f_string("my $tmp := $MATCH; ") + f_string(( f_string("$MATCH := MiniPerl6::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string(( f_string("$MATCH.bool := ") + f_string(( f_string(v_self.v_rule_exp.f_emit()) + f_string(( f_string("; ") + f_string(( f_string("$tmp.bool := ?$MATCH; ") + f_string(( f_string("$MATCH := $tmp; ") + f_string(( f_string("?$MATCH; ") + f_string("}") )) )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Before.f_emit;  // v8 bug workaround
 })();
@@ -310,7 +310,7 @@ if (typeof Rul$NotBefore != 'object') {
   // method emit
   Rul$NotBefore.f_emit = function () {
     var v_self = this;
-    try { return(( f_string("do { ") + f_string(( f_string("my $tmp := $MATCH; ") + f_string(( f_string("$MATCH := MiniPerl6::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string(( f_string("$MATCH.bool := ") + f_string(( f_string(this.v_rule_exp.f_emit()) + f_string(( f_string("; ") + f_string(( f_string("$tmp.bool := !$MATCH; ") + f_string(( f_string("$MATCH := $tmp; ") + f_string(( f_string("?$MATCH; ") + f_string("}") )) )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(( f_string("do { ") + f_string(( f_string("my $tmp := $MATCH; ") + f_string(( f_string("$MATCH := MiniPerl6::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string(( f_string("$MATCH.bool := ") + f_string(( f_string(v_self.v_rule_exp.f_emit()) + f_string(( f_string("; ") + f_string(( f_string("$tmp.bool := !$MATCH; ") + f_string(( f_string("$MATCH := $tmp; ") + f_string(( f_string("?$MATCH; ") + f_string("}") )) )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$NotBefore.f_emit;  // v8 bug workaround
 })();

@@ -309,7 +309,7 @@ class Var {
             $ns := Main::to_javascript_namespace($.namespace) ~ '.';
         }
            ( $.twigil eq '.' )
-        ?? ( 'this.v_' ~ $.name ~ '' )
+        ?? ( 'v_self.v_' ~ $.name ~ '' )
         !!  (    ( $.name eq '/' )
             ??   ( $table{$.sigil} ~ 'MATCH' )
             !!   ( $table{$.sigil} ~ $ns ~ $.name )
@@ -421,7 +421,7 @@ class Call {
     method emit_javascript {
         my $invocant := $.invocant.emit_javascript;
         if $invocant eq 'self' {
-            $invocant := 'this';
+            $invocant := 'v_self';
         };
 
         if     ($.method eq 'values')
@@ -486,9 +486,9 @@ class Call {
         };
 
         my $meth := $.method;
-        if  $meth eq 'postcircumfix:<( )>'  {
-             $meth := '';  
-        };
+        #if  $meth eq 'postcircumfix:<( )>'  {
+        #     $meth := '';  
+        #};
         
         if ($.hyper) {
                     '(function (a_) { '
@@ -499,7 +499,10 @@ class Call {
                     ~ ' })(' ~ $invocant ~ ')'
         }
         else {
-            $invocant ~ '.f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+            if  $meth eq 'postcircumfix:<( )>'  {
+                return '(' ~ $invocant ~ ')(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+            }
+            return $invocant ~ '.f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
         };
 
     }
@@ -517,7 +520,7 @@ class Apply {
             return '(' ~ $.code.emit_javascript ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         };
 
-        if $code eq 'self'       { return 'this' };
+        if $code eq 'self'       { return 'v_self' };
         if $code eq 'false'      { return '0' };
         if $code eq 'make'       { return '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
         if $code eq 'say'        { return 'say('    ~ (@.arguments.>>emit_javascript).join(' + ') ~ ')' };
@@ -557,6 +560,13 @@ class Apply {
  
         if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ') ~ ')' };
         if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ') ~ ')' };
+
+        if $code eq 'exists'     { 
+            my $arg := @.arguments[0];
+            if $arg.isa( 'Lookup' ) {
+                return '(' ~ ($arg.obj).emit_javascript ~ ').hasOwnProperty(' ~ ($arg.index_exp).emit_javascript ~ ')';
+            }
+        };
 
         if $code eq 'ternary:<?? !!>' { 
             return '( f_bool(' ~ (@.arguments[0]).emit_javascript ~ ')' 

@@ -295,6 +295,22 @@ class For {
     }
 }
 
+class When {
+    has @.parameters;
+    has @.body;
+    method eval { die "TODO - When" }
+}
+
+class While {
+    has $.cond;
+    has @.body;
+    method eval { die "TODO - While" }
+}
+
+class Leave {
+    method eval { die "TODO - Leave" }
+}
+
 class Decl {
     has $.decl;
     has $.type;
