@@ -6,8 +6,9 @@ class CompUnit {
     has %.methods;
     has @.body;
     method eval ($env) {
+        my $env1 := [ {}, @$env ];
         for @.body -> $stmt {
-            $stmt.eval($env);
+            $stmt.eval($env1);
         }
     }
 }
@@ -255,13 +256,15 @@ class If {
         #    $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         # }
         if $cond.eval($env) { 
+            my $env1 := [ {}, @$env ];
             for @.body -> $stmt {
-                $stmt.eval($env);
+                $stmt.eval($env1);
             }
         } 
         else { 
+            my $env1 := [ {}, @$env ];
             for @.otherwise -> $stmt {
-                $stmt.eval($env);
+                $stmt.eval($env1);
             }
         }
         return undef;
@@ -280,10 +283,11 @@ class For {
         #    $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         # }
         my $topic_name := $.topic.plain_name;
+        my $env1 := [ {}, @$env ];
         for @( $cond.eval($env) ) -> $topic {
-            ($env[0]){$topic_name} := $topic;
+            $env1[0] := { $topic_name => $topic };
             for @.body -> $stmt {
-                $stmt.eval($env);
+                $stmt.eval($env1);
             }
         }
         return undef;
@@ -390,8 +394,9 @@ class Sub {
 class Do {
     has @.block;
     method eval ($env) {
+        my $env1 := [ {}, @$env ];
         for @.block -> $stmt {
-            $stmt.eval($env);
+            $stmt.eval($env1);
         }
     }
 }

@@ -12,7 +12,7 @@ class Main {
     use MiniPerl6::Grammar;
     use MiniPerl6::Eval;
 
-    say '1..4';
+    say '1..5';
 
     my $env := 
         [
@@ -105,9 +105,11 @@ class Main {
         '
             class Testing { 
                 my @a := [ 3, 4 ];
+                my $x := 5;
                 for @a -> $x {
-                    say "ok ", $x, " # eval-string ";
+                    say "ok ", $x, " # eval-string for";
                 }
+                say "ok ", $x, " # eval-string outer-lexical";
             }
         ', 
         0

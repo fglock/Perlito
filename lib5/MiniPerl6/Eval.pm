@@ -10,7 +10,7 @@ sub name { @_ == 1 ? ( $_[0]->{name} ) : ( $_[0]->{name} = $_[1] ) };
 sub attributes { @_ == 1 ? ( $_[0]->{attributes} ) : ( $_[0]->{attributes} = $_[1] ) };
 sub methods { @_ == 1 ? ( $_[0]->{methods} ) : ( $_[0]->{methods} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env) } } }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $env1 = [{  }, @{$env}]); do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env1) } } }
 
 }
 {
@@ -164,7 +164,7 @@ sub new { shift; bless { @_ }, "If" }
 sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
 sub otherwise { @_ == 1 ? ( $_[0]->{otherwise} ) : ( $_[0]->{otherwise} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $cond = $self->{cond}); do { if ((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>'))) { (my  $if = If->new( 'cond' => $cond->arguments()->[0],'body' => $self->{otherwise},'otherwise' => $self->{body}, ));return($if->eval($env)) } else {  } }; do { if ($cond->eval($env)) { do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env) } } } else { do { for my $stmt ( @{$self->{otherwise}} ) { $stmt->eval($env) } } } }; return((undef)) }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $cond = $self->{cond}); do { if ((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>'))) { (my  $if = If->new( 'cond' => $cond->arguments()->[0],'body' => $self->{otherwise},'otherwise' => $self->{body}, ));return($if->eval($env)) } else {  } }; do { if ($cond->eval($env)) { (my  $env1 = [{  }, @{$env}]);do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env1) } } } else { (my  $env1 = [{  }, @{$env}]);do { for my $stmt ( @{$self->{otherwise}} ) { $stmt->eval($env1) } } } }; return((undef)) }
 
 }
 {
@@ -173,7 +173,7 @@ sub new { shift; bless { @_ }, "For" }
 sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
 sub topic { @_ == 1 ? ( $_[0]->{topic} ) : ( $_[0]->{topic} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $cond = $self->{cond}); (my  $topic_name = $self->{topic}->plain_name()); do { for my $topic ( @{$cond->eval($env)} ) { ($env->[0]->{$topic_name} = $topic);do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env) } } } }; return((undef)) }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $cond = $self->{cond}); (my  $topic_name = $self->{topic}->plain_name()); (my  $env1 = [{  }, @{$env}]); do { for my $topic ( @{$cond->eval($env)} ) { ($env1->[0] = { $topic_name => $topic, });do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env1) } } } }; return((undef)) }
 
 }
 {
@@ -217,7 +217,7 @@ sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[
 package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { @_ == 1 ? ( $_[0]->{block} ) : ( $_[0]->{block} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; do { for my $stmt ( @{$self->{block}} ) { $stmt->eval($env) } } }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $env1 = [{  }, @{$env}]); do { for my $stmt ( @{$self->{block}} ) { $stmt->eval($env1) } } }
 
 }
 {
