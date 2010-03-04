@@ -17,34 +17,34 @@ sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[
 package Val::Int;
 sub new { shift; bless { @_ }, "Val::Int" }
 sub int { @_ == 1 ? ( $_[0]->{int} ) : ( $_[0]->{int} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; $self->{int} }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; $self->{int} }
 
 }
 {
 package Val::Bit;
 sub new { shift; bless { @_ }, "Val::Bit" }
 sub bit { @_ == 1 ? ( $_[0]->{bit} ) : ( $_[0]->{bit} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; $self->{bit} }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; $self->{bit} }
 
 }
 {
 package Val::Num;
 sub new { shift; bless { @_ }, "Val::Num" }
 sub num { @_ == 1 ? ( $_[0]->{num} ) : ( $_[0]->{num} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; $self->{num} }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; $self->{num} }
 
 }
 {
 package Val::Buf;
 sub new { shift; bless { @_ }, "Val::Buf" }
 sub buf { @_ == 1 ? ( $_[0]->{buf} ) : ( $_[0]->{buf} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; $self->{buf} }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; $self->{buf} }
 
 }
 {
 package Val::Undef;
 sub new { shift; bless { @_ }, "Val::Undef" }
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; (undef) }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (undef) }
 
 }
 {
@@ -52,28 +52,28 @@ package Val::Object;
 sub new { shift; bless { @_ }, "Val::Object" }
 sub class { @_ == 1 ? ( $_[0]->{class} ) : ( $_[0]->{class} = $_[1] ) };
 sub fields { @_ == 1 ? ( $_[0]->{fields} ) : ( $_[0]->{fields} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Val::Object'); 'bless(' . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . ')' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Val::Object'); 'bless(' . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . ')' }
 
 }
 {
 package Lit::Seq;
 sub new { shift; bless { @_ }, "Lit::Seq" }
 sub seq { @_ == 1 ? ( $_[0]->{seq} ) : ( $_[0]->{seq} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Lit::Seq'); '(' . Main::join([ map { $_->eval() } @{ $self->{seq} } ], ', ') . ')' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Lit::Seq'); '(' . Main::join([ map { $_->eval() } @{ $self->{seq} } ], ', ') . ')' }
 
 }
 {
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { @_ == 1 ? ( $_[0]->{array1} ) : ( $_[0]->{array1} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Lit::Array'); '[' . Main::join([ map { $_->eval() } @{ $self->{array1} } ], ', ') . ']' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Lit::Array'); '[' . Main::join([ map { $_->eval() } @{ $self->{array1} } ], ', ') . ']' }
 
 }
 {
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { @_ == 1 ? ( $_[0]->{hash1} ) : ( $_[0]->{hash1} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Lit::Hash'); (my  $fields = $self->{hash1}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = $str . $field->[0]->eval() . ' => ' . $field->[1]->eval() . ',') } }; '{ ' . $str . ' }' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Lit::Hash'); (my  $fields = $self->{hash1}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = $str . $field->[0]->eval() . ' => ' . $field->[1]->eval() . ',') } }; '{ ' . $str . ' }' }
 
 }
 {
@@ -87,7 +87,7 @@ package Lit::Object;
 sub new { shift; bless { @_ }, "Lit::Object" }
 sub class { @_ == 1 ? ( $_[0]->{class} ) : ( $_[0]->{class} = $_[1] ) };
 sub fields { @_ == 1 ? ( $_[0]->{fields} ) : ( $_[0]->{fields} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Lit::Object'); (my  $fields = $self->{fields}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = $str . $field->[0]->eval() . ' => ' . $field->[1]->eval() . ',') } }; $self->{class} . '->new( ' . $str . ' )' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Lit::Object'); (my  $fields = $self->{fields}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = $str . $field->[0]->eval() . ' => ' . $field->[1]->eval() . ',') } }; $self->{class} . '->new( ' . $str . ' )' }
 
 }
 {
@@ -95,7 +95,7 @@ package Index;
 sub new { shift; bless { @_ }, "Index" }
 sub obj { @_ == 1 ? ( $_[0]->{obj} ) : ( $_[0]->{obj} = $_[1] ) };
 sub index_exp { @_ == 1 ? ( $_[0]->{index_exp} ) : ( $_[0]->{index_exp} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; $self->{obj}->eval()->[$self->{index_exp}->eval()] }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; $self->{obj}->eval($env)->[$self->{index_exp}->eval($env)] }
 
 }
 {
@@ -103,7 +103,7 @@ package Lookup;
 sub new { shift; bless { @_ }, "Lookup" }
 sub obj { @_ == 1 ? ( $_[0]->{obj} ) : ( $_[0]->{obj} = $_[1] ) };
 sub index_exp { @_ == 1 ? ( $_[0]->{index_exp} ) : ( $_[0]->{index_exp} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; $self->{obj}->eval()->{$self->{index_exp}->eval()} }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; $self->{obj}->eval($env)->{$self->{index_exp}->eval($env)} }
 
 }
 {
@@ -122,14 +122,14 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { @_ == 1 ? ( $_[0]->{parameters} ) : ( $_[0]->{parameters} = $_[1] ) };
 sub arguments { @_ == 1 ? ( $_[0]->{arguments} ) : ( $_[0]->{arguments} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; do { if (Main::isa($self->{parameters}, 'Lit::Array')) { warn('Interpreter TODO: Bind') } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Hash')) { warn('Interpreter TODO: Bind') } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Object')) { warn('Interpreter TODO: Bind') } else {  } }; do { if (Main::isa($self->{parameters}, 'Decl')) { $self->{parameters}->eval($env) } else {  } }; (my  $name = $self->{parameters}->plain_name()); (my  $value = $self->{arguments}->eval()); do { for my $e ( @{$env} ) { do { if (exists($e->{$name})) { ($e->{$name} = $value);return($value) } else {  } } } }; warn('Interpreter Bind: variable \'' . $name . '\' not found') }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; do { if (Main::isa($self->{parameters}, 'Lit::Array')) { warn('Interpreter TODO: Bind') } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Hash')) { warn('Interpreter TODO: Bind') } else {  } }; do { if (Main::isa($self->{parameters}, 'Lit::Object')) { warn('Interpreter TODO: Bind') } else {  } }; do { if (Main::isa($self->{parameters}, 'Decl')) { $self->{parameters}->eval($env) } else {  } }; (my  $name = $self->{parameters}->plain_name()); (my  $value = $self->{arguments}->eval($env)); do { for my $e ( @{$env} ) { do { if (exists($e->{$name})) { ($e->{$name} = $value);return($value) } else {  } } } }; warn('Interpreter Bind: variable \'' . $name . '\' not found') }
 
 }
 {
 package Proto;
 sub new { shift; bless { @_ }, "Proto" }
 sub name { @_ == 1 ? ( $_[0]->{name} ) : ( $_[0]->{name} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; ("" . $self->{name}) }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; ("" . $self->{name}) }
 
 }
 {
@@ -139,7 +139,7 @@ sub invocant { @_ == 1 ? ( $_[0]->{invocant} ) : ( $_[0]->{invocant} = $_[1] ) }
 sub hyper { @_ == 1 ? ( $_[0]->{hyper} ) : ( $_[0]->{hyper} = $_[1] ) };
 sub method { @_ == 1 ? ( $_[0]->{method} ) : ( $_[0]->{method} = $_[1] ) };
 sub arguments { @_ == 1 ? ( $_[0]->{arguments} ) : ( $_[0]->{arguments} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Call'); (my  $invocant = $self->{invocant}->eval()); do { if (($invocant eq 'self')) { ($invocant = '$self') } else {  } }; do { if ($self->{hyper}) {  } else {  } }; warn('Interpreter runtime error: method \'', $self->{method}, '()\' not found') }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Call'); (my  $invocant = $self->{invocant}->eval($env)); do { if (($invocant eq 'self')) { ($invocant = '$self') } else {  } }; do { if ($self->{hyper}) {  } else {  } }; warn('Interpreter runtime error: method \'', $self->{method}, '()\' not found') }
 
 }
 {
@@ -155,7 +155,7 @@ sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[
 package Return;
 sub new { shift; bless { @_ }, "Return" }
 sub result { @_ == 1 ? ( $_[0]->{result} ) : ( $_[0]->{result} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Return'); return('return(' . $self->{result}->eval() . ')') }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Return'); return('return(' . $self->{result}->eval() . ')') }
 
 }
 {
@@ -164,7 +164,7 @@ sub new { shift; bless { @_ }, "If" }
 sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
 sub otherwise { @_ == 1 ? ( $_[0]->{otherwise} ) : ( $_[0]->{otherwise} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: If'); (my  $cond = $self->{cond}); do { if ((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>'))) { (my  $if = If->new( 'cond' => $cond->arguments()->[0],'body' => $self->{otherwise},'otherwise' => $self->{body}, ));return($if->eval()) } else {  } }; do { if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  } }; 'if (' . $cond->eval() . ') { ' . Main::join([ map { $_->eval() } @{ $self->{body} } ], ';') . ' } else { ' . Main::join([ map { $_->eval() } @{ $self->{otherwise} } ], ';') . ' }' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $cond = $self->{cond}); do { if ((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>'))) { (my  $if = If->new( 'cond' => $cond->arguments()->[0],'body' => $self->{otherwise},'otherwise' => $self->{body}, ));return($if->eval($env)) } else {  } }; do { if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  } }; do { if ($cond->eval($env)) { do { for my $stmt ( @{$self->{body}} ) { $stmt->eval($env) } } } else { do { for my $stmt ( @{$self->{otherwise}} ) { $stmt->eval($env) } } } }; return((undef)) }
 
 }
 {
@@ -173,7 +173,7 @@ sub new { shift; bless { @_ }, "For" }
 sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
 sub topic { @_ == 1 ? ( $_[0]->{topic} ) : ( $_[0]->{topic} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: For'); (my  $cond = $self->{cond}); do { if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  } }; 'for my ' . $self->{topic}->eval() . ' ( ' . $cond->eval() . ' ) { ' . Main::join([ map { $_->eval() } @{ $self->{body} } ], ';') . ' }' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: For'); (my  $cond = $self->{cond}); do { if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  } }; 'for my ' . $self->{topic}->eval() . ' ( ' . $cond->eval() . ' ) { ' . Main::join([ map { $_->eval() } @{ $self->{body} } ], ';') . ' }' }
 
 }
 {
@@ -192,7 +192,7 @@ sub new { shift; bless { @_ }, "Sig" }
 sub invocant { @_ == 1 ? ( $_[0]->{invocant} ) : ( $_[0]->{invocant} = $_[1] ) };
 sub positional { @_ == 1 ? ( $_[0]->{positional} ) : ( $_[0]->{positional} = $_[1] ) };
 sub named { @_ == 1 ? ( $_[0]->{named} ) : ( $_[0]->{named} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Sig') }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Sig') }
 
 }
 {
@@ -201,7 +201,7 @@ sub new { shift; bless { @_ }, "Method" }
 sub name { @_ == 1 ? ( $_[0]->{name} ) : ( $_[0]->{name} = $_[1] ) };
 sub sig { @_ == 1 ? ( $_[0]->{sig} ) : ( $_[0]->{sig} = $_[1] ) };
 sub block { @_ == 1 ? ( $_[0]->{block} ) : ( $_[0]->{block} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Method'); (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = 'my $List__ = \\@_; '); do { for my $field ( @{$pos} ) { do { if (Main::isa($field, 'Lit::Array')) { ($str = $str . 'my (' . Main::join([ map { $_->eval() } @{ $field->array1() } ], ', ') . '); ') } else { ($str = $str . 'my ' . $field->eval() . '; ') } } } }; (my  $bind = Bind->new( 'parameters' => Lit::Array->new( 'array1' => $sig->positional(), ),'arguments' => Var->new( 'sigil' => '@','twigil' => '','name' => '_', ), )); ($str = $str . $bind->eval() . '; '); 'sub ' . $self->{name} . ' { ' . 'my ' . $invocant->eval() . ' = shift; ' . $str . Main::join([ map { $_->eval() } @{ $self->{block} } ], '; ') . ' }' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Method'); (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = 'my $List__ = \\@_; '); do { for my $field ( @{$pos} ) { do { if (Main::isa($field, 'Lit::Array')) { ($str = $str . 'my (' . Main::join([ map { $_->eval() } @{ $field->array1() } ], ', ') . '); ') } else { ($str = $str . 'my ' . $field->eval() . '; ') } } } }; (my  $bind = Bind->new( 'parameters' => Lit::Array->new( 'array1' => $sig->positional(), ),'arguments' => Var->new( 'sigil' => '@','twigil' => '','name' => '_', ), )); ($str = $str . $bind->eval() . '; '); 'sub ' . $self->{name} . ' { ' . 'my ' . $invocant->eval() . ' = shift; ' . $str . Main::join([ map { $_->eval() } @{ $self->{block} } ], '; ') . ' }' }
 
 }
 {
@@ -210,7 +210,7 @@ sub new { shift; bless { @_ }, "Sub" }
 sub name { @_ == 1 ? ( $_[0]->{name} ) : ( $_[0]->{name} = $_[1] ) };
 sub sig { @_ == 1 ? ( $_[0]->{sig} ) : ( $_[0]->{sig} = $_[1] ) };
 sub block { @_ == 1 ? ( $_[0]->{block} ) : ( $_[0]->{block} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Sub'); (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $str = 'my $List__ = \\@_; '); do { for my $field ( @{$pos} ) { do { if (Main::isa($field, 'Lit::Array')) { ($str = $str . 'my (' . Main::join([ map { $_->eval() } @{ $field->array1() } ], ', ') . '); ') } else { ($str = $str . 'my ' . $field->eval() . '; ') } } } }; (my  $bind = Bind->new( 'parameters' => Lit::Array->new( 'array1' => $sig->positional(), ),'arguments' => Var->new( 'sigil' => '@','twigil' => '','name' => '_', ), )); ($str = $str . $bind->eval() . '; '); 'sub ' . $self->{name} . ' { ' . $str . Main::join([ map { $_->eval() } @{ $self->{block} } ], '; ') . ' }' }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Sub'); (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $str = 'my $List__ = \\@_; '); do { for my $field ( @{$pos} ) { do { if (Main::isa($field, 'Lit::Array')) { ($str = $str . 'my (' . Main::join([ map { $_->eval() } @{ $field->array1() } ], ', ') . '); ') } else { ($str = $str . 'my ' . $field->eval() . '; ') } } } }; (my  $bind = Bind->new( 'parameters' => Lit::Array->new( 'array1' => $sig->positional(), ),'arguments' => Var->new( 'sigil' => '@','twigil' => '','name' => '_', ), )); ($str = $str . $bind->eval() . '; '); 'sub ' . $self->{name} . ' { ' . $str . Main::join([ map { $_->eval() } @{ $self->{block} } ], '; ') . ' }' }
 
 }
 {
@@ -224,7 +224,7 @@ sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[
 package Use;
 sub new { shift; bless { @_ }, "Use" }
 sub mod { @_ == 1 ? ( $_[0]->{mod} ) : ( $_[0]->{mod} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; warn('Interpreter TODO: Use'); 'use ' . $self->{mod} }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; warn('Interpreter TODO: Use'); 'use ' . $self->{mod} }
 
 }
 1;

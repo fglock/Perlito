@@ -39,7 +39,11 @@ class Main {
                                     ($args[0]).eval($env) + ($args[1]).eval($env)
                                 },
                     ),
-
+                'infix:<==>' => ::BuiltinFunction(
+                        func => sub ( $env, $args ) {
+                                    ($args[0]).eval($env) == ($args[1]).eval($env)
+                                },
+                    ),
             }
         ];
 
@@ -77,6 +81,24 @@ class Main {
         ', 
         0
     );
+    ($$m).eval( $env );
+
+    $m := MiniPerl6::Grammar.comp_unit( 
+        '
+            class Testing { 
+                my $a := 123;
+                if $a == (100 + 23) {
+                    say "# looks good";
+                }
+                else {
+                    print "not ";
+                }
+                say "ok 2 # eval-string ", $a;
+            }
+        ', 
+        0
+    );
+    # say ($$m).perl;
     ($$m).eval( $env );
 
 }

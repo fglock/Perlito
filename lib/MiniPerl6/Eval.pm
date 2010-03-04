@@ -5,41 +5,41 @@ class CompUnit {
     has %.attributes;
     has %.methods;
     has @.body;
-    method eval ( $env ) {
+    method eval ($env) {
         for @.body -> $stmt {
-            $stmt.eval( $env );
+            $stmt.eval($env);
         }
     }
 }
 
 class Val::Int {
     has $.int;
-    method eval { $.int }
+    method eval ($env) { $.int }
 }
 
 class Val::Bit {
     has $.bit;
-    method eval { $.bit }
+    method eval ($env) { $.bit }
 }
 
 class Val::Num {
     has $.num;
-    method eval { $.num }
+    method eval ($env) { $.num }
 }
 
 class Val::Buf {
     has $.buf;
-    method eval { $.buf }
+    method eval ($env) { $.buf }
 }
 
 class Val::Undef {
-    method eval { undef }
+    method eval ($env) { undef }
 }
 
 class Val::Object {
     has $.class;
     has %.fields;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Val::Object";
         'bless(' ~ %.fields.perl ~ ', ' ~ $.class.perl ~ ')';
     }
@@ -47,7 +47,7 @@ class Val::Object {
 
 class Lit::Seq {
     has @.seq;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Lit::Seq";
         '(' ~ (@.seq.>>eval).join(', ') ~ ')';
     }
@@ -55,7 +55,7 @@ class Lit::Seq {
 
 class Lit::Array {
     has @.array1;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Lit::Array";
         '[' ~ (@.array1.>>eval).join(', ') ~ ']';
     }
@@ -63,7 +63,7 @@ class Lit::Array {
 
 class Lit::Hash {
     has @.hash1;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Lit::Hash";
         my $fields := @.hash1;
         my $str := '';
@@ -81,7 +81,7 @@ class Lit::Code {
 class Lit::Object {
     has $.class;
     has @.fields;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Lit::Object";
         my $fields := @.fields;
         my $str := '';
@@ -95,16 +95,16 @@ class Lit::Object {
 class Index {
     has $.obj;
     has $.index_exp;
-    method eval {
-        ( $.obj.eval )[ $.index_exp.eval ];
+    method eval ($env) {
+        ( $.obj.eval($env) )[ $.index_exp.eval($env) ];
     }
 }
 
 class Lookup {
     has $.obj;
     has $.index_exp;
-    method eval {
-        ( $.obj.eval ){ $.index_exp.eval };
+    method eval ($env) {
+        ( $.obj.eval($env) ){ $.index_exp.eval($env) };
     }
 }
 
@@ -113,7 +113,7 @@ class Var {
     has $.twigil;
     has $.namespace;
     has $.name;
-    method eval ( $env ) {
+    method eval ($env) {
         my $ns := '';
         if $.namespace {
             $ns := $.namespace ~ '::';
@@ -151,7 +151,7 @@ class Var {
 class Bind {
     has $.parameters;
     has $.arguments;
-    method eval ( $env ) {
+    method eval ($env) {
         if $.parameters.isa( 'Lit::Array' ) {
             warn "Interpreter TODO: Bind";
         }
@@ -162,10 +162,10 @@ class Bind {
             warn "Interpreter TODO: Bind";
         }
         if $.parameters.isa( 'Decl' ) {
-            $.parameters.eval( $env );
+            $.parameters.eval($env);
         }
         my $name := $.parameters.plain_name;
-        my $value := $.arguments.eval;
+        my $value := $.arguments.eval($env);
         for @($env) -> $e {
             if exists( $e{ $name } ) {
                 $e{ $name } := $value;
@@ -178,7 +178,7 @@ class Bind {
 
 class Proto {
     has $.name;
-    method eval {
+    method eval ($env) {
         ~$.name        
     }
 }
@@ -188,9 +188,9 @@ class Call {
     has $.hyper;
     has $.method;
     has @.arguments;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Call";
-        my $invocant := $.invocant.eval;
+        my $invocant := $.invocant.eval($env);
         if $invocant eq 'self' {
             $invocant := '$self';
         }
@@ -214,6 +214,7 @@ class Apply {
             $ns := $.namespace ~ '::';
         }
         my $code := $ns ~ $.code;
+        # warn "Apply ", $env.perl, " code: '", $code, "'";
         for @($env) -> $e {
             if exists( $e{ $code } ) {
                 return $e{ $code }.eval( $env, @.arguments );
@@ -225,7 +226,7 @@ class Apply {
 
 class Return {
     has $.result;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Return";
         return
         'return(' ~ $.result.eval ~ ')';
@@ -236,22 +237,31 @@ class If {
     has $.cond;
     has @.body;
     has @.otherwise;
-    method eval {
-        warn "Interpreter TODO: If";
+    method eval ($env) {
         my $cond := $.cond;
 
         if   $cond.isa( 'Apply' ) 
           && $cond.code eq 'prefix:<!>' 
         {
             my $if := If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
-            return $if.eval;
+            return $if.eval($env);
         }
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
             $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        'if (' ~ $cond.eval ~ ') { ' ~ (@.body.>>eval).join(';') ~ ' } else { ' ~ (@.otherwise.>>eval).join(';') ~ ' }';
+        if $cond.eval($env) { 
+            for @.body -> $stmt {
+                $stmt.eval($env);
+            }
+        } 
+        else { 
+            for @.otherwise -> $stmt {
+                $stmt.eval($env);
+            }
+        }
+        return undef;
     }
 }
 
@@ -259,14 +269,14 @@ class For {
     has $.cond;
     has @.body;
     has @.topic;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: For";
         my $cond := $.cond;
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
             $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-        };
+        }
         'for my ' ~ $.topic.eval ~ ' ( ' ~ $cond.eval ~ ' ) { ' ~ (@.body.>>eval).join(';') ~ ' }';
     }
 }
@@ -275,7 +285,7 @@ class Decl {
     has $.decl;
     has $.type;
     has $.var;
-    method eval ( $env ) {
+    method eval ($env) {
         my $decl := $.decl;
         my $name := $.var.plain_name;
         if $decl eq 'has' {
@@ -295,7 +305,7 @@ class Sig {
     has $.invocant;
     has $.positional;
     has $.named;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Sig";
     };
 }
@@ -304,7 +314,7 @@ class Method {
     has $.name;
     has $.sig;
     has @.block;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Method";
         my $sig := $.sig;
         my $invocant := $sig.invocant; 
@@ -318,8 +328,8 @@ class Method {
             }
             else {
                 $str := $str ~ 'my ' ~ $field.eval ~ '; ';
-            };
-        };
+            }
+        }
 
         my $bind := Bind.new( 
             parameters => Lit::Array.new( array1 => $sig.positional ), 
@@ -339,7 +349,7 @@ class Sub {
     has $.name;
     has $.sig;
     has @.block;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Sub";
         my $sig := $.sig;
         my $pos := $sig.positional;
@@ -352,8 +362,8 @@ class Sub {
             }
             else {
                 $str := $str ~ 'my ' ~ $field.eval ~ '; ';
-            };
-        };
+            }
+        }
 
         my $bind := Bind.new( 
             parameters => Lit::Array.new( array1 => $sig.positional ), 
@@ -370,16 +380,16 @@ class Sub {
 
 class Do {
     has @.block;
-    method eval ( $env ) {
+    method eval ($env) {
         for @.block -> $stmt {
-            $stmt.eval( $env );
+            $stmt.eval($env);
         }
     }
 }
 
 class Use {
     has $.mod;
-    method eval {
+    method eval ($env) {
         warn "Interpreter TODO: Use";
         'use ' ~ $.mod
     }
@@ -393,7 +403,7 @@ MiniPerl6::Eval - AST interpreter for MiniPerl6
 
 =head1 SYNOPSIS
 
-    $program.eval  # runs program in interpreter
+    $program_ast.eval($environment)  # runs program in interpreter
 
 =head1 DESCRIPTION
 
