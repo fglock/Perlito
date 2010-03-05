@@ -420,7 +420,7 @@ class Call {
 
         my $meth := Main::to_lisp_identifier($.method) ~ ' ';
         if  $.method eq 'postcircumfix:<( )>'  {
-             $meth := '';  
+             return '(funcall ' ~ $invocant ~ ' ' ~ $arguments ~ ')';
         };
         
         if ($.hyper) {
