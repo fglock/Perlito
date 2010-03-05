@@ -90,6 +90,7 @@ MiniPerl6$Match.f_hash = function () { return this }
 if (typeof f_print != 'function') {
     var buf = "";
     f_print = function (s) { 
+        s = s + "";
         if ( s.substr(s.length - 2, 2 ) == "\n" ) {
             print( buf + s.substr(0, s.length - 2) );
             buf = "";
