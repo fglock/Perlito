@@ -241,12 +241,28 @@ class Lit::Array {
 class Lit::Hash {
     has @.hash1;
     method emit_javascript {
-        my $fields := @.hash1;
-        my $str := '';
-        for @$fields -> $field { 
-            $str := $str ~ ($field[0]).emit_javascript ~ ':' ~ ($field[1]).emit_javascript ~ ',';
-        }; 
-        '{ ' ~ $str ~ ' }';
+        my $needs_interpolation := 0;
+        for @.hash1 -> $item {
+            if !( ($item[0]).isa( 'Val::Buf' ) ) {
+                $needs_interpolation := 1;
+            }
+        }
+        if $needs_interpolation {
+            my $s := '';
+            for @.hash1 -> $field { 
+                $s := $s ~ 'a[' ~ ($field[0]).emit_javascript ~ '] = ' ~ ($field[1]).emit_javascript ~ '; '
+            }
+            return '(function () { var a = []; ' 
+                    ~ $s 
+                ~ ' return a })()';
+        }
+        else {
+            my $str := '';
+            for @.hash1 -> $field { 
+                $str := $str ~ ($field[0]).emit_javascript ~ ':' ~ ($field[1]).emit_javascript ~ ',';
+            } 
+            return '{ ' ~ $str ~ ' }';
+        }
     }
 }
 

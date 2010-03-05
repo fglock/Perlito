@@ -83,7 +83,7 @@ sub emit_javascript { my $self = shift; my $List__ = \@_; do { [] }; (my  $needs
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { @_ == 1 ? ( $_[0]->{hash1} ) : ( $_[0]->{hash1} = $_[1] ) };
-sub emit_javascript { my $self = shift; my $List__ = \@_; do { [] }; (my  $fields = $self->{hash1}); (my  $str = ''); do { for my $field ( @{$fields} ) { ($str = $str . $field->[0]->emit_javascript() . ':' . $field->[1]->emit_javascript() . ',') } }; '{ ' . $str . ' }' }
+sub emit_javascript { my $self = shift; my $List__ = \@_; do { [] }; (my  $needs_interpolation = 0); do { for my $item ( @{$self->{hash1}} ) { do { if (Main::isa($item->[0], 'Val::Buf')) {  } else { ($needs_interpolation = 1) } } } }; do { if ($needs_interpolation) { (my  $s = '');do { for my $field ( @{$self->{hash1}} ) { ($s = $s . 'a[' . $field->[0]->emit_javascript() . '] = ' . $field->[1]->emit_javascript() . '; ') } };return('(function () { var a = []; ' . $s . ' return a })()') } else { (my  $str = '');do { for my $field ( @{$self->{hash1}} ) { ($str = $str . $field->[0]->emit_javascript() . ':' . $field->[1]->emit_javascript() . ',') } };return('{ ' . $str . ' }') } } }
 
 }
 {
