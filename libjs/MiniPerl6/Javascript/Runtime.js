@@ -90,7 +90,7 @@ MiniPerl6$Match.f_hash = function () { return this }
 if (typeof f_print != 'function') {
     var buf = "";
     f_print = function (s) { 
-        s = s + "";
+        s = s + "";  
         if ( s.substr(s.length - 2, 2 ) == "\n" ) {
             print( buf + s.substr(0, s.length - 2) );
             buf = "";
@@ -195,8 +195,8 @@ f_shift = function (o) {
   if (o.length == null ) { return null }
   return o.shift();
 }
-f_push = function (o) {
-  return o.push();
+f_push = function (o, v) {
+  return o.push(v);
 }
 f_index = function (o, s) {
   return o.indexOf(s);
