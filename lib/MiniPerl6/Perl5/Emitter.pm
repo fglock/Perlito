@@ -164,6 +164,14 @@ class Bind {
     has $.parameters;
     has $.arguments;
     method emit {
+        if $.parameters.isa( 'Call' ) {
+
+            # $obj.a := 3
+
+            my $a := $.parameters;
+            return '((' ~ ($a.invocant).emit ~ ')->{' ~ $a.method ~ '} = ' ~ $.arguments.emit ~ ')';
+        }
+
         if $.parameters.isa( 'Lit::Array' ) {
             
             #  [$a, [$b, $c]] := [1, [2, 3]]
