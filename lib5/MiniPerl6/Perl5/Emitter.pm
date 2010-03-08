@@ -66,7 +66,7 @@ sub emit { my $self = shift; my $List__ = \@_; do { [] }; '(' . Main::join([ map
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { @_ == 1 ? ( $_[0]->{array1} ) : ( $_[0]->{array1} = $_[1] ) };
-sub emit { my $self = shift; my $List__ = \@_; do { [] }; '[' . Main::join([ map { $_->emit() } @{ $self->{array1} } ], ', ') . ']' }
+sub emit { my $self = shift; my $List__ = \@_; do { [] }; my  $List_s; do { for my $item ( @{$self->{array1}} ) { do { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { push( @{$List_s}, '@{' . $item->emit() . '}' ) } else { push( @{$List_s}, $item->emit() ) } } } }; '[' . Main::join($List_s, ', ') . ']' }
 
 }
 {

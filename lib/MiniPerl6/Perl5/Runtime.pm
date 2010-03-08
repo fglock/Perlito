@@ -84,8 +84,22 @@ package IO;
 
 package Main;
 
-    sub print { print join( '', @_ ) }
-    sub say   { print join( '', @_, "\n" ) }
+    sub Str {
+        if ( ref($_) ) {
+            return join( " ", map { Str($_) } @$_ ) if ref($_) eq 'ARRAY';
+        }
+        return $_;
+    }
+    sub print { 
+        for (@_) {
+            if ( ref($_) ) {
+                CORE::print Main::Str($_);
+                next;
+            }
+            CORE::print $_
+        } 
+    }
+    sub say   { Main::print( @_, "\n" ) }
     sub chars { length( $_[0] ) }
     sub newline { "\n" }
     sub quote   { '"' }

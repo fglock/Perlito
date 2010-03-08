@@ -56,7 +56,18 @@ class Lit::Seq {
 class Lit::Array {
     has @.array1;
     method emit {
-        '[' ~ (@.array1.>>emit).join(', ') ~ ']';
+        my @s;
+        for @.array1 -> $item {
+            if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
+                || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' )
+            {
+                push @s, '@{' ~ $item.emit ~ '}';
+            }
+            else {
+                push @s, $item.emit;
+            }
+        }
+        '[' ~ @s.join(', ') ~ ']';
     }
 }
 
