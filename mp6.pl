@@ -328,6 +328,7 @@ elsif ( $backend eq 'perl5' ) {
     $result .=  "use strict;\n";
     $result .=  "use MiniPerl6::Perl5::Runtime;\n";
     $result .=  "use MiniPerl6::Perl5::Match;\n";
+    $result .=  "our \$MATCH = MiniPerl6::Match->new();\n";
     for my $p ( @comp_unit ) {
         $result .=  "{\n" . $p->emit() . "}\n";
     }
