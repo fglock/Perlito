@@ -65,11 +65,11 @@ __END__
 
 =head1 NAME
 
-create-mp6-list.pl - create mp6-list executable
+create-mp6-lisp.pl - create mp6-lisp binary executable
 
 =head1 SYNOPSIS
 
-	perl create-mp6-list.pl 
+	perl create-mp6-lisp.pl 
 
 =head1 DESCRIPTION
 
