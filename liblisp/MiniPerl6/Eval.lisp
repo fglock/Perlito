@@ -1192,9 +1192,9 @@ new-slots))
 
 ;; method eval
 (if (not (ignore-errors (find-method 'sv-eval () ())))
-  (defgeneric sv-eval (sv-self)
+  (defgeneric sv-eval (sv-self &optional sv-env)
       (:documentation "a method")))
-(defmethod sv-eval ((sv-self mp-When))
+(defmethod sv-eval ((sv-self mp-When) &optional sv-env)
   (block mp6-function
     (progn (progn (write-line (format nil "~{~a~}" (list "TODO - When")) *error-output*) (sb-ext:quit)))))
 
@@ -1246,9 +1246,9 @@ new-slots))
 
 ;; method eval
 (if (not (ignore-errors (find-method 'sv-eval () ())))
-  (defgeneric sv-eval (sv-self)
+  (defgeneric sv-eval (sv-self &optional sv-env)
       (:documentation "a method")))
-(defmethod sv-eval ((sv-self mp-While))
+(defmethod sv-eval ((sv-self mp-While) &optional sv-env)
   (block mp6-function
     (progn (progn (write-line (format nil "~{~a~}" (list "TODO - While")) *error-output*) (sb-ext:quit)))))
 
@@ -1270,9 +1270,9 @@ new-slots))
   (defun proto-mp-Leave () x))
 ;; method eval
 (if (not (ignore-errors (find-method 'sv-eval () ())))
-  (defgeneric sv-eval (sv-self)
+  (defgeneric sv-eval (sv-self &optional sv-env)
       (:documentation "a method")))
-(defmethod sv-eval ((sv-self mp-Leave))
+(defmethod sv-eval ((sv-self mp-Leave) &optional sv-env)
   (block mp6-function
     (progn (progn (write-line (format nil "~{~a~}" (list "TODO - Leave")) *error-output*) (sb-ext:quit)))))
 

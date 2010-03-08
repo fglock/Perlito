@@ -6,6 +6,7 @@ cat liblisp/MiniPerl6/Lisp/Runtime.lisp \
     liblisp/MiniPerl6/Grammar/Mapping.lisp \
     liblisp/MiniPerl6/Grammar/Regex.lisp   \
     liblisp/MiniPerl6/Emitter/Token.lisp   \
+    liblisp/MiniPerl6/Eval.lisp   \
     util-lisp/create-core-image.lisp   \
   > tmp-create-core-image.lisp
 
