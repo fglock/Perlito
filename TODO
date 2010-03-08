@@ -1,3 +1,9 @@
+Eval
+
+- debug Lisp, Go 
+
+- add exceptions
+
 Command line compiler (util/mp6)
 
 - build Ast cache using JSON (we currently use Perl5 Data::Dumper) or XML (Go has XML and JSON input)

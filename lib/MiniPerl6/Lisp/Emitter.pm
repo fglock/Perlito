@@ -13,12 +13,22 @@ class MiniPerl6::Lisp::LexicalBlock {
         for @.block -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $has_my_decl := 1;
-                $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (sv-undef))'; 
+                if ($decl.var).sigil eq '@' {
+                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' nil)'; 
+                }
+                else {
+                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (sv-undef))'; 
+                }
                 # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ ($decl.var).emit_lisp;
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $has_my_decl := 1;
-                $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (sv-undef))'; 
+                if (($decl.parameters).var).sigil eq '@' {
+                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' nil)'; 
+                }
+                else {
+                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (sv-undef))'; 
+                }
                 # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ (($decl.parameters).var).emit_lisp;
             }
         }
@@ -62,12 +72,22 @@ class CompUnit {
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $has_my_decl := 1;
-                $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (sv-undef))'; 
+                if ($decl.var).sigil eq '@' {
+                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' nil)'; 
+                }
+                else {
+                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (sv-undef))'; 
+                }
                 # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ ($decl.var).emit_lisp;
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $has_my_decl := 1;
-                $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (sv-undef))'; 
+                if (($decl.parameters).var).sigil eq '@' {
+                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' nil)'; 
+                }
+                else {
+                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (sv-undef))'; 
+                }
                 # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ (($decl.parameters).var).emit_lisp;
             }
         }
