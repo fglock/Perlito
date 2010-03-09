@@ -26,13 +26,13 @@ if (typeof MiniPerl6$Match != 'object') {
   // method scalar
   MiniPerl6$Match.f_scalar = function () {
     var v_self = this;
-    try { if ( f_bool(v_self.v_bool) ) { if ( f_bool((v_self.v_capture != null)) ) { throw(v_self.v_capture) } else {  };throw((v_self.v_str || "").substr(v_self.v_from, (v_self.v_to - v_self.v_from))) } else { throw("") } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { if ( f_bool(v_self.v_bool) ) { if ( f_bool((v_self.v_capture != null)) ) { (function () { throw(v_self.v_capture); })() } else { (function () { null })() };throw((v_self.v_str || "").substr(v_self.v_from, (v_self.v_to - v_self.v_from))) } else { throw("") } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   MiniPerl6$Match.f_scalar;  // v8 bug workaround
   // method string
   MiniPerl6$Match.f_string = function () {
     var v_self = this;
-    try { if ( f_bool(v_self.v_bool) ) { if ( f_bool((v_self.v_capture != null)) ) { throw(v_self.v_capture) } else {  };throw((v_self.v_str || "").substr(v_self.v_from, (v_self.v_to - v_self.v_from))) } else { throw("") } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { if ( f_bool(v_self.v_bool) ) { if ( f_bool((v_self.v_capture != null)) ) { (function () { throw(v_self.v_capture); })() } else { (function () { null })() };throw((v_self.v_str || "").substr(v_self.v_from, (v_self.v_to - v_self.v_from))) } else { throw("") } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   MiniPerl6$Match.f_string;  // v8 bug workaround
 })();

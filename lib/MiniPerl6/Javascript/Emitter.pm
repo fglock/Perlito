@@ -637,9 +637,12 @@ class If {
         {
             $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        'if ( f_bool(' ~ $cond.emit_javascript ~ ') ) { ' 
-            ~ (@.body.>>emit_javascript).join(';') ~ ' } else { ' 
-            ~ (@.otherwise.>>emit_javascript).join(';') ~ ' }';
+        my $body      := MiniPerl6::Javascript::LexicalBlock.new( block => @.body, needs_return => 0 );
+        my $otherwise := MiniPerl6::Javascript::LexicalBlock.new( block => @.otherwise, needs_return => 0 );
+        return
+            'if ( f_bool(' ~ $cond.emit_javascript ~ ') ) { ' 
+              ~ '(function () { ' ~ $body.emit_javascript      ~ ' })() } else { ' 
+              ~ '(function () { ' ~ $otherwise.emit_javascript ~ ' })() }';
     }
 }
 

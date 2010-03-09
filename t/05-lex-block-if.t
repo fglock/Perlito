@@ -15,5 +15,5 @@ class Main {
     if $a != 123 {
         print 'not '
     }
-    say 'ok 2 - if block';
+    say 'ok 2 - if block # ', $a;
 }

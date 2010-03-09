@@ -83,7 +83,7 @@ var v_testing_started = null;
   }
   // sub proclaim
   Test.f_proclaim = function (v_cond, v_desc, v_todo, v_got, v_expected, v_depends, v_negate) {
-    try { (v_testing_started = 1);(v_num_of_tests_run = (v_num_of_tests_run + 1));if ( f_bool(v_cond) ) { say("ok " + v_num_of_tests_run) } else { say("not ok " + v_num_of_tests_run);Test.f_report_failure(v_todo, v_got, v_expected, v_negate) };throw(v_cond) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { (v_testing_started = 1);(v_num_of_tests_run = (v_num_of_tests_run + 1));if ( f_bool(v_cond) ) { (function () { say("ok " + v_num_of_tests_run); })() } else { (function () { say("not ok " + v_num_of_tests_run);Test.f_report_failure(v_todo, v_got, v_expected, v_negate); })() };throw(v_cond) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub report_failure
   Test.f_report_failure = function (v_todo, v_got, v_expected, v_negate) {
@@ -91,7 +91,7 @@ var v_testing_started = null;
   }
   // sub test_ends
   Test.f_test_ends = function () {
-    try { if ( f_bool(v_testing_started) ) {  } else { throw(null) };if ( f_bool(v_num_of_tests_planned) ) {  } else { say(( f_string("1..") + f_string(v_num_of_tests_run) )) };if ( f_bool((v_num_of_tests_planned != v_num_of_tests_run)) ) { say(( f_string("# Looks like you planned ") + f_string(( f_string(v_num_of_tests_planned) + f_string(( f_string(" tests, but ran ") + f_string(v_num_of_tests_run) )) )) )) } else {  };if ( f_bool(v_num_of_tests_failed) ) { say(( f_string("# Looks like you failed ") + f_string(( f_string(v_num_of_tests_failed) + f_string(( f_string(" tests of ") + f_string(v_num_of_tests_run) )) )) )) } else {  };(v_num_of_tests_run = 0);(v_num_of_tests_failed = 0);(v_num_of_tests_planned = 0);return((v_testing_started = 0)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { if ( f_bool(v_testing_started) ) { (function () { null })() } else { (function () { throw(null); })() };if ( f_bool(v_num_of_tests_planned) ) { (function () { null })() } else { (function () { say(( f_string("1..") + f_string(v_num_of_tests_run) )); })() };if ( f_bool((v_num_of_tests_planned != v_num_of_tests_run)) ) { (function () { say(( f_string("# Looks like you planned ") + f_string(( f_string(v_num_of_tests_planned) + f_string(( f_string(" tests, but ran ") + f_string(v_num_of_tests_run) )) )) )); })() } else { (function () { null })() };if ( f_bool(v_num_of_tests_failed) ) { (function () { say(( f_string("# Looks like you failed ") + f_string(( f_string(v_num_of_tests_failed) + f_string(( f_string(" tests of ") + f_string(v_num_of_tests_run) )) )) )); })() } else { (function () { null })() };(v_num_of_tests_run = 0);(v_num_of_tests_failed = 0);(v_num_of_tests_planned = 0);return((v_testing_started = 0)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
 })();
 

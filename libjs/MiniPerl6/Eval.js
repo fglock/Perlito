@@ -323,13 +323,13 @@ if (typeof Var != 'object') {
   // method eval
   Var.f_eval = function (v_env) {
     var v_self = this;
-    try { var v_ns;var v_name;(v_ns = "");if ( f_bool(v_self.v_namespace) ) { (v_ns = ( f_string(v_self.v_namespace) + f_string("::") )) } else { if ( f_bool(( f_bool((v_self.v_sigil == "@")) && f_bool(( f_bool((v_self.v_twigil == "*")) && f_bool((v_self.v_name == "ARGS")) )) )) ) { throw(List_ARGS) } else {  };if ( f_bool((v_self.v_twigil == ".")) ) { f_warn(( f_string("Interpreter TODO: $.") + f_string(v_self.v_name) ));throw(( f_string("$self->{") + f_string(( f_string(v_self.v_name) + f_string("}") )) )) } else {  };if ( f_bool((v_self.v_name == "/")) ) { f_warn("Interpreter TODO: $/");throw(( f_string(v_self.v_sigil) + f_string("MATCH") )) } else {  } };(v_name = ( f_string(v_self.v_sigil) + f_string(( f_string(v_ns) + f_string(v_self.v_name) )) ));(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_e) { if ( f_bool((v_e).hasOwnProperty(v_name)) ) { throw(v_e[v_name]) } else {  } })(a_[i_]) } })((v_env));return(f_warn("Interpreter runtime error: variable '" + v_name + "' not found")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_ns;var v_name;(v_ns = "");if ( f_bool(v_self.v_namespace) ) { (function () { (v_ns = ( f_string(v_self.v_namespace) + f_string("::") )); })() } else { (function () { if ( f_bool(( f_bool((v_self.v_sigil == "@")) && f_bool(( f_bool((v_self.v_twigil == "*")) && f_bool((v_self.v_name == "ARGS")) )) )) ) { (function () { throw(List_ARGS); })() } else { (function () { null })() };if ( f_bool((v_self.v_twigil == ".")) ) { (function () { f_warn(( f_string("Interpreter TODO: $.") + f_string(v_self.v_name) ));throw(( f_string("$self->{") + f_string(( f_string(v_self.v_name) + f_string("}") )) )); })() } else { (function () { null })() };if ( f_bool((v_self.v_name == "/")) ) { (function () { f_warn("Interpreter TODO: $/");throw(( f_string(v_self.v_sigil) + f_string("MATCH") )); })() } else { (function () { null })() }; })() };(v_name = ( f_string(v_self.v_sigil) + f_string(( f_string(v_ns) + f_string(v_self.v_name) )) ));(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_e) { if ( f_bool((v_e).hasOwnProperty(v_name)) ) { (function () { throw(v_e[v_name]); })() } else { (function () { null })() } })(a_[i_]) } })((v_env));return(f_warn("Interpreter runtime error: variable '" + v_name + "' not found")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Var.f_eval;  // v8 bug workaround
   // method plain_name
   Var.f_plain_name = function () {
     var v_self = this;
-    try { if ( f_bool(v_self.v_namespace) ) { throw(( f_string(v_self.v_sigil) + f_string(( f_string(v_self.v_namespace) + f_string(( f_string("::") + f_string(v_self.v_name) )) )) )) } else {  };throw(( f_string(v_self.v_sigil) + f_string(v_self.v_name) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { if ( f_bool(v_self.v_namespace) ) { (function () { throw(( f_string(v_self.v_sigil) + f_string(( f_string(v_self.v_namespace) + f_string(( f_string("::") + f_string(v_self.v_name) )) )) )); })() } else { (function () { null })() };throw(( f_string(v_self.v_sigil) + f_string(v_self.v_name) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Var.f_plain_name;  // v8 bug workaround
 })();
@@ -352,7 +352,7 @@ if (typeof Bind != 'object') {
   // method eval
   Bind.f_eval = function (v_env) {
     var v_self = this;
-    try { var v_name;var v_value;if ( f_bool(f_isa(v_self.v_parameters, "Lit::Array")) ) { f_warn("Interpreter TODO: Bind") } else {  };if ( f_bool(f_isa(v_self.v_parameters, "Lit::Hash")) ) { f_warn("Interpreter TODO: Bind") } else {  };if ( f_bool(f_isa(v_self.v_parameters, "Lit::Object")) ) { f_warn("Interpreter TODO: Bind") } else {  };if ( f_bool(f_isa(v_self.v_parameters, "Decl")) ) { v_self.v_parameters.f_eval(v_env) } else {  };(v_name = v_self.v_parameters.f_plain_name());(v_value = v_self.v_arguments.f_eval(v_env));(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_e) { if ( f_bool((v_e).hasOwnProperty(v_name)) ) { (v_e[v_name] = v_value);throw(v_value) } else {  } })(a_[i_]) } })((v_env));return(f_warn(( f_string("Interpreter Bind: variable '") + f_string(( f_string(v_name) + f_string("' not found") )) ))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_name;var v_value;if ( f_bool(f_isa(v_self.v_parameters, "Lit::Array")) ) { (function () { f_warn("Interpreter TODO: Bind"); })() } else { (function () { null })() };if ( f_bool(f_isa(v_self.v_parameters, "Lit::Hash")) ) { (function () { f_warn("Interpreter TODO: Bind"); })() } else { (function () { null })() };if ( f_bool(f_isa(v_self.v_parameters, "Lit::Object")) ) { (function () { f_warn("Interpreter TODO: Bind"); })() } else { (function () { null })() };if ( f_bool(f_isa(v_self.v_parameters, "Decl")) ) { (function () { v_self.v_parameters.f_eval(v_env); })() } else { (function () { null })() };(v_name = v_self.v_parameters.f_plain_name());(v_value = v_self.v_arguments.f_eval(v_env));(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_e) { if ( f_bool((v_e).hasOwnProperty(v_name)) ) { (function () { (v_e[v_name] = v_value);throw(v_value); })() } else { (function () { null })() } })(a_[i_]) } })((v_env));return(f_warn(( f_string("Interpreter Bind: variable '") + f_string(( f_string(v_name) + f_string("' not found") )) ))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Bind.f_eval;  // v8 bug workaround
 })();
@@ -401,7 +401,7 @@ if (typeof Call != 'object') {
   // method eval
   Call.f_eval = function (v_env) {
     var v_self = this;
-    try { var v_invocant;f_warn("Interpreter TODO: Call");(v_invocant = v_self.v_invocant.f_eval(v_env));if ( f_bool((v_invocant == "self")) ) { (v_invocant = "$self") } else {  };if ( f_bool(v_self.v_hyper) ) {  } else {  };return(f_warn("Interpreter runtime error: method '" + v_self.v_method + "()' not found")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_invocant;f_warn("Interpreter TODO: Call");(v_invocant = v_self.v_invocant.f_eval(v_env));if ( f_bool((v_invocant == "self")) ) { (function () { (v_invocant = "$self"); })() } else { (function () { null })() };if ( f_bool(v_self.v_hyper) ) { (function () { null })() } else { (function () { null })() };return(f_warn("Interpreter runtime error: method '" + v_self.v_method + "()' not found")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Call.f_eval;  // v8 bug workaround
 })();
@@ -427,7 +427,7 @@ if (typeof Apply != 'object') {
   // method eval
   Apply.f_eval = function (v_env) {
     var v_self = this;
-    try { var v_ns;var v_code;(v_ns = "");if ( f_bool(v_self.v_namespace) ) { (v_ns = ( f_string(v_self.v_namespace) + f_string("::") )) } else {  };(v_code = ( f_string(v_ns) + f_string(v_self.v_code) ));(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_e) { if ( f_bool((v_e).hasOwnProperty(v_code)) ) { throw(v_e[v_code]).f_apply(v_env, v_self.v_arguments) } else {  } })(a_[i_]) } })((v_env));return(f_warn("Interpreter runtime error: subroutine '" + v_code + "()' not found")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_ns;var v_code;(v_ns = "");if ( f_bool(v_self.v_namespace) ) { (function () { (v_ns = ( f_string(v_self.v_namespace) + f_string("::") )); })() } else { (function () { null })() };(v_code = ( f_string(v_ns) + f_string(v_self.v_code) ));(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_e) { if ( f_bool((v_e).hasOwnProperty(v_code)) ) { (function () { throw(v_e[v_code]).f_apply(v_env, v_self.v_arguments); })() } else { (function () { null })() } })(a_[i_]) } })((v_env));return(f_warn("Interpreter runtime error: subroutine '" + v_code + "()' not found")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Apply.f_eval;  // v8 bug workaround
 })();
@@ -473,7 +473,7 @@ if (typeof If != 'object') {
   // method eval
   If.f_eval = function (v_env) {
     var v_self = this;
-    try { var v_cond;(v_cond = v_self.v_cond);if ( f_bool(( f_bool(f_isa(v_cond, "Apply")) && f_bool((v_cond.f_code() == "prefix:<!>")) )) ) { (v_if = function () { var tmp = {v_cond: v_cond.f_arguments()[0],v_body: v_self.v_otherwise,v_otherwise: v_self.v_body,}; tmp.__proto__ = If; return tmp }());throw(v_if.f_eval(v_env)) } else {  };if ( f_bool(v_cond.f_eval(v_env)) ) { (v_env1 = (function () { var a = []; a.push({  }); (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})((v_env));  return a })());(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_stmt) { v_stmt.f_eval(v_env1) })(a_[i_]) } })(v_self.v_body) } else { (v_env1 = (function () { var a = []; a.push({  }); (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})((v_env));  return a })());(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_stmt) { v_stmt.f_eval(v_env1) })(a_[i_]) } })(v_self.v_otherwise) };throw(null) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_cond;(v_cond = v_self.v_cond);if ( f_bool(( f_bool(f_isa(v_cond, "Apply")) && f_bool((v_cond.f_code() == "prefix:<!>")) )) ) { (function () { var v_if;(v_if = function () { var tmp = {v_cond: v_cond.f_arguments()[0],v_body: v_self.v_otherwise,v_otherwise: v_self.v_body,}; tmp.__proto__ = If; return tmp }());throw(v_if.f_eval(v_env)); })() } else { (function () { null })() };if ( f_bool(v_cond.f_eval(v_env)) ) { (function () { var v_env1;(v_env1 = (function () { var a = []; a.push({  }); (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})((v_env));  return a })());(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_stmt) { v_stmt.f_eval(v_env1) })(a_[i_]) } })(v_self.v_body); })() } else { (function () { var v_env1;(v_env1 = (function () { var a = []; a.push({  }); (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})((v_env));  return a })());(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_stmt) { v_stmt.f_eval(v_env1) })(a_[i_]) } })(v_self.v_otherwise); })() };throw(null) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   If.f_eval;  // v8 bug workaround
 })();
@@ -588,7 +588,7 @@ if (typeof Decl != 'object') {
   // method eval
   Decl.f_eval = function (v_env) {
     var v_self = this;
-    try { var v_decl;var v_name;(v_decl = v_self.v_decl);(v_name = v_self.v_var.f_plain_name());if ( f_bool((v_decl == "has")) ) { f_warn("Interpreter TODO: has") } else {  };if ( f_bool((v_env[0]).hasOwnProperty(v_name)) ) {  } else { (v_env[0][v_name] = null) };throw(null) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_decl;var v_name;(v_decl = v_self.v_decl);(v_name = v_self.v_var.f_plain_name());if ( f_bool((v_decl == "has")) ) { (function () { f_warn("Interpreter TODO: has"); })() } else { (function () { null })() };if ( f_bool((v_env[0]).hasOwnProperty(v_name)) ) { (function () { null })() } else { (function () { (v_env[0][v_name] = null); })() };throw(null) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Decl.f_eval;  // v8 bug workaround
   // method plain_name
@@ -675,7 +675,7 @@ if (typeof Sub != 'object') {
     try { var List_param_name = [];
 var v_sub;(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_field) { f_push(List_param_name, v_field.f_plain_name()) })(a_[i_]) } })((v_self.v_sig.f_positional()));(v_sub = function () { var tmp = {v_func: function (v_env, v_args) { try { var Hash_context = {};
 var v_n;var v_env1;var v_r = null;
-(v_n = 0);(Hash_context["@_"] = v_args);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_name) { (Hash_context[v_name] = v_args[v_n].f_eval(v_env));(v_n = (v_n + 1)) })(a_[i_]) } })(List_param_name);(v_env1 = (function () { var a = []; a.push(Hash_context); (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})((v_env));  return a })());(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_stmt) { (v_r = v_stmt.f_eval(v_env1)) })(a_[i_]) } })(v_self.v_block);throw(v_r) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } }  },}; tmp.__proto__ = EvalFunction; return tmp }());if ( f_bool(v_self.v_name) ) { (v_env[0][v_self.v_name] = v_sub) } else {  };throw(v_sub) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+(v_n = 0);(Hash_context["@_"] = v_args);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_name) { (Hash_context[v_name] = v_args[v_n].f_eval(v_env));(v_n = (v_n + 1)) })(a_[i_]) } })(List_param_name);(v_env1 = (function () { var a = []; a.push(Hash_context); (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})((v_env));  return a })());(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_stmt) { (v_r = v_stmt.f_eval(v_env1)) })(a_[i_]) } })(v_self.v_block);throw(v_r) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } }  },}; tmp.__proto__ = EvalFunction; return tmp }());if ( f_bool(v_self.v_name) ) { (function () { (v_env[0][v_self.v_name] = v_sub); })() } else { (function () { null })() };throw(v_sub) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Sub.f_eval;  // v8 bug workaround
 })();
