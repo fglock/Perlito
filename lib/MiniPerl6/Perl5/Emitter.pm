@@ -59,7 +59,6 @@ class Lit::Array {
         my @s;
         for @.array1 -> $item {
             if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
-                || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' )
             {
                 push @s, '@{' ~ $item.emit ~ '}';
             }
@@ -337,7 +336,7 @@ class Apply {
         if $code eq 'self'       { return '$self' };
         if $code eq 'false'      { return '0' };
 
-        if $code eq 'make'       { return '($MATCH->capture = ('   ~ (@.arguments.>>emit).join(', ') ~ '))' };
+        if $code eq 'make'       { return '($MATCH->{capture} = ('   ~ (@.arguments.>>emit).join(', ') ~ '))' };
 
         if $code eq 'say'        { return 'Main::say('   ~ (@.arguments.>>emit).join(', ') ~ ')' };
         if $code eq 'print'      { return 'Main::print(' ~ (@.arguments.>>emit).join(', ') ~ ')' };

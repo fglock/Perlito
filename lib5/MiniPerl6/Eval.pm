@@ -2,7 +2,7 @@
 use v5;
 use strict;
 use MiniPerl6::Perl5::Runtime;
-use MiniPerl6::Perl5::Match;
+our $MATCH = MiniPerl6::Match->new();
 {
 package EvalFunction;
 sub new { shift; bless { @_ }, "EvalFunction" }
@@ -182,7 +182,7 @@ package When;
 sub new { shift; bless { @_ }, "When" }
 sub parameters { @_ == 1 ? ( $_[0]->{parameters} ) : ( $_[0]->{parameters} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; die('TODO - When') }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; die('TODO - When') }
 
 }
 {
@@ -190,13 +190,13 @@ package While;
 sub new { shift; bless { @_ }, "While" }
 sub cond { @_ == 1 ? ( $_[0]->{cond} ) : ( $_[0]->{cond} = $_[1] ) };
 sub body { @_ == 1 ? ( $_[0]->{body} ) : ( $_[0]->{body} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; die('TODO - While') }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; die('TODO - While') }
 
 }
 {
 package Leave;
 sub new { shift; bless { @_ }, "Leave" }
-sub eval { my $self = shift; my $List__ = \@_; do { [] }; die('TODO - Leave') }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; die('TODO - Leave') }
 
 }
 {

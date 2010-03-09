@@ -10,7 +10,6 @@ BEGIN {
 }
 
 use MiniPerl6::Perl5::Runtime;
-use MiniPerl6::Perl5::Match;
 
 package Main;
 use MiniPerl6::Perl5::Emitter;
@@ -327,7 +326,6 @@ elsif ( $backend eq 'perl5' ) {
     $result .=  "use v5;\n";
     $result .=  "use strict;\n";
     $result .=  "use MiniPerl6::Perl5::Runtime;\n";
-    $result .=  "use MiniPerl6::Perl5::Match;\n";
     $result .=  "our \$MATCH = MiniPerl6::Match->new();\n";
     for my $p ( @comp_unit ) {
         $result .=  "{\n" . $p->emit() . "}\n";

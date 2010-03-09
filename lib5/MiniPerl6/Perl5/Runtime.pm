@@ -1,18 +1,89 @@
 
 use v5;
 
-use Data::Dumper;
+{
+    package MiniPerl6::Match;
+    
+    use strict;
+    use warnings;
+    no warnings 'recursion';
+    
+    use overload (
+        '@{}'    => \&array,
+        bool     => \&bool,
+        '${}'    => \&scalar,
+        '""'     => \&flat,
+        '0+'     => \&flat,
+        'eq'     => sub { "$_[0]" eq "$_[1]" },
+    );
+    
+    sub new {
+        my ($class, %data) = @_;
+        return bless \%data, $class;
+    }
+    
+    sub from { $_[0]{from} }
+    sub to   { $_[0]{to} }
+    sub bool { $_[0]{bool} }
+    sub capture { $_[0]{capture} }
+    
+    sub array {    
+        my $v = $_[0];
+             $v->{match} 
+        || ( $v->{match} = [] )
+    }
+    
+    sub hash  {   
+        $_[0]
+    }
+    
+    sub keys   { 
+        CORE::keys %{$_[0]};
+    }
+    sub values { 
+        CORE::values %{$_[0]};
+    }
+    
+    sub flat {
+        my $obj = $_[0];
+        my $cap = $obj->{capture};
+        #print ref $cap;
+        return $cap
+            if defined $cap;
+        return '' unless $obj->{bool};
+        return '' if $_[0]->from > length( $obj->{str} );
+        return substr( $obj->{str}, $_[0]->from, $_[0]->to - $_[0]->from );
+    }
+    
+    sub str {
+        "" . $_[0]->flat;
+    }
+    
+    sub perl {
+        my $o = $_[0];
+        my $key = "$o";
+        return "'!!! Recursive structure !!!'" if $Main::_seen{$key};
+        $Main::_seen{$key} = 1;
+        return __PACKAGE__ . ".new( " 
+                . join( ", ", map { Main::perl($_) . ' => ' . Main::perl($o->{$_}) } CORE::keys %$o ) 
+                . ")";
+    }
+    
+    sub scalar {
+        return \( $_[0]->flat );
+    }
+    
+}
 
 package MiniPerl6::Grammar;
-    use MiniPerl6::Perl5::Match;
     sub space { 
         my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
         my $MATCH; 
         $MATCH = MiniPerl6::Match->new( 
             str => $str,from => $pos,to => $pos, ); 
-        $MATCH->bool(
+        $MATCH->{bool} = (
             substr($str, $MATCH->to()) =~ m/^([[:space:]])/
-            ? ( 1 + ($MATCH->to = ( length( $1 ) + $MATCH->to() )))
+            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->to() )))
             : 0
         );
         $MATCH;
@@ -21,9 +92,9 @@ package MiniPerl6::Grammar;
         my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
         my $MATCH; $MATCH = MiniPerl6::Match->new( 
             str => $str,from => $pos,to => $pos, ); 
-        $MATCH->bool(
+        $MATCH->{bool} = (
             substr($str, $MATCH->to()) =~ m/^([[:digit:]])/
-            ? ( 1 + ($MATCH->to = ( length( $1 ) + $MATCH->to() )))
+            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->to() )))
             : 0
         );
         $MATCH;
@@ -36,9 +107,9 @@ BEGIN {
             my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
             my $MATCH; $MATCH = MiniPerl6::Match->new( 
                 str => $str,from => $pos,to => $pos, ); 
-            $MATCH->bool(
+            $MATCH->{bool} = (
                 substr($str, $MATCH->to()) =~ m/^([[:word:]])/
-                ? ( 1 + ($MATCH->to = ( length( $1 ) + $MATCH->to() )))
+                ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->to() )))
                 : 0
             );
             $MATCH;
@@ -52,9 +123,9 @@ BEGIN {
             str => $str,from => $pos,to => $pos, ); 
         return $MATCH unless ord( substr($str, $MATCH->to()) ) == 10
             || ord( substr($str, $MATCH->to()) ) == 13;
-        $MATCH->bool(
+        $MATCH->{bool} = (
             substr($str, $MATCH->to()) =~ m/(?m)^(\n\r?|\r\n?)/
-            ? ( 1 + ($MATCH->to = ( length( $1 ) + $MATCH->to() )))
+            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->to() )))
             : 0
         );
         $MATCH;
@@ -65,8 +136,8 @@ BEGIN {
             str => $str,from => $pos,to => $pos, bool => 0 ); 
         return $MATCH if ord( substr($str, $MATCH->to()) ) == 10
             || ord( substr($str, $MATCH->to()) ) == 13;
-        $MATCH->to = ( 1 + $MATCH->to );
-        $MATCH->bool( 1 );
+        $MATCH->{to} = ( 1 + $MATCH->to );
+        $MATCH->{bool} = ( 1 );
         $MATCH;
     }
     
@@ -85,12 +156,14 @@ package IO;
 package Main;
 
     sub Str {
-        if ( ref($_) ) {
-            return join( " ", map { Str($_) } @$_ ) if ref($_) eq 'ARRAY';
+        local $_;
+        if ( ref($_[0]) ) {
+            return join( " ", map { Str($_) } @{$_[0]} ) if ref($_[0]) eq 'ARRAY';
         }
-        return $_;
+        return $_[0];
     }
     sub print { 
+        local $_;
         for (@_) {
             if ( ref($_) ) {
                 CORE::print Main::Str($_);
@@ -121,14 +194,29 @@ package Main;
     }
 
     sub perl {
-        local $Data::Dumper::Terse    = 1;
-        my $can = UNIVERSAL::can($_[0] => 'perl');
-        if ($can) {
-            $can->($_[0]);
+        local $_;
+        local %Main::_seen = %Main::_seen;
+        my $o = shift;
+        if ( ref($o) ) {
+            my $key = "$o";
+            return "'!!! Recursive structure !!!'" if $Main::_seen{$key};
+            $Main::_seen{$key} = 1;
+            return '[' . join( ", ", map { perl($_) } @$o ) . ']' 
+                if ref($o) eq 'ARRAY';
+            return '{' . join( ", ", map { perl($_) . ' => ' . perl($o->{$_}) } keys %$o ) . '}' 
+                if ref($o) eq 'HASH';
         }
         else {
-            Data::Dumper::Dumper($_[0]);
+            return $o if (0+$o) eq $o;
+            return "'" . perl_escape_string($o) . "'";
         }
+        my $can = UNIVERSAL::can($o => 'perl');
+        return $can->($o) if $can;
+
+        my $ref = ref($o);
+        return $ref . ".new( "
+            . join( ", ", map { Main::perl($_) . ' => ' . Main::perl($o->{$_}) } CORE::keys %$o )
+            . ")";
     }
     
     sub yaml {

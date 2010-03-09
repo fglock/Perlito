@@ -36,12 +36,4 @@ class MiniPerl6::Perl5::Match {
         return self.scalar;
     };
 
-# TODO
-#use overload (
-#    '@{}'    => \&array,
-#    '%{}'    => \&hash,
-#    '${}'    => \&scalar,
-#);
-#
-
 }

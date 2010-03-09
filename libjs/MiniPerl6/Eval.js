@@ -520,7 +520,7 @@ if (typeof When != 'object') {
   When.v_body = null;
   When.f_body = function () { return this.v_body }
   // method eval
-  When.f_eval = function () {
+  When.f_eval = function (v_env) {
     var v_self = this;
     try { return(f_die("TODO - When")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
@@ -543,7 +543,7 @@ if (typeof While != 'object') {
   While.v_body = null;
   While.f_body = function () { return this.v_body }
   // method eval
-  While.f_eval = function () {
+  While.f_eval = function (v_env) {
     var v_self = this;
     try { return(f_die("TODO - While")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
@@ -560,7 +560,7 @@ if (typeof Leave != 'object') {
 (function () {
   var v__NAMESPACE = Leave;
   // method eval
-  Leave.f_eval = function () {
+  Leave.f_eval = function (v_env) {
     var v_self = this;
     try { return(f_die("TODO - Leave")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }

@@ -2,7 +2,7 @@
 use v5;
 use strict;
 use MiniPerl6::Perl5::Runtime;
-use MiniPerl6::Perl5::Match;
+our $MATCH = MiniPerl6::Match->new();
 {
 package MiniPerl6::Javascript::LexicalBlock;
 sub new { shift; bless { @_ }, "MiniPerl6::Javascript::LexicalBlock" }

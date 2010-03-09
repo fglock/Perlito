@@ -2,7 +2,7 @@
 use v5;
 use strict;
 use MiniPerl6::Perl5::Runtime;
-use MiniPerl6::Perl5::Match;
+our $MATCH = MiniPerl6::Match->new();
 {
 package Test;
 sub new { shift; bless { @_ }, "Test" }

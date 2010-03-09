@@ -1,8 +1,6 @@
 
 use v5;
 
-use Data::Dumper;
-
 package MiniPerl6::Grammar;
     use MiniPerl6::Perl5::Match;
     sub space { 
@@ -95,13 +93,12 @@ package Main;
     }
 
     sub perl {
-        local $Data::Dumper::Terse    = 1;
         my $can = UNIVERSAL::can($_[0] => 'perl');
         if ($can) {
             $can->($_[0]);
         }
         else {
-            Data::Dumper::Dumper($_[0]);
+            # ...
         }
     }
     

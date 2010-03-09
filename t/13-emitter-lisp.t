@@ -3,7 +3,7 @@ use v6;
 class Main {
     use MiniPerl6::Lisp::Emitter;
 
-    say '1..4';
+    say '1..7';
     my $m := ::Val::Num( num => 123 );
     # say '# Ast is:        ', $m.perl;
     say '# code is:  ', $m.emit_lisp;

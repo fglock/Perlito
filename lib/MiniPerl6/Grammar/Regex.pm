@@ -246,7 +246,6 @@ token rule_term {
         # { say 'matching terms'; }
         <rule_terms>
         { 
-            #print 'term: ', Dumper( $_[0]->data );
             make $$<rule_terms> 
         }
     |  <!before \] | \} | \) | \> | \: | \? | \+ | \* | \| | \& | \/ > <any>   # TODO - <...>* - optimize!
