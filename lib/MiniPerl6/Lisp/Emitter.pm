@@ -14,7 +14,7 @@ class MiniPerl6::Lisp::LexicalBlock {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $has_my_decl := 1;
                 if ($decl.var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' nil)'; 
+                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))'; 
                 }
                 else {
                     $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (sv-undef))'; 
@@ -24,7 +24,7 @@ class MiniPerl6::Lisp::LexicalBlock {
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $has_my_decl := 1;
                 if (($decl.parameters).var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' nil)'; 
+                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))'; 
                 }
                 else {
                     $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (sv-undef))'; 
@@ -73,7 +73,7 @@ class CompUnit {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $has_my_decl := 1;
                 if ($decl.var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' nil)'; 
+                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))'; 
                 }
                 else {
                     $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (sv-undef))'; 
@@ -83,7 +83,7 @@ class CompUnit {
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $has_my_decl := 1;
                 if (($decl.parameters).var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' nil)'; 
+                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))'; 
                 }
                 else {
                     $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (sv-undef))'; 
@@ -241,7 +241,9 @@ class Lit::Array {
         if @.array1 {
             my $str := '';
             for @.array1 -> $elem {
-                if $elem.isa( 'Apply' ) && $elem.code eq 'prefix:<@>' {
+                if     ( $elem.isa( 'Var' )   && $elem.sigil eq '@' )
+                    || ( $elem.isa( 'Apply' ) && $elem.code  eq 'prefix:<@>' )
+                {
                     $str := $str ~ ' ' ~ $elem.emit_lisp;
                 }
                 else {
