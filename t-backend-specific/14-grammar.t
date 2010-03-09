@@ -1,11 +1,15 @@
 use v6;
 
 class Main {
+
+    use MiniPerl6::Lisp::Emitter;
+
     say '1..4';
     my $m := MiniPerl6::Grammar.var_ident( '$abc', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', ($$m).perl;
-    if (($$m).emit) eq 'v_abc' {
+    say '# emit_lisp is:  ', ($$m).emit_lisp;
+    if (($$m).emit_lisp) eq 'sv-abc' {
         say 'ok 1';
     }
     else {
@@ -15,7 +19,7 @@ class Main {
     $m := MiniPerl6::Grammar.val_buf( '"abc"', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', ($$m).perl;
-    if (($$m).emit) eq '"abc"' {
+    if (($$m).emit_lisp) eq '"abc"' {
         say 'ok 2';
     }
     else {
@@ -34,8 +38,8 @@ class Main {
 
     $m := MiniPerl6::Grammar.comp_unit( 'class Main { 123 }', 0);
     say '# Ast is:        ', $m.perl;
-    say '# code is:  ', ($$m).emit;
-    if ($$m).emit {
+    # say '# code is:  ', ($$m).emit_lisp;
+    if ($$m).emit_lisp {
         say 'ok 4';
     }
     else {

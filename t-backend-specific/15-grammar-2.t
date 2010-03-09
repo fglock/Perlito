@@ -1,11 +1,15 @@
 use v6;
 
 class Main {
+
+    use MiniPerl6::Lisp::Emitter;
+
     say '1..4';
     my $m := MiniPerl6::Grammar.exp_stmts( 'abc.meth()', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', ($$m).perl;
-    if ((($$m)[0]).emit) eq 'v_abc' {
+    say '# emit is:  ', (($$m)[0]).emit_lisp;
+    if ((($$m)[0]).emit_lisp) eq '(sv-meth (proto-mp-abc) )' {
         say 'ok 1';
     }
     else {
@@ -15,7 +19,8 @@ class Main {
     $m := MiniPerl6::Grammar.exp_stmts( 'abc.meth', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', ($$m).perl;
-    if ((($$m)[0]).emit) eq '"abc"' {
+    say '# emit is:  ', (($$m)[0]).emit_lisp;
+    if ((($$m)[0]).emit_lisp) eq '(sv-meth (proto-mp-abc) )' {
         say 'ok 2';
     }
     else {
@@ -34,8 +39,8 @@ class Main {
 
     $m := MiniPerl6::Grammar.exp_stmts( 'abc.meth(123)', 0);
     say '# Ast is:        ', $m.perl;
-    say '# code is:  ', (($$m)[0]).emit;
-    if (($$m)[0]).emit {
+    say '# code is:  ', (($$m)[0]).emit_lisp;
+    if (($$m)[0]).emit_lisp {
         say 'ok 4';
     }
     else {
