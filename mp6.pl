@@ -46,8 +46,9 @@ mp6 [switches] [programfile]
     -e program      one line of program (omit programfile)
     -Ctarget        compile to target backend: go, js, lisp, parrot, perl5
         additional options:
+        -Cast-perl6   dump the ast in Perl 6 format
         -Cast-json    dump the ast in JSON format
-        -Cast-perl5   dump the ast in perl 5 format
+        -Cast-perl5   dump the ast in Perl 5 format
     -Btarget        run in target backend: go, js, lisp, parrot, perl5
         additional options:
         -Brhino       run in Rhino (javascript)
@@ -337,6 +338,9 @@ elsif ( $backend eq 'perl5' ) {
         eval $result;
         warn $@ if $@;
     }
+}
+elsif ( $backend eq 'ast-perl6' ) {
+    $result .=  Main::perl( \@comp_unit ) . "\n";
 }
 elsif ( $backend eq 'ast-perl5' ) {
     require Data::Dumper;

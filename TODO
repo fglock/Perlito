@@ -14,7 +14,7 @@ Command line compiler (util/mp6)
 
 - does it need a config file? (lib location, make details)
 
-- impl 'make test' or 'prove' (move TODO tests away)
+- impl 'make test' or 'prove' - FIXED prove now works
 
 MiniPerl6 in Rakudo
 
