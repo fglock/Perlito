@@ -95,6 +95,9 @@ type index_er interface {
 type function_er interface {
     f_function(v Capture) *Any
 }
+type exists_er interface {
+	f_exists(v Capture) *Any
+}
 
 
 // constants
@@ -286,6 +289,17 @@ func (i *Hash) f_lookup(v Capture) *Any {
 		return j
 	}
 	return item
+}
+func (i *Hash) f_exists(v Capture) *Any {
+	if i.h == nil {
+	    return b_false()
+	}
+	pos := tostr(v.p[0])
+	_, found := i.h[pos]
+	if found {
+        return b_true()
+	}
+	return b_false()
 }
 func (i Hash) f_perl(Capture) *Any {
 	var s = "{"

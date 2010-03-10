@@ -765,6 +765,23 @@ class Apply {
                                                 ~ (@.arguments.>>emit_go).join(', ')    
                                                 ~ ' } } )' 
                                     }
+        if $code eq 'Int'           { return 'toInt(' 
+                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ')'
+                                        ~ ')' 
+                                    };
+        if $code eq 'Num'           { return 'toInt('    # TODO
+                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ')'
+                                        ~ ')' 
+                                    };
+        if $code eq 'exists'        { 
+                                      my $arg := @.arguments[0];
+                                      if $arg.isa( 'Lookup' ) {
+                                        return '(*' ~ ($arg.obj).emit_go ~ ')' 
+                                            ~ '.(exists_er).f_exists(Capture{ p : []*Any{ ' 
+                                            ~ ($arg.index_exp).emit_go 
+                                            ~ ' } } )';
+                                      }
+                                    }
         if $code eq 'prefix:<~>'    { return Call::emit_go_call( @.arguments[0], 'Str' ) }
         if $code eq 'prefix:<!>'    { return 'toBool(!tobool(' ~ ( @.arguments[0]).emit_go ~ '))' };
         if $code eq 'prefix:<?>'    { return Call::emit_go_call( @.arguments[0], 'Bool') } 
@@ -992,7 +1009,13 @@ class Sig {
         my $str := '';
         my $i := 0;
         for @($.positional) -> $decl { 
-            $str := $str ~ $decl.emit_go ~ ' := v.p[' ~ $i ~ ']; ';
+            $str := $str  
+                ~ "  var " ~ $decl.emit_go ~ " *Any;\n"
+                ~ "  if len(v.p) > " ~ $i ~ " {\n"
+                ~ "    " ~ $decl.emit_go ~ " = v.p[" ~ $i ~ "];\n"
+                ~ "  }\n";
+            # avoid "x declared and not used"
+            $str := $str ~ $decl.emit_go ~ ' = ' ~ $decl.emit_go ~ '; ';
             $i := $i + 1;
         }
         return $str;
