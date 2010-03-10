@@ -11,9 +11,9 @@ class Main {
         say 'not ok 1';
     }
 
-    $<abc> := 3;
-    say '# value is [', $<abc>,']';
-    if ($<abc>) == 3 {
+    $m{"abc"} := 3;
+    say '# value is [', $m{"abc"},']';
+    if ($m{"abc"}) == 3 {
         say 'ok 2';
     }
     else {

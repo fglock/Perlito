@@ -178,13 +178,19 @@ class CompUnit {
                     ~ 'return &m1; '
                 ~ '}();' ~ "\n";
 
+        my %decl_seen;
         for @.body -> $decl1 { 
             my $decl := $decl1;
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $decl := $decl.parameters;
             }
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $str := $str ~ $decl.emit_go_init;
+                my $var_name := (($decl).var).emit_go;
+                if !(%decl_seen{ $var_name }) {
+                    $str := $str ~ $decl.emit_go_init;
+                    %decl_seen{ $var_name } := 1;
+                }
+
             }
         }
 
@@ -335,6 +341,7 @@ class CompUnit {
             shift => 1,
             lookup => 1,
             index => 1,
+            function => 1,
         };
         for @($comp_units) -> $comp_unit {
             for @( $comp_unit.body ) -> $stmt {
@@ -658,7 +665,8 @@ class Call {
                 $meth := '';  # ???
             }
             else {
-                return $invocant ~ '( Capture{ p : []*Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } )';
+                # ((*v_a).(function_er).f_function(Capture{}))
+                return '((*' ~ $invocant ~ ').(function_er).f_function( Capture{ p : []*Any{ ' ~ (@.arguments.>>emit_go).join(', ') ~ ' } } ))';
             }
         };
         
@@ -1014,7 +1022,7 @@ class Sub {
     method emit_go {
         if $.name eq '' { 
             return
-                'Function( func(v Capture) *Any { '
+                'toFunction( func(v Capture) *Any { '
                     ~ '    ' ~ ($.sig).emit_go_bind ~ "\n"
                     ~ '    p := make(chan *Any); go func () { ' ~ "\n"
                     ~ '        ' ~ (MiniPerl6::Go::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_go 

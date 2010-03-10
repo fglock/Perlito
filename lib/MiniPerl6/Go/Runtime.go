@@ -92,6 +92,10 @@ type lookup_er interface {
 type index_er interface {
 	f_index(v Capture) *Any
 }
+type function_er interface {
+    f_function(v Capture) *Any
+}
+
 
 // constants
 var i_1 = toInt(1)
@@ -240,6 +244,13 @@ func (i Str) f_chars(v Capture) *Any { return toInt(len(string(i))) }
 
 
 type Function func(Capture) *Any
+func (f Function) f_function(v Capture) *Any {
+    return f(v)
+}
+func toFunction(f func(Capture) *Any) *Any {
+	var r Any = Function(f)
+	return &r
+}
 
 type Hash struct {
 	h map[string]*Any
