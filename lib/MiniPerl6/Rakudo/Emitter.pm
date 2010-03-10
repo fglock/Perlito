@@ -349,15 +349,6 @@ class Decl {
     has $.var;
     method emit {
         return $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit;
-        #my $decl := $.decl;
-        #my $name := $.var.name;
-        #   ( $decl eq 'has' )
-        #?? ( 'sub ' ~ $name ~ ' { ' ~
-        #    '@_ == 1 ' ~
-        #        '?? ( $_[0].{' ~ $name ~ '} ) ' ~
-        #        '!! ( $_[0].{' ~ $name ~ '} = $_[1] ) ' ~
-        #    '}' )
-        #!! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit;
     }
 }
 
@@ -444,11 +435,11 @@ class Use {
 
 =head1 NAME 
 
-MiniPerl6::Perl5::Emit - Code generator for MiniPerl6-in-Perl5
+MiniPerl6::Rakudo::Emit - Code generator for MiniPerl6-in-Rakudo
 
 =head1 SYNOPSIS
 
-    $program.emit  # generated Perl5 code
+    $program.emit  # generated Perl6 code
 
 =head1 DESCRIPTION
 

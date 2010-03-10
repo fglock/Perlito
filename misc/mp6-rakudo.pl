@@ -13,7 +13,7 @@ use MiniPerl6::Perl5::Match;
 
 package Main;
 use MiniPerl6::Grammar;
-use MiniPerl6::Perl6Parrot::Emitter;
+use MiniPerl6::Rakudo::Emitter;
 use MiniPerl6::Grammar::Regex;
 use MiniPerl6::Emitter::Token;
 
