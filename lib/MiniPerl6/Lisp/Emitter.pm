@@ -13,23 +13,11 @@ class MiniPerl6::Lisp::LexicalBlock {
         for @.block -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $has_my_decl := 1;
-                if ($decl.var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (MAKE-ARRAY 0 :FILL-POINTER T :ADJUSTABLE T))'; 
-                }
-                else {
-                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (sv-undef))'; 
-                }
-                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ ($decl.var).emit_lisp;
+                $my_decl := $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $has_my_decl := 1;
-                if (($decl.parameters).var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (MAKE-ARRAY 0 :FILL-POINTER T :ADJUSTABLE T))'; 
-                }
-                else {
-                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (sv-undef))'; 
-                }
-                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ (($decl.parameters).var).emit_lisp;
+                $my_decl := $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
             }
         }
         if $has_my_decl {
@@ -72,23 +60,11 @@ class CompUnit {
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $has_my_decl := 1;
-                if ($decl.var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (MAKE-ARRAY 0 :FILL-POINTER T :ADJUSTABLE T))'; 
-                }
-                else {
-                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (sv-undef))'; 
-                }
-                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ ($decl.var).emit_lisp;
+                $my_decl := $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $has_my_decl := 1;
-                if (($decl.parameters).var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (MAKE-ARRAY 0 :FILL-POINTER T :ADJUSTABLE T))'; 
-                }
-                else {
-                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (sv-undef))'; 
-                }
-                # $silence_unused_warning := $silence_unused_warning ~ ' ' ~ (($decl.parameters).var).emit_lisp;
+                $my_decl := $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
             }
         }
         if $has_my_decl {
@@ -572,6 +548,19 @@ class Decl {
                 ': ( $_[0]->{' ~ $name ~ '} = $_[1] ) ' ~
             '}' )
         !! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_lisp;
+    }
+    sub emit_lisp_initializer ($decl) {
+        if $decl.sigil eq '%' {
+            return '(' ~ $decl.emit_lisp ~ ' (make-hash-table :test \'equal))'; 
+        }
+        else {
+        if $decl.sigil eq '@' {
+            return '(' ~ $decl.emit_lisp ~ ' (make-array 0 :fill-pointer t :adjustable t))'; 
+        }
+        else {
+            return '(' ~ $decl.emit_lisp ~ ' (sv-undef))'; 
+        }
+        }
     }
 }
 
