@@ -261,7 +261,8 @@ class Lit::Hash {
             my $fields := @.hash1;
             my $str := '';
             for @$fields -> $field { 
-                $str := $str ~ '(setf (gethash ' ~ ($field[0]).emit_lisp ~ ' h) ' ~ ($field[1]).emit_lisp ~ ')';
+                $str := $str ~ '(setf (mp-Main::sv-hash-lookup ' 
+                    ~ ($field[0]).emit_lisp ~ ' h) ' ~ ($field[1]).emit_lisp ~ ')';
             }; 
             return '(let ((h (make-hash-table :test \'equal))) ' ~ $str ~ ' h)';
         }
@@ -304,12 +305,7 @@ class Lookup {
     has $.obj;
     has $.index_exp;
     method emit_lisp {
-        if $.obj.isa( 'Var' ) {
-            if ($.obj.name eq 'MATCH') || ($.obj.name eq '/') {
-                return '(gethash ' ~ $.index_exp.emit_lisp ~ ' (sv-hash ' ~ $.obj.emit_lisp ~ '))';
-            }
-        };
-        return '(gethash ' ~ $.index_exp.emit_lisp ~ ' ' ~ $.obj.emit_lisp ~ ')';
+        return '(mp-Main::sv-hash-lookup ' ~ $.index_exp.emit_lisp ~ ' ' ~ $.obj.emit_lisp ~ ')';
     }
 }
 

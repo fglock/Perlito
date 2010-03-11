@@ -15,7 +15,7 @@
   (:export 
         #:sv-eq #:sv-bool #:sv-substr #:sv-say #:sv-print #:sv-index 
         #:sv-and #:sv-or #:sv-perl #:sv-scalar #:sv-string #:sv-undef
-        #:sv-defined #:sv-array-index))
+        #:sv-defined #:sv-array-index #:sv-hash-lookup))
 (in-package mp-Main)
 
 (setf COMMON-LISP-USER::*posix-argv* (cdr COMMON-LISP-USER::*posix-argv*))
@@ -52,16 +52,15 @@
   (let ((l1 (search substr s))) 
     (if l1 l1 -1)))
 
-;; (defun sv-array-index (sv-array sv-ix)
-;;   (progn 
-;;     (loop for i from (length sv-array) to sv-ix do (push (sv-undef) sv-array))
-;;     (elt sv-array sv-ix)))
 (defmacro sv-array-index (sv-array sv-ix)
   `(aref 
     (progn
       (loop for i from (length ,sv-array) to ,sv-ix do (vector-push-extend (sv-undef) ,sv-array))
       ,sv-array) 
     ,sv-ix))
+
+(defmacro sv-hash-lookup (key h)
+  `(gethash ,key (if (hash-table-p ,h) ,h (sv-hash ,h))))
 
 (if (not (ignore-errors (find-method 'sv-string () ())))
   (defgeneric sv-string (x)
@@ -102,18 +101,8 @@
 (defmacro sv-and (x y)
  `(and (sv-bool ,x) (sv-bool ,y)))
 
-;; (if (not (ignore-errors (find-method 'sv-and () ())))
-;;   (defgeneric sv-and (x y)
-;;       (:documentation "and")))
-;; (defmethod sv-and (x y) (and (sv-bool x) (sv-bool y)))
-
 (defmacro sv-or (x y)
  `(or (sv-bool ,x) (sv-bool ,y)))
-
-;; (if (not (ignore-errors (find-method 'sv-or () ())))
-;;   (defgeneric sv-or (x y)
-;;       (:documentation "or")))
-;; (defmethod sv-or (x y) (or (sv-bool x) (sv-bool y)))
 
 (if (not (ignore-errors (find-method 'sv-perl () ())))
   (defgeneric sv-perl (self)
@@ -224,9 +213,6 @@
 
 (defvar sv-MATCH (make-instance 'mp-MiniPerl6-Match))
 
-(if (not (ignore-errors (find-method 'sv-hash () ())))
-  (defgeneric sv-hash (self)
-      (:documentation "get a hash value")))
 (defmethod sv-hash ((m mp-MiniPerl6-Match)) 
   (or 
     (ignore-errors (slot-value m 'hash))

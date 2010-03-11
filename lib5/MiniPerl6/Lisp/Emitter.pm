@@ -108,7 +108,7 @@ sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (@{$self-
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { @_ == 1 ? ( $_[0]->{hash1} ) : ( $_[0]->{hash1} = $_[1] ) };
-sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (@{$self->{hash1}}) { (my  $fields = $self->{hash1});(my  $str = '');do { for my $field ( @{$fields} ) { ($str = $str . '(setf (gethash ' . $field->[0]->emit_lisp() . ' h) ' . $field->[1]->emit_lisp() . ')') } };return('(let ((h (make-hash-table :test \'equal))) ' . $str . ' h)') } else { return('(make-hash-table :test \'equal)') } } }
+sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (@{$self->{hash1}}) { (my  $fields = $self->{hash1});(my  $str = '');do { for my $field ( @{$fields} ) { ($str = $str . '(setf (mp-Main::sv-hash-lookup ' . $field->[0]->emit_lisp() . ' h) ' . $field->[1]->emit_lisp() . ')') } };return('(let ((h (make-hash-table :test \'equal))) ' . $str . ' h)') } else { return('(make-hash-table :test \'equal)') } } }
 
 }
 {
@@ -138,7 +138,7 @@ package Lookup;
 sub new { shift; bless { @_ }, "Lookup" }
 sub obj { @_ == 1 ? ( $_[0]->{obj} ) : ( $_[0]->{obj} = $_[1] ) };
 sub index_exp { @_ == 1 ? ( $_[0]->{index_exp} ) : ( $_[0]->{index_exp} = $_[1] ) };
-sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (Main::isa($self->{obj}, 'Var')) { do { if ((($self->{obj}->name() eq 'MATCH') || ($self->{obj}->name() eq '/'))) { return('(gethash ' . $self->{index_exp}->emit_lisp() . ' (sv-hash ' . $self->{obj}->emit_lisp() . '))') } else {  } } } else {  } }; return('(gethash ' . $self->{index_exp}->emit_lisp() . ' ' . $self->{obj}->emit_lisp() . ')') }
+sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; return('(mp-Main::sv-hash-lookup ' . $self->{index_exp}->emit_lisp() . ' ' . $self->{obj}->emit_lisp() . ')') }
 
 }
 {
