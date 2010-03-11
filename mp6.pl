@@ -234,10 +234,23 @@ if ( $backend eq 'lisp' ) {
     if ( $execute ) {
         open( OUT, '>', $tmp_filename . '.lisp' )
           or die "Cannot write to ${tmp_filename}.lisp\n";
-        open FILE, "lib/MiniPerl6/Lisp/Runtime.lisp";
+
+        my $filename = "lib/MiniPerl6/Lisp/Runtime.lisp";
+        warn "reading lisp runtime: $filename\n" if $verbose;
+        open FILE, $filename
+          or die "Cannot read Lisp runtime: $filename";
         local $/ = undef;
         my $lib = <FILE>;
-        print OUT $lib, "\n", $result;
+        print OUT $lib, "\n";
+
+        $filename = "liblisp/MiniPerl6/Lisp/Prelude.lisp";
+        warn "reading lisp prelude: $filename\n" if $verbose;
+        open FILE, $filename
+          or die "Cannot read Lisp prelude: $filename";
+        $lib = <FILE>;
+        print OUT $lib, "\n";
+
+        print OUT $result, "\n";
         close(OUT);
         warn "calling lisp compiler\n" if $verbose;
         exec "sbcl --script $tmp_filename.lisp"
