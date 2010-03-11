@@ -10,14 +10,23 @@ class MiniPerl6::Lisp::LexicalBlock {
         my $has_my_decl := 0;
         my $my_decl := '';
         # my $silence_unused_warning := '';
+        my %decl_seen;
         for @.block -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $has_my_decl := 1;
-                $my_decl := $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
+                my $var_name := ($decl.var).emit_lisp;
+                if !(%decl_seen{ $var_name }) {
+                    $has_my_decl := 1;
+                    $my_decl := $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
+                    %decl_seen{ $var_name } := 1;
+                }
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                $has_my_decl := 1;
-                $my_decl := $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
+                my $var_name := (($decl.parameters).var).emit_lisp;
+                if !(%decl_seen{ $var_name }) {
+                    $has_my_decl := 1;
+                    $my_decl := $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
+                    %decl_seen{ $var_name } := 1;
+                }
             }
         }
         if $has_my_decl {
@@ -57,14 +66,23 @@ class CompUnit {
 
         my $has_my_decl := 0;
         my $my_decl := '';
+        my %decl_seen;
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $has_my_decl := 1;
-                $my_decl := $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
+                my $var_name := ($decl.var).emit_lisp;
+                if !(%decl_seen{ $var_name }) {
+                    $has_my_decl := 1;
+                    $my_decl := $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
+                    %decl_seen{ $var_name } := 1;
+                }
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                $has_my_decl := 1;
-                $my_decl := $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
+                my $var_name := (($decl.parameters).var).emit_lisp;
+                if !(%decl_seen{ $var_name }) {
+                    $has_my_decl := 1;
+                    $my_decl := $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
+                    %decl_seen{ $var_name } := 1;
+                }
             }
         }
         if $has_my_decl {
