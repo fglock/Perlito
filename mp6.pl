@@ -108,6 +108,9 @@ if ( $backend eq 'v8'    ) {
 if ( $backend eq 'go' ) {
     $lib_spec = 'Go';
 }
+if ( $backend eq 'lisp' ) {
+    $lib_spec = 'Lisp';
+}
 
 $source_filename = shift @args if @args;
 
@@ -154,6 +157,7 @@ else {
 
     if  (  $backend eq 'go' 
         || $backend eq 'js'
+        || ( $backend eq 'lisp' && $execute )
         ) 
     {
         # TODO - recursive 'use'

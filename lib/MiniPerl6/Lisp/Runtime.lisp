@@ -62,6 +62,18 @@
 (defmacro sv-hash-lookup (key h)
   `(gethash ,key (if (hash-table-p ,h) ,h (sv-hash ,h))))
 
+(if (not (ignore-errors (find-method 'sv-Int () ())))
+  (defgeneric sv-Int (x)
+      (:documentation "Int()")))
+(defmethod sv-Int ((x string)) (parse-integer x))
+(defmethod sv-Int (x) x)
+
+(if (not (ignore-errors (find-method 'sv-Num () ())))
+  (defgeneric sv-Num (x)
+      (:documentation "Num()")))
+(defmethod sv-Num ((x string)) (parse-integer x))
+(defmethod sv-Num (x) x)
+
 (if (not (ignore-errors (find-method 'sv-string () ())))
   (defgeneric sv-string (x)
       (:documentation "stringify values")))

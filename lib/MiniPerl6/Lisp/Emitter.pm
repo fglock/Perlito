@@ -475,6 +475,13 @@ class Apply {
 
         if $code eq 'array'      { return $args };
 
+        if $code eq 'exists'     {
+                                      my $arg := @.arguments[0];
+                                      if $arg.isa( 'Lookup' ) {
+                                        return '(nth-value 1 ' ~ $arg.emit_lisp ~ ')'
+                                      }
+                                 }
+
         if $code eq 'prefix:<~>' { return '(sv-string '     ~ $args ~ ')'  };
         if $code eq 'prefix:<!>' { return '(not (sv-bool '  ~ $args ~ '))' };
         if $code eq 'prefix:<?>' { return '(sv-bool '       ~ $args ~ ')'  };
