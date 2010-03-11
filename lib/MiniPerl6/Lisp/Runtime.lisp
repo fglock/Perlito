@@ -15,7 +15,7 @@
   (:export 
         #:sv-eq #:sv-bool #:sv-substr #:sv-say #:sv-print #:sv-index 
         #:sv-and #:sv-or #:sv-perl #:sv-scalar #:sv-string #:sv-undef
-        #:sv-defined))
+        #:sv-defined #:sv-array-index))
 (in-package mp-Main)
 
 (setf COMMON-LISP-USER::*posix-argv* (cdr COMMON-LISP-USER::*posix-argv*))
@@ -51,6 +51,17 @@
 (defun sv-index (s substr &optional start) 
   (let ((l1 (search substr s))) 
     (if l1 l1 -1)))
+
+;; (defun sv-array-index (sv-array sv-ix)
+;;   (progn 
+;;     (loop for i from (length sv-array) to sv-ix do (push (sv-undef) sv-array))
+;;     (elt sv-array sv-ix)))
+(defmacro sv-array-index (sv-array sv-ix)
+  `(aref 
+    (progn
+      (loop for i from (length ,sv-array) to ,sv-ix do (vector-push-extend (sv-undef) ,sv-array))
+      ,sv-array) 
+    ,sv-ix))
 
 (if (not (ignore-errors (find-method 'sv-string () ())))
   (defgeneric sv-string (x)
@@ -217,8 +228,8 @@
 (defmethod sv-array ((m mp-MiniPerl6-Match)) 
   (or 
     (ignore-errors (slot-value m 'array))
-    (setf (slot-value m 'array) (list (sv-undef) (sv-undef) (sv-undef)))))
-    ;; (setf (slot-value m 'array) (make-array 10 :adjustable 1))))
+    (setf (slot-value m 'array) (make-array 0 :adjustable 1))))
+    ;; (setf (slot-value m 'array) (list (sv-undef) (sv-undef) (sv-undef)))))
 
 ;; compiler utils
 

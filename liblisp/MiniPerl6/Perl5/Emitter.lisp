@@ -387,7 +387,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-emit ((sv-self mp-Lit-Array))
   (block mp6-function
-    (let ((sv-s nil)) (dolist (sv-item (sv-array1 sv-self)) (progn (if (sv-bool (sv-and (typep sv-item 'mp-Var) (sv-eq (sv-sigil sv-item ) "@"))) (progn (sv-push sv-s (concatenate 'string (sv-string "@{") (sv-string (concatenate 'string (sv-string (sv-emit sv-item )) (sv-string "}")))))) (progn (sv-push sv-s (sv-emit sv-item ))))))(concatenate 'string (sv-string "[") (sv-string (concatenate 'string (sv-string (sv-join sv-s ", ")) (sv-string "]")))))))
+    (let ((sv-s (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))) (dolist (sv-item (sv-array1 sv-self)) (progn (if (sv-bool (sv-and (typep sv-item 'mp-Var) (sv-eq (sv-sigil sv-item ) "@"))) (progn (sv-push sv-s (concatenate 'string (sv-string "@{") (sv-string (concatenate 'string (sv-string (sv-emit sv-item )) (sv-string "}")))))) (progn (sv-push sv-s (sv-emit sv-item ))))))(concatenate 'string (sv-string "[") (sv-string (concatenate 'string (sv-string (sv-join sv-s ", ")) (sv-string "]")))))))
 
 (defmethod sv-perl ((self mp-Lit-Array))
   (mp-Main::sv-lisp_dump_object "::Lit::Array" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "array1") (setf (sv-value m) (sv-array1 self)) m) )))

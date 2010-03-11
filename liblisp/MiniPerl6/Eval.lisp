@@ -426,7 +426,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-eval ((sv-self mp-Lit-Array) &optional sv-env)
   (block mp6-function
-    (let ((sv-a nil)) (dolist (sv-v (sv-array1 sv-self)) (progn (sv-push sv-a (sv-eval sv-v sv-env))))(return-from mp6-function sv-a))))
+    (let ((sv-a (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))) (dolist (sv-v (sv-array1 sv-self)) (progn (sv-push sv-a (sv-eval sv-v sv-env))))(return-from mp6-function sv-a))))
 
 (defmethod sv-perl ((self mp-Lit-Array))
   (mp-Main::sv-lisp_dump_object "::Lit::Array" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "array1") (setf (sv-value m) (sv-array1 self)) m) )))
@@ -1558,7 +1558,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-eval ((sv-self mp-Sub) &optional sv-env)
   (block mp6-function
-    (let ((sv-param_name nil)(sv-sub (sv-undef))) (dolist (sv-field (sv-positional (sv-sig sv-self) )) (progn (sv-push sv-param_name (sv-plain_name sv-field ))))(setf sv-sub (let ((m (make-instance 'mp-EvalFunction))) (setf (sv-func m) (lambda  (&optional sv-env sv-args )
+    (let ((sv-param_name (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))(sv-sub (sv-undef))) (dolist (sv-field (sv-positional (sv-sig sv-self) )) (progn (sv-push sv-param_name (sv-plain_name sv-field ))))(setf sv-sub (let ((m (make-instance 'mp-EvalFunction))) (setf (sv-func m) (lambda  (&optional sv-env sv-args )
   (block mp6-function (let ((sv-context (sv-undef))(sv-n (sv-undef))(sv-env1 (sv-undef))(sv-r (sv-undef))) (setf sv-n 0)(setf (gethash "@_" sv-context) sv-args)(dolist (sv-name sv-param_name) (progn (setf (gethash sv-name sv-context) (sv-eval (elt sv-args sv-n) sv-env))(setf sv-n (+ sv-n 1))))(setf sv-env1 (concatenate 'list  (list sv-context) sv-env))(dolist (sv-stmt (sv-block sv-self)) (progn (setf sv-r (sv-eval sv-stmt sv-env1))))(return-from mp6-function sv-r))))
 ) m))(if (sv-bool (sv-name sv-self)) (progn (setf (gethash (sv-name sv-self) (elt sv-env 0)) sv-sub)) nil)(return-from mp6-function sv-sub))))
 

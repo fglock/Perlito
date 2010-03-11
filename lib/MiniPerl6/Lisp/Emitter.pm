@@ -14,7 +14,7 @@ class MiniPerl6::Lisp::LexicalBlock {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $has_my_decl := 1;
                 if ($decl.var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))'; 
+                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (MAKE-ARRAY 0 :FILL-POINTER T :ADJUSTABLE T))'; 
                 }
                 else {
                     $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (sv-undef))'; 
@@ -24,7 +24,7 @@ class MiniPerl6::Lisp::LexicalBlock {
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $has_my_decl := 1;
                 if (($decl.parameters).var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))'; 
+                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (MAKE-ARRAY 0 :FILL-POINTER T :ADJUSTABLE T))'; 
                 }
                 else {
                     $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (sv-undef))'; 
@@ -73,7 +73,7 @@ class CompUnit {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $has_my_decl := 1;
                 if ($decl.var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))'; 
+                    $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (MAKE-ARRAY 0 :FILL-POINTER T :ADJUSTABLE T))'; 
                 }
                 else {
                     $my_decl := $my_decl ~ '(' ~ ($decl.var).emit_lisp ~ ' (sv-undef))'; 
@@ -83,7 +83,7 @@ class CompUnit {
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 $has_my_decl := 1;
                 if (($decl.parameters).var).sigil eq '@' {
-                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))'; 
+                    $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (MAKE-ARRAY 0 :FILL-POINTER T :ADJUSTABLE T))'; 
                 }
                 else {
                     $my_decl := $my_decl ~ '(' ~ (($decl.parameters).var).emit_lisp ~ ' (sv-undef))'; 
@@ -250,10 +250,12 @@ class Lit::Array {
                     $str := $str ~ ' (list ' ~ $elem.emit_lisp ~ ')';
                 }
             }
-            return '(concatenate \'list ' ~ $str ~ ')';
+            return
+                ~ '(let ((_tmp_ (concatenate \'list ' ~ $str ~ '))) ' 
+                ~   '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))'
         }
         else {
-            return 'nil'
+            return '(make-array 0 :adjustable 1)'
         }
     }
 }
@@ -300,7 +302,7 @@ class Index {
     has $.obj;
     has $.index_exp;
     method emit_lisp {
-        return '(elt ' ~ $.obj.emit_lisp ~ ' ' ~ $.index_exp.emit_lisp ~ ')';
+        return '(mp-Main::sv-array-index ' ~ $.obj.emit_lisp ~ ' ' ~ $.index_exp.emit_lisp ~ ')';
     }
 }
 
@@ -544,7 +546,15 @@ class For {
         {
             $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        '(dolist (' ~ $.topic.emit_lisp ~ ' ' ~ $cond.emit_lisp ~ ') ' ~ $block.emit_lisp ~ ')';
+        # '(dolist (' ~ $.topic.emit_lisp ~ ' ' ~ $cond.emit_lisp ~ ') ' ~ $block.emit_lisp ~ ')';
+        '(loop for ' 
+            ~ $.topic.emit_lisp 
+            ~ ' across ' ~ $cond.emit_lisp ~ 
+            ' do ' ~ $block.emit_lisp ~ ')';
+
+        # (loop for x being the elements of '(1 2 3) 
+        #        do (print x))
+
     }
 }
 

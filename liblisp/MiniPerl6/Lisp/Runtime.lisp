@@ -124,6 +124,79 @@
       (:documentation "get a scalar value")))
 (defmethod sv-scalar (x) x)
 
+
+;; Array
+
+    ;; (setf (slot-value m 'array) (make-array 10 :adjustable 1))))
+
+(defpackage mp-array
+  (:use common-lisp mp-Main))
+;; (in-package mp-array)
+(if (not (ignore-errors (find-class 'mp-array)))
+  (defclass mp-array () ()))
+
+(let (x) 
+  (setq x (make-instance 'mp-array))
+  (defun proto-mp-array () x))
+;; has $.array
+(let ((new-slots (list (list :name 'sv-array
+  :readers '(sv-array)
+  :writers '((setf sv-array))
+  :initform '(sv-undef)
+  :initfunction (constantly (sv-undef))))))
+(dolist (slot-defn (sb-mop:class-direct-slots (find-class 'mp-array)))
+(push (list :name (sb-mop:slot-definition-name slot-defn)
+  :readers (sb-mop:slot-definition-readers slot-defn)
+  :writers (sb-mop:slot-definition-writers slot-defn)
+  :initform (sb-mop:slot-definition-initform slot-defn)
+  :initfunction (sb-mop:slot-definition-initfunction slot-defn))
+new-slots))
+(sb-mop:ensure-class 'mp-array :direct-slots new-slots))
+
+;; method index
+(if (not (ignore-errors (find-method 'sv-index () ())))
+  (defgeneric sv-index (sv-self &optional sv-ix)
+      (:documentation "a method")))
+(defmethod sv-index ((sv-self mp-array) &optional sv-ix)
+  (block mp6-function
+    (progn (elt sv-array sv-ix))))
+
+;; method push
+(if (not (ignore-errors (find-method 'sv-push () ())))
+  (defgeneric sv-push (sv-self &optional sv-o)
+      (:documentation "a method")))
+(defmethod sv-push ((sv-self mp-array) &optional sv-o)
+  (block mp6-function
+    (progn (sv-push sv-array sv-o))))
+
+;; method unshift
+(if (not (ignore-errors (find-method 'sv-unshift () ())))
+  (defgeneric sv-unshift (sv-self &optional sv-o)
+      (:documentation "a method")))
+(defmethod sv-unshift ((sv-self mp-array) &optional sv-o)
+  (block mp6-function
+    (progn (sv-unshift sv-array sv-o))))
+
+;; method pop
+(if (not (ignore-errors (find-method 'sv-pop () ())))
+  (defgeneric sv-pop (sv-self)
+      (:documentation "a method")))
+(defmethod sv-pop ((sv-self mp-array))
+  (block mp6-function
+    (progn (sv-pop sv-array))))
+
+;; method shift
+(if (not (ignore-errors (find-method 'sv-shift () ())))
+  (defgeneric sv-shift (sv-self)
+      (:documentation "a method")))
+(defmethod sv-shift ((sv-self mp-array))
+  (block mp6-function
+    (progn (sv-shift sv-array))))
+
+(defmethod sv-perl ((self mp-array))
+  (mp-Main::sv-lisp_dump_object "::array" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "array") (setf (sv-value m) (sv-array self)) m) )))
+
+
 ;; Grammars
 
 (if (not (ignore-errors (find-class 'mp-MiniPerl6-Grammar)))
