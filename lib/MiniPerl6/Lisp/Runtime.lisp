@@ -130,6 +130,16 @@
             (sv-join l ", " ))
         " }" )))
 
+(defmethod sv-values ((x hash-table))
+  (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
+    (maphash #'(lambda (key val) (push val tmp)) x) 
+    tmp ))
+
+(defmethod sv-keys ((x hash-table))
+  (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
+    (maphash #'(lambda (key val) (push key tmp)) x) 
+    tmp ))
+
 (if (not (ignore-errors (find-method 'sv-scalar () ())))
   (defgeneric sv-scalar (self)
       (:documentation "get a scalar value")))

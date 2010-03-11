@@ -378,16 +378,6 @@ class Call {
             $invocant := 'sv-self';
         };
 
-        if     ($.method eq 'values')
-        { 
-            if ($.hyper) {
-                die "not implemented";
-            }
-            else {
-                return '@{' ~ $invocant ~ '}';
-            }
-        };
-
         if $.method eq 'isa' {        
             # (typep "abc" 'Xyz)
             if ((@.arguments[0]).buf) eq 'Str' {
