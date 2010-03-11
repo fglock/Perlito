@@ -165,7 +165,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-emit ((sv-self mp-Rul-Or))
   (block mp6-function
-    (progn (concatenate 'string (sv-string "do { ") (sv-string (concatenate 'string (sv-string "my $pos1 := $MATCH.to; do{ ") (sv-string (concatenate 'string (sv-string (sv-join (mapcar #'sv-emit (sv-or_list sv-self)) "} || do { $MATCH.to := $pos1; ")) (sv-string "} }")))))))))
+    (progn (concatenate 'string (sv-string "do { ") (sv-string (concatenate 'string (sv-string "my $pos1 := $MATCH.to; do{ ") (sv-string (concatenate 'string (sv-string (sv-join (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t))) (map nil #'(lambda (c) (push (sv-emit  c) tmp)) (sv-or_list sv-self)) tmp ) "} || do { $MATCH.to := $pos1; ")) (sv-string "} }")))))))))
 
 (defmethod sv-perl ((self mp-Rul-Or))
   (mp-Main::sv-lisp_dump_object "::Rul::Or" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "or_list") (setf (sv-value m) (sv-or_list self)) m) )))
@@ -204,7 +204,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-emit ((sv-self mp-Rul-Concat))
   (block mp6-function
-    (progn (concatenate 'string (sv-string "(") (sv-string (concatenate 'string (sv-string (sv-join (mapcar #'sv-emit (sv-concat sv-self)) " && ")) (sv-string ")")))))))
+    (progn (concatenate 'string (sv-string "(") (sv-string (concatenate 'string (sv-string (sv-join (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t))) (map nil #'(lambda (c) (push (sv-emit  c) tmp)) (sv-concat sv-self)) tmp ) " && ")) (sv-string ")")))))))
 
 (defmethod sv-perl ((self mp-Rul-Concat))
   (mp-Main::sv-lisp_dump_object "::Rul::Concat" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "concat") (setf (sv-value m) (sv-concat self)) m) )))
@@ -351,7 +351,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-emit ((sv-self mp-Rul-Var))
   (block mp6-function
-    (let ((sv-table (sv-undef))) (setf sv-table (let ((h (make-hash-table :test 'equal))) (setf (gethash "$" h) "$")(setf (gethash "@" h) "$List_")(setf (gethash "%" h) "$Hash_")(setf (gethash "&" h) "$Code_") h))(concatenate 'string (sv-string (gethash (sv-sigil sv-self) sv-table)) (sv-string (sv-name sv-self))))))
+    (let ((sv-table (sv-undef))) (setf sv-table (let ((h (make-hash-table :test 'equal))) (setf (mp-Main::sv-hash-lookup "$" h) "$")(setf (mp-Main::sv-hash-lookup "@" h) "$List_")(setf (mp-Main::sv-hash-lookup "%" h) "$Hash_")(setf (mp-Main::sv-hash-lookup "&" h) "$Code_") h))(concatenate 'string (sv-string (mp-Main::sv-hash-lookup (sv-sigil sv-self) sv-table)) (sv-string (sv-name sv-self))))))
 
 (defmethod sv-perl ((self mp-Rul-Var))
   (mp-Main::sv-lisp_dump_object "::Rul::Var" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "sigil") (setf (sv-value m) (sv-sigil self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "twigil") (setf (sv-value m) (sv-twigil self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "name") (setf (sv-value m) (sv-name self)) m) )))

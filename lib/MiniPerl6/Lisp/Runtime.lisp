@@ -141,6 +141,9 @@
     (maphash #'(lambda (key val) (push key tmp)) x) 
     tmp ))
 
+(defmethod sv-push (a x) 
+  (vector-push-extend x a)
+
 (if (not (ignore-errors (find-method 'sv-scalar () ())))
   (defgeneric sv-scalar (self)
       (:documentation "get a scalar value")))

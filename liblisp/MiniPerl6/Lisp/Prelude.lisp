@@ -174,7 +174,7 @@ new-slots))
 (in-package mp-Main)
 (in-package mp-Main)
   (defun sv-lisp_dump_object (&optional sv-class_name sv-data )
-  (block mp6-function (progn (return-from mp6-function (concatenate 'string (sv-string sv-class_name) (sv-string (concatenate 'string (sv-string "( ") (sv-string (concatenate 'string (sv-string (sv-join (mapcar #'sv-perl sv-data) ", ")) (sv-string " )"))))))))))
+  (block mp6-function (progn (return-from mp6-function (concatenate 'string (sv-string sv-class_name) (sv-string (concatenate 'string (sv-string "( ") (sv-string (concatenate 'string (sv-string (sv-join (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t))) (map nil #'(lambda (c) (push (sv-perl  c) tmp)) sv-data) tmp ) ", ")) (sv-string " )"))))))))))
 
 (in-package mp-Main)
 (defmethod sv-perl ((self mp-Main))

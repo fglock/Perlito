@@ -32,7 +32,7 @@
 (in-package mp-Main)
 (in-package mp-Test)
   (defun sv-isnt (&optional sv-got sv-expected sv-desc sv-todo sv-depends )
-  (block mp6-function (let ((sv-test (sv-undef))) (setf sv-test (not (sv-bool (sv-eq sv-got sv-expected))))(mp-Test::sv-proclaim sv-test (concatenate 'string (sv-string "isnt! ") (sv-string sv-desc)) sv-todo sv-got sv-expected sv-depends (let ((h (make-hash-table :test 'equal))) (setf (gethash "negate" h) 1) h)))))
+  (block mp6-function (let ((sv-test (sv-undef))) (setf sv-test (not (sv-bool (sv-eq sv-got sv-expected))))(mp-Test::sv-proclaim sv-test (concatenate 'string (sv-string "isnt! ") (sv-string sv-desc)) sv-todo sv-got sv-expected sv-depends (let ((h (make-hash-table :test 'equal))) (setf (mp-Main::sv-hash-lookup "negate" h) 1) h)))))
 
 (in-package mp-Main)
 (in-package mp-Test)

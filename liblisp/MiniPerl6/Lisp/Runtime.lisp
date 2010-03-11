@@ -15,7 +15,7 @@
   (:export 
         #:sv-eq #:sv-bool #:sv-substr #:sv-say #:sv-print #:sv-index 
         #:sv-and #:sv-or #:sv-perl #:sv-scalar #:sv-string #:sv-undef
-        #:sv-defined))
+        #:sv-defined #:sv-array-index #:sv-hash-lookup))
 (in-package mp-Main)
 
 (setf COMMON-LISP-USER::*posix-argv* (cdr COMMON-LISP-USER::*posix-argv*))
@@ -51,6 +51,28 @@
 (defun sv-index (s substr &optional start) 
   (let ((l1 (search substr s))) 
     (if l1 l1 -1)))
+
+(defmacro sv-array-index (sv-array sv-ix)
+  `(aref 
+    (progn
+      (loop for i from (length ,sv-array) to ,sv-ix do (vector-push-extend (sv-undef) ,sv-array))
+      ,sv-array) 
+    ,sv-ix))
+
+(defmacro sv-hash-lookup (key h)
+  `(gethash ,key (if (hash-table-p ,h) ,h (sv-hash ,h))))
+
+(if (not (ignore-errors (find-method 'sv-Int () ())))
+  (defgeneric sv-Int (x)
+      (:documentation "Int()")))
+(defmethod sv-Int ((x string)) (parse-integer x))
+(defmethod sv-Int (x) x)
+
+(if (not (ignore-errors (find-method 'sv-Num () ())))
+  (defgeneric sv-Num (x)
+      (:documentation "Num()")))
+(defmethod sv-Num ((x string)) (parse-integer x))
+(defmethod sv-Num (x) x)
 
 (if (not (ignore-errors (find-method 'sv-string () ())))
   (defgeneric sv-string (x)
@@ -91,18 +113,8 @@
 (defmacro sv-and (x y)
  `(and (sv-bool ,x) (sv-bool ,y)))
 
-;; (if (not (ignore-errors (find-method 'sv-and () ())))
-;;   (defgeneric sv-and (x y)
-;;       (:documentation "and")))
-;; (defmethod sv-and (x y) (and (sv-bool x) (sv-bool y)))
-
 (defmacro sv-or (x y)
  `(or (sv-bool ,x) (sv-bool ,y)))
-
-;; (if (not (ignore-errors (find-method 'sv-or () ())))
-;;   (defgeneric sv-or (x y)
-;;       (:documentation "or")))
-;; (defmethod sv-or (x y) (or (sv-bool x) (sv-bool y)))
 
 (if (not (ignore-errors (find-method 'sv-perl () ())))
   (defgeneric sv-perl (self)
@@ -119,83 +131,23 @@
             (sv-join l ", " ))
         " }" )))
 
+(defmethod sv-values ((x hash-table))
+  (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
+    (maphash #'(lambda (key val) (push val tmp)) x) 
+    tmp ))
+
+(defmethod sv-keys ((x hash-table))
+  (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
+    (maphash #'(lambda (key val) (push key tmp)) x) 
+    tmp ))
+
+(defmethod sv-push (a x) 
+  (vector-push-extend x a)
+
 (if (not (ignore-errors (find-method 'sv-scalar () ())))
   (defgeneric sv-scalar (self)
       (:documentation "get a scalar value")))
 (defmethod sv-scalar (x) x)
-
-
-;; Array
-
-    ;; (setf (slot-value m 'array) (make-array 10 :adjustable 1))))
-
-(defpackage mp-array
-  (:use common-lisp mp-Main))
-;; (in-package mp-array)
-(if (not (ignore-errors (find-class 'mp-array)))
-  (defclass mp-array () ()))
-
-(let (x) 
-  (setq x (make-instance 'mp-array))
-  (defun proto-mp-array () x))
-;; has $.array
-(let ((new-slots (list (list :name 'sv-array
-  :readers '(sv-array)
-  :writers '((setf sv-array))
-  :initform '(sv-undef)
-  :initfunction (constantly (sv-undef))))))
-(dolist (slot-defn (sb-mop:class-direct-slots (find-class 'mp-array)))
-(push (list :name (sb-mop:slot-definition-name slot-defn)
-  :readers (sb-mop:slot-definition-readers slot-defn)
-  :writers (sb-mop:slot-definition-writers slot-defn)
-  :initform (sb-mop:slot-definition-initform slot-defn)
-  :initfunction (sb-mop:slot-definition-initfunction slot-defn))
-new-slots))
-(sb-mop:ensure-class 'mp-array :direct-slots new-slots))
-
-;; method index
-(if (not (ignore-errors (find-method 'sv-index () ())))
-  (defgeneric sv-index (sv-self &optional sv-ix)
-      (:documentation "a method")))
-(defmethod sv-index ((sv-self mp-array) &optional sv-ix)
-  (block mp6-function
-    (progn (elt sv-array sv-ix))))
-
-;; method push
-(if (not (ignore-errors (find-method 'sv-push () ())))
-  (defgeneric sv-push (sv-self &optional sv-o)
-      (:documentation "a method")))
-(defmethod sv-push ((sv-self mp-array) &optional sv-o)
-  (block mp6-function
-    (progn (sv-push sv-array sv-o))))
-
-;; method unshift
-(if (not (ignore-errors (find-method 'sv-unshift () ())))
-  (defgeneric sv-unshift (sv-self &optional sv-o)
-      (:documentation "a method")))
-(defmethod sv-unshift ((sv-self mp-array) &optional sv-o)
-  (block mp6-function
-    (progn (sv-unshift sv-array sv-o))))
-
-;; method pop
-(if (not (ignore-errors (find-method 'sv-pop () ())))
-  (defgeneric sv-pop (sv-self)
-      (:documentation "a method")))
-(defmethod sv-pop ((sv-self mp-array))
-  (block mp6-function
-    (progn (sv-pop sv-array))))
-
-;; method shift
-(if (not (ignore-errors (find-method 'sv-shift () ())))
-  (defgeneric sv-shift (sv-self)
-      (:documentation "a method")))
-(defmethod sv-shift ((sv-self mp-array))
-  (block mp6-function
-    (progn (sv-shift sv-array))))
-
-(defmethod sv-perl ((self mp-array))
-  (mp-Main::sv-lisp_dump_object "::array" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "array") (setf (sv-value m) (sv-array self)) m) )))
-
 
 ;; Grammars
 
@@ -276,9 +228,6 @@ new-slots))
 
 (defvar sv-MATCH (make-instance 'mp-MiniPerl6-Match))
 
-(if (not (ignore-errors (find-method 'sv-hash () ())))
-  (defgeneric sv-hash (self)
-      (:documentation "get a hash value")))
 (defmethod sv-hash ((m mp-MiniPerl6-Match)) 
   (or 
     (ignore-errors (slot-value m 'hash))
@@ -290,8 +239,8 @@ new-slots))
 (defmethod sv-array ((m mp-MiniPerl6-Match)) 
   (or 
     (ignore-errors (slot-value m 'array))
-    (setf (slot-value m 'array) (list (sv-undef) (sv-undef) (sv-undef)))))
-    ;; (setf (slot-value m 'array) (make-array 10 :adjustable 1))))
+    (setf (slot-value m 'array) (make-array 0 :adjustable 1))))
+    ;; (setf (slot-value m 'array) (list (sv-undef) (sv-undef) (sv-undef)))))
 
 ;; compiler utils
 
