@@ -414,7 +414,10 @@ class Call {
         };
         
         if ($.hyper) {
-            '(mapcar #\'' ~ $meth ~ $invocant ~ ')';
+            return 
+                  '(let ((tmp (make-array 0 :adjustable 1 :fill-pointer t))) '
+                ~   '(map nil #\'(lambda (c) (push (' ~ $meth ~ ' c) tmp)) ' ~ $invocant ~ ') '
+                ~   'tmp )'
         }
         else {
             return '(' ~ $meth ~ $invocant ~ ' ' ~ $arguments ~ ')';
