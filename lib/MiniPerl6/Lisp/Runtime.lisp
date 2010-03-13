@@ -142,7 +142,7 @@
     tmp ))
 
 (defmethod sv-push (a x) 
-  (vector-push-extend x a)
+  (vector-push-extend x a))
 
 (if (not (ignore-errors (find-method 'sv-scalar () ())))
   (defgeneric sv-scalar (self)
