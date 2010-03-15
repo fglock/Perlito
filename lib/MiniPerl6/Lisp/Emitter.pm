@@ -59,9 +59,9 @@ class CompUnit {
         my $class_name := Main::to_lisp_namespace($.name);
         my $str := ';; class ' ~ $.name ~ Main.newline;
 
-        $str := $str ~ '(defpackage ' ~ $class_name ~ Main.newline
-                ~ '  (:use common-lisp mp-Main))' ~ Main.newline
-                ~ ';; (in-package ' ~ $class_name ~ ')' ~ Main.newline;
+        # $str := $str ~ '(defpackage ' ~ $class_name ~ Main.newline
+        #        ~ '  (:use common-lisp mp-Main))' ~ Main.newline
+        #        ~ ';; (in-package ' ~ $class_name ~ ')' ~ Main.newline;
         # my $silence_unused_warning := '';
 
         my $has_my_decl := 0;
@@ -188,6 +188,20 @@ new-slots))
         }
         $str := $str ~ Main.newline ~ Main.newline;
     }
+
+    sub emit_lisp_program( $comp_units ) {
+        my $str := '';
+        for @($comp_units) -> $comp_unit {
+            $str := $str 
+                    ~ '(defpackage ' ~ Main::to_lisp_namespace($comp_unit.name) ~ "\n"
+                    ~ '  (:use common-lisp mp-Main))' ~ "\n"
+        }
+        for @($comp_units) -> $comp_unit {
+            $str := $str ~ $comp_unit.emit_lisp ~ "\n"
+        }
+        return $str;
+    }
+
 }
 
 class Val::Int {
