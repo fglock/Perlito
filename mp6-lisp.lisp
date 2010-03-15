@@ -118,6 +118,7 @@
 (defmethod sv-bool ((x mp-Undef)) nil)
 (defmethod sv-bool ((x number)) (not (eql x 0)))
 (defmethod sv-bool ((x string)) (and (not (equal x "")) (not (equal x "0"))))
+(defmethod sv-bool ((x vector)) (not (eql (length x) 0)))
 
 (defmacro sv-and (x y)
  `(and (sv-bool ,x) (sv-bool ,y)))
