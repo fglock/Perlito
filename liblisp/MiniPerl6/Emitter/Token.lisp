@@ -46,10 +46,11 @@
 (let (x) 
   (setq x (make-instance 'mp-Rul))
   (defun proto-mp-Rul () x))
+(defun mp-Rul-sv-constant (&optional sv-str )
+  (block mp6-function (let ((sv-len (sv-undef))) (setf sv-len (length sv-str))(if (sv-bool (sv-eq sv-str "\\")) (progn (setf sv-str "\\\\")) nil)(if (sv-bool (sv-eq sv-str "'")) (progn (setf sv-str "\\'")) nil)(if (sv-bool sv-len) (progn (concatenate 'string (sv-string "( ( '") (sv-string (concatenate 'string (sv-string sv-str) (sv-string (concatenate 'string (sv-string "' eq substr( $str, $MATCH.to, ") (sv-string (concatenate 'string (sv-string sv-len) (sv-string (concatenate 'string (sv-string ")) ") (sv-string (concatenate 'string (sv-string "  ?? (1 + ( $MATCH.to := ") (sv-string (concatenate 'string (sv-string sv-len) (sv-string (concatenate 'string (sv-string " + $MATCH.to ))") (sv-string (concatenate 'string (sv-string "  !! false ") (sv-string ")"))))))))))))))))))) (progn (return-from mp6-function "1"))))))
 (in-package mp-Rul)
   (defun sv-constant (&optional sv-str )
-  (block mp6-function (let ((sv-len (sv-undef))) (setf sv-len (length sv-str))(if (sv-bool (sv-eq sv-str "\\")) (progn (setf sv-str "\\\\")) nil)(if (sv-bool (sv-eq sv-str "'")) (progn (setf sv-str "\\'")) nil)(if (sv-bool sv-len) (progn (concatenate 'string (sv-string "( ( '") (sv-string (concatenate 'string (sv-string sv-str) (sv-string (concatenate 'string (sv-string "' eq substr( $str, $MATCH.to, ") (sv-string (concatenate 'string (sv-string sv-len) (sv-string (concatenate 'string (sv-string ")) ") (sv-string (concatenate 'string (sv-string "  ?? (1 + ( $MATCH.to := ") (sv-string (concatenate 'string (sv-string sv-len) (sv-string (concatenate 'string (sv-string " + $MATCH.to ))") (sv-string (concatenate 'string (sv-string "  !! false ") (sv-string ")"))))))))))))))))))) (progn (return-from mp6-function "1"))))))
-
+    (mp-Main::mp-Rul-sv-constant sv-str ))
 (in-package mp-Main)
 (defmethod sv-perl ((self mp-Rul))
   (mp-Main::sv-lisp_dump_object "::Rul" (list )))
@@ -196,7 +197,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-emit ((sv-self mp-Rul-Or))
   (block mp6-function
-    (progn (concatenate 'string (sv-string "do { ") (sv-string (concatenate 'string (sv-string "my $pos1 := $MATCH.to; do{ ") (sv-string (concatenate 'string (sv-string (sv-join (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t))) (map nil #'(lambda (c) (push (sv-emit  c) tmp)) (sv-or_list sv-self)) tmp ) "} || do { $MATCH.to := $pos1; ")) (sv-string "} }")))))))))
+    (progn (concatenate 'string (sv-string "do { ") (sv-string (concatenate 'string (sv-string "my $pos1 := $MATCH.to; do{ ") (sv-string (concatenate 'string (sv-string (sv-join (map 'vector #'(lambda (c) (sv-emit  c)) (sv-or_list sv-self)) "} || do { $MATCH.to := $pos1; ")) (sv-string "} }")))))))))
 
 (defmethod sv-perl ((self mp-Rul-Or))
   (mp-Main::sv-lisp_dump_object "::Rul::Or" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "or_list") (setf (sv-value m) (sv-or_list self)) m) )))
@@ -232,7 +233,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-emit ((sv-self mp-Rul-Concat))
   (block mp6-function
-    (progn (concatenate 'string (sv-string "(") (sv-string (concatenate 'string (sv-string (sv-join (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t))) (map nil #'(lambda (c) (push (sv-emit  c) tmp)) (sv-concat sv-self)) tmp ) " && ")) (sv-string ")")))))))
+    (progn (concatenate 'string (sv-string "(") (sv-string (concatenate 'string (sv-string (sv-join (map 'vector #'(lambda (c) (sv-emit  c)) (sv-concat sv-self)) " && ")) (sv-string ")")))))))
 
 (defmethod sv-perl ((self mp-Rul-Concat))
   (mp-Main::sv-lisp_dump_object "::Rul::Concat" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "concat") (setf (sv-value m) (sv-concat self)) m) )))

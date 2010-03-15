@@ -19,10 +19,11 @@
 (let (x) 
   (setq x (make-instance 'mp-MiniPerl6-Grammar))
   (defun proto-mp-MiniPerl6-Grammar () x))
+(defun mp-MiniPerl6-Grammar-sv-get_class_name ()
+  (block mp6-function (progn sv-Class_name)))
 (in-package mp-MiniPerl6-Grammar)
   (defun sv-get_class_name ()
-  (block mp6-function (progn sv-Class_name)))
-
+    (mp-Main::mp-MiniPerl6-Grammar-sv-get_class_name ))
 (in-package mp-Main)
 ;; method ident_digit
 (if (not (ignore-errors (find-method 'sv-ident_digit () ())))

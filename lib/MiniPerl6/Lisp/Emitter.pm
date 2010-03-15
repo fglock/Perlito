@@ -59,11 +59,6 @@ class CompUnit {
         my $class_name := Main::to_lisp_namespace($.name);
         my $str := ';; class ' ~ $.name ~ Main.newline;
 
-        # $str := $str ~ '(defpackage ' ~ $class_name ~ Main.newline
-        #        ~ '  (:use common-lisp mp-Main))' ~ Main.newline
-        #        ~ ';; (in-package ' ~ $class_name ~ ')' ~ Main.newline;
-        # my $silence_unused_warning := '';
-
         my $has_my_decl := 0;
         my $my_decl := '';
         my %decl_seen;
@@ -159,10 +154,25 @@ new-slots))
 ';
             }
             if $decl.isa( 'Sub' ) {
+                my $pos := ($decl.sig).positional;
+                my $param;
+                if @$pos {
+                    for @$pos -> $field {
+                        $param := $param ~ $field.emit_lisp ~ ' ';
+                    }
+                }
+                my $sig := '';
+                if $param {
+                    $sig := '&optional ' ~ $param;
+                }
+                my $block := MiniPerl6::Lisp::LexicalBlock.new( block => $decl.block );
                 $str := $str 
-                    ~ '(in-package ' ~ $class_name ~ ')' ~ Main.newline
-                    ~ '  ' ~ ($decl).emit_lisp ~ Main.newline
-                    ~ '(in-package mp-Main)' ~ Main.newline;
+                    ~ '(defun ' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' ~ "\n"
+                    ~ '  (block mp6-function ' ~ $block.emit_lisp ~ '))' ~ "\n"
+                    ~ '(in-package ' ~ $class_name ~ ')' ~ "\n"
+                    ~ '  (defun ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' ~ "\n"
+                    ~ '    (mp-Main::' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' ' ~ $param ~ '))' ~ "\n"
+                    ~ '(in-package mp-Main)' ~ "\n";
             }
         }; 
 
@@ -442,10 +452,7 @@ class Call {
         };
         
         if ($.hyper) {
-            return 
-                  '(let ((tmp (make-array 0 :adjustable 1 :fill-pointer t))) '
-                ~   '(map nil #\'(lambda (c) (push (' ~ $meth ~ ' c) tmp)) ' ~ $invocant ~ ') '
-                ~   'tmp )'
+            return '(map \'vector #\'(lambda (c) (' ~ $meth ~ ' c)) ' ~ $invocant ~ ')'
         }
         else {
             return '(' ~ $meth ~ $invocant ~ ' ' ~ $arguments ~ ')';
