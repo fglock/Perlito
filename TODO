@@ -1,6 +1,6 @@
 Eval
 
-- debug Lisp, Go 
+- debug Go 
 
 - add exceptions
 
@@ -14,8 +14,6 @@ Command line compiler (util/mp6)
 
 - does it need a config file? (lib location, make details)
 
-- impl 'make test' or 'prove' - FIXED prove now works
-
 MiniPerl6 in Rakudo
 
 - Rakudo should be able to execute MiniPerl6 directly. What do we need to fix in both sides?
@@ -25,8 +23,6 @@ MiniPerl6 in Lisp
 - implement command line switches '-C' and '-B' (use util/mp6)
 
 - fix warnings
-
-- Eval module doesn't work (no output in test suite)
 
 MiniPerl6 in Go
 
