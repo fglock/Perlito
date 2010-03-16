@@ -222,7 +222,7 @@ class Apply {
         # warn "Apply ", $env.perl, " code: '", $code, "'";
         for @($env) -> $e {
             if exists( $e{ $code } ) {
-                return $e{ $code }.apply( $env, @.arguments );
+                return (($e{ $code }).apply( $env, @.arguments ));
             }
         }
         warn "Interpreter runtime error: subroutine '", $code, "()' not found";
