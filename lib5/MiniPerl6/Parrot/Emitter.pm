@@ -145,9 +145,9 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $fields = 
 package Index;
 sub new { shift; bless { @_ }, "Index" }
 sub obj { @_ == 1 ? ( $_[0]->{obj} ) : ( $_[0]->{obj} = $_[1] ) };
-sub index { @_ == 1 ? ( $_[0]->{index} ) : ( $_[0]->{index} = $_[1] ) };
+sub index_exp { @_ == 1 ? ( $_[0]->{index_exp} ) : ( $_[0]->{index_exp} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $s = '  save $P1' . '
-'); ($s = $s . $self->{obj}->emit_parrot()); ($s = $s . '  $P1 = $P0' . Main->newline()); ($s = $s . $self->{index}->emit_parrot()); ($s = $s . '  $P0 = $P1[$P0]' . Main->newline()); (my  $s = $s . '  restore $P1' . '
+'); ($s = $s . $self->{obj}->emit_parrot()); ($s = $s . '  $P1 = $P0' . Main->newline()); ($s = $s . $self->{index_exp}->emit_parrot()); ($s = $s . '  $P0 = $P1[$P0]' . Main->newline()); (my  $s = $s . '  restore $P1' . '
 '); return($s) }
 
 }
@@ -155,9 +155,9 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $s = '  sa
 package Lookup;
 sub new { shift; bless { @_ }, "Lookup" }
 sub obj { @_ == 1 ? ( $_[0]->{obj} ) : ( $_[0]->{obj} = $_[1] ) };
-sub index { @_ == 1 ? ( $_[0]->{index} ) : ( $_[0]->{index} = $_[1] ) };
+sub index_exp { @_ == 1 ? ( $_[0]->{index_exp} ) : ( $_[0]->{index_exp} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $s = '  save $P1' . '
-'); ($s = $s . $self->{obj}->emit_parrot()); ($s = $s . '  $P1 = $P0' . Main->newline()); ($s = $s . $self->{index}->emit_parrot()); ($s = $s . '  $P0 = $P1[$P0]' . Main->newline()); (my  $s = $s . '  restore $P1' . '
+'); ($s = $s . $self->{obj}->emit_parrot()); ($s = $s . '  $P1 = $P0' . Main->newline()); ($s = $s . $self->{index_exp}->emit_parrot()); ($s = $s . '  $P0 = $P1[$P0]' . Main->newline()); (my  $s = $s . '  restore $P1' . '
 '); return($s) }
 
 }
@@ -182,14 +182,14 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; do { if (Main::
 ') } else {  } }; do { if (Main::isa($self->{parameters}, 'Decl')) { return($self->{arguments}->emit_parrot() . '  .local pmc ' . $self->{parameters}->var()->full_name() . '
 ' . '  ' . $self->{parameters}->var()->full_name() . ' = $P0' . '
 ' . '  .lex \'' . $self->{parameters}->var()->full_name() . '\', $P0' . '
-') } else {  } }; do { if (Main::isa($self->{parameters}, 'Lookup')) { (my  $param = $self->{parameters});(my  $obj = $param->obj());(my  $index = $param->index());return($self->{arguments}->emit_parrot() . '  save $P2' . '
+') } else {  } }; do { if (Main::isa($self->{parameters}, 'Lookup')) { (my  $param = $self->{parameters});(my  $obj = $param->obj());(my  $index = $param->index_exp());return($self->{arguments}->emit_parrot() . '  save $P2' . '
 ' . '  $P2 = $P0' . '
 ' . '  save $P1' . '
 ' . $obj->emit_parrot() . '  $P1 = $P0' . '
 ' . $index->emit_parrot() . '  $P1[$P0] = $P2' . '
 ' . '  restore $P1' . '
 ' . '  restore $P2' . '
-') } else {  } }; do { if (Main::isa($self->{parameters}, 'Index')) { (my  $param = $self->{parameters});(my  $obj = $param->obj());(my  $index = $param->index());return($self->{arguments}->emit_parrot() . '  save $P2' . '
+') } else {  } }; do { if (Main::isa($self->{parameters}, 'Index')) { (my  $param = $self->{parameters});(my  $obj = $param->obj());(my  $index = $param->index_exp());return($self->{arguments}->emit_parrot() . '  save $P2' . '
 ' . '  $P2 = $P0' . '
 ' . '  save $P1' . '
 ' . $obj->emit_parrot() . '  $P1 = $P0' . '

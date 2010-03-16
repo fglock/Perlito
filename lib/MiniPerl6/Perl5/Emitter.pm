@@ -299,6 +299,18 @@ class Call {
                     'Main::' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit).join(', ') ~ ')';
             }
         };
+        if $.method eq 'push' { 
+            return 'push( @{' ~ $invocant ~ '}, '~ (@.arguments.>>emit).join(', ') ~ ' )' 
+        }
+        if $.method eq 'unshift' { 
+            return 'unshift( @{' ~ $invocant ~ '}, '~ (@.arguments.>>emit).join(', ') ~ ' )' 
+        }
+        if $.method eq 'pop' { 
+            return 'pop( @{' ~ $invocant ~ '} )' 
+        }
+        if $.method eq 'shift' { 
+            return 'shift( @{' ~ $invocant ~ '} )' 
+        }
 
         my $meth := $.method;
         if  $meth eq 'postcircumfix:<( )>'  {

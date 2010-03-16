@@ -149,7 +149,7 @@ sub new { shift; bless { @_ }, "Apply" }
 sub code { @_ == 1 ? ( $_[0]->{code} ) : ( $_[0]->{code} = $_[1] ) };
 sub arguments { @_ == 1 ? ( $_[0]->{arguments} ) : ( $_[0]->{arguments} = $_[1] ) };
 sub namespace { @_ == 1 ? ( $_[0]->{namespace} ) : ( $_[0]->{namespace} = $_[1] ) };
-sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $ns = ''); do { if ($self->{namespace}) { ($ns = $self->{namespace} . '::') } else {  } }; (my  $code = $ns . $self->{code}); do { for my $e ( @{$env} ) { do { if (exists($e->{$code})) { return($e->{$code})->apply($env, $self->{arguments}) } else {  } } } }; warn('Interpreter runtime error: subroutine \'', $code, '()\' not found') }
+sub eval { my $self = shift; my $List__ = \@_; my $env; do {  ($env = $List__->[0]); [$env] }; (my  $ns = ''); do { if ($self->{namespace}) { ($ns = $self->{namespace} . '::') } else {  } }; (my  $code = $ns . $self->{code}); do { for my $e ( @{$env} ) { do { if (exists($e->{$code})) { return($e->{$code}->apply($env, $self->{arguments})) } else {  } } } }; warn('Interpreter runtime error: subroutine \'', $code, '()\' not found') }
 
 }
 {
