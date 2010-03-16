@@ -321,3 +321,22 @@
               do (format s "~A~A" delim (aref v i))))
           ""))))
 
+;; IO
+
+(defpackage mp-IO
+  (:use common-lisp mp-Main))
+
+(in-package mp-Main)
+(defun sv-slurp (sv-filename)
+  (format nil "~{~a~%~}"
+    (with-open-file (s sv-filename)
+      (loop for line = (read-line s nil nil)
+            while line
+            collect line into lines
+            finally (return lines)))))
+
+(in-package mp-IO)
+  (defun sv-slurp (&optional sv-filename )
+    (mp-Main::sv-slurp sv-filename ))
+(in-package mp-Main)
+
