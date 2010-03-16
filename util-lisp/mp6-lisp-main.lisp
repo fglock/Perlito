@@ -7,7 +7,10 @@
             collect line into lines
             finally (return lines)))))
 
-(let (source (pos 0) p)
+(let (source 
+      (pos 0) 
+      p 
+      (sv-comp_units (make-array 0 :adjustable 1 :fill-pointer t)))
     (if (sv-eq (elt *mp6-args* 1) "-e")
         (setf source (elt *mp6-args* 2))
         (setf source (slurp (elt *mp6-args* 1))))
@@ -17,8 +20,8 @@
           do (progn
              (setf p (sv-comp_unit (proto-mp-MiniPerl6-Grammar) source pos))
              ;; (format t "~a~%" (sv-perl p))
-             (format t "~a~%" (sv-emit_lisp (sv-capture p)))
+             ;; (format t "~a~%" (sv-emit_lisp (sv-capture p)))
+             (sv-push sv-comp_units (sv-capture p))
              ;; (sv-say (list ";; at source pos: " (sv-to p) " source end: " (length source)))
-             (setf pos (sv-to p)))))
-
-
+             (setf pos (sv-to p))))
+    (sv-print (list (mp-CompUnit::sv-emit_lisp_program sv-comp_units))))

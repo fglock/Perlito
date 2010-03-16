@@ -272,7 +272,7 @@ class Lit::Array {
                 ~    '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))'
         }
         else {
-            return '(make-array 0 :adjustable 1)'
+            return '(make-array 0 :adjustable 1 :fill-pointer t)'
         }
     }
 }
