@@ -232,14 +232,14 @@ class Lit::Object {
 
 class Index {
     has $.obj;
-    has $.index;
+    has $.index_exp;
     method emit_parrot {
         my $s := 
             '  save $P1'  ~ "\n";
         $s := $s ~ $.obj.emit_parrot;
         $s := $s ~ 
             '  $P1 = $P0' ~ Main.newline();
-        $s := $s ~ $.index.emit_parrot;
+        $s := $s ~ $.index_exp.emit_parrot;
         $s := $s ~ 
             '  $P0 = $P1[$P0]' ~ Main.newline();
         my $s := $s ~ 
@@ -250,14 +250,14 @@ class Index {
 
 class Lookup {
     has $.obj;
-    has $.index;
+    has $.index_exp;
     method emit_parrot {
         my $s := 
             '  save $P1'  ~ "\n";
         $s := $s ~ $.obj.emit_parrot;
         $s := $s ~ 
             '  $P1 = $P0' ~ Main.newline;
-        $s := $s ~ $.index.emit_parrot;
+        $s := $s ~ $.index_exp.emit_parrot;
         $s := $s ~ 
             '  $P0 = $P1[$P0]' ~ Main.newline;
         my $s := $s ~ 
@@ -393,7 +393,7 @@ class Bind {
         if $.parameters.isa( 'Lookup' ) {
             my $param := $.parameters;
             my $obj   := $param.obj;
-            my $index := $param.index;
+            my $index := $param.index_exp;
             return
                 $.arguments.emit_parrot ~
                 '  save $P2'  ~ "\n" ~
@@ -409,7 +409,7 @@ class Bind {
         if $.parameters.isa( 'Index' ) {
             my $param := $.parameters;
             my $obj   := $param.obj;
-            my $index := $param.index;
+            my $index := $param.index_exp;
             return
                 $.arguments.emit_parrot ~
                 '  save $P2'  ~ "\n" ~

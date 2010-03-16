@@ -262,15 +262,14 @@ class Lit::Array {
                 if     ( $elem.isa( 'Var' )   && $elem.sigil eq '@' )
                     || ( $elem.isa( 'Apply' ) && $elem.code  eq 'prefix:<@>' )
                 {
-                    $str := $str ~ ' ' ~ $elem.emit_lisp;
+                    $str := $str ~ ' (coerce ' ~ $elem.emit_lisp ~ ' \'list)';
                 }
                 else {
                     $str := $str ~ ' (list ' ~ $elem.emit_lisp ~ ')';
                 }
             }
-            return
-                ~ '(let ((_tmp_ (concatenate \'list ' ~ $str ~ '))) ' 
-                ~   '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))'
+            return '(let ((_tmp_ (concatenate \'list ' ~ $str ~ '))) ' 
+                ~    '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))'
         }
         else {
             return '(make-array 0 :adjustable 1)'

@@ -92,24 +92,17 @@ class Lit::Object {
 
 class Index {
     has $.obj;
-    has $.index;
+    has $.index_exp;
     method emit {
-        $.obj.emit ~ '[' ~ $.index.emit ~ ']';
-        # TODO
-        # if ($.obj.isa(Lit::Seq)) {
-        #    $.obj.emit ~ '[' ~ $.index.emit ~ ']';
-        # }
-        # else {
-        #    $.obj.emit ~ '->[' ~ $.index.emit ~ ']';
-        # }
+        $.obj.emit ~ '[' ~ $.index_exp.emit ~ ']';
     }
 }
 
 class Lookup {
     has $.obj;
-    has $.index;
+    has $.index_exp;
     method emit {
-        $.obj.emit ~ '[' ~ $.index.emit ~ ']';
+        $.obj.emit ~ '[' ~ $.index_exp.emit ~ ']';
     }
 }
 

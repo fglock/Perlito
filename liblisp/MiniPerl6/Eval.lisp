@@ -170,7 +170,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-eval ((sv-self mp-CompUnit) &optional sv-env)
   (block mp6-function
-    (let ((sv-env1 (sv-undef))) (setf sv-env1 (let ((_tmp_ (concatenate 'list  (list (make-hash-table :test 'equal)) sv-env))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-stmt across (sv-body sv-self) do (progn (sv-eval sv-stmt sv-env1))))))
+    (let ((sv-env1 (sv-undef))) (setf sv-env1 (let ((_tmp_ (concatenate 'list  (list (make-hash-table :test 'equal)) (coerce sv-env 'list)))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-stmt across (sv-body sv-self) do (progn (sv-eval sv-stmt sv-env1))))))
 
 (defmethod sv-perl ((self mp-CompUnit))
   (mp-Main::sv-lisp_dump_object "::CompUnit" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "name") (setf (sv-value m) (sv-name self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "attributes") (setf (sv-value m) (sv-attributes self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "methods") (setf (sv-value m) (sv-methods self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "body") (setf (sv-value m) (sv-body self)) m) )))
@@ -1072,7 +1072,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-eval ((sv-self mp-If) &optional sv-env)
   (block mp6-function
-    (let ((sv-cond (sv-undef))) (setf sv-cond (sv-cond sv-self))(if (sv-bool (sv-and (typep sv-cond 'mp-Apply) (sv-eq (sv-code sv-cond ) "prefix:<!>"))) (let ((sv-if (sv-undef))) (setf sv-if (let ((m (make-instance 'mp-If))) (setf (sv-cond m) (mp-Main::sv-array-index (sv-arguments sv-cond ) 0))(setf (sv-body m) (sv-otherwise sv-self))(setf (sv-otherwise m) (sv-body sv-self)) m))(return-from mp6-function (sv-eval sv-if sv-env))) nil)(if (sv-bool (sv-eval sv-cond sv-env)) (let ((sv-env1 (sv-undef))) (setf sv-env1 (let ((_tmp_ (concatenate 'list  (list (make-hash-table :test 'equal)) sv-env))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-stmt across (sv-body sv-self) do (progn (sv-eval sv-stmt sv-env1)))) (let ((sv-env1 (sv-undef))) (setf sv-env1 (let ((_tmp_ (concatenate 'list  (list (make-hash-table :test 'equal)) sv-env))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-stmt across (sv-otherwise sv-self) do (progn (sv-eval sv-stmt sv-env1)))))(return-from mp6-function (sv-undef)))))
+    (let ((sv-cond (sv-undef))) (setf sv-cond (sv-cond sv-self))(if (sv-bool (sv-and (typep sv-cond 'mp-Apply) (sv-eq (sv-code sv-cond ) "prefix:<!>"))) (let ((sv-if (sv-undef))) (setf sv-if (let ((m (make-instance 'mp-If))) (setf (sv-cond m) (mp-Main::sv-array-index (sv-arguments sv-cond ) 0))(setf (sv-body m) (sv-otherwise sv-self))(setf (sv-otherwise m) (sv-body sv-self)) m))(return-from mp6-function (sv-eval sv-if sv-env))) nil)(if (sv-bool (sv-eval sv-cond sv-env)) (let ((sv-env1 (sv-undef))) (setf sv-env1 (let ((_tmp_ (concatenate 'list  (list (make-hash-table :test 'equal)) (coerce sv-env 'list)))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-stmt across (sv-body sv-self) do (progn (sv-eval sv-stmt sv-env1)))) (let ((sv-env1 (sv-undef))) (setf sv-env1 (let ((_tmp_ (concatenate 'list  (list (make-hash-table :test 'equal)) (coerce sv-env 'list)))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-stmt across (sv-otherwise sv-self) do (progn (sv-eval sv-stmt sv-env1)))))(return-from mp6-function (sv-undef)))))
 
 (defmethod sv-perl ((self mp-If))
   (mp-Main::sv-lisp_dump_object "::If" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "cond") (setf (sv-value m) (sv-cond self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "body") (setf (sv-value m) (sv-body self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "otherwise") (setf (sv-value m) (sv-otherwise self)) m) )))
@@ -1138,7 +1138,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-eval ((sv-self mp-For) &optional sv-env)
   (block mp6-function
-    (let ((sv-cond (sv-undef))(sv-topic_name (sv-undef))(sv-env1 (sv-undef))) (setf sv-cond (sv-cond sv-self))(setf sv-topic_name (sv-plain_name (sv-topic sv-self) ))(setf sv-env1 (let ((_tmp_ (concatenate 'list  (list (make-hash-table :test 'equal)) sv-env))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-topic across (sv-eval sv-cond sv-env) do (progn (setf (mp-Main::sv-array-index sv-env1 0) (let ((h (make-hash-table :test 'equal))) (setf (mp-Main::sv-hash-lookup sv-topic_name h) sv-topic) h))(loop for sv-stmt across (sv-body sv-self) do (progn (sv-eval sv-stmt sv-env1)))))(return-from mp6-function (sv-undef)))))
+    (let ((sv-cond (sv-undef))(sv-topic_name (sv-undef))(sv-env1 (sv-undef))) (setf sv-cond (sv-cond sv-self))(setf sv-topic_name (sv-plain_name (sv-topic sv-self) ))(setf sv-env1 (let ((_tmp_ (concatenate 'list  (list (make-hash-table :test 'equal)) (coerce sv-env 'list)))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-topic across (sv-eval sv-cond sv-env) do (progn (setf (mp-Main::sv-array-index sv-env1 0) (let ((h (make-hash-table :test 'equal))) (setf (mp-Main::sv-hash-lookup sv-topic_name h) sv-topic) h))(loop for sv-stmt across (sv-body sv-self) do (progn (sv-eval sv-stmt sv-env1)))))(return-from mp6-function (sv-undef)))))
 
 (defmethod sv-perl ((self mp-For))
   (mp-Main::sv-lisp_dump_object "::For" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "cond") (setf (sv-value m) (sv-cond self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "body") (setf (sv-value m) (sv-body self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "topic") (setf (sv-value m) (sv-topic self)) m) )))
@@ -1534,7 +1534,7 @@ new-slots))
 (defmethod sv-eval ((sv-self mp-Sub) &optional sv-env)
   (block mp6-function
     (let ((sv-param_name (make-array 0 :fill-pointer t :adjustable t))(sv-sub (sv-undef))) (loop for sv-field across (sv-positional (sv-sig sv-self) ) do (progn (sv-push sv-param_name (sv-plain_name sv-field ))))(setf sv-sub (let ((m (make-instance 'mp-EvalFunction))) (setf (sv-func m) (lambda  (&optional sv-env sv-args )
-  (block mp6-function (let ((sv-context (make-hash-table :test 'equal))(sv-n (sv-undef))(sv-env1 (sv-undef))(sv-r (sv-undef))) (setf sv-n 0)(setf (mp-Main::sv-hash-lookup "@_" sv-context) sv-args)(loop for sv-name across sv-param_name do (progn (setf (mp-Main::sv-hash-lookup sv-name sv-context) (sv-eval (mp-Main::sv-array-index sv-args sv-n) sv-env))(setf sv-n (+ sv-n 1))))(setf sv-env1 (let ((_tmp_ (concatenate 'list  (list sv-context) sv-env))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-stmt across (sv-block sv-self) do (progn (setf sv-r (sv-eval sv-stmt sv-env1))))(return-from mp6-function sv-r))))
+  (block mp6-function (let ((sv-context (make-hash-table :test 'equal))(sv-n (sv-undef))(sv-env1 (sv-undef))(sv-r (sv-undef))) (setf sv-n 0)(setf (mp-Main::sv-hash-lookup "@_" sv-context) sv-args)(loop for sv-name across sv-param_name do (progn (setf (mp-Main::sv-hash-lookup sv-name sv-context) (sv-eval (mp-Main::sv-array-index sv-args sv-n) sv-env))(setf sv-n (+ sv-n 1))))(setf sv-env1 (let ((_tmp_ (concatenate 'list  (list sv-context) (coerce sv-env 'list)))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-stmt across (sv-block sv-self) do (progn (setf sv-r (sv-eval sv-stmt sv-env1))))(return-from mp6-function sv-r))))
 ) m))(if (sv-bool (sv-name sv-self)) (progn (setf (mp-Main::sv-hash-lookup (sv-name sv-self) (mp-Main::sv-array-index sv-env 0)) sv-sub)) nil)(return-from mp6-function sv-sub))))
 
 (defmethod sv-perl ((self mp-Sub))
@@ -1571,7 +1571,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-eval ((sv-self mp-Do) &optional sv-env)
   (block mp6-function
-    (let ((sv-env1 (sv-undef))) (setf sv-env1 (let ((_tmp_ (concatenate 'list  (list (make-hash-table :test 'equal)) sv-env))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-stmt across (sv-block sv-self) do (progn (sv-eval sv-stmt sv-env1))))))
+    (let ((sv-env1 (sv-undef))) (setf sv-env1 (let ((_tmp_ (concatenate 'list  (list (make-hash-table :test 'equal)) (coerce sv-env 'list)))) (make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_)))(loop for sv-stmt across (sv-block sv-self) do (progn (sv-eval sv-stmt sv-env1))))))
 
 (defmethod sv-perl ((self mp-Do))
   (mp-Main::sv-lisp_dump_object "::Do" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "block") (setf (sv-value m) (sv-block self)) m) )))

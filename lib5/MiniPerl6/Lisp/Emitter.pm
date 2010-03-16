@@ -111,7 +111,7 @@ sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; '(' . Main::join(
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { @_ == 1 ? ( $_[0]->{array1} ) : ( $_[0]->{array1} = $_[1] ) };
-sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (@{$self->{array1}}) { (my  $str = '');do { for my $elem ( @{$self->{array1}} ) { do { if (((Main::isa($elem, 'Var') && ($elem->sigil() eq '@')) || (Main::isa($elem, 'Apply') && ($elem->code() eq 'prefix:<@>')))) { ($str = $str . ' ' . $elem->emit_lisp()) } else { ($str = $str . ' (list ' . $elem->emit_lisp() . ')') } } } };return((undef)) . '(let ((_tmp_ (concatenate \'list ' . $str . '))) ' . '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))' } else { return('(make-array 0 :adjustable 1)') } } }
+sub emit_lisp { my $self = shift; my $List__ = \@_; do { [] }; do { if (@{$self->{array1}}) { (my  $str = '');do { for my $elem ( @{$self->{array1}} ) { do { if (((Main::isa($elem, 'Var') && ($elem->sigil() eq '@')) || (Main::isa($elem, 'Apply') && ($elem->code() eq 'prefix:<@>')))) { ($str = $str . ' (coerce ' . $elem->emit_lisp() . ' \'list)') } else { ($str = $str . ' (list ' . $elem->emit_lisp() . ')') } } } };return('(let ((_tmp_ (concatenate \'list ' . $str . '))) ' . '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))') } else { return('(make-array 0 :adjustable 1)') } } }
 
 }
 {
