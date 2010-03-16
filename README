@@ -74,6 +74,19 @@ AST output
 
     perl mp6.pl -Cast-json -e 'class Main { say "hello, World!" }'
 
+RUNNING TESTS
+
+Testing a backend using the Perl5 based compiler
+
+    prove -e "perl mp6.pl -Bjs"
+    prove -e "perl mp6.pl -Bperl5"
+    prove -e "perl mp6.pl -Blisp"
+    prove -e "perl mp6.pl -Bgo"
+
+Testing the Lisp image compiler
+
+    prove -e "./mp6-lisp"
+
 AUTHORS
 
 Flavio Soibelmann Glock - fglock@gmail.com

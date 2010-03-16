@@ -1,6 +1,6 @@
 4.0  (plan)
 - 'Eval' module - implements a MiniPerl6 interpreter in MiniPerl6
-- fixed test suite and added 'prove' script
+- fixed test suite and added 'prove' how-to to README
 - supported backends are: Perl6, Javascript, Lisp, Go
 
 3.0  2010-01-21
