@@ -131,15 +131,19 @@
       (:documentation "data dumper")))
 (defmethod sv-perl (x)          (format nil "~A" x))
 (defmethod sv-perl ((x string)) (format nil "~{~a~}" (list "'" (sv-perl_escape_string x) "'")))
-(defmethod sv-perl ((x vector)) (format nil "~{~a~}" (list "[ " (sv-join (mapcar #'sv-perl x) ", ") " ]" )))
+(defmethod sv-perl ((x vector)) (format nil "~{~a~}" (list 
+        "[ " 
+        (sv-join (map 'vector #'(lambda (c) (sv-perl c)) x))
+        " ]" )))
 (defmethod sv-perl ((x mp-Undef)) "undef")
 (defmethod sv-perl ((x hash-table))
    (format nil "~{~a~}" (list
-        "{ " 
-        (let (l) 
-            (maphash #'(lambda (key val) (push (format nil "~A => ~A" (sv-perl key) (sv-perl val)) l)) x) 
+        "{ "
+        (let ((l (make-array 0 :adjustable 1 :fill-pointer t)))
+            (maphash #'(lambda (key val) (vector-push-extend (format nil "~A => ~A" (sv-perl key) (sv-perl val)) l)) x)    
             (sv-join l ", " ))
         " }" )))
+
 
 (defmethod sv-values ((x hash-table))
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))

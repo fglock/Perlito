@@ -26,9 +26,13 @@ MiniPerl6 in Lisp
 
 - fix warnings
 
+- Eval module doesn't work (no output in test suite)
+
 MiniPerl6 in Go
 
 - very slow in bootstrap mode; Ast cache might help.
+
+- Eval module generates an internal Go error.
 
 MiniPerl6 in Perl5
 
