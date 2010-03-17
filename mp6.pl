@@ -271,15 +271,18 @@ if ( $backend eq 'lisp' ) {
         print OUT $lib, "\n";
 
         print OUT $result, "\n";
+
+        if ( $compile_to_bin ) {
+            print OUT
+                '(sb-ext:save-lisp-and-die "tmp-lisp" :toplevel \'compiler-main :executable t )';
+            warn "TODO - Lisp compile_to_bin";
+        }
+
         close(OUT);
-    }
-    if ( $execute ) {
+
         warn "calling lisp compiler\n" if $verbose;
         exec( "sbcl", "--script", "$tmp_filename.lisp", @args )
             or die "can't execute";
-    }
-    if ( $compile_to_bin ) {
-        die "TODO - Lisp compile_to_bin";
     }
 }
 elsif ( $backend eq 'parrot' ) {

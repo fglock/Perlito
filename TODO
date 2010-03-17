@@ -1,8 +1,12 @@
-Eval
+Eval module
 
 - debug Go 
 
 - add exceptions
+
+Command line compiler (mp6.pl)
+
+- implement -Clisp-bin (requires some changes in the lisp emitter)
 
 Command line compiler (util/mp6)
 
@@ -13,6 +17,8 @@ Command line compiler (util/mp6)
 - add "make" capabilities (test file dates, etc)
 
 - does it need a config file? (lib location, make details)
+
+- debug Go
 
 MiniPerl6 in Rakudo
 
@@ -51,6 +57,8 @@ Missing Backends
 
 - Clojure
 
+- v6.pm
+
 Missing Features
 
 - detailed syntax errors
@@ -69,6 +77,8 @@ Missing Features
   (maybe not needed for MP6)
 
 - no 'state', 'constant'
+
+- debugger
 
 Missing Features of the Token sub-compiler
 
