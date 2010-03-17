@@ -349,7 +349,7 @@ class Var {
         }
         else {
             if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
-                return 'COMMON-LISP-USER::*posix-argv*'
+                return '*mp6-args*'
             }
         }
 
