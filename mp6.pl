@@ -303,8 +303,13 @@ elsif ( $backend eq 'js' ) {
 
         print OUT $inc, $result;
         close(OUT);
-        warn "calling javascript compiler: @cmd\n" if $verbose;
-        exec( @cmd, "$tmp_filename.js", @args )
+        my @extra_args;
+        if ( $cmd[0] eq 'v8' && @args ) {
+            @extra_args = ("--") 
+        }
+        my @exec = ( @cmd, "$tmp_filename.js", @extra_args, @args );
+        warn "calling javascript compiler: @exec\n" if $verbose;
+        exec( @exec )
             or die "can't execute";
     }
 }
