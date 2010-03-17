@@ -156,7 +156,33 @@
     tmp ))
 
 (defmethod sv-push (a x) 
-  (vector-push-extend x a))
+  (progn 
+    (vector-push-extend x a)
+    x))
+
+(defmethod sv-unshift (a x) 
+  (let ((l (length a)))
+    (vector-push-extend 0 a)
+    (loop for i from 1 to l 
+          do (setf (aref a (+ (- l i) 1)) 
+                   (aref a (- l i))))
+    (setf (aref a 0) x)
+    x))
+
+(defmethod sv-shift (a) 
+    (if (eql (length a) 0)
+        (sv-Undef)   
+        (let (x)
+          (setf x (aref a 0))
+          (loop for i from 0 to (- (length a) 2) 
+              do (setf (aref a i) (aref a (+ i 1))))
+          (vector-pop a)
+          x)))
+
+(defmethod sv-pop (a)
+    (if (eql (length a) 0)
+        (sv-Undef)   
+        (vector-pop a)))
 
 (if (not (ignore-errors (find-method 'sv-scalar () ())))
   (defgeneric sv-scalar (self)
