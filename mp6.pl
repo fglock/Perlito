@@ -23,6 +23,7 @@ my $backend = 'perl5';
 my $tmp_filename = 'tmp';
 my @cmd;
 my $execute = 1;
+my $compile_to_bin = 0;
 my $verbose = 0;
 my $lib_spec = '';
 my @args = @ARGV;
@@ -45,15 +46,27 @@ mp6 [switches] [programfile]
     -V --version
     -e program      one line of program (omit programfile)
     -Ctarget        compile to target backend: go, js, lisp, parrot, perl5
-        additional options:
+        options:
+        -Cgo          compile to Go source code
+        -Cjs          compile to Javascript source code
+        -Clisp        compile to Lisp source code
+        -Cparrot      compile to PIR source code
+        -Cperl5       compile to Perl 5 source code
         -Cast-perl6   dump the ast in Perl 6 format
         -Cast-json    dump the ast in JSON format
         -Cast-perl5   dump the ast in Perl 5 format
+        -Cgo-bin      create a binary executable file using Go (doesn't run it)
+        -Clisp-bin    create a binary executable file using SBCL Lisp (doesn't run it) 
+        -Cjava-class  create a Java .class (doesn't run it)
     -Btarget        run in target backend: go, js, lisp, parrot, perl5
-        additional options:
+        options:
+        -Bgo          run in Go (this also creates a binary executable)
+        -Bjs          run in V8 (Javascript)
+        -Blisp        run in SBCL (Lisp)
+        -Bparrot      run in Parrot
+        -Bperl5       run in Perl 5 source code
         -Brhino       run in Rhino (javascript)
         -Bv8          run in V8 (javascript)
-        -Bjava-class  create a Java .class 
 ";
         exit;
     }
@@ -72,9 +85,10 @@ mp6 [switches] [programfile]
         shift @args;
         redo;
     }
-    if ( $args[0] =~ /^-C(.*)/ ) {
+    if ( $args[0] =~ /^-C(.*?)(-bin)?$/ ) {
         $execute = 0;
         $backend = $1;
+        $compile_to_bin = $2 ? 1 : 0;
         shift @args;
         redo;
     }
@@ -94,6 +108,7 @@ if ( $backend eq 'java-class' ) {
     @cmd = qw/java org.mozilla.javascript.tools.jsc.Main -opt 9/;
     $backend = 'js';
     $lib_spec = 'Javascript';
+    $execute = 1;
 }
 if ( $backend eq 'rhino' ) { 
     @cmd = qw/java org.mozilla.javascript.tools.shell.Main/; 
@@ -236,7 +251,7 @@ if ( $backend eq 'lisp' ) {
     #    $result .=  $p->emit_lisp() . "\n";
     # }
 
-    if ( $execute ) {
+    if ( $execute || $compile_to_bin ) {
         open( OUT, '>', $tmp_filename . '.lisp' )
           or die "Cannot write to ${tmp_filename}.lisp\n";
 
@@ -257,9 +272,14 @@ if ( $backend eq 'lisp' ) {
 
         print OUT $result, "\n";
         close(OUT);
+    }
+    if ( $execute ) {
         warn "calling lisp compiler\n" if $verbose;
         exec( "sbcl", "--script", "$tmp_filename.lisp", @args )
             or die "can't execute";
+    }
+    if ( $compile_to_bin ) {
+        die "TODO - Lisp compile_to_bin";
     }
 }
 elsif ( $backend eq 'parrot' ) {
@@ -328,7 +348,7 @@ elsif ( $backend eq 'go' ) {
 
     $result .= CompUnit::emit_go_program( \@comp_unit );
 
-    if ( $execute ) {
+    if ( $execute || $compile_to_bin ) {
         open( OUT, '>', $tmp_filename . '.go' )
           or die "Cannot write to ${tmp_filename}.go\n";
         print OUT $result;
@@ -340,6 +360,8 @@ elsif ( $backend eq 'go' ) {
         warn "go compiler: $result\n" if $verbose && $result;
         $result = `6l $tmp_filename.6`;
         warn "go linker: $result\n" if $verbose && $result;
+    }
+    if ( $execute ) {
         warn "now executing\n" if $verbose;
         exec("./6.out", @args)
             or die "can't execute";
@@ -383,7 +405,7 @@ else {
     die "it seems backend '$backend' is not supported";
 }
 
-if ( !$execute ) {
+if ( !$execute && !$compile_to_bin ) {
     print $result;
 }
 

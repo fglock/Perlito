@@ -1,7 +1,9 @@
 4.0  (plan)
-- 'Eval' module - implements a MiniPerl6 interpreter in MiniPerl6
-- fixed test suite and added 'prove' how-to to README
-- supported backends are: Perl6, Javascript, Lisp, Go
+- 'Eval' module - implements a MiniPerl6 interpreter in MiniPerl6.
+  This should add some debugging capabilities later on.
+- New test suite. Added 'prove' how-to to README
+- Supported backends are: Perl5, Javascript, JVM, Lisp, Go
+- New compiler options to create binary executables
 
 3.0  2010-01-21
 - Go language backend; using Go: http://golang.org
