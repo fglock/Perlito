@@ -52,7 +52,11 @@
   (map nil #'(lambda (c) (format t "~a" (sv-string c))) l))
 ;;  (format t "~a" (sv-join l "")))
 
-(defun sv-substr (s start count) 
+(if (not (ignore-errors (find-method 'sv-substr () ())))
+  (defgeneric sv-substr (x s c)
+      (:documentation "substring")))
+(defmethod sv-substr ((s mp-Undef) start count) "")
+(defmethod sv-substr (s start count) 
   (let ((l1 (length s)) (l2 (+ start count)))
   (or (ignore-errors (subseq s start (if (> l2 l1) l1 l2)))
       "")))
