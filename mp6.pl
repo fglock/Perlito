@@ -21,7 +21,7 @@ my ( @switch_e, $source, $source_filename, $result );
 my @comp_unit;
 my $backend = 'perl5';
 my $tmp_filename = 'tmp';
-my $cmd = '';
+my @cmd;
 my $execute = 1;
 my $verbose = 0;
 my $lib_spec = '';
@@ -87,21 +87,21 @@ mp6 [switches] [programfile]
 }
 
 if ( $backend eq 'js'    ) { 
-    $cmd = 'v8'; 
+    @cmd = ('v8'); 
     $lib_spec = 'Javascript';
 }
 if ( $backend eq 'java-class' ) { 
-    $cmd = 'java org.mozilla.javascript.tools.jsc.Main -opt 9 ';
+    @cmd = qw/java org.mozilla.javascript.tools.jsc.Main -opt 9/;
     $backend = 'js';
     $lib_spec = 'Javascript';
 }
 if ( $backend eq 'rhino' ) { 
-    $cmd = 'java org.mozilla.javascript.tools.shell.Main'; 
+    @cmd = qw/java org.mozilla.javascript.tools.shell.Main/; 
     $backend = 'js';
     $lib_spec = 'Javascript';
 }
 if ( $backend eq 'v8'    ) { 
-    $cmd = 'v8';    
+    @cmd = ('v8');    
     $backend = 'js';
     $lib_spec = 'Javascript';
 }
@@ -121,7 +121,7 @@ if ( $verbose ) {
     warn "\texecute         '$execute'\n";
     warn "\tsource_filename '$source_filename'\n";
     warn "\tBin             '$::Bin'\n";
-    warn "\tcmd             '$cmd'\n";
+    warn "\tcmd             '@cmd'\n";
     warn "\tlibspec         '$lib_spec'\n";
     warn "\te               '${_}'\n" for @switch_e;
 }
@@ -258,7 +258,7 @@ if ( $backend eq 'lisp' ) {
         print OUT $result, "\n";
         close(OUT);
         warn "calling lisp compiler\n" if $verbose;
-        exec "sbcl --script $tmp_filename.lisp"
+        exec( "sbcl", "--script", "$tmp_filename.lisp", @args )
             or die "can't execute";
     }
 }
@@ -275,7 +275,7 @@ elsif ( $backend eq 'parrot' ) {
         print OUT $result;
         close(OUT);
         warn "calling parrot compiler\n" if $verbose;
-        exec "parrot $tmp_filename.pir"
+        exec( "parrot", "$tmp_filename.pir", @args )
             or die "can't execute";
     }
 }
@@ -303,8 +303,8 @@ elsif ( $backend eq 'js' ) {
 
         print OUT $inc, $result;
         close(OUT);
-        warn "calling javascript compiler: $cmd\n" if $verbose;
-        exec "$cmd $tmp_filename.js"
+        warn "calling javascript compiler: @cmd\n" if $verbose;
+        exec( @cmd, "$tmp_filename.js", @args )
             or die "can't execute";
     }
 }
@@ -336,7 +336,7 @@ elsif ( $backend eq 'go' ) {
         $result = `6l $tmp_filename.6`;
         warn "go linker: $result\n" if $verbose && $result;
         warn "now executing\n" if $verbose;
-        exec "./6.out"
+        exec("./6.out", @args)
             or die "can't execute";
     }
 }
