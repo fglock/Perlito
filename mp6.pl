@@ -47,26 +47,27 @@ mp6 [switches] [programfile]
     -e program      one line of program (omit programfile)
     -Ctarget        compile to target backend: go, js, lisp, parrot, perl5
         options:
-        -Cgo          compile to Go source code
-        -Cjs          compile to Javascript source code
-        -Clisp        compile to Lisp source code
-        -Cparrot      compile to PIR source code
-        -Cperl5       compile to Perl 5 source code
-        -Cast-perl6   dump the ast in Perl 6 format
-        -Cast-json    dump the ast in JSON format
-        -Cast-perl5   dump the ast in Perl 5 format
-        -Cgo-bin      create a binary executable file using Go (doesn't run it)
-        -Clisp-bin    create a binary executable file using SBCL Lisp (doesn't run it) 
-        -Cjava-class  create a Java .class (doesn't run it)
+        -Cgo           compile to Go source code
+        -Cjs           compile to Javascript source code
+        -Clisp         compile to Lisp source code
+        -Cparrot       compile to PIR source code
+        -Cperl5        compile to Perl 5 source code
+        -Cast-perl6    dump the ast in Perl 6 format
+        -Cast-json     dump the ast in JSON format
+        -Cast-perl5    dump the ast in Perl 5 format
+        -Cgo-bin       create a binary executable file using Go (doesn't run it)
+        -Clisp-bin     create a binary executable file using SBCL Lisp (doesn't run it) 
+        -Cjava-class   create a Java .class (doesn't run it)
     -Btarget        run in target backend: go, js, lisp, parrot, perl5
         options:
-        -Bgo          run in Go (this also creates a binary executable)
-        -Bjs          run in V8 (Javascript)
-        -Blisp        run in SBCL (Lisp)
-        -Bparrot      run in Parrot
-        -Bperl5       run in Perl 5 source code
-        -Brhino       run in Rhino (javascript)
-        -Bv8          run in V8 (javascript)
+        -Bgo           run in Go (this also creates a binary executable)
+        -Bjs           run in V8 (Javascript)
+        -Blisp         run in SBCL (Lisp)
+        -Bparrot       run in Parrot
+        -Bperl5        run in Perl 5 source code
+        -Brhino        run in Rhino (Javascript)
+        -Bv8           run in V8 (Javascript)
+        -Bspidermonkey run in SpiderMonkey (Javascript)
 ";
         exit;
     }
@@ -112,6 +113,11 @@ if ( $backend eq 'java-class' ) {
 }
 if ( $backend eq 'rhino' ) { 
     @cmd = qw/java org.mozilla.javascript.tools.shell.Main/; 
+    $backend = 'js';
+    $lib_spec = 'Javascript';
+}
+if ( $backend eq 'spidermonkey' ) { 
+    @cmd = qw/spidermonkey/; 
     $backend = 'js';
     $lib_spec = 'Javascript';
 }
