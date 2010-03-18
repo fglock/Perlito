@@ -6,11 +6,19 @@ class CompUnit {
     has %.methods;
     has @.body;
     method emit {
-          'package ' ~ $.name ~ ";" ~ Main.newline 
-        ~ 'sub new { shift; bless { @_ }, "' ~ $.name ~ '" }'  ~ Main.newline 
-        ~ (@.body.>>emit).join( ";" ~ Main.newline )
-        ~ Main.newline
-        ~ Main.newline
+          "{\n"
+        ~ 'package ' ~ $.name ~ ";" ~ "\n" 
+        ~ 'sub new { shift; bless { @_ }, "' ~ $.name ~ '" }'  ~ "\n" 
+        ~ (@.body.>>emit).join( ";" ~ "\n" ) ~ "\n"
+        ~ "}\n"
+        ~ "\n"
+    }
+    sub emit_perl5_program( $comp_units ) {
+        my $str := '';
+        for @($comp_units) -> $comp_unit {
+            $str := $str ~ $comp_unit.emit
+        }
+        return $str;
     }
 }
 

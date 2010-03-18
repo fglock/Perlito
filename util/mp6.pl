@@ -160,10 +160,8 @@ mp6 [switches] [programfile]
             say "use v5;";
             say "use strict;";
             say "use MiniPerl6::Perl5::Runtime;";
-            say "use MiniPerl6::Perl5::Match;";
-            for @($comp_units) -> $c {
-                say "{\n", $c.emit, "}";
-            }
+            say 'our $MATCH = MiniPerl6::Match->new();';
+            print CompUnit::emit_perl5_program( $comp_units );
             say "1;";
         }
         if $backend eq 'js' {

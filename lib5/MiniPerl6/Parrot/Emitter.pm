@@ -35,8 +35,8 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $a = $self
 '); do { for my $item ( @{$a} ) { do { if ((Main::isa($item, 'Decl') && ($item->decl() eq 'has'))) { ($s = $s . $item->emit_parrot()) } else {  } };do { if ((Main::isa($item, 'Decl') || (Main::isa($item, 'Sub') || Main::isa($item, 'Method')))) {  } else { ($s = $s . $item->emit_parrot()) } } } }; ($s = $s . '.end' . '
 ' . '
 '); return($s) }
-
 }
+
 {
 package Val::Int;
 sub new { shift; bless { @_ }, "Val::Int" }
@@ -44,8 +44,8 @@ sub int { @_ == 1 ? ( $_[0]->{int} ) : ( $_[0]->{int} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; '  $P0 = new .Integer' . '
 ' . '  $P0 = ' . $self->{int} . '
 ' }
-
 }
+
 {
 package Val::Bit;
 sub new { shift; bless { @_ }, "Val::Bit" }
@@ -53,8 +53,8 @@ sub bit { @_ == 1 ? ( $_[0]->{bit} ) : ( $_[0]->{bit} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; '  $P0 = new "Integer"' . '
 ' . '  $P0 = ' . $self->{bit} . '
 ' }
-
 }
+
 {
 package Val::Num;
 sub new { shift; bless { @_ }, "Val::Num" }
@@ -62,8 +62,8 @@ sub num { @_ == 1 ? ( $_[0]->{num} ) : ( $_[0]->{num} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; '  $P0 = new "Float"' . '
 ' . '  $P0 = ' . $self->{num} . '
 ' }
-
 }
+
 {
 package Val::Buf;
 sub new { shift; bless { @_ }, "Val::Buf" }
@@ -71,30 +71,30 @@ sub buf { @_ == 1 ? ( $_[0]->{buf} ) : ( $_[0]->{buf} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; '  $P0 = new "String"' . '
 ' . '  $P0 = ' . '"' . $self->{buf} . '"' . '
 ' }
-
 }
+
 {
 package Val::Undef;
 sub new { shift; bless { @_ }, "Val::Undef" }
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; '  $P0 = new .Undef' . '
 ' }
-
 }
+
 {
 package Val::Object;
 sub new { shift; bless { @_ }, "Val::Object" }
 sub class { @_ == 1 ? ( $_[0]->{class} ) : ( $_[0]->{class} = $_[1] ) };
 sub fields { @_ == 1 ? ( $_[0]->{fields} ) : ( $_[0]->{fields} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; die('Val::Object - not used yet') }
-
 }
+
 {
 package Lit::Seq;
 sub new { shift; bless { @_ }, "Lit::Seq" }
 sub seq { @_ == 1 ? ( $_[0]->{seq} ) : ( $_[0]->{seq} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; die('Lit::Seq - not used yet') }
-
 }
+
 {
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
@@ -104,8 +104,8 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $a = $self
 '); do { for my $item ( @{$a} ) { ($s = $s . $item->emit_parrot());($s = $s . '  push $P1, $P0' . Main->newline()) } }; (my  $s = $s . '  $P0 = $P1' . '
 ' . '  restore $P1' . '
 '); return($s) }
-
 }
+
 {
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
@@ -117,14 +117,14 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $a = $self
 ' . '  restore $P2' . '
 ' . '  restore $P1' . '
 '); return($s) }
-
 }
+
 {
 package Lit::Code;
 sub new { shift; bless { @_ }, "Lit::Code" }
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; die('Lit::Code - not used yet') }
-
 }
+
 {
 package Lit::Object;
 sub new { shift; bless { @_ }, "Lit::Object" }
@@ -139,8 +139,8 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $fields = 
 ' . '  restore $S2' . '
 ' . '  restore $P1' . '
 '); $str }
-
 }
+
 {
 package Index;
 sub new { shift; bless { @_ }, "Index" }
@@ -149,8 +149,8 @@ sub index_exp { @_ == 1 ? ( $_[0]->{index_exp} ) : ( $_[0]->{index_exp} = $_[1] 
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $s = '  save $P1' . '
 '); ($s = $s . $self->{obj}->emit_parrot()); ($s = $s . '  $P1 = $P0' . Main->newline()); ($s = $s . $self->{index_exp}->emit_parrot()); ($s = $s . '  $P0 = $P1[$P0]' . Main->newline()); (my  $s = $s . '  restore $P1' . '
 '); return($s) }
-
 }
+
 {
 package Lookup;
 sub new { shift; bless { @_ }, "Lookup" }
@@ -159,8 +159,8 @@ sub index_exp { @_ == 1 ? ( $_[0]->{index_exp} ) : ( $_[0]->{index_exp} = $_[1] 
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $s = '  save $P1' . '
 '); ($s = $s . $self->{obj}->emit_parrot()); ($s = $s . '  $P1 = $P0' . Main->newline()); ($s = $s . $self->{index_exp}->emit_parrot()); ($s = $s . '  $P0 = $P1[$P0]' . Main->newline()); (my  $s = $s . '  restore $P1' . '
 '); return($s) }
-
 }
+
 {
 package Var;
 sub new { shift; bless { @_ }, "Var" }
@@ -171,8 +171,8 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (($self->{twigi
 ' : '  $P0 = ' . $self->full_name() . ' ' . '
 ') };
 sub full_name { my $self = shift; my $List__ = \@_; do { [] }; (my  $table = { '$' => 'scalar_','@' => 'list_','%' => 'hash_','&' => 'code_', }); (($self->{twigil} eq '.') ? $self->{name} : (($self->{name} eq '/') ? $table->{$self->{sigil}} . 'MATCH' : $table->{$self->{sigil}} . $self->{name})) }
-
 }
+
 {
 package Bind;
 sub new { shift; bless { @_ }, "Bind" }
@@ -198,16 +198,16 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; do { if (Main::
 ' . '  restore $P2' . '
 ') } else {  } }; die('Not implemented binding: ' . $self->{parameters} . '
 ' . $self->{parameters}->emit_parrot()) }
-
 }
+
 {
 package Proto;
 sub new { shift; bless { @_ }, "Proto" }
 sub name { @_ == 1 ? ( $_[0]->{name} ) : ( $_[0]->{name} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; '  $P0 = ' . $self->{name} . '
 ' }
-
 }
+
 {
 package Call;
 sub new { shift; bless { @_ }, "Call" }
@@ -220,8 +220,8 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; do { if ((($sel
 ');($i = ($i + 1)) } }; ($str = $str . $self->{invocant}->emit_parrot() . '  $P0 = $P0.' . $meth . '('); ($i = 0); my  $List_p; do { for my $arg ( @{$List_args} ) { ($List_p->[$i] = '$P' . ($i + 10));($i = ($i + 1)) } }; ($str = $str . Main::join($List_p, ', ') . ')' . '
 '); do { for my $arg ( @{$List_args} ) { ($ii = ($ii - 1));($str = $str . '  restore $P' . $ii . '
 ') } }; return($str) }
-
 }
+
 {
 package Apply;
 sub new { shift; bless { @_ }, "Apply" }
@@ -310,16 +310,16 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $code = $s
 ');($i = ($i + 1)) } }; ($str = $str . '  $P0 = ' . $self->{code} . '('); ($i = 0); my  $List_p; do { for my $arg ( @{$List_args} ) { ($List_p->[$i] = '$P' . ($i + 10));($i = ($i + 1)) } }; ($str = $str . Main::join($List_p, ', ') . ')' . '
 '); do { for my $arg ( @{$List_args} ) { ($ii = ($ii - 1));($str = $str . '  restore $P' . $ii . '
 ') } }; return($str) }
-
 }
+
 {
 package Return;
 sub new { shift; bless { @_ }, "Return" }
 sub result { @_ == 1 ? ( $_[0]->{result} ) : ( $_[0]->{result} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; $self->{result}->emit_parrot() . '  .return( $P0 )' . '
 ' }
-
 }
+
 {
 package If;
 sub new { shift; bless { @_ }, "If" }
@@ -332,8 +332,8 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; ($label = ($lab
 ' . 'ifelse' . $id . ':' . '
 ' . Main::join([ map { $_->emit_parrot() } @{ $self->{otherwise} } ], '') . 'ifend' . $id . ':' . '
 ') }
-
 }
+
 {
 package For;
 sub new { shift; bless { @_ }, "For" }
@@ -353,8 +353,8 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $cond = $s
 ' . '  restore $P2' . '
 ' . '  restore $P1' . '
 ' . '') }
-
 }
+
 {
 package Decl;
 sub new { shift; bless { @_ }, "Decl" }
@@ -365,8 +365,8 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $decl = $s
 ' : '  .local pmc ' . $self->{var}->full_name() . ' ' . '
 ' . '  .lex \'' . $self->{var}->full_name() . '\', ' . $self->{var}->full_name() . ' ' . '
 ') }
-
 }
+
 {
 package Sig;
 sub new { shift; bless { @_ }, "Sig" }
@@ -374,8 +374,8 @@ sub invocant { @_ == 1 ? ( $_[0]->{invocant} ) : ( $_[0]->{invocant} = $_[1] ) }
 sub positional { @_ == 1 ? ( $_[0]->{positional} ) : ( $_[0]->{positional} = $_[1] ) };
 sub named { @_ == 1 ? ( $_[0]->{named} ) : ( $_[0]->{named} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; ' print \'Signature - TODO\'; die \'Signature - TODO\'; ' }
-
 }
+
 {
 package Method;
 sub new { shift; bless { @_ }, "Method" }
@@ -390,8 +390,8 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $sig = $se
 ' . $str . Main::join([ map { $_->emit_parrot() } @{ $self->{block} } ], '') . '.end' . '
 ' . '
 ') }
-
 }
+
 {
 package Sub;
 sub new { shift; bless { @_ }, "Sub" }
@@ -405,21 +405,21 @@ sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; (my  $sig = $se
 ' . $str . Main::join([ map { $_->emit_parrot() } @{ $self->{block} } ], '') . '.end' . '
 ' . '
 ') }
-
 }
+
 {
 package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { @_ == 1 ? ( $_[0]->{block} ) : ( $_[0]->{block} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; Main::join([ map { $_->emit_parrot() } @{ $self->{block} } ], '') }
-
 }
+
 {
 package Use;
 sub new { shift; bless { @_ }, "Use" }
 sub mod { @_ == 1 ? ( $_[0]->{mod} ) : ( $_[0]->{mod} = $_[1] ) };
 sub emit_parrot { my $self = shift; my $List__ = \@_; do { [] }; '  .include ' . '"' . $self->{mod} . '"' . '
 ' }
-
 }
+
 1;
