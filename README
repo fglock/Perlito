@@ -34,6 +34,12 @@ Javascript backend - command line
 
     perl mp6.pl -Brhino -e 'class Main { say "hello, World!" }'
 
+    Bootstrapping the util/mp6.pl compiler to javascript, using mp6.pl:
+
+    perl mp6.pl -Bperl5 util/mp6.pl -Cjs util/mp6.pl > util-js/mp6.js
+    # testing the bootstrap with Rhino
+    java org.mozilla.javascript.tools.shell.Main util-js/mp6.js -Cjs util/mp6.pl > mp6-new.js
+
     See also: 
 
         V8 homepage at http://code.google.com/apis/v8
@@ -53,7 +59,7 @@ Lisp backend
     Bootstrapping the util/mp6.pl compiler to lisp, using mp6.pl:
 
     perl mp6.pl -Bperl5 util/mp6.pl -Clisp util/mp6.pl > util-lisp/mp6.lisp
-    # testing the bootstrap
+    # testing the bootstrap with SBCL
     sbcl --script util-lisp/mp6.lisp -Clisp util/mp6.pl > mp6-new.lisp
 
     See more utilities in util-lisp directory.
@@ -75,6 +81,12 @@ Perl 5 backend
     perl mp6.pl -e 'class Main { say "hello, World!" }'
 
     See also: Perl 5 homepage at http://www.perl.org
+
+    Bootstrapping the util/mp6.pl compiler to javascript, using mp6.pl:
+
+    perl mp6.pl -Cperl5 util/mp6.pl -Cperl5 util/mp6.pl > util-perl5/mp6.pl
+    # testing the bootstrap 
+    perl -Ilib5 util-perl5/mp6.pl -Cperl5 util/mp6.pl > mp6-new.pl
 
 AST output
 
