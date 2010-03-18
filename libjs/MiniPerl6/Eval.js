@@ -427,7 +427,7 @@ if (typeof Apply != 'object') {
   // method eval
   Apply.f_eval = function (v_env) {
     var v_self = this;
-    try { var v_ns;var v_code;(v_ns = "");if ( f_bool(v_self.v_namespace) ) { (function () { (v_ns = ( f_string(v_self.v_namespace) + f_string("::") )); })() } else { (function () { null })() };(v_code = ( f_string(v_ns) + f_string(v_self.v_code) ));(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_e) { if ( f_bool((v_e).hasOwnProperty(v_code)) ) { (function () { throw(v_e[v_code]).f_apply(v_env, v_self.v_arguments); })() } else { (function () { null })() } })(a_[i_]) } })((v_env));return(f_warn("Interpreter runtime error: subroutine '" + v_code + "()' not found")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_ns;var v_code;(v_ns = "");if ( f_bool(v_self.v_namespace) ) { (function () { (v_ns = ( f_string(v_self.v_namespace) + f_string("::") )); })() } else { (function () { null })() };(v_code = ( f_string(v_ns) + f_string(v_self.v_code) ));(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_e) { if ( f_bool((v_e).hasOwnProperty(v_code)) ) { (function () { throw(v_e[v_code].f_apply(v_env, v_self.v_arguments)); })() } else { (function () { null })() } })(a_[i_]) } })((v_env));return(f_warn("Interpreter runtime error: subroutine '" + v_code + "()' not found")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Apply.f_eval;  // v8 bug workaround
 })();
