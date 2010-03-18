@@ -457,11 +457,7 @@ class Decl {
         my $decl := $.decl;
         my $name := $.var.plain_name;
            ( $decl eq 'has' )
-        ?? ( 'sub ' ~ $name ~ ' { ' ~
-            '@_ == 1 ' ~
-                '? ( $_[0]->{' ~ $name ~ '} ) ' ~
-                ': ( $_[0]->{' ~ $name ~ '} = $_[1] ) ' ~
-            '}' )
+        ?? ( 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} }' )
         !! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit;
     }
 }
@@ -483,26 +479,34 @@ class Method {
         my $sig := $.sig;
         my $invocant := $sig.invocant; 
         my $pos := $sig.positional;
-        my $str := 'my $List__ = \\@_; ';   
+        my $str := '';
 
-        # TODO - follow recursively
+        # $str := 'my $List__ = \\@_; ';   
+        #
+        # # TODO - follow recursively
+        # for @$pos -> $field { 
+        #    if ( $field.isa('Lit::Array') ) {
+        #        $str := $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
+        #    }
+        #    else {
+        #        $str := $str ~ 'my ' ~ $field.emit ~ '; ';
+        #    };
+        # };
+        #
+        # my $bind := Bind.new( 
+        #    parameters => Lit::Array.new( array1 => $sig.positional ), 
+        #    arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
+        # );
+        # $str := $str ~ $bind.emit ~ '; ';
+
+        my $i := 1;
         for @$pos -> $field { 
-            if ( $field.isa('Lit::Array') ) {
-                $str := $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
-            }
-            else {
-                $str := $str ~ 'my ' ~ $field.emit ~ '; ';
-            };
-        };
-
-        my $bind := Bind.new( 
-            parameters => Lit::Array.new( array1 => $sig.positional ), 
-            arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
-        );
-        $str := $str ~ $bind.emit ~ '; ';
+            $str := $str ~ 'my ' ~ $field.emit ~ ' = $_[' ~ $i ~ ']; ';
+            $i := $i + 1;
+        }
 
         'sub ' ~ $.name ~ ' { ' ~ 
-          'my ' ~ $invocant.emit ~ ' = shift; ' ~
+          'my ' ~ $invocant.emit ~ ' = $_[0]; ' ~
           $str ~
           (@.block.>>emit).join('; ') ~ 
         ' }'
@@ -516,23 +520,31 @@ class Sub {
     method emit {
         my $sig := $.sig;
         my $pos := $sig.positional;
-        my $str := 'my $List__ = \\@_; ';  
+        my $str := '';
 
-        # TODO - follow recursively
+        # my $str := 'my $List__ = \\@_; ';  
+        #
+        # # TODO - follow recursively
+        # for @$pos -> $field { 
+        #    if ( $field.isa('Lit::Array') ) {
+        #        $str := $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
+        #    }
+        #    else {
+        #        $str := $str ~ 'my ' ~ $field.emit ~ '; ';
+        #    };
+        # };
+        #
+        # my $bind := Bind.new( 
+        #    parameters => Lit::Array.new( array1 => $sig.positional ), 
+        #    arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
+        # );
+        # $str := $str ~ $bind.emit ~ '; ';
+
+        my $i := 0;
         for @$pos -> $field { 
-            if ( $field.isa('Lit::Array') ) {
-                $str := $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
-            }
-            else {
-                $str := $str ~ 'my ' ~ $field.emit ~ '; ';
-            };
-        };
-
-        my $bind := Bind.new( 
-            parameters => Lit::Array.new( array1 => $sig.positional ), 
-            arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
-        );
-        $str := $str ~ $bind.emit ~ '; ';
+            $str := $str ~ 'my ' ~ $field.emit ~ ' = $_[' ~ $i ~ ']; ';
+            $i := $i + 1;
+        }
 
         'sub ' ~ $.name ~ ' { ' ~ 
           $str ~
