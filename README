@@ -87,6 +87,10 @@ Testing the Lisp image compiler
 
     prove -e "./mp6-lisp"
 
+Testing Rakudo Perl6 compatibility
+
+    prove -e "perl6"
+
 AUTHORS
 
 Flavio Soibelmann Glock - fglock@gmail.com
