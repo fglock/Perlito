@@ -61,13 +61,13 @@ mp6 [switches] [programfile]
     -Btarget        run in target backend: go, js, lisp, parrot, perl5
         options:
         -Bgo           run in Go (this also creates a binary executable)
-        -Bjs           run in V8 (Javascript)
+        -Bjs           run in Javascript using the \"js\" command (Spidermonkey or V8)
         -Blisp         run in SBCL (Lisp)
         -Bparrot       run in Parrot
-        -Bperl5        run in Perl 5 source code
-        -Brhino        run in Rhino (Javascript)
-        -Bv8           run in V8 (Javascript)
-        -Bspidermonkey run in SpiderMonkey (Javascript)
+        -Bperl5        run in Perl 5 
+        -Brhino        run in JVM using Rhino
+        -Bv8           run in V8 (Javascript) using the \"v8\" command 
+        -Bspidermonkey run in SpiderMonkey (Javascript) using the \"spidermonkey\" command
 ";
         exit;
     }
@@ -102,7 +102,7 @@ mp6 [switches] [programfile]
 }
 
 if ( $backend eq 'js'    ) { 
-    @cmd = ('v8'); 
+    @cmd = ('js'); 
     $lib_spec = 'Javascript';
 }
 if ( $backend eq 'java-class' ) { 

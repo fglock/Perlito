@@ -50,6 +50,12 @@ Lisp backend
     . util-lisp/create-core-image.sh
     ./mp6-lisp t/04-op.t
 
+    Bootstrapping the util/mp6.pl compiler to lisp, using mp6.pl:
+
+    perl mp6.pl -Bperl5 util/mp6.pl -Clisp util/mp6.pl > util-lisp/mp6.lisp
+    # testing the bootstrap
+    sbcl --script util-lisp/mp6.lisp -Clisp util/mp6.pl > mp6-new.lisp
+
     See more utilities in util-lisp directory.
 
     See also: SBCL homepage at http://www.sbcl.org
