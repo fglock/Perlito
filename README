@@ -2,9 +2,20 @@ MiniPerl6 "Perlito" compiler
 
 Go backend
 
-    The Go backend is not bootstrapped. Compiling to Go currently requires a Perlito compiler built in Perl5, Lisp, or Javascript:
-
     perl mp6.pl -Bgo t/04-op.t
+
+    Creating a bootstrapped compiler:
+
+    # create a "6.out" binary, using mp6.pl
+    perl mp6.pl -Bgo util/mp6.pl    
+    # test the binary
+    ./6.out -Cgo t/04-op.t          
+    # recompile the compiler using itself
+    ./6.out -Cgo util/mp6.pl > mp6-go.go   
+    6g mp6-go.go
+    6l mp6-go.6
+    ./6.out -Cgo util/mp6.pl > mp6-go-new.go
+    # "mp6-go.go" and "mp6-go-new.go" should be identical
 
     See also: Go homepage at http://golang.org
 
@@ -13,9 +24,11 @@ Java class backend
     perl mp6.pl -Bjava-class -e 'class Main { say "hello, World!" }'
     java tmp
 
-    Creating a bootstrapped compiler, using mp6.pl:
+    Creating a bootstrapped compiler:
 
+    # create a Java class, using mp6.pl:
     perl mp6.pl -v -Bjava-class util/mp6.pl
+    # test "tmp.class"
     java tmp -Cjs t/04-op.t
 
     Requires Rhino's js.jar in CLASSPATH, see also: http://www.mozilla.org/rhino
@@ -36,8 +49,9 @@ Javascript backend - command line
 
     perl mp6.pl -Brhino -e 'class Main { say "hello, World!" }'
 
-    Bootstrapping the util/mp6.pl compiler to javascript, using mp6.pl:
+    Creating a bootstrapped compiler:
 
+    # compile util/mp6.pl to Javascript, using mp6.pl:
     perl mp6.pl -Bperl5 util/mp6.pl -Cjs util/mp6.pl > util-js/mp6.js
     # testing the bootstrap with Rhino
     java org.mozilla.javascript.tools.shell.Main util-js/mp6.js -Cjs util/mp6.pl > mp6-new.js
@@ -58,8 +72,9 @@ Lisp backend
     . util-lisp/create-core-image.sh
     ./mp6-lisp t/04-op.t
 
-    Bootstrapping the util/mp6.pl compiler to lisp, using mp6.pl:
+    Creating a bootstrapped compiler:
 
+    # compile util/mp6.pl to Lisp, using mp6.pl:
     perl mp6.pl -Bperl5 util/mp6.pl -Clisp util/mp6.pl > util-lisp/mp6.lisp
     # testing the bootstrap with SBCL
     sbcl --script util-lisp/mp6.lisp -Clisp util/mp6.pl > mp6-new.lisp
@@ -84,11 +99,12 @@ Perl 5 backend
 
     See also: Perl 5 homepage at http://www.perl.org
 
-    Bootstrapping the util/mp6.pl compiler to javascript, using mp6.pl:
+    Creating a bootstrapped compiler:
 
-    perl mp6.pl -Cperl5 util/mp6.pl -Cperl5 util/mp6.pl > util-perl5/mp6.pl
+    # compile util/mp6.pl using mp6.pl:
+    perl mp6.pl -Cperl5 util/mp6.pl > mp6-perl5.pl 
     # testing the bootstrap 
-    perl -Ilib5 util-perl5/mp6.pl -Cperl5 util/mp6.pl > mp6-new.pl
+    perl -Ilib5 mp6-perl5.pl -Cperl5 util/mp6.pl > mp6-new.pl
 
 AST output
 
@@ -103,7 +119,7 @@ Testing a backend using the Perl5 based compiler
     prove -e "perl mp6.pl -Blisp"
     prove -e "perl mp6.pl -Bgo"
 
-Testing the Lisp image compiler
+Testing the Lisp binary image compiler
 
     prove -e "./mp6-lisp"
 

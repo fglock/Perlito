@@ -3,7 +3,8 @@
   This should add some debugging capabilities later on.
 - New test suite. See README on how to use 'prove' for each backend.
 - New compiler options to create binary executables
-- Currently stable backends are: Perl5, Javascript, JVM, Lisp, Go.
+- Currently the stable backends are: Perl5, Javascript, JVM, Lisp, Go.
+  See README for bootstrapping instructions for all backends.
 - The Go backend was updated to the latest Go language spec. 
 
 3.0  2010-01-21
