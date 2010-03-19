@@ -1,4 +1,4 @@
-4.0  (plan)
+4.0  2010-03-20
 - Go backend bootstrap.
   The Go backend was updated to the latest Go language spec. 
 - Perl5 backend optimized; 30% faster
