@@ -434,6 +434,14 @@ class If {
     }
 }
 
+class While {
+    has $.cond;
+    has @.body;
+    method emit {
+        'do {while (' ~ $.cond.emit ~ ') {' ~ (@.body.>>emit).join(';') ~ ' }}'
+    }
+}
+
 class For {
     has $.cond;
     has @.body;

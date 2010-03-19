@@ -176,6 +176,14 @@ sub emit { my $self = $_[0]; (my  $cond = $self->{cond}); do { if ((Main::isa($c
 }
 
 {
+package While;
+sub new { shift; bless { @_ }, "While" }
+sub cond { $_[0]->{cond} };
+sub body { $_[0]->{body} };
+sub emit { my $self = $_[0]; 'do {while (' . $self->{cond}->emit() . ') {' . Main::join([ map { $_->emit() } @{ $self->{body} } ], ';') . ' }}' }
+}
+
+{
 package For;
 sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
