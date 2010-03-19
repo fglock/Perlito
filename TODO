@@ -30,8 +30,6 @@ MiniPerl6 in Go
 
 - very slow in bootstrap mode; Ast cache might help.
 
-- Eval module generates an internal Go error.
-
 MiniPerl6 in Perl5
 
 (no issues at the moment)

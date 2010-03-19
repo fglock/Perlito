@@ -66,14 +66,14 @@ sub emit_go { my $self = $_[0]; (my  $class_name = Main::to_go_namespace($self->
 ' . '    ' . $sig->invocant()->emit_go() . ' = ' . $sig->invocant()->emit_go() . ';' . '
 ' . '    ' . $sig->emit_go_bind() . '
 ');($str = $str . '    p := make(chan *Any); go func () { ' . '
-' . '        ' . $block->emit_go() . '; return }(); ' . '
+' . '        ' . $block->emit_go() . '; p <- nil }(); ' . '
 ' . '    return <-p; ' . '
 ' . '  };' . '
 ') } else {  } };do { if (Main::isa($decl, 'Sub')) { (my  $sig = $decl->sig());(my  $block = MiniPerl6::Go::LexicalBlock->new( 'block' => $decl->block(),'needs_return' => 1,'top_level' => 1, ));($str = $str . '  // sub ' . $decl->name() . '
 ' . '  Namespace_' . $class_name . '.f_' . $decl->name() . ' = Function( func (v Capture) *Any {' . '
 ');($str = $str . '    ' . $sig->emit_go_bind() . '
 ' . '    p := make(chan *Any); go func () { ' . '
-' . '        ' . $block->emit_go() . '; return }(); ' . '
+' . '        ' . $block->emit_go() . '; p <- nil }(); ' . '
 ');($str = $str . '    return <-p; ' . '
 ' . '  } );' . '
 ') } else {  } } } }; ($str = $str . '  // main runtime block of ' . $self->{name} . '
@@ -344,7 +344,7 @@ sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
 sub emit_go { my $self = $_[0]; (my  $invocant = $self->{sig}->invocant()); 'func ' . $self->{name} . '(v Capture) *Any { ' . '    ' . $self->{sig}->emit_go_bind() . '
 ' . '    p := make(chan *Any); go func () { ' . '
-' . '        ' . MiniPerl6::Go::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1,'top_level' => 1, )->emit_go() . '; return }(); ' . '
+' . '        ' . MiniPerl6::Go::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1,'top_level' => 1, )->emit_go() . '; p <- nil }(); ' . '
 ' . '    return <-p; ' . '
 ' . ' }' }
 }
@@ -357,11 +357,11 @@ sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
 sub emit_go { my $self = $_[0]; do { if (($self->{name} eq '')) { return('toFunction( func(v Capture) *Any { ' . '    ' . $self->{sig}->emit_go_bind() . '
 ' . '    p := make(chan *Any); go func () { ' . '
-' . '        ' . MiniPerl6::Go::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1,'top_level' => 1, )->emit_go() . '; return }(); ' . '
+' . '        ' . MiniPerl6::Go::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1,'top_level' => 1, )->emit_go() . '; p <- nil }(); ' . '
 ' . '    return <-p; ' . '
 ' . '} ' . ')') } else {  } }; 'func ' . $self->{name} . '(v Capture) *Any { ' . '    ' . $self->{sig}->emit_go_bind() . '
 ' . '    p := make(chan *Any); go func () { ' . '
-' . '        ' . MiniPerl6::Go::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1,'top_level' => 1, )->emit_go() . '; return }(); ' . '
+' . '        ' . MiniPerl6::Go::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1,'top_level' => 1, )->emit_go() . '; p <- nil }(); ' . '
 ' . '    return <-p; ' . '
 ' . ' }' }
 }

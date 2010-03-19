@@ -241,7 +241,7 @@ class CompUnit {
               ~ '    ' ~ $sig.emit_go_bind ~ "\n";
                 $str := $str  
               ~ '    p := make(chan *Any); go func () { ' ~ "\n"
-              ~ '        ' ~ $block.emit_go ~ '; return }(); ' ~ "\n"
+              ~ '        ' ~ $block.emit_go ~ '; p <- nil }(); ' ~ "\n"
               ~ '    return <-p; ' ~ "\n"
               ~ '  };' ~ "\n"
             }
@@ -255,7 +255,7 @@ class CompUnit {
                 $str := $str  
               ~ '    ' ~ $sig.emit_go_bind ~ "\n"
               ~ '    p := make(chan *Any); go func () { ' ~ "\n"
-              ~ '        ' ~ $block.emit_go ~ '; return }(); ' ~ "\n";
+              ~ '        ' ~ $block.emit_go ~ '; p <- nil }(); ' ~ "\n";
                 $str := $str  
               ~ '    return <-p; ' ~ "\n"
               ~ '  } );' ~ "\n";
@@ -1032,7 +1032,7 @@ class Method {
               ~ '    ' ~ ($.sig).emit_go_bind ~ "\n"
               ~ '    p := make(chan *Any); go func () { ' ~ "\n"
               ~ '        ' ~ (MiniPerl6::Go::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_go 
-              ~ '; return }(); ' ~ "\n"
+              ~ '; p <- nil }(); ' ~ "\n"
               ~ '    return <-p; ' ~ "\n"
         ~ ' }'
     }
@@ -1049,7 +1049,7 @@ class Sub {
                     ~ '    ' ~ ($.sig).emit_go_bind ~ "\n"
                     ~ '    p := make(chan *Any); go func () { ' ~ "\n"
                     ~ '        ' ~ (MiniPerl6::Go::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_go 
-                    ~ '; return }(); ' ~ "\n"
+                    ~ '; p <- nil }(); ' ~ "\n"
                     ~ '    return <-p; ' ~ "\n"
                     ~ '} '
                 ~ ')'
@@ -1059,7 +1059,7 @@ class Sub {
                     ~ '    ' ~ ($.sig).emit_go_bind ~ "\n"
                     ~ '    p := make(chan *Any); go func () { ' ~ "\n"
                     ~ '        ' ~ (MiniPerl6::Go::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_go 
-                    ~ '; return }(); ' ~ "\n"
+                    ~ '; p <- nil }(); ' ~ "\n"
                     ~ '    return <-p; ' ~ "\n"
         ~ ' }'
     }
