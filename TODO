@@ -2,11 +2,15 @@ Eval.pm module
 
 - add exceptions
 
+- complete ast nodes implementation
+
 Command line compiler (mp6.pl)
 
 - implement -Clisp-bin (requires some changes in the lisp emitter)
 
 Command line compiler (util/mp6.pl)
+
+- migrate all bootstrap scripts to use util/mp6.pl (we now depend on shell and perl5)
 
 - build Ast cache using JSON (we currently use Perl5 Data::Dumper) or XML (Go has XML and JSON input)
 
@@ -24,7 +28,9 @@ MiniPerl6 in Rakudo
 
 MiniPerl6 in Lisp
 
-- fix warnings
+- fix warnings (SBCL)
+
+- test other Lisp implementations
 
 MiniPerl6 in Go
 
@@ -58,14 +64,6 @@ Missing Features
 
 - type annotations - FIXED
 
-- autoquote hash keys - FIXED
-
-- double quote variable and expression interpolation 
-
-- operator precedence
-
-- all statements need a semicolon - FIXED but hack
-
 - 'use v5' is not supported
   (maybe not needed for MP6)
 
@@ -88,4 +86,19 @@ Nice to Have
 - 'mp6-format' script (see gofmt and perltidy)
 
 - run some tests from the standard test suite
+
+Grammar
+
+- modify the grammar to return multi-line strings as multiple strings
+  (this makes it easier to write a beautifier script)
+
+- parse Namespaces as array of string (we are going to split them anyway)
+
+- operator precedence
+
+- double quote variable and expression interpolation 
+
+- all statements need a semicolon - FIXED but hack
+
+- autoquote hash keys - FIXED
 

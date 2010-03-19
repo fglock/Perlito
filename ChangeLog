@@ -9,6 +9,7 @@
 - New compiler options to create binary executables
 - Currently the stable backends are: Perl5, Javascript, JVM, Lisp, Go.
   See README for bootstrapping instructions for all backends.
+- Removed support for features that are not standard Perl6.
 
 3.0  2010-01-21
 - Go language backend; using Go: http://golang.org

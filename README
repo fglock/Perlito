@@ -1,5 +1,9 @@
 MiniPerl6 "Perlito" compiler
 
+- main Perlito repository: http://github.com/fglock/Perlito
+
+- main Project web page: http://www.perlito.org
+
 Go backend
 
     perl mp6.pl -Bgo t/04-op.t
