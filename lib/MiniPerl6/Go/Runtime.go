@@ -493,11 +493,6 @@ func f_substr(s Capture) *Any {
 	}
 	return toStr(s1[a:c])
 }
-func Go_return(p chan *Any, r *Any) bool {
-	p <- r
-	runtime.Goexit()
-	return false
-}
 func f_and(f1, f2 func() *Any) *Any {
 	var tmp = f1()
 	if tobool(tmp) {

@@ -256,7 +256,7 @@ sub emit_go { my $self = $_[0]; (my  $code = $self->{code}); do { if (Main::isa(
 package Return;
 sub new { shift; bless { @_ }, "Return" }
 sub result { $_[0]->{result} };
-sub emit_go { my $self = $_[0]; do { if (Main::isa($self->{result}, 'Bind')) { (my  $tmp = $self->{result}->parameters());return('(func () *Any { ' . $self->{result}->emit_go() . '; ' . 'Go_return(p, ' . $tmp->emit_go() . '); ' . 'return u_undef(); ' . '}())') } else {  } }; return('(func () *Any { ' . 'var tmp *Any = ' . $self->{result}->emit_go() . '; ' . 'Go_return(p, tmp); ' . 'return u_undef(); ' . '}())') };
+sub emit_go { my $self = $_[0]; do { if (Main::isa($self->{result}, 'Bind')) { (my  $tmp = $self->{result}->parameters());return('(func () { ' . $self->{result}->emit_go() . '; ' . 'p <- ' . $tmp->emit_go() . '; ' . 'runtime.Goexit(); ' . '}())') } else {  } }; return('(func () { ' . 'var tmp *Any = ' . $self->{result}->emit_go() . '; ' . 'p <- tmp; ' . 'runtime.Goexit(); ' . '}())') };
 sub emit_go_simple { my $self = $_[0]; do { if (Main::isa($self->{result}, 'Bind')) { (my  $tmp = $self->{result}->parameters());return('return (func () *Any { ' . $self->{result}->emit_go() . '; ' . 'return ' . $tmp->emit_go() . '; ' . '}())') } else {  } }; return('return( ' . $self->{result}->emit_go() . ')') }
 }
 

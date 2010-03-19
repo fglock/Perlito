@@ -877,17 +877,17 @@ class Return {
         if ($.result).isa( 'Bind' ) {
             my $tmp := ($.result).parameters;
             return 
-                '(func () *Any { '
+                '(func () { '
                     ~ ($.result).emit_go ~ '; ' 
-                    ~ 'Go_return(p, ' ~ $tmp.emit_go ~ '); '
-                    ~ 'return u_undef(); '
+                    ~ 'p <- ' ~ $tmp.emit_go ~ '; '
+                    ~ 'runtime.Goexit(); '
                 ~ '}())'
         }
         return
-                '(func () *Any { '
+                '(func () { '
                     ~ 'var tmp *Any = ' ~ ($.result).emit_go ~ '; '
-                    ~ 'Go_return(p, tmp); '
-                    ~ 'return u_undef(); '
+                    ~ 'p <- tmp; '
+                    ~ 'runtime.Goexit(); '
                 ~ '}())'
     }
     method emit_go_simple {
