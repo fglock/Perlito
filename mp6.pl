@@ -213,6 +213,7 @@ else {
                 else {
                     if ( !$precompiled) {
                         warn "now compiling MiniPerl6 source code to AST\n" if $verbose;
+                        mkdir $::Bin . "/libast-perl5-new";  # avoid error message in the script below
                         system( ". util-perl5/update-ast-perl5.sh" );
                         $precompiled = 1;
                         redo;
