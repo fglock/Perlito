@@ -327,7 +327,12 @@ class Call {
         
         my $call := '->' ~ $meth ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         if ($.hyper) {
-            '[ map { $_' ~ $call ~ ' } @{ ' ~ $invocant ~ ' } ]';
+            if !(  $.invocant.isa( 'Apply' )
+                && $.invocant.code eq 'prefix:<@>' )
+            {
+                $invocant := '@{ ' ~ $invocant ~ ' }';
+            }
+            return '[ map { $_' ~ $call ~ ' } ' ~ $invocant ~ ' ]';
         }
         else {
             $invocant ~ $call;
