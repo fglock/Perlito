@@ -13,7 +13,7 @@ class Main {
     say '1..3';
     say 'ok 1 - load ok';
 
-    my $other := [ ::Other( a => 2 ), ::Other( a => 3 ) ];
+    my $other := [ Other.new( a => 2 ), Other.new( a => 3 ) ];
 
     my @r := $other.>>subr();
     say '# [', @r, ']';

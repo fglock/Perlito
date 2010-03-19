@@ -14,7 +14,7 @@ class Main {
     my $env := 
         [
             {
-                'print' => ::EvalFunction(
+                'print' => EvalFunction.new(
                         func => sub ( $env, $args ) { 
                                     for @($args) -> $v {
                                         print $v.eval($env);
@@ -22,7 +22,7 @@ class Main {
                                     return 1;
                                 }, 
                     ),
-                'say' => ::EvalFunction(
+                'say' => EvalFunction.new(
                         func => sub ( $env, $args ) { 
                                     for @($args) -> $v {
                                         print $v.eval($env);
@@ -31,12 +31,12 @@ class Main {
                                     return 1;
                                 }, 
                     ),
-                'infix:<+>' => ::EvalFunction(
+                'infix:<+>' => EvalFunction.new(
                         func => sub ( $env, $args ) { 
                                     ($args[0]).eval($env) + ($args[1]).eval($env)
                                 },
                     ),
-                'infix:<==>' => ::EvalFunction(
+                'infix:<==>' => EvalFunction.new(
                         func => sub ( $env, $args ) {
                                     ($args[0]).eval($env) == ($args[1]).eval($env)
                                 },
@@ -44,7 +44,7 @@ class Main {
             }
         ];
 
-    my $m := ::Val::Num( num => 123 );
+    my $m := Val::Num.new( num => 123 );
     if ($m.eval) eq 123 {
         say 'ok 1';
     }
@@ -52,10 +52,10 @@ class Main {
         say 'not ok 1';
     }
 
-    $m := ::Apply(
+    $m := Apply.new(
                 code      => 'say',
                 namespace => '',
-                arguments => [ ::Val::Buf( buf => '# ok eval-ast' ) ],
+                arguments => [ Val::Buf.new( buf => '# ok eval-ast' ) ],
             );
     $m.eval( $env );
 

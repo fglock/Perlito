@@ -111,14 +111,7 @@ MiniPer6 specification
 macro statement_control:<is> {...}
 
 update:
-Implementation-specific limitations in the Perl5 backend:
-
-    - uses "no strict vars" inside subs and methods, because it currently depends on 
-      autovivification of the parameter list variables
-
-update:
 Implementation-specific limitations in the Parrot backend:
 
     - 'for' variables need to be predeclared
     - blocks do not create a new lexical pad
-    - variables should never be re-declared (infinite loop in Parrot 0.4.7 release)

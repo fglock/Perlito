@@ -12,7 +12,7 @@ class Main {
     
     say '1..2';
 
-    my $other := ::Other();
+    my $other := Other.new();
 
     my $x := 0;
     $x := $other.subr( 1, 2 );

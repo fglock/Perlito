@@ -2,7 +2,7 @@ MiniPerl6 "Perlito" compiler
 
 Go backend
 
-    Compiling to Go currently requires Perl 5:
+    The Go backend is not bootstrapped. Compiling to Go currently requires a Perlito compiler built in Perl5, Lisp, or Javascript:
 
     perl mp6.pl -Bgo t/04-op.t
 
@@ -12,6 +12,8 @@ Java class backend
 
     perl mp6.pl -Bjava-class -e 'class Main { say "hello, World!" }'
     java tmp
+
+    Creating a bootstrapped compiler, using mp6.pl:
 
     perl mp6.pl -v -Bjava-class util/mp6.pl
     java tmp -Cjs t/04-op.t

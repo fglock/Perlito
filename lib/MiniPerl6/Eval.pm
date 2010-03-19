@@ -365,7 +365,7 @@ class Sub {
             push( @param_name, $field.plain_name );
         }
         my $sub :=  
-            ::EvalFunction(
+            EvalFunction.new(
                 func => sub ( $env, $args ) {
                     my %context;
                     my $n := 0;

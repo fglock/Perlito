@@ -1,6 +1,4 @@
-Eval module
-
-- debug Go 
+Eval.pm module
 
 - add exceptions
 
@@ -8,7 +6,7 @@ Command line compiler (mp6.pl)
 
 - implement -Clisp-bin (requires some changes in the lisp emitter)
 
-Command line compiler (util/mp6)
+Command line compiler (util/mp6.pl)
 
 - build Ast cache using JSON (we currently use Perl5 Data::Dumper) or XML (Go has XML and JSON input)
 
@@ -18,15 +16,13 @@ Command line compiler (util/mp6)
 
 - does it need a config file? (lib location, make details)
 
-- debug Go
+- add '-B' option (execute)
 
 MiniPerl6 in Rakudo
 
 - Rakudo should be able to execute MiniPerl6 directly. What do we need to fix in both sides?
 
 MiniPerl6 in Lisp
-
-- implement command line switches '-C' and '-B' (use util/mp6)
 
 - fix warnings
 
@@ -38,8 +34,7 @@ MiniPerl6 in Go
 
 MiniPerl6 in Perl5
 
-- generate 'my' variables for subroutine signatures;
-  currently depends on autovivification
+(no issues at the moment)
 
 MiniPerl6 in Parrot
 
@@ -51,7 +46,7 @@ Missing Backends
 
 - Haskell
 
-- MO in MP6 (MP6-2)
+- MO in MP6 
 
 - Python
 
@@ -67,7 +62,7 @@ Missing Features
 
 - autoquote hash keys - FIXED
 
-- double quote interpolation 
+- double quote variable and expression interpolation 
 
 - operator precedence
 
@@ -95,5 +90,4 @@ Nice to Have
 - 'mp6-format' script (see gofmt and perltidy)
 
 - run some tests from the standard test suite
-
 
