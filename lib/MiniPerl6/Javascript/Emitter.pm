@@ -646,6 +646,18 @@ class If {
     }
 }
 
+
+class While {
+    has $.cond;
+    has @.body;
+    method emit_javascript {
+        my $body      := MiniPerl6::Javascript::LexicalBlock.new( block => @.body, needs_return => 0 );
+        return
+            'while ( f_bool(' ~ $.cond.emit_javascript ~ ') ) { ' 
+              ~ '(function () { ' ~ $body.emit_javascript      ~ ' })() }' 
+    }
+}
+
 class For {
     has $.cond;
     has @.body;

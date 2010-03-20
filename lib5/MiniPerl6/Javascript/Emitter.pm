@@ -178,6 +178,14 @@ sub emit_javascript { my $self = $_[0]; (my  $cond = $self->{cond}); do { if ((M
 }
 
 {
+package While;
+sub new { shift; bless { @_ }, "While" }
+sub cond { $_[0]->{cond} };
+sub body { $_[0]->{body} };
+sub emit_javascript { my $self = $_[0]; (my  $body = MiniPerl6::Javascript::LexicalBlock->new( 'block' => $self->{body},'needs_return' => 0, )); return('while ( f_bool(' . $self->{cond}->emit_javascript() . ') ) { ' . '(function () { ' . $body->emit_javascript() . ' })() }') }
+}
+
+{
 package For;
 sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
