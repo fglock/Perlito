@@ -6,7 +6,7 @@ our $MATCH = MiniPerl6::Match->new();
 {
 package Rul;
 sub new { shift; bless { @_ }, "Rul" }
-sub constant { my $str = $_[0]; (my  $len = Main::chars($str, )); do { if (($str eq '\\')) { ($str = '\\\\') } else {  } }; do { if (($str eq '\'')) { ($str = '\\\'') } else {  } }; do { if ($len) { '( ( \'' . $str . '\' eq substr( $str, $MATCH.to, ' . $len . ')) ' . '  ?? (1 + ( $MATCH.to := ' . $len . ' + $MATCH.to ))' . '  !! false ' . ')' } else { return('1') } } }
+sub constant { my $str = $_[0]; (my  $len = Main::chars($str, )); if (($str eq '\\')) { ($str = '\\\\') } else {  }; if (($str eq '\'')) { ($str = '\\\'') } else {  }; if ($len) { '( ( \'' . $str . '\' eq substr( $str, $MATCH.to, ' . $len . ')) ' . '  ?? (1 + ( $MATCH.to := ' . $len . ' + $MATCH.to ))' . '  !! false ' . ')' } else { return('1') } }
 }
 
 {
@@ -75,7 +75,7 @@ sub emit { my $self = $_[0]; '( (\'\' ne substr( $str, $MATCH.to, 1 )) ' . '  ??
 package Rul::SpecialChar;
 sub new { shift; bless { @_ }, "Rul::SpecialChar" }
 sub char { $_[0]->{char} };
-sub emit { my $self = $_[0]; (my  $char = $self->{char}); do { if (($char eq 'n')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'is_newline', ));($rul = $rul->emit());return($rul) } else {  } }; do { if (($char eq 'N')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'not_newline', ));($rul = $rul->emit());return($rul) } else {  } }; do { if (($char eq 'd')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'digit', ));($rul = $rul->emit());return($rul) } else {  } }; do { if (($char eq 's')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'space', ));($rul = $rul->emit());return($rul) } else {  } }; return(Rul::constant($char)) }
+sub emit { my $self = $_[0]; (my  $char = $self->{char}); if (($char eq 'n')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'is_newline', ));($rul = $rul->emit());return($rul) } else {  }; if (($char eq 'N')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'not_newline', ));($rul = $rul->emit());return($rul) } else {  }; if (($char eq 'd')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'digit', ));($rul = $rul->emit());return($rul) } else {  }; if (($char eq 's')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'space', ));($rul = $rul->emit());return($rul) } else {  }; return(Rul::constant($char)) }
 }
 
 {

@@ -13,7 +13,7 @@ sub result_object { $_[0]->{result_object} };
 sub from { $_[0]->{from} };
 sub to { $_[0]->{to} };
 sub bool { $_[0]->{bool} };
-sub scalar { my $self = $_[0]; do { if ($self->{bool}) { return((undef)) } else {  } }; do { if (defined($self->{result_object})) { return($self->{result_object}) } else {  } }; return(substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}) + 1))) };
+sub scalar { my $self = $_[0]; if ($self->{bool}) { return((undef)) } else {  }; if (defined($self->{result_object})) { return($self->{result_object}) } else {  }; return(substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}) + 1))) };
 sub __get_bool { my $self = $_[0]; return($self->{bool}) };
 sub __get_int { my $self = $_[0]; return((0 + $self->scalar())) };
 sub __get_number { my $self = $_[0]; return((0 + $self->scalar())) };

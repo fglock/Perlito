@@ -411,9 +411,7 @@ class Apply {
 class Return {
     has $.result;
     method emit {
-        return
-        #'do { print Main::perl(caller(),' ~ $.result.emit ~ '); return(' ~ $.result.emit ~ ') }';
-        'return(' ~ $.result.emit ~ ')';
+        return 'return(' ~ $.result.emit ~ ')';
     }
 }
 
@@ -435,7 +433,12 @@ class If {
         {
             $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        'do { if (' ~ $cond.emit ~ ') { ' ~ (@.body.>>emit).join(';') ~ ' } else { ' ~ (@.otherwise.>>emit).join(';') ~ ' } }';
+        return 'if (' ~ $cond.emit ~ ') { ' 
+             ~   (@.body.>>emit).join(';') 
+             ~ ' } ' 
+             ~ 'else { ' 
+             ~   (@.otherwise.>>emit).join(';') 
+             ~ ' }';
     }
 }
 
@@ -443,7 +446,9 @@ class While {
     has $.cond;
     has @.body;
     method emit {
-        'do {while (' ~ $.cond.emit ~ ') {' ~ (@.body.>>emit).join(';') ~ ' }}'
+          'while (' ~ $.cond.emit ~ ') {' 
+        ~   (@.body.>>emit).join(';') 
+        ~ ' }'
     }
 }
 
@@ -458,7 +463,9 @@ class For {
         {
             $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        'do { for my ' ~ $.topic.emit ~ ' ( ' ~ $cond.emit ~ ' ) { ' ~ (@.body.>>emit).join(';') ~ ' } }';
+        return  'for my ' ~ $.topic.emit ~ ' ( ' ~ $cond.emit ~ ' ) { ' 
+             ~   (@.body.>>emit).join(';') 
+             ~ ' }';
     }
 }
 
