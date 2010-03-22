@@ -59,6 +59,9 @@ type keys_er interface {
 type int_er interface {
 	f_int(v Capture) *Any
 }
+type num_er interface {
+	f_num(v Capture) *Any
+}
 type str_er interface {
 	f_str(v Capture) *Any
 }
@@ -138,6 +141,7 @@ type Undef bool
 
 func (i Undef) f_Bool(Capture) *Any  { return b_false() }
 func (i Undef) f_int(Capture) *Any   { return i_0 }
+func (i Undef) f_num(Capture) *Any   { return toNum(0.0) }
 func (i Undef) f_Str(Capture) *Any   { return s_empty }
 func (i Undef) f_array(Capture) *Any { return a_array() }
 func (i Undef) f_hash(Capture) *Any  { return h_hash() }
@@ -191,6 +195,10 @@ func (i Int) f_Bool(Capture) *Any {
 	}
 	return b_true()
 }
+func (i Int) f_num(Capture) *Any {
+	var v Any = i   // TODO
+	return &v
+}
 func (i Int) f_int(Capture) *Any {
 	var v Any = i
 	return &v
@@ -200,6 +208,33 @@ func (i Int) f_array(Capture) *Any { panic("converting int to array") }
 func (i Int) f_hash(Capture) *Any  { panic("converting int to hash") }
 func (i Int) f_perl(Capture) *Any  { return i.f_Str(Capture{}) }
 func (i Int) f_isa(v Capture) *Any { return toBool("Int" == tostr(v.p[0])) }
+
+type Num float
+
+func toNum(i float) *Any {
+	var r Any = Num(i)
+	return &r
+}
+func tonum(v *Any) float { return float((*((*v).(num_er).f_num(Capture{}))).(Num)) }
+func (i Num) f_Bool(Capture) *Any {
+	if i == 0 {
+		return b_false()
+	}
+	return b_true()
+}
+func (i Num) f_num(Capture) *Any {
+	var v Any = i
+	return &v
+}
+func (i Num) f_int(Capture) *Any {
+	var v Any = i   // TODO
+	return &v
+}
+func (i Num) f_Str(Capture) *Any   { return toStr(strconv.Ftoa(float(i), 'g', -1)) }
+func (i Num) f_array(Capture) *Any { panic("converting number to array") }
+func (i Num) f_hash(Capture) *Any  { panic("converting number to hash") }
+func (i Num) f_perl(Capture) *Any  { return i.f_Str(Capture{}) }
+func (i Num) f_isa(v Capture) *Any { return toBool("Num" == tostr(v.p[0])) }
 
 type Str string
 
