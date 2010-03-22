@@ -19,7 +19,7 @@ token ident_digit {
 }
 
 token ident {
-    [ <.word> | _ ] <.ident_digit>
+    [ <!before \d ><.word> | _ ] <.ident_digit>
 }
 
 token full_ident {
@@ -343,9 +343,9 @@ token var_ident {
 token val {
     | <val_undef>  { make $$<val_undef> }  # undef
     # | $<exp> := <val_object>   # (not exposed to the outside)
+    | <val_num>    { make $$<val_num>   }  # 123.456
     | <val_int>    { make $$<val_int>   }  # 123
     | <val_bit>    { make $$<val_bit>   }  # True, False
-    | <val_num>    { make $$<val_num>   }  # 123.456
     | <val_buf>    { make $$<val_buf>   }  # 'moose'
 }
 
@@ -360,13 +360,22 @@ token val_bit {
 grammar MiniPerl6::Grammar {
 
 
+token digits {  \d  [ <digits> | '' ]  }
+
 token val_undef {
     undef <!before \w >
     { make Val::Undef.new( ) }
 }
 
 token val_num {  
-    XXX { make 'TODO: val_num' } 
+    <digits> 
+    [   [ 'e' | 'E' ] <digits>
+    |   \. <digits>
+        [ [ 'e' | 'E' ] <digits>
+        | ''
+        ]
+    ]
+    { make Val::Num.new( num => ~$/ ) }
 }
 
 token char_any {
@@ -403,8 +412,6 @@ token val_buf {
     | \" <double_quoted_unescape>  \" { make Val::Buf.new( buf => $$<double_quoted_unescape> ) }
     | \' <single_quoted_unescape>  \' { make Val::Buf.new( buf => $$<single_quoted_unescape> ) }
 }
-
-token digits {  \d  [ <digits> | '' ]  }
 
 token val_int {
     <digits>

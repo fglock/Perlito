@@ -1,3 +1,6 @@
+5.0 (plan)
+- these features are now enabled: while loop, floating point numbers
+
 4.0  2010-03-20
 - Go backend bootstrap.
   The Go backend was updated to the latest Go language spec. 
