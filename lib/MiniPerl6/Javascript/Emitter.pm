@@ -564,6 +564,9 @@ class Apply {
         if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' + ')  ~ ')' };
         if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_javascript).join(' - ')  ~ ')' };
         if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' > ')  ~ ')' };
+        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' < ')  ~ ')' };
+        if $code eq 'infix:<>=>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };
+        if $code eq 'infix:<<=>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' };
         
         #if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit_javascript).join(' && ') ~ ')' };
         #if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit_javascript).join(' || ') ~ ')' };
