@@ -812,6 +812,21 @@ class Apply {
                                         ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
                                         ~ ')' 
                                     };
+        if $code eq 'infix:<<>'     { return 'toBool( ' 
+                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') < '
+                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
+                                        ~ ')' 
+                                    };
+        if $code eq 'infix:<>=>'     { return 'toBool( ' 
+                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') >= '
+                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
+                                        ~ ')' 
+                                    };
+        if $code eq 'infix:<<=>'     { return 'toBool( ' 
+                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') <= '
+                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
+                                        ~ ')' 
+                                    };
 
         if $code eq 'infix:<&&>' { 
             return 

@@ -513,6 +513,9 @@ class Apply {
         if $code eq 'infix:<+>'  { return '(+ '  ~ $args  ~ ')' };
         if $code eq 'infix:<->'  { return '(-'   ~ $args  ~ ')' };
         if $code eq 'infix:<>>'  { return '(> '  ~ $args  ~ ')' };
+        if $code eq 'infix:<<>'  { return '(< '  ~ $args  ~ ')' };
+        if $code eq 'infix:<>=>' { return '(>= '  ~ $args  ~ ')' };
+        if $code eq 'infix:<<=>' { return '(<= '  ~ $args  ~ ')' };
         
         if $code eq 'infix:<&&>' { return '(sv-and ' ~ $args ~ ')' };
         if $code eq 'infix:<||>' { return '(sv-or '  ~ $args ~ ')' };
