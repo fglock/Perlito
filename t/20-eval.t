@@ -44,7 +44,7 @@ class Main {
             }
         ];
 
-    my $m := Val::Num.new( num => 123 );
+    my $m := Val::Int.new( int => 123 );
     if ($m.eval) eq 123 {
         say 'ok 1';
     }

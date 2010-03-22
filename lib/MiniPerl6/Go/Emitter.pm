@@ -330,6 +330,7 @@ class CompUnit {
             keys => 1,
             bind => 1,
             int => 1,
+            num => 1,
             str => 1,
             Str => 1,
             bool => 1,
@@ -769,8 +770,8 @@ class Apply {
                                         ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ')'
                                         ~ ')' 
                                     };
-        if $code eq 'Num'           { return 'toInt('    # TODO
-                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ')'
+        if $code eq 'Num'           { return 'toNum('   
+                                        ~ 'tonum(' ~ (@.arguments[0]).emit_go ~ ')'
                                         ~ ')' 
                                     };
         if $code eq 'exists'        { 
