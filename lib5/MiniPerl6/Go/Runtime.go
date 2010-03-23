@@ -59,6 +59,9 @@ type keys_er interface {
 type int_er interface {
 	f_int(v Capture) *Any
 }
+type num_er interface {
+	f_num(v Capture) *Any
+}
 type str_er interface {
 	f_str(v Capture) *Any
 }
@@ -93,7 +96,7 @@ type index_er interface {
 	f_index(v Capture) *Any
 }
 type function_er interface {
-    f_function(v Capture) *Any
+	f_function(v Capture) *Any
 }
 type exists_er interface {
 	f_exists(v Capture) *Any
@@ -138,6 +141,7 @@ type Undef bool
 
 func (i Undef) f_Bool(Capture) *Any  { return b_false() }
 func (i Undef) f_int(Capture) *Any   { return i_0 }
+func (i Undef) f_num(Capture) *Any   { return toNum(0.0) }
 func (i Undef) f_Str(Capture) *Any   { return s_empty }
 func (i Undef) f_array(Capture) *Any { return a_array() }
 func (i Undef) f_hash(Capture) *Any  { return h_hash() }
@@ -191,6 +195,10 @@ func (i Int) f_Bool(Capture) *Any {
 	}
 	return b_true()
 }
+func (i Int) f_num(Capture) *Any {
+	var v Any = i // TODO
+	return &v
+}
 func (i Int) f_int(Capture) *Any {
 	var v Any = i
 	return &v
@@ -200,6 +208,33 @@ func (i Int) f_array(Capture) *Any { panic("converting int to array") }
 func (i Int) f_hash(Capture) *Any  { panic("converting int to hash") }
 func (i Int) f_perl(Capture) *Any  { return i.f_Str(Capture{}) }
 func (i Int) f_isa(v Capture) *Any { return toBool("Int" == tostr(v.p[0])) }
+
+type Num float
+
+func toNum(i float) *Any {
+	var r Any = Num(i)
+	return &r
+}
+func tonum(v *Any) float { return float((*((*v).(num_er).f_num(Capture{}))).(Num)) }
+func (i Num) f_Bool(Capture) *Any {
+	if i == 0 {
+		return b_false()
+	}
+	return b_true()
+}
+func (i Num) f_num(Capture) *Any {
+	var v Any = i
+	return &v
+}
+func (i Num) f_int(Capture) *Any {
+	var v Any = Int(int(i))
+	return &v
+}
+func (i Num) f_Str(Capture) *Any   { return toStr(strconv.Ftoa(float(i), 'g', -1)) }
+func (i Num) f_array(Capture) *Any { panic("converting number to array") }
+func (i Num) f_hash(Capture) *Any  { panic("converting number to hash") }
+func (i Num) f_perl(Capture) *Any  { return i.f_Str(Capture{}) }
+func (i Num) f_isa(v Capture) *Any { return toBool("Num" == tostr(v.p[0])) }
 
 type Str string
 
@@ -247,9 +282,8 @@ func (i Str) f_chars(v Capture) *Any { return toInt(len(string(i))) }
 
 
 type Function func(Capture) *Any
-func (f Function) f_function(v Capture) *Any {
-    return f(v)
-}
+
+func (f Function) f_function(v Capture) *Any { return f(v) }
 func toFunction(f func(Capture) *Any) *Any {
 	var r Any = Function(f)
 	return &r
@@ -292,12 +326,12 @@ func (i *Hash) f_lookup(v Capture) *Any {
 }
 func (i *Hash) f_exists(v Capture) *Any {
 	if i.h == nil {
-	    return b_false()
+		return b_false()
 	}
 	pos := tostr(v.p[0])
 	_, found := i.h[pos]
 	if found {
-        return b_true()
+		return b_true()
 	}
 	return b_false()
 }
@@ -506,6 +540,178 @@ func f_or(f1, f2 func() *Any) *Any {
 		return tmp
 	}
 	return f2()
+}
+func f_numify(v *Any) *Any {
+	switch i := (*v).(type) {
+	case nil:
+		return i_0
+	case Undef:
+		return i_0
+	case Int:
+		return v
+	case Num:
+		return v
+	case Str:
+		// Str can be converted to Int or Num
+		s := string((*v).(Str))
+		out := ""
+		pos := 0
+		max := len(s)
+		if pos >= max {
+			return i_0
+		}
+		if s[pos] == '+' {
+			pos++
+		} else if s[pos] == '-' {
+			out += s[pos : pos+1]
+			pos++
+		}
+		if pos >= max || s[pos] < '0' || s[pos] > '9' {
+			return i_0
+		}
+		for i := pos; i < len(s); i++ {
+			if s[i] >= '0' && s[i] <= '9' {
+				out += s[i : i+1]
+				pos++
+			} else {
+				i = len(s)
+			}
+		}
+		if (pos < max && s[pos] == '.') || ((pos+1) < max && (s[pos] == 'e' || s[pos] == 'E') && (s[pos+1] == '+' || s[pos+1] == '-' || (s[pos+1] >= '0' && s[pos+1] <= '9'))) {
+			// 123. 123e10
+			n, _ := strconv.Atof(s)
+			return toNum(n)
+		}
+		n, _ := strconv.Atoi(out)
+		return toInt(n)
+	}
+	return (*v).(int_er).f_int(Capture{})
+}
+func f_add(v1, v2 *Any) *Any {
+	n1 := f_numify(v1);
+    n2 := f_numify(v2);
+	switch i := (*n1).(type) {
+	case Int:
+	    switch j := (*n2).(type) {
+	    case Int:
+            return toInt( int((*n1).(Int)) + int((*n2).(Int)) )
+        case Num:
+	    	return toNum( float((*n1).(Int)) + float((*n2).(Num)) )
+	    }
+    case Num:
+	    switch j := (*n2).(type) {
+        case Int:
+            return toNum( float((*n1).(Num)) + float((*n2).(Int)) )
+        case Num:
+            return toNum( float((*n1).(Num)) + float((*n2).(Num)) )
+	    }
+	}
+    return i_0
+}
+func f_sub(v1, v2 *Any) *Any {
+	n1 := f_numify(v1);
+    n2 := f_numify(v2);
+	switch i := (*n1).(type) {
+	case Int:
+	    switch j := (*n2).(type) {
+	    case Int:
+            return toInt( int((*n1).(Int)) - int((*n2).(Int)) )
+        case Num:
+	    	return toNum( float((*n1).(Int)) - float((*n2).(Num)) )
+	    }
+    case Num:
+	    switch j := (*n2).(type) {
+        case Int:
+            return toNum( float((*n1).(Num)) - float((*n2).(Int)) )
+        case Num:
+            return toNum( float((*n1).(Num)) - float((*n2).(Num)) )
+	    }
+	}
+    return i_0
+}
+func f_greater(v1, v2 *Any) *Any {
+	n1 := f_numify(v1);
+    n2 := f_numify(v2);
+	switch i := (*n1).(type) {
+	case Int:
+	    switch j := (*n2).(type) {
+	    case Int:
+            return toBool( int((*n1).(Int)) > int((*n2).(Int)) )
+        case Num:
+	    	return toBool( float((*n1).(Int)) > float((*n2).(Num)) )
+	    }
+    case Num:
+	    switch j := (*n2).(type) {
+        case Int:
+            return toBool( float((*n1).(Num)) > float((*n2).(Int)) )
+        case Num:
+            return toBool( float((*n1).(Num)) > float((*n2).(Num)) )
+	    }
+	}
+    return b_false();
+}
+func f_smaller(v1, v2 *Any) *Any {
+	n1 := f_numify(v1);
+    n2 := f_numify(v2);
+	switch i := (*n1).(type) {
+	case Int:
+	    switch j := (*n2).(type) {
+	    case Int:
+            return toBool( int((*n1).(Int)) < int((*n2).(Int)) )
+        case Num:
+	    	return toBool( float((*n1).(Int)) < float((*n2).(Num)) )
+	    }
+    case Num:
+	    switch j := (*n2).(type) {
+        case Int:
+            return toBool( float((*n1).(Num)) < float((*n2).(Int)) )
+        case Num:
+            return toBool( float((*n1).(Num)) < float((*n2).(Num)) )
+	    }
+	}
+    return b_false();
+}
+func f_greater_equal(v1, v2 *Any) *Any {
+	n1 := f_numify(v1);
+    n2 := f_numify(v2);
+	switch i := (*n1).(type) {
+	case Int:
+	    switch j := (*n2).(type) {
+	    case Int:
+            return toBool( int((*n1).(Int)) >= int((*n2).(Int)) )
+        case Num:
+	    	return toBool( float((*n1).(Int)) >= float((*n2).(Num)) )
+	    }
+    case Num:
+	    switch j := (*n2).(type) {
+        case Int:
+            return toBool( float((*n1).(Num)) >= float((*n2).(Int)) )
+        case Num:
+            return toBool( float((*n1).(Num)) >= float((*n2).(Num)) )
+	    }
+	}
+    return b_false();
+}
+func f_smaller_equal(v1, v2 *Any) *Any {
+	n1 := f_numify(v1);
+    n2 := f_numify(v2);
+	switch i := (*n1).(type) {
+	case Int:
+	    switch j := (*n2).(type) {
+	    case Int:
+            return toBool( int((*n1).(Int)) <= int((*n2).(Int)) )
+        case Num:
+	    	return toBool( float((*n1).(Int)) <= float((*n2).(Num)) )
+	    }
+    case Num:
+	    switch j := (*n2).(type) {
+        case Int:
+            return toBool( float((*n1).(Num)) <= float((*n2).(Int)) )
+        case Num:
+            return toBool( float((*n1).(Num)) <= float((*n2).(Num)) )
+	    }
+	}
+    return b_false();
 }
 
 // implementation of functions and methods declared in the prelude file

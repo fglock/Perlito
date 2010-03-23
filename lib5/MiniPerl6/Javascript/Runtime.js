@@ -99,7 +99,7 @@ if (typeof MiniPerl6$Match != 'object') {
   MiniPerl6$Match = function() {};
   MiniPerl6$Match = new MiniPerl6$Match;
   MiniPerl6$Match.f_isa = function (s) { return s == 'MiniPerl6::Match' };
-  MiniPerl6$Match.f_perl = function () { return '::MiniPerl6::Match(' + Main._dump(this) + ')' };
+  MiniPerl6$Match.f_perl = function () { return 'MiniPerl6::Match.new(' + Main._dump(this) + ')' };
 }
 v_MATCH = {};
 v_MATCH.__proto__ = MiniPerl6$Match;
@@ -196,6 +196,18 @@ f_string = function (o) {
   if ( typeof o.f_string == 'function' ) { return o.f_string() }
   if ( typeof o != 'string' ) { return "" + o }
   return o;
+}
+f_add = function (o1, o2) { 
+  if ( typeof o1 == 'string' ) { 
+    if ( typeof o2 == 'string' ) { 
+      return parseFloat(o1) + parseFloat(o2)
+    }
+    return parseFloat(o1) + o2 
+  }
+  if ( typeof o2 == 'string' ) { 
+    return o1 + parseFloat(o2)
+  }
+  return o1 + o2;
 }
 f_bool = function (o) {
   if ( o == null ) { return o }

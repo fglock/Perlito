@@ -964,7 +964,17 @@ class When {
 class While {
     has $.cond;
     has @.body;
-    method emit_go { die "TODO - While" }
+    method emit_go { 
+        my $cond := $.cond;
+        if   $cond.isa( 'Var' )
+          && $cond.sigil eq '@'
+        {
+            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+        };
+        return  'for ;tobool( ' ~ Call::emit_go_call( $cond, 'Bool' ) ~ ' ); { '  
+             ~     (MiniPerl6::Go::LexicalBlock.new( block => @.body, needs_return => 0 )).emit_go
+             ~ ' }';
+    }
 }
 
 class Leave {
