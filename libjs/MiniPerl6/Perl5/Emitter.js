@@ -492,7 +492,7 @@ if (typeof While != 'object') {
   // method emit
   While.f_emit = function () {
     var v_self = this;
-    try { return(( f_string("while (") + f_string(( f_string(v_self.v_cond.f_emit()) + f_string(( f_string(") {") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) } return out; })(v_self.v_body).join(";")) + f_string(" }") )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_cond;(v_cond = v_self.v_cond);if ( f_bool(( f_bool(f_isa(v_cond, "Var")) && f_bool((v_cond.f_sigil() == "@")) )) ) { (function () { (v_cond = function () { var tmp = {v_code: "prefix:<@>",v_arguments: [v_cond],}; tmp.__proto__ = Apply; return tmp }()); })() } else { (function () { null })() };return(( f_string("while (") + f_string(( f_string(v_cond.f_emit()) + f_string(( f_string(") {") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) } return out; })(v_self.v_body).join(";")) + f_string(" }") )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   While.f_emit;  // v8 bug workaround
 })();

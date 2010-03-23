@@ -99,7 +99,7 @@ if (typeof MiniPerl6$Match != 'object') {
   MiniPerl6$Match = function() {};
   MiniPerl6$Match = new MiniPerl6$Match;
   MiniPerl6$Match.f_isa = function (s) { return s == 'MiniPerl6::Match' };
-  MiniPerl6$Match.f_perl = function () { return '::MiniPerl6::Match(' + Main._dump(this) + ')' };
+  MiniPerl6$Match.f_perl = function () { return 'MiniPerl6::Match.new(' + Main._dump(this) + ')' };
 }
 v_MATCH = {};
 v_MATCH.__proto__ = MiniPerl6$Match;
