@@ -197,6 +197,18 @@ f_string = function (o) {
   if ( typeof o != 'string' ) { return "" + o }
   return o;
 }
+f_add = function (o1, o2) { 
+  if ( typeof o1 == 'string' ) { 
+    if ( typeof o2 == 'string' ) { 
+      return parseFloat(o1) + parseFloat(o2)
+    }
+    return parseFloat(o1) + o2 
+  }
+  if ( typeof o2 == 'string' ) { 
+    return o1 + parseFloat(o2)
+  }
+  return o1 + o2;
+}
 f_bool = function (o) {
   if ( o == null ) { return o }
   if ( typeof o == 'boolean' ) { return o }

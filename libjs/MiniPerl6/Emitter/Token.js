@@ -104,7 +104,7 @@ if (typeof Rul$Subrule != 'object') {
   // method emit
   Rul$Subrule.f_emit = function () {
     var v_self = this;
-    try { var v_meth;(v_meth = ( f_bool((1 + f_index(v_self.v_metasyntax, "."))) ? v_self.v_metasyntax : ( f_string("$grammar.") + f_string(v_self.v_metasyntax) )));return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string("if $m2 { $MATCH.to := $m2.to; $MATCH{'") + f_string(( f_string(v_self.v_metasyntax) + f_string(( f_string("'} := $m2; 1 } else { false } ") + f_string("}") )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_meth;(v_meth = ( f_bool(f_add(1, f_index(v_self.v_metasyntax, "."))) ? v_self.v_metasyntax : ( f_string("$grammar.") + f_string(v_self.v_metasyntax) )));return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string("if $m2 { $MATCH.to := $m2.to; $MATCH{'") + f_string(( f_string(v_self.v_metasyntax) + f_string(( f_string("'} := $m2; 1 } else { false } ") + f_string("}") )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Subrule.f_emit;  // v8 bug workaround
 })();
@@ -124,7 +124,7 @@ if (typeof Rul$SubruleNoCapture != 'object') {
   // method emit
   Rul$SubruleNoCapture.f_emit = function () {
     var v_self = this;
-    try { var v_meth;(v_meth = ( f_bool((1 + f_index(v_self.v_metasyntax, "."))) ? v_self.v_metasyntax : ( f_string("$grammar.") + f_string(v_self.v_metasyntax) )));return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string("if $m2 { $MATCH.to := $m2.to; 1 } else { false } ") + f_string("}") )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_meth;(v_meth = ( f_bool(f_add(1, f_index(v_self.v_metasyntax, "."))) ? v_self.v_metasyntax : ( f_string("$grammar.") + f_string(v_self.v_metasyntax) )));return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string("if $m2 { $MATCH.to := $m2.to; 1 } else { false } ") + f_string("}") )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$SubruleNoCapture.f_emit;  // v8 bug workaround
 })();

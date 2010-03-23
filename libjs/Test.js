@@ -83,7 +83,7 @@ var v_testing_started = null;
   }
   // sub proclaim
   Test.f_proclaim = function (v_cond, v_desc, v_todo, v_got, v_expected, v_depends, v_negate) {
-    try { (v_testing_started = 1);(v_num_of_tests_run = (v_num_of_tests_run + 1));if ( f_bool(v_cond) ) { (function () { say("ok " + v_num_of_tests_run); })() } else { (function () { say("not ok " + v_num_of_tests_run);Test.f_report_failure(v_todo, v_got, v_expected, v_negate); })() };throw(v_cond) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { (v_testing_started = 1);(v_num_of_tests_run = f_add(v_num_of_tests_run, 1));if ( f_bool(v_cond) ) { (function () { say("ok " + v_num_of_tests_run); })() } else { (function () { say("not ok " + v_num_of_tests_run);Test.f_report_failure(v_todo, v_got, v_expected, v_negate); })() };throw(v_cond) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub report_failure
   Test.f_report_failure = function (v_todo, v_got, v_expected, v_negate) {
