@@ -449,7 +449,13 @@ class While {
     has $.cond;
     has @.body;
     method emit {
-          'while (' ~ $.cond.emit ~ ') {' 
+        my $cond := $.cond;
+        if   $cond.isa( 'Var' ) 
+          && $cond.sigil eq '@' 
+        {
+            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+        };
+          'while (' ~ $cond.emit ~ ') {' 
         ~   (@.body.>>emit).join(';') 
         ~ ' }'
     }

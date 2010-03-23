@@ -180,7 +180,7 @@ package While;
 sub new { shift; bless { @_ }, "While" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
-sub emit { my $self = $_[0]; 'while (' . $self->{cond}->emit() . ') {' . Main::join([ map { $_->emit() } @{ $self->{body} } ], ';') . ' }' }
+sub emit { my $self = $_[0]; (my  $cond = $self->{cond}); if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  }; 'while (' . $cond->emit() . ') {' . Main::join([ map { $_->emit() } @{ $self->{body} } ], ';') . ' }' }
 }
 
 {
