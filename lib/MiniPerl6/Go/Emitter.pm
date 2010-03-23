@@ -797,37 +797,36 @@ class Apply {
                                                 ~ 'tostr(' ~ (@.arguments[0]).emit_go ~ ') + ' 
                                                 ~ 'tostr(' ~ (@.arguments[1]).emit_go ~ ') ' 
                                                 ~ ')' 
-                                    };
-        if $code eq 'infix:<+>'     { return 'toInt( ' 
-                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') + '
-                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') ' 
-                                        ~ ')' 
-                                    };
+                                    }
+        if $code eq 'infix:<+>'     { return 'f_add( ' 
+                                                ~ (@.arguments.>>emit_go).join(', ')    
+                                                ~ ')' 
+                                    }
         if $code eq 'infix:<->'     { return 'toInt( ' 
                                         ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') - '
                                         ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
                                         ~ ')' 
-                                    };
+                                    }
         if $code eq 'infix:<>>'     { return 'toBool( ' 
                                         ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') > '
                                         ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
                                         ~ ')' 
-                                    };
+                                    }
         if $code eq 'infix:<<>'     { return 'toBool( ' 
                                         ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') < '
                                         ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
                                         ~ ')' 
-                                    };
+                                    }
         if $code eq 'infix:<>=>'     { return 'toBool( ' 
                                         ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') >= '
                                         ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
                                         ~ ')' 
-                                    };
+                                    }
         if $code eq 'infix:<<=>'     { return 'toBool( ' 
                                         ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') <= '
                                         ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
                                         ~ ')' 
-                                    };
+                                    }
 
         if $code eq 'infix:<&&>' { 
             return 
