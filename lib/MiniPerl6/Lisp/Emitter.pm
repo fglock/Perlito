@@ -510,10 +510,10 @@ class Apply {
         if $code eq 'prefix:<@>' { return $args };
         if $code eq 'prefix:<%>' { return $args };
 
-        if $code eq 'infix:<+>'  { return '(+ '  ~ $args  ~ ')' };
-        if $code eq 'infix:<->'  { return '(-'   ~ $args  ~ ')' };
-        if $code eq 'infix:<>>'  { return '(> '  ~ $args  ~ ')' };
-        if $code eq 'infix:<<>'  { return '(< '  ~ $args  ~ ')' };
+        if $code eq 'infix:<+>'  { return '(+ '   ~ $args  ~ ')' };
+        if $code eq 'infix:<->'  { return '(- '   ~ $args  ~ ')' };
+        if $code eq 'infix:<>>'  { return '(> '   ~ $args  ~ ')' };
+        if $code eq 'infix:<<>'  { return '(< '   ~ $args  ~ ')' };
         if $code eq 'infix:<>=>' { return '(>= '  ~ $args  ~ ')' };
         if $code eq 'infix:<<=>' { return '(<= '  ~ $args  ~ ')' };
         
@@ -568,6 +568,16 @@ class For {
         # (loop for x being the elements of '(1 2 3) 
         #        do (print x))
 
+    }
+}
+
+class While {
+    has $.cond;
+    has @.body;
+    method emit_lisp { 
+          '(loop while (sv-bool ' ~ $.cond.emit_lisp ~ ') do ' 
+        ~    (MiniPerl6::Lisp::LexicalBlock.new( block => @.body )).emit_lisp
+        ~ ')';
     }
 }
 
