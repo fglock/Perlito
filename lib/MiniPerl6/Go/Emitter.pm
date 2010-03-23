@@ -799,24 +799,13 @@ class Apply {
                                                 ~ ')' 
                                     }
         if $code eq 'infix:<+>'     { return 'f_add( ' 
-                                                ~ (@.arguments.>>emit_go).join(', ')    
-                                                ~ ')' 
-                                    }
-        if $code eq 'infix:<->'     { return 'toInt( ' 
-                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') - '
-                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
-                                        ~ ')' 
-                                    }
-        if $code eq 'infix:<>>'     { return 'toBool( ' 
-                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') > '
-                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
-                                        ~ ')' 
-                                    }
-        if $code eq 'infix:<<>'     { return 'toBool( ' 
-                                        ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') < '
-                                        ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
-                                        ~ ')' 
-                                    }
+                                                ~ (@.arguments.>>emit_go).join(', ') ~ ')' }
+        if $code eq 'infix:<->'     { return 'f_sub( ' 
+                                                ~ (@.arguments.>>emit_go).join(', ') ~ ')' }
+        if $code eq 'infix:<>>'     { return 'f_greater( ' 
+                                                ~ (@.arguments.>>emit_go).join(', ') ~ ')' }
+        if $code eq 'infix:<<>'     { return 'f_smaller( ' 
+                                                ~ (@.arguments.>>emit_go).join(', ') ~ ')' }
         if $code eq 'infix:<>=>'     { return 'toBool( ' 
                                         ~ 'toint(' ~ (@.arguments[0]).emit_go ~ ') >= '
                                         ~ 'toint(' ~ (@.arguments[1]).emit_go ~ ') '
