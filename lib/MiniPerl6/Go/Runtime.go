@@ -227,7 +227,7 @@ func (i Num) f_num(Capture) *Any {
 	return &v
 }
 func (i Num) f_int(Capture) *Any {
-	var v Any = i   // TODO
+	var v Any = Int(int(i))
 	return &v
 }
 func (i Num) f_Str(Capture) *Any   { return toStr(strconv.Ftoa(float(i), 'g', -1)) }
