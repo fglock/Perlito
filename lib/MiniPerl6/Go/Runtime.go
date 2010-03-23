@@ -96,7 +96,7 @@ type index_er interface {
 	f_index(v Capture) *Any
 }
 type function_er interface {
-    f_function(v Capture) *Any
+	f_function(v Capture) *Any
 }
 type exists_er interface {
 	f_exists(v Capture) *Any
@@ -196,7 +196,7 @@ func (i Int) f_Bool(Capture) *Any {
 	return b_true()
 }
 func (i Int) f_num(Capture) *Any {
-	var v Any = i   // TODO
+	var v Any = i // TODO
 	return &v
 }
 func (i Int) f_int(Capture) *Any {
@@ -282,9 +282,8 @@ func (i Str) f_chars(v Capture) *Any { return toInt(len(string(i))) }
 
 
 type Function func(Capture) *Any
-func (f Function) f_function(v Capture) *Any {
-    return f(v)
-}
+
+func (f Function) f_function(v Capture) *Any { return f(v) }
 func toFunction(f func(Capture) *Any) *Any {
 	var r Any = Function(f)
 	return &r
@@ -327,12 +326,12 @@ func (i *Hash) f_lookup(v Capture) *Any {
 }
 func (i *Hash) f_exists(v Capture) *Any {
 	if i.h == nil {
-	    return b_false()
+		return b_false()
 	}
 	pos := tostr(v.p[0])
 	_, found := i.h[pos]
 	if found {
-        return b_true()
+		return b_true()
 	}
 	return b_false()
 }
@@ -541,6 +540,52 @@ func f_or(f1, f2 func() *Any) *Any {
 		return tmp
 	}
 	return f2()
+}
+func f_numify(v *Any) *Any {
+	switch i := (*v).(type) {
+	case nil:
+		return i_0
+	case Undef:
+		return i_0
+	case Int:
+		return v
+	case Num:
+		return v
+	case Str:
+		// Str can be converted to Int or Num
+		s := string((*v).(Str))
+		out := ""
+		pos := 0
+		max := len(s)
+		if pos >= max {
+			return i_0
+		}
+		if s[pos] == '+' {
+			pos++
+		} else if s[pos] == '-' {
+			out += s[pos : pos+1]
+			pos++
+		}
+		if pos >= max || s[pos] < '0' || s[pos] > '9' {
+			return i_0
+		}
+		for i := pos; i < len(s); i++ {
+			if s[i] >= '0' && s[i] <= '9' {
+				out += s[i : i+1]
+				pos++
+			} else {
+				i = len(s)
+			}
+		}
+		if (pos < max && s[pos] == '.') || ((pos+1) < max && (s[pos] == 'e' || s[pos] == 'E') && (s[pos+1] == '+' || s[pos+1] == '-' || (s[pos+1] >= '0' && s[pos+1] <= '9'))) {
+			// 123. 123e10
+			n, _ := strconv.Atof(s)
+			return toNum(n)
+		}
+		n, _ := strconv.Atoi(out)
+		return toInt(n)
+	}
+	return (*v).(int_er).f_int(Capture{})
 }
 
 // implementation of functions and methods declared in the prelude file
