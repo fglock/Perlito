@@ -14,33 +14,25 @@ class Main {
     my $env := 
         [
             {
-                'print' => EvalFunction.new(
-                        func => sub ( $env, $args ) { 
+                'print' =>      sub ( $env, $args ) { 
                                     for @($args) -> $v {
                                         print $v.eval($env);
                                     }
                                     return 1;
                                 }, 
-                    ),
-                'say' => EvalFunction.new(
-                        func => sub ( $env, $args ) { 
+                'say' =>        sub ( $env, $args ) { 
                                     for @($args) -> $v {
                                         print $v.eval($env);
                                     }
                                     print "\n";
                                     return 1;
                                 }, 
-                    ),
-                'infix:<+>' => EvalFunction.new(
-                        func => sub ( $env, $args ) { 
+                'infix:<+>' =>  sub ( $env, $args ) { 
                                     ($args[0]).eval($env) + ($args[1]).eval($env)
                                 },
-                    ),
-                'infix:<==>' => EvalFunction.new(
-                        func => sub ( $env, $args ) {
+                'infix:<==>' => sub ( $env, $args ) {
                                     ($args[0]).eval($env) == ($args[1]).eval($env)
                                 },
-                    ),
             }
         ];
 

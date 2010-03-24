@@ -1,13 +1,5 @@
 use v6;
 
-class EvalFunction {
-    has $.func;
-
-    method apply ( $env, $args ) {
-        $.func.( $env, $args );
-    }
-}
-
 class CompUnit {
     has $.name;
     has %.attributes;
@@ -222,7 +214,7 @@ class Apply {
         # warn "Apply ", $env.perl, " code: '", $code, "'";
         for @($env) -> $e {
             if exists( $e{ $code } ) {
-                return (($e{ $code }).apply( $env, @.arguments ));
+                return (($e{ $code }).( $env, @.arguments ));
             }
         }
         warn "Interpreter runtime error: subroutine '", $code, "()' not found";
@@ -365,8 +357,7 @@ class Sub {
             push( @param_name, $field.plain_name );
         }
         my $sub :=  
-            EvalFunction.new(
-                func => sub ( $env, $args ) {
+                sub ( $env, $args ) {
                     my %context;
                     my $n := 0;
                     %context{'@_'} := $args;
@@ -380,8 +371,7 @@ class Sub {
                         $r := $stmt.eval($env1);
                     }
                     return $r;
-                },
-            );
+                };
         if $.name {
             ($env[0]){$.name} := $sub;
         }
