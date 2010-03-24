@@ -56,13 +56,6 @@ sub emit { my $self = $_[0]; die('Val::Object - not used yet') }
 }
 
 {
-package Lit::Seq;
-sub new { shift; bless { @_ }, "Lit::Seq" }
-sub seq { $_[0]->{seq} };
-sub emit { my $self = $_[0]; die('Lit::Seq - not used yet') }
-}
-
-{
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array { $_[0]->{array} };

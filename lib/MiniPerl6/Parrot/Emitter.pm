@@ -145,14 +145,6 @@ class Val::Object {
     }
 }
 
-class Lit::Seq {
-    has @.seq;
-    method emit_parrot {
-        die 'Lit::Seq - not used yet';
-        # '(' ~ (@.seq.>>emit_parrot).join('') ~ ')';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit_parrot {

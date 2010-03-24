@@ -195,13 +195,6 @@ class Val::Object {
     }
 }
 
-class Lit::Seq {
-    has @.seq;
-    method emit_javascript {
-        '(' ~ (@.seq.>>emit_javascript).join(', ') ~ ')';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit_javascript {

@@ -56,13 +56,6 @@ sub eval { my $self = $_[0]; my $env = $_[1]; warn('Interpreter TODO: Val::Objec
 }
 
 {
-package Lit::Seq;
-sub new { shift; bless { @_ }, "Lit::Seq" }
-sub seq { $_[0]->{seq} };
-sub eval { my $self = $_[0]; my $env = $_[1]; warn('Interpreter TODO: Lit::Seq') }
-}
-
-{
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };

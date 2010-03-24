@@ -246,13 +246,6 @@ class Val::Object {
     }
 }
 
-class Lit::Seq {
-    has @.seq;
-    method emit_lisp {
-        '(' ~ (@.seq.>>emit_lisp).join(' ') ~ ')';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit_lisp {

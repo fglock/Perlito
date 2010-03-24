@@ -175,26 +175,6 @@ if (typeof Val$Object != 'object') {
   Val$Object.f_emit_javascript;  // v8 bug workaround
 })();
 
-// class Lit::Seq
-if (typeof Lit$Seq != 'object') {
-  Lit$Seq = function() {};
-  Lit$Seq = new Lit$Seq;
-  Lit$Seq.f_isa = function (s) { return s == 'Lit::Seq' };
-  Lit$Seq.f_perl = function () { return '::Lit::Seq(' + Main._dump(this) + ')' };
-}
-(function () {
-  var v__NAMESPACE = Lit$Seq;
-  // accessor seq
-  Lit$Seq.v_seq = null;
-  Lit$Seq.f_seq = function () { return this.v_seq }
-  // method emit_javascript
-  Lit$Seq.f_emit_javascript = function () {
-    var v_self = this;
-    try { return(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) } return out; })(v_self.v_seq).join(", ")) + f_string(")") )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
-  }
-  Lit$Seq.f_emit_javascript;  // v8 bug workaround
-})();
-
 // class Lit::Array
 if (typeof Lit$Array != 'object') {
   Lit$Array = function() {};

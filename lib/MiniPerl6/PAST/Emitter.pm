@@ -227,14 +227,6 @@ class Val::Object {
     }
 }
 
-class Lit::Seq {
-    has @.seq;
-    method emit {
-        die 'Lit::Seq - not used yet';
-        # '(' ~ (@.seq.>>emit).join('') ~ ')';
-    }
-}
-
 class Lit::Array {
     has @.array;
     method emit {

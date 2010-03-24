@@ -44,13 +44,6 @@ class Val::Object {
     }
 }
 
-class Lit::Seq {
-    has @.seq;
-    method emit {
-        '[' ~ (@.seq.>>emit).join(', ') ~ ']';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit {

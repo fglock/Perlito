@@ -46,13 +46,6 @@ class Val::Object {
     }
 }
 
-class Lit::Seq {
-    has @.seq;
-    method eval ($env) {
-        warn "Interpreter TODO: Lit::Seq";
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method eval ($env) {

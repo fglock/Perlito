@@ -56,13 +56,6 @@ sub emit { my $self = $_[0]; Main::perl($self->{class}, ) . '.new(' . Main::perl
 }
 
 {
-package Lit::Seq;
-sub new { shift; bless { @_ }, "Lit::Seq" }
-sub seq { $_[0]->{seq} };
-sub emit { my $self = $_[0]; '(' . Main::join([ map { $_->emit() } @{ $self->{seq} } ], ', ') . ')' }
-}
-
-{
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };

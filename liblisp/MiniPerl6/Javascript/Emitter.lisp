@@ -15,8 +15,6 @@
   (:use common-lisp mp-Main))
 (defpackage mp-Val-Object
   (:use common-lisp mp-Main))
-(defpackage mp-Lit-Seq
-  (:use common-lisp mp-Main))
 (defpackage mp-Lit-Array
   (:use common-lisp mp-Main))
 (defpackage mp-Lit-Hash
@@ -419,42 +417,6 @@ new-slots))
 
 (defmethod sv-perl ((self mp-Val-Object))
   (mp-Main::sv-lisp_dump_object "::Val::Object" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "class") (setf (sv-value m) (sv-class self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "fields") (setf (sv-value m) (sv-fields self)) m) )))
-
-
-
-
-;; class Lit::Seq
-(if (not (ignore-errors (find-class 'mp-Lit-Seq)))
-  (defclass mp-Lit-Seq () ()))
-
-(let (x) 
-  (setq x (make-instance 'mp-Lit-Seq))
-  (defun proto-mp-Lit-Seq () x))
-;; has $.seq
-(let ((new-slots (list (list :name 'sv-seq
-  :readers '(sv-seq)
-  :writers '((setf sv-seq))
-  :initform '(sv-undef)
-  :initfunction (constantly (sv-undef))))))
-(dolist (slot-defn (sb-mop:class-direct-slots (find-class 'mp-Lit-Seq)))
-(push (list :name (sb-mop:slot-definition-name slot-defn)
-  :readers (sb-mop:slot-definition-readers slot-defn)
-  :writers (sb-mop:slot-definition-writers slot-defn)
-  :initform (sb-mop:slot-definition-initform slot-defn)
-  :initfunction (sb-mop:slot-definition-initfunction slot-defn))
-new-slots))
-(sb-mop:ensure-class 'mp-Lit-Seq :direct-slots new-slots))
-
-;; method emit_javascript
-(if (not (ignore-errors (find-method 'sv-emit_javascript () ())))
-  (defgeneric sv-emit_javascript (sv-self)
-      (:documentation "a method")))
-(defmethod sv-emit_javascript ((sv-self mp-Lit-Seq))
-  (block mp6-function
-    (progn (concatenate 'string (sv-string "(") (sv-string (concatenate 'string (sv-string (sv-join (map 'vector #'(lambda (c) (sv-emit_javascript  c)) (sv-seq sv-self)) ", ")) (sv-string ")")))))))
-
-(defmethod sv-perl ((self mp-Lit-Seq))
-  (mp-Main::sv-lisp_dump_object "::Lit::Seq" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "seq") (setf (sv-value m) (sv-seq self)) m) )))
 
 
 

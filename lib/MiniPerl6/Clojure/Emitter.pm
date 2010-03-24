@@ -206,13 +206,6 @@ class Val::Object {
     }
 }
 
-class Lit::Seq {
-    has @.seq;
-    method emit_clojure {
-        '(' ~ (@.seq.>>emit_clojure).join(' ') ~ ')';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit_clojure {
