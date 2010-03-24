@@ -510,7 +510,7 @@ class Apply {
         if $code eq 'prefix:<@>' { return $args };
         if $code eq 'prefix:<%>' { return $args };
 
-        if $code eq 'infix:<+>'  { return '(+ '   ~ $args  ~ ')' };
+        if $code eq 'infix:<+>'  { return '(sv-add ' ~ $args  ~ ')' };
         if $code eq 'infix:<->'  { return '(- '   ~ $args  ~ ')' };
         if $code eq 'infix:<>>'  { return '(> '   ~ $args  ~ ')' };
         if $code eq 'infix:<<>'  { return '(< '   ~ $args  ~ ')' };

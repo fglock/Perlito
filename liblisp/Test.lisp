@@ -112,7 +112,7 @@
     (mp-Main::mp-Test-sv-flunk sv-desc sv-todo sv-depends ))
 (in-package mp-Main)
 (defun mp-Test-sv-proclaim (&optional sv-cond sv-desc sv-todo sv-got sv-expected sv-depends sv-negate )
-  (block mp6-function (progn (setf sv-testing_started 1)(setf sv-num_of_tests_run (+ sv-num_of_tests_run 1))(if (sv-bool sv-cond) (progn (mp-Main::sv-say (list "ok " sv-num_of_tests_run))) (progn (mp-Main::sv-say (list "not ok " sv-num_of_tests_run))(mp-Test::sv-report_failure sv-todo sv-got sv-expected sv-negate)))(return-from mp6-function sv-cond))))
+  (block mp6-function (progn (setf sv-testing_started 1)(setf sv-num_of_tests_run (sv-add sv-num_of_tests_run 1))(if (sv-bool sv-cond) (progn (mp-Main::sv-say (list "ok " sv-num_of_tests_run))) (progn (mp-Main::sv-say (list "not ok " sv-num_of_tests_run))(mp-Test::sv-report_failure sv-todo sv-got sv-expected sv-negate)))(return-from mp6-function sv-cond))))
 (in-package mp-Test)
   (defun sv-proclaim (&optional sv-cond sv-desc sv-todo sv-got sv-expected sv-depends sv-negate )
     (mp-Main::mp-Test-sv-proclaim sv-cond sv-desc sv-todo sv-got sv-expected sv-depends sv-negate ))

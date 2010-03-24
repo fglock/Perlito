@@ -269,7 +269,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-emit ((sv-self mp-Rul-Subrule))
   (block mp6-function
-    (let ((sv-meth (sv-undef))) (setf sv-meth (if (sv-bool (+ 1 (sv-index (sv-metasyntax sv-self) "."))) (sv-metasyntax sv-self) (concatenate 'string (sv-string "$grammar.") (sv-string (sv-metasyntax sv-self)))))(concatenate 'string (sv-string "do { ") (sv-string (concatenate 'string (sv-string "my $m2 := ") (sv-string (concatenate 'string (sv-string sv-meth) (sv-string (concatenate 'string (sv-string "($str, $MATCH.to); ") (sv-string (concatenate 'string (sv-string "if $m2 { $MATCH.to := $m2.to; $MATCH{'") (sv-string (concatenate 'string (sv-string (sv-metasyntax sv-self)) (sv-string (concatenate 'string (sv-string "'} := $m2; 1 } else { false } ") (sv-string "}")))))))))))))))))
+    (let ((sv-meth (sv-undef))) (setf sv-meth (if (sv-bool (sv-add 1 (sv-index (sv-metasyntax sv-self) "."))) (sv-metasyntax sv-self) (concatenate 'string (sv-string "$grammar.") (sv-string (sv-metasyntax sv-self)))))(concatenate 'string (sv-string "do { ") (sv-string (concatenate 'string (sv-string "my $m2 := ") (sv-string (concatenate 'string (sv-string sv-meth) (sv-string (concatenate 'string (sv-string "($str, $MATCH.to); ") (sv-string (concatenate 'string (sv-string "if $m2 { $MATCH.to := $m2.to; $MATCH{'") (sv-string (concatenate 'string (sv-string (sv-metasyntax sv-self)) (sv-string (concatenate 'string (sv-string "'} := $m2; 1 } else { false } ") (sv-string "}")))))))))))))))))
 
 (defmethod sv-perl ((self mp-Rul-Subrule))
   (mp-Main::sv-lisp_dump_object "::Rul::Subrule" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "metasyntax") (setf (sv-value m) (sv-metasyntax self)) m) )))
@@ -305,7 +305,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-emit ((sv-self mp-Rul-SubruleNoCapture))
   (block mp6-function
-    (let ((sv-meth (sv-undef))) (setf sv-meth (if (sv-bool (+ 1 (sv-index (sv-metasyntax sv-self) "."))) (sv-metasyntax sv-self) (concatenate 'string (sv-string "$grammar.") (sv-string (sv-metasyntax sv-self)))))(concatenate 'string (sv-string "do { ") (sv-string (concatenate 'string (sv-string "my $m2 := ") (sv-string (concatenate 'string (sv-string sv-meth) (sv-string (concatenate 'string (sv-string "($str, $MATCH.to); ") (sv-string (concatenate 'string (sv-string "if $m2 { $MATCH.to := $m2.to; 1 } else { false } ") (sv-string "}")))))))))))))
+    (let ((sv-meth (sv-undef))) (setf sv-meth (if (sv-bool (sv-add 1 (sv-index (sv-metasyntax sv-self) "."))) (sv-metasyntax sv-self) (concatenate 'string (sv-string "$grammar.") (sv-string (sv-metasyntax sv-self)))))(concatenate 'string (sv-string "do { ") (sv-string (concatenate 'string (sv-string "my $m2 := ") (sv-string (concatenate 'string (sv-string sv-meth) (sv-string (concatenate 'string (sv-string "($str, $MATCH.to); ") (sv-string (concatenate 'string (sv-string "if $m2 { $MATCH.to := $m2.to; 1 } else { false } ") (sv-string "}")))))))))))))
 
 (defmethod sv-perl ((self mp-Rul-SubruleNoCapture))
   (mp-Main::sv-lisp_dump_object "::Rul::SubruleNoCapture" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "metasyntax") (setf (sv-value m) (sv-metasyntax self)) m) )))

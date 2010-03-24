@@ -15,7 +15,7 @@
   (:export 
         #:sv-eq #:sv-bool #:sv-substr #:sv-say #:sv-print #:sv-index 
         #:sv-and #:sv-or #:sv-perl #:sv-scalar #:sv-string #:sv-undef
-        #:sv-defined #:sv-array-index #:sv-hash-lookup))
+        #:sv-defined #:sv-array-index #:sv-hash-lookup #:sv-add ))
 (in-package mp-Main)
 
 (setf COMMON-LISP-USER::*posix-argv* (cdr COMMON-LISP-USER::*posix-argv*))
@@ -85,7 +85,7 @@
   (defgeneric sv-Num (x)
       (:documentation "Num()")))
 (defmethod sv-Num (x) x)
-(defmethod sv-Num ((x string)) (parse-integer x))
+(defmethod sv-Num ((x string)) (read-from-string x))
 
 (if (not (ignore-errors (find-method 'sv-string () ())))
   (defgeneric sv-string (x)
@@ -106,14 +106,24 @@
 
 (if (not (ignore-errors (find-method 'sv-eq-int () ())))
   (defgeneric sv-eq-int (x y)
-      (:documentation "compare int values")))
+      (:documentation "compare 2 numeric values")))
 ;; (defmethod sv-eq (x y) (eql x y))
 (defmethod sv-eq-int (x y)                   (eql x y))
-(defmethod sv-eq-int (x (y string))          (eql x (parse-integer y)))
-(defmethod sv-eq-int ((x string) (y string)) (eql (parse-integer x) (parse-integer y)))
-(defmethod sv-eq-int ((x string) (y number)) (eql (parse-integer x) y))
-(defmethod sv-eq-int ((x number) (y string)) (eql x (parse-integer y)))
+(defmethod sv-eq-int (x (y string))          (eql x (read-from-string y)))
+(defmethod sv-eq-int ((x string) (y string)) (eql (read-from-string x) (read-from-string y)))
+(defmethod sv-eq-int ((x string) (y number)) (eql (read-from-string x) y))
+(defmethod sv-eq-int ((x number) (y string)) (eql x (read-from-string y)))
 (defmethod sv-eq-int ((x number) (y number)) (eql x y))
+
+(if (not (ignore-errors (find-method 'sv-add () ())))
+  (defgeneric sv-add (x y)
+      (:documentation "add 2 values")))
+(defmethod sv-add (x y)                   (+ x y))
+(defmethod sv-add (x (y string))          (+ x (read-from-string y)))
+(defmethod sv-add ((x string) (y string)) (+ (read-from-string x) (read-from-string y)))
+(defmethod sv-add ((x string) (y number)) (+ (read-from-string x) y))
+(defmethod sv-add ((x number) (y string)) (+ x (read-from-string y)))
+(defmethod sv-add ((x number) (y number)) (+ x y))
 
 (if (not (ignore-errors (find-method 'sv-bool () ())))
   (defgeneric sv-bool (self)
