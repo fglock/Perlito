@@ -367,38 +367,40 @@ class Apply {
         if $code eq 'print'      { return 'Main::print(' ~ (@.arguments.>>emit).join(', ') ~ ')' };
         if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>emit).join(', ') ~ ')' };
 
-        if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit).join(' ')    ~ '}' };
-        if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>emit).join(' ')    ~ '} )' };
-        if $code eq 'push'       { return 'push( @{' ~ (@.arguments[0]).emit ~ '}, '~ (@.arguments[1]).emit ~ ' )' };
+        if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
+        if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>emit).join(' ')  ~ '} )' };
+        if $code eq 'push'       { return 'push( @{' ~ (@.arguments[0]).emit ~ '}, ' ~ (@.arguments[1]).emit ~ ' )' };
         if $code eq 'shift'      { return 'shift( @{' ~ (@.arguments.>>emit).join(' ')    ~ '} )' };
 
-        if $code eq 'Int'        { return '(0+' ~ (@.arguments[0]).emit ~ ')' };
-        if $code eq 'Num'        { return '(0+' ~ (@.arguments[0]).emit ~ ')' };
+        if $code eq 'Int'        { return '(0+' ~ (@.arguments[0]).emit             ~ ')' };
+        if $code eq 'Num'        { return '(0+' ~ (@.arguments[0]).emit             ~ ')' };
 
         if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit).join(' ') ~ ')' };
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ' ? 0 : 1)' };
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit).join(' ')    ~ ' ? 1 : 0)' };
+        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit).join(' ')     ~ ' ? 0 : 1)' };
+        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit).join(' ')     ~ ' ? 1 : 0)' };
 
-        if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit).join(' ')    ~ '}' };
-        if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit).join(' ')    ~ '}' };
-        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit).join(' ')    ~ '}' };
+        if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
+        if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
+        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
 
-        if $code eq 'infix:<~>'  { return ''   ~ (@.arguments.>>emit).join(' . ')  ~ '' };
-        if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit).join(' + ')  ~ ')' };
-        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit).join(' - ')  ~ ')' };
-        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit).join(' > ')  ~ ')' };
-        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit).join(' < ')  ~ ')' };
-        if $code eq 'infix:<x>'  { return '('  ~ (@.arguments.>>emit).join(' x ')  ~ ')' };
-        if $code eq 'infix:<>=>'  { return '('  ~ (@.arguments.>>emit).join(' >= ')  ~ ')' };
-        if $code eq 'infix:<<=>'  { return '('  ~ (@.arguments.>>emit).join(' <= ')  ~ ')' };
+        if $code eq 'infix:<~>'  { return ''   ~ (@.arguments.>>emit).join(' . ')   ~ ''  };
+        if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit).join(' + ')   ~ ')' };
+        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit).join(' - ')   ~ ')' };
+        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit).join(' * ')   ~ ')' };
+        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit).join(' / ')   ~ ')' };
+        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit).join(' > ')   ~ ')' };
+        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit).join(' < ')   ~ ')' };
+        if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit).join(' >= ')  ~ ')' };
+        if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit).join(' <= ')  ~ ')' };
+        if $code eq 'infix:<x>'  { return '('  ~ (@.arguments.>>emit).join(' x ')   ~ ')' };
         
-        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit).join(' && ') ~ ')' };
-        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit).join(' || ') ~ ')' };
-        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit).join(' eq ') ~ ')' };
-        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit).join(' ne ') ~ ')' };
+        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit).join(' && ')  ~ ')' };
+        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit).join(' || ')  ~ ')' };
+        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit).join(' eq ')  ~ ')' };
+        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit).join(' ne ')  ~ ')' };
  
-        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit).join(' == ') ~ ')' };
-        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit).join(' != ') ~ ')' };
+        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit).join(' == ')  ~ ')' };
+        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit).join(' != ')  ~ ')' };
 
         if $code eq 'ternary:<?? !!>' { 
             return '(' ~ (@.arguments[0]).emit ~
@@ -407,7 +409,6 @@ class Apply {
                   ')' };
         
         $code ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
-        # '(' ~ $.code.emit ~ ')->(' ~ @.arguments.>>emit.join(', ') ~ ')';
     }
 }
 

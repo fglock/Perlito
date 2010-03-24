@@ -1,5 +1,6 @@
-5.0 (plan)
-- these features are now enabled: while loop, floating point numbers
+4.1  2010-03-24
+- floating point numbers
+- while loop
 
 4.0  2010-03-20
 - Go backend bootstrap.

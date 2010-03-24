@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..3';
+    say '1..5';
     my $v := 1 + 0.3;
     if ( $v < 1.29 ) || ( $v > 1.31 ) {
         print 'not '
@@ -17,4 +17,14 @@ class Main {
         print 'not '
     }
     say 'ok ', 3, ' # ', ($v + '3.4');
+
+    if ( $v / 2 ) != 0.65 {
+        print 'not '
+    }
+    say 'ok 4 # ', ($v / 2);
+
+    if ( $v * 2 ) != 2.6 {
+        print 'not '
+    }
+    say 'ok 5 # ', ($v * 2);
 }

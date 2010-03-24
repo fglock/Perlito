@@ -629,6 +629,48 @@ func f_sub(v1, v2 *Any) *Any {
 	}
     return i_0
 }
+func f_mul(v1, v2 *Any) *Any {
+	n1 := f_numify(v1);
+    n2 := f_numify(v2);
+	switch i := (*n1).(type) {
+	case Int:
+	    switch j := (*n2).(type) {
+	    case Int:
+            return toInt( int((*n1).(Int)) * int((*n2).(Int)) )
+        case Num:
+	    	return toNum( float((*n1).(Int)) * float((*n2).(Num)) )
+	    }
+    case Num:
+	    switch j := (*n2).(type) {
+        case Int:
+            return toNum( float((*n1).(Num)) * float((*n2).(Int)) )
+        case Num:
+            return toNum( float((*n1).(Num)) * float((*n2).(Num)) )
+	    }
+	}
+    return i_0
+}
+func f_div(v1, v2 *Any) *Any {
+	n1 := f_numify(v1);
+    n2 := f_numify(v2);
+	switch i := (*n1).(type) {
+	case Int:
+	    switch j := (*n2).(type) {
+	    case Int:
+            return toInt( int((*n1).(Int)) / int((*n2).(Int)) )
+        case Num:
+	    	return toNum( float((*n1).(Int)) / float((*n2).(Num)) )
+	    }
+    case Num:
+	    switch j := (*n2).(type) {
+        case Int:
+            return toNum( float((*n1).(Num)) / float((*n2).(Int)) )
+        case Num:
+            return toNum( float((*n1).(Num)) / float((*n2).(Num)) )
+	    }
+	}
+    return i_0
+}
 func f_greater(v1, v2 *Any) *Any {
 	n1 := f_numify(v1);
     n2 := f_numify(v2);

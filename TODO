@@ -34,7 +34,7 @@ MiniPerl6 in Lisp
 
 MiniPerl6 in Go
 
-(no issues at the moment)
+- the floating point implementation seemed to slow down the bootstrapped compiler
 
 MiniPerl6 in Perl5
 
@@ -81,7 +81,7 @@ Nice to Have
 
 - replace := with = everywhere. Alternately, impl both := and = in all backends
 
-- impl 'while', 'elsif'
+- impl 'elsif'
 
 - 'mp6-format' script (see gofmt and perltidy)
 

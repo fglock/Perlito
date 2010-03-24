@@ -802,6 +802,10 @@ class Apply {
                                                 ~ (@.arguments.>>emit_go).join(', ') ~ ')' }
         if $code eq 'infix:<->'     { return 'f_sub( ' 
                                                 ~ (@.arguments.>>emit_go).join(', ') ~ ')' }
+        if $code eq 'infix:<*>'     { return 'f_mul( ' 
+                                                ~ (@.arguments.>>emit_go).join(', ') ~ ')' }
+        if $code eq 'infix:</>'     { return 'f_div( ' 
+                                                ~ (@.arguments.>>emit_go).join(', ') ~ ')' }
         if $code eq 'infix:<>>'     { return 'f_greater( ' 
                                                 ~ (@.arguments.>>emit_go).join(', ') ~ ')' }
         if $code eq 'infix:<<>'     { return 'f_smaller( ' 
