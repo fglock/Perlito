@@ -93,7 +93,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-scalar ((sv-self mp-MiniPerl6-Match))
   (block mp6-function
-    (progn (if (sv-bool (sv-bool sv-self)) (progn (if (sv-bool (sv-defined (sv-capture sv-self))) (progn (return-from mp6-function (sv-capture sv-self))) nil)(return-from mp6-function (sv-substr (sv-str sv-self) (sv-from sv-self) (- (sv-to sv-self) (sv-from sv-self))))) (progn (return-from mp6-function ""))))))
+    (progn (if (sv-bool (sv-bool sv-self)) (progn (if (sv-bool (sv-defined (sv-capture sv-self))) (progn (return-from mp6-function (sv-capture sv-self))) nil)(return-from mp6-function (sv-substr (sv-str sv-self) (sv-from sv-self) (sv-sub (sv-to sv-self) (sv-from sv-self))))) (progn (return-from mp6-function ""))))))
 
 ;; method string
 (if (not (ignore-errors (find-method 'sv-string () ())))
@@ -101,7 +101,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-string ((sv-self mp-MiniPerl6-Match))
   (block mp6-function
-    (progn (if (sv-bool (sv-bool sv-self)) (progn (if (sv-bool (sv-defined (sv-capture sv-self))) (progn (return-from mp6-function (sv-capture sv-self))) nil)(return-from mp6-function (sv-substr (sv-str sv-self) (sv-from sv-self) (- (sv-to sv-self) (sv-from sv-self))))) (progn (return-from mp6-function ""))))))
+    (progn (if (sv-bool (sv-bool sv-self)) (progn (if (sv-bool (sv-defined (sv-capture sv-self))) (progn (return-from mp6-function (sv-capture sv-self))) nil)(return-from mp6-function (sv-substr (sv-str sv-self) (sv-from sv-self) (sv-sub (sv-to sv-self) (sv-from sv-self))))) (progn (return-from mp6-function ""))))))
 
 (defmethod sv-perl ((self mp-MiniPerl6-Match))
   (mp-Main::sv-lisp_dump_object "::MiniPerl6::Match" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "from") (setf (sv-value m) (sv-from self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "to") (setf (sv-value m) (sv-to self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "str") (setf (sv-value m) (sv-str self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "bool") (setf (sv-value m) (sv-bool self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "capture") (setf (sv-value m) (sv-capture self)) m) )))

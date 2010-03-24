@@ -510,20 +510,21 @@ class Apply {
         if $code eq 'prefix:<@>' { return $args };
         if $code eq 'prefix:<%>' { return $args };
 
-        if $code eq 'infix:<+>'  { return '(sv-add ' ~ $args  ~ ')' };
-        if $code eq 'infix:<->'  { return '(- '   ~ $args  ~ ')' };
-        if $code eq 'infix:<>>'  { return '(> '   ~ $args  ~ ')' };
-        if $code eq 'infix:<<>'  { return '(< '   ~ $args  ~ ')' };
-        if $code eq 'infix:<>=>' { return '(>= '  ~ $args  ~ ')' };
-        if $code eq 'infix:<<=>' { return '(<= '  ~ $args  ~ ')' };
+        if $code eq 'infix:<+>'  { return '(sv-add '        ~ $args  ~ ')' };
+        if $code eq 'infix:<->'  { return '(sv-sub '        ~ $args  ~ ')' };
+        if $code eq 'infix:<*>'  { return '(sv-mul '        ~ $args  ~ ')' };
+        if $code eq 'infix:</>'  { return '(sv-div '        ~ $args  ~ ')' };
+        if $code eq 'infix:<>>'  { return '(sv-numeric-bigger '         ~ $args ~  ')' };
+        if $code eq 'infix:<<>'  { return '(sv-numeric-smaller '        ~ $args ~  ')' };
+        if $code eq 'infix:<>=>' { return '(sv-numeric-bigger-equal '   ~ $args ~  ')' };
+        if $code eq 'infix:<<=>' { return '(sv-numeric-smaller-equal '  ~ $args ~  ')' };
+        if $code eq 'infix:<==>' { return '(sv-numeric-equal '          ~ $args ~  ')' };
+        if $code eq 'infix:<!=>' { return '(not (sv-numeric-equal '     ~ $args ~ '))' };
         
-        if $code eq 'infix:<&&>' { return '(sv-and ' ~ $args ~ ')' };
-        if $code eq 'infix:<||>' { return '(sv-or '  ~ $args ~ ')' };
-        if $code eq 'infix:<eq>' { return '(sv-eq '  ~ $args ~ ')' };
-        if $code eq 'infix:<ne>' { return '(not (sv-eq '  ~ $args ~ '))' };
- 
-        if $code eq 'infix:<==>' { return '(sv-eq-int '       ~ $args ~ ')' };
-        if $code eq 'infix:<!=>' { return '(not (sv-eq-int '  ~ $args ~ '))' };
+        if $code eq 'infix:<&&>' { return '(sv-and '        ~ $args ~  ')' };
+        if $code eq 'infix:<||>' { return '(sv-or '         ~ $args ~  ')' };
+        if $code eq 'infix:<eq>' { return '(sv-eq '         ~ $args ~  ')' };
+        if $code eq 'infix:<ne>' { return '(not (sv-eq '    ~ $args ~ '))' };
 
         return '(' ~ $ns ~ Main::to_lisp_identifier($.code) ~ ' ' ~ $args ~ ')';
     }
