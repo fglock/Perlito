@@ -52,20 +52,12 @@ token pod_begin {
     |   . <.to_line_end> <.pod_begin>
 }
 
-token pod_other {
-    |   \n '=cut' <.to_line_end>
-    |   . <.to_line_end> <.pod_other>
-}
-
 token ws {
     [
     |    '#' <.to_line_end>
     |    \n [
             |  '=begin'  <.pod_begin>
-            |  '=kwid'   <.pod_other>
-            |  '=pod'    <.pod_other>
-            |  '=for'    <.pod_other>
-            |  '=head1'  <.pod_other>
+            |  '=for'    <.pod_begin>  # fixme
             |  ''
             ]
     |    \s

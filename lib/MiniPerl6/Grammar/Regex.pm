@@ -175,7 +175,7 @@ token rule_terms {
 
 }
 
-=for later
+=begin later
     |   ':::' { make { colon => ':::' ,} }
     |   ':?'  { make { colon => ':?' ,} }
     |   ':+'  { make { colon => ':+' ,} }
@@ -224,7 +224,7 @@ token rule_terms {
         <.ws> <rule> 
         { make { modifier => 'langs',  rule_exp => $$<rule>, } } }
 }
-=cut
+=end
 
 token rule_term {
     |  
