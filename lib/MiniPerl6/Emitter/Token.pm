@@ -36,6 +36,28 @@ class Rul::Quantifier {
         if ($.quant eq '') && ($.greedy eq '') {
             return $.term.emit;
         }
+        if ($.quant eq '+') && ($.greedy eq '') {
+            $.term.set_captures_to_array;
+            return 
+                'do { ' 
+                ~   'my $last_match_null := 0; '
+                ~   'my $last_pos := $MATCH.to; '
+                ~   'my $count := 0; '
+                ~   'while ' ~ $.term.emit ~ ' && ($last_match_null < 2) '
+                ~   '{ '
+                ~       'if $last_pos == $MATCH.to { '
+                ~           '$last_match_null := $last_match_null + 1; '
+                ~       '} '
+                ~       'else { '
+                ~           '$last_match_null := 0; '
+                ~       '} '
+                ~       '$last_pos := $MATCH.to; '
+                ~       '$count := $count + 1; '
+                ~   '}; ' 
+                ~   '$MATCH.to := $last_pos; '
+                ~   '$count > 0; '
+                ~ '}';
+        }
         if ($.quant eq '*') && ($.greedy eq '') {
             $.term.set_captures_to_array;
             return 

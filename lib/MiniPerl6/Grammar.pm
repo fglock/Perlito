@@ -30,26 +30,21 @@ token optional_namespace_before_ident {
         { make '' }
 }
 
-token to_line_end {
-    \N*
-}
-
 token pod_begin {
-    |   \n '=end' <.to_line_end>
-    |   . <.to_line_end> <.pod_begin>
+    |   \n '=end' \N*
+    |   . \N* <.pod_begin>
 }
 
 token ws {
     [
-    |    '#' <.to_line_end>
+    |    '#' \N*
     |    \n [
             |  '=begin'  <.pod_begin>
             |  '=for'    <.pod_begin>  # fixme
             |  ''
             ]
     |    \s
-    ]
-    [ <.ws> | '' ]
+    ]+
 }
 
 token opt_ws  {  <.ws> | ''  }
@@ -339,7 +334,7 @@ token val_bit {
 grammar MiniPerl6::Grammar {
 
 
-token digits {  \d  [ <digits> | '' ]  }
+token digits {  \d+  }
 
 token val_undef {
     undef <!before \w >
