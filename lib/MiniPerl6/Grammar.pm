@@ -5,9 +5,6 @@ grammar MiniPerl6::Grammar {
 use MiniPerl6::Grammar::Regex;
 use MiniPerl6::Grammar::Mapping;
 use MiniPerl6::Grammar::Control;
-
-# XXX - move to v6.pm emitter
-#sub array($data)    { use v5; @$data; use v6; }
  
 my $Class_name;  # for diagnostic messages
 sub get_class_name { $Class_name } 
@@ -47,9 +44,9 @@ token ws {
     ]+
 }
 
-token opt_ws  {  <.ws> | ''  }
-token opt_ws2 {  <.ws> | ''  }
-token opt_ws3 {  <.ws> | ''  }
+token opt_ws  {  <.ws>?  }
+token opt_ws2 {  <.ws>?  }
+token opt_ws3 {  <.ws>?  }
 
 token parse {
     | <comp_unit>
@@ -62,7 +59,7 @@ token parse {
 }
 
 token comp_unit {
-    <.opt_ws> [\; <.opt_ws> | '' ]
+    <.opt_ws> [ \; <.opt_ws> ]?
     [ 'use' <.ws> 'v6-' <ident> <.opt_ws> \; <.ws>  
     | 'use' <.ws> 'v6' <.opt_ws> \; <.ws>  
     |  '' 
@@ -75,7 +72,7 @@ token comp_unit {
         <exp_stmts>
         <.opt_ws>
     '}'
-    <.opt_ws> [\; <.opt_ws> | '' ]
+    <.opt_ws> [ \; <.opt_ws> ]?
     {
         make CompUnit.new(
             name        => $$<full_ident>,
@@ -95,7 +92,7 @@ token infix_op {
 }
 
 token hyper_op {
-    '>>' | ''
+    '>>'?
 }
 
 token prefix_op {
@@ -244,11 +241,11 @@ token term_meth {
 }
 
 token sub_or_method_name {
-    <full_ident> [ \. <ident> | '' ]
+    <full_ident> [ \. <ident> ]?
 }
 
 token opt_type {
-    |   [ '::' | '' ]  <full_ident>   { make $$<full_ident> }
+    |   '::'?  <full_ident>   { make $$<full_ident> }
     |   ''                              { make '' }
 }
 
@@ -275,7 +272,7 @@ token exp_term {
         { make Do.new( block => $$<exp_stmts> ) }   # do { stmt; ... }
     | <declarator> <.ws> <opt_type> <.opt_ws> <var_ident>   # my Int $variable
         { make Decl.new( decl => $$<declarator>, type => $$<opt_type>, var => $$<var_ident> ) }
-    | use <.ws> <full_ident>  [ - <ident> | '' ]
+    | use <.ws> <full_ident>  [ - <ident> ]?
         { make Use.new( mod => $$<full_ident> ) }
     | <val>     { make $$<val> }     # 'value'
     | <lit>     { make $$<lit> }     # [literal construct]
@@ -289,16 +286,13 @@ token exp_term {
     | <apply>   { make $$<apply>  }  # self; print 1,2,3
 }
 
-#token index { XXX }
-#token lookup { XXX }
-
 }
     #---- split into compilation units in order to use less RAM...
 grammar MiniPerl6::Grammar {
 
 token var_sigil { \$ |\% |\@ |\& }
 
-token var_twigil { [ \. | \! | \^ | \* ] | '' }
+token var_twigil { [ \. | \! | \^ | \* ]? }
 
 token var_name { <full_ident> | '/' | <digit> }
 
@@ -316,7 +310,6 @@ token var_ident {
 
 token val {
     | <val_undef>  { make $$<val_undef> }  # undef
-    # | $<exp> := <val_object>   # (not exposed to the outside)
     | <val_num>    { make $$<val_num>   }  # 123.456
     | <val_int>    { make $$<val_int>   }  # 123
     | <val_bit>    { make $$<val_bit>   }  # True, False
@@ -344,10 +337,7 @@ token val_undef {
 token val_num {  
     <digits> 
     [   [ 'e' | 'E' ] <digits>
-    |   \. <digits>
-        [ [ 'e' | 'E' ] <digits>
-        | ''
-        ]
+    |   \. <digits>  [ [ 'e' | 'E' ] <digits> ]?
     ]
     { make Val::Num.new( num => ~$/ ) }
 }
@@ -424,17 +414,8 @@ token exp_seq {
 grammar MiniPerl6::Grammar {
 
 token lit {
-    #| <lit_seq>    { make $$<lit_seq>    }  # (a, b, c)
-    #| <lit_array>  { make $$<lit_array>  }  # [a, b, c]
-    #| <lit_hash>   { make $$<lit_hash>   }  # {a => x, b => y}
-    #| <lit_code>   { make $$<lit_code>   }  # sub $x {...}
-    | <lit_object> { make $$<lit_object> }  # Tree.new(a => x, b => y);
+    <lit_object> { make $$<lit_object> }  # Tree.new(a => x, b => y);
 }
-
-token lit_seq   {  XXX { make 'TODO: lit_seq'    } }
-token lit_array {  XXX { make 'TODO: lit_array'  } }
-token lit_hash  {  XXX { make 'TODO: lit_hash'   } }
-token lit_code  {  XXX { make 'TODO - Lit::Code' } }
 
 token lit_object {
     '::'
@@ -499,7 +480,7 @@ token apply {
     ]
 }
 
-token opt_name {  <ident> | ''  }
+token opt_name {  <ident>?  }
 
 
 token var_invocant {

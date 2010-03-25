@@ -78,6 +78,18 @@ class Rul::Quantifier {
                 ~   '1 '
                 ~ '}';
         }
+        if ($.quant eq '?') && ($.greedy eq '') {
+            $.term.set_captures_to_array;
+            return 
+                'do { ' 
+                ~   'my $last_pos := $MATCH.to; '
+                ~   'if !(do {' ~ $.term.emit ~ '}) '
+                ~   '{ '
+                ~       '$MATCH.to := $last_pos; '
+                ~   '}; ' 
+                ~   '1 '
+                ~ '}';
+        }
 
         # TODO
         warn "Rul::Quantifier: " ~ $.quant ~ $.greedy ~ " not implemented";
@@ -125,7 +137,16 @@ class Rul::Subrule {
         }
         elsif $.captures > 1 {
             # TODO: capture level > 2
-            $code := 'if $m2 { $MATCH.to := $m2.to; ($MATCH{\'' ~ $.metasyntax ~ '\'}).push( $m2 ); 1 } else { false } ' 
+            $code := 'if $m2 { '
+                    ~   '$MATCH.to := $m2.to; '
+                    ~   'if exists $MATCH{\'' ~ $.metasyntax ~ '\'} { '
+                    ~       '($MATCH{\'' ~ $.metasyntax ~ '\'}).push( $m2 ); '
+                    ~   '} '
+                    ~   'else { ' 
+                    ~       '$MATCH{\'' ~ $.metasyntax ~ '\'} := [ $m2 ]; '
+                    ~   '} '
+                    ~   '1 '
+                    ~ '} else { false } ' 
         }
         else {
             $code := 'if $m2 { $MATCH.to := $m2.to; 1 } else { false } ' 
