@@ -37,13 +37,13 @@ class Rul::Quantifier {
             return $.term.emit;
         }
         if ($.quant eq '*') && ($.greedy eq '') {
-            warn "Rul::Quantifier: capture to array inside '*' not implemented";
-            # $.term.set_captures_to_array();
+            $.term.set_captures_to_array;
             return 
                 'do { ' 
                 ~   'my $last_match_null := 0; '
                 ~   'my $last_pos := $MATCH.to; '
-                ~   'while ' ~ $.term.emit ~ ' && ($last_match_null < 2) { '
+                ~   'while ' ~ $.term.emit ~ ' && ($last_match_null < 2) '
+                ~   '{ '
                 ~       'if $last_pos == $MATCH.to { '
                 ~           '$last_match_null := $last_match_null + 1; '
                 ~       '} '
@@ -52,13 +52,17 @@ class Rul::Quantifier {
                 ~       '} '
                 ~       '$last_pos := $MATCH.to; '
                 ~   '}; ' 
+                ~   '$MATCH.to := $last_pos; '
                 ~   '1 '
                 ~ '}';
         }
 
         # TODO
-        warn "Rul::Quantifier: not implemented";
+        warn "Rul::Quantifier: " ~ $.quant ~ $.greedy ~ " not implemented";
         $.term.emit;
+    }
+    method set_captures_to_array {
+        $.term.set_captures_to_array;
     }
 }
 
@@ -70,12 +74,18 @@ class Rul::Or {
             (@.or_list.>>emit).join('} || do { $MATCH.to := $pos1; ') ~
         '} }';
     }
+    method set_captures_to_array {
+        @.or_list.>>set_captures_to_array;
+    }
 }
 
 class Rul::Concat {
     has @.concat;
     method emit {
         '(' ~ (@.concat.>>emit).join(' && ') ~ ')';
+    }
+    method set_captures_to_array {
+        @.concat.>>set_captures_to_array;
     }
 }
 
@@ -86,13 +96,26 @@ class Rul::Subrule {
         my $meth := ( 1 + index( $.metasyntax, '.' ) )
             ?? $.metasyntax 
             !! ( '$grammar.' ~ $.metasyntax );
+
+        my $code;
+        if $.captures == 1 {
+            $code := 'if $m2 { $MATCH.to := $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} := $m2; 1 } else { false } ' 
+        }
+        elsif $.captures > 1 {
+            # TODO: capture level > 2
+            $code := 'if $m2 { $MATCH.to := $m2.to; ($MATCH{\'' ~ $.metasyntax ~ '\'}).push( $m2 ); 1 } else { false } ' 
+        }
+        else {
+            $code := 'if $m2 { $MATCH.to := $m2.to; 1 } else { false } ' 
+        }
+
         'do { ' 
         ~   'my $m2 := ' ~ $meth ~ '($str, $MATCH.to); ' 
-        ~   (   $.captures 
-            ??  'if $m2 { $MATCH.to := $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} := $m2; 1 } else { false } ' 
-            !!  'if $m2 { $MATCH.to := $m2.to; 1 } else { false } ' 
-            )
+        ~   $code
         ~ '}'
+    }
+    method set_captures_to_array {
+        $.captures := $.captures + 1;
     }
 }
 
@@ -122,6 +145,7 @@ class Rul::Constant {
         my $str := $.constant; 
         Rul::constant( $str );
     }
+    method set_captures_to_array { }
 }
 
 class Rul::Dot {
@@ -131,6 +155,7 @@ class Rul::Dot {
         '  !! false ' ~
         ')';
     }
+    method set_captures_to_array { }
 }
 
 class Rul::SpecialChar {
@@ -159,6 +184,7 @@ class Rul::SpecialChar {
         };
         return Rul::constant( $char );
     }
+    method set_captures_to_array { }
 }
 
 class Rul::Block {
@@ -166,6 +192,7 @@ class Rul::Block {
     method emit {
         '(do { ' ~ $.closure ~ ' } || 1)'
     }
+    method set_captures_to_array { }
 }
 
 class Rul::InterpolateVar {
@@ -174,6 +201,7 @@ class Rul::InterpolateVar {
         say '# TODO: interpolate var ' ~ $.var.emit ~ '';
         die();
     };
+    method set_captures_to_array { }
 }
 
 class Rul::NamedCapture {
@@ -182,6 +210,9 @@ class Rul::NamedCapture {
     method emit {
         say '# TODO: named capture ' ~ $.capture_ident ~ ' := ' ~ $.rule_exp.emit ~ '';
         die();
+    }
+    method set_captures_to_array {
+        say '# TODO: named capture ';
     }
 }
 
@@ -199,6 +230,7 @@ class Rul::Before {
             '?$MATCH; ' ~
         '}'
     }
+    method set_captures_to_array { }
 }
 
 class Rul::NotBefore {

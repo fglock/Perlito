@@ -44,9 +44,15 @@ if (typeof Rul$Quantifier != 'object') {
   // method emit
   Rul$Quantifier.f_emit = function () {
     var v_self = this;
-    try { return(v_self.v_term.f_emit()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { if ( f_bool(( f_bool((v_self.v_quant == "")) && f_bool((v_self.v_greedy == "")) )) ) { (function () { throw(v_self.v_term.f_emit()); })() } else { (function () { null })() };if ( f_bool(( f_bool((v_self.v_quant == "*")) && f_bool((v_self.v_greedy == "")) )) ) { (function () { v_self.v_term.f_set_captures_to_array();throw(( f_string("do { ") + f_string(( f_string("my $last_match_null := 0; ") + f_string(( f_string("my $last_pos := $MATCH.to; ") + f_string(( f_string("while ") + f_string(( f_string(v_self.v_term.f_emit()) + f_string(( f_string(" && ($last_match_null < 2) ") + f_string(( f_string("{ ") + f_string(( f_string("if $last_pos == $MATCH.to { ") + f_string(( f_string("$last_match_null := $last_match_null + 1; ") + f_string(( f_string("} ") + f_string(( f_string("else { ") + f_string(( f_string("$last_match_null := 0; ") + f_string(( f_string("} ") + f_string(( f_string("$last_pos := $MATCH.to; ") + f_string(( f_string("}; ") + f_string(( f_string("$MATCH.to := $last_pos; ") + f_string(( f_string("1 ") + f_string("}") )) )) )) )) )) )) )) )) )) )) )) )) )) )) )) )) )); })() } else { (function () { null })() };f_warn(( f_string("Rul::Quantifier: ") + f_string(( f_string(v_self.v_quant) + f_string(( f_string(v_self.v_greedy) + f_string(" not implemented") )) )) ));return(v_self.v_term.f_emit()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Quantifier.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$Quantifier.f_set_captures_to_array = function () {
+    var v_self = this;
+    try { return(v_self.v_term.f_set_captures_to_array()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+  }
+  Rul$Quantifier.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::Or
@@ -67,6 +73,12 @@ if (typeof Rul$Or != 'object') {
     try { return(( f_string("do { ") + f_string(( f_string("my $pos1 := $MATCH.to; do{ ") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) } return out; })(v_self.v_or_list).join("} || do { $MATCH.to := $pos1; ")) + f_string("} }") )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Or.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$Or.f_set_captures_to_array = function () {
+    var v_self = this;
+    try { return((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_set_captures_to_array() ) } return out; })(v_self.v_or_list)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+  }
+  Rul$Or.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::Concat
@@ -87,6 +99,12 @@ if (typeof Rul$Concat != 'object') {
     try { return(( f_string("(") + f_string(( f_string((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) } return out; })(v_self.v_concat).join(" && ")) + f_string(")") )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Concat.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$Concat.f_set_captures_to_array = function () {
+    var v_self = this;
+    try { return((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_set_captures_to_array() ) } return out; })(v_self.v_concat)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+  }
+  Rul$Concat.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::Subrule
@@ -101,32 +119,22 @@ if (typeof Rul$Subrule != 'object') {
   // accessor metasyntax
   Rul$Subrule.v_metasyntax = null;
   Rul$Subrule.f_metasyntax = function () { return this.v_metasyntax }
+  // accessor captures
+  Rul$Subrule.v_captures = null;
+  Rul$Subrule.f_captures = function () { return this.v_captures }
   // method emit
   Rul$Subrule.f_emit = function () {
     var v_self = this;
-    try { var v_meth;(v_meth = ( f_bool(f_add(1, f_index(v_self.v_metasyntax, "."))) ? v_self.v_metasyntax : ( f_string("$grammar.") + f_string(v_self.v_metasyntax) )));return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string("if $m2 { $MATCH.to := $m2.to; $MATCH{'") + f_string(( f_string(v_self.v_metasyntax) + f_string(( f_string("'} := $m2; 1 } else { false } ") + f_string("}") )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_meth;var v_code = null;
+(v_meth = ( f_bool(f_add(1, f_index(v_self.v_metasyntax, "."))) ? v_self.v_metasyntax : ( f_string("$grammar.") + f_string(v_self.v_metasyntax) )));if ( f_bool((v_self.v_captures == 1)) ) { (function () { (v_code = ( f_string("if $m2 { $MATCH.to := $m2.to; $MATCH{'") + f_string(( f_string(v_self.v_metasyntax) + f_string("'} := $m2; 1 } else { false } ") )) )); })() } else { (function () { if ( f_bool((v_self.v_captures > 1)) ) { (function () { (v_code = ( f_string("if $m2 { $MATCH.to := $m2.to; ($MATCH{'") + f_string(( f_string(v_self.v_metasyntax) + f_string("'}).push( $m2 ); 1 } else { false } ") )) )); })() } else { (function () { (v_code = "if $m2 { $MATCH.to := $m2.to; 1 } else { false } "); })() }; })() };return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string(v_code) + f_string("}") )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Subrule.f_emit;  // v8 bug workaround
-})();
-
-// class Rul::SubruleNoCapture
-if (typeof Rul$SubruleNoCapture != 'object') {
-  Rul$SubruleNoCapture = function() {};
-  Rul$SubruleNoCapture = new Rul$SubruleNoCapture;
-  Rul$SubruleNoCapture.f_isa = function (s) { return s == 'Rul::SubruleNoCapture' };
-  Rul$SubruleNoCapture.f_perl = function () { return '::Rul::SubruleNoCapture(' + Main._dump(this) + ')' };
-}
-(function () {
-  var v__NAMESPACE = Rul$SubruleNoCapture;
-  // accessor metasyntax
-  Rul$SubruleNoCapture.v_metasyntax = null;
-  Rul$SubruleNoCapture.f_metasyntax = function () { return this.v_metasyntax }
-  // method emit
-  Rul$SubruleNoCapture.f_emit = function () {
+  // method set_captures_to_array
+  Rul$Subrule.f_set_captures_to_array = function () {
     var v_self = this;
-    try { var v_meth;(v_meth = ( f_bool(f_add(1, f_index(v_self.v_metasyntax, "."))) ? v_self.v_metasyntax : ( f_string("$grammar.") + f_string(v_self.v_metasyntax) )));return(( f_string("do { ") + f_string(( f_string("my $m2 := ") + f_string(( f_string(v_meth) + f_string(( f_string("($str, $MATCH.to); ") + f_string(( f_string("if $m2 { $MATCH.to := $m2.to; 1 } else { false } ") + f_string("}") )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return((v_self.v_captures = f_add(v_self.v_captures, 1))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$SubruleNoCapture.f_emit;  // v8 bug workaround
+  Rul$Subrule.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::Var
@@ -173,6 +181,12 @@ if (typeof Rul$Constant != 'object') {
     try { var v_str;(v_str = v_self.v_constant);return(Rul.f_constant(v_str)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Constant.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$Constant.f_set_captures_to_array = function () {
+    var v_self = this;
+    null
+  }
+  Rul$Constant.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::Dot
@@ -190,6 +204,12 @@ if (typeof Rul$Dot != 'object') {
     try { return(( f_string("( ('' ne substr( $str, $MATCH.to, 1 )) ") + f_string(( f_string("  ?? (1 + ($MATCH.to := 1 + $MATCH.to ))") + f_string(( f_string("  !! false ") + f_string(")") )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Dot.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$Dot.f_set_captures_to_array = function () {
+    var v_self = this;
+    null
+  }
+  Rul$Dot.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::SpecialChar
@@ -207,9 +227,15 @@ if (typeof Rul$SpecialChar != 'object') {
   // method emit
   Rul$SpecialChar.f_emit = function () {
     var v_self = this;
-    try { var v_char;(v_char = v_self.v_char);if ( f_bool((v_char == "n")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "is_newline",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() } else { (function () { null })() };if ( f_bool((v_char == "N")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "not_newline",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() } else { (function () { null })() };if ( f_bool((v_char == "d")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "digit",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() } else { (function () { null })() };if ( f_bool((v_char == "s")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "space",}; tmp.__proto__ = Rul$SubruleNoCapture; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() } else { (function () { null })() };throw(Rul.f_constant(v_char)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_char;(v_char = v_self.v_char);if ( f_bool((v_char == "n")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "is_newline",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() } else { (function () { null })() };if ( f_bool((v_char == "N")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "not_newline",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() } else { (function () { null })() };if ( f_bool((v_char == "d")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "digit",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() } else { (function () { null })() };if ( f_bool((v_char == "s")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "space",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() } else { (function () { null })() };throw(Rul.f_constant(v_char)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$SpecialChar.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$SpecialChar.f_set_captures_to_array = function () {
+    var v_self = this;
+    null
+  }
+  Rul$SpecialChar.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::Block
@@ -230,6 +256,12 @@ if (typeof Rul$Block != 'object') {
     try { return(( f_string("(do { ") + f_string(( f_string(v_self.v_closure) + f_string(" } || 1)") )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Block.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$Block.f_set_captures_to_array = function () {
+    var v_self = this;
+    null
+  }
+  Rul$Block.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::InterpolateVar
@@ -250,6 +282,12 @@ if (typeof Rul$InterpolateVar != 'object') {
     try { say(( f_string("# TODO: interpolate var ") + f_string(( f_string(v_self.v_var.f_emit()) + f_string("") )) ));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$InterpolateVar.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$InterpolateVar.f_set_captures_to_array = function () {
+    var v_self = this;
+    null
+  }
+  Rul$InterpolateVar.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::NamedCapture
@@ -273,6 +311,12 @@ if (typeof Rul$NamedCapture != 'object') {
     try { say(( f_string("# TODO: named capture ") + f_string(( f_string(v_self.v_capture_ident) + f_string(( f_string(" := ") + f_string(( f_string(v_self.v_rule_exp.f_emit()) + f_string("") )) )) )) ));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$NamedCapture.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$NamedCapture.f_set_captures_to_array = function () {
+    var v_self = this;
+    try { return(say("# TODO: named capture ")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+  }
+  Rul$NamedCapture.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::Before
@@ -293,6 +337,12 @@ if (typeof Rul$Before != 'object') {
     try { return(( f_string("do { ") + f_string(( f_string("my $tmp := $MATCH; ") + f_string(( f_string("$MATCH := MiniPerl6::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string(( f_string("$MATCH.bool := ") + f_string(( f_string(v_self.v_rule_exp.f_emit()) + f_string(( f_string("; ") + f_string(( f_string("$tmp.bool := ?$MATCH; ") + f_string(( f_string("$MATCH := $tmp; ") + f_string(( f_string("?$MATCH; ") + f_string("}") )) )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Before.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$Before.f_set_captures_to_array = function () {
+    var v_self = this;
+    null
+  }
+  Rul$Before.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::NotBefore

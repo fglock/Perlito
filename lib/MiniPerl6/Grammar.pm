@@ -12,28 +12,16 @@ use MiniPerl6::Grammar::Control;
 my $Class_name;  # for diagnostic messages
 sub get_class_name { $Class_name } 
 
-token ident_digit {
-    [ [ <.word> | _ | <.digit> ] <.ident_digit>
-    |   ''
-    ]    
-}
-
 token ident {
-    [ <!before \d ><.word> | _ ] <.ident_digit>
+    [ <!before \d ><.word> | _ ]   [ <.word> | _ | <.digit> ]*
 }
 
 token full_ident {
-    <.ident>
-    [   '::' <.full_ident>
-    |   ''
-    ]    
+    <.ident>  [ '::' <.ident> ]*
 }
 
 token namespace_before_ident {
-    <.ident> <before '::' >
-        [   '::' <.namespace_before_ident>
-        |   ''
-        ]   
+    <.ident> <before '::'>   [ '::' <.ident> <before '::'> ]*
 }
 token optional_namespace_before_ident {
     | <namespace_before_ident> '::' 
@@ -43,8 +31,7 @@ token optional_namespace_before_ident {
 }
 
 token to_line_end {
-    |  \N <.to_line_end>
-    |  ''
+    \N*
 }
 
 token pod_begin {
