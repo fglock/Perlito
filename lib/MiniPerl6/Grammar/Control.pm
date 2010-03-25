@@ -30,6 +30,16 @@ token if {
             );
         }
     |
+        <.opt_ws>
+        els <if> 
+        { 
+            make If.new( 
+                cond => $$<exp>, 
+                body => $$<exp_stmts>, 
+                otherwise => [ $$<if> ],
+            );
+        }
+    |
         { 
             make If.new( 
                 cond => $$<exp>, 
