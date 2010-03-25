@@ -52,8 +52,7 @@ class MiniPerl6::Go::LexicalBlock {
                         ~ $body.emit_go ~ ' } else { ' 
                         ~ $otherwise.emit_go ~ ' }';
             }
-            else {
-            if $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
+            elsif $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
                 # Return, For - no changes for now 
                 $str := $str ~ $last_statement.emit_go
             }
@@ -65,7 +64,6 @@ class MiniPerl6::Go::LexicalBlock {
                 else {
                     $str := $str ~ $last_statement.emit_go_simple
                 }
-            }
             }
         }
         return $str;
@@ -991,13 +989,11 @@ class Decl {
             if ($.var).sigil eq '%' {
                 $str := $str ~ ($.var).emit_go ~ ' = h_hash();' ~ "\n";
             }
-            else {
-            if ($.var).sigil eq '@' {
+            elsif ($.var).sigil eq '@' {
                 $str := $str ~ ($.var).emit_go ~ ' = a_array();' ~ "\n";
             }
             else {
                 $str := $str ~ ($.var).emit_go ~ ' = u_undef();' ~ "\n";
-            }
             }
             return $str;
         }

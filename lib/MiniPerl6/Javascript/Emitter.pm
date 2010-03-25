@@ -46,15 +46,13 @@ class MiniPerl6::Javascript::LexicalBlock {
                         ~ $body.emit_javascript ~ ' } else { ' 
                         ~ $otherwise.emit_javascript ~ ' }';
             }
-            else {
-            if $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
+            elsif $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
                 # Return, For - no changes for now 
                 $str := $str ~ $last_statement.emit_javascript
             }
             else {
                 # $last_statement := Return.new( result => $last_statement );
                 $str := $str ~ 'return(' ~ $last_statement.emit_javascript ~ ')'
-            }
             }
         }
         if $.top_level {
@@ -492,14 +490,12 @@ class Call {
                         'Main.' ~ $.method ~ '(' ~ $invocant ~ ')';
                 }
             }
-        };
+        }
 
         my $meth := $.method;
-        #if  $meth eq 'postcircumfix:<( )>'  {
-        #     $meth := '';  
-        #};
         
         if ($.hyper) {
+            return
                     '(function (a_) { '
                         ~ 'var out = []; ' 
                         ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
@@ -507,13 +503,10 @@ class Call {
                             ~ 'out.push( a_[i].f_' ~ $meth ~ '() ) } return out;'
                     ~ ' })(' ~ $invocant ~ ')'
         }
-        else {
-            if  $meth eq 'postcircumfix:<( )>'  {
-                return '(' ~ $invocant ~ ')(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
-            }
-            return $invocant ~ '.f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
-        };
-
+        if  $meth eq 'postcircumfix:<( )>'  {
+            return '(' ~ $invocant ~ ')(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+        }
+        return $invocant ~ '.f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
     }
 }
 
@@ -527,7 +520,7 @@ class Apply {
         if $code.isa( 'Str' ) { }
         else {
             return '(' ~ $.code.emit_javascript ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
-        };
+        }
 
         if $code eq 'self'       { return 'v_self' };
         if $code eq 'false'      { return '0' };
@@ -591,15 +584,13 @@ class Apply {
         if $.namespace {
             $code := Main::to_javascript_namespace($.namespace) ~ '.' ~ $code;
         }
-        else {
-            if     ($code ne 'f_index') 
-                && ($code ne 'f_die') 
-                && ($code ne 'f_pop') 
-                && ($code ne 'f_shift') 
-                && ($code ne 'f_push') 
-            {
-                $code := 'v__NAMESPACE.' ~ $code;
-            }
+        elsif  ($code ne 'f_index') 
+            && ($code ne 'f_die') 
+            && ($code ne 'f_pop') 
+            && ($code ne 'f_shift') 
+            && ($code ne 'f_push') 
+        {
+            $code := 'v__NAMESPACE.' ~ $code;
         }
         $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
     }
@@ -679,13 +670,11 @@ class Decl {
             if ($.var).sigil eq '%' {
                 $str := $str ~ '{};' ~ "\n";
             }
-            else {
-            if ($.var).sigil eq '@' {
+            elsif ($.var).sigil eq '@' {
                 $str := $str ~ '[];' ~ "\n";
             }
             else {
                 $str := $str ~ 'null;' ~ "\n";
-            }
             }
             return $str;
         }

@@ -38,7 +38,7 @@ class MiniPerl6::Lisp::LexicalBlock {
         }
         else {
             $str := $str ~ '(progn ';
-        };
+        }
         for @.block -> $decl { 
             if (!( $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ))) {
                 $str := $str ~ ($decl).emit_lisp;
@@ -340,10 +340,8 @@ class Var {
         if $.namespace {
             $ns := Main::to_lisp_namespace( $.namespace ) ~ '::';
         }
-        else {
-            if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
-                return '*mp6-args*'
-            }
+        elsif ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
+            return '*mp6-args*'
         }
 
            ( $.twigil eq '.' )
@@ -436,19 +434,19 @@ class Call {
                 return
                     '(' ~ $.method ~ ' ' ~ $invocant ~ ' ' ~ $arguments ~ ')';
             }
-        };
+        }
 
         my $meth := Main::to_lisp_identifier($.method) ~ ' ';
         if  $.method eq 'postcircumfix:<( )>'  {
              return '(funcall ' ~ $invocant ~ ' ' ~ $arguments ~ ')';
-        };
+        }
         
         if ($.hyper) {
             return '(map \'vector #\'(lambda (c) (' ~ $meth ~ ' c)) ' ~ $invocant ~ ')'
         }
         else {
             return '(' ~ $meth ~ $invocant ~ ' ' ~ $arguments ~ ')';
-        };
+        }
 
     }
 }
@@ -594,13 +592,11 @@ class Decl {
         if $decl.sigil eq '%' {
             return '(' ~ $decl.emit_lisp ~ ' (make-hash-table :test \'equal))'; 
         }
-        else {
-        if $decl.sigil eq '@' {
+        elsif $decl.sigil eq '@' {
             return '(' ~ $decl.emit_lisp ~ ' (make-array 0 :fill-pointer t :adjustable t))'; 
         }
         else {
             return '(' ~ $decl.emit_lisp ~ ' (sv-undef))'; 
-        }
         }
     }
 }

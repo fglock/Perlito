@@ -257,12 +257,11 @@ class Call {
     has $.hyper;
     has $.method;
     has @.arguments;
-    #has $.hyper;
     method emit {
         my $invocant := $.invocant.emit;
         if $invocant eq 'self' {
             $invocant := '$self';
-        };
+        }
 
         if     ($.method eq 'shift')
         { 
@@ -272,7 +271,7 @@ class Call {
             else {
                 return 'shift( @{' ~ $invocant ~ '} )';
             }
-        };
+        }
 
         if     ($.method eq 'values')
         { 
@@ -282,7 +281,7 @@ class Call {
             else {
                 return 'values( %{' ~ $invocant ~ '} )';
             }
-        };
+        }
 
         if     ($.method eq 'perl')
             || ($.method eq 'yaml')
@@ -316,7 +315,7 @@ class Call {
         my $meth := $.method;
         if  $meth eq 'postcircumfix:<( )>'  {
              $meth := '';  
-        };
+        }
         
         my $call := '->' ~ $meth ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         if ($.hyper) {
@@ -329,8 +328,7 @@ class Call {
         }
         else {
             $invocant ~ $call;
-        };
-
+        }
     }
 }
 
@@ -339,7 +337,6 @@ class Apply {
     has @.arguments;
     has $.namespace;
     method emit {
-        
         my $ns := '';
         if $.namespace {
             $ns := $.namespace ~ '::';
@@ -349,7 +346,7 @@ class Apply {
         if $code.isa( 'Str' ) { }
         else {
             return '(' ~ $.code.emit ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
-        };
+        }
 
         if $code eq 'self'       { return '$self' };
         if $code eq 'false'      { return '0' };
