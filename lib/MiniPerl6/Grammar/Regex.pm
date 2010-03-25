@@ -64,7 +64,7 @@ token named_capture_body {
     | \(  <rule>        \)  { make { capturing_group => $$<rule> ,} } 
     | \[  <rule>        \]  { make $$<rule> } 
     | \<  <metasyntax_exp>  \>  
-            { make Rul::Subrule.new( metasyntax => $$<metasyntax_exp> ) }
+            { make Rul::Subrule.new( metasyntax => $$<metasyntax_exp>, captures => 1 ) }
     | { die 'invalid alias syntax' }
 }
 
@@ -138,15 +138,15 @@ token rule_terms {
             \?
             # TODO 
             <metasyntax_exp>  \>
-            { make Rul::SubruleNoCapture.new( metasyntax => $$<metasyntax_exp> ) }
+            { make Rul::Subrule.new( metasyntax => $$<metasyntax_exp>, captures => 0 ) }
         |
             \.
             <metasyntax_exp>  \>
-            { make Rul::SubruleNoCapture.new( metasyntax => $$<metasyntax_exp> ) }
+            { make Rul::Subrule.new( metasyntax => $$<metasyntax_exp>, captures => 0 ) }
         |
             # TODO
             <metasyntax_exp>  \>
-            { make Rul::Subrule.new( metasyntax => $$<metasyntax_exp> ) }
+            { make Rul::Subrule.new( metasyntax => $$<metasyntax_exp>, captures => 1 ) }
         ]
     |   \{ 
         <parsed_code>  \}

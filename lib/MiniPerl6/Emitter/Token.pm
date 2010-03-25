@@ -33,7 +33,31 @@ class Rul::Quantifier {
     has $.ws2;
     has $.ws3;
     method emit {
+        if ($.quant eq '') && ($.greedy eq '') {
+            return $.term.emit;
+        }
+        if ($.quant eq '*') && ($.greedy eq '') {
+            warn "Rul::Quantifier: capture to array inside '*' not implemented";
+            # $.term.set_captures_to_array();
+            return 
+                'do { ' 
+                ~   'my $last_match_null := 0; '
+                ~   'my $last_pos := $MATCH.to; '
+                ~   'while ' ~ $.term.emit ~ ' && ($last_match_null < 2) { '
+                ~       'if $last_pos == $MATCH.to { '
+                ~           '$last_match_null := $last_match_null + 1; '
+                ~       '} '
+                ~       'else { '
+                ~           '$last_match_null := 0; '
+                ~       '} '
+                ~       '$last_pos := $MATCH.to; '
+                ~   '}; ' 
+                ~   '1 '
+                ~ '}';
+        }
+
         # TODO
+        warn "Rul::Quantifier: not implemented";
         $.term.emit;
     }
 }
@@ -57,27 +81,18 @@ class Rul::Concat {
 
 class Rul::Subrule {
     has $.metasyntax;
+    has $.captures;
     method emit {
         my $meth := ( 1 + index( $.metasyntax, '.' ) )
             ?? $.metasyntax 
             !! ( '$grammar.' ~ $.metasyntax );
-        'do { ' ~
-          'my $m2 := ' ~ $meth ~ '($str, $MATCH.to); ' ~
-          'if $m2 { $MATCH.to := $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} := $m2; 1 } else { false } ' ~
-        '}'
-    }
-}
-
-class Rul::SubruleNoCapture {
-    has $.metasyntax;
-    method emit {
-        my $meth := ( 1 + index( $.metasyntax, '.' ) )
-            ?? $.metasyntax 
-            !! ( '$grammar.' ~ $.metasyntax );
-        'do { ' ~
-          'my $m2 := ' ~ $meth ~ '($str, $MATCH.to); ' ~
-          'if $m2 { $MATCH.to := $m2.to; 1 } else { false } ' ~
-        '}'
+        'do { ' 
+        ~   'my $m2 := ' ~ $meth ~ '($str, $MATCH.to); ' 
+        ~   (   $.captures 
+            ??  'if $m2 { $MATCH.to := $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} := $m2; 1 } else { false } ' 
+            !!  'if $m2 { $MATCH.to := $m2.to; 1 } else { false } ' 
+            )
+        ~ '}'
     }
 }
 
@@ -123,22 +138,22 @@ class Rul::SpecialChar {
     method emit {
         my $char := $.char;
         if $char eq 'n' {
-            my $rul := Rul::SubruleNoCapture.new( metasyntax => 'is_newline' );
+            my $rul := Rul::Subrule.new( metasyntax => 'is_newline', captures => 0 );
             $rul := $rul.emit;
             return $rul;
         };
         if $char eq 'N' {
-            my $rul := Rul::SubruleNoCapture.new( metasyntax => 'not_newline' );
+            my $rul := Rul::Subrule.new( metasyntax => 'not_newline', captures => 0 );
             $rul := $rul.emit;
             return $rul;
         };
         if $char eq 'd' {
-            my $rul := Rul::SubruleNoCapture.new( metasyntax => 'digit' );
+            my $rul := Rul::Subrule.new( metasyntax => 'digit', captures => 0 );
             $rul := $rul.emit;
             return $rul;
         };
         if $char eq 's' {
-            my $rul := Rul::SubruleNoCapture.new( metasyntax => 'space' );
+            my $rul := Rul::Subrule.new( metasyntax => 'space', captures => 0 );
             $rul := $rul.emit;
             return $rul;
         };

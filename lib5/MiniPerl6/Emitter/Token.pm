@@ -18,7 +18,7 @@ sub greedy { $_[0]->{greedy} };
 sub ws1 { $_[0]->{ws1} };
 sub ws2 { $_[0]->{ws2} };
 sub ws3 { $_[0]->{ws3} };
-sub emit { my $self = $_[0]; $self->{term}->emit() }
+sub emit { my $self = $_[0]; if ((($self->{quant} eq '') && ($self->{greedy} eq ''))) { return($self->{term}->emit()) } else {  }; if ((($self->{quant} eq '*') && ($self->{greedy} eq ''))) { warn('Rul::Quantifier: capture to array inside \'*\' not implemented');return('do { ' . 'my $last_match_null := 0; ' . 'my $last_pos := $MATCH.to; ' . 'while ' . $self->{term}->emit() . ' && ($last_match_null < 2) { ' . 'if $last_pos == $MATCH.to { ' . '$last_match_null := $last_match_null + 1; ' . '} ' . 'else { ' . '$last_match_null := 0; ' . '} ' . '$last_pos := $MATCH.to; ' . '}; ' . '1 ' . '}') } else {  }; warn('Rul::Quantifier: not implemented'); $self->{term}->emit() }
 }
 
 {
@@ -39,14 +39,8 @@ sub emit { my $self = $_[0]; '(' . Main::join([ map { $_->emit() } @{ $self->{co
 package Rul::Subrule;
 sub new { shift; bless { @_ }, "Rul::Subrule" }
 sub metasyntax { $_[0]->{metasyntax} };
-sub emit { my $self = $_[0]; (my  $meth = ((1 + index($self->{metasyntax}, '.')) ? $self->{metasyntax} : '$grammar.' . $self->{metasyntax})); 'do { ' . 'my $m2 := ' . $meth . '($str, $MATCH.to); ' . 'if $m2 { $MATCH.to := $m2.to; $MATCH{\'' . $self->{metasyntax} . '\'} := $m2; 1 } else { false } ' . '}' }
-}
-
-{
-package Rul::SubruleNoCapture;
-sub new { shift; bless { @_ }, "Rul::SubruleNoCapture" }
-sub metasyntax { $_[0]->{metasyntax} };
-sub emit { my $self = $_[0]; (my  $meth = ((1 + index($self->{metasyntax}, '.')) ? $self->{metasyntax} : '$grammar.' . $self->{metasyntax})); 'do { ' . 'my $m2 := ' . $meth . '($str, $MATCH.to); ' . 'if $m2 { $MATCH.to := $m2.to; 1 } else { false } ' . '}' }
+sub captures { $_[0]->{captures} };
+sub emit { my $self = $_[0]; (my  $meth = ((1 + index($self->{metasyntax}, '.')) ? $self->{metasyntax} : '$grammar.' . $self->{metasyntax})); 'do { ' . 'my $m2 := ' . $meth . '($str, $MATCH.to); ' . ($self->{captures} ? 'if $m2 { $MATCH.to := $m2.to; $MATCH{\'' . $self->{metasyntax} . '\'} := $m2; 1 } else { false } ' : 'if $m2 { $MATCH.to := $m2.to; 1 } else { false } ') . '}' }
 }
 
 {
@@ -75,7 +69,7 @@ sub emit { my $self = $_[0]; '( (\'\' ne substr( $str, $MATCH.to, 1 )) ' . '  ??
 package Rul::SpecialChar;
 sub new { shift; bless { @_ }, "Rul::SpecialChar" }
 sub char { $_[0]->{char} };
-sub emit { my $self = $_[0]; (my  $char = $self->{char}); if (($char eq 'n')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'is_newline', ));($rul = $rul->emit());return($rul) } else {  }; if (($char eq 'N')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'not_newline', ));($rul = $rul->emit());return($rul) } else {  }; if (($char eq 'd')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'digit', ));($rul = $rul->emit());return($rul) } else {  }; if (($char eq 's')) { (my  $rul = Rul::SubruleNoCapture->new( 'metasyntax' => 'space', ));($rul = $rul->emit());return($rul) } else {  }; return(Rul::constant($char)) }
+sub emit { my $self = $_[0]; (my  $char = $self->{char}); if (($char eq 'n')) { (my  $rul = Rul::Subrule->new( 'metasyntax' => 'is_newline','captures' => 0, ));($rul = $rul->emit());return($rul) } else {  }; if (($char eq 'N')) { (my  $rul = Rul::Subrule->new( 'metasyntax' => 'not_newline','captures' => 0, ));($rul = $rul->emit());return($rul) } else {  }; if (($char eq 'd')) { (my  $rul = Rul::Subrule->new( 'metasyntax' => 'digit','captures' => 0, ));($rul = $rul->emit());return($rul) } else {  }; if (($char eq 's')) { (my  $rul = Rul::Subrule->new( 'metasyntax' => 'space','captures' => 0, ));($rul = $rul->emit());return($rul) } else {  }; return(Rul::constant($char)) }
 }
 
 {
