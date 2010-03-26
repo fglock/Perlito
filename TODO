@@ -73,7 +73,7 @@ Missing Features
 
 Missing Features of the Token sub-compiler
 
-- no quantifiers
+- no quantifiers - FIXED
 
 - no variable interpolation
 
