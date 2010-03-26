@@ -81,13 +81,17 @@ Nice to Have
 
 - replace := with = everywhere. Alternately, impl both := and = in all backends
 
-- impl 'elsif'
+- impl 'elsif' - FIXED
 
 - 'mp6-format' script (see gofmt and perltidy)
 
 - run some tests from the standard test suite
 
+- use Test.pm
+
 Grammar
+
+- captures like: / <a> <a>* / - the first capture must share storage with the second capture
 
 - modify the grammar to return multi-line strings as multiple strings
   (this makes it easier to write a beautifier script)
