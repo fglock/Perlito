@@ -326,6 +326,7 @@ class CompUnit {
             isa => 1,
             values => 1,
             keys => 1,
+            exists => 1,
             bind => 1,
             int => 1,
             num => 1,

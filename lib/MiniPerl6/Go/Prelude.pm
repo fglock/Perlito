@@ -27,6 +27,7 @@ class MiniPerl6::Match {
 
     method Str          { die "TODO" }
     method scalar       { die "TODO" }
+    method exists       { die "TODO" }
 }
 
 class MiniPerl6::Grammar {

@@ -806,6 +806,10 @@ func Init_Prelude() {
 		}
 		return toStr("")
 	}
+	Method_MiniPerl6__Match.f_exists = func(v_self *MiniPerl6__Match, v Capture) *Any {
+        tmp := v_self.f_hash(Capture{})
+        return (*tmp).(exists_er).f_exists(v)
+	}
 
 	Method_MiniPerl6__Grammar.f_is_newline = func(v_grammar *MiniPerl6__Grammar, v Capture) *Any {
 		var s1 = tostr(v.p[0])

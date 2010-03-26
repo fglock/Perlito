@@ -16,7 +16,8 @@ sub array { $_[0]->{array} };
 sub perl { my $self = $_[0]; return('Match.new(' . 'from => ' . Main::perl($self->{from}, ) . ', to => ' . Main::perl($self->{to}, ) . ', bool => ' . Main::perl($self->{bool}->bool(), ) . ', capture => ' . Main::perl($self->{capture}, ) . ', hash => ' . Main::perl($self->{hash}, ) . ', array => ' . Main::perl($self->{array}, ) . ')') };
 sub Bool { my $self = $_[0]; $self->{bool}->Bool() };
 sub Str { my $self = $_[0]; die('TODO') };
-sub scalar { my $self = $_[0]; die('TODO') }
+sub scalar { my $self = $_[0]; die('TODO') };
+sub exists { my $self = $_[0]; die('TODO') }
 }
 
 {
