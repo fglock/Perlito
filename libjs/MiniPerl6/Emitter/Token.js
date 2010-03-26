@@ -132,7 +132,7 @@ if (typeof Rul$Subrule != 'object') {
   // method set_captures_to_array
   Rul$Subrule.f_set_captures_to_array = function () {
     var v_self = this;
-    try { return((v_self.v_captures = f_add(v_self.v_captures, 1))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { if ( f_bool((v_self.v_captures > 0)) ) { return((v_self.v_captures = f_add(v_self.v_captures, 1))) } else { null } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Subrule.f_set_captures_to_array;  // v8 bug workaround
 })();

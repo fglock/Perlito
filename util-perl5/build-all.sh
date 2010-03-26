@@ -5,4 +5,4 @@ perl util-perl5/make.pl -Clisp && rm -rf liblisp && mv liblisp-new liblisp
 perl util-perl5/make.pl -Cjs && rm -rf libjs && mv libjs-new libjs
 . util-js/make-perlito-js.sh
 . util-lisp/prepare-mp6-lisp-main.sh
-
+. util-lisp/create-core-image.sh

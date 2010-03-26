@@ -314,7 +314,7 @@ new-slots))
       (:documentation "a method")))
 (defmethod sv-set_captures_to_array ((sv-self mp-Rul-Subrule))
   (block mp6-function
-    (progn (setf (sv-captures sv-self) (sv-add (sv-captures sv-self) 1)))))
+    (progn (if (sv-bool (sv-numeric-bigger (sv-captures sv-self) 0)) (progn (setf (sv-captures sv-self) (sv-add (sv-captures sv-self) 1))) nil))))
 
 (defmethod sv-perl ((self mp-Rul-Subrule))
   (mp-Main::sv-lisp_dump_object "::Rul::Subrule" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "metasyntax") (setf (sv-value m) (sv-metasyntax self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "captures") (setf (sv-value m) (sv-captures self)) m) )))

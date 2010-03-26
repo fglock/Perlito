@@ -44,7 +44,7 @@ sub new { shift; bless { @_ }, "Rul::Subrule" }
 sub metasyntax { $_[0]->{metasyntax} };
 sub captures { $_[0]->{captures} };
 sub emit { my $self = $_[0]; (my  $meth = ((1 + index($self->{metasyntax}, '.')) ? $self->{metasyntax} : '$grammar.' . $self->{metasyntax})); my  $code; if (($self->{captures} == 1)) { ($code = 'if $m2 { $MATCH.to := $m2.to; $MATCH{\'' . $self->{metasyntax} . '\'} := $m2; 1 } else { false } ') } else { if (($self->{captures} > 1)) { ($code = 'if $m2 { ' . '$MATCH.to := $m2.to; ' . 'if exists $MATCH{\'' . $self->{metasyntax} . '\'} { ' . '($MATCH{\'' . $self->{metasyntax} . '\'}).push( $m2 ); ' . '} ' . 'else { ' . '$MATCH{\'' . $self->{metasyntax} . '\'} := [ $m2 ]; ' . '} ' . '1 ' . '} else { false } ') } else { ($code = 'if $m2 { $MATCH.to := $m2.to; 1 } else { false } ') } }; 'do { ' . 'my $m2 := ' . $meth . '($str, $MATCH.to); ' . $code . '}' };
-sub set_captures_to_array { my $self = $_[0]; ($self->{captures} = ($self->{captures} + 1)) }
+sub set_captures_to_array { my $self = $_[0]; if (($self->{captures} > 0)) { ($self->{captures} = ($self->{captures} + 1)) } else {  } }
 }
 
 {

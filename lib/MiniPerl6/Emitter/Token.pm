@@ -158,7 +158,9 @@ class Rul::Subrule {
         ~ '}'
     }
     method set_captures_to_array {
-        $.captures := $.captures + 1;
+        if $.captures > 0 {
+            $.captures := $.captures + 1;
+        }
     }
 }
 
