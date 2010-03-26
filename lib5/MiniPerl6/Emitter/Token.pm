@@ -116,7 +116,8 @@ sub set_captures_to_array { my $self = $_[0];  }
 package Rul::NotBefore;
 sub new { shift; bless { @_ }, "Rul::NotBefore" }
 sub rule_exp { $_[0]->{rule_exp} };
-sub emit { my $self = $_[0]; 'do { ' . 'my $tmp := $MATCH; ' . '$MATCH := MiniPerl6::Match.new( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' . '$MATCH.bool := ' . $self->{rule_exp}->emit() . '; ' . '$tmp.bool := !$MATCH; ' . '$MATCH := $tmp; ' . '?$MATCH; ' . '}' }
+sub emit { my $self = $_[0]; 'do { ' . 'my $tmp := $MATCH; ' . '$MATCH := MiniPerl6::Match.new( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' . '$MATCH.bool := ' . $self->{rule_exp}->emit() . '; ' . '$tmp.bool := !$MATCH; ' . '$MATCH := $tmp; ' . '?$MATCH; ' . '}' };
+sub set_captures_to_array { my $self = $_[0];  }
 }
 
 {

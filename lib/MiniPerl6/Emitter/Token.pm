@@ -290,6 +290,7 @@ class Rul::NotBefore {
             '?$MATCH; ' ~
         '}'
     }
+    method set_captures_to_array { }
 }
 
 class Rul::NegateCharClass {

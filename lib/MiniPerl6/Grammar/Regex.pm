@@ -12,9 +12,10 @@ token rule_ident {  <.MiniPerl6::Grammar.full_ident> | <digit> }
 token any { . }
 
 token literal {
-    |  \\ .        <literal>
-    |  <!before \' > .  <literal>
-    |  ''
+    [
+    |  \\ .        
+    |  <!before \' > .  
+    ]*
 }
 
 token metasyntax_exp {
@@ -24,16 +25,14 @@ token metasyntax_exp {
     |  \{  <.string_code> \}
     |  \<  <.metasyntax_exp>  \>
     |  <!before \> > . 
-    ]
-    [ <metasyntax_exp> | '' ]
+    ]+
 }
 
 token char_range {
     [ 
     |  \\ .
     |  <!before \] > . 
-    ]
-    [ <char_range> | '' ]
+    ]+
 }
 
 token char_class {
@@ -49,8 +48,7 @@ token string_code {
     |  \'  <.literal>     \'
     |  \{  <.string_code> \}
     |  <!before \} > . 
-    ]
-    [ <string_code> | '' ]
+    ]+
 }
 
 token parsed_code {
@@ -261,28 +259,24 @@ token quant_exp {
 token greedy_exp {   \?  |  \+  |  ''  }
 
 token quantifier {
-    #|   <.MiniPerl6::Grammar.opt_ws>
-    #    <before   \}  |  \]   |  \)   >
-    #    XXX   # fail
-    #|
-        <.MiniPerl6::Grammar.opt_ws>
-        <rule_term> 
-        <.MiniPerl6::Grammar.opt_ws2>
-        [
-            <quant_exp> <greedy_exp>
-            <.MiniPerl6::Grammar.opt_ws3>
-            { make Rul::Quantifier.new(
-                    term    => $$<rule_term>,
-                    quant   => $$<quant_exp>,
-                    greedy  => $$<greedy_exp>,
-                    ws1     => $$<MiniPerl6::Grammar.opt_ws>,
-                    ws2     => $$<MiniPerl6::Grammar.opt_ws2>,
-                    ws3     => $$<MiniPerl6::Grammar.opt_ws3>,
-                )
-            }
-        |
-            { make $$<rule_term> }
-        ]
+    <.MiniPerl6::Grammar.opt_ws>
+    <rule_term> 
+    <.MiniPerl6::Grammar.opt_ws2>
+    [
+        <quant_exp> <greedy_exp>
+        <.MiniPerl6::Grammar.opt_ws3>
+        { make Rul::Quantifier.new(
+                term    => $$<rule_term>,
+                quant   => $$<quant_exp>,
+                greedy  => $$<greedy_exp>,
+                ws1     => $$<MiniPerl6::Grammar.opt_ws>,
+                ws2     => $$<MiniPerl6::Grammar.opt_ws2>,
+                ws3     => $$<MiniPerl6::Grammar.opt_ws3>,
+            )
+        }
+    |
+        { make $$<rule_term> }
+    ]
 }
 
 token concat_list {

@@ -363,6 +363,12 @@ if (typeof Rul$NotBefore != 'object') {
     try { return(( f_string("do { ") + f_string(( f_string("my $tmp := $MATCH; ") + f_string(( f_string("$MATCH := MiniPerl6::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string(( f_string("$MATCH.bool := ") + f_string(( f_string(v_self.v_rule_exp.f_emit()) + f_string(( f_string("; ") + f_string(( f_string("$tmp.bool := !$MATCH; ") + f_string(( f_string("$MATCH := $tmp; ") + f_string(( f_string("?$MATCH; ") + f_string("}") )) )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$NotBefore.f_emit;  // v8 bug workaround
+  // method set_captures_to_array
+  Rul$NotBefore.f_set_captures_to_array = function () {
+    var v_self = this;
+    null
+  }
+  Rul$NotBefore.f_set_captures_to_array;  // v8 bug workaround
 })();
 
 // class Rul::NegateCharClass

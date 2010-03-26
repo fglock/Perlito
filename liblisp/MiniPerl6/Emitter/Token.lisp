@@ -726,6 +726,14 @@ new-slots))
   (block mp6-function
     (progn (concatenate 'string (sv-string "do { ") (sv-string (concatenate 'string (sv-string "my $tmp := $MATCH; ") (sv-string (concatenate 'string (sv-string "$MATCH := MiniPerl6::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") (sv-string (concatenate 'string (sv-string "$MATCH.bool := ") (sv-string (concatenate 'string (sv-string (sv-emit (sv-rule_exp sv-self) )) (sv-string (concatenate 'string (sv-string "; ") (sv-string (concatenate 'string (sv-string "$tmp.bool := !$MATCH; ") (sv-string (concatenate 'string (sv-string "$MATCH := $tmp; ") (sv-string (concatenate 'string (sv-string "?$MATCH; ") (sv-string "}")))))))))))))))))))))
 
+;; method set_captures_to_array
+(if (not (ignore-errors (find-method 'sv-set_captures_to_array () ())))
+  (defgeneric sv-set_captures_to_array (sv-self)
+      (:documentation "a method")))
+(defmethod sv-set_captures_to_array ((sv-self mp-Rul-NotBefore))
+  (block mp6-function
+    nil))
+
 (defmethod sv-perl ((self mp-Rul-NotBefore))
   (mp-Main::sv-lisp_dump_object "::Rul::NotBefore" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "rule_exp") (setf (sv-value m) (sv-rule_exp self)) m) )))
 

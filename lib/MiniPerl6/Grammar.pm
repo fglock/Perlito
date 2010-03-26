@@ -59,20 +59,17 @@ token parse {
 }
 
 token comp_unit {
-    <.opt_ws> [ \; <.opt_ws> ]?
-    [ 'use' <.ws> 'v6-' <ident> <.opt_ws> \; <.ws>  
-    | 'use' <.ws> 'v6' <.opt_ws> \; <.ws>  
-    |  '' 
-    ]
+    <.ws>? [ \; <.ws>? ]?
+    [ 'use' <.ws> 'v6'  [ '-' <ident> ]?  <.ws>? \; <.ws>? ]?
     
-    [ 'class' | 'grammar' ]  <.opt_ws> <full_ident> <.opt_ws> 
+    [ 'class' | 'grammar' ]  <.ws> <full_ident> <.ws>? 
     '{'
         { $Class_name := ~$<full_ident> }
-        <.opt_ws>
+        <.ws>?
         <exp_stmts>
-        <.opt_ws>
+        <.ws>?
     '}'
-    <.opt_ws> [ \; <.opt_ws> ]?
+    <.ws>? [ \; <.ws>? ]?
     {
         make CompUnit.new(
             name        => $$<full_ident>,
@@ -84,7 +81,7 @@ token comp_unit {
 }
 
 token infix_op {
-    '+' | '-' | '*' | '/' 
+    | '+' | '-' | '*' | '/' 
     | eq | ne | '==' | '!=' | '&&' | '||' | '~~' | '~' 
     | '>=' | '>'
     | '<=' | '<'
@@ -156,17 +153,17 @@ token opt_ident {
 token term_meth {
     <full_ident>
     [ 
-       [ 
+        [ 
             '.new('   
             [ 
- 	                <.opt_ws> <exp_mapping> <.opt_ws> \) 
- 	                { 
- 	                    # say 'Parsing Lit::Object ', $$<full_ident>, ($$<exp_mapping>).perl; 
- 	                    make Lit::Object.new( 
- 	                        class  => $$<full_ident>, 
- 	                        fields => $$<exp_mapping> 
- 	                    ) 
- 	                } 
+ 	            <.opt_ws> <exp_mapping> <.opt_ws> \) 
+ 	            { 
+ 	                # say 'Parsing Lit::Object ', $$<full_ident>, ($$<exp_mapping>).perl; 
+ 	                make Lit::Object.new( 
+ 	                    class  => $$<full_ident>, 
+ 	                    fields => $$<exp_mapping> 
+ 	                ) 
+ 	            } 
             | { say '*** Syntax Error parsing Constructor'; die() } 
             ] 
         ] 
@@ -274,36 +271,33 @@ token exp_term {
         { make Decl.new( decl => $$<declarator>, type => $$<opt_type>, var => $$<var_ident> ) }
     | use <.ws> <full_ident>  [ - <ident> ]?
         { make Use.new( mod => $$<full_ident> ) }
-    | <val>     { make $$<val> }     # 'value'
-    | <lit>     { make $$<lit> }     # [literal construct]
-#   | <bind>    { make $$<bind>   }  # $lhs := $rhs
-    | <token>   { make $$<token>  }  # token  { regex... }
-    | <method_def>  { make $$<method_def> }  # method { code... }
-    | <sub_def>     { make $$<sub_def>    }  # sub    { code... }
-    | <control> { make $$<control> } # Various control structures.  Does _not_ appear in binding LHS
-#   | <index>     # $obj[1, 2, 3]
-#   | <lookup>    # $obj{'1', '2', '3'}
-    | <apply>   { make $$<apply>  }  # self; print 1,2,3
+    | <val>         { make $$<val>          }   # 'value'
+    | <lit>         { make $$<lit>          }   # [literal construct]
+    | <token>       { make $$<token>        }   # token  { regex... }
+    | <method_def>  { make $$<method_def>   }   # method { code... }
+    | <sub_def>     { make $$<sub_def>      }   # sub    { code... }
+    | <control>     { make $$<control>      }   # Various control structures.  Does _not_ appear in binding LHS
+    | <apply>       { make $$<apply>        }   # self; print 1,2,3
 }
 
 }
     #---- split into compilation units in order to use less RAM...
 grammar MiniPerl6::Grammar {
 
-token var_sigil { \$ |\% |\@ |\& }
+token var_sigil     { \$ |\% |\@ |\& }
 
-token var_twigil { [ \. | \! | \^ | \* ]? }
+token var_twigil    { [ \. | \! | \^ | \* ]? }
 
-token var_name { <full_ident> | '/' | <digit> }
+token var_name      { <full_ident> | '/' | <digit> }
 
 token var_ident {
     <var_sigil> <var_twigil> <optional_namespace_before_ident> <var_name>
     {
         make Var.new(
-            sigil  => ~$<var_sigil>,
-            twigil => ~$<var_twigil>,
-            namespace => $$<optional_namespace_before_ident>,
-            name   => ~$<var_name>,
+            sigil       => ~$<var_sigil>,
+            twigil      => ~$<var_twigil>,
+            namespace   => $$<optional_namespace_before_ident>,
+            name        => ~$<var_name>,
         )
     }
 }
@@ -317,8 +311,8 @@ token val {
 }
 
 token val_bit {
-    | True  { make Val::Bit.new( bit => 1 ) }
-    | False { make Val::Bit.new( bit => 0 ) }
+    | 'True'       { make Val::Bit.new( bit => 1 ) }
+    | 'False'      { make Val::Bit.new( bit => 0 ) }
 }
 
 
@@ -335,9 +329,9 @@ token val_undef {
 }
 
 token val_num {  
-    <digits> 
-    [   [ 'e' | 'E' ] <digits>
-    |   \. <digits>  [ [ 'e' | 'E' ] <digits> ]?
+    \d+ 
+    [   [ 'e' | 'E' ]   [ '+' | '-' | '' ]  \d+
+    |   \. \d+  [ [ 'e' | 'E' ]  [ '+' | '-' | '' ]  \d+ ]?
     ]
     { make Val::Num.new( num => ~$/ ) }
 }
@@ -378,7 +372,7 @@ token val_buf {
 }
 
 token val_int {
-    <digits>
+    \d+
     { make Val::Int.new( int => ~$/ ) }
 }
 
@@ -494,15 +488,15 @@ token var_invocant {
 }
 
 token args_sig {
-        <var_invocant>
-        <.opt_ws> 
-        # TODO - exp_seq / exp_mapping == positional / named 
-        <exp_seq> 
-        {
-            # say ' invocant: ', ($$<var_invocant>).perl;
-            # say ' positional: ', ($$<exp_seq>).perl;
-            make Sig.new( invocant => $$<var_invocant>, positional => $$<exp_seq>, named => { } );
-        }
+    <var_invocant>
+    <.opt_ws> 
+    # TODO - exp_seq / exp_mapping == positional / named 
+    <exp_seq> 
+    {
+        # say ' invocant: ', ($$<var_invocant>).perl;
+        # say ' positional: ', ($$<exp_seq>).perl;
+        make Sig.new( invocant => $$<var_invocant>, positional => $$<exp_seq>, named => { } );
+    }
 }
 
 token method_sig {
