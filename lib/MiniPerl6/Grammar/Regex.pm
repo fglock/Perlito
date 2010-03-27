@@ -251,8 +251,13 @@ token rule_term {
 }
 
 token quant_exp {
-    |   '**' <.MiniPerl6::Grammar.opt_ws> \{  <parsed_code>  \}
-        { make { closure => $$<parsed_code> } }
+    |   '**'  <.MiniPerl6::Grammar.opt_ws> 
+        [
+        |  <MiniPerl6::Grammar.val_int>
+           { make $$<MiniPerl6::Grammar.val_int> }
+        |  <rule_term>
+           { make $$<rule_term> }
+        ]
     |   [  \? | \* | \+  ]
 }
 

@@ -393,7 +393,13 @@ class Apply {
         if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit).join(' != ')  ~ ')' };
 
         if $code eq 'ternary:<?? !!>' { 
-            return '(' ~ (@.arguments[0]).emit ~
+            my $cond := @.arguments[0];
+            if   $cond.isa( 'Var' ) 
+              && $cond.sigil eq '@' 
+            {
+                $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+            }
+            return '(' ~ $cond.emit ~
                  ' ? ' ~ (@.arguments[1]).emit ~
                  ' : ' ~ (@.arguments[2]).emit ~
                   ')' };

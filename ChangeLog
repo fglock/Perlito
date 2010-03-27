@@ -1,4 +1,5 @@
 (5.0)
+- 'use' - all backends can use Test.pm
 - 'elsif'
 - regex quantifiers
 

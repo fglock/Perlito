@@ -114,7 +114,9 @@
      (defmethod ,op-name ((x string) (y string)) (,op-symbol (read-from-string x) (read-from-string y)))
      (defmethod ,op-name ((x string) (y number)) (,op-symbol (read-from-string x) y))
      (defmethod ,op-name ((x number) (y string)) (,op-symbol x (read-from-string y)))
-     (defmethod ,op-name ((x number) (y number)) (,op-symbol x y))))
+     (defmethod ,op-name ((x number) (y number)) (,op-symbol x y))
+     (defmethod ,op-name (x (y mp-Undef))        (,op-symbol x 0))
+     (defmethod ,op-name ((x mp-Undef) y)        (,op-symbol 0 y))))
 
 (create-numeric-op sv-add                   "add 2 values"               +)
 (create-numeric-op sv-sub                   "subtract 2 values"          -)
@@ -331,6 +333,8 @@
     (replace-substring
         (replace-substring s "\\" "\\\\")
                              "\"" "\\\""))
+(defun mp-Main-sv-lisp_escape_string (s)
+  (sv-lisp_escape_string s))
 
 (if (not (ignore-errors (find-method 'sv-perl_escape_string () ())))
   (defgeneric sv-hash (self)
@@ -339,12 +343,16 @@
     (replace-substring
         (replace-substring s "\\" "\\\\")
                              "'" "\\\'"))
+(defun mp-Main-sv-perl_escape_string (s)
+  (perl_escape_string s))
 
 (if (not (ignore-errors (find-method 'sv-to_lisp_namespace () ())))
   (defgeneric sv-hash (self)
       (:documentation "escape a lisp namespace string")))
 (defmethod sv-to_lisp_namespace ((s string)) 
     (format nil "mp-~a" (replace-substring s "::" "-")))
+(defun mp-Main-sv-to_lisp_namespace (s)
+  (sv-to_lisp_namespace s))
 
 (if (not (ignore-errors (find-method 'sv-join () ())))
   (defgeneric sv-join (l &optional delim)

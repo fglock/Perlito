@@ -481,7 +481,7 @@ class Call {
                     ~ ' })(' ~ $invocant ~ ')'
             }
             else {
-                if defined @.arguments {
+                if @.arguments {
                     return
                         'Main.' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
                 }

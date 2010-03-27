@@ -92,7 +92,7 @@ class Rul::Quantifier {
         }
 
         # TODO
-        warn "Rul::Quantifier: " ~ $.quant ~ $.greedy ~ " not implemented";
+        warn "Rul::Quantifier: " ~ self.perl ~ " not implemented";
         $.term.emit;
     }
     method set_captures_to_array {

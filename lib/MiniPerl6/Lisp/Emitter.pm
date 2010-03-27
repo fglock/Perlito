@@ -179,7 +179,7 @@ new-slots))
         if $.name ne 'Pair' {
             # .perl()
             $str := $str ~ '(defmethod sv-perl ((self ' ~ $class_name ~ '))' ~ Main.newline
-                ~ '  (mp-Main::sv-lisp_dump_object "::' ~ Main::lisp_escape_string($.name) ~ '"' 
+                ~ '  (mp-Main::sv-lisp_dump_object "' ~ Main::lisp_escape_string($.name) ~ '"' 
                 ~ ' (list ' ~ $dumper ~ ')))' ~ Main.newline ~ Main.newline;
         }
 
@@ -338,7 +338,7 @@ class Var {
         # &x    => $Code_x
         my $ns := '';
         if $.namespace {
-            $ns := Main::to_lisp_namespace( $.namespace ) ~ '::';
+            $ns := Main::to_lisp_namespace( $.namespace ) ~ '-';
         }
         elsif ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
             return '*mp6-args*'
@@ -458,7 +458,7 @@ class Apply {
     method emit_lisp {
         my $ns := '';
         if $.namespace {
-            $ns := Main::to_lisp_namespace( $.namespace ) ~ '::';
+            $ns := Main::to_lisp_namespace( $.namespace ) ~ '-';
         }
         my $code := $ns ~ $.code;
 

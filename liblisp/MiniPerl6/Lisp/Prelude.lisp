@@ -104,7 +104,7 @@ new-slots))
     (progn (if (sv-bool (sv-bool sv-self)) (progn (if (sv-bool (sv-defined (sv-capture sv-self))) (progn (return-from mp6-function (sv-capture sv-self))) nil)(return-from mp6-function (sv-substr (sv-str sv-self) (sv-from sv-self) (sv-sub (sv-to sv-self) (sv-from sv-self))))) (progn (return-from mp6-function ""))))))
 
 (defmethod sv-perl ((self mp-MiniPerl6-Match))
-  (mp-Main::sv-lisp_dump_object "::MiniPerl6::Match" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "from") (setf (sv-value m) (sv-from self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "to") (setf (sv-value m) (sv-to self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "str") (setf (sv-value m) (sv-str self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "bool") (setf (sv-value m) (sv-bool self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "capture") (setf (sv-value m) (sv-capture self)) m) )))
+  (mp-Main::sv-lisp_dump_object "MiniPerl6::Match" (list (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "from") (setf (sv-value m) (sv-from self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "to") (setf (sv-value m) (sv-to self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "str") (setf (sv-value m) (sv-str self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "bool") (setf (sv-value m) (sv-bool self)) m) (let ((m (make-instance 'mp-Pair))) (setf (sv-key m) "capture") (setf (sv-value m) (sv-capture self)) m) )))
 
 
 
@@ -177,7 +177,7 @@ new-slots))
     (mp-Main::mp-Main-sv-lisp_dump_object sv-class_name sv-data ))
 (in-package mp-Main)
 (defmethod sv-perl ((self mp-Main))
-  (mp-Main::sv-lisp_dump_object "::Main" (list )))
+  (mp-Main::sv-lisp_dump_object "Main" (list )))
 
 
 

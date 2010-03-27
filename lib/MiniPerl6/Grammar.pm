@@ -206,11 +206,21 @@ token term_meth {
     [ \.
         <hyper_op>
         <opt_ident>   # $obj.(42)
-            [ \( 
-                # { say 'testing exp_seq at ', $/.to }
-                <.opt_ws> <exp_seq> <.opt_ws> \)
+            [ [ \( 
+                    # { say 'testing exp_seq at ', $/.to }
+                    <.opt_ws> <exp_seq> <.opt_ws> 
+                \)
                 # { say 'found parameter list: ', $<exp_seq>.perl }
-            | \: <.ws> <exp_seq> <.opt_ws>
+              | \: <.ws> <exp_seq> <.opt_ws>
+              ]
+                {
+                    make Call.new(
+                        invocant  => $$<exp_term>,
+                        method    => $$<opt_ident>,
+                        arguments => $$<exp_seq>,
+                        hyper     => $$<hyper_op>,
+                    )
+                }
             |
                 {
                     make Call.new(
@@ -221,14 +231,6 @@ token term_meth {
                     )
                 }
             ]
-            {
-                make Call.new(
-                    invocant  => $$<exp_term>,
-                    method    => $$<opt_ident>,
-                    arguments => $$<exp_seq>,
-                    hyper     => $$<hyper_op>,
-                )
-            }
     | \[ <.opt_ws> <exp> <.opt_ws> \]
          { make Index.new(  obj => $$<exp_term>, index_exp => $$<exp> ) }   # $a[exp]
     | \{ <.opt_ws> <exp> <.opt_ws> \}
