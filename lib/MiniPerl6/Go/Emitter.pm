@@ -297,8 +297,8 @@ class CompUnit {
                 push @tmp_comp_unit, $comp_unit;
             }
         }
-
         $comp_units := @tmp_comp_unit;
+
         for @($comp_units) -> $comp_unit {
             for @( $comp_unit.body ) -> $stmt {
                 if $stmt.isa('Method') {

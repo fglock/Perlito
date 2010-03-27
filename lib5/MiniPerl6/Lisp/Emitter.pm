@@ -17,14 +17,29 @@ sub name { $_[0]->{name} };
 sub attributes { $_[0]->{attributes} };
 sub methods { $_[0]->{methods} };
 sub body { $_[0]->{body} };
-sub emit_lisp { my $self = $_[0]; (my  $class_name = Main::to_lisp_namespace($self->{name})); (my  $str = ';; class ' . $self->{name} . Main->newline()); (my  $has_my_decl = 0); (my  $my_decl = ''); my  $Hash_decl_seen; for my $decl ( @{$self->{body}} ) { if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my'))) { (my  $var_name = $decl->var()->emit_lisp());if ($Hash_decl_seen->{$var_name}) {  } else { ($has_my_decl = 1);($my_decl = $my_decl . Decl::emit_lisp_initializer($decl->var()));($Hash_decl_seen->{$var_name} = 1) } } else {  };if ((Main::isa($decl, 'Bind') && (Main::isa($decl->parameters(), 'Decl') && ($decl->parameters()->decl() eq 'my')))) { (my  $var_name = $decl->parameters()->var()->emit_lisp());if ($Hash_decl_seen->{$var_name}) {  } else { ($has_my_decl = 1);($my_decl = $my_decl . Decl::emit_lisp_initializer($decl->parameters()->var()));($Hash_decl_seen->{$var_name} = 1) } } else {  } }; if ($has_my_decl) { ($str = $str . '(let (' . $my_decl . ')' . Main->newline()) } else {  }; ($str = $str . '(if (not (ignore-errors (find-class \'' . $class_name . ')))
-  (defclass ' . $class_name . ' () ()))
-
-(let (x) 
+sub emit_lisp { my $self = $_[0]; (my  $class_name = Main::to_lisp_namespace($self->{name})); (my  $str = ';; class ' . $self->{name} . Main->newline()); (my  $has_my_decl = 0); (my  $my_decl = ''); my  $Hash_decl_seen; for my $decl ( @{$self->{body}} ) { if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my'))) { (my  $var_name = $decl->var()->emit_lisp());if ($Hash_decl_seen->{$var_name}) {  } else { ($has_my_decl = 1);($my_decl = $my_decl . Decl::emit_lisp_initializer($decl->var()));($Hash_decl_seen->{$var_name} = 1) } } else {  };if ((Main::isa($decl, 'Bind') && (Main::isa($decl->parameters(), 'Decl') && ($decl->parameters()->decl() eq 'my')))) { (my  $var_name = $decl->parameters()->var()->emit_lisp());if ($Hash_decl_seen->{$var_name}) {  } else { ($has_my_decl = 1);($my_decl = $my_decl . Decl::emit_lisp_initializer($decl->parameters()->var()));($Hash_decl_seen->{$var_name} = 1) } } else {  } }; if ($has_my_decl) { ($str = $str . '(let (' . $my_decl . ')' . Main->newline()) } else {  }; ($str = $str . '(let (x) 
   (setq x (make-instance \'' . $class_name . '))
   (defun proto-' . $class_name . ' () x))
-'); (my  $dumper = ''); for my $decl ( @{$self->{body}} ) { if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'has'))) { (my  $accessor_name = $decl->var()->name());($dumper = $dumper . '(let ((m (make-instance \'mp-Pair))) ' . '(setf (sv-key m) "' . Main::lisp_escape_string($accessor_name) . '") ' . '(setf (sv-value m) (' . Main::to_lisp_identifier($accessor_name) . ' self)) m) ');($str = $str . ';; has $.' . $accessor_name . '
-(let ((new-slots (list (list :name \'' . Main::to_lisp_identifier($accessor_name) . '
+'); (my  $dumper = ''); for my $decl ( @{$self->{body}} ) { if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'has'))) { (my  $accessor_name = $decl->var()->name());($dumper = $dumper . '(let ((m (make-instance \'mp-Pair))) ' . '(setf (sv-key m) "' . Main::lisp_escape_string($accessor_name) . '") ' . '(setf (sv-value m) (' . Main::to_lisp_identifier($accessor_name) . ' self)) m) ') } else {  };if (Main::isa($decl, 'Method')) { (my  $sig = $decl->sig());(my  $invocant = $sig->invocant());(my  $pos = $sig->positional());(my  $str_specific = '(' . $invocant->emit_lisp() . ' ' . $class_name . ')');(my  $str_optionals = '');for my $field ( @{$pos} ) { ($str_optionals = $str_optionals . ' ' . $field->emit_lisp()) };if ($str_optionals) { ($str_specific = $str_specific . ' &optional' . $str_optionals) } else {  };(my  $block = MiniPerl6::Lisp::LexicalBlock->new( 'block' => $decl->block(), ));($str = $str . ';; method ' . $decl->name() . '
+' . '(defmethod ' . Main::to_lisp_identifier($decl->name()) . ' (' . $str_specific . ')
+  (block mp6-function
+    ' . $block->emit_lisp() . '))
+
+') } else {  };if (Main::isa($decl, 'Sub')) { (my  $pos = $decl->sig()->positional());my  $param;if (@{$pos}) { for my $field ( @{$pos} ) { ($param = $param . $field->emit_lisp() . ' ') } } else {  };(my  $sig = '');if ($param) { ($sig = '&optional ' . $param) } else {  };(my  $block = MiniPerl6::Lisp::LexicalBlock->new( 'block' => $decl->block(), ));($str = $str . '(defun ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' (' . $sig . ')' . '
+' . '  (block mp6-function ' . $block->emit_lisp() . '))' . '
+' . '(in-package ' . $class_name . ')' . '
+' . '  (defun ' . Main::to_lisp_identifier($decl->name()) . ' (' . $sig . ')' . '
+' . '    (mp-Main::' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . $param . '))' . '
+' . '(in-package mp-Main)' . '
+') } else {  } }; if (($self->{name} ne 'Pair')) { ($str = $str . '(defmethod sv-perl ((self ' . $class_name . '))' . Main->newline() . '  (mp-Main::sv-lisp_dump_object "' . Main::lisp_escape_string($self->{name}) . '"' . ' (list ' . $dumper . ')))' . Main->newline() . Main->newline()) } else {  }; ($str = $str . '(defun run-' . $class_name . ' ()' . '
+'); for my $decl ( @{$self->{body}} ) { if ((((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has') || ($decl->decl() eq 'my'))) ? 0 : 1) && ((Main::isa($decl, 'Method') ? 0 : 1) && (Main::isa($decl, 'Sub') ? 0 : 1)))) { ($str = $str . $decl->emit_lisp() . Main->newline()) } else {  } }; ($str = $str . ')' . '
+'); if ($has_my_decl) { ($str = $str . ')') } else {  }; ($str = $str . Main->newline() . Main->newline()) };
+sub emit_lisp_program { my $comp_units = $_[0]; (my  $str = ''); my  $Hash_unit_seen; my  $List_tmp_comp_unit; for my $comp_unit ( @{$comp_units} ) { (my  $name = $comp_unit->name());if ($Hash_unit_seen->{$name}) { for my $stmt ( @{$comp_unit->body()} ) { push( @{$Hash_unit_seen->{$name}->body()}, $stmt ) } } else { ($Hash_unit_seen->{$name} = $comp_unit);push( @{$List_tmp_comp_unit}, $comp_unit ) } }; ($comp_units = $List_tmp_comp_unit); for my $comp_unit ( @{$comp_units} ) { for my $stmt ( @{$comp_unit->body()} ) { if (Main::isa($stmt, 'Method')) { ($comp_unit->methods()->{$stmt->name()} = $stmt) } else {  };if ((Main::isa($stmt, 'Decl') && ($stmt->decl() eq 'has'))) { ($comp_unit->attributes()->{$stmt->var()->name()} = $stmt) } else {  } } }; for my $comp_unit ( @{$comp_units} ) { (my  $class_name = Main::to_lisp_namespace($comp_unit->name()));($str = $str . '(defpackage ' . $class_name . '
+' . '  (:use common-lisp mp-Main))' . '
+');($str = $str . '(if (not (ignore-errors (find-class \'' . $class_name . ')))' . '
+' . '  (defclass ' . $class_name . ' () ()))' . '
+');for my $decl ( @{$comp_unit->body()} ) { if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'has'))) { (my  $accessor_name = $decl->var()->name());($str = $str . ';; has $.' . $accessor_name . '
+' . '(let ((new-slots (list (list :name \'' . Main::to_lisp_identifier($accessor_name) . '
   :readers \'(' . Main::to_lisp_identifier($accessor_name) . ')
   :writers \'((setf ' . Main::to_lisp_identifier($accessor_name) . '))
   :initform \'(sv-undef)
@@ -36,25 +51,14 @@ sub emit_lisp { my $self = $_[0]; (my  $class_name = Main::to_lisp_namespace($se
   :initform (sb-mop:slot-definition-initform slot-defn)
   :initfunction (sb-mop:slot-definition-initfunction slot-defn))
 new-slots))
-(sb-mop:ensure-class \'' . $class_name . ' :direct-slots new-slots))
+(sb-mop:ensure-class \'' . $class_name . ' :direct-slots new-slots))' . '
 
-') } else {  };if (Main::isa($decl, 'Method')) { (my  $sig = $decl->sig());(my  $invocant = $sig->invocant());(my  $pos = $sig->positional());(my  $str_specific = '(' . $invocant->emit_lisp() . ' ' . $class_name . ')');(my  $str_generic = $invocant->emit_lisp());(my  $str_optionals = '');for my $field ( @{$pos} ) { ($str_optionals = $str_optionals . ' ' . $field->emit_lisp()) };if ($str_optionals) { ($str_specific = $str_specific . ' &optional' . $str_optionals);($str_generic = $str_generic . ' &optional' . $str_optionals) } else {  };(my  $block = MiniPerl6::Lisp::LexicalBlock->new( 'block' => $decl->block(), ));($str = $str . ';; method ' . $decl->name() . '
-(if (not (ignore-errors (find-method \'' . Main::to_lisp_identifier($decl->name()) . ' () ())))
-  (defgeneric ' . Main::to_lisp_identifier($decl->name()) . ' (' . $str_generic . ')' . Main->newline());($str = $str . '      (:documentation ' . '"' . 'a method' . '"' . ')))
-(defmethod ' . Main::to_lisp_identifier($decl->name()) . ' (' . $str_specific . ')
-  (block mp6-function
-    ' . $block->emit_lisp() . '))
-
-') } else {  };if (Main::isa($decl, 'Sub')) { (my  $pos = $decl->sig()->positional());my  $param;if (@{$pos}) { for my $field ( @{$pos} ) { ($param = $param . $field->emit_lisp() . ' ') } } else {  };(my  $sig = '');if ($param) { ($sig = '&optional ' . $param) } else {  };(my  $block = MiniPerl6::Lisp::LexicalBlock->new( 'block' => $decl->block(), ));($str = $str . '(defun ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' (' . $sig . ')' . '
-' . '  (block mp6-function ' . $block->emit_lisp() . '))' . '
-' . '(in-package ' . $class_name . ')' . '
-' . '  (defun ' . Main::to_lisp_identifier($decl->name()) . ' (' . $sig . ')' . '
-' . '    (mp-Main::' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . $param . '))' . '
-' . '(in-package mp-Main)' . '
-') } else {  } }; if (($self->{name} ne 'Pair')) { ($str = $str . '(defmethod sv-perl ((self ' . $class_name . '))' . Main->newline() . '  (mp-Main::sv-lisp_dump_object "' . Main::lisp_escape_string($self->{name}) . '"' . ' (list ' . $dumper . ')))' . Main->newline() . Main->newline()) } else {  }; for my $decl ( @{$self->{body}} ) { if ((((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has') || ($decl->decl() eq 'my'))) ? 0 : 1) && ((Main::isa($decl, 'Method') ? 0 : 1) && (Main::isa($decl, 'Sub') ? 0 : 1)))) { ($str = $str . $decl->emit_lisp() . Main->newline()) } else {  } }; if ($has_my_decl) { ($str = $str . ')') } else {  }; ($str = $str . Main->newline() . Main->newline()) };
-sub emit_lisp_program { my $comp_units = $_[0]; (my  $str = ''); for my $comp_unit ( @{$comp_units} ) { ($str = $str . '(defpackage ' . Main::to_lisp_namespace($comp_unit->name()) . '
-' . '  (:use common-lisp mp-Main))' . '
-') }; for my $comp_unit ( @{$comp_units} ) { ($str = $str . $comp_unit->emit_lisp() . '
+') } else {  };if (Main::isa($decl, 'Method')) { (my  $sig = $decl->sig());(my  $invocant = $sig->invocant());(my  $pos = $sig->positional());(my  $str_generic = $invocant->emit_lisp());(my  $str_optionals = '');for my $field ( @{$pos} ) { ($str_optionals = $str_optionals . ' ' . $field->emit_lisp()) };if ($str_optionals) { ($str_generic = $str_generic . ' &optional' . $str_optionals) } else {  };($str = $str . ';; method ' . $decl->name() . '
+' . '(if (not (ignore-errors (find-method \'' . Main::to_lisp_identifier($decl->name()) . ' () ())))
+  (defgeneric ' . Main::to_lisp_identifier($decl->name()) . ' (' . $str_generic . ')' . '
+' . '      (:documentation ' . '"' . 'a method' . '"' . ')))' . '
+') } else {  } } }; for my $comp_unit ( @{$comp_units} ) { ($str = $str . $comp_unit->emit_lisp() . '
+') }; for my $comp_unit ( @{$comp_units} ) { ($str = $str . '(run-' . Main::to_lisp_namespace($comp_unit->name()) . ')
 ') }; return($str) }
 }
 

@@ -89,10 +89,7 @@ class CompUnit {
         }
 
         $str := $str ~ 
-'(if (not (ignore-errors (find-class \'' ~ $class_name ~ ')))
-  (defclass ' ~ $class_name ~ ' () ()))
-
-(let (x) 
+'(let (x) 
   (setq x (make-instance \'' ~ $class_name ~ '))
   (defun proto-' ~ $class_name ~ ' () x))
 ';
@@ -101,53 +98,27 @@ class CompUnit {
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 my $accessor_name := ($decl.var).name;
-
-                $dumper := $dumper ~ '(let ((m (make-instance \'mp-Pair))) '
+                $dumper := $dumper 
+                    ~ '(let ((m (make-instance \'mp-Pair))) '
                     ~ '(setf (sv-key m) "' ~ Main::lisp_escape_string($accessor_name) ~ '") '
                     ~ '(setf (sv-value m) (' ~ Main::to_lisp_identifier($accessor_name) ~ ' self)) m) ';
-
-# suggested by Arthur Lemmens in: http://osdir.com/ml/lisp.lispworks.general/2005-07/msg00153.html 
-
-                $str := $str ~ 
-';; has $.' ~ $accessor_name  ~ '
-(let ((new-slots (list (list :name \'' ~ Main::to_lisp_identifier($accessor_name)  ~ '
-  :readers \'(' ~ Main::to_lisp_identifier($accessor_name)  ~ ')
-  :writers \'((setf ' ~ Main::to_lisp_identifier($accessor_name)  ~ '))
-  :initform \'(sv-undef)
-  :initfunction (constantly (sv-undef))))))
-(dolist (slot-defn (sb-mop:class-direct-slots (find-class \'' ~ $class_name  ~ ')))
-(push (list :name (sb-mop:slot-definition-name slot-defn)
-  :readers (sb-mop:slot-definition-readers slot-defn)
-  :writers (sb-mop:slot-definition-writers slot-defn)
-  :initform (sb-mop:slot-definition-initform slot-defn)
-  :initfunction (sb-mop:slot-definition-initfunction slot-defn))
-new-slots))
-(sb-mop:ensure-class \'' ~ $class_name  ~ ' :direct-slots new-slots))
-
-';
             }
             if $decl.isa( 'Method' ) {
                 my $sig      := $decl.sig;
                 my $invocant := $sig.invocant; 
                 my $pos      := $sig.positional;
                 my $str_specific := '(' ~ $invocant.emit_lisp ~ ' ' ~ $class_name ~ ')';
-                my $str_generic  :=  $invocant.emit_lisp;
                 my $str_optionals := '';
                 for @$pos -> $field { 
                     $str_optionals := $str_optionals ~ ' ' ~ $field.emit_lisp;
                 };
                 if ( $str_optionals ) {
                     $str_specific := $str_specific ~ ' &optional' ~ $str_optionals;
-                    $str_generic  := $str_generic  ~ ' &optional' ~ $str_optionals;
                 }
                 my $block    := MiniPerl6::Lisp::LexicalBlock.new( block => $decl.block );
-                $str := $str ~
-';; method ' ~ $decl.name ~ '
-(if (not (ignore-errors (find-method \'' ~ Main::to_lisp_identifier($decl.name) ~ ' () ())))
-  (defgeneric ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $str_generic ~ ')' ~ Main.newline;
-                $str := $str ~ 
-'      (:documentation ' ~ '"' ~ 'a method' ~ '"' ~ ')))
-(defmethod ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $str_specific ~ ')
+                $str := $str 
+                    ~ ';; method ' ~ $decl.name ~ "\n"
+~ '(defmethod ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $str_specific ~ ')
   (block mp6-function
     ' ~ $block.emit_lisp ~ '))
 
@@ -183,6 +154,8 @@ new-slots))
                 ~ ' (list ' ~ $dumper ~ ')))' ~ Main.newline ~ Main.newline;
         }
 
+        $str := $str
+            ~ '(defun run-' ~ $class_name ~ ' ()' ~ "\n";
         for @.body -> $decl { 
             if    (!( $decl.isa( 'Decl' ) && (( $decl.decl eq 'has' ) || ( $decl.decl eq 'my' )) ))
                && (!( $decl.isa( 'Method'))) 
@@ -191,6 +164,9 @@ new-slots))
                 $str := $str ~ ($decl).emit_lisp ~ Main.newline;
             }
         }; 
+        # close paren for '(defun '
+        $str := $str
+            ~ ')' ~ "\n";
         
         if $has_my_decl {
             # close paren for '(let '
@@ -201,13 +177,90 @@ new-slots))
 
     sub emit_lisp_program( $comp_units ) {
         my $str := '';
+
+        # join classes that have the same name
+        # if there are method or accessor collisions, classes declared later have higher priority
+
+        my %unit_seen;
+        my @tmp_comp_unit;
         for @($comp_units) -> $comp_unit {
+            my $name := $comp_unit.name;
+            if %unit_seen{$name} {
+                for @( $comp_unit.body ) -> $stmt {
+                    push (%unit_seen{$name}).body, $stmt;
+                }
+            }
+            else {
+                %unit_seen{$name} := $comp_unit;
+                push @tmp_comp_unit, $comp_unit;
+            }
+        }
+        $comp_units := @tmp_comp_unit;
+
+        for @($comp_units) -> $comp_unit {
+            for @( $comp_unit.body ) -> $stmt {
+                if $stmt.isa('Method') {
+                    ($comp_unit.methods){ $stmt.name } := $stmt;
+                }
+                if $stmt.isa('Decl') && ( $stmt.decl eq 'has' ) {
+                    ($comp_unit.attributes){ ($stmt.var).name } := $stmt;
+                }
+            }
+        }
+
+        for @($comp_units) -> $comp_unit {
+            my $class_name := Main::to_lisp_namespace($comp_unit.name);
             $str := $str 
-                    ~ '(defpackage ' ~ Main::to_lisp_namespace($comp_unit.name) ~ "\n"
-                    ~ '  (:use common-lisp mp-Main))' ~ "\n"
+                    ~ '(defpackage ' ~ $class_name ~ "\n"
+                    ~ '  (:use common-lisp mp-Main))' ~ "\n";
+            $str := $str 
+                    ~ '(if (not (ignore-errors (find-class \'' ~ $class_name ~ ')))' ~ "\n"
+                    ~ '  (defclass ' ~ $class_name ~ ' () ()))' ~ "\n";
+            for @($comp_unit.body) -> $decl { 
+                if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
+                    my $accessor_name := ($decl.var).name;
+                    # suggested by Arthur Lemmens in: http://osdir.com/ml/lisp.lispworks.general/2005-07/msg00153.html 
+                    $str := $str 
+                        ~ ';; has $.' ~ $accessor_name ~ "\n"
+~ '(let ((new-slots (list (list :name \'' ~ Main::to_lisp_identifier($accessor_name)  ~ '
+  :readers \'(' ~ Main::to_lisp_identifier($accessor_name)  ~ ')
+  :writers \'((setf ' ~ Main::to_lisp_identifier($accessor_name)  ~ '))
+  :initform \'(sv-undef)
+  :initfunction (constantly (sv-undef))))))
+(dolist (slot-defn (sb-mop:class-direct-slots (find-class \'' ~ $class_name  ~ ')))
+(push (list :name (sb-mop:slot-definition-name slot-defn)
+  :readers (sb-mop:slot-definition-readers slot-defn)
+  :writers (sb-mop:slot-definition-writers slot-defn)
+  :initform (sb-mop:slot-definition-initform slot-defn)
+  :initfunction (sb-mop:slot-definition-initfunction slot-defn))
+new-slots))
+(sb-mop:ensure-class \'' ~ $class_name  ~ ' :direct-slots new-slots))' ~ "\n\n";
+                }
+                if $decl.isa( 'Method' ) {
+                    my $sig      := $decl.sig;
+                    my $invocant := $sig.invocant; 
+                    my $pos      := $sig.positional;
+                    my $str_generic  :=  $invocant.emit_lisp;
+                    my $str_optionals := '';
+                    for @$pos -> $field { 
+                        $str_optionals := $str_optionals ~ ' ' ~ $field.emit_lisp;
+                    };
+                    if ( $str_optionals ) {
+                        $str_generic  := $str_generic  ~ ' &optional' ~ $str_optionals;
+                    }
+                    $str := $str 
+                        ~ ';; method ' ~ $decl.name ~ "\n"
+~ '(if (not (ignore-errors (find-method \'' ~ Main::to_lisp_identifier($decl.name) ~ ' () ())))
+  (defgeneric ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $str_generic ~ ')' ~ "\n"
+                        ~ '      (:documentation ' ~ '"' ~ 'a method' ~ '"' ~ ')))' ~ "\n";
+                }
+            }
         }
         for @($comp_units) -> $comp_unit {
             $str := $str ~ $comp_unit.emit_lisp ~ "\n"
+        }
+        for @($comp_units) -> $comp_unit {
+            $str := $str ~ "(run-" ~ Main::to_lisp_namespace( $comp_unit.name ) ~ ")\n"
         }
         return $str;
     }
