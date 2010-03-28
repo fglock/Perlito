@@ -329,7 +329,7 @@
     result))
 
 (if (not (ignore-errors (find-method 'sv-lisp_escape_string () ())))
-  (defgeneric sv-hash (self)
+  (defgeneric sv-lisp_escape_string (self)
       (:documentation "escape a lisp string value")))
 (defmethod sv-lisp_escape_string ((s string)) 
     (replace-substring
@@ -339,7 +339,7 @@
   (sv-lisp_escape_string s))
 
 (if (not (ignore-errors (find-method 'sv-perl_escape_string () ())))
-  (defgeneric sv-hash (self)
+  (defgeneric sv-perl_escape_string (self)
       (:documentation "escape a single quoted perl string value")))
 (defmethod sv-perl_escape_string ((s string)) 
     (replace-substring
@@ -349,7 +349,7 @@
   (perl_escape_string s))
 
 (if (not (ignore-errors (find-method 'sv-to_lisp_namespace () ())))
-  (defgeneric sv-hash (self)
+  (defgeneric sv-to_lisp_namespace (self)
       (:documentation "escape a lisp namespace string")))
 (defmethod sv-to_lisp_namespace ((s string)) 
     (format nil "mp-~a" (replace-substring s "::" "-")))

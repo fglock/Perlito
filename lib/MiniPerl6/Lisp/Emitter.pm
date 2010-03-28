@@ -9,7 +9,7 @@ class MiniPerl6::Lisp::LexicalBlock {
         my $str := '';
         my $has_my_decl := 0;
         my $my_decl := '';
-        # my $silence_unused_warning := '';
+        my $my_ignore := '';
         my %decl_seen;
         for @.block -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
@@ -17,6 +17,7 @@ class MiniPerl6::Lisp::LexicalBlock {
                 if !(%decl_seen{ $var_name }) {
                     $has_my_decl := 1;
                     $my_decl := $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
+                    $my_ignore := $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
                     %decl_seen{ $var_name } := 1;
                 }
             }
@@ -25,16 +26,15 @@ class MiniPerl6::Lisp::LexicalBlock {
                 if !(%decl_seen{ $var_name }) {
                     $has_my_decl := 1;
                     $my_decl := $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
+                    $my_ignore := $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
                     %decl_seen{ $var_name } := 1;
                 }
             }
         }
         if $has_my_decl {
-            $str := $str ~ '(let (' ~ $my_decl ~ ') ';
-
-            # silence warning "The variable X is defined but never used." in SBCL
-            # $str := $str ~ '(list ' ~ $silence_unused_warning ~ ') ';
-
+            $str := $str 
+                ~ '(let (' ~ $my_decl ~ ")\n"
+                ~ $my_ignore;
         }
         else {
             $str := $str ~ '(progn ';
@@ -61,6 +61,7 @@ class CompUnit {
 
         my $has_my_decl := 0;
         my $my_decl := '';
+        my $my_ignore := '';
         my %decl_seen;
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
@@ -68,6 +69,7 @@ class CompUnit {
                 if !(%decl_seen{ $var_name }) {
                     $has_my_decl := 1;
                     $my_decl := $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
+                    $my_ignore := $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
                     %decl_seen{ $var_name } := 1;
                 }
             }
@@ -76,16 +78,15 @@ class CompUnit {
                 if !(%decl_seen{ $var_name }) {
                     $has_my_decl := 1;
                     $my_decl := $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
+                    $my_ignore := $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
                     %decl_seen{ $var_name } := 1;
                 }
             }
         }
         if $has_my_decl {
-            $str := $str ~ '(let (' ~ $my_decl ~ ')' ~ Main.newline;
-
-            # silence warning "The variable X is defined but never used." in SBCL
-            # $str := $str ~ '(list ' ~ $silence_unused_warning ~ ') ';
-
+            $str := $str 
+                ~ '(let (' ~ $my_decl ~ ")\n"
+                ~ $my_ignore;
         }
 
         $str := $str ~ 
@@ -127,9 +128,11 @@ class CompUnit {
             if $decl.isa( 'Sub' ) {
                 my $pos := ($decl.sig).positional;
                 my $param;
+                my $ignorable := '';
                 if @$pos {
                     for @$pos -> $field {
                         $param := $param ~ $field.emit_lisp ~ ' ';
+                        $ignorable := $ignorable ~ "\n" ~ '  (declare (ignorable ' ~ $field.emit_lisp ~ "))";
                     }
                 }
                 my $sig := '';
@@ -138,7 +141,8 @@ class CompUnit {
                 }
                 my $block := MiniPerl6::Lisp::LexicalBlock.new( block => $decl.block );
                 $str := $str 
-                    ~ '(defun ' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' ~ "\n"
+                    ~ '(defun ' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' 
+                    ~    $ignorable ~ "\n"
                     ~ '  (block mp6-function ' ~ $block.emit_lisp ~ '))' ~ "\n"
                     ~ '(in-package ' ~ $class_name ~ ')' ~ "\n"
                     ~ '  (defun ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' ~ "\n"
@@ -463,7 +467,7 @@ class Call {
         my $arguments := (@.arguments.>>emit_lisp).join(' ');
 
         my $invocant := $.invocant.emit_lisp;
-        if $invocant eq 'self' {
+        if $invocant eq '(proto-mp-self)' {
             $invocant := 'sv-self';
         };
 
