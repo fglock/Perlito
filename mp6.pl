@@ -178,7 +178,7 @@ else {
 
     if  (  $backend eq 'go' 
         || $backend eq 'js'
-        || ( $backend eq 'lisp' && $execute )
+        || ( $backend eq 'lisp' && ( $execute || $compile_to_bin ) )
         ) 
     {
         # TODO - recursive 'use'
@@ -267,19 +267,13 @@ if ( $backend eq 'lisp' ) {
         my $lib = <FILE>;
         print OUT $lib, "\n";
 
-        $filename = "liblisp/MiniPerl6/Lisp/Prelude.lisp";
-        warn "reading lisp prelude: $filename\n" if $verbose;
-        open FILE, $filename
-          or die "Cannot read Lisp prelude: $filename";
-        $lib = <FILE>;
-        print OUT $lib, "\n";
-
         print OUT $result, "\n";
 
         if ( $compile_to_bin ) {
-            print OUT
-                '(sb-ext:save-lisp-and-die "tmp-lisp" :toplevel \'compiler-main :executable t )';
-            warn "TODO - Lisp compile_to_bin";
+            print OUT '(sb-ext:save-lisp-and-die "' . $tmp_filename . '.out" :toplevel \'compiler-main :executable t )' . "\n";
+        }
+        else {
+            print OUT "(compiler-main)\n";
         }
 
         close(OUT);
@@ -318,7 +312,7 @@ elsif ( $backend eq 'js' ) {
           or die "Cannot write to ${tmp_filename}.js\n";
         my $inc;
 
-        for my $lib_source_filename ( 'lib/MiniPerl6/Javascript/Runtime.js', 'libjs/MiniPerl6/Javascript/Prelude.js' ) {
+        for my $lib_source_filename ( 'lib/MiniPerl6/Javascript/Runtime.js' ) {
             $inc .= "// include file: $lib_source_filename\n";
             open FILE, $::Bin . '/' . $lib_source_filename
               or die "Cannot read $::Bin/$lib_source_filename\n";

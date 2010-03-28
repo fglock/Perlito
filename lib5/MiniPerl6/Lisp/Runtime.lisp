@@ -18,12 +18,14 @@
         #:sv-defined #:sv-array-index #:sv-hash-lookup #:sv-add ))
 (in-package mp-Main)
 
-(setf COMMON-LISP-USER::*posix-argv* (cdr COMMON-LISP-USER::*posix-argv*))
-(defparameter *mp6-args* (make-array 
-                            (length COMMON-LISP-USER::*posix-argv*) 
-                            :adjustable 1 
-                            :fill-pointer t 
-                            :initial-contents COMMON-LISP-USER::*posix-argv*))
+(defun init-argv ()
+  (progn
+    (setf COMMON-LISP-USER::*posix-argv* (cdr COMMON-LISP-USER::*posix-argv*))
+    (defparameter *mp6-args* (make-array 
+                                (length COMMON-LISP-USER::*posix-argv*) 
+                                :adjustable 1 
+                                :fill-pointer t 
+                                :initial-contents COMMON-LISP-USER::*posix-argv*))))
 
 ;; "undef"
 
@@ -383,6 +385,8 @@
             while line
             collect line into lines
             finally (return lines)))))
+(defun mp-io-sv-slurp (s)
+  (sv-slurp s))
 
 (in-package mp-IO)
   (defun sv-slurp (&optional sv-filename )

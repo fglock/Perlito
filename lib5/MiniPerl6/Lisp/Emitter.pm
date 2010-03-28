@@ -58,8 +58,11 @@ new-slots))
   (defgeneric ' . Main::to_lisp_identifier($decl->name()) . ' (' . $str_generic . ')' . '
 ' . '      (:documentation ' . '"' . 'a method' . '"' . ')))' . '
 ') } else {  } } }; for my $comp_unit ( @{$comp_units} ) { ($str = $str . $comp_unit->emit_lisp() . '
-') }; for my $comp_unit ( @{$comp_units} ) { ($str = $str . '(run-' . Main::to_lisp_namespace($comp_unit->name()) . ')
-') }; return($str) }
+') }; ($str = $str . '(defun compiler-main ()
+' . '  (progn
+' . '    (init-argv)'); for my $comp_unit ( @{$comp_units} ) { ($str = $str . '
+    (run-' . Main::to_lisp_namespace($comp_unit->name()) . ')') }; ($str = $str . '))
+'); return($str) }
 }
 
 {

@@ -259,9 +259,17 @@ new-slots))
         for @($comp_units) -> $comp_unit {
             $str := $str ~ $comp_unit.emit_lisp ~ "\n"
         }
+
+        $str := $str 
+            ~ "(defun compiler-main ()\n"
+            ~ "  (progn\n"
+            ~ "    (init-argv)";
         for @($comp_units) -> $comp_unit {
-            $str := $str ~ "(run-" ~ Main::to_lisp_namespace( $comp_unit.name ) ~ ")\n"
+            $str := $str ~ "\n    (run-" ~ Main::to_lisp_namespace( $comp_unit.name ) ~ ")"
         }
+        $str := $str 
+            ~ "))\n";
+
         return $str;
     }
 

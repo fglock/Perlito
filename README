@@ -73,17 +73,9 @@ Lisp backend
 
     Creating an executable image:
 
-    . util-lisp/create-core-image.sh
-    ./mp6-lisp t/04-op.t
-
-    Creating a bootstrapped compiler:
-
-    # compile util/mp6.pl to Lisp, using mp6.pl:
-    perl mp6.pl -Bperl5 util/mp6.pl -Clisp util/mp6.pl > util-lisp/mp6.lisp
-    # testing the bootstrap with SBCL
-    sbcl --script util-lisp/mp6.lisp -Clisp util/mp6.pl > mp6-new.lisp
-
-    See more utilities in util-lisp directory.
+    perl mp6.pl -Clisp-bin util/mp6.pl 
+    mv tmp.out mp6-lisp
+    ./mp6-lisp -Clisp t/04-op.t
 
     See also: SBCL homepage at http://www.sbcl.org
 
@@ -122,14 +114,6 @@ Testing a backend using the Perl5 based compiler
     prove -e "perl mp6.pl -Bperl5"
     prove -e "perl mp6.pl -Blisp"
     prove -e "perl mp6.pl -Bgo"
-
-Testing the Lisp binary image compiler
-
-    prove -e "./mp6-lisp"
-
-Testing Rakudo Perl6 compatibility
-
-    prove -e "perl6"
 
 AUTHORS
 
