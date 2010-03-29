@@ -429,21 +429,12 @@ class Call {
         my $invocant := $.invocant.emit_javascript;
         if $invocant eq 'self' {
             $invocant := 'v_self';
-        };
-
-        if     ($.method eq 'values')
-        { 
-            if ($.hyper) {
-                die "not implemented";
-            }
-            else {
-                return 'f_values(' ~ $invocant ~ ')';
-            }
-        };
-
+        }
         if     ($.method eq 'perl')
             || ($.method eq 'isa')
             || ($.method eq 'scalar')
+            || ($.method eq 'keys')
+            || ($.method eq 'values')
         { 
             if ($.hyper) {
                 return 
@@ -525,8 +516,8 @@ class Apply {
         if $code eq 'self'       { return 'v_self' };
         if $code eq 'false'      { return '0' };
         if $code eq 'make'       { return '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
-        if $code eq 'say'        { return 'say('    ~ (@.arguments.>>emit_javascript).join(' + ') ~ ')' };
-        if $code eq 'print'      { return 'f_print('  ~ (@.arguments.>>emit_javascript).join(' + ') ~ ')' };
+        if $code eq 'say'        { return 'f_say('    ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
+        if $code eq 'print'      { return 'f_print('  ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
         if $code eq 'warn'       { return 'f_warn('   ~ (@.arguments.>>emit_javascript).join(' + ') ~ ')' };
         # if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit_javascript).join(' ')    ~ '}' };
         if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ' != null)' };

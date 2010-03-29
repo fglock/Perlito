@@ -13,4 +13,5 @@ class Main {
 
     %a{123} := 456;
     say '# values: ', %a.values;
+    say '# keys:   ', %a.keys;
 }

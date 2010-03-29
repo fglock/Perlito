@@ -274,12 +274,13 @@ class Call {
         }
 
         if     ($.method eq 'values')
+            || ($.method eq 'keys')
         { 
             if ($.hyper) {
                 die "not implemented";
             }
             else {
-                return 'values( %{' ~ $invocant ~ '} )';
+                return $.method ~ '( %{' ~ $invocant ~ '} )';
             }
         }
 

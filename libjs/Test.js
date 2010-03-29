@@ -15,7 +15,7 @@ var v_num_of_tests_planned = null;
 var v_testing_started = null;
   // sub plan
   Test.f_plan = function (v_number_of_tests) {
-    try { (v_testing_started = 1);(v_num_of_tests_planned = v_number_of_tests);return(say(( f_string("1..") + f_string(v_number_of_tests) ))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { (v_testing_started = 1);(v_num_of_tests_planned = v_number_of_tests);return(f_say(( f_string("1..") + f_string(v_number_of_tests) ))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub ok
   Test.f_ok = function (v_cond, v_desc, v_todo, v_depends) {
@@ -35,39 +35,39 @@ var v_testing_started = null;
   }
   // sub cmp_ok
   Test.f_cmp_ok = function (v_got, Code_compare_func, v_expected, v_desc, v_todo, v_depends) {
-    try { return(say("### Test::cmp_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("### Test::cmp_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub like
   Test.f_like = function () {
-    try { return(say("### Test::like not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("### Test::like not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub unlike
   Test.f_unlike = function () {
-    try { return(say("### Test::unlike not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("### Test::unlike not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub eval_dies_ok
   Test.f_eval_dies_ok = function () {
-    try { return(say("### Test::eval_dies_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("### Test::eval_dies_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub isa_ok
   Test.f_isa_ok = function () {
-    try { return(say("### Test::isa_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("### Test::isa_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub use_ok
   Test.f_use_ok = function () {
-    try { return(say("### Test::use_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("### Test::use_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub throws_ok
   Test.f_throws_ok = function () {
-    try { return(say("### Test::throws_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("### Test::throws_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub dies_ok
   Test.f_dies_ok = function () {
-    try { return(say("### Test::dies_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("### Test::dies_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub lives_ok
   Test.f_lives_ok = function () {
-    try { return(say("### Test::lives_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("### Test::lives_ok not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub skip
   Test.f_skip = function (v_reason, v_depends) {
@@ -83,15 +83,15 @@ var v_testing_started = null;
   }
   // sub proclaim
   Test.f_proclaim = function (v_cond, v_desc, v_todo, v_got, v_expected, v_depends, v_negate) {
-    try { (v_testing_started = 1);(v_num_of_tests_run = f_add(v_num_of_tests_run, 1));if ( f_bool(v_cond) ) { (function () { say("ok " + v_num_of_tests_run); })() } else { (function () { say("not ok " + v_num_of_tests_run);Test.f_report_failure(v_todo, v_got, v_expected, v_negate); })() };throw(v_cond) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { (v_testing_started = 1);(v_num_of_tests_run = f_add(v_num_of_tests_run, 1));if ( f_bool(v_cond) ) { (function () { f_say("ok ", v_num_of_tests_run); })() } else { (function () { f_say("not ok ", v_num_of_tests_run);Test.f_report_failure(v_todo, v_got, v_expected, v_negate); })() };throw(v_cond) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub report_failure
   Test.f_report_failure = function (v_todo, v_got, v_expected, v_negate) {
-    try { return(say("### Test::report_failure not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("### Test::report_failure not implemented")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub test_ends
   Test.f_test_ends = function () {
-    try { if ( f_bool(v_testing_started) ) { (function () { null })() } else { (function () { throw(null); })() };if ( f_bool(v_num_of_tests_planned) ) { (function () { null })() } else { (function () { say(( f_string("1..") + f_string(v_num_of_tests_run) )); })() };if ( f_bool((v_num_of_tests_planned != v_num_of_tests_run)) ) { (function () { say(( f_string("# Looks like you planned ") + f_string(( f_string(v_num_of_tests_planned) + f_string(( f_string(" tests, but ran ") + f_string(v_num_of_tests_run) )) )) )); })() } else { (function () { null })() };if ( f_bool(v_num_of_tests_failed) ) { (function () { say(( f_string("# Looks like you failed ") + f_string(( f_string(v_num_of_tests_failed) + f_string(( f_string(" tests of ") + f_string(v_num_of_tests_run) )) )) )); })() } else { (function () { null })() };(v_num_of_tests_run = 0);(v_num_of_tests_failed = 0);(v_num_of_tests_planned = 0);return((v_testing_started = 0)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { if ( f_bool(v_testing_started) ) { (function () { null })() } else { (function () { throw(null); })() };if ( f_bool(v_num_of_tests_planned) ) { (function () { null })() } else { (function () { f_say(( f_string("1..") + f_string(v_num_of_tests_run) )); })() };if ( f_bool((v_num_of_tests_planned != v_num_of_tests_run)) ) { (function () { f_say(( f_string("# Looks like you planned ") + f_string(( f_string(v_num_of_tests_planned) + f_string(( f_string(" tests, but ran ") + f_string(v_num_of_tests_run) )) )) )); })() } else { (function () { null })() };if ( f_bool(v_num_of_tests_failed) ) { (function () { f_say(( f_string("# Looks like you failed ") + f_string(( f_string(v_num_of_tests_failed) + f_string(( f_string(" tests of ") + f_string(v_num_of_tests_run) )) )) )); })() } else { (function () { null })() };(v_num_of_tests_run = 0);(v_num_of_tests_failed = 0);(v_num_of_tests_planned = 0);return((v_testing_started = 0)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
 })();
 

@@ -52,7 +52,10 @@ if ( test( "${target_dir}-new" ) ) {
 #---
 
 sub test {
-    warn "automatic testing is not implemented yet\n";
+    warn "automatic testing is not implemented yet. Please use one of:\n";
+    for ( qw( perl5 lisp js go ) ) {
+        warn "  prove -e \"perl mp6.pl -B$_\"\n"
+    }
     return 0;
 }
 sub backup {

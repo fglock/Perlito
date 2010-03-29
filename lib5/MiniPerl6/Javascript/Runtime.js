@@ -107,24 +107,31 @@ MiniPerl6$Match.f_hash = function () { return this }
 
 if (typeof f_print != 'function') {
     var buf = "";
-    f_print = function (s) { 
-        s = s + "";  
-        if ( s.substr(s.length - 2, 2 ) == "\n" ) {
-            print( buf + s.substr(0, s.length - 2) );
-            buf = "";
-        }
-        else if ( s.substr(s.length - 1, 1 ) == "\n" ) {
-            print( buf + s.substr(0, s.length - 1) );
-            buf = "";
-        }
-        else {
-            buf = buf + s;
+    f_print = function () { 
+        var i;
+        for (i = 0; i < f_print.arguments.length; i++) {
+            var s = f_string( f_print.arguments[i] ) 
+            if ( s.substr(s.length - 2, 2 ) == "\n" ) {
+                print( buf + s.substr(0, s.length - 2) );
+                buf = "";
+            }
+            else if ( s.substr(s.length - 1, 1 ) == "\n" ) {
+                print( buf + s.substr(0, s.length - 1) );
+                buf = "";
+            }
+            else {
+                buf = buf + s;
+            }
         }
     }
 }
-if (typeof say != 'function') {
-  say = function (s) {
-    f_print(s + "\n")
+if (typeof f_say != 'function') {
+  f_say = function () {
+    var i;
+    for (i = 0; i < f_say.arguments.length; i++) {
+        f_print( f_say.arguments[i] );
+    }
+    f_print("\n");
   }
 }
 if (typeof f_die != 'function') {
@@ -150,11 +157,28 @@ f_values = function (o) {
     case "boolean":  return [o];
     case "undefined": return [];
   }
-    var out = [];
+  var out = [];
+  for(var i in o) { 
+    out.push( o[i] ) 
+  }
+  return out;
+}
+f_keys = function (o) {
+  if ( o == null ) { return [] };
+  if ( typeof o.f_keys == 'function' ) { return o.f_keys() }
+  var out = [];
+  if ( typeof o == 'object' && (o instanceof Array) ) {
+    var count = 0;
     for(var i in o) { 
-      out.push( o[i] ) 
+      out.push(count) 
+      count++;
     }
-    return out;
+    return o;
+  }
+  for(var i in o) { 
+    out.push(i) 
+  }
+  return out;
 }
 f_perl = function (o) {
   if ( o == null ) { return 'undef' };
@@ -193,6 +217,11 @@ f_scalar = function (o) {
 }
 f_string = function (o) { 
   if ( o == null ) { return "" }
+  if ( typeof o == 'object' && (o instanceof Array) ) {
+    var out = [];
+    for(var i = 0; i < o.length; i++) { out.push( f_string(o[i]) ) }
+    return out.join(" ");
+  }
   if ( typeof o.f_string == 'function' ) { return o.f_string() }
   if ( typeof o != 'string' ) { return "" + o }
   return o;

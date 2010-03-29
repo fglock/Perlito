@@ -279,7 +279,7 @@ if (typeof Rul$InterpolateVar != 'object') {
   // method emit
   Rul$InterpolateVar.f_emit = function () {
     var v_self = this;
-    try { say(( f_string("# TODO: interpolate var ") + f_string(( f_string(v_self.v_var.f_emit()) + f_string("") )) ));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { f_say(( f_string("# TODO: interpolate var ") + f_string(( f_string(v_self.v_var.f_emit()) + f_string("") )) ));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$InterpolateVar.f_emit;  // v8 bug workaround
   // method set_captures_to_array
@@ -308,13 +308,13 @@ if (typeof Rul$NamedCapture != 'object') {
   // method emit
   Rul$NamedCapture.f_emit = function () {
     var v_self = this;
-    try { say(( f_string("# TODO: named capture ") + f_string(( f_string(v_self.v_capture_ident) + f_string(( f_string(" := ") + f_string(( f_string(v_self.v_rule_exp.f_emit()) + f_string("") )) )) )) ));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { f_say(( f_string("# TODO: named capture ") + f_string(( f_string(v_self.v_capture_ident) + f_string(( f_string(" := ") + f_string(( f_string(v_self.v_rule_exp.f_emit()) + f_string("") )) )) )) ));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$NamedCapture.f_emit;  // v8 bug workaround
   // method set_captures_to_array
   Rul$NamedCapture.f_set_captures_to_array = function () {
     var v_self = this;
-    try { return(say("# TODO: named capture ")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return(f_say("# TODO: named capture ")) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$NamedCapture.f_set_captures_to_array;  // v8 bug workaround
 })();
@@ -386,7 +386,7 @@ if (typeof Rul$NegateCharClass != 'object') {
   // method emit
   Rul$NegateCharClass.f_emit = function () {
     var v_self = this;
-    try { say("TODO NegateCharClass");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { f_say("TODO NegateCharClass");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$NegateCharClass.f_emit;  // v8 bug workaround
 })();
@@ -406,7 +406,7 @@ if (typeof Rul$CharClass != 'object') {
   // method emit
   Rul$CharClass.f_emit = function () {
     var v_self = this;
-    try { say("TODO CharClass");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { f_say("TODO CharClass");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$CharClass.f_emit;  // v8 bug workaround
 })();
@@ -426,7 +426,7 @@ if (typeof Rul$Capture != 'object') {
   // method emit
   Rul$Capture.f_emit = function () {
     var v_self = this;
-    try { say("TODO RulCapture");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { f_say("TODO RulCapture");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$Capture.f_emit;  // v8 bug workaround
 })();
@@ -446,7 +446,7 @@ if (typeof Rul$CaptureResult != 'object') {
   // method emit
   Rul$CaptureResult.f_emit = function () {
     var v_self = this;
-    try { say("TODO Rul::CaptureResult");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { f_say("TODO Rul::CaptureResult");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$CaptureResult.f_emit;  // v8 bug workaround
 })();
@@ -466,7 +466,7 @@ if (typeof Rul$After != 'object') {
   // method emit
   Rul$After.f_emit = function () {
     var v_self = this;
-    try { say("TODO Rul::After");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { f_say("TODO Rul::After");return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Rul$After.f_emit;  // v8 bug workaround
 })();

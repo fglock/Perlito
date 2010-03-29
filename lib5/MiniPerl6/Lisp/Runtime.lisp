@@ -51,6 +51,9 @@
 (if (not (ignore-errors (find-method 'sv-hash () ())))
   (defgeneric sv-hash (self)
       (:documentation "get a hash value")))
+(if (not (ignore-errors (find-method 'sv-push () ())))
+  (defgeneric sv-push (self x)
+      (:documentation "push")))
 (if (not (ignore-errors (find-method 'sv-perl_escape_string () ())))
   (defgeneric sv-perl_escape_string (self)
       (:documentation "escape a single quoted perl string value")))
@@ -199,7 +202,7 @@
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
     (maphash #'(lambda (key val) 
                   (declare (ignorable key))
-                  (push val tmp)) 
+                  (sv-push tmp val)) 
              x) 
     tmp ))
 
@@ -210,13 +213,10 @@
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
     (maphash #'(lambda (key val) 
                   (declare (ignorable val))
-                  (push key tmp)) 
+                  (sv-push tmp key)) 
              x) 
     tmp ))
 
-(if (not (ignore-errors (find-method 'sv-push () ())))
-  (defgeneric sv-push (self x)
-      (:documentation "push")))
 (defmethod sv-push (a x) 
   (progn 
     (vector-push-extend x a)
