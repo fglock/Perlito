@@ -47,12 +47,10 @@
 (defun sv-say (l)
   (progn
     (map nil #'(lambda (c) (format t "~a" (sv-string c))) l)
-    (format t "~%" nil)))
-;;  (format t "~a~%" (sv-join l "")))
+    (format t "~%" )))
 
 (defun sv-print (l)
   (map nil #'(lambda (c) (format t "~a" (sv-string c))) l))
-;;  (format t "~a" (sv-join l "")))
 
 (if (not (ignore-errors (find-method 'sv-substr () ())))
   (defgeneric sv-substr (x s c)
@@ -64,6 +62,7 @@
       "")))
 
 (defun sv-index (s substr &optional start) 
+  (declare (ignorable start))    ;; TODO
   (let ((l1 (search substr s))) 
     (if l1 l1 -1)))
 
@@ -164,21 +163,33 @@
         " }" )))
 
 
+(if (not (ignore-errors (find-method 'sv-values () ())))
+  (defgeneric sv-values (self)
+      (:documentation "hash values")))
 (defmethod sv-values ((x hash-table))
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
     (maphash #'(lambda (key val) (push val tmp)) x) 
     tmp ))
 
+(if (not (ignore-errors (find-method 'sv-keys () ())))
+  (defgeneric sv-keys (self)
+      (:documentation "hash keys")))
 (defmethod sv-keys ((x hash-table))
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
     (maphash #'(lambda (key val) (push key tmp)) x) 
     tmp ))
 
+(if (not (ignore-errors (find-method 'sv-push () ())))
+  (defgeneric sv-push (self x)
+      (:documentation "push")))
 (defmethod sv-push (a x) 
   (progn 
     (vector-push-extend x a)
     x))
 
+(if (not (ignore-errors (find-method 'sv-unshift () ())))
+  (defgeneric sv-unshift (self x)
+      (:documentation "unshift")))
 (defmethod sv-unshift (a x) 
   (let ((l (length a)))
     (vector-push-extend 0 a)
@@ -188,6 +199,9 @@
     (setf (aref a 0) x)
     x))
 
+(if (not (ignore-errors (find-method 'sv-shift () ())))
+  (defgeneric sv-shift (self)
+      (:documentation "shift")))
 (defmethod sv-shift (a) 
     (if (eql (length a) 0)
         (sv-Undef)   
@@ -198,6 +212,9 @@
           (vector-pop a)
           x)))
 
+(if (not (ignore-errors (find-method 'sv-pop () ())))
+  (defgeneric sv-pop (self)
+      (:documentation "pop")))
 (defmethod sv-pop (a)
     (if (eql (length a) 0)
         (sv-Undef)   
@@ -359,9 +376,9 @@
 (if (not (ignore-errors (find-method 'sv-join () ())))
   (defgeneric sv-join (l &optional delim)
       (:documentation "list join")))
-;;(defmethod sv-join (l &optional (delim ""))
-;;  (sv-string l))
-(defmethod sv-join ((l string) &optional (delim "")) l)
+(defmethod sv-join ((l string) &optional (delim "")) 
+  (declare (ignorable delim))
+  l)
 (defmethod sv-join ((v vector) &optional (delim ""))
   (with-output-to-string (s)
     (when v
