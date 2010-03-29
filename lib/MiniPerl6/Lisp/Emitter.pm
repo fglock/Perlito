@@ -89,12 +89,6 @@ class CompUnit {
                 ~ $my_ignore;
         }
 
-        $str := $str ~ 
-'(let (x) 
-  (setq x (make-instance \'' ~ $class_name ~ '))
-  (defun proto-' ~ $class_name ~ ' () x))
-';
-
         my $dumper := '';
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
@@ -155,7 +149,7 @@ class CompUnit {
         if $.name ne 'Pair' {
             # .perl()
             $str := $str ~ '(defmethod sv-perl ((self ' ~ $class_name ~ '))' ~ Main.newline
-                ~ '  (mp-Main::sv-lisp_dump_object "' ~ Main::lisp_escape_string($.name) ~ '"' 
+                ~ '  (mp-Main-sv-lisp_dump_object "' ~ Main::lisp_escape_string($.name) ~ '"' 
                 ~ ' (list ' ~ $dumper ~ ')))' ~ Main.newline ~ Main.newline;
         }
 
@@ -215,12 +209,18 @@ class CompUnit {
 
         for @($comp_units) -> $comp_unit {
             my $class_name := Main::to_lisp_namespace($comp_unit.name);
-            $str := $str 
+            if $class_name ne 'mp-Main' {
+                $str := $str 
                     ~ '(defpackage ' ~ $class_name ~ "\n"
                     ~ '  (:use common-lisp mp-Main))' ~ "\n";
+            }
             $str := $str 
                     ~ '(if (not (ignore-errors (find-class \'' ~ $class_name ~ ')))' ~ "\n"
                     ~ '  (defclass ' ~ $class_name ~ ' () ()))' ~ "\n";
+            $str := $str  
+                    ~ '(let (x)' ~ "\n"
+                    ~ '  (setq x (make-instance \'' ~ $class_name ~ "))\n"
+                    ~ '  (defun proto-' ~ $class_name ~ ' () x))' ~ "\n";
             for @($comp_unit.body) -> $decl { 
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                     my $accessor_name := ($decl.var).name;

@@ -18,10 +18,12 @@
         #:sv-defined #:sv-array-index #:sv-hash-lookup #:sv-add ))
 (in-package mp-Main)
 
+(defparameter *mp6-args* ())
+
 (defun init-argv ()
   (progn
     (setf COMMON-LISP-USER::*posix-argv* (cdr COMMON-LISP-USER::*posix-argv*))
-    (defparameter *mp6-args* (make-array 
+    (setf *mp6-args* (make-array 
                                 (length COMMON-LISP-USER::*posix-argv*) 
                                 :adjustable 1 
                                 :fill-pointer t 
@@ -52,8 +54,10 @@
 (if (not (ignore-errors (find-method 'sv-perl_escape_string () ())))
   (defgeneric sv-perl_escape_string (self)
       (:documentation "escape a single quoted perl string value")))
-(if (not (ignore-errors (find-method 'sv-lisp_dump_object () ())))
-  (defgeneric sv-lisp_dump_object (self &optional l)))
+(if (not (ignore-errors (find-method 'sv-javascript_escape_string () ())))
+  (defgeneric sv-javascript_escape_string (self)
+      (:documentation "escape a single quoted javascript string value")))
+
 
 ;; "undef"
 
@@ -390,6 +394,16 @@
 (defun mp-Main-sv-perl_escape_string (s)
   (sv-perl_escape_string s))
 
+(defmethod sv-javascript_escape_string ((s string)) 
+    (replace-substring
+      (replace-substring
+        (replace-substring s "\\" "\\\\")
+                             "\"" "\\\"")
+                             "
+" "\\n"))
+(defun mp-Main-sv-javascript_escape_string (s)
+  (sv-javascript_escape_string s))
+
 (if (not (ignore-errors (find-method 'sv-to_lisp_namespace () ())))
   (defgeneric sv-to_lisp_namespace (self)
       (:documentation "escape a lisp namespace string")))
@@ -397,6 +411,22 @@
     (format nil "mp-~a" (replace-substring s "::" "-")))
 (defun mp-Main-sv-to_lisp_namespace (s)
   (sv-to_lisp_namespace s))
+
+(if (not (ignore-errors (find-method 'sv-to_go_namespace () ())))
+  (defgeneric sv-to_go_namespace (self)
+      (:documentation "escape a lisp namespace string")))
+(defmethod sv-to_go_namespace ((s string)) 
+    (format nil "mp-~a" (replace-substring s "::" "__")))
+(defun mp-Main-sv-to_go_namespace (s)
+  (sv-to_go_namespace s))
+
+(if (not (ignore-errors (find-method 'sv-to_javascript_namespace () ())))
+  (defgeneric sv-to_javascript_namespace (self)
+      (:documentation "escape a lisp namespace string")))
+(defmethod sv-to_javascript_namespace ((s string)) 
+    (format nil "mp-~a" (replace-substring s "::" "$")))
+(defun mp-Main-sv-to_javascript_namespace (s)
+  (sv-to_javascript_namespace s))
 
 (defmethod sv-join ((l string) &optional (delim "")) 
   (declare (ignorable delim))

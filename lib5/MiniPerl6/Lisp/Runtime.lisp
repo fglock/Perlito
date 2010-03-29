@@ -18,14 +18,46 @@
         #:sv-defined #:sv-array-index #:sv-hash-lookup #:sv-add ))
 (in-package mp-Main)
 
+(defparameter *mp6-args* ())
+
 (defun init-argv ()
   (progn
     (setf COMMON-LISP-USER::*posix-argv* (cdr COMMON-LISP-USER::*posix-argv*))
-    (defparameter *mp6-args* (make-array 
+    (setf *mp6-args* (make-array 
                                 (length COMMON-LISP-USER::*posix-argv*) 
                                 :adjustable 1 
                                 :fill-pointer t 
                                 :initial-contents COMMON-LISP-USER::*posix-argv*))))
+
+;; predeclarations
+
+(if (not (ignore-errors (find-method '(setf sv-bool) () ())))
+  (defgeneric (setf sv-bool) (x v)))
+(if (not (ignore-errors (find-method '(setf sv-from) () ())))
+  (defgeneric (setf sv-from) (x v)))
+(if (not (ignore-errors (find-method '(setf sv-to)   () ())))
+  (defgeneric (setf sv-to)   (x v)))
+(if (not (ignore-errors (find-method '(setf sv-str)  () ())))
+  (defgeneric (setf sv-str)  (x v)))
+(if (not (ignore-errors (find-method 'sv-string () ())))
+  (defgeneric sv-string (x) 
+      (:documentation "stringify values")))
+(if (not (ignore-errors (find-method 'sv-join () ())))
+  (defgeneric sv-join (l &optional delim)
+      (:documentation "list join")))
+(if (not (ignore-errors (find-method 'sv-array () ())))
+  (defgeneric sv-array (self)
+      (:documentation "get an array value")))
+(if (not (ignore-errors (find-method 'sv-hash () ())))
+  (defgeneric sv-hash (self)
+      (:documentation "get a hash value")))
+(if (not (ignore-errors (find-method 'sv-perl_escape_string () ())))
+  (defgeneric sv-perl_escape_string (self)
+      (:documentation "escape a single quoted perl string value")))
+(if (not (ignore-errors (find-method 'sv-javascript_escape_string () ())))
+  (defgeneric sv-javascript_escape_string (self)
+      (:documentation "escape a single quoted javascript string value")))
+
 
 ;; "undef"
 
@@ -47,12 +79,10 @@
 (defun sv-say (l)
   (progn
     (map nil #'(lambda (c) (format t "~a" (sv-string c))) l)
-    (format t "~%" nil)))
-;;  (format t "~a~%" (sv-join l "")))
+    (format t "~%" )))
 
 (defun sv-print (l)
   (map nil #'(lambda (c) (format t "~a" (sv-string c))) l))
-;;  (format t "~a" (sv-join l "")))
 
 (if (not (ignore-errors (find-method 'sv-substr () ())))
   (defgeneric sv-substr (x s c)
@@ -64,6 +94,7 @@
       "")))
 
 (defun sv-index (s substr &optional start) 
+  (declare (ignorable start))    ;; TODO
   (let ((l1 (search substr s))) 
     (if l1 l1 -1)))
 
@@ -89,9 +120,6 @@
 (defmethod sv-Num (x) x)
 (defmethod sv-Num ((x string)) (read-from-string x))
 
-(if (not (ignore-errors (find-method 'sv-string () ())))
-  (defgeneric sv-string (x)
-      (:documentation "stringify values")))
 (defmethod sv-string (x) x)
 (defmethod sv-string ((x vector)) (sv-join x " "))
 (defmethod sv-string ((x number)) (format nil "~a" x))
@@ -108,7 +136,7 @@
 
 (defmacro create-numeric-op (op-name op-documentation op-symbol)
   `(progn
-     (if (not (ignore-errors (find-method ,op-name () ())))
+     (if (not (ignore-errors (find-method ',op-name () ())))
        (defgeneric ,op-name (x y)
            (:documentation ,op-documentation)))
      (defmethod ,op-name (x y)                   (,op-symbol x y))
@@ -164,21 +192,39 @@
         " }" )))
 
 
+(if (not (ignore-errors (find-method 'sv-values () ())))
+  (defgeneric sv-values (self)
+      (:documentation "hash values")))
 (defmethod sv-values ((x hash-table))
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
-    (maphash #'(lambda (key val) (push val tmp)) x) 
+    (maphash #'(lambda (key val) 
+                  (declare (ignorable key))
+                  (push val tmp)) 
+             x) 
     tmp ))
 
+(if (not (ignore-errors (find-method 'sv-keys () ())))
+  (defgeneric sv-keys (self)
+      (:documentation "hash keys")))
 (defmethod sv-keys ((x hash-table))
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
-    (maphash #'(lambda (key val) (push key tmp)) x) 
+    (maphash #'(lambda (key val) 
+                  (declare (ignorable val))
+                  (push key tmp)) 
+             x) 
     tmp ))
 
+(if (not (ignore-errors (find-method 'sv-push () ())))
+  (defgeneric sv-push (self x)
+      (:documentation "push")))
 (defmethod sv-push (a x) 
   (progn 
     (vector-push-extend x a)
     x))
 
+(if (not (ignore-errors (find-method 'sv-unshift () ())))
+  (defgeneric sv-unshift (self x)
+      (:documentation "unshift")))
 (defmethod sv-unshift (a x) 
   (let ((l (length a)))
     (vector-push-extend 0 a)
@@ -188,6 +234,9 @@
     (setf (aref a 0) x)
     x))
 
+(if (not (ignore-errors (find-method 'sv-shift () ())))
+  (defgeneric sv-shift (self)
+      (:documentation "shift")))
 (defmethod sv-shift (a) 
     (if (eql (length a) 0)
         (sv-Undef)   
@@ -198,6 +247,9 @@
           (vector-pop a)
           x)))
 
+(if (not (ignore-errors (find-method 'sv-pop () ())))
+  (defgeneric sv-pop (self)
+      (:documentation "pop")))
 (defmethod sv-pop (a)
     (if (eql (length a) 0)
         (sv-Undef)   
@@ -292,9 +344,6 @@
     (ignore-errors (slot-value m 'hash))
     (setf (slot-value m 'hash) (make-hash-table :test 'equal))))
 
-(if (not (ignore-errors (find-method 'sv-array () ())))
-  (defgeneric sv-array (self)
-      (:documentation "get an array value")))
 (defmethod sv-array ((m mp-MiniPerl6-Match)) 
   (or 
     (ignore-errors (slot-value m 'array))
@@ -338,15 +387,22 @@
 (defun mp-Main-sv-lisp_escape_string (s)
   (sv-lisp_escape_string s))
 
-(if (not (ignore-errors (find-method 'sv-perl_escape_string () ())))
-  (defgeneric sv-perl_escape_string (self)
-      (:documentation "escape a single quoted perl string value")))
 (defmethod sv-perl_escape_string ((s string)) 
     (replace-substring
         (replace-substring s "\\" "\\\\")
                              "'" "\\\'"))
 (defun mp-Main-sv-perl_escape_string (s)
-  (perl_escape_string s))
+  (sv-perl_escape_string s))
+
+(defmethod sv-javascript_escape_string ((s string)) 
+    (replace-substring
+      (replace-substring
+        (replace-substring s "\\" "\\\\")
+                             "\"" "\\\"")
+                             "
+" "\\n"))
+(defun mp-Main-sv-javascript_escape_string (s)
+  (sv-javascript_escape_string s))
 
 (if (not (ignore-errors (find-method 'sv-to_lisp_namespace () ())))
   (defgeneric sv-to_lisp_namespace (self)
@@ -356,12 +412,25 @@
 (defun mp-Main-sv-to_lisp_namespace (s)
   (sv-to_lisp_namespace s))
 
-(if (not (ignore-errors (find-method 'sv-join () ())))
-  (defgeneric sv-join (l &optional delim)
-      (:documentation "list join")))
-;;(defmethod sv-join (l &optional (delim ""))
-;;  (sv-string l))
-(defmethod sv-join ((l string) &optional (delim "")) l)
+(if (not (ignore-errors (find-method 'sv-to_go_namespace () ())))
+  (defgeneric sv-to_go_namespace (self)
+      (:documentation "escape a lisp namespace string")))
+(defmethod sv-to_go_namespace ((s string)) 
+    (format nil "mp-~a" (replace-substring s "::" "__")))
+(defun mp-Main-sv-to_go_namespace (s)
+  (sv-to_go_namespace s))
+
+(if (not (ignore-errors (find-method 'sv-to_javascript_namespace () ())))
+  (defgeneric sv-to_javascript_namespace (self)
+      (:documentation "escape a lisp namespace string")))
+(defmethod sv-to_javascript_namespace ((s string)) 
+    (format nil "mp-~a" (replace-substring s "::" "$")))
+(defun mp-Main-sv-to_javascript_namespace (s)
+  (sv-to_javascript_namespace s))
+
+(defmethod sv-join ((l string) &optional (delim "")) 
+  (declare (ignorable delim))
+  l)
 (defmethod sv-join ((v vector) &optional (delim ""))
   (with-output-to-string (s)
     (when v
