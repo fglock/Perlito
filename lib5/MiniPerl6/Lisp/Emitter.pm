@@ -32,7 +32,7 @@ sub emit_lisp { my $self = $_[0]; (my  $class_name = Main::to_lisp_namespace($se
 ' . '  (block mp6-function' . '
 ' . '    ' . $block->emit_lisp() . '))
 ') } else {  };if (Main::isa($decl, 'Sub')) { (my  $pos = $decl->sig()->positional());my  $param;(my  $ignorable = '');if (@{$pos}) { for my $field ( @{$pos} ) { ($param = $param . $field->emit_lisp() . ' ');($ignorable = $ignorable . '
-' . '  (declare (ignorable ' . $field->emit_lisp() . '))') } } else {  };(my  $sig = '');if ($param) { ($sig = '&optional ' . $param) } else {  };(my  $block = MiniPerl6::Lisp::LexicalBlock->new( 'block' => $decl->block(), ));($str = $str . '(defun ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' (' . $sig . ')' . $ignorable . '
+' . '  (declare (ignorable ' . $field->emit_lisp() . '))') } } else {  };(my  $sig = '');if ($param) { ($sig = '&optional ' . $param) } else {  };(my  $block = MiniPerl6::Lisp::LexicalBlock->new( 'block' => $decl->block(), ));($str = $str . '(defmethod ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' (' . $sig . ')' . $ignorable . '
 ' . '  (block mp6-function ' . $block->emit_lisp() . '))' . '
 ' . '(in-package ' . $class_name . ')' . '
 ' . '  (defun ' . Main::to_lisp_identifier($decl->name()) . ' (' . $sig . ')' . '
@@ -63,6 +63,10 @@ new-slots))
 ') } else {  };if (Main::isa($decl, 'Method')) { (my  $sig = $decl->sig());(my  $invocant = $sig->invocant());(my  $pos = $sig->positional());(my  $str_generic = $invocant->emit_lisp());(my  $str_optionals = '');for my $field ( @{$pos} ) { ($str_optionals = $str_optionals . ' ' . $field->emit_lisp()) };if ($str_optionals) { ($str_generic = $str_generic . ' &optional' . $str_optionals) } else {  };($str = $str . ';; method ' . $decl->name() . '
 ' . '(if (not (ignore-errors (find-method \'' . Main::to_lisp_identifier($decl->name()) . ' () ())))
   (defgeneric ' . Main::to_lisp_identifier($decl->name()) . ' (' . $str_generic . ')' . '
+' . '      (:documentation ' . '"' . 'a method' . '"' . ')))' . '
+') } else {  };if (Main::isa($decl, 'Sub')) { (my  $pos = $decl->sig()->positional());my  $param;if (@{$pos}) { for my $field ( @{$pos} ) { ($param = $param . $field->emit_lisp() . ' ') } } else {  };(my  $sig = '');if ($param) { ($sig = '&optional ' . $param) } else {  };($str = $str . ';; sub ' . $decl->name() . '
+' . '(if (not (ignore-errors (find-method \'' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' () ())))
+  (defgeneric ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' (' . $sig . ')' . '
 ' . '      (:documentation ' . '"' . 'a method' . '"' . ')))' . '
 ') } else {  } } }; for my $comp_unit ( @{$comp_units} ) { ($str = $str . $comp_unit->emit_lisp() . '
 ') }; ($str = $str . '(defun compiler-main ()

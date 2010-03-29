@@ -142,7 +142,7 @@ class CompUnit {
                 }
                 my $block := MiniPerl6::Lisp::LexicalBlock.new( block => $decl.block );
                 $str := $str 
-                    ~ '(defun ' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' 
+                    ~ '(defmethod ' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' 
                     ~    $ignorable ~ "\n"
                     ~ '  (block mp6-function ' ~ $block.emit_lisp ~ '))' ~ "\n"
                     ~ '(in-package ' ~ $class_name ~ ')' ~ "\n"
@@ -257,6 +257,24 @@ new-slots))
                         ~ ';; method ' ~ $decl.name ~ "\n"
 ~ '(if (not (ignore-errors (find-method \'' ~ Main::to_lisp_identifier($decl.name) ~ ' () ())))
   (defgeneric ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $str_generic ~ ')' ~ "\n"
+                        ~ '      (:documentation ' ~ '"' ~ 'a method' ~ '"' ~ ')))' ~ "\n";
+                }
+                if $decl.isa( 'Sub' ) {
+                    my $pos := ($decl.sig).positional;
+                    my $param;
+                    if @$pos {
+                        for @$pos -> $field {
+                            $param := $param ~ $field.emit_lisp ~ ' ';
+                        }
+                    }
+                    my $sig := '';
+                    if $param {
+                        $sig := '&optional ' ~ $param;
+                    }
+                    $str := $str 
+                        ~ ';; sub ' ~ $decl.name ~ "\n"
+~ '(if (not (ignore-errors (find-method \'' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' () ())))
+  (defgeneric ' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' ~ "\n"
                         ~ '      (:documentation ' ~ '"' ~ 'a method' ~ '"' ~ ')))' ~ "\n";
                 }
             }
