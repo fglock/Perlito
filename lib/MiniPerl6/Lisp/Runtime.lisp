@@ -27,6 +27,23 @@
                                 :fill-pointer t 
                                 :initial-contents COMMON-LISP-USER::*posix-argv*))))
 
+;; predeclarations
+
+(if (not (ignore-errors (find-method '(setf sv-bool) () ())))
+  (defgeneric (setf sv-bool) (x v)))
+(if (not (ignore-errors (find-method '(setf sv-from) () ())))
+  (defgeneric (setf sv-from) (x v)))
+(if (not (ignore-errors (find-method '(setf sv-to)   () ())))
+  (defgeneric (setf sv-to)   (x v)))
+(if (not (ignore-errors (find-method '(setf sv-str)  () ())))
+  (defgeneric (setf sv-str)  (x v)))
+(if (not (ignore-errors (find-method 'sv-string () ())))
+  (defgeneric sv-string (x) 
+      (:documentation "stringify values")))
+(if (not (ignore-errors (find-method 'sv-join () ())))
+  (defgeneric sv-join (l &optional delim)
+      (:documentation "list join")))
+
 ;; "undef"
 
 (if (not (ignore-errors (find-class 'mp-Undef)))
@@ -88,9 +105,6 @@
 (defmethod sv-Num (x) x)
 (defmethod sv-Num ((x string)) (read-from-string x))
 
-(if (not (ignore-errors (find-method 'sv-string () ())))
-  (defgeneric sv-string (x)
-      (:documentation "stringify values")))
 (defmethod sv-string (x) x)
 (defmethod sv-string ((x vector)) (sv-join x " "))
 (defmethod sv-string ((x number)) (format nil "~a" x))
@@ -107,7 +121,7 @@
 
 (defmacro create-numeric-op (op-name op-documentation op-symbol)
   `(progn
-     (if (not (ignore-errors (find-method ,op-name () ())))
+     (if (not (ignore-errors (find-method ',op-name () ())))
        (defgeneric ,op-name (x y)
            (:documentation ,op-documentation)))
      (defmethod ,op-name (x y)                   (,op-symbol x y))
@@ -168,7 +182,10 @@
       (:documentation "hash values")))
 (defmethod sv-values ((x hash-table))
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
-    (maphash #'(lambda (key val) (push val tmp)) x) 
+    (maphash #'(lambda (key val) 
+                  (declare (ignorable key))
+                  (push val tmp)) 
+             x) 
     tmp ))
 
 (if (not (ignore-errors (find-method 'sv-keys () ())))
@@ -176,7 +193,10 @@
       (:documentation "hash keys")))
 (defmethod sv-keys ((x hash-table))
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
-    (maphash #'(lambda (key val) (push key tmp)) x) 
+    (maphash #'(lambda (key val) 
+                  (declare (ignorable val))
+                  (push key tmp)) 
+             x) 
     tmp ))
 
 (if (not (ignore-errors (find-method 'sv-push () ())))
@@ -373,9 +393,6 @@
 (defun mp-Main-sv-to_lisp_namespace (s)
   (sv-to_lisp_namespace s))
 
-(if (not (ignore-errors (find-method 'sv-join () ())))
-  (defgeneric sv-join (l &optional delim)
-      (:documentation "list join")))
 (defmethod sv-join ((l string) &optional (delim "")) 
   (declare (ignorable delim))
   l)
