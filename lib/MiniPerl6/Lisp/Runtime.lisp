@@ -43,6 +43,17 @@
 (if (not (ignore-errors (find-method 'sv-join () ())))
   (defgeneric sv-join (l &optional delim)
       (:documentation "list join")))
+(if (not (ignore-errors (find-method 'sv-array () ())))
+  (defgeneric sv-array (self)
+      (:documentation "get an array value")))
+(if (not (ignore-errors (find-method 'sv-hash () ())))
+  (defgeneric sv-hash (self)
+      (:documentation "get a hash value")))
+(if (not (ignore-errors (find-method 'sv-perl_escape_string () ())))
+  (defgeneric sv-perl_escape_string (self)
+      (:documentation "escape a single quoted perl string value")))
+(if (not (ignore-errors (find-method 'sv-lisp_dump_object () ())))
+  (defgeneric sv-lisp_dump_object (self &optional l)))
 
 ;; "undef"
 
@@ -329,9 +340,6 @@
     (ignore-errors (slot-value m 'hash))
     (setf (slot-value m 'hash) (make-hash-table :test 'equal))))
 
-(if (not (ignore-errors (find-method 'sv-array () ())))
-  (defgeneric sv-array (self)
-      (:documentation "get an array value")))
 (defmethod sv-array ((m mp-MiniPerl6-Match)) 
   (or 
     (ignore-errors (slot-value m 'array))
@@ -375,15 +383,12 @@
 (defun mp-Main-sv-lisp_escape_string (s)
   (sv-lisp_escape_string s))
 
-(if (not (ignore-errors (find-method 'sv-perl_escape_string () ())))
-  (defgeneric sv-perl_escape_string (self)
-      (:documentation "escape a single quoted perl string value")))
 (defmethod sv-perl_escape_string ((s string)) 
     (replace-substring
         (replace-substring s "\\" "\\\\")
                              "'" "\\\'"))
 (defun mp-Main-sv-perl_escape_string (s)
-  (perl_escape_string s))
+  (sv-perl_escape_string s))
 
 (if (not (ignore-errors (find-method 'sv-to_lisp_namespace () ())))
   (defgeneric sv-to_lisp_namespace (self)

@@ -110,8 +110,10 @@ class CompUnit {
                 my $pos      := $sig.positional;
                 my $str_specific := '(' ~ $invocant.emit_lisp ~ ' ' ~ $class_name ~ ')';
                 my $str_optionals := '';
+                my $ignorable := '';
                 for @$pos -> $field { 
                     $str_optionals := $str_optionals ~ ' ' ~ $field.emit_lisp;
+                    $ignorable := $ignorable ~ "\n" ~ '  (declare (ignorable ' ~ $field.emit_lisp ~ "))";
                 };
                 if ( $str_optionals ) {
                     $str_specific := $str_specific ~ ' &optional' ~ $str_optionals;
@@ -119,11 +121,10 @@ class CompUnit {
                 my $block    := MiniPerl6::Lisp::LexicalBlock.new( block => $decl.block );
                 $str := $str 
                     ~ ';; method ' ~ $decl.name ~ "\n"
-~ '(defmethod ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $str_specific ~ ')
-  (block mp6-function
-    ' ~ $block.emit_lisp ~ '))
-
-';
+                    ~ '(defmethod ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $str_specific ~ ')'
+                    ~    $ignorable ~ "\n"
+                    ~ '  (block mp6-function' ~ "\n"
+                    ~ '    ' ~ $block.emit_lisp ~ "))\n";
             }
             if $decl.isa( 'Sub' ) {
                 my $pos := ($decl.sig).positional;

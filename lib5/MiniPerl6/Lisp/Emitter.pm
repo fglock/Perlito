@@ -26,11 +26,11 @@ sub emit_lisp { my $self = $_[0]; (my  $class_name = Main::to_lisp_namespace($se
 ' . $my_ignore) } else {  }; ($str = $str . '(let (x) 
   (setq x (make-instance \'' . $class_name . '))
   (defun proto-' . $class_name . ' () x))
-'); (my  $dumper = ''); for my $decl ( @{$self->{body}} ) { if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'has'))) { (my  $accessor_name = $decl->var()->name());($dumper = $dumper . '(let ((m (make-instance \'mp-Pair))) ' . '(setf (sv-key m) "' . Main::lisp_escape_string($accessor_name) . '") ' . '(setf (sv-value m) (' . Main::to_lisp_identifier($accessor_name) . ' self)) m) ') } else {  };if (Main::isa($decl, 'Method')) { (my  $sig = $decl->sig());(my  $invocant = $sig->invocant());(my  $pos = $sig->positional());(my  $str_specific = '(' . $invocant->emit_lisp() . ' ' . $class_name . ')');(my  $str_optionals = '');for my $field ( @{$pos} ) { ($str_optionals = $str_optionals . ' ' . $field->emit_lisp()) };if ($str_optionals) { ($str_specific = $str_specific . ' &optional' . $str_optionals) } else {  };(my  $block = MiniPerl6::Lisp::LexicalBlock->new( 'block' => $decl->block(), ));($str = $str . ';; method ' . $decl->name() . '
-' . '(defmethod ' . Main::to_lisp_identifier($decl->name()) . ' (' . $str_specific . ')
-  (block mp6-function
-    ' . $block->emit_lisp() . '))
-
+'); (my  $dumper = ''); for my $decl ( @{$self->{body}} ) { if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'has'))) { (my  $accessor_name = $decl->var()->name());($dumper = $dumper . '(let ((m (make-instance \'mp-Pair))) ' . '(setf (sv-key m) "' . Main::lisp_escape_string($accessor_name) . '") ' . '(setf (sv-value m) (' . Main::to_lisp_identifier($accessor_name) . ' self)) m) ') } else {  };if (Main::isa($decl, 'Method')) { (my  $sig = $decl->sig());(my  $invocant = $sig->invocant());(my  $pos = $sig->positional());(my  $str_specific = '(' . $invocant->emit_lisp() . ' ' . $class_name . ')');(my  $str_optionals = '');(my  $ignorable = '');for my $field ( @{$pos} ) { ($str_optionals = $str_optionals . ' ' . $field->emit_lisp());($ignorable = $ignorable . '
+' . '  (declare (ignorable ' . $field->emit_lisp() . '))') };if ($str_optionals) { ($str_specific = $str_specific . ' &optional' . $str_optionals) } else {  };(my  $block = MiniPerl6::Lisp::LexicalBlock->new( 'block' => $decl->block(), ));($str = $str . ';; method ' . $decl->name() . '
+' . '(defmethod ' . Main::to_lisp_identifier($decl->name()) . ' (' . $str_specific . ')' . $ignorable . '
+' . '  (block mp6-function' . '
+' . '    ' . $block->emit_lisp() . '))
 ') } else {  };if (Main::isa($decl, 'Sub')) { (my  $pos = $decl->sig()->positional());my  $param;(my  $ignorable = '');if (@{$pos}) { for my $field ( @{$pos} ) { ($param = $param . $field->emit_lisp() . ' ');($ignorable = $ignorable . '
 ' . '  (declare (ignorable ' . $field->emit_lisp() . '))') } } else {  };(my  $sig = '');if ($param) { ($sig = '&optional ' . $param) } else {  };(my  $block = MiniPerl6::Lisp::LexicalBlock->new( 'block' => $decl->block(), ));($str = $str . '(defun ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' (' . $sig . ')' . $ignorable . '
 ' . '  (block mp6-function ' . $block->emit_lisp() . '))' . '
