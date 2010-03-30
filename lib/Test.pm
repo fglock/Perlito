@@ -14,8 +14,8 @@ class Test {
 ### FUNCTIONS
 
   sub plan ($number_of_tests) {
-    $testing_started      := 1;
-    $num_of_tests_planned := $number_of_tests;
+    $testing_started      = 1;
+    $num_of_tests_planned = $number_of_tests;
 
     say '1..' ~ $number_of_tests;
   }
@@ -27,23 +27,23 @@ class Test {
 
 
   sub is ($got, $expected, $desc, $todo, $depends) {
-    my $test := $got eq $expected;
+    my $test = $got eq $expected;
     Test::proclaim($test, 'is! ' ~ $desc, $todo, $got, $expected, $depends);
   }
 
 
   sub is_deeply($got, $expected, $desc, $todo, $depends) {
     # hack for now
-    my $got_perl      := $got.perl;
-    my $expected_perl := $expected.perl;
-    my $test          := ($got_perl eq $expected_perl);
+    my $got_perl      = $got.perl;
+    my $expected_perl = $expected.perl;
+    my $test          = ($got_perl eq $expected_perl);
 
     Test::proclaim($test, 'is deeply! ' ~ $desc, $todo, $got_perl, $expected_perl, $depends);
   }
 
 
   sub isnt ($got, $expected, $desc, $todo, $depends) {
-    my $test := !($got eq $expected);
+    my $test = !($got eq $expected);
     Test::proclaim($test, 'isnt! ' ~ $desc, $todo, $got, $expected, $depends, { negate => 1 });
   }
 
@@ -103,8 +103,8 @@ class Test {
 ## 'private' subs
 
   sub proclaim ($cond, $desc, $todo, $got, $expected, $depends, $negate) {
-    $testing_started  := 1;
-    $num_of_tests_run := $num_of_tests_run + 1;
+    $testing_started  = 1;
+    $num_of_tests_run = $num_of_tests_run + 1;
 
     if ( $cond ) {
       say "ok ", $num_of_tests_run;
@@ -139,10 +139,10 @@ class Test {
         say "# Looks like you failed " ~ $num_of_tests_failed ~ " tests of " ~ $num_of_tests_run;
     }
 
-    $num_of_tests_run     := 0;
-    $num_of_tests_failed  := 0;
-    $num_of_tests_planned := 0;
-    $testing_started      := 0;
+    $num_of_tests_run     = 0;
+    $num_of_tests_failed  = 0;
+    $num_of_tests_planned = 0;
+    $testing_started      = 0;
   }
 
 }

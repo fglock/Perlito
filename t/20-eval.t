@@ -11,7 +11,7 @@ class Main {
 
     say '1..8';
 
-    my $env := 
+    my $env = 
         [
             {
                 'print' =>      sub ( $env, $args ) { 
@@ -36,7 +36,7 @@ class Main {
             }
         ];
 
-    my $m := Val::Int.new( int => 123 );
+    my $m = Val::Int.new( int => 123 );
     if ($m.eval) eq 123 {
         say 'ok 1';
     }
@@ -44,14 +44,14 @@ class Main {
         say 'not ok 1';
     }
 
-    $m := Apply.new(
+    $m = Apply.new(
                 code      => 'say',
                 namespace => '',
                 arguments => [ Val::Buf.new( buf => '# ok eval-ast' ) ],
             );
     $m.eval( $env );
 
-    $m := MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.comp_unit( 
         '
             class Testing { 
                 say "# ok eval-string ", (3+4), "==7";
@@ -61,10 +61,10 @@ class Main {
     );
     ($$m).eval( $env );
 
-    $m := MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.comp_unit( 
         '
             class Testing { 
-                my $a := 3;
+                my $a = 3;
                 say "# ok eval-string ", $a;
             }
         ', 
@@ -72,10 +72,10 @@ class Main {
     );
     ($$m).eval( $env );
 
-    $m := MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.comp_unit( 
         '
             class Testing { 
-                my $a := 123;
+                my $a = 123;
                 if $a == (100 + 23) {
                     say "# looks good";
                 }
@@ -90,11 +90,11 @@ class Main {
     # say ($$m).perl;
     ($$m).eval( $env );
 
-    $m := MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.comp_unit( 
         '
             class Testing { 
-                my @a := [ 3, 4 ];
-                my $x := 5;
+                my @a = [ 3, 4 ];
+                my $x = 5;
                 for @a -> $x {
                     say "ok ", $x, " # eval-string for";
                 }
@@ -106,7 +106,7 @@ class Main {
     # say ($$m).perl;
     ($$m).eval( $env );
 
-    $m := MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.comp_unit( 
         '
             class Testing { 
 
@@ -120,11 +120,11 @@ class Main {
     # say ($$m).perl;
     ($$m).eval( $env );
 
-    $m := MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.comp_unit( 
         '
             class Testing { 
-                my %v := { a => 5, b => 6, c => 7 }; 
-                my @x := [ 5, 6, 7, 8, 9, 10 ];
+                my %v = { a => 5, b => 6, c => 7 }; 
+                my @x = [ 5, 6, 7, 8, 9, 10 ];
                 say "ok ", %v{"c"}, " # eval-string hash literal and lookup";
                 say "ok ", @x[3], " # eval-string array literal and lookup";
             }

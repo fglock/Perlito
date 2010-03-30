@@ -46,7 +46,7 @@ MiniPerl6::Grammar - Grammar for MiniPerl6
 
 =head1 SYNOPSIS
 
-    my $match := $source.parse;
+    my $match = $source.parse;
     ($$match).perl;    # generated MiniPerl6 AST
 
 =head1 DESCRIPTION

@@ -10,15 +10,15 @@ class Main {
     use MiniPerl6::Grammar::Regex;
     use MiniPerl6::Emitter::Token;
 
-    my $_V6_COMPILER_NAME    := 'MiniPerl6';
-    my $_V6_COMPILER_VERSION := '4.1';
-    my $source      := '';
-    my $backend     := '';
-    my $execute     := 0;
-    my $verbose     := 0;
-    my $comp_units  := [];
-    my $perl6lib    := './lib';
-    my $expand_use  := 1;
+    my $_V6_COMPILER_NAME    = 'MiniPerl6';
+    my $_V6_COMPILER_VERSION = '4.1';
+    my $source      = '';
+    my $backend     = '';
+    my $execute     = 0;
+    my $verbose     = 0;
+    my $comp_units  = [];
+    my $perl6lib    = './lib';
+    my $expand_use  = 1;
 
     if $verbose {
         warn "// MiniPerl6 compiler";
@@ -34,7 +34,7 @@ token module_name {
     ]
 }
 sub modulename_to_filename ($s) {
-    my $ident := Main.module_name( $s, 0 );
+    my $ident = Main.module_name( $s, 0 );
     return ($$ident).join("/");
 }
 sub add_comp_unit ($comp_unit) {
@@ -43,9 +43,9 @@ sub add_comp_unit ($comp_unit) {
     }
     for @( $comp_unit.body ) -> $stmt {
         if $expand_use && $stmt.isa('Use') {
-            my $module_name := $stmt.mod;
+            my $module_name = $stmt.mod;
             if !(%module_seen{$module_name}) {
-                %module_seen{$module_name} := 1;
+                %module_seen{$module_name} = 1;
                 # say "  now use: ", $module_name;
                 if ($backend eq 'perl5') || ($backend eq 'ast-perl6') {
                     # skip 'use' statements for this backend
@@ -53,13 +53,13 @@ sub add_comp_unit ($comp_unit) {
                 else {
                     # TODO - look for a precompiled version
                     # build the filename
-                    my $filename := $module_name;
-                    $filename := $perl6lib ~ '/' ~ modulename_to_filename($filename) ~ '.pm';
+                    my $filename = $module_name;
+                    $filename = $perl6lib ~ '/' ~ modulename_to_filename($filename) ~ '.pm';
                     if ( $verbose ) {
                         warn "// now loading: ", $filename;
                     }
                     # load source 
-                    my $source := IO::slurp( $filename );
+                    my $source = IO::slurp( $filename );
 
                     # compile; push AST into comp_units
                     # warn $source;
@@ -80,26 +80,26 @@ token parse {
 }
 
     if (@*ARGS[0] eq '-v') || (@*ARGS[0] eq '--verbose') {
-        $verbose := 1;
+        $verbose = 1;
         shift @*ARGS;
     }
     if substr(@*ARGS[0], 0, 2) eq '-C' {
-        $backend := substr(@*ARGS[0], 2, 10);
-        $execute := 0;
+        $backend = substr(@*ARGS[0], 2, 10);
+        $execute = 0;
         shift @*ARGS;
     }
     if substr(@*ARGS[0], 0, 2) eq '-B' {
-        $backend := substr(@*ARGS[0], 2, 10);
-        $execute := 1;
+        $backend = substr(@*ARGS[0], 2, 10);
+        $execute = 1;
         shift @*ARGS;
     }
     if (@*ARGS[0] eq '-V') || (@*ARGS[0] eq '--version') {
-        $backend := '';
+        $backend = '';
         say $_V6_COMPILER_NAME, " ", $_V6_COMPILER_VERSION;
         shift @*ARGS;
     }
     elsif (@*ARGS[0] eq '-h') || (@*ARGS[0] eq '--help') || ($backend eq '') {
-        $backend := '';
+        $backend = '';
         say $_V6_COMPILER_NAME, " ", $_V6_COMPILER_VERSION, "
 mp6 [switches] [programfile]
   switches:
@@ -114,43 +114,43 @@ mp6 [switches] [programfile]
         shift @*ARGS;
     }
     if @*ARGS[0] eq '--expand_use' {
-        $expand_use := 1;
+        $expand_use = 1;
         shift @*ARGS;
     }
     if @*ARGS[0] eq '--noexpand_use' {
-        $expand_use := 0;
+        $expand_use = 0;
         shift @*ARGS;
     }
     if $backend && @*ARGS {
         my $prelude_filename;
         if $backend eq 'lisp' {
-            $prelude_filename := $perl6lib ~ '/MiniPerl6/Lisp/Prelude.pm';
+            $prelude_filename = $perl6lib ~ '/MiniPerl6/Lisp/Prelude.pm';
         }
         if $backend eq 'js' {
-            $prelude_filename := $perl6lib ~ '/MiniPerl6/Javascript/Prelude.pm';
+            $prelude_filename = $perl6lib ~ '/MiniPerl6/Javascript/Prelude.pm';
         }
         if $backend eq 'go' {
-            $prelude_filename := $perl6lib ~ '/MiniPerl6/Go/Prelude.pm';
+            $prelude_filename = $perl6lib ~ '/MiniPerl6/Go/Prelude.pm';
         }
         if $prelude_filename {
             if $verbose {
                 warn "// loading lib: ", $prelude_filename;
             }
-            $source := IO::slurp( $prelude_filename );
-            my $m := Main.parse($source, 0);
+            $source = IO::slurp( $prelude_filename );
+            my $m = Main.parse($source, 0);
         }
         if @*ARGS[0] eq '-e' {
             shift @*ARGS;
             if $verbose {
                 warn "// source from command line: ", @*ARGS[0];
             }
-            $source := @*ARGS.shift;
+            $source = @*ARGS.shift;
         }
         else {
             if $verbose {
                 warn "// source from file: ", @*ARGS[0];
             }
-            $source := IO::slurp( @*ARGS.shift );
+            $source = IO::slurp( @*ARGS.shift );
         }
 
         if $verbose {
@@ -158,7 +158,7 @@ mp6 [switches] [programfile]
             warn "now parsing";
         }
 
-        my $m := Main.parse($source, 0);
+        my $m = Main.parse($source, 0);
 
         if $backend eq 'ast-perl6' {
             say "# AST dump - do not edit this file - Generated by ", $_V6_COMPILER_NAME, " ", $_V6_COMPILER_VERSION;
@@ -166,21 +166,21 @@ mp6 [switches] [programfile]
         }
         if $backend eq 'go' {
             say "// Do not edit this file - Generated by ", $_V6_COMPILER_NAME, " ", $_V6_COMPILER_VERSION;
-            my $filename := $perl6lib ~ '/MiniPerl6/Go/Runtime.go';
+            my $filename = $perl6lib ~ '/MiniPerl6/Go/Runtime.go';
             if ( $verbose ) {
                 warn "// now loading: ", $filename;
             }
-            my $source := IO::slurp( $filename );
+            my $source = IO::slurp( $filename );
             say $source;
             say CompUnit::emit_go_program( $comp_units );
         }
         if $backend eq 'lisp' {
             say ";; Do not edit this file - Generated by ", $_V6_COMPILER_NAME, " ", $_V6_COMPILER_VERSION;
-            my $filename := $perl6lib ~ '/MiniPerl6/Lisp/Runtime.lisp';
+            my $filename = $perl6lib ~ '/MiniPerl6/Lisp/Runtime.lisp';
             if ( $verbose ) {
                 warn "// now loading: ", $filename;
             }
-            my $source := IO::slurp( $filename );
+            my $source = IO::slurp( $filename );
             say $source;
             say CompUnit::emit_lisp_program( $comp_units );
             say '(compiler-main)';
@@ -198,11 +198,11 @@ mp6 [switches] [programfile]
         }
         if $backend eq 'js' {
             say "// Do not edit this file - Generated by ", $_V6_COMPILER_NAME, " ", $_V6_COMPILER_VERSION;
-            my $filename := $perl6lib ~ '/MiniPerl6/Javascript/Runtime.js';
+            my $filename = $perl6lib ~ '/MiniPerl6/Javascript/Runtime.js';
             if ( $verbose ) {
                 warn "// now loading: ", $filename;
             }
-            my $source := IO::slurp( $filename );
+            my $source = IO::slurp( $filename );
             say $source;
             for @($comp_units) -> $c {
                 say $c.emit_javascript;

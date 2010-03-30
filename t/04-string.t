@@ -4,7 +4,7 @@ class Main {
 
     say '1..3';
 
-    my $x := "abcd";
+    my $x = "abcd";
     if substr($x,1,1) ne "b" {
         print 'not '
     };

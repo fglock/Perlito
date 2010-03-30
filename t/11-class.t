@@ -10,10 +10,10 @@ class Main {
     
     say '1..2';
 
-    my $other := Other.new();
+    my $other = Other.new();
 
-    my $x := 0;
-    $x := $other.subr( 1, 2 );
+    my $x = 0;
+    $x = $other.subr( 1, 2 );
     if $x != 3 {
         print 'not '
     };
@@ -21,8 +21,8 @@ class Main {
 
 
 
-    $x := 0;
-    $x := Other.subr2( 1, 2, 4 );
+    $x = 0;
+    $x = Other.subr2( 1, 2, 4 );
     if $x != 7 {
         print 'not '
     };

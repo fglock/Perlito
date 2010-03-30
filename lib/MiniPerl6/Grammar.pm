@@ -64,7 +64,7 @@ token comp_unit {
     
     [ 'class' | 'grammar' ]  <.ws> <full_ident> <.ws>? 
     '{'
-        { $Class_name := ~$<full_ident> }
+        { $Class_name = ~$<full_ident> }
         <.ws>?
         <exp_stmts>
         <.ws>?
@@ -137,10 +137,10 @@ token exp {
             code      => 'infix:<' ~ $<infix_op> ~ '>',
             arguments => [ $$<term_meth>, $$<exp> ],
           ) }
-    | <.opt_ws> ':=' <.opt_ws> <exp>
-        { make Bind.new( parameters => $$<term_meth>, arguments => $$<exp>) }
     | <.opt_ws> '=' <.opt_ws> <exp>
-        { die '*** Error in assignment operation: infix<=> not implemented; use infix<:=> instead' }
+        { make Bind.new( parameters => $$<term_meth>, arguments => $$<exp>) }
+    | <.opt_ws> ':=' <.opt_ws> <exp>
+        { die '*** Error in bind operation: infix<:=> not implemented; use infix<=> instead' }
     |   { make $$<term_meth> }
     ]
 }
@@ -431,7 +431,7 @@ token lit_object {
 }
 
 token bind {
-    <exp>  <.opt_ws> ':=' <.opt_ws>  <exp2>
+    <exp>  <.opt_ws> '=' <.opt_ws>  <exp2>
     {
         make Bind.new(
             parameters => $$<exp>,
@@ -551,14 +551,14 @@ token token {
     \}
     {
         #say 'Token was compiled into: ', ($$<MiniPerl6::Grammar::Regex.rule>).perl;
-        my $source := 'method ' ~ $<opt_name> ~ ' ( $grammar: $str, $pos ) { ' ~
-            'my $MATCH; $MATCH := MiniPerl6::Match.new( \'str\' => $str, \'from\' => $pos, \'to\' => $pos, \'bool\' => 1 ); ' ~ 
-            '$MATCH.bool := ( ' ~
+        my $source = 'method ' ~ $<opt_name> ~ ' ( $grammar: $str, $pos ) { ' ~
+            'my $MATCH; $MATCH = MiniPerl6::Match.new( \'str\' => $str, \'from\' => $pos, \'to\' => $pos, \'bool\' => 1 ); ' ~ 
+            '$MATCH.bool = ( ' ~
                 ($$<MiniPerl6::Grammar::Regex.rule>).emit ~
             '); ' ~
             '$MATCH }';
         #say 'Intermediate code: ', $source;
-        my $ast := MiniPerl6::Grammar.exp_term( $source, 0 );
+        my $ast = MiniPerl6::Grammar.exp_term( $source, 0 );
         # say 'Intermediate ast: ', $$ast.emit;
         make $$ast;
     }
@@ -574,7 +574,7 @@ MiniPerl6::Grammar - Grammar for MiniPerl6
 
 =head1 SYNOPSIS
 
-    my $match := $source.parse;
+    my $match = $source.parse;
     ($$match).perl;    # generated MiniPerl6 AST
 
 =head1 DESCRIPTION

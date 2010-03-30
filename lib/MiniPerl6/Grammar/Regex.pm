@@ -228,7 +228,7 @@ token rule_term {
     |  
        # { say 'matching variables' } 
        <variables>
-       [  <.ws>? ':=' <.ws>? <named_capture_body>
+       [  <.ws>? '=' <.ws>? <named_capture_body>
           { 
             make Rul::NamedCapture.new(
                 rule_exp =>  $$<named_capture_body>,
@@ -334,7 +334,7 @@ MiniPerl6::Grammar::Regex - Grammar for MiniPerl6 Regex
 
 =head1 SYNOPSIS
 
-    my $match := $source.rule;
+    my $match = $source.rule;
     ($$match).perl;    # generated Regex AST
 
 =head1 DESCRIPTION

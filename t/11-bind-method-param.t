@@ -6,8 +6,8 @@ class Main {
 
     method subr( $a, $b ) { $a + $b };
 
-    my $x := 0;
-    $x := Main.subr( 1, 2 );
+    my $x = 0;
+    $x = Main.subr( 1, 2 );
     if $x != 3 {
         print 'not '
     };
@@ -16,8 +16,8 @@ class Main {
 
     method subr2( $a, $b, $c ) { $a + $b + $c };
 
-    $x := 0;
-    $x := Main.subr2( 1, 2, 4 );
+    $x = 0;
+    $x = Main.subr2( 1, 2, 4 );
     if $x != 7 {
         print 'not '
     };

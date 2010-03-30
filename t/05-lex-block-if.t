@@ -2,10 +2,10 @@ use v6;
 
 class Main {
     say '1..2';
-    my $a := 123;
+    my $a = 123;
 
     if 1 {
-        my $a := do { 3 };
+        my $a = do { 3 };
         if $a != 3 {
             print 'not '
         }

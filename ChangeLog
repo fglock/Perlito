@@ -1,4 +1,5 @@
 (5.0)
+- use variable assignment instead of binding - that is, use '=' instead of ':='
 - 'use' - all backends can use Test.pm
 - 'elsif'
 - regex quantifiers
@@ -6,7 +7,7 @@
 
 4.1  2010-03-24
 - floating point numbers
-- while loop
+- 'while' loop
 
 4.0  2010-03-20
 - Go backend bootstrap.

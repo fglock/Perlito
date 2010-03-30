@@ -6,42 +6,42 @@ class MiniPerl6::Lisp::LexicalBlock {
         if !(@.block) {
             return 'nil';
         }
-        my $str := '';
-        my $has_my_decl := 0;
-        my $my_decl := '';
-        my $my_ignore := '';
+        my $str = '';
+        my $has_my_decl = 0;
+        my $my_decl = '';
+        my $my_ignore = '';
         my %decl_seen;
         for @.block -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                my $var_name := ($decl.var).emit_lisp;
+                my $var_name = ($decl.var).emit_lisp;
                 if !(%decl_seen{ $var_name }) {
-                    $has_my_decl := 1;
-                    $my_decl := $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
-                    $my_ignore := $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
-                    %decl_seen{ $var_name } := 1;
+                    $has_my_decl = 1;
+                    $my_decl = $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
+                    $my_ignore = $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
+                    %decl_seen{ $var_name } = 1;
                 }
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                my $var_name := (($decl.parameters).var).emit_lisp;
+                my $var_name = (($decl.parameters).var).emit_lisp;
                 if !(%decl_seen{ $var_name }) {
-                    $has_my_decl := 1;
-                    $my_decl := $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
-                    $my_ignore := $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
-                    %decl_seen{ $var_name } := 1;
+                    $has_my_decl = 1;
+                    $my_decl = $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
+                    $my_ignore = $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
+                    %decl_seen{ $var_name } = 1;
                 }
             }
         }
         if $has_my_decl {
-            $str := $str 
+            $str = $str 
                 ~ '(let (' ~ $my_decl ~ ")\n"
                 ~ $my_ignore;
         }
         else {
-            $str := $str ~ '(progn ';
+            $str = $str ~ '(progn ';
         }
         for @.block -> $decl { 
             if (!( $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ))) {
-                $str := $str ~ ($decl).emit_lisp;
+                $str = $str ~ ($decl).emit_lisp;
             }
         }; 
         return $str ~ ')';
@@ -56,64 +56,64 @@ class CompUnit {
     has @.body;
     method emit_lisp {
 
-        my $class_name := Main::to_lisp_namespace($.name);
-        my $str := ';; class ' ~ $.name ~ Main.newline;
+        my $class_name = Main::to_lisp_namespace($.name);
+        my $str = ';; class ' ~ $.name ~ Main.newline;
 
-        my $has_my_decl := 0;
-        my $my_decl := '';
-        my $my_ignore := '';
+        my $has_my_decl = 0;
+        my $my_decl = '';
+        my $my_ignore = '';
         my %decl_seen;
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                my $var_name := ($decl.var).emit_lisp;
+                my $var_name = ($decl.var).emit_lisp;
                 if !(%decl_seen{ $var_name }) {
-                    $has_my_decl := 1;
-                    $my_decl := $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
-                    $my_ignore := $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
-                    %decl_seen{ $var_name } := 1;
+                    $has_my_decl = 1;
+                    $my_decl = $my_decl ~ Decl::emit_lisp_initializer( $decl.var );
+                    $my_ignore = $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
+                    %decl_seen{ $var_name } = 1;
                 }
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                my $var_name := (($decl.parameters).var).emit_lisp;
+                my $var_name = (($decl.parameters).var).emit_lisp;
                 if !(%decl_seen{ $var_name }) {
-                    $has_my_decl := 1;
-                    $my_decl := $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
-                    $my_ignore := $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
-                    %decl_seen{ $var_name } := 1;
+                    $has_my_decl = 1;
+                    $my_decl = $my_decl ~ Decl::emit_lisp_initializer( ($decl.parameters).var );
+                    $my_ignore = $my_ignore ~ '(declare (ignorable ' ~ $var_name ~ "))\n";
+                    %decl_seen{ $var_name } = 1;
                 }
             }
         }
         if $has_my_decl {
-            $str := $str 
+            $str = $str 
                 ~ '(let (' ~ $my_decl ~ ")\n"
                 ~ $my_ignore;
         }
 
-        my $dumper := '';
+        my $dumper = '';
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                my $accessor_name := ($decl.var).name;
-                $dumper := $dumper 
+                my $accessor_name = ($decl.var).name;
+                $dumper = $dumper 
                     ~ '(let ((m (make-instance \'mp-Pair))) '
                     ~ '(setf (sv-key m) "' ~ Main::lisp_escape_string($accessor_name) ~ '") '
                     ~ '(setf (sv-value m) (' ~ Main::to_lisp_identifier($accessor_name) ~ ' self)) m) ';
             }
             if $decl.isa( 'Method' ) {
-                my $sig      := $decl.sig;
-                my $invocant := $sig.invocant; 
-                my $pos      := $sig.positional;
-                my $str_specific := '(' ~ $invocant.emit_lisp ~ ' ' ~ $class_name ~ ')';
-                my $str_optionals := '';
-                my $ignorable := '';
+                my $sig      = $decl.sig;
+                my $invocant = $sig.invocant; 
+                my $pos      = $sig.positional;
+                my $str_specific = '(' ~ $invocant.emit_lisp ~ ' ' ~ $class_name ~ ')';
+                my $str_optionals = '';
+                my $ignorable = '';
                 for @$pos -> $field { 
-                    $str_optionals := $str_optionals ~ ' ' ~ $field.emit_lisp;
-                    $ignorable := $ignorable ~ "\n" ~ '  (declare (ignorable ' ~ $field.emit_lisp ~ "))";
+                    $str_optionals = $str_optionals ~ ' ' ~ $field.emit_lisp;
+                    $ignorable = $ignorable ~ "\n" ~ '  (declare (ignorable ' ~ $field.emit_lisp ~ "))";
                 };
                 if ( $str_optionals ) {
-                    $str_specific := $str_specific ~ ' &optional' ~ $str_optionals;
+                    $str_specific = $str_specific ~ ' &optional' ~ $str_optionals;
                 }
-                my $block    := MiniPerl6::Lisp::LexicalBlock.new( block => $decl.block );
-                $str := $str 
+                my $block    = MiniPerl6::Lisp::LexicalBlock.new( block => $decl.block );
+                $str = $str 
                     ~ ';; method ' ~ $decl.name ~ "\n"
                     ~ '(defmethod ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $str_specific ~ ')'
                     ~    $ignorable ~ "\n"
@@ -121,21 +121,21 @@ class CompUnit {
                     ~ '    ' ~ $block.emit_lisp ~ "))\n";
             }
             if $decl.isa( 'Sub' ) {
-                my $pos := ($decl.sig).positional;
+                my $pos = ($decl.sig).positional;
                 my $param;
-                my $ignorable := '';
+                my $ignorable = '';
                 if @$pos {
                     for @$pos -> $field {
-                        $param := $param ~ $field.emit_lisp ~ ' ';
-                        $ignorable := $ignorable ~ "\n" ~ '  (declare (ignorable ' ~ $field.emit_lisp ~ "))";
+                        $param = $param ~ $field.emit_lisp ~ ' ';
+                        $ignorable = $ignorable ~ "\n" ~ '  (declare (ignorable ' ~ $field.emit_lisp ~ "))";
                     }
                 }
-                my $sig := '';
+                my $sig = '';
                 if $param {
-                    $sig := '&optional ' ~ $param;
+                    $sig = '&optional ' ~ $param;
                 }
-                my $block := MiniPerl6::Lisp::LexicalBlock.new( block => $decl.block );
-                $str := $str 
+                my $block = MiniPerl6::Lisp::LexicalBlock.new( block => $decl.block );
+                $str = $str 
                     ~ '(defmethod ' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' 
                     ~    $ignorable ~ "\n"
                     ~ '  (block mp6-function ' ~ $block.emit_lisp ~ '))' ~ "\n"
@@ -148,34 +148,34 @@ class CompUnit {
 
         if $.name ne 'Pair' {
             # .perl()
-            $str := $str ~ '(defmethod sv-perl ((self ' ~ $class_name ~ '))' ~ Main.newline
+            $str = $str ~ '(defmethod sv-perl ((self ' ~ $class_name ~ '))' ~ Main.newline
                 ~ '  (mp-Main-sv-lisp_dump_object "' ~ Main::lisp_escape_string($.name) ~ '"' 
                 ~ ' (list ' ~ $dumper ~ ')))' ~ Main.newline ~ Main.newline;
         }
 
-        $str := $str
+        $str = $str
             ~ '(defun run-' ~ $class_name ~ ' ()' ~ "\n";
         for @.body -> $decl { 
             if    (!( $decl.isa( 'Decl' ) && (( $decl.decl eq 'has' ) || ( $decl.decl eq 'my' )) ))
                && (!( $decl.isa( 'Method'))) 
                && (!( $decl.isa( 'Sub'))) 
             {
-                $str := $str ~ ($decl).emit_lisp ~ Main.newline;
+                $str = $str ~ ($decl).emit_lisp ~ Main.newline;
             }
         }; 
         # close paren for '(defun '
-        $str := $str
+        $str = $str
             ~ ')' ~ "\n";
         
         if $has_my_decl {
             # close paren for '(let '
-            $str := $str ~ ')';
+            $str = $str ~ ')';
         }
-        $str := $str ~ Main.newline ~ Main.newline;
+        $str = $str ~ Main.newline ~ Main.newline;
     }
 
     sub emit_lisp_program( $comp_units ) {
-        my $str := '';
+        my $str = '';
 
         # join classes that have the same name
         # if there are method or accessor collisions, classes declared later have higher priority
@@ -183,49 +183,49 @@ class CompUnit {
         my %unit_seen;
         my @tmp_comp_unit;
         for @($comp_units) -> $comp_unit {
-            my $name := $comp_unit.name;
+            my $name = $comp_unit.name;
             if %unit_seen{$name} {
                 for @( $comp_unit.body ) -> $stmt {
                     push (%unit_seen{$name}).body, $stmt;
                 }
             }
             else {
-                %unit_seen{$name} := $comp_unit;
+                %unit_seen{$name} = $comp_unit;
                 push @tmp_comp_unit, $comp_unit;
             }
         }
-        $comp_units := @tmp_comp_unit;
+        $comp_units = @tmp_comp_unit;
 
         for @($comp_units) -> $comp_unit {
             for @( $comp_unit.body ) -> $stmt {
                 if $stmt.isa('Method') {
-                    ($comp_unit.methods){ $stmt.name } := $stmt;
+                    ($comp_unit.methods){ $stmt.name } = $stmt;
                 }
                 if $stmt.isa('Decl') && ( $stmt.decl eq 'has' ) {
-                    ($comp_unit.attributes){ ($stmt.var).name } := $stmt;
+                    ($comp_unit.attributes){ ($stmt.var).name } = $stmt;
                 }
             }
         }
 
         for @($comp_units) -> $comp_unit {
-            my $class_name := Main::to_lisp_namespace($comp_unit.name);
+            my $class_name = Main::to_lisp_namespace($comp_unit.name);
             if $class_name ne 'mp-Main' {
-                $str := $str 
+                $str = $str 
                     ~ '(defpackage ' ~ $class_name ~ "\n"
                     ~ '  (:use common-lisp mp-Main))' ~ "\n";
             }
-            $str := $str 
+            $str = $str 
                     ~ '(if (not (ignore-errors (find-class \'' ~ $class_name ~ ')))' ~ "\n"
                     ~ '  (defclass ' ~ $class_name ~ ' () ()))' ~ "\n";
-            $str := $str  
+            $str = $str  
                     ~ '(let (x)' ~ "\n"
                     ~ '  (setq x (make-instance \'' ~ $class_name ~ "))\n"
                     ~ '  (defun proto-' ~ $class_name ~ ' () x))' ~ "\n";
             for @($comp_unit.body) -> $decl { 
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                    my $accessor_name := ($decl.var).name;
+                    my $accessor_name = ($decl.var).name;
                     # suggested by Arthur Lemmens in: http://osdir.com/ml/lisp.lispworks.general/2005-07/msg00153.html 
-                    $str := $str 
+                    $str = $str 
                         ~ ';; has $.' ~ $accessor_name ~ "\n"
 ~ '(let ((new-slots (list (list :name \'' ~ Main::to_lisp_identifier($accessor_name)  ~ '
   :readers \'(' ~ Main::to_lisp_identifier($accessor_name)  ~ ')
@@ -242,36 +242,36 @@ new-slots))
 (sb-mop:ensure-class \'' ~ $class_name  ~ ' :direct-slots new-slots))' ~ "\n\n";
                 }
                 if $decl.isa( 'Method' ) {
-                    my $sig      := $decl.sig;
-                    my $invocant := $sig.invocant; 
-                    my $pos      := $sig.positional;
-                    my $str_generic  :=  $invocant.emit_lisp;
-                    my $str_optionals := '';
+                    my $sig      = $decl.sig;
+                    my $invocant = $sig.invocant; 
+                    my $pos      = $sig.positional;
+                    my $str_generic  =  $invocant.emit_lisp;
+                    my $str_optionals = '';
                     for @$pos -> $field { 
-                        $str_optionals := $str_optionals ~ ' ' ~ $field.emit_lisp;
+                        $str_optionals = $str_optionals ~ ' ' ~ $field.emit_lisp;
                     };
                     if ( $str_optionals ) {
-                        $str_generic  := $str_generic  ~ ' &optional' ~ $str_optionals;
+                        $str_generic  = $str_generic  ~ ' &optional' ~ $str_optionals;
                     }
-                    $str := $str 
+                    $str = $str 
                         ~ ';; method ' ~ $decl.name ~ "\n"
 ~ '(if (not (ignore-errors (find-method \'' ~ Main::to_lisp_identifier($decl.name) ~ ' () ())))
   (defgeneric ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $str_generic ~ ')' ~ "\n"
                         ~ '      (:documentation ' ~ '"' ~ 'a method' ~ '"' ~ ')))' ~ "\n";
                 }
                 if $decl.isa( 'Sub' ) {
-                    my $pos := ($decl.sig).positional;
+                    my $pos = ($decl.sig).positional;
                     my $param;
                     if @$pos {
                         for @$pos -> $field {
-                            $param := $param ~ $field.emit_lisp ~ ' ';
+                            $param = $param ~ $field.emit_lisp ~ ' ';
                         }
                     }
-                    my $sig := '';
+                    my $sig = '';
                     if $param {
-                        $sig := '&optional ' ~ $param;
+                        $sig = '&optional ' ~ $param;
                     }
-                    $str := $str 
+                    $str = $str 
                         ~ ';; sub ' ~ $decl.name ~ "\n"
 ~ '(if (not (ignore-errors (find-method \'' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' () ())))
   (defgeneric ' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' ~ "\n"
@@ -280,17 +280,17 @@ new-slots))
             }
         }
         for @($comp_units) -> $comp_unit {
-            $str := $str ~ $comp_unit.emit_lisp ~ "\n"
+            $str = $str ~ $comp_unit.emit_lisp ~ "\n"
         }
 
-        $str := $str 
+        $str = $str 
             ~ "(defun compiler-main ()\n"
             ~ "  (progn\n"
             ~ "    (init-argv)";
         for @($comp_units) -> $comp_unit {
-            $str := $str ~ "\n    (run-" ~ Main::to_lisp_namespace( $comp_unit.name ) ~ ")"
+            $str = $str ~ "\n    (run-" ~ Main::to_lisp_namespace( $comp_unit.name ) ~ ")"
         }
-        $str := $str 
+        $str = $str 
             ~ "))\n";
 
         return $str;
@@ -334,15 +334,15 @@ class Lit::Array {
     has @.array1;
     method emit_lisp {
         if @.array1 {
-            my $str := '';
+            my $str = '';
             for @.array1 -> $elem {
                 if     ( $elem.isa( 'Var' )   && $elem.sigil eq '@' )
                     || ( $elem.isa( 'Apply' ) && $elem.code  eq 'prefix:<@>' )
                 {
-                    $str := $str ~ ' (coerce ' ~ $elem.emit_lisp ~ ' \'list)';
+                    $str = $str ~ ' (coerce ' ~ $elem.emit_lisp ~ ' \'list)';
                 }
                 else {
-                    $str := $str ~ ' (list ' ~ $elem.emit_lisp ~ ')';
+                    $str = $str ~ ' (list ' ~ $elem.emit_lisp ~ ')';
                 }
             }
             return '(let ((_tmp_ (concatenate \'list ' ~ $str ~ '))) ' 
@@ -358,10 +358,10 @@ class Lit::Hash {
     has @.hash1;
     method emit_lisp {
         if @.hash1 {
-            my $fields := @.hash1;
-            my $str := '';
+            my $fields = @.hash1;
+            my $str = '';
             for @$fields -> $field { 
-                $str := $str ~ '(setf (mp-Main::sv-hash-lookup ' 
+                $str = $str ~ '(setf (mp-Main::sv-hash-lookup ' 
                     ~ ($field[0]).emit_lisp ~ ' h) ' ~ ($field[1]).emit_lisp ~ ')';
             }; 
             return '(let ((h (make-hash-table :test \'equal))) ' ~ $str ~ ' h)';
@@ -380,10 +380,10 @@ class Lit::Object {
     has @.fields;
     method emit_lisp {
         if @.fields {
-            my $fields := @.fields;
-            my $str := '';
+            my $fields = @.fields;
+            my $str = '';
             for @$fields -> $field { 
-                $str := $str ~ '(setf (' ~ Main::to_lisp_identifier(($field[0]).buf) ~ ' m) ' ~ ($field[1]).emit_lisp ~ ')';
+                $str = $str ~ '(setf (' ~ Main::to_lisp_identifier(($field[0]).buf) ~ ' m) ' ~ ($field[1]).emit_lisp ~ ')';
             }; 
             '(let ((m (make-instance \'' ~ Main::to_lisp_namespace($.class) ~ '))) ' ~ $str ~ ' m)'
         }
@@ -420,9 +420,9 @@ class Var {
         # @x    => $List_x
         # %x    => $Hash_x
         # &x    => $Code_x
-        my $ns := '';
+        my $ns = '';
         if $.namespace {
-            $ns := Main::to_lisp_namespace( $.namespace ) ~ '-';
+            $ns = Main::to_lisp_namespace( $.namespace ) ~ '-';
         }
         elsif ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
             return '*mp6-args*'
@@ -443,21 +443,21 @@ class Bind {
     method emit_lisp {
         if $.parameters.isa( 'Lit::Object' ) {
 
-            #  Obj.new(:$a, :$b) := $obj
+            #  Obj.new(:$a, :$b) = $obj
 
-            my $class := $.parameters.class;
-            my $a     := $.parameters.fields;
-            my $b     := $.arguments;
-            my $str   := 'do { ';
-            my $i     := 0;
+            my $class = $.parameters.class;
+            my $a     = $.parameters.fields;
+            my $b     = $.arguments;
+            my $str   = 'do { ';
+            my $i     = 0;
             my $arg;
             for @$a -> $var {
-                my $bind := Bind.new( 
+                my $bind = Bind.new( 
                     parameters => $var[1], 
                     arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
-                $str := $str ~ ' ' ~ $bind.emit_lisp ~ ' ';
-                $i := $i + 1;
+                $str = $str ~ ' ' ~ $bind.emit_lisp ~ ' ';
+                $i = $i + 1;
             };
             return $str ~ $.parameters.emit_lisp ~ ' }';
         };
@@ -483,11 +483,11 @@ class Call {
     has @.arguments;
     method emit_lisp {
 
-        my $arguments := (@.arguments.>>emit_lisp).join(' ');
+        my $arguments = (@.arguments.>>emit_lisp).join(' ');
 
-        my $invocant := $.invocant.emit_lisp;
+        my $invocant = $.invocant.emit_lisp;
         if $invocant eq '(proto-mp-self)' {
-            $invocant := 'sv-self';
+            $invocant = 'sv-self';
         };
 
         if $.method eq 'isa' {        
@@ -520,7 +520,7 @@ class Call {
             }
         }
 
-        my $meth := Main::to_lisp_identifier($.method) ~ ' ';
+        my $meth = Main::to_lisp_identifier($.method) ~ ' ';
         if  $.method eq 'postcircumfix:<( )>'  {
              return '(funcall ' ~ $invocant ~ ' ' ~ $arguments ~ ')';
         }
@@ -540,11 +540,11 @@ class Apply {
     has @.arguments;
     has $.namespace;
     method emit_lisp {
-        my $ns := '';
+        my $ns = '';
         if $.namespace {
-            $ns := Main::to_lisp_namespace( $.namespace ) ~ '-';
+            $ns = Main::to_lisp_namespace( $.namespace ) ~ '-';
         }
-        my $code := $ns ~ $.code;
+        my $code = $ns ~ $.code;
 
         if $code eq 'infix:<~>'  { 
             return '(concatenate \'string (sv-string ' ~ (@.arguments[0]).emit_lisp ~ ') (sv-string ' ~ (@.arguments[1]).emit_lisp ~ '))'; }
@@ -552,9 +552,9 @@ class Apply {
             return '(if (sv-bool ' ~ (@.arguments[0]).emit_lisp ~ ') ' ~ (@.arguments[1]).emit_lisp ~ ' ' ~ (@.arguments[2]).emit_lisp ~ ')';
         } 
 
-        my $args := '';
+        my $args = '';
         if @.arguments {
-            $args := (@.arguments.>>emit_lisp).join(' ');
+            $args = (@.arguments.>>emit_lisp).join(' ');
         }
 
         if $code eq 'self'       { return 'sv-self' };
@@ -571,7 +571,7 @@ class Apply {
         if $code eq 'array'      { return $args };
 
         if $code eq 'exists'     {
-                                      my $arg := @.arguments[0];
+                                      my $arg = @.arguments[0];
                                       if $arg.isa( 'Lookup' ) {
                                         return '(nth-value 1 ' ~ $arg.emit_lisp ~ ')'
                                       }
@@ -617,8 +617,8 @@ class If {
     has @.body;
     has @.otherwise;
     method emit_lisp {
-        my $block1 := MiniPerl6::Lisp::LexicalBlock.new( block => @.body );
-        my $block2 := MiniPerl6::Lisp::LexicalBlock.new( block => @.otherwise );
+        my $block1 = MiniPerl6::Lisp::LexicalBlock.new( block => @.body );
+        my $block2 = MiniPerl6::Lisp::LexicalBlock.new( block => @.otherwise );
         '(if (sv-bool ' ~ $.cond.emit_lisp ~ ') ' ~ $block1.emit_lisp ~ ' ' ~ $block2.emit_lisp ~ ')';
     }
 }
@@ -628,12 +628,12 @@ class For {
     has @.body;
     has @.topic;
     method emit_lisp {
-        my $cond := $.cond;
-        my $block := MiniPerl6::Lisp::LexicalBlock.new( block => @.body );
+        my $cond = $.cond;
+        my $block = MiniPerl6::Lisp::LexicalBlock.new( block => @.body );
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
-            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+            $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
         # '(dolist (' ~ $.topic.emit_lisp ~ ' ' ~ $cond.emit_lisp ~ ') ' ~ $block.emit_lisp ~ ')';
         '(loop for ' 
@@ -662,8 +662,8 @@ class Decl {
     has $.type;
     has $.var;
     method emit_lisp {
-        my $decl := $.decl;
-        my $name := $.var.name;
+        my $decl = $.decl;
+        my $name = $.var.name;
            ( $decl eq 'has' )
         ?? ( 'sub ' ~ $name ~ ' { ' ~
             '@_ == 1 ' ~
@@ -708,17 +708,17 @@ class Sub {
     has $.sig;
     has @.block;
     method emit_lisp {
-        my $sig := $.sig;
-        my $pos := $sig.positional;
-        my $block := MiniPerl6::Lisp::LexicalBlock.new( block => @.block );
+        my $sig = $.sig;
+        my $pos = $sig.positional;
+        my $block = MiniPerl6::Lisp::LexicalBlock.new( block => @.block );
         my $str;
         if @$pos {
             for @$pos -> $field { 
-                $str := $str ~ $field.emit_lisp ~ ' ';
+                $str = $str ~ $field.emit_lisp ~ ' ';
             }
         }
         if $str {
-            $str := '&optional ' ~ $str;
+            $str = '&optional ' ~ $str;
         }
 
         if $.name {
@@ -739,7 +739,7 @@ class Sub {
 class Do {
     has @.block;
     method emit_lisp {
-        my $block := MiniPerl6::Lisp::LexicalBlock.new( block => @.block );
+        my $block = MiniPerl6::Lisp::LexicalBlock.new( block => @.block );
         return $block.emit_lisp;
     }
 }

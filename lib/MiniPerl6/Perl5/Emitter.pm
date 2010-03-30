@@ -14,9 +14,9 @@ class CompUnit {
         ~ "\n"
     }
     sub emit_perl5_program( $comp_units ) {
-        my $str := '';
+        my $str = '';
         for @($comp_units) -> $comp_unit {
-            $str := $str ~ $comp_unit.emit
+            $str = $str ~ $comp_unit.emit
         }
         return $str;
     }
@@ -74,10 +74,10 @@ class Lit::Array {
 class Lit::Hash {
     has @.hash1;
     method emit {
-        my $fields := @.hash1;
-        my $str := '';
+        my $fields = @.hash1;
+        my $str = '';
         for @$fields -> $field { 
-            $str := $str ~ ($field[0]).emit ~ ' => ' ~ ($field[1]).emit ~ ',';
+            $str = $str ~ ($field[0]).emit ~ ' => ' ~ ($field[1]).emit ~ ',';
         }; 
         '{ ' ~ $str ~ ' }';
     }
@@ -92,11 +92,11 @@ class Lit::Object {
     has @.fields;
     method emit {
         # $.class ~ '->new( ' ~ @.fields.>>emit.join(', ') ~ ' )';
-        my $fields := @.fields;
-        my $str := '';
+        my $fields = @.fields;
+        my $str = '';
         # say @fields.map(sub { $_[0].emit ~ ' => ' ~ $_[1].emit}).join(', ') ~ ')';
         for @$fields -> $field { 
-            $str := $str ~ ($field[0]).emit ~ ' => ' ~ ($field[1]).emit ~ ',';
+            $str = $str ~ ($field[0]).emit ~ ' => ' ~ ($field[1]).emit ~ ',';
         }; 
         $.class ~ '->new( ' ~ $str ~ ' )';
     }
@@ -129,15 +129,15 @@ class Var {
         # @x    => $List_x
         # %x    => $Hash_x
         # &x    => $Code_x
-        my $table := {
+        my $table = {
             '$' => '$',
             '@' => '$List_',
             '%' => '$Hash_',
             '&' => '$Code_',
         };
-        my $ns := '';
+        my $ns = '';
         if $.namespace {
-            $ns := $.namespace ~ '::';
+            $ns = $.namespace ~ '::';
         }
         else {
             if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
@@ -166,22 +166,22 @@ class Bind {
     method emit {
         if $.parameters.isa( 'Call' ) {
 
-            # $obj.a := 3
+            # $obj.a = 3
 
-            my $a := $.parameters;
+            my $a = $.parameters;
             return '((' ~ ($a.invocant).emit ~ ')->{' ~ $a.method ~ '} = ' ~ $.arguments.emit ~ ')';
         }
 
         if $.parameters.isa( 'Lit::Array' ) {
             
-            #  [$a, [$b, $c]] := [1, [2, 3]]
+            #  [$a, [$b, $c]] = [1, [2, 3]]
             
-            my $a := $.parameters.array1;
-            #my $b := $.arguments.array1;
-            my $str := 'do { ';
-            my $i := 0;
+            my $a = $.parameters.array1;
+            #my $b = $.arguments.array1;
+            my $str = 'do { ';
+            my $i = 0;
             for @$a -> $var { 
-                my $bind := Bind.new( 
+                my $bind = Bind.new( 
                     parameters => $var, 
                     # arguments => ($b[$i]) );
                     arguments  => Index.new(
@@ -189,54 +189,54 @@ class Bind {
                         index_exp  => Val::Int.new( int => $i )
                     )
                 );
-                $str := $str ~ ' ' ~ $bind.emit ~ '; ';
-                $i := $i + 1;
+                $str = $str ~ ' ' ~ $bind.emit ~ '; ';
+                $i = $i + 1;
             };
             return $str ~ $.parameters.emit ~ ' }';
         };
         if $.parameters.isa( 'Lit::Hash' ) {
 
-            #  {:$a, :$b} := { a => 1, b => [2, 3]}
+            #  {:$a, :$b} = { a => 1, b => [2, 3]}
 
-            my $a := $.parameters.hash1;
-            my $b := $.arguments.hash1;
-            my $str := 'do { ';
-            my $i := 0;
+            my $a = $.parameters.hash1;
+            my $b = $.arguments.hash1;
+            my $str = 'do { ';
+            my $i = 0;
             my $arg;
             for @$a -> $var {
 
-                $arg := Val::Undef.new();
+                $arg = Val::Undef.new();
                 for @$b -> $var2 {
                     #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
                     if ($var2[0]).buf eq ($var[0]).buf {
-                        $arg := $var2[1];
+                        $arg = $var2[1];
                     }
                 };
 
-                my $bind := Bind.new( parameters => $var[1], arguments => $arg );
-                $str := $str ~ ' ' ~ $bind.emit ~ '; ';
-                $i := $i + 1;
+                my $bind = Bind.new( parameters => $var[1], arguments => $arg );
+                $str = $str ~ ' ' ~ $bind.emit ~ '; ';
+                $i = $i + 1;
             };
             return $str ~ $.parameters.emit ~ ' }';
         };
 
         if $.parameters.isa( 'Lit::Object' ) {
 
-            #  Obj.new(:$a, :$b) := $obj
+            #  Obj.new(:$a, :$b) = $obj
 
-            my $class := $.parameters.class;
-            my $a     := $.parameters.fields;
-            my $b     := $.arguments;
-            my $str   := 'do { ';
-            my $i     := 0;
+            my $class = $.parameters.class;
+            my $a     = $.parameters.fields;
+            my $b     = $.arguments;
+            my $str   = 'do { ';
+            my $i     = 0;
             my $arg;
             for @$a -> $var {
-                my $bind := Bind.new( 
+                my $bind = Bind.new( 
                     parameters => $var[1], 
                     arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
-                $str := $str ~ ' ' ~ $bind.emit ~ '; ';
-                $i := $i + 1;
+                $str = $str ~ ' ' ~ $bind.emit ~ '; ';
+                $i = $i + 1;
             };
             return $str ~ $.parameters.emit ~ ' }';
         };
@@ -258,9 +258,9 @@ class Call {
     has $.method;
     has @.arguments;
     method emit {
-        my $invocant := $.invocant.emit;
+        my $invocant = $.invocant.emit;
         if $invocant eq 'self' {
-            $invocant := '$self';
+            $invocant = '$self';
         }
 
         if     ($.method eq 'shift')
@@ -313,17 +313,17 @@ class Call {
             return 'shift( @{' ~ $invocant ~ '} )' 
         }
 
-        my $meth := $.method;
+        my $meth = $.method;
         if  $meth eq 'postcircumfix:<( )>'  {
-             $meth := '';  
+             $meth = '';  
         }
         
-        my $call := '->' ~ $meth ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+        my $call = '->' ~ $meth ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         if ($.hyper) {
             if !(  $.invocant.isa( 'Apply' )
                 && $.invocant.code eq 'prefix:<@>' )
             {
-                $invocant := '@{ ' ~ $invocant ~ ' }';
+                $invocant = '@{ ' ~ $invocant ~ ' }';
             }
             return '[ map { $_' ~ $call ~ ' } ' ~ $invocant ~ ' ]';
         }
@@ -338,11 +338,11 @@ class Apply {
     has @.arguments;
     has $.namespace;
     method emit {
-        my $ns := '';
+        my $ns = '';
         if $.namespace {
-            $ns := $.namespace ~ '::';
+            $ns = $.namespace ~ '::';
         }
-        my $code := $ns ~ $.code;
+        my $code = $ns ~ $.code;
 
         if $code.isa( 'Str' ) { }
         else {
@@ -394,11 +394,11 @@ class Apply {
         if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit).join(' != ')  ~ ')' };
 
         if $code eq 'ternary:<?? !!>' { 
-            my $cond := @.arguments[0];
+            my $cond = @.arguments[0];
             if   $cond.isa( 'Var' ) 
               && $cond.sigil eq '@' 
             {
-                $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+                $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
             }
             return '(' ~ $cond.emit ~
                  ' ? ' ~ (@.arguments[1]).emit ~
@@ -421,18 +421,18 @@ class If {
     has @.body;
     has @.otherwise;
     method emit {
-        my $cond := $.cond;
+        my $cond = $.cond;
 
         if   $cond.isa( 'Apply' ) 
           && $cond.code eq 'prefix:<!>' 
         {
-            my $if := If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
+            my $if = If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
             return $if.emit;
         }
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
-            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+            $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
         return 'if (' ~ $cond.emit ~ ') { ' 
              ~   (@.body.>>emit).join(';') 
@@ -447,11 +447,11 @@ class While {
     has $.cond;
     has @.body;
     method emit {
-        my $cond := $.cond;
+        my $cond = $.cond;
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
-            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+            $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
           'while (' ~ $cond.emit ~ ') {' 
         ~   (@.body.>>emit).join(';') 
@@ -464,11 +464,11 @@ class For {
     has @.body;
     has @.topic;
     method emit {
-        my $cond := $.cond;
+        my $cond = $.cond;
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
-            $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+            $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
         return  'for my ' ~ $.topic.emit ~ ' ( ' ~ $cond.emit ~ ' ) { ' 
              ~   (@.body.>>emit).join(';') 
@@ -481,8 +481,8 @@ class Decl {
     has $.type;
     has $.var;
     method emit {
-        my $decl := $.decl;
-        my $name := $.var.plain_name;
+        my $decl = $.decl;
+        my $name = $.var.plain_name;
            ( $decl eq 'has' )
         ?? ( 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} }' )
         !! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit;
@@ -503,33 +503,33 @@ class Method {
     has $.sig;
     has @.block;
     method emit {
-        my $sig := $.sig;
-        my $invocant := $sig.invocant; 
-        my $pos := $sig.positional;
-        my $str := '';
+        my $sig = $.sig;
+        my $invocant = $sig.invocant; 
+        my $pos = $sig.positional;
+        my $str = '';
 
-        # $str := 'my $List__ = \\@_; ';   
+        # $str = 'my $List__ = \\@_; ';   
         #
         # # TODO - follow recursively
         # for @$pos -> $field { 
         #    if ( $field.isa('Lit::Array') ) {
-        #        $str := $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
+        #        $str = $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
         #    }
         #    else {
-        #        $str := $str ~ 'my ' ~ $field.emit ~ '; ';
+        #        $str = $str ~ 'my ' ~ $field.emit ~ '; ';
         #    };
         # };
         #
-        # my $bind := Bind.new( 
+        # my $bind = Bind.new( 
         #    parameters => Lit::Array.new( array1 => $sig.positional ), 
         #    arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
         # );
-        # $str := $str ~ $bind.emit ~ '; ';
+        # $str = $str ~ $bind.emit ~ '; ';
 
-        my $i := 1;
+        my $i = 1;
         for @$pos -> $field { 
-            $str := $str ~ 'my ' ~ $field.emit ~ ' = $_[' ~ $i ~ ']; ';
-            $i := $i + 1;
+            $str = $str ~ 'my ' ~ $field.emit ~ ' = $_[' ~ $i ~ ']; ';
+            $i = $i + 1;
         }
 
         'sub ' ~ $.name ~ ' { ' ~ 
@@ -545,32 +545,32 @@ class Sub {
     has $.sig;
     has @.block;
     method emit {
-        my $sig := $.sig;
-        my $pos := $sig.positional;
-        my $str := '';
+        my $sig = $.sig;
+        my $pos = $sig.positional;
+        my $str = '';
 
-        # my $str := 'my $List__ = \\@_; ';  
+        # my $str = 'my $List__ = \\@_; ';  
         #
         # # TODO - follow recursively
         # for @$pos -> $field { 
         #    if ( $field.isa('Lit::Array') ) {
-        #        $str := $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
+        #        $str = $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
         #    }
         #    else {
-        #        $str := $str ~ 'my ' ~ $field.emit ~ '; ';
+        #        $str = $str ~ 'my ' ~ $field.emit ~ '; ';
         #    };
         # };
         #
-        # my $bind := Bind.new( 
+        # my $bind = Bind.new( 
         #    parameters => Lit::Array.new( array1 => $sig.positional ), 
         #    arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
         # );
-        # $str := $str ~ $bind.emit ~ '; ';
+        # $str = $str ~ $bind.emit ~ '; ';
 
-        my $i := 0;
+        my $i = 0;
         for @$pos -> $field { 
-            $str := $str ~ 'my ' ~ $field.emit ~ ' = $_[' ~ $i ~ ']; ';
-            $i := $i + 1;
+            $str = $str ~ 'my ' ~ $field.emit ~ ' = $_[' ~ $i ~ ']; ';
+            $i = $i + 1;
         }
 
         'sub ' ~ $.name ~ ' { ' ~ 

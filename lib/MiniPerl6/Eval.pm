@@ -6,7 +6,7 @@ class CompUnit {
     has %.methods;
     has @.body;
     method eval ($env) {
-        my $env1 := [ {}, @$env ];
+        my $env1 = [ {}, @$env ];
         for @.body -> $stmt {
             $stmt.eval($env1);
         }
@@ -62,7 +62,7 @@ class Lit::Hash {
     method eval ($env) {
         my %h;
         for @.hash1 -> $field { 
-            %h{ ($field[0]).eval($env) } := ($field[1]).eval($env);
+            %h{ ($field[0]).eval($env) } = ($field[1]).eval($env);
         }; 
         return %h;
     }
@@ -73,10 +73,10 @@ class Lit::Object {
     has @.fields;
     method eval ($env) {
         warn "Interpreter TODO: Lit::Object";
-        my $fields := @.fields;
-        my $str := '';
+        my $fields = @.fields;
+        my $str = '';
         for @$fields -> $field { 
-            $str := $str ~ ($field[0]).eval ~ ' => ' ~ ($field[1]).eval ~ ',';
+            $str = $str ~ ($field[0]).eval ~ ' => ' ~ ($field[1]).eval ~ ',';
         }; 
         $.class ~ '->new( ' ~ $str ~ ' )';
     }
@@ -104,9 +104,9 @@ class Var {
     has $.namespace;
     has $.name;
     method eval ($env) {
-        my $ns := '';
+        my $ns = '';
         if $.namespace {
-            $ns := $.namespace ~ '::';
+            $ns = $.namespace ~ '::';
         }
         else {
             if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
@@ -122,7 +122,7 @@ class Var {
             }
         }
 
-        my $name := $.sigil ~ $ns ~ $.name;
+        my $name = $.sigil ~ $ns ~ $.name;
         for @($env) -> $e {
             if exists( $e{ $name } ) {
                 return $e{ $name };
@@ -154,11 +154,11 @@ class Bind {
         if $.parameters.isa( 'Decl' ) {
             $.parameters.eval($env);
         }
-        my $name := $.parameters.plain_name;
-        my $value := $.arguments.eval($env);
+        my $name = $.parameters.plain_name;
+        my $value = $.arguments.eval($env);
         for @($env) -> $e {
             if exists( $e{ $name } ) {
-                $e{ $name } := $value;
+                $e{ $name } = $value;
                 return $value;
             }
         }
@@ -180,9 +180,9 @@ class Call {
     has @.arguments;
     method eval ($env) {
         warn "Interpreter TODO: Call";
-        my $invocant := $.invocant.eval($env);
+        my $invocant = $.invocant.eval($env);
         if $invocant eq 'self' {
-            $invocant := '$self';
+            $invocant = '$self';
         }
         if ($.hyper) {
             # '[ map { $_' ~ $call ~ ' } @{ ' ~ $invocant ~ ' } ]';
@@ -199,11 +199,11 @@ class Apply {
     has @.arguments;
     has $.namespace;
     method eval ($env) {
-        my $ns := '';
+        my $ns = '';
         if $.namespace {
-            $ns := $.namespace ~ '::';
+            $ns = $.namespace ~ '::';
         }
-        my $code := $ns ~ $.code;
+        my $code = $ns ~ $.code;
         # warn "Apply ", $env.perl, " code: '", $code, "'";
         for @($env) -> $e {
             if exists( $e{ $code } ) {
@@ -228,27 +228,27 @@ class If {
     has @.body;
     has @.otherwise;
     method eval ($env) {
-        my $cond := $.cond;
+        my $cond = $.cond;
 
         if   $cond.isa( 'Apply' ) 
           && $cond.code eq 'prefix:<!>' 
         {
-            my $if := If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
+            my $if = If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
             return $if.eval($env);
         }
         # if   $cond.isa( 'Var' ) 
         #  && $cond.sigil eq '@' 
         # {
-        #    $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+        #    $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         # }
         if $cond.eval($env) { 
-            my $env1 := [ {}, @$env ];
+            my $env1 = [ {}, @$env ];
             for @.body -> $stmt {
                 $stmt.eval($env1);
             }
         } 
         else { 
-            my $env1 := [ {}, @$env ];
+            my $env1 = [ {}, @$env ];
             for @.otherwise -> $stmt {
                 $stmt.eval($env1);
             }
@@ -262,16 +262,16 @@ class For {
     has @.body;
     has @.topic;
     method eval ($env) {
-        my $cond := $.cond;
+        my $cond = $.cond;
         # if   $cond.isa( 'Var' ) 
         #  && $cond.sigil eq '@' 
         # {
-        #    $cond := Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+        #    $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         # }
-        my $topic_name := $.topic.plain_name;
-        my $env1 := [ {}, @$env ];
+        my $topic_name = $.topic.plain_name;
+        my $env1 = [ {}, @$env ];
         for @( $cond.eval($env) ) -> $topic {
-            $env1[0] := { $topic_name => $topic };
+            $env1[0] = { $topic_name => $topic };
             for @.body -> $stmt {
                 $stmt.eval($env1);
             }
@@ -301,13 +301,13 @@ class Decl {
     has $.type;
     has $.var;
     method eval ($env) {
-        my $decl := $.decl;
-        my $name := $.var.plain_name;
+        my $decl = $.decl;
+        my $name = $.var.plain_name;
         if $decl eq 'has' {
             warn "Interpreter TODO: has";
         }
         if !( exists ($env[0]){ $name } ) {
-            ($env[0]){ $name } := undef;
+            ($env[0]){ $name } = undef;
         }
         return undef;
     }
@@ -331,10 +331,10 @@ class Method {
     has @.block;
     method eval ($env) {
         warn "Interpreter TODO: Method";
-        my $sig := $.sig;
-        my $invocant := $sig.invocant; 
-        my $pos := $sig.positional;
-        my $str := 'my $List__ = \\@_; ';   
+        my $sig = $.sig;
+        my $invocant = $sig.invocant; 
+        my $pos = $sig.positional;
+        my $str = 'my $List__ = \\@_; ';   
 
         # ...
     }
@@ -349,24 +349,24 @@ class Sub {
         for @( $.sig.positional ) -> $field { 
             push( @param_name, $field.plain_name );
         }
-        my $sub :=  
+        my $sub =  
                 sub ( $env, $args ) {
                     my %context;
-                    my $n := 0;
-                    %context{'@_'} := $args;
+                    my $n = 0;
+                    %context{'@_'} = $args;
                     for @param_name -> $name {
-                        %context{$name} := ($args[$n]).eval($env);
-                        $n := $n + 1;
+                        %context{$name} = ($args[$n]).eval($env);
+                        $n = $n + 1;
                     }
-                    my $env1 := [ %context, @$env ];
+                    my $env1 = [ %context, @$env ];
                     my $r;
                     for @.block -> $stmt {
-                        $r := $stmt.eval($env1);
+                        $r = $stmt.eval($env1);
                     }
                     return $r;
                 };
         if $.name {
-            ($env[0]){$.name} := $sub;
+            ($env[0]){$.name} = $sub;
         }
         return $sub;
     }
@@ -375,7 +375,7 @@ class Sub {
 class Do {
     has @.block;
     method eval ($env) {
-        my $env1 := [ {}, @$env ];
+        my $env1 = [ {}, @$env ];
         for @.block -> $stmt {
             $stmt.eval($env1);
         }

@@ -6,11 +6,11 @@ Eval.pm module
 
 Command line compiler (mp6.pl)
 
-- implement -Clisp-bin (requires some changes in the lisp emitter)
+(no issues at the moment)
 
 Command line compiler (util/mp6.pl)
 
-- migrate all bootstrap scripts to use util/mp6.pl (we now depend on shell and perl5)
+- migrate all bootstrap scripts to use util/mp6.pl - FIXED
 
 - build Ast cache using JSON (we currently use Perl5 Data::Dumper) or XML (Go has XML and JSON input)
 
@@ -27,8 +27,6 @@ MiniPerl6 in Rakudo
 - Rakudo should be able to execute MiniPerl6 directly. What do we need to fix in both sides?
 
 MiniPerl6 in Lisp
-
-- fix warnings (SBCL)
 
 - test other Lisp implementations
 
@@ -79,10 +77,6 @@ Missing Features of the Token sub-compiler
 
 Nice to Have
 
-- replace := with = everywhere. Alternately, impl both := and = in all backends
-
-- impl 'elsif' - FIXED
-
 - 'mp6-format' script (see gofmt and perltidy)
 
 - run some tests from the standard test suite
@@ -103,6 +97,4 @@ Grammar
 - double quote variable and expression interpolation 
 
 - all statements need a semicolon - FIXED but hack
-
-- autoquote hash keys - FIXED
 
