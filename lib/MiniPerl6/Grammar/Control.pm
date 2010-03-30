@@ -11,6 +11,7 @@ token control {
     | <when>   { make $$<when>   }   # when 3 { ... }
     | <for>    { make $$<for>    }   # $x.map(-> $i {...})
     | <while>  { make $$<while>  }   # while ... { ... }
+    | <loop>   { make $$<loop>   }   # loop { ... }
     | <apply>  { make $$<apply>  }   # $obj($arg1, $arg2)
  #  | <call>   { make $$<call>   }   # $obj.method($arg1, $arg2)
 };
@@ -64,6 +65,18 @@ token while {
     while <.ws> <exp> <.ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
     { make While.new( cond => $$<exp>, body => $$<exp_stmts> ) }
 };
+
+token loop {
+    loop <.ws> 
+        [ 
+            \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
+            { make While.new( cond => Val::Bit.new( bit => 1 ), body => $$<exp_stmts> ) }
+        |
+            { die 'loop(;;){} not implemented' } 
+            # \( <exp> <.opt_ws> ';' <.opt_ws> <exp> <.opt_ws> ';' <.opt_ws> <exp> <.opt_ws> \) 
+            # \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
+        ]
+}
 
 token ctrl_leave {
     leave

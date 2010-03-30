@@ -1,7 +1,8 @@
 (5.0)
 - use variable assignment instead of binding - that is, use '=' instead of ':='
-- 'use' - all backends can use Test.pm
+- 'use' - all backends can now use Test.pm
 - 'elsif'
+- 'loop' 
 - regex quantifiers
 - Lisp backend now bootstraps with the 'util/mp6.pl' compiler
 
