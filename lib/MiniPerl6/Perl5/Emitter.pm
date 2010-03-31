@@ -444,7 +444,9 @@ class If {
 }
 
 class While {
+    has $.init;
     has $.cond;
+    has $.continue;
     has @.body;
     method emit {
         my $cond = $.cond;
@@ -453,8 +455,12 @@ class While {
         {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-          'while (' ~ $cond.emit ~ ') {' 
-        ~   (@.body.>>emit).join(';') 
+           'for ( '
+        ~  ( $.init     ?? $.init.emit      ~ '; ' !! '; ' )
+        ~  ( $cond      ?? $cond.emit       ~ '; ' !! '; ' )
+        ~  ( $.continue ?? $.continue.emit  ~ ' '  !! ' '  )
+        ~  ') { ' 
+        ~       (@.body.>>emit).join('; ') 
         ~ ' }'
     }
 }

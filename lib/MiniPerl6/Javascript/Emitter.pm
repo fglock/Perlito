@@ -624,13 +624,20 @@ class If {
 
 
 class While {
+    has $.init;
     has $.cond;
+    has $.continue;
     has @.body;
     method emit_javascript {
         my $body      = MiniPerl6::Javascript::LexicalBlock.new( block => @.body, needs_return => 0 );
         return
-            'while ( f_bool(' ~ $.cond.emit_javascript ~ ') ) { ' 
-              ~ '(function () { ' ~ $body.emit_javascript      ~ ' })() }' 
+           'for ( '
+        ~  ( $.init     ?? $.init.emit_javascript             ~ '; '  !! '; ' )
+        ~  ( $.cond     ?? 'f_bool(' ~ $.cond.emit_javascript ~ '); ' !! '; ' )
+        ~  ( $.continue ?? $.continue.emit_javascript         ~ ' '   !! ' '  )
+        ~  ') { '
+            ~ '(function () { ' ~ $body.emit_javascript      ~ ' })()' 
+        ~ ' }'
     }
 }
 

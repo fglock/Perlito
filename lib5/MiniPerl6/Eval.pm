@@ -174,7 +174,9 @@ sub eval { my $self = $_[0]; my $env = $_[1]; die('TODO - When') }
 {
 package While;
 sub new { shift; bless { @_ }, "While" }
+sub init { $_[0]->{init} };
 sub cond { $_[0]->{cond} };
+sub continue { $_[0]->{continue} };
 sub body { $_[0]->{body} };
 sub eval { my $self = $_[0]; my $env = $_[1]; die('TODO - While') }
 }

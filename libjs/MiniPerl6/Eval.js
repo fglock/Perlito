@@ -496,9 +496,15 @@ if (typeof While != 'object') {
 }
 (function () {
   var v__NAMESPACE = While;
+  // accessor init
+  While.v_init = null;
+  While.f_init = function () { return this.v_init }
   // accessor cond
   While.v_cond = null;
   While.f_cond = function () { return this.v_cond }
+  // accessor continue
+  While.v_continue = null;
+  While.f_continue = function () { return this.v_continue }
   // accessor body
   While.v_body = null;
   While.f_body = function () { return this.v_body }

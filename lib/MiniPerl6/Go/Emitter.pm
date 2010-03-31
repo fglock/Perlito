@@ -956,7 +956,9 @@ class When {
 }
 
 class While {
+    has $.init;
     has $.cond;
+    has $.continue;
     has @.body;
     method emit_go { 
         my $cond = $.cond;
@@ -965,8 +967,12 @@ class While {
         {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        return  'for ;tobool( ' ~ Call::emit_go_call( $cond, 'Bool' ) ~ ' ); { '  
-             ~     (MiniPerl6::Go::LexicalBlock.new( block => @.body, needs_return => 0 )).emit_go
+        return  'for ' 
+             ~    ( $.init ?? $.init.emit_go ~ '; ' !! ';' )
+             ~    'tobool( ' ~ Call::emit_go_call( $cond, 'Bool' ) ~ ' ); '  
+             ~    ( $.continue ?? $.continue.emit_go ~ ' ' !! '' )
+             ~  '{ '
+             ~      (MiniPerl6::Go::LexicalBlock.new( block => @.body, needs_return => 0 )).emit_go
              ~ ' }';
     }
 }

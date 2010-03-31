@@ -287,7 +287,9 @@ class When {
 }
 
 class While {
+    has $.init;
     has $.cond;
+    has $.continue;
     has @.body;
     method eval ($env) { die "TODO - While" }
 }

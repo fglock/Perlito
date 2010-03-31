@@ -72,9 +72,14 @@ token loop {
             \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
             { make While.new( cond => Val::Bit.new( bit => 1 ), body => $$<exp_stmts> ) }
         |
-            { die 'loop(;;){} not implemented' } 
-            # \( <exp> <.opt_ws> ';' <.opt_ws> <exp> <.opt_ws> ';' <.opt_ws> <exp> <.opt_ws> \) 
-            # \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
+            \( <.opt_ws> <exp_stmts>  <.opt_ws> \) <.opt_ws>
+            \{ <.opt_ws> <exp_stmts2> <.opt_ws> \}
+            { make While.new( 
+                        init     => ($$<exp_stmts>)[0],
+                        cond     => ($$<exp_stmts>)[1], 
+                        continue => ($$<exp_stmts>)[2], 
+                        body     =>  $$<exp_stmts2> )
+            }
         ]
 }
 

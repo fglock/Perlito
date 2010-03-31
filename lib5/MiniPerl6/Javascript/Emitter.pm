@@ -173,9 +173,11 @@ sub emit_javascript { my $self = $_[0]; (my  $cond = $self->{cond}); if ((Main::
 {
 package While;
 sub new { shift; bless { @_ }, "While" }
+sub init { $_[0]->{init} };
 sub cond { $_[0]->{cond} };
+sub continue { $_[0]->{continue} };
 sub body { $_[0]->{body} };
-sub emit_javascript { my $self = $_[0]; (my  $body = MiniPerl6::Javascript::LexicalBlock->new( 'block' => $self->{body},'needs_return' => 0, )); return('while ( f_bool(' . $self->{cond}->emit_javascript() . ') ) { ' . '(function () { ' . $body->emit_javascript() . ' })() }') }
+sub emit_javascript { my $self = $_[0]; (my  $body = MiniPerl6::Javascript::LexicalBlock->new( 'block' => $self->{body},'needs_return' => 0, )); return('for ( ' . ($self->{init} ? $self->{init}->emit_javascript() . '; ' : '; ') . ($self->{cond} ? 'f_bool(' . $self->{cond}->emit_javascript() . '); ' : '; ') . ($self->{continue} ? $self->{continue}->emit_javascript() . ' ' : ' ') . ') { ' . '(function () { ' . $body->emit_javascript() . ' })()' . ' }') }
 }
 
 {

@@ -485,16 +485,22 @@ if (typeof While != 'object') {
 }
 (function () {
   var v__NAMESPACE = While;
+  // accessor init
+  While.v_init = null;
+  While.f_init = function () { return this.v_init }
   // accessor cond
   While.v_cond = null;
   While.f_cond = function () { return this.v_cond }
+  // accessor continue
+  While.v_continue = null;
+  While.f_continue = function () { return this.v_continue }
   // accessor body
   While.v_body = null;
   While.f_body = function () { return this.v_body }
   // method emit_javascript
   While.f_emit_javascript = function () {
     var v_self = this;
-    try { var v_body;(v_body = function () { var tmp = {v_block: v_self.v_body,v_needs_return: 0,}; tmp.__proto__ = MiniPerl6$Javascript$LexicalBlock; return tmp }());throw(( f_string("while ( f_bool(") + f_string(( f_string(v_self.v_cond.f_emit_javascript()) + f_string(( f_string(") ) { ") + f_string(( f_string("(function () { ") + f_string(( f_string(v_body.f_emit_javascript()) + f_string(" })() }") )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_body;(v_body = function () { var tmp = {v_block: v_self.v_body,v_needs_return: 0,}; tmp.__proto__ = MiniPerl6$Javascript$LexicalBlock; return tmp }());throw(( f_string("for ( ") + f_string(( f_string(( f_bool(v_self.v_init) ? ( f_string(v_self.v_init.f_emit_javascript()) + f_string("; ") ) : "; ")) + f_string(( f_string(( f_bool(v_self.v_cond) ? ( f_string("f_bool(") + f_string(( f_string(v_self.v_cond.f_emit_javascript()) + f_string("); ") )) ) : "; ")) + f_string(( f_string(( f_bool(v_self.v_continue) ? ( f_string(v_self.v_continue.f_emit_javascript()) + f_string(" ") ) : " ")) + f_string(( f_string(") { ") + f_string(( f_string("(function () { ") + f_string(( f_string(v_body.f_emit_javascript()) + f_string(( f_string(" })()") + f_string(" }") )) )) )) )) )) )) )) )) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   While.f_emit_javascript;  // v8 bug workaround
 })();

@@ -648,12 +648,20 @@ class For {
 }
 
 class While {
+    has $.init;
     has $.cond;
+    has $.continue;
     has @.body;
     method emit_lisp { 
-          '(loop while (sv-bool ' ~ $.cond.emit_lisp ~ ') do ' 
-        ~    (MiniPerl6::Lisp::LexicalBlock.new( block => @.body )).emit_lisp
-        ~ ')';
+        my @body = @.body;
+        if $.continue {
+            @body.push( $.continue );
+        }
+          '(progn '
+        ~    ( $.init ?? $.init.emit_lisp ~ ' ' !! '' )
+        ~    '(loop while (sv-bool ' ~ $.cond.emit_lisp ~ ') do ' 
+        ~       (MiniPerl6::Lisp::LexicalBlock.new( block => @body )).emit_lisp
+        ~    '))';
     }
 }
 

@@ -171,9 +171,11 @@ sub emit { my $self = $_[0]; (my  $cond = $self->{cond}); if ((Main::isa($cond, 
 {
 package While;
 sub new { shift; bless { @_ }, "While" }
+sub init { $_[0]->{init} };
 sub cond { $_[0]->{cond} };
+sub continue { $_[0]->{continue} };
 sub body { $_[0]->{body} };
-sub emit { my $self = $_[0]; (my  $cond = $self->{cond}); if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  }; 'while (' . $cond->emit() . ') {' . Main::join([ map { $_->emit() } @{ $self->{body} } ], ';') . ' }' }
+sub emit { my $self = $_[0]; (my  $cond = $self->{cond}); if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  }; 'for ( ' . ($self->{init} ? $self->{init}->emit() . '; ' : '; ') . ($cond ? $cond->emit() . '; ' : '; ') . ($self->{continue} ? $self->{continue}->emit() . ' ' : ' ') . ') { ' . Main::join([ map { $_->emit() } @{ $self->{body} } ], '; ') . ' }' }
 }
 
 {

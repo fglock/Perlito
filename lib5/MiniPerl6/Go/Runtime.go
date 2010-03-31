@@ -154,6 +154,10 @@ func toBool(i bool) *Any {
 	var r Any = Bool(i)
 	return &r
 }
+func toBit(i int) *Any {
+	var r Any = Bool(i != 0)
+	return &r
+}
 func tobool(v *Any) bool { return bool((*((*v).(Bool_er).f_Bool(Capture{}))).(Bool)) }
 func (i Bool) f_Bool(Capture) *Any {
 	var v Any = i

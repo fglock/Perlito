@@ -289,9 +289,11 @@ sub emit_go { my $self = $_[0]; die('TODO - When') }
 {
 package While;
 sub new { shift; bless { @_ }, "While" }
+sub init { $_[0]->{init} };
 sub cond { $_[0]->{cond} };
+sub continue { $_[0]->{continue} };
 sub body { $_[0]->{body} };
-sub emit_go { my $self = $_[0]; (my  $cond = $self->{cond}); if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  }; return('for ;tobool( ' . Call::emit_go_call($cond, 'Bool') . ' ); { ' . MiniPerl6::Go::LexicalBlock->new( 'block' => $self->{body},'needs_return' => 0, )->emit_go() . ' }') }
+sub emit_go { my $self = $_[0]; (my  $cond = $self->{cond}); if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  }; return('for ' . ($self->{init} ? $self->{init}->emit_go() . '; ' : ';') . 'tobool( ' . Call::emit_go_call($cond, 'Bool') . ' ); ' . ($self->{continue} ? $self->{continue}->emit_go() . ' ' : '') . '{ ' . MiniPerl6::Go::LexicalBlock->new( 'block' => $self->{body},'needs_return' => 0, )->emit_go() . ' }') }
 }
 
 {

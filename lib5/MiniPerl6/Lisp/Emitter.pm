@@ -234,9 +234,11 @@ sub emit_lisp { my $self = $_[0]; (my  $cond = $self->{cond}); (my  $block = Min
 {
 package While;
 sub new { shift; bless { @_ }, "While" }
+sub init { $_[0]->{init} };
 sub cond { $_[0]->{cond} };
+sub continue { $_[0]->{continue} };
 sub body { $_[0]->{body} };
-sub emit_lisp { my $self = $_[0]; '(loop while (sv-bool ' . $self->{cond}->emit_lisp() . ') do ' . MiniPerl6::Lisp::LexicalBlock->new( 'block' => $self->{body}, )->emit_lisp() . ')' }
+sub emit_lisp { my $self = $_[0]; (my  $List_body = $self->{body}); if ($self->{continue}) { push( @{$List_body}, $self->{continue} ) } else {  }; '(progn ' . ($self->{init} ? $self->{init}->emit_lisp() . ' ' : '') . '(loop while (sv-bool ' . $self->{cond}->emit_lisp() . ') do ' . MiniPerl6::Lisp::LexicalBlock->new( 'block' => $List_body, )->emit_lisp() . '))' }
 }
 
 {
