@@ -280,7 +280,7 @@ class Call {
                 die "not implemented";
             }
             else {
-                return $.method ~ '( %{' ~ $invocant ~ '} )';
+                return '[' ~ $.method ~ '( %{' ~ $invocant ~ '} )' ~ ']';
             }
         }
 

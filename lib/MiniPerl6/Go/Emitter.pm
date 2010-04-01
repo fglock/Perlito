@@ -80,7 +80,7 @@ class CompUnit {
         my $str =
               '// instances of class ' ~ $.name ~ "\n"
             ~ 'type ' ~ $class_name ~ ' struct {' ~ "\n";
-        for (%.attributes).values -> $decl { 
+        for @((%.attributes).values) -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str = $str  ~ '  ' ~ 'v_' ~ ($decl.var).name ~ ' *Any;' ~ "\n"
             }
@@ -90,12 +90,12 @@ class CompUnit {
         $str = $str 
             ~ '// methods in class ' ~ $.name ~ "\n"
             ~ 'var Method_' ~ $class_name ~ ' struct {' ~ "\n";
-        for (%.methods).values -> $decl { 
+        for @((%.methods).values) -> $decl { 
             if $decl.isa( 'Method' ) {
                 $str = $str  ~ '  ' ~ 'f_' ~ $decl.name ~ ' func (*' ~ $class_name ~ ', Capture) *Any;' ~ "\n";
             }
         }
-        for (%.attributes).values -> $decl { 
+        for @((%.attributes).values) -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str = $str  ~ '  ' ~ 'f_' ~ ($decl.var).name ~ ' func (*' ~ $class_name ~ ', Capture) *Any;' ~ "\n";
             }
@@ -115,7 +115,7 @@ class CompUnit {
 
         $str = $str 
             ~ '// method wrappers for ' ~ $.name ~ "\n";
-        for (%.methods).values -> $decl { 
+        for @((%.methods).values) -> $decl { 
             if $decl.isa( 'Method' ) {
                 $str = $str  
                     ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ $decl.name ~ ' (v Capture) *Any {' ~ "\n"
@@ -123,7 +123,7 @@ class CompUnit {
                     ~ '}'~ "\n";
             }
         }
-        for (%.attributes).values -> $decl { 
+        for @((%.attributes).values) -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str = $str  
                     ~ 'func (v_self *' ~ $class_name ~ ') f_' ~ ($decl.var).name ~ ' (v Capture) *Any {' ~ "\n"
@@ -140,7 +140,7 @@ class CompUnit {
             $str = $str ~ 'func (v_self *' ~ $class_name ~ ') f_perl (v Capture) *Any { '
                     ~ 'return toStr( "::' ~ $.name ~ '(" ';
             my $sep = '';
-            for (%.attributes).values -> $decl { 
+            for @((%.attributes).values) -> $decl { 
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                     $str = $str 
                         ~ $sep 
