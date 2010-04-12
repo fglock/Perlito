@@ -712,6 +712,12 @@ class Apply {
                 ~ '}()';
         };
 
+        if $code eq 'go'            { 
+                                      return 'go func () { ' ~ "\n"
+                                                ~ '        ' ~ (MiniPerl6::Go::LexicalBlock.new( block => (@.arguments[0]).block, needs_return => 0, top_level => 1 )).emit_go ~ "\n"
+                                                ~ '    }()'
+                                    }
+
         if $code eq 'say'           { return 'f_print( Capture{ p : []*Any{ '    
                                                 ~ (@.arguments.>>emit_go).join(', ') 
                                                 ~ ', toStr("\n") } } )'
