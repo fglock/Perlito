@@ -162,7 +162,8 @@ class Var {
 class Bind {
     has $.parameters;
     has $.arguments;
-    method emit {
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
         if $.parameters.isa( 'Lit::Array' ) {
             
             #  [$a, [$b, $c]] = [1, [2, 3]]
@@ -233,7 +234,8 @@ class Bind {
             return $str ~ $.parameters.emit ~ "\n# }\n";
         };
     
-        $.parameters.emit ~ ' = ' ~ $.arguments.emit;
+        Python::tab($level) ~ 
+            $.parameters.emit ~ ' = ' ~ $.arguments.emit;
     }
 }
 
@@ -359,8 +361,12 @@ class If {
     has $.cond;
     has @.body;
     has @.otherwise;
-    method emit {
-        'do { if (' ~ $.cond.emit ~ ') { ' ~ (@.body.>>emit).join(';') ~ ' } else { ' ~ (@.otherwise.>>emit).join(';') ~ ' } }';
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
+        Python::tab($level) ~   'if ' ~ $.cond.emit ~ ":\n" 
+            ~ (@.body.>>emit_indented($level+1)).join('\n') ~ "\n"
+        ~ Python::tab($level) ~ "else:\n" 
+            ~ (@.otherwise.>>emit_indented($level+1)).join('\n');
     }
 }
 

@@ -136,7 +136,8 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
-sub emit { my $self = $_[0]; if (Main::isa($self->{parameters}, 'Lit::Array')) { (my  $a = $self->{parameters}->array());(my  $str = 'if True:
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; if (Main::isa($self->{parameters}, 'Lit::Array')) { (my  $a = $self->{parameters}->array());(my  $str = 'if True:
 # {
  ');(my  $i = 0);for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var,'arguments' => Index->new( 'obj' => $self->{arguments},'index' => Val::Int->new( 'int' => $i, ), ), ));($str = $str . ' ' . $bind->emit() . '
 ');($i = ($i + 1)) };return($str . $self->{parameters}->emit() . '
@@ -151,7 +152,7 @@ sub emit { my $self = $_[0]; if (Main::isa($self->{parameters}, 'Lit::Array')) {
 ');(my  $i = 0);my  $arg;for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => Call->new( 'invocant' => $b,'method' => $var->[0]->buf(),'arguments' => [],'hyper' => 0, ), ));($str = $str . ' ' . $bind->emit() . '
 ');($i = ($i + 1)) };return($str . $self->{parameters}->emit() . '
 # }
-') } else {  }; $self->{parameters}->emit() . ' = ' . $self->{arguments}->emit() }
+') } else {  }; Python::tab($level) . $self->{parameters}->emit() . ' = ' . $self->{arguments}->emit() }
 }
 
 {
@@ -198,7 +199,11 @@ sub new { shift; bless { @_ }, "If" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
-sub emit { my $self = $_[0]; 'do { if (' . $self->{cond}->emit() . ') { ' . Main::join([ map { $_->emit() } @{ $self->{body} } ], ';') . ' } else { ' . Main::join([ map { $_->emit() } @{ $self->{otherwise} } ], ';') . ' } }' }
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'if ' . $self->{cond}->emit() . ':
+' . Main::join([ map { $_->emit_indented(($level + 1)) } @{ $self->{body} } ], '\\n') . '
+' . Python::tab($level) . 'else:
+' . Main::join([ map { $_->emit_indented(($level + 1)) } @{ $self->{otherwise} } ], '\\n') }
 }
 
 {
