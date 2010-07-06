@@ -51,14 +51,15 @@ sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $
 package Val::Buf;
 sub new { shift; bless { @_ }, "Val::Buf" }
 sub buf { $_[0]->{buf} };
-sub emit { my $self = $_[0]; '"""' . $self->{buf} . '"""' };
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
 sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . '"""' . $self->{buf} . '"""' }
 }
 
 {
 package Val::Undef;
 sub new { shift; bless { @_ }, "Val::Undef" }
-sub emit { my $self = $_[0]; '(None)' }
+sub emit { my $self = $_[0]; 'None' };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'None' }
 }
 
 {
@@ -66,21 +67,24 @@ package Val::Object;
 sub new { shift; bless { @_ }, "Val::Object" }
 sub class { $_[0]->{class} };
 sub fields { $_[0]->{fields} };
-sub emit { my $self = $_[0]; 'bless(' . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . ')' }
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . Main::perl($self->{class}, ) . '(' . Main::perl($self->{fields}, ) . ')' }
 }
 
 {
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
-sub emit { my $self = $_[0]; '[' . Main::join([ map { $_->emit() } @{ $self->{array1} } ], ', ') . ']' }
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . '[' . Main::join([ map { $_->emit() } @{ $self->{array1} } ], ', ') . ']' }
 }
 
 {
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
-sub emit { my $self = $_[0]; (my  $fields = $self->{hash1}); (my  $str = ''); for my $field ( @{$fields} ) { ($str = $str . $field->[0]->emit() . ' = ' . $field->[1]->emit() . ',') }; 'dict( ' . $str . ' )' }
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{hash1}); my  $List_dict; for my $field ( @{$fields} ) { push( @{$List_dict}, $field->[0]->emit() . ':' . $field->[1]->emit() ) }; Python::tab($level) . '{' . Main::join($List_dict, ', ') . '}' }
 }
 
 {
@@ -94,7 +98,8 @@ package Lit::Object;
 sub new { shift; bless { @_ }, "Lit::Object" }
 sub class { $_[0]->{class} };
 sub fields { $_[0]->{fields} };
-sub emit { my $self = $_[0]; (my  $fields = $self->{fields}); (my  $str = ''); for my $field ( @{$fields} ) { ($str = $str . $field->[0]->emit() . ' = ' . $field->[1]->emit() . ',') }; $self->{class} . '( ' . $str . ' )' }
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{fields}); (my  $str = ''); for my $field ( @{$fields} ) { ($str = $str . $field->[0]->emit() . ' = ' . $field->[1]->emit() . ',') }; Python::tab($level) . $self->{class} . '( ' . $str . ' )' }
 }
 
 {
@@ -102,7 +107,8 @@ package Index;
 sub new { shift; bless { @_ }, "Index" }
 sub obj { $_[0]->{obj} };
 sub index_exp { $_[0]->{index_exp} };
-sub emit { my $self = $_[0]; $self->{obj}->emit() . '[' . $self->{index_exp}->emit() . ']' }
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{obj}->emit() . '[' . $self->{index_exp}->emit() . ']' }
 }
 
 {
@@ -110,7 +116,8 @@ package Lookup;
 sub new { shift; bless { @_ }, "Lookup" }
 sub obj { $_[0]->{obj} };
 sub index_exp { $_[0]->{index_exp} };
-sub emit { my $self = $_[0]; $self->{obj}->emit() . '[' . $self->{index_exp}->emit() . ']' }
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{obj}->emit() . '[' . $self->{index_exp}->emit() . ']' }
 }
 
 {
@@ -119,7 +126,8 @@ sub new { shift; bless { @_ }, "Var" }
 sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub name { $_[0]->{name} };
-sub emit { my $self = $_[0]; (my  $table = { '$' => 'scalar_','@' => 'List_','%' => 'Hash_','&' => 'Code_', }); (($self->{twigil} eq '.') ? 'self.' . $self->{name} : (($self->{name} eq '/') ? $table->{$self->{sigil}} . 'MATCH' : $table->{$self->{sigil}} . $self->{name})) };
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $table = { '$' => 'scalar_','@' => 'List_','%' => 'Hash_','&' => 'Code_', }); return(Python::tab($level) . (($self->{twigil} eq '.') ? 'self.' . $self->{name} : (($self->{name} eq '/') ? $table->{$self->{sigil}} . 'MATCH' : $table->{$self->{sigil}} . $self->{name}))) };
 sub name { my $self = $_[0]; $self->{name} }
 }
 

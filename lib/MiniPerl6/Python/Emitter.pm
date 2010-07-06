@@ -9,7 +9,7 @@ class CompUnit {
     has %.attributes;
     has %.methods;
     has @.body;
-    method emit { $self.emit_indented( 0 ) }
+    method emit { $self.emit_indented(0) }
     method emit_indented( $level ) {
         Python::tab($level) ~ 'class ' ~ $.name ~ ":\n" ~ 
             (@.body.>>emit_indented($level + 1)).join( "\n" ) ~ "\n"
@@ -42,41 +42,49 @@ class Val::Num {
 
 class Val::Buf {
     has $.buf;
-    method emit { '"""' ~ $.buf ~ '"""' }
+    method emit { $self.emit_indented(0) }
     method emit_indented( $level ) {
         Python::tab($level) ~ '"""' ~ $.buf ~ '"""' 
     }
 }
 
 class Val::Undef {
-    method emit { '(None)' }
+    method emit { 'None' }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ 'None' 
+    }
 }
 
 class Val::Object {
     has $.class;
     has %.fields;
-    method emit {
-        # fix
-        'bless(' ~ %.fields.perl ~ ', ' ~ $.class.perl ~ ')';
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ 
+            $.class.perl ~ '(' ~ %.fields.perl ~ ')';
     }
 }
 
 class Lit::Array {
     has @.array1;
-    method emit {
-        '[' ~ (@.array1.>>emit).join(', ') ~ ']';
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ 
+            '[' ~ (@.array1.>>emit).join(', ') ~ ']';
     }
 }
 
 class Lit::Hash {
     has @.hash1;
-    method emit {
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
         my $fields = @.hash1;
-        my $str = '';
+        my @dict;
         for @$fields -> $field { 
-            $str = $str ~ ($field[0]).emit ~ ' = ' ~ ($field[1]).emit ~ ',';
+            push @dict, (($field[0]).emit ~ ':' ~ ($field[1]).emit);
         }; 
-        'dict( ' ~ $str ~ ' )';
+        Python::tab($level) ~ 
+            '{' ~ @dict.join(', ') ~ '}';
     }
 }
 
@@ -88,31 +96,35 @@ class Lit::Code {
 class Lit::Object {
     has $.class;
     has @.fields;
-    method emit {
-        # $.class ~ '->new( ' ~ @.fields.>>emit.join(', ') ~ ' )';
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
         my $fields = @.fields;
         my $str = '';
-        # say @fields.map(sub { $_[0].emit ~ ' => ' ~ $_[1].emit}).join(', ') ~ ')';
         for @$fields -> $field { 
             $str = $str ~ ($field[0]).emit ~ ' = ' ~ ($field[1]).emit ~ ',';
         }; 
-        $.class ~ '( ' ~ $str ~ ' )';
+        Python::tab($level) ~ 
+            $.class ~ '( ' ~ $str ~ ' )';
     }
 }
 
 class Index {
     has $.obj;
     has $.index_exp;
-    method emit {
-        $.obj.emit ~ '[' ~ $.index_exp.emit ~ ']';
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ 
+            $.obj.emit ~ '[' ~ $.index_exp.emit ~ ']';
     }
 }
 
 class Lookup {
     has $.obj;
     has $.index_exp;
-    method emit {
-        $.obj.emit ~ '[' ~ $.index_exp.emit ~ ']';
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ 
+            $.obj.emit ~ '[' ~ $.index_exp.emit ~ ']';
     }
 }
 
@@ -120,7 +132,8 @@ class Var {
     has $.sigil;
     has $.twigil;
     has $.name;
-    method emit {
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
         # Normalize the sigil here into $
         # $x    => $x
         # @x    => $List_x
@@ -132,11 +145,13 @@ class Var {
             '%' => 'Hash_',
             '&' => 'Code_',
         };
-           ( $.twigil eq '.' )
-        ?? ( 'self.' ~ $.name )
-        !!  (    ( $.name eq '/' )
-            ??   ( $table{$.sigil} ~ 'MATCH' )
-            !!   ( $table{$.sigil} ~ $.name )
+        return Python::tab($level) ~ (
+               ( $.twigil eq '.' )
+            ?? ( 'self.' ~ $.name )
+            !!  (    ( $.name eq '/' )
+                ??   ( $table{$.sigil} ~ 'MATCH' )
+                !!   ( $table{$.sigil} ~ $.name )
+                )
             )
     };
     method name {
