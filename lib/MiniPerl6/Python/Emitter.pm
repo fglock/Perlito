@@ -26,6 +26,12 @@ class MiniPerl6::Python::LexicalBlock {
         for @anon_block -> $stmt {
             @tmp.push( $stmt );
         }
+
+        my $last_statement;
+        if $.needs_return {
+            $last_statement = pop @.block;
+        }
+
         for @.block -> $stmt {
             @anon_block = [];
             my $s2 = $stmt.emit_python_indented($level);
@@ -35,6 +41,38 @@ class MiniPerl6::Python::LexicalBlock {
             }
             push @s, $s2;
         }
+
+        if $.needs_return && $last_statement {
+            @anon_block = [];
+            my $s2;
+            if $last_statement.isa( 'If' ) {
+                my $cond      = $last_statement.cond;
+                my $body      = $last_statement.body;
+                my $otherwise = $last_statement.otherwise;
+                my $has_otherwise = $otherwise ?? 1 !! 0;
+                $body      = MiniPerl6::Python::LexicalBlock.new( block => $body, needs_return => 1 );
+                $otherwise = MiniPerl6::Python::LexicalBlock.new( block => $otherwise, needs_return => 1 );
+                $s2 = Python::tab($level) ~ 'if ' ~ $cond.emit_python ~ ":\n" 
+                    ~ $body.emit_python_indented( $level + 1 );
+                if ( $has_otherwise ) {
+                    $s2 = $s2 ~ "\n"
+                        ~ Python::tab($level) ~ "else:\n" 
+                            ~ $otherwise.emit_python_indented($level+1);
+                }
+            }
+            elsif $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
+                $s2 = $last_statement.emit_python_indented( $level );
+            }
+            else {
+                $s2 = Python::tab($level) ~ 'return ' ~ $last_statement.emit_python
+            }
+
+            for @anon_block -> $stmt {
+                @s.push( $stmt.emit_python_indented( $level ) );
+            }
+            @s.push( $s2 ); 
+        }
+
         @anon_block = @tmp;
         return @s.join( "\n" );
     }
@@ -376,13 +414,20 @@ class Apply {
         if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit_python).join(' > ')  ~ ')' };
 
         if $code eq 'ternary:<?? !!>' { 
-            return '(' ~ (@.arguments[0]).emit_python ~
-                 ' ? ' ~ (@.arguments[1]).emit_python ~
-                 ' : ' ~ (@.arguments[2]).emit_python ~
-                  ')' };
+            my $ast = 
+                Do.new( 
+                    block => [
+                        If.new(
+                            cond      => (@.arguments[0]),
+                            body      => [ @.arguments[1] ],
+                            otherwise => [ @.arguments[2] ],
+                        ),
+                    ]
+                );
+            return $ast.emit_python;
+        }
         
         $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
-        # '(' ~ $.code.emit_python ~ ')->(' ~ @.arguments.>>emit.join(', ') ~ ')';
     }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ $self.emit_python 
@@ -511,7 +556,9 @@ class Sub {
         for @$pos -> $field { 
             @args.push( $field.emit_python );
         };
-        my $block = MiniPerl6::Python::LexicalBlock.new( block => @.block );
+        my $block = MiniPerl6::Python::LexicalBlock.new( 
+                block => @.block,
+                needs_return => 1 );
         Python::tab($level) ~ 'def ' ~ $.name ~ "(" ~ @args.join(", ") ~ "):\n" 
             ~ $block.emit_python_indented($level + 1) 
     }
