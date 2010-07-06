@@ -306,8 +306,8 @@ class Apply {
 
         if $code eq 'self'       { return 'self' };
 
-        if $code eq 'say'        { return 'Main::say('   ~ (@.arguments.>>emit).join(', ') ~ ')' };
-        if $code eq 'print'      { return 'print(' ~ (@.arguments.>>emit).join(', ') ~ ')' };
+        if $code eq 'say'        { return 'miniperl6.python.runtime.mp6_say('   ~ (@.arguments.>>emit).join(', ') ~ ')' } 
+        if $code eq 'print'      { return 'miniperl6.python.runtime.mp6_print(' ~ (@.arguments.>>emit).join(', ') ~ ')' }
         if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>emit).join(', ') ~ ')' };
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit).join(' ')    ~ ']' };

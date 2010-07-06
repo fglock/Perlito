@@ -1,4 +1,6 @@
 
+rm -rf libpy/
+
 mkdir libpy
 touch libpy/__init__.py
 
