@@ -10,15 +10,25 @@ sub tab { my $level = $_[0]; ('    ' x $level) }
 }
 
 {
+package MiniPerl6::Python::LexicalBlock;
+sub new { shift; bless { @_ }, "MiniPerl6::Python::LexicalBlock" }
+sub block { $_[0]->{block} };
+sub needs_return { $_[0]->{needs_return} };
+sub top_level { $_[0]->{top_level} };
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1];  }
+}
+
+{
 package CompUnit;
 sub new { shift; bless { @_ }, "CompUnit" }
 sub name { $_[0]->{name} };
 sub attributes { $_[0]->{attributes} };
 sub methods { $_[0]->{methods} };
 sub body { $_[0]->{body} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'class ' . $self->{name} . ':
-' . Main::join([ map { $_->emit_indented(($level + 1)) } @{ $self->{body} } ], '
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'class ' . $self->{name} . ':
+' . Main::join([ map { $_->emit_python_indented(($level + 1)) } @{ $self->{body} } ], '
 ') . '
 ' }
 }
@@ -27,39 +37,39 @@ sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . '
 package Val::Int;
 sub new { shift; bless { @_ }, "Val::Int" }
 sub int { $_[0]->{int} };
-sub emit { my $self = $_[0]; $self->{int} };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{int} }
+sub emit_python { my $self = $_[0]; $self->{int} };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{int} }
 }
 
 {
 package Val::Bit;
 sub new { shift; bless { @_ }, "Val::Bit" }
 sub bit { $_[0]->{bit} };
-sub emit { my $self = $_[0]; $self->{bit} };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{bit} }
+sub emit_python { my $self = $_[0]; $self->{bit} };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{bit} }
 }
 
 {
 package Val::Num;
 sub new { shift; bless { @_ }, "Val::Num" }
 sub num { $_[0]->{num} };
-sub emit { my $self = $_[0]; $self->{num} };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{num} }
+sub emit_python { my $self = $_[0]; $self->{num} };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{num} }
 }
 
 {
 package Val::Buf;
 sub new { shift; bless { @_ }, "Val::Buf" }
 sub buf { $_[0]->{buf} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . '"""' . $self->{buf} . '"""' }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . '"""' . $self->{buf} . '"""' }
 }
 
 {
 package Val::Undef;
 sub new { shift; bless { @_ }, "Val::Undef" }
-sub emit { my $self = $_[0]; 'None' };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'None' }
+sub emit_python { my $self = $_[0]; 'None' };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'None' }
 }
 
 {
@@ -67,24 +77,24 @@ package Val::Object;
 sub new { shift; bless { @_ }, "Val::Object" }
 sub class { $_[0]->{class} };
 sub fields { $_[0]->{fields} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . Main::perl($self->{class}, ) . '(' . Main::perl($self->{fields}, ) . ')' }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . Main::perl($self->{class}, ) . '(' . Main::perl($self->{fields}, ) . ')' }
 }
 
 {
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . '[' . Main::join([ map { $_->emit() } @{ $self->{array1} } ], ', ') . ']' }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . '[' . Main::join([ map { $_->emit_python() } @{ $self->{array1} } ], ', ') . ']' }
 }
 
 {
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{hash1}); my  $List_dict; for my $field ( @{$fields} ) { push( @{$List_dict}, $field->[0]->emit() . ':' . $field->[1]->emit() ) }; Python::tab($level) . '{' . Main::join($List_dict, ', ') . '}' }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{hash1}); my  $List_dict; for my $field ( @{$fields} ) { push( @{$List_dict}, $field->[0]->emit_python() . ':' . $field->[1]->emit_python() ) }; Python::tab($level) . '{' . Main::join($List_dict, ', ') . '}' }
 }
 
 {
@@ -98,8 +108,8 @@ package Lit::Object;
 sub new { shift; bless { @_ }, "Lit::Object" }
 sub class { $_[0]->{class} };
 sub fields { $_[0]->{fields} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{fields}); (my  $str = ''); for my $field ( @{$fields} ) { ($str = $str . $field->[0]->emit() . ' = ' . $field->[1]->emit() . ',') }; Python::tab($level) . $self->{class} . '( ' . $str . ' )' }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{fields}); (my  $str = ''); for my $field ( @{$fields} ) { ($str = $str . $field->[0]->emit_python() . ' = ' . $field->[1]->emit_python() . ',') }; Python::tab($level) . $self->{class} . '( ' . $str . ' )' }
 }
 
 {
@@ -107,8 +117,8 @@ package Index;
 sub new { shift; bless { @_ }, "Index" }
 sub obj { $_[0]->{obj} };
 sub index_exp { $_[0]->{index_exp} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{obj}->emit() . '[' . $self->{index_exp}->emit() . ']' }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{obj}->emit_python() . '[' . $self->{index_exp}->emit_python() . ']' }
 }
 
 {
@@ -116,8 +126,8 @@ package Lookup;
 sub new { shift; bless { @_ }, "Lookup" }
 sub obj { $_[0]->{obj} };
 sub index_exp { $_[0]->{index_exp} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{obj}->emit() . '[' . $self->{index_exp}->emit() . ']' }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{obj}->emit_python() . '[' . $self->{index_exp}->emit_python() . ']' }
 }
 
 {
@@ -126,8 +136,8 @@ sub new { shift; bless { @_ }, "Var" }
 sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub name { $_[0]->{name} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $table = { '$' => '','@' => 'List_','%' => 'Hash_','&' => 'Code_', }); return(Python::tab($level) . (($self->{twigil} eq '.') ? 'self.' . $self->{name} : (($self->{name} eq '/') ? $table->{$self->{sigil}} . 'MATCH' : $table->{$self->{sigil}} . $self->{name}))) };
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $table = { '$' => '','@' => 'List_','%' => 'Hash_','&' => 'Code_', }); return(Python::tab($level) . (($self->{twigil} eq '.') ? 'self.' . $self->{name} : (($self->{name} eq '/') ? $table->{$self->{sigil}} . 'MATCH' : $table->{$self->{sigil}} . $self->{name}))) };
 sub name { my $self = $_[0]; $self->{name} }
 }
 
@@ -136,31 +146,31 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; if (Main::isa($self->{parameters}, 'Lit::Array')) { (my  $a = $self->{parameters}->array());(my  $str = 'if True:
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; if (Main::isa($self->{parameters}, 'Lit::Array')) { (my  $a = $self->{parameters}->array());(my  $str = 'if True:
 # {
- ');(my  $i = 0);for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var,'arguments' => Index->new( 'obj' => $self->{arguments},'index' => Val::Int->new( 'int' => $i, ), ), ));($str = $str . ' ' . $bind->emit() . '
-');($i = ($i + 1)) };return($str . $self->{parameters}->emit() . '
+ ');(my  $i = 0);for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var,'arguments' => Index->new( 'obj' => $self->{arguments},'index' => Val::Int->new( 'int' => $i, ), ), ));($str = $str . ' ' . $bind->emit_python() . '
+');($i = ($i + 1)) };return($str . $self->{parameters}->emit_python() . '
 # }
 ') } else {  }; if (Main::isa($self->{parameters}, 'Lit::Hash')) { (my  $a = $self->{parameters}->hash());(my  $b = $self->{arguments}->hash());(my  $str = 'if 1:
 #{
-');(my  $i = 0);my  $arg;for my $var ( @{$a} ) { ($arg = Val::Undef->new(  ));for my $var2 ( @{$b} ) { if (($var2->[0]->buf() eq $var->[0]->buf())) { ($arg = $var2->[1]) } else {  } };(my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => $arg, ));($str = $str . ' ' . $bind->emit() . '
-');($i = ($i + 1)) };return($str . $self->{parameters}->emit() . '
+');(my  $i = 0);my  $arg;for my $var ( @{$a} ) { ($arg = Val::Undef->new(  ));for my $var2 ( @{$b} ) { if (($var2->[0]->buf() eq $var->[0]->buf())) { ($arg = $var2->[1]) } else {  } };(my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => $arg, ));($str = $str . ' ' . $bind->emit_python() . '
+');($i = ($i + 1)) };return($str . $self->{parameters}->emit_python() . '
 # }
 ') } else {  }; if (Main::isa($self->{parameters}, 'Lit::Object')) { (my  $class = $self->{parameters}->class());(my  $a = $self->{parameters}->fields());(my  $b = $self->{arguments});(my  $str = 'do { ');(my  $str = 'if 1:
 # {
-');(my  $i = 0);my  $arg;for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => Call->new( 'invocant' => $b,'method' => $var->[0]->buf(),'arguments' => [],'hyper' => 0, ), ));($str = $str . ' ' . $bind->emit() . '
-');($i = ($i + 1)) };return($str . $self->{parameters}->emit() . '
+');(my  $i = 0);my  $arg;for my $var ( @{$a} ) { (my  $bind = Bind->new( 'parameters' => $var->[1],'arguments' => Call->new( 'invocant' => $b,'method' => $var->[0]->buf(),'arguments' => [],'hyper' => 0, ), ));($str = $str . ' ' . $bind->emit_python() . '
+');($i = ($i + 1)) };return($str . $self->{parameters}->emit_python() . '
 # }
-') } else {  }; Python::tab($level) . $self->{parameters}->emit() . ' = ' . $self->{arguments}->emit() }
+') } else {  }; Python::tab($level) . $self->{parameters}->emit_python() . ' = ' . $self->{arguments}->emit() }
 }
 
 {
 package Proto;
 sub new { shift; bless { @_ }, "Proto" }
 sub name { $_[0]->{name} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{name} }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{name} }
 }
 
 {
@@ -170,9 +180,9 @@ sub invocant { $_[0]->{invocant} };
 sub hyper { $_[0]->{hyper} };
 sub method { $_[0]->{method} };
 sub arguments { $_[0]->{arguments} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $invocant = $self->{invocant}->emit()); if ((($self->{method} eq 'perl') || (($self->{method} eq 'yaml') || (($self->{method} eq 'say') || (($self->{method} eq 'join') || (($self->{method} eq 'chars') || ($self->{method} eq 'isa'))))))) { if ($self->{hyper}) { return('map(lambda: Main.' . $self->{method} . '( self, ' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ') , ' . $invocant . ')
-') } else { return('Main.' . $self->{method} . '(' . $invocant . ', ' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } } else {  }; (my  $meth = $self->{method}); if (($meth eq 'postcircumfix:<( )>')) { ($meth = '') } else {  }; (my  $call = '.' . $meth . '(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')'); if ($self->{hyper}) { Python::tab($level) . '[ map { $_' . $call . ' } @{ ' . $invocant . ' } ]' } else { Python::tab($level) . $invocant . $call } }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $invocant = $self->{invocant}->emit()); if ((($self->{method} eq 'perl') || (($self->{method} eq 'yaml') || (($self->{method} eq 'say') || (($self->{method} eq 'join') || (($self->{method} eq 'chars') || ($self->{method} eq 'isa'))))))) { if ($self->{hyper}) { return('map(lambda: Main.' . $self->{method} . '( self, ' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ') , ' . $invocant . ')
+') } else { return('Main.' . $self->{method} . '(' . $invocant . ', ' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')') } } else {  }; (my  $meth = $self->{method}); if (($meth eq 'postcircumfix:<( )>')) { ($meth = '') } else {  }; (my  $call = '.' . $meth . '(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')'); if ($self->{hyper}) { Python::tab($level) . '[ map { $_' . $call . ' } @{ ' . $invocant . ' } ]' } else { Python::tab($level) . $invocant . $call } }
 }
 
 {
@@ -180,17 +190,17 @@ package Apply;
 sub new { shift; bless { @_ }, "Apply" }
 sub code { $_[0]->{code} };
 sub arguments { $_[0]->{arguments} };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->emit() };
-sub emit { my $self = $_[0]; (my  $code = $self->{code}); if (Main::isa($code, 'Str')) {  } else { return('(' . $self->{code}->emit() . ').(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') }; if (($code eq 'self')) { return('self') } else {  }; if (($code eq 'say')) { return('miniperl6.python.runtime.mp6_say(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'print')) { return('miniperl6.python.runtime.mp6_print(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'warn')) { return('warn(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'array')) { return('[' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ']') } else {  }; if (($code eq 'prefix:<~>')) { return('("" . ' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ')') } else {  }; if (($code eq 'prefix:<!>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ' ? 0 : 1)') } else {  }; if (($code eq 'prefix:<?>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ' ? 1 : 0)') } else {  }; if (($code eq 'prefix:<$>')) { return('${' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'prefix:<@>')) { return('@{' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'prefix:<%>')) { return('%{' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'infix:<~>')) { return('(str(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ') + str(') . '))') } else {  }; if (($code eq 'infix:<+>')) { return('(float(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ') + float(') . '))') } else {  }; if (($code eq 'infix:<->')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' - ') . ')') } else {  }; if (($code eq 'infix:<*>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' * ') . ')') } else {  }; if (($code eq 'infix:</>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' / ') . ')') } else {  }; if (($code eq 'infix:<&&>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' and ') . ')') } else {  }; if (($code eq 'infix:<||>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' or ') . ')') } else {  }; if (($code eq 'infix:<eq>')) { return('(str(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ') == str(') . '))') } else {  }; if (($code eq 'infix:<ne>')) { return('(str(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ') != str(') . '))') } else {  }; if (($code eq 'infix:<==>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' == ') . ')') } else {  }; if (($code eq 'infix:<!=>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' != ') . ')') } else {  }; if (($code eq 'infix:<<>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' < ') . ')') } else {  }; if (($code eq 'infix:<>>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' > ') . ')') } else {  }; if (($code eq 'ternary:<?? !!>')) { return('(' . $self->{arguments}->[0]->emit() . ' ? ' . $self->{arguments}->[1]->emit() . ' : ' . $self->{arguments}->[2]->emit() . ')') } else {  }; $self->{code} . '(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')' };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->emit() }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->emit() };
+sub emit_python { my $self = $_[0]; (my  $code = $self->{code}); if (Main::isa($code, 'Str')) {  } else { return('(' . $self->{code}->emit_python() . ').(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')') }; if (($code eq 'self')) { return('self') } else {  }; if (($code eq 'say')) { return('miniperl6.python.runtime.mp6_say(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'print')) { return('miniperl6.python.runtime.mp6_print(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'warn')) { return('warn(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'array')) { return('[' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' ') . ']') } else {  }; if (($code eq 'prefix:<~>')) { return('("" . ' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' ') . ')') } else {  }; if (($code eq 'prefix:<!>')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' ') . ' ? 0 : 1)') } else {  }; if (($code eq 'prefix:<?>')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' ') . ' ? 1 : 0)') } else {  }; if (($code eq 'prefix:<$>')) { return('${' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'prefix:<@>')) { return('@{' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'prefix:<%>')) { return('%{' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'infix:<~>')) { return('(str(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ') + str(') . '))') } else {  }; if (($code eq 'infix:<+>')) { return('(float(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ') + float(') . '))') } else {  }; if (($code eq 'infix:<->')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' - ') . ')') } else {  }; if (($code eq 'infix:<*>')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' * ') . ')') } else {  }; if (($code eq 'infix:</>')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' / ') . ')') } else {  }; if (($code eq 'infix:<&&>')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' and ') . ')') } else {  }; if (($code eq 'infix:<||>')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' or ') . ')') } else {  }; if (($code eq 'infix:<eq>')) { return('(str(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ') == str(') . '))') } else {  }; if (($code eq 'infix:<ne>')) { return('(str(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ') != str(') . '))') } else {  }; if (($code eq 'infix:<==>')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' == ') . ')') } else {  }; if (($code eq 'infix:<!=>')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' != ') . ')') } else {  }; if (($code eq 'infix:<<>')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' < ') . ')') } else {  }; if (($code eq 'infix:<>>')) { return('(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ' > ') . ')') } else {  }; if (($code eq 'ternary:<?? !!>')) { return('(' . $self->{arguments}->[0]->emit_python() . ' ? ' . $self->{arguments}->[1]->emit_python() . ' : ' . $self->{arguments}->[2]->emit_python() . ')') } else {  }; $self->{code} . '(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')' };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->emit_python() }
 }
 
 {
 package Return;
 sub new { shift; bless { @_ }, "Return" }
 sub result { $_[0]->{result} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'return ' . $self->{result}->emit() }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'return ' . $self->{result}->emit() }
 }
 
 {
@@ -199,11 +209,11 @@ sub new { shift; bless { @_ }, "If" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $has_body = (@{$self->{body}} ? 1 : 0)); (my  $has_otherwise = (@{$self->{otherwise}} ? 1 : 0)); (my  $s = Python::tab($level) . 'if ' . $self->{cond}->emit() . ':
-' . Main::join([ map { $_->emit_indented(($level + 1)) } @{ $self->{body} } ], '\\n')); if ($has_otherwise) { ($s = $s . '
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $has_body = (@{$self->{body}} ? 1 : 0)); (my  $has_otherwise = (@{$self->{otherwise}} ? 1 : 0)); (my  $s = Python::tab($level) . 'if ' . $self->{cond}->emit_python() . ':
+' . Main::join([ map { $_->emit_python_indented(($level + 1)) } @{ $self->{body} } ], '\\n')); if ($has_otherwise) { ($s = $s . '
 ' . Python::tab($level) . 'else:
-' . Main::join([ map { $_->emit_indented(($level + 1)) } @{ $self->{otherwise} } ], '\\n')) } else {  }; return($s) }
+' . Main::join([ map { $_->emit_python_indented(($level + 1)) } @{ $self->{otherwise} } ], '\\n')) } else {  }; return($s) }
 }
 
 {
@@ -212,7 +222,7 @@ sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub topic { $_[0]->{topic} };
-sub emit { my $self = $_[0]; (my  $cond = $self->{cond}); if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  }; 'do { for my ' . $self->{topic}->emit() . ' ( ' . $cond->emit() . ' ) { ' . Main::join([ map { $_->emit() } @{ $self->{body} } ], ';') . ' } }' }
+sub emit_python { my $self = $_[0]; (my  $cond = $self->{cond}); if ((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) { ($cond = Apply->new( 'code' => 'prefix:<@>','arguments' => [$cond], )) } else {  }; 'do { for my ' . $self->{topic}->emit_python() . ' ( ' . $cond->emit_python() . ' ) { ' . Main::join([ map { $_->emit_python() } @{ $self->{body} } ], ';') . ' } }' }
 }
 
 {
@@ -221,8 +231,8 @@ sub new { shift; bless { @_ }, "Decl" }
 sub decl { $_[0]->{decl} };
 sub type { $_[0]->{type} };
 sub var { $_[0]->{var} };
-sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $decl = $self->{decl}); (my  $name = $self->{var}->name()); Python::tab($level) . (($decl eq 'has') ? 'sub ' . $name . ' { ' . '@_ == 1 ' . '? ( $_[0]->{' . $name . '} ) ' . ': ( $_[0]->{' . $name . '} = $_[1] ) ' . '}' : ($self->{type} ? $self->{type} . ' ' . $self->{var}->emit() : $self->{var}->emit())) }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $decl = $self->{decl}); (my  $name = $self->{var}->name()); Python::tab($level) . (($decl eq 'has') ? 'sub ' . $name . ' { ' . '@_ == 1 ' . '? ( $_[0]->{' . $name . '} ) ' . ': ( $_[0]->{' . $name . '} = $_[1] ) ' . '}' : ($self->{type} ? $self->{type} . ' ' . $self->{var}->emit() : $self->{var}->emit_python())) }
 }
 
 {
@@ -231,7 +241,7 @@ sub new { shift; bless { @_ }, "Sig" }
 sub invocant { $_[0]->{invocant} };
 sub positional { $_[0]->{positional} };
 sub named { $_[0]->{named} };
-sub emit { my $self = $_[0]; ' print \'Signature - TODO\'; die \'Signature - TODO\'; ' };
+sub emit_python { my $self = $_[0]; ' print \'Signature - TODO\'; die \'Signature - TODO\'; ' };
 sub invocant { my $self = $_[0]; $self->{invocant} };
 sub positional { my $self = $_[0]; $self->{positional} }
 }
@@ -242,7 +252,7 @@ sub new { shift; bless { @_ }, "Method" }
 sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
-sub emit { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = 'my $List__ = \\@_; '); (my  $pos = $sig->positional()); for my $field ( @{$pos} ) { if (Main::isa($field, 'Lit::Array')) { ($str = $str . 'my (' . Main::join([ map { $_->emit() } @{ $field->array() } ], ', ') . '); ') } else { ($str = $str . 'my ' . $field->emit() . '; ') } }; (my  $bind = Bind->new( 'parameters' => Lit::Array->new( 'array' => $sig->positional(), ),'arguments' => Var->new( 'sigil' => '@','twigil' => '','name' => '_', ), )); ($str = $str . $bind->emit() . '; '); 'sub ' . $self->{name} . ' { ' . 'my ' . $invocant->emit() . ' = shift; ' . $str . Main::join([ map { $_->emit() } @{ $self->{block} } ], '; ') . ' }' }
+sub emit_python { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = 'my $List__ = \\@_; '); (my  $pos = $sig->positional()); for my $field ( @{$pos} ) { if (Main::isa($field, 'Lit::Array')) { ($str = $str . 'my (' . Main::join([ map { $_->emit_python() } @{ $field->array() } ], ', ') . '); ') } else { ($str = $str . 'my ' . $field->emit_python() . '; ') } }; (my  $bind = Bind->new( 'parameters' => Lit::Array->new( 'array' => $sig->positional(), ),'arguments' => Var->new( 'sigil' => '@','twigil' => '','name' => '_', ), )); ($str = $str . $bind->emit_python() . '; '); 'sub ' . $self->{name} . ' { ' . 'my ' . $invocant->emit_python() . ' = shift; ' . $str . Main::join([ map { $_->emit_python() } @{ $self->{block} } ], '; ') . ' }' }
 }
 
 {
@@ -251,26 +261,23 @@ sub new { shift; bless { @_ }, "Sub" }
 sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
-sub emit { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $str = 'my $List__ = \\@_; '); (my  $pos = $sig->positional()); for my $field ( @{$pos} ) { if (Main::isa($field, 'Lit::Array')) { ($str = $str . 'my (' . Main::join([ map { $_->emit() } @{ $field->array() } ], ', ') . '); ') } else { ($str = $str . 'my ' . $field->emit() . '; ') } }; (my  $bind = Bind->new( 'parameters' => Lit::Array->new( 'array' => $sig->positional(), ),'arguments' => Var->new( 'sigil' => '@','twigil' => '','name' => '_', ), )); ($str = $str . $bind->emit() . '; '); 'sub ' . $self->{name} . ' { ' . $str . Main::join([ map { $_->emit() } @{ $self->{block} } ], '; ') . ' }' }
+sub emit_python { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $str = 'my $List__ = \\@_; '); (my  $pos = $sig->positional()); for my $field ( @{$pos} ) { if (Main::isa($field, 'Lit::Array')) { ($str = $str . 'my (' . Main::join([ map { $_->emit_python() } @{ $field->array() } ], ', ') . '); ') } else { ($str = $str . 'my ' . $field->emit_python() . '; ') } }; (my  $bind = Bind->new( 'parameters' => Lit::Array->new( 'array' => $sig->positional(), ),'arguments' => Var->new( 'sigil' => '@','twigil' => '','name' => '_', ), )); ($str = $str . $bind->emit_python() . '; '); 'sub ' . $self->{name} . ' { ' . $str . Main::join([ map { $_->emit_python() } @{ $self->{block} } ], '; ') . ' }' }
 }
 
 {
 package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
-sub emit { my $self = $_[0]; 'if 1:
-# {
-' . Main::join([ map { $_->emit() } @{ $self->{block} } ], '
-') . '
-# }
-' }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_'); return(Python::tab($level) . $label . '()') }
 }
 
 {
 package Use;
 sub new { shift; bless { @_ }, "Use" }
 sub mod { $_[0]->{mod} };
-sub emit { my $self = $_[0]; 'from ' . $self->{mod} . 'import *' }
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'from ' . $self->{mod} . 'import *' }
 }
 
 1;

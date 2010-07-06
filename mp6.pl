@@ -262,7 +262,7 @@ if ( $backend eq 'python' ) {
     $result .= "import miniperl6.python.runtime\n";
     $result .= "\n";
     for my $p ( @comp_unit ) {
-        $result .=  $p->emit() . "\n";
+        $result .=  $p->emit_python() . "\n";
     }
     if ( $execute || $compile_to_bin ) {
         open( OUT, '>', $tmp_filename . '.py' )
