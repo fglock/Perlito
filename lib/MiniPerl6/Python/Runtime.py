@@ -31,3 +31,8 @@ def mp6_say(*msg):
         sys.stdout.write(str(m))
     sys.stdout.write("\n")
 
+def mp6_warn(*msg):
+    for m in msg:
+        sys.stderr.write(str(m))
+    sys.stderr.write("\n")
+

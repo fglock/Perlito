@@ -24,12 +24,15 @@ import sys
 
 def mp6_print(*msg):
     for m in msg:
-        s = "%s" % m
-        sys.stdout.write(s)
+        sys.stdout.write(str(m))
 
 def mp6_say(*msg):
     for m in msg:
-        s = "%s" % m
-        sys.stdout.write(s)
+        sys.stdout.write(str(m))
     sys.stdout.write("\n")
+
+def mp6_warn(*msg):
+    for m in msg:
+        sys.stderr.write(str(m))
+    sys.stderr.write("\n")
 

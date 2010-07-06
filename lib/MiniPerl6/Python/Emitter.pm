@@ -8,11 +8,35 @@ class MiniPerl6::Python::LexicalBlock {
     has @.block;
     has $.needs_return;
     has $.top_level;
+
+    my $ident;
+    my @anon_block;
+    sub push_stmt($block) { 
+        push @anon_block, $block; 
+    }
+    sub get_ident {
+        $ident = $ident + 1;
+        return $ident;
+    }
+
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        # TODO
-        # add anon subs
-        (@.block.>>emit_python_indented($level)).join( "\n" );
+        my @s;
+        my @tmp;
+        for @anon_block -> $stmt {
+            @tmp.push( $stmt );
+        }
+        for @.block -> $stmt {
+            @anon_block = [];
+            my $s2 = $stmt.emit_python_indented($level);
+            for @anon_block -> $stmt {
+                # add anon subs
+                @s.push( $stmt.emit_python_indented( $level ) );
+            }
+            push @s, $s2;
+        }
+        @anon_block = @tmp;
+        return @s.join( "\n" );
     }
 }
 
@@ -323,7 +347,7 @@ class Apply {
 
         if $code eq 'say'        { return 'miniperl6.python.runtime.mp6_say('   ~ (@.arguments.>>emit_python).join(', ') ~ ')' } 
         if $code eq 'print'      { return 'miniperl6.python.runtime.mp6_print(' ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
-        if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>emit_python).join(', ') ~ ')' };
+        if $code eq 'warn'       { return 'miniperl6.python.runtime.mp6_warn('  ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_python).join(' ')    ~ ']' };
 
@@ -451,39 +475,21 @@ class Method {
     has $.sig;
     has @.block;
     method emit_python {
-        # TODO - signature binding
         my $sig = $.sig;
-        # say "Sig: ", $sig.perl;
         my $invocant = $sig.invocant; 
-        # say $invocant.emit;
-
         my $pos = $sig.positional;
         my $str = 'my $List__ = \@_; ';   # no strict "vars"; ';
 
-        # TODO - follow recursively
         my $pos = $sig.positional;
         for @$pos -> $field { 
-            if ( $field.isa('Lit::Array') ) {
-                $str = $str ~ 'my (' ~ (($field.array).>>emit_python).join(', ') ~ '); ';
-            }
-            else {
-                $str = $str ~ 'my ' ~ $field.emit_python ~ '; ';
-            };
-        };
+            $str = $str ~ 'my ' ~ $field.emit_python ~ '; ';
+        }
 
         my $bind = Bind.new( 
             parameters => Lit::Array.new( array => $sig.positional ), 
             arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
         );
         $str = $str ~ $bind.emit_python ~ '; ';
-
-#        my $pos = $sig.positional;
-#        my $str = '';
-#        my $i = 1;
-#        for @$pos -> $field { 
-#            $str = $str ~ 'my ' ~ $field.emit_python ~ ' = $_[' ~ $i ~ ']; ';
-#            $i = $i + 1;
-#        };
 
         'sub ' ~ $.name ~ ' { ' ~ 
           'my ' ~ $invocant.emit_python ~ ' = shift; ' ~
@@ -497,50 +503,17 @@ class Sub {
     has $.name;
     has $.sig;
     has @.block;
-    method emit_python {
-        # TODO - signature binding
+    method emit_python { $self.emit_python_indented(0) }
+    method emit_python_indented( $level ) {
         my $sig = $.sig;
-        # say "Sig: ", $sig.perl;
-        ## my $invocant = $sig.invocant; 
-        # say $invocant.emit;
         my $pos = $sig.positional;
-        my $str = 'my $List__ = \@_; ';  # no strict "vars"; ';
-
-        # TODO - follow recursively
-        my $pos = $sig.positional;
+        my @args;
         for @$pos -> $field { 
-            if ( $field.isa('Lit::Array') ) {
-                $str = $str ~ 'my (' ~ (($field.array).>>emit_python).join(', ') ~ '); ';
-            }
-            else {
-                $str = $str ~ 'my ' ~ $field.emit_python ~ '; ';
-            };
-            #$str = $str ~ 'my ' ~ $field.emit_python ~ '; ';
+            @args.push( $field.emit_python );
         };
-
-        my $bind = Bind.new( 
-            parameters => Lit::Array.new( array => $sig.positional ), 
-            arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
-        );
-        $str = $str ~ $bind.emit_python ~ '; ';
-
-#        my $i = 0;
-#        for @$pos -> $field { 
-#            my $bind = Bind.new( 
-#                parameters => $field, 
-#                arguments  => Index.new(
-#                        obj    => Var.new( sigil => '@', twigil => '', name => '_' ),
-#                        index  => Val::Int.new( int => $i )
-#                    ),
-#                );
-#            $str = $str ~ $bind.emit_python ~ '; ';
-#            $i = $i + 1;
-#        };
-        'sub ' ~ $.name ~ ' { ' ~ 
-          ## 'my ' ~ $invocant.emit_python ~ ' = $_[0]; ' ~
-          $str ~
-          (@.block.>>emit_python).join('; ') ~ 
-        ' }'
+        my $block = MiniPerl6::Python::LexicalBlock.new( block => @.block );
+        Python::tab($level) ~ 'def ' ~ $.name ~ "(" ~ @args.join(", ") ~ "):\n" 
+            ~ $block.emit_python_indented($level + 1) 
     }
 }
 
@@ -548,12 +521,16 @@ class Do {
     has @.block;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        my $label = "_anon_";
-
-        # TODO - generate an anonymous sub in the current block
-    	# (@.block.>>emit_python).join("\n") ~
-        my $block = MiniPerl6::Python::LexicalBlock.new( block => @.block );
-
+        my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident;
+        # generate an anonymous sub in the current block
+        MiniPerl6::Python::LexicalBlock::push_stmt( 
+                Sub.new( 
+                    name  => $label, 
+                    block => @.block,
+                    sig   => Sig.new( invocant => undef, positional => [], named => {} ) 
+                )
+            );
+        # call the anonymous sub
         return Python::tab($level) ~ $label ~ "()";
     }
 }
