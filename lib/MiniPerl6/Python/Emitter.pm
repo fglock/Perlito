@@ -1,34 +1,51 @@
 use v6;
 
+class Python {
+    sub tab($level) { "    " x $level }
+}
+
 class CompUnit {
     has $.name;
     has %.attributes;
     has %.methods;
     has @.body;
-    method emit {
-        'class ' ~ $.name ~ ":\n# {\n" ~ 
-        (@.body.>>emit).join( "\n" ) ~ "\n# }\n"
+    method emit { $self.emit_indented( 0 ) }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ 'class ' ~ $.name ~ ":\n" ~ 
+            (@.body.>>emit_indented($level + 1)).join( "\n" ) ~ "\n"
     }
 }
 
 class Val::Int {
     has $.int;
     method emit { $.int }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ $.int 
+    }
 }
 
 class Val::Bit {
     has $.bit;
     method emit { $.bit }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ $.bit 
+    }
 }
 
 class Val::Num {
     has $.num;
     method emit { $.num }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ $.num 
+    }
 }
 
 class Val::Buf {
     has $.buf;
     method emit { '\'' ~ $.buf ~ '\'' }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ '\'' ~ $.buf ~ '\'' 
+    }
 }
 
 class Val::Undef {
@@ -268,7 +285,7 @@ class Apply {
         if $code eq 'self'       { return 'self' };
 
         if $code eq 'say'        { return 'Main::say('   ~ (@.arguments.>>emit).join(', ') ~ ')' };
-        if $code eq 'print'      { return 'Main::print(' ~ (@.arguments.>>emit).join(', ') ~ ')' };
+        if $code eq 'print'      { return 'Main.print(' ~ (@.arguments.>>emit).join(', ') ~ ')' };
         if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>emit).join(', ') ~ ')' };
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit).join(' ')    ~ ']' };
@@ -301,6 +318,9 @@ class Apply {
         
         $.code ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         # '(' ~ $.code.emit ~ ')->(' ~ @.arguments.>>emit.join(', ') ~ ')';
+    }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ $self.emit 
     }
 }
 

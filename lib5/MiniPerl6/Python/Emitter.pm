@@ -4,17 +4,22 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
+package Python;
+sub new { shift; bless { @_ }, "Python" }
+sub tab { my $level = $_[0]; ('    ' x $level) }
+}
+
+{
 package CompUnit;
 sub new { shift; bless { @_ }, "CompUnit" }
 sub name { $_[0]->{name} };
 sub attributes { $_[0]->{attributes} };
 sub methods { $_[0]->{methods} };
 sub body { $_[0]->{body} };
-sub emit { my $self = $_[0]; 'class ' . $self->{name} . ':
-# {
-' . Main::join([ map { $_->emit() } @{ $self->{body} } ], '
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'class ' . $self->{name} . ':
+' . Main::join([ map { $_->emit_indented(($level + 1)) } @{ $self->{body} } ], '
 ') . '
-# }
 ' }
 }
 
@@ -22,28 +27,32 @@ sub emit { my $self = $_[0]; 'class ' . $self->{name} . ':
 package Val::Int;
 sub new { shift; bless { @_ }, "Val::Int" }
 sub int { $_[0]->{int} };
-sub emit { my $self = $_[0]; $self->{int} }
+sub emit { my $self = $_[0]; $self->{int} };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{int} }
 }
 
 {
 package Val::Bit;
 sub new { shift; bless { @_ }, "Val::Bit" }
 sub bit { $_[0]->{bit} };
-sub emit { my $self = $_[0]; $self->{bit} }
+sub emit { my $self = $_[0]; $self->{bit} };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{bit} }
 }
 
 {
 package Val::Num;
 sub new { shift; bless { @_ }, "Val::Num" }
 sub num { $_[0]->{num} };
-sub emit { my $self = $_[0]; $self->{num} }
+sub emit { my $self = $_[0]; $self->{num} };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{num} }
 }
 
 {
 package Val::Buf;
 sub new { shift; bless { @_ }, "Val::Buf" }
 sub buf { $_[0]->{buf} };
-sub emit { my $self = $_[0]; '\'' . $self->{buf} . '\'' }
+sub emit { my $self = $_[0]; '\'' . $self->{buf} . '\'' };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . '\'' . $self->{buf} . '\'' }
 }
 
 {
@@ -160,7 +169,8 @@ package Apply;
 sub new { shift; bless { @_ }, "Apply" }
 sub code { $_[0]->{code} };
 sub arguments { $_[0]->{arguments} };
-sub emit { my $self = $_[0]; (my  $code = $self->{code}); if (Main::isa($code, 'Str')) {  } else { return('(' . $self->{code}->emit() . ').(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') }; if (($code eq 'self')) { return('self') } else {  }; if (($code eq 'say')) { return('Main::say(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'print')) { return('Main::print(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'warn')) { return('warn(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'array')) { return('[' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ']') } else {  }; if (($code eq 'prefix:<~>')) { return('("" . ' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ')') } else {  }; if (($code eq 'prefix:<!>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ' ? 0 : 1)') } else {  }; if (($code eq 'prefix:<?>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ' ? 1 : 0)') } else {  }; if (($code eq 'prefix:<$>')) { return('${' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'prefix:<@>')) { return('@{' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'prefix:<%>')) { return('%{' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'infix:<~>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' . ') . ')') } else {  }; if (($code eq 'infix:<+>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' + ') . ')') } else {  }; if (($code eq 'infix:<->')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' - ') . ')') } else {  }; if (($code eq 'infix:<&&>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' && ') . ')') } else {  }; if (($code eq 'infix:<||>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' || ') . ')') } else {  }; if (($code eq 'infix:<eq>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' eq ') . ')') } else {  }; if (($code eq 'infix:<ne>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ne ') . ')') } else {  }; if (($code eq 'infix:<==>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' == ') . ')') } else {  }; if (($code eq 'infix:<!=>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' != ') . ')') } else {  }; if (($code eq 'ternary:<?? !!>')) { return('(' . $self->{arguments}->[0]->emit() . ' ? ' . $self->{arguments}->[1]->emit() . ' : ' . $self->{arguments}->[2]->emit() . ')') } else {  }; $self->{code} . '(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')' }
+sub emit { my $self = $_[0]; (my  $code = $self->{code}); if (Main::isa($code, 'Str')) {  } else { return('(' . $self->{code}->emit() . ').(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') }; if (($code eq 'self')) { return('self') } else {  }; if (($code eq 'say')) { return('Main::say(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'print')) { return('Main.print(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'warn')) { return('warn(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'array')) { return('[' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ']') } else {  }; if (($code eq 'prefix:<~>')) { return('("" . ' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ')') } else {  }; if (($code eq 'prefix:<!>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ' ? 0 : 1)') } else {  }; if (($code eq 'prefix:<?>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ' ? 1 : 0)') } else {  }; if (($code eq 'prefix:<$>')) { return('${' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'prefix:<@>')) { return('@{' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'prefix:<%>')) { return('%{' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'infix:<~>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' . ') . ')') } else {  }; if (($code eq 'infix:<+>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' + ') . ')') } else {  }; if (($code eq 'infix:<->')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' - ') . ')') } else {  }; if (($code eq 'infix:<&&>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' && ') . ')') } else {  }; if (($code eq 'infix:<||>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' || ') . ')') } else {  }; if (($code eq 'infix:<eq>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' eq ') . ')') } else {  }; if (($code eq 'infix:<ne>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ne ') . ')') } else {  }; if (($code eq 'infix:<==>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' == ') . ')') } else {  }; if (($code eq 'infix:<!=>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' != ') . ')') } else {  }; if (($code eq 'ternary:<?? !!>')) { return('(' . $self->{arguments}->[0]->emit() . ' ? ' . $self->{arguments}->[1]->emit() . ' : ' . $self->{arguments}->[2]->emit() . ')') } else {  }; $self->{code} . '(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')' };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->emit() }
 }
 
 {
