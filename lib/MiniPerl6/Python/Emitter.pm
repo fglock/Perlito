@@ -27,6 +27,15 @@ class MiniPerl6::Python::LexicalBlock {
             @tmp.push( $stmt );
         }
 
+        for @.block -> $decl {
+            if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
+                push @s, $decl.emit_python_init( $level );
+            }
+            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
+                push @s, ($decl.parameters).emit_python_init( $level );
+            }
+        }
+
         my $last_statement;
         if $.needs_return {
             $last_statement = pop @.block;
@@ -36,7 +45,6 @@ class MiniPerl6::Python::LexicalBlock {
             @anon_block = [];
             my $s2 = $stmt.emit_python_indented($level);
             for @anon_block -> $stmt {
-                # add anon subs
                 @s.push( $stmt.emit_python_indented( $level ) );
             }
             push @s, $s2;
@@ -239,78 +247,8 @@ class Bind {
     has $.arguments;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        if $.parameters.isa( 'Lit::Array' ) {
-            
-            #  [$a, [$b, $c]] = [1, [2, 3]]
-            
-            my $a = $.parameters.array;
-            #my $b = $.arguments.array;
-            my $str = "if True:\n# {\n ";
-            my $i = 0;
-            for @$a -> $var { 
-                my $bind = Bind.new( 
-                    parameters => $var, 
-                    # arguments => ($b[$i]) );
-                    arguments  => Index.new(
-                        obj    => $.arguments,
-                        index  => Val::Int.new( int => $i )
-                    )
-                );
-                $str = $str ~ ' ' ~ $bind.emit_python ~ "\n";
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_python ~ "\n# }\n";
-        };
-        if $.parameters.isa( 'Lit::Hash' ) {
-
-            #  {:$a, :$b} = { a => 1, b => [2, 3]}
-
-            my $a = $.parameters.hash;
-            my $b = $.arguments.hash;
-            my $str = "if 1:\n#{\n";
-            my $i = 0;
-            my $arg;
-            for @$a -> $var {
-
-                $arg = Val::Undef.new();
-                for @$b -> $var2 {
-                    #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
-                    if ($var2[0]).buf eq ($var[0]).buf {
-                        $arg = $var2[1];
-                    }
-                };
-
-                my $bind = Bind.new( parameters => $var[1], arguments => $arg );
-                $str = $str ~ ' ' ~ $bind.emit_python ~ "\n";
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_python ~ "\n# }\n";
-        };
-
-        if $.parameters.isa( 'Lit::Object' ) {
-
-            #  Obj.new(:$a, :$b) = $obj
-
-            my $class = $.parameters.class;
-            my $a     = $.parameters.fields;
-            my $b     = $.arguments;
-            my $str   = 'do { ';
-            my $str   = "if 1:\n# {\n";
-            my $i     = 0;
-            my $arg;
-            for @$a -> $var {
-                my $bind = Bind.new( 
-                    parameters => $var[1], 
-                    arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
-                );
-                $str = $str ~ ' ' ~ $bind.emit_python ~ "\n";
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_python ~ "\n# }\n";
-        };
-    
         Python::tab($level) ~ 
-            $.parameters.emit_python ~ ' = ' ~ $.arguments.emit;
+            $.parameters.emit_python ~ ' = ' ~ $.arguments.emit_python;
     }
 }
 
@@ -331,7 +269,7 @@ class Call {
     #has $.hyper;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        my $invocant = $.invocant.emit;
+        my $invocant = $.invocant.emit_python;
         if     ($.method eq 'perl')
             || ($.method eq 'yaml')
             || ($.method eq 'say' )
@@ -390,8 +328,8 @@ class Apply {
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_python).join(' ')    ~ ']' };
 
         if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit_python).join(' ')    ~ ' ? 0 : 1)' };
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_python).join(' ')    ~ ' ? 1 : 0)' };
+        if $code eq 'prefix:<!>' { return 'not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
+        if $code eq 'prefix:<?>' { return 'not (not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ '))' };
 
         if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
         if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
@@ -408,10 +346,10 @@ class Apply {
         if $code eq 'infix:<eq>' { return '(str('  ~ (@.arguments.>>emit_python).join(') == str(')  ~ '))' };
         if $code eq 'infix:<ne>' { return '(str('  ~ (@.arguments.>>emit_python).join(') != str(')  ~ '))' };
  
-        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_python).join(' == ') ~ ')' };
-        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_python).join(' != ') ~ ')' };
-        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit_python).join(' < ')  ~ ')' };
-        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit_python).join(' > ')  ~ ')' };
+        if $code eq 'infix:<==>' { return '(float('  ~ (@.arguments.>>emit_python).join(') == float(') ~ '))' };
+        if $code eq 'infix:<!=>' { return '(float('  ~ (@.arguments.>>emit_python).join(') != float(') ~ '))' };
+        if $code eq 'infix:<<>'  { return '(float('  ~ (@.arguments.>>emit_python).join(') < float(')  ~ '))' };
+        if $code eq 'infix:<>>'  { return '(float('  ~ (@.arguments.>>emit_python).join(') > float(')  ~ '))' };
 
         if $code eq 'ternary:<?? !!>' { 
             my $ast = 
@@ -497,6 +435,24 @@ class Decl {
             !! ( $.type 
                 ?? $.type ~ ' ' ~ $.var.emit
                 !! $.var.emit_python ) );
+    }
+    method emit_python_init( $level ) {
+        if $.decl eq 'my' {
+            my $str = Python::tab($level) ~ ($.var).emit_python ~ ' = ';
+            if ($.var).sigil eq '%' {
+                $str = $str ~ '{}';
+            }
+            elsif ($.var).sigil eq '@' {
+                $str = $str ~ '[]';
+            }
+            else {
+                $str = $str ~ 'None';
+            }
+            return $str;
+        }
+        else {
+            die "not implemented: Decl '" ~ $.decl ~ "'";
+        }
     }
 }
 
