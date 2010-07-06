@@ -42,9 +42,9 @@ class Val::Num {
 
 class Val::Buf {
     has $.buf;
-    method emit { '\'' ~ $.buf ~ '\'' }
+    method emit { '"""' ~ $.buf ~ '"""' }
     method emit_indented( $level ) {
-        Python::tab($level) ~ '\'' ~ $.buf ~ '\'' 
+        Python::tab($level) ~ '"""' ~ $.buf ~ '"""' 
     }
 }
 
@@ -285,7 +285,7 @@ class Apply {
         if $code eq 'self'       { return 'self' };
 
         if $code eq 'say'        { return 'Main::say('   ~ (@.arguments.>>emit).join(', ') ~ ')' };
-        if $code eq 'print'      { return 'Main.print(' ~ (@.arguments.>>emit).join(', ') ~ ')' };
+        if $code eq 'print'      { return 'print(' ~ (@.arguments.>>emit).join(', ') ~ ')' };
         if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>emit).join(', ') ~ ')' };
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit).join(' ')    ~ ']' };
