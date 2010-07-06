@@ -132,9 +132,9 @@ class Val::Buf {
 }
 
 class Val::Undef {
-    method emit_python { 'None' }
+    method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        Python::tab($level) ~ 'None' 
+        Python::tab($level) ~ 'mp6_Undef()'
     }
 }
 
@@ -308,7 +308,7 @@ class Apply {
     has @.arguments;
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            $self.emit
+            $self.emit_python
     }
     method emit_python {
         
@@ -321,9 +321,9 @@ class Apply {
 
         if $code eq 'self'       { return 'self' };
 
-        if $code eq 'say'        { return 'miniperl6.python.runtime.mp6_say('   ~ (@.arguments.>>emit_python).join(', ') ~ ')' } 
-        if $code eq 'print'      { return 'miniperl6.python.runtime.mp6_print(' ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
-        if $code eq 'warn'       { return 'miniperl6.python.runtime.mp6_warn('  ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
+        if $code eq 'say'        { return 'mp6_say('   ~ (@.arguments.>>emit_python).join(', ') ~ ')' } 
+        if $code eq 'print'      { return 'mp6_print(' ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
+        if $code eq 'warn'       { return 'mp6_warn('  ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_python).join(' ')    ~ ']' };
 
@@ -377,7 +377,7 @@ class Return {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            'return ' ~ $.result.emit
+            'return ' ~ $.result.emit_python
     }
 }
 
@@ -433,7 +433,7 @@ class Decl {
                     ': ( $_[0]->{' ~ $name ~ '} = $_[1] ) ' ~
                 '}' )
             !! ( $.type 
-                ?? $.type ~ ' ' ~ $.var.emit
+                ?? $.type ~ ' ' ~ $.var.emit_python
                 !! $.var.emit_python ) );
     }
     method emit_python_init( $level ) {
@@ -446,7 +446,7 @@ class Decl {
                 $str = $str ~ '[]';
             }
             else {
-                $str = $str ~ 'None';
+                $str = $str ~ 'mp6_Undef()';
             }
             return $str;
         }
