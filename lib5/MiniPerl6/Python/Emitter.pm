@@ -127,7 +127,7 @@ sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub name { $_[0]->{name} };
 sub emit { my $self = $_[0]; $self->emit_indented(0) };
-sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $table = { '$' => 'scalar_','@' => 'List_','%' => 'Hash_','&' => 'Code_', }); return(Python::tab($level) . (($self->{twigil} eq '.') ? 'self.' . $self->{name} : (($self->{name} eq '/') ? $table->{$self->{sigil}} . 'MATCH' : $table->{$self->{sigil}} . $self->{name}))) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $table = { '$' => '','@' => 'List_','%' => 'Hash_','&' => 'Code_', }); return(Python::tab($level) . (($self->{twigil} eq '.') ? 'self.' . $self->{name} : (($self->{name} eq '/') ? $table->{$self->{sigil}} . 'MATCH' : $table->{$self->{sigil}} . $self->{name}))) };
 sub name { my $self = $_[0]; $self->{name} }
 }
 
@@ -158,7 +158,8 @@ sub emit { my $self = $_[0]; if (Main::isa($self->{parameters}, 'Lit::Array')) {
 package Proto;
 sub new { shift; bless { @_ }, "Proto" }
 sub name { $_[0]->{name} };
-sub emit { my $self = $_[0]; ("" . $self->{name}) }
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{name} }
 }
 
 {
@@ -168,8 +169,9 @@ sub invocant { $_[0]->{invocant} };
 sub hyper { $_[0]->{hyper} };
 sub method { $_[0]->{method} };
 sub arguments { $_[0]->{arguments} };
-sub emit { my $self = $_[0]; (my  $invocant = $self->{invocant}->emit()); if ((($self->{method} eq 'perl') || (($self->{method} eq 'yaml') || (($self->{method} eq 'say') || (($self->{method} eq 'join') || (($self->{method} eq 'chars') || ($self->{method} eq 'isa'))))))) { if ($self->{hyper}) { return('map(lambda: Main.' . $self->{method} . '( self, ' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ') , ' . $invocant . ')
-') } else { return('Main.' . $self->{method} . '(' . $invocant . ', ' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } } else {  }; (my  $meth = $self->{method}); if (($meth eq 'postcircumfix:<( )>')) { ($meth = '') } else {  }; (my  $call = '->' . $meth . '(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')'); if ($self->{hyper}) { '[ map { $_' . $call . ' } @{ ' . $invocant . ' } ]' } else { $invocant . $call } }
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; (my  $invocant = $self->{invocant}->emit()); if ((($self->{method} eq 'perl') || (($self->{method} eq 'yaml') || (($self->{method} eq 'say') || (($self->{method} eq 'join') || (($self->{method} eq 'chars') || ($self->{method} eq 'isa'))))))) { if ($self->{hyper}) { return('map(lambda: Main.' . $self->{method} . '( self, ' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ') , ' . $invocant . ')
+') } else { return('Main.' . $self->{method} . '(' . $invocant . ', ' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } } else {  }; (my  $meth = $self->{method}); if (($meth eq 'postcircumfix:<( )>')) { ($meth = '') } else {  }; (my  $call = '.' . $meth . '(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')'); if ($self->{hyper}) { Python::tab($level) . '[ map { $_' . $call . ' } @{ ' . $invocant . ' } ]' } else { Python::tab($level) . $invocant . $call } }
 }
 
 {
@@ -177,6 +179,7 @@ package Apply;
 sub new { shift; bless { @_ }, "Apply" }
 sub code { $_[0]->{code} };
 sub arguments { $_[0]->{arguments} };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->emit() };
 sub emit { my $self = $_[0]; (my  $code = $self->{code}); if (Main::isa($code, 'Str')) {  } else { return('(' . $self->{code}->emit() . ').(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') }; if (($code eq 'self')) { return('self') } else {  }; if (($code eq 'say')) { return('Main::say(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'print')) { return('print(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'warn')) { return('warn(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; if (($code eq 'array')) { return('[' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ']') } else {  }; if (($code eq 'prefix:<~>')) { return('("" . ' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ')') } else {  }; if (($code eq 'prefix:<!>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ' ? 0 : 1)') } else {  }; if (($code eq 'prefix:<?>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . ' ? 1 : 0)') } else {  }; if (($code eq 'prefix:<$>')) { return('${' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'prefix:<@>')) { return('@{' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'prefix:<%>')) { return('%{' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ') . '}') } else {  }; if (($code eq 'infix:<~>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' . ') . ')') } else {  }; if (($code eq 'infix:<+>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' + ') . ')') } else {  }; if (($code eq 'infix:<->')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' - ') . ')') } else {  }; if (($code eq 'infix:<&&>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' && ') . ')') } else {  }; if (($code eq 'infix:<||>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' || ') . ')') } else {  }; if (($code eq 'infix:<eq>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' eq ') . ')') } else {  }; if (($code eq 'infix:<ne>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' ne ') . ')') } else {  }; if (($code eq 'infix:<==>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' == ') . ')') } else {  }; if (($code eq 'infix:<!=>')) { return('(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ' != ') . ')') } else {  }; if (($code eq 'ternary:<?? !!>')) { return('(' . $self->{arguments}->[0]->emit() . ' ? ' . $self->{arguments}->[1]->emit() . ' : ' . $self->{arguments}->[2]->emit() . ')') } else {  }; $self->{code} . '(' . Main::join([ map { $_->emit() } @{ $self->{arguments} } ], ', ') . ')' };
 sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->emit() }
 }
@@ -185,8 +188,8 @@ sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $
 package Return;
 sub new { shift; bless { @_ }, "Return" }
 sub result { $_[0]->{result} };
-sub emit { my $self = $_[0]; return('return ' . $self->{result}->emit() . '
-') }
+sub emit { my $self = $_[0]; $self->emit_indented(0) };
+sub emit_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'return ' . $self->{result}->emit() }
 }
 
 {

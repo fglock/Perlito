@@ -140,7 +140,7 @@ class Var {
         # %x    => $Hash_x
         # &x    => $Code_x
         my $table = {
-            '$' => 'scalar_',
+            '$' => '',
             '@' => 'List_',
             '%' => 'Hash_',
             '&' => 'Code_',
@@ -239,8 +239,10 @@ class Bind {
 
 class Proto {
     has $.name;
-    method emit {
-        ~$.name        
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ 
+            $.name        
     }
 }
 
@@ -250,8 +252,8 @@ class Call {
     has $.method;
     has @.arguments;
     #has $.hyper;
-    method emit {
-    # XXX
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
         my $invocant = $.invocant.emit;
         if     ($.method eq 'perl')
             || ($.method eq 'yaml')
@@ -273,13 +275,14 @@ class Call {
              $meth = '';  
         };
         
-        my $call = '->' ~ $meth ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+        my $call = '.' ~ $meth ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         if ($.hyper) {
-        #CT
-            '[ map { $_' ~ $call ~ ' } @{ ' ~ $invocant ~ ' } ]';
+            Python::tab($level) ~ 
+                '[ map { $_' ~ $call ~ ' } @{ ' ~ $invocant ~ ' } ]';
         }
         else {
-            $invocant ~ $call;
+            Python::tab($level) ~ 
+                $invocant ~ $call;
         };
 
     }
@@ -288,6 +291,10 @@ class Call {
 class Apply {
     has $.code;
     has @.arguments;
+    method emit_indented( $level ) {
+        Python::tab($level) ~ 
+            $self.emit
+    }
     method emit {
         
         my $code = $.code;
@@ -341,10 +348,10 @@ class Apply {
 
 class Return {
     has $.result;
-    method emit {
-        return
-        #'do { print Main::perl(caller(),' ~ $.result.emit ~ '); return(' ~ $.result.emit ~ ') }';
-        'return ' ~ $.result.emit ~ "\n";
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
+        Python::tab($level) ~ 
+            'return ' ~ $.result.emit
     }
 }
 
