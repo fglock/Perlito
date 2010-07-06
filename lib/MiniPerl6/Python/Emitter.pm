@@ -322,17 +322,21 @@ class Apply {
         if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit).join(' ')    ~ '}' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit).join(' ')    ~ '}' };
 
-        if $code eq 'infix:<~>'  { return '('  ~ (@.arguments.>>emit).join(' . ')  ~ ')' };
-        if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit).join(' + ')  ~ ')' };
+        if $code eq 'infix:<~>'  { return '(str('  ~ (@.arguments.>>emit).join(') + str(')  ~ '))' };
+        if $code eq 'infix:<+>'  { return '(float('  ~ (@.arguments.>>emit).join(') + float(')  ~ '))' };
         if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit).join(' - ')  ~ ')' };
+        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit).join(' * ')  ~ ')' };
+        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit).join(' / ')  ~ ')' };
         
-        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit).join(' && ') ~ ')' };
-        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit).join(' || ') ~ ')' };
-        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit).join(' eq ') ~ ')' };
-        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit).join(' ne ') ~ ')' };
+        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit).join(' and ') ~ ')' };
+        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit).join(' or ') ~ ')' };
+        if $code eq 'infix:<eq>' { return '(str('  ~ (@.arguments.>>emit).join(') == str(')  ~ '))' };
+        if $code eq 'infix:<ne>' { return '(str('  ~ (@.arguments.>>emit).join(') != str(')  ~ '))' };
  
         if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit).join(' == ') ~ ')' };
         if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit).join(' != ') ~ ')' };
+        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit).join(' < ')  ~ ')' };
+        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit).join(' > ')  ~ ')' };
 
         if $code eq 'ternary:<?? !!>' { 
             return '(' ~ (@.arguments[0]).emit ~
@@ -363,10 +367,16 @@ class If {
     has @.otherwise;
     method emit { $self.emit_indented(0) }
     method emit_indented( $level ) {
-        Python::tab($level) ~   'if ' ~ $.cond.emit ~ ":\n" 
-            ~ (@.body.>>emit_indented($level+1)).join('\n') ~ "\n"
-        ~ Python::tab($level) ~ "else:\n" 
-            ~ (@.otherwise.>>emit_indented($level+1)).join('\n');
+        my $has_body = @.body ?? 1 !! 0;
+        my $has_otherwise = @.otherwise ?? 1 !! 0;
+        my $s = Python::tab($level) ~   'if ' ~ $.cond.emit ~ ":\n" 
+            ~ (@.body.>>emit_indented($level+1)).join('\n');
+        if ( $has_otherwise ) {
+            $s = $s ~ "\n"
+                ~ Python::tab($level) ~ "else:\n" 
+                    ~ (@.otherwise.>>emit_indented($level+1)).join('\n');
+        }
+        return $s;
     }
 }
 
@@ -389,16 +399,20 @@ class Decl {
     has $.decl;
     has $.type;
     has $.var;
-    method emit {
+    method emit { $self.emit_indented(0) }
+    method emit_indented( $level ) {
         my $decl = $.decl;
         my $name = $.var.name;
-           ( $decl eq 'has' )
-        ?? ( 'sub ' ~ $name ~ ' { ' ~
-            '@_ == 1 ' ~
-                '? ( $_[0]->{' ~ $name ~ '} ) ' ~
-                ': ( $_[0]->{' ~ $name ~ '} = $_[1] ) ' ~
-            '}' )
-        !! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit;
+        Python::tab($level)
+            ~ ( ( $decl eq 'has' )
+            ?? ( 'sub ' ~ $name ~ ' { ' ~
+                '@_ == 1 ' ~
+                    '? ( $_[0]->{' ~ $name ~ '} ) ' ~
+                    ': ( $_[0]->{' ~ $name ~ '} = $_[1] ) ' ~
+                '}' )
+            !! ( $.type 
+                ?? $.type ~ ' ' ~ $.var.emit
+                !! $.var.emit ) );
     }
 }
 
