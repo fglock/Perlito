@@ -16,7 +16,8 @@ sub block { $_[0]->{block} };
 sub needs_return { $_[0]->{needs_return} };
 sub top_level { $_[0]->{top_level} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1];  }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Main::join([ map { $_->emit_python_indented($level) } @{ $self->{block} } ], '
+') }
 }
 
 {
@@ -27,9 +28,8 @@ sub attributes { $_[0]->{attributes} };
 sub methods { $_[0]->{methods} };
 sub body { $_[0]->{body} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'class ' . $self->{name} . ':
-' . Main::join([ map { $_->emit_python_indented(($level + 1)) } @{ $self->{body} } ], '
-') . '
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{body}, )); Python::tab($level) . 'class ' . $self->{name} . ':
+' . $block->emit_python_indented(($level + 1)) . '
 ' }
 }
 
@@ -210,10 +210,10 @@ sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $has_body = (@{$self->{body}} ? 1 : 0)); (my  $has_otherwise = (@{$self->{otherwise}} ? 1 : 0)); (my  $s = Python::tab($level) . 'if ' . $self->{cond}->emit_python() . ':
-' . Main::join([ map { $_->emit_python_indented(($level + 1)) } @{ $self->{body} } ], '\\n')); if ($has_otherwise) { ($s = $s . '
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $has_body = (@{$self->{body}} ? 1 : 0)); (my  $has_otherwise = (@{$self->{otherwise}} ? 1 : 0)); (my  $body_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{body}, )); (my  $otherwise_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{otherwise}, )); (my  $s = Python::tab($level) . 'if ' . $self->{cond}->emit_python() . ':
+' . $body_block->emit_python_indented(($level + 1))); if ($has_otherwise) { ($s = $s . '
 ' . Python::tab($level) . 'else:
-' . Main::join([ map { $_->emit_python_indented(($level + 1)) } @{ $self->{otherwise} } ], '\\n')) } else {  }; return($s) }
+' . $otherwise_block->emit_python_indented(($level + 1))) } else {  }; return($s) }
 }
 
 {
@@ -269,7 +269,7 @@ package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_'); return(Python::tab($level) . $label . '()') }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_'); (my  $block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{block}, )); return(Python::tab($level) . $label . '()') }
 }
 
 {

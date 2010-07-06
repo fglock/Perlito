@@ -12,6 +12,7 @@ class MiniPerl6::Python::LexicalBlock {
     method emit_python_indented( $level ) {
         # TODO
         # add anon subs
+        (@.block.>>emit_python_indented($level)).join( "\n" );
     }
 }
 
@@ -22,8 +23,9 @@ class CompUnit {
     has @.body;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
+        my $block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
         Python::tab($level) ~ 'class ' ~ $.name ~ ":\n" ~ 
-            (@.body.>>emit_python_indented($level + 1)).join( "\n" ) ~ "\n"
+            $block.emit_python_indented($level + 1) ~ "\n"
     }
 }
 
@@ -380,12 +382,14 @@ class If {
     method emit_python_indented( $level ) {
         my $has_body = @.body ?? 1 !! 0;
         my $has_otherwise = @.otherwise ?? 1 !! 0;
+        my $body_block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
+        my $otherwise_block = MiniPerl6::Python::LexicalBlock.new( block => @.otherwise );
         my $s = Python::tab($level) ~   'if ' ~ $.cond.emit_python ~ ":\n" 
-            ~ (@.body.>>emit_python_indented($level+1)).join('\n');
+            ~ $body_block.emit_python_indented( $level + 1 );
         if ( $has_otherwise ) {
             $s = $s ~ "\n"
                 ~ Python::tab($level) ~ "else:\n" 
-                    ~ (@.otherwise.>>emit_python_indented($level+1)).join('\n');
+                    ~ $otherwise_block.emit_python_indented($level+1);
         }
         return $s;
     }
@@ -548,6 +552,7 @@ class Do {
 
         # TODO - generate an anonymous sub in the current block
     	# (@.block.>>emit_python).join("\n") ~
+        my $block = MiniPerl6::Python::LexicalBlock.new( block => @.block );
 
         return Python::tab($level) ~ $label ~ "()";
     }
@@ -561,4 +566,40 @@ class Use {
             ~ 'from ' ~ $.mod ~ 'import *'
     }
 }
+
+=begin
+
+=head1 NAME
+
+MiniPerl6::Python::Emit - Code generator for MiniPerl6-in-Python
+
+=head1 SYNOPSIS
+
+    $program.emit_python  # generated Python code
+
+=head1 DESCRIPTION
+
+This module generates Python code for the MiniPerl6 compiler.
+
+=head1 AUTHORS
+
+Flavio Soibelmann Glock <fglock@gmail.com>.
+The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
+
+=head1 SEE ALSO
+
+The Perl 6 homepage at L<http://dev.perl.org/perl6>.
+
+The Pugs homepage at L<http://pugscode.org/>.
+
+=head1 COPYRIGHT
+
+Copyright 2010 by Flavio Soibelmann Glock and others.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+See L<http://www.perl.com/perl/misc/Artistic.html>
+
+=end
 
