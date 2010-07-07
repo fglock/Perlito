@@ -208,11 +208,12 @@ class Lit::Array {
                     )
                 );
             # call the anonymous sub
-            return Python::tab($level) ~ $label ~ "([" ~ (@.array1.>>emit_python).join(', ') ~ "])";
+            return Python::tab($level) 
+                ~ $label ~ "(mp6_Array([" ~ (@.array1.>>emit_python).join(', ') ~ "]))";
         }
         else {
-            Python::tab($level) ~ 
-                '[' ~ (@.array1.>>emit_python).join(', ') ~ ']';
+            Python::tab($level)  
+                ~ 'mp6_Array([' ~ (@.array1.>>emit_python).join(', ') ~ '])';
         }
     }
 }
@@ -257,7 +258,7 @@ class Index {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            $.obj.emit_python ~ '[' ~ $.index_exp.emit_python ~ ']';
+            $.obj.emit_python ~ '.index(' ~ $.index_exp.emit_python ~ ')';
     }
 }
 
@@ -309,8 +310,7 @@ class Bind {
     method emit_python_indented( $level ) {
         if $.parameters.isa( 'Index' ) {
             return Python::tab($level)  
-                ~ 'mp6_array_set(' 
-                    ~ ($.parameters.obj).emit_python ~ ', '
+                ~ ($.parameters.obj).emit_python ~ '.set('
                     ~ ($.parameters.index_exp).emit_python ~ ', '
                     ~ $.arguments.emit_python ~ ')'
         }
@@ -355,9 +355,6 @@ class Call {
         my $meth = $.method;
         if $meth eq 'postcircumfix:<( )>' {
             $meth = '';  
-        }
-        if $meth eq 'push' {
-            $meth = 'append';
         }
         
         my $call = '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
@@ -444,6 +441,9 @@ class Apply {
         if $code eq 'index' { 
             return (@.arguments[0]).emit_python ~ '.index(' ~ (@.arguments[1]).emit_python ~ ')' 
         } 
+        if $code eq 'shift' { 
+            return (@.arguments[0]).emit_python ~ '.shift()' 
+        } 
 
         $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
     }
@@ -482,18 +482,37 @@ class If {
     }
 }
 
+class While {
+    has $.init;
+    has $.cond;
+    has $.continue;
+    has @.body;
+    method emit_python { $self.emit_python_indented(0) }
+    method emit_python_indented( $level ) {
+        my $body_block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
+        if $.init && $.continue {
+            die "not implemented (While)"
+            #    'for ( '
+            # ~  ( $.init     ?? $.init.emit_             ~ '; '  !! '; ' )
+            # ~  ( $.cond     ?? 'f_bool(' ~ $.cond.emit_ ~ '); ' !! '; ' )
+            # ~  ( $.continue ?? $.continue.emit_         ~ ' '   !! ' '  )
+        }
+        Python::tab($level)
+            ~ 'while ' ~ $.cond.emit_python ~ ":\n"
+                ~ $body_block.emit_python_indented( $level + 1 );
+    }
+}
+
 class For {
     has $.cond;
     has @.body;
     has @.topic;
-    method emit_python {
-        my $cond = $.cond;
-        if   $cond.isa( 'Var' ) 
-          && $cond.sigil eq '@' 
-        {
-            $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-        };
-        'do { for my ' ~ $.topic.emit_python ~ ' ( ' ~ $cond.emit_python ~ ' ) { ' ~ (@.body.>>emit_python).join(';') ~ ' } }';
+    method emit_python { $self.emit_python_indented(0) }
+    method emit_python_indented( $level ) {
+        my $body_block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
+        Python::tab($level)
+            ~ 'for ' ~ $.topic.emit_python ~ " in " ~ $.cond.emit_python ~ ":\n"
+                ~ $body_block.emit_python_indented( $level + 1 );
     }
 }
 
@@ -523,7 +542,7 @@ class Decl {
                 $str = $str ~ '{}';
             }
             elsif ($.var).sigil eq '@' {
-                $str = $str ~ '[]';
+                $str = $str ~ 'mp6_Array([])';
             }
             else {
                 $str = $str ~ 'mp6_Undef()';

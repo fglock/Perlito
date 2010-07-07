@@ -22,7 +22,8 @@ See L<http://www.perl.com/perl/misc/Artistic.html>
 
 import sys
 
-__all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 'mp6_Undef', 'mp6_to_num', 'mp6_array_set']
+__all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 'mp6_to_num', 
+           'mp6_Undef', 'mp6_Array']
 
 def mp6_print(*msg):
     for m in msg:
@@ -40,20 +41,50 @@ def mp6_warn(*msg):
 
 def mp6_to_num(s): 
     try:
-        return int(s)
-    except ValueError:
+        c = coerce(s, 0);
+        return c[0]
+    except TypeError:
         try:
+            s.index(".")
             return float(s)
         except ValueError:
-            return 0
+            try:
+                return int(s)
+            except ValueError:
+                return 0
 
-def mp6_array_set(arr, i, s):
-    while True:
+class mp6_Array:
+    def __init__(self, l):
+        self.l = l
+    def __str__(self):
+        return str(self.l)
+    def __int__(self):
+        return len(self.l)
+    def __nonzero__(self):
+        return len(self.l) > 0
+    def __iter__(self):
+        return self.l.__iter__()
+    def extend(self, l):
+        self.l.extend(l.l)
+    def push(self, s):
+        self.l.append(s)
+    def set(self, i, s):
+        while True:
+            try:
+                self.l[i] = s
+                return s
+            except IndexError:
+                self.l.append( mp6_Undef() )
+    def shift(self):
         try:
-            arr[i] = s
-            return s
+            return self.l.pop(0)
         except IndexError:
-            arr.append( mp6_Undef() )
+            return mp6_Undef()
+    def index(self, i):
+        try:
+            return self.l[i]
+        except IndexError:
+            return mp6_Undef()
 
 class mp6_Undef:
     def __str__(self):
