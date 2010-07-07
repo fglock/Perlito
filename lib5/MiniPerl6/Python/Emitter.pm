@@ -17,8 +17,9 @@ sub needs_return { $_[0]->{needs_return} };
 sub top_level { $_[0]->{top_level} };
 my  $ident;
 my  $List_anon_block;
-sub push_stmt { my $block = $_[0]; push( @{$List_anon_block}, $block ) };
-sub get_ident { ($ident = ($ident + 1)); return($ident) };
+sub push_stmt_python { my $block = $_[0]; push( @{$List_anon_block}, $block ) };
+sub get_ident_python { ($ident = ($ident + 1)); return($ident) };
+sub has_my_decl { my $self = $_[0]; for my $decl ( @{$self->{block}} ) { if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my'))) { return(1) } else {  };if ((Main::isa($decl, 'Bind') && (Main::isa($decl->parameters(), 'Decl') && ($decl->parameters()->decl() eq 'my')))) { return(1) } else {  } }; return(0) };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
 sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; my  $List_s; my  $List_tmp; for my $stmt ( @{$List_anon_block} ) { push( @{$List_tmp}, $stmt ) }; for my $decl ( @{$self->{block}} ) { if ((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my'))) { push( @{$List_s}, $decl->emit_python_init($level) ) } else {  };if ((Main::isa($decl, 'Bind') && (Main::isa($decl->parameters(), 'Decl') && ($decl->parameters()->decl() eq 'my')))) { push( @{$List_s}, $decl->parameters()->emit_python_init($level) ) } else {  } }; my  $last_statement; if ($self->{needs_return}) { ($last_statement = pop( @{$self->{block}} )) } else {  }; for my $stmt ( @{$self->{block}} ) { ($List_anon_block = []);(my  $s2 = $stmt->emit_python_indented($level));for my $stmt ( @{$List_anon_block} ) { push( @{$List_s}, $stmt->emit_python_indented($level) ) };push( @{$List_s}, $s2 ) }; if (($self->{needs_return} && $last_statement)) { ($List_anon_block = []);my  $s2;if (Main::isa($last_statement, 'If')) { (my  $cond = $last_statement->cond());(my  $body = $last_statement->body());(my  $otherwise = $last_statement->otherwise());(my  $has_otherwise = ($otherwise ? 1 : 0));($body = MiniPerl6::Python::LexicalBlock->new( 'block' => $body,'needs_return' => 1, ));($otherwise = MiniPerl6::Python::LexicalBlock->new( 'block' => $otherwise,'needs_return' => 1, ));($s2 = Python::tab($level) . 'if ' . $cond->emit_python() . ':
 ' . $body->emit_python_indented(($level + 1)));if ($has_otherwise) { ($s2 = $s2 . '
@@ -93,7 +94,7 @@ package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $needs_interpolation = 0); for my $item ( @{$self->{array1}} ) { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { ($needs_interpolation = 1) } else {  } }; if ($needs_interpolation) { my  $List_block;(my  $temp_array = Var->new( 'name' => 'a','namespace' => '','sigil' => '@','twigil' => '', ));(my  $input_array = Var->new( 'name' => 'b','namespace' => '','sigil' => '@','twigil' => '', ));push( @{$List_block}, Decl->new( 'decl' => 'my','type' => '','var' => $temp_array, ) );(my  $index = 0);for my $item ( @{$self->{array1}} ) { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { push( @{$List_block}, Call->new( 'method' => 'extend','arguments' => [Index->new( 'obj' => $input_array,'index_exp' => Val::Int->new( 'int' => $index, ), )],'hyper' => '','invocant' => $temp_array, ) ) } else { push( @{$List_block}, Call->new( 'method' => 'push','arguments' => [Index->new( 'obj' => $input_array,'index_exp' => Val::Int->new( 'int' => $index, ), )],'hyper' => '','invocant' => $temp_array, ) ) };($index = ($index + 1)) };push( @{$List_block}, $temp_array );(my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident());MiniPerl6::Python::LexicalBlock::push_stmt(Sub->new( 'name' => $label,'block' => $List_block,'sig' => Sig->new( 'invocant' => (undef),'positional' => [$input_array],'named' => {  }, ), ));return(Python::tab($level) . $label . '(mp6_Array([' . Main::join([ map { $_->emit_python() } @{ $self->{array1} } ], ', ') . ']))') } else { Python::tab($level) . 'mp6_Array([' . Main::join([ map { $_->emit_python() } @{ $self->{array1} } ], ', ') . '])' } }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $needs_interpolation = 0); for my $item ( @{$self->{array1}} ) { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { ($needs_interpolation = 1) } else {  } }; if ($needs_interpolation) { my  $List_block;(my  $temp_array = Var->new( 'name' => 'a','namespace' => '','sigil' => '@','twigil' => '', ));(my  $input_array = Var->new( 'name' => 'b','namespace' => '','sigil' => '@','twigil' => '', ));push( @{$List_block}, Decl->new( 'decl' => 'my','type' => '','var' => $temp_array, ) );(my  $index = 0);for my $item ( @{$self->{array1}} ) { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { push( @{$List_block}, Call->new( 'method' => 'extend','arguments' => [Index->new( 'obj' => $input_array,'index_exp' => Val::Int->new( 'int' => $index, ), )],'hyper' => '','invocant' => $temp_array, ) ) } else { push( @{$List_block}, Call->new( 'method' => 'push','arguments' => [Index->new( 'obj' => $input_array,'index_exp' => Val::Int->new( 'int' => $index, ), )],'hyper' => '','invocant' => $temp_array, ) ) };($index = ($index + 1)) };push( @{$List_block}, $temp_array );(my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python());MiniPerl6::Python::LexicalBlock::push_stmt_python(Sub->new( 'name' => $label,'block' => $List_block,'sig' => Sig->new( 'invocant' => (undef),'positional' => [$input_array],'named' => {  }, ), ));return(Python::tab($level) . $label . '(mp6_Array([' . Main::join([ map { $_->emit_python() } @{ $self->{array1} } ], ', ') . ']))') } else { Python::tab($level) . 'mp6_Array([' . Main::join([ map { $_->emit_python() } @{ $self->{array1} } ], ', ') . '])' } }
 }
 
 {
@@ -202,7 +203,7 @@ sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $has_body = (@{$self->{body}} ? 1 : 0)); (my  $has_otherwise = (@{$self->{otherwise}} ? 1 : 0)); (my  $body_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{body}, )); (my  $otherwise_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{otherwise}, )); (my  $s = Python::tab($level) . 'if ' . $self->{cond}->emit_python() . ':
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $has_body = (@{$self->{body}} ? 1 : 0)); (my  $has_otherwise = (@{$self->{otherwise}} ? 1 : 0)); (my  $body_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{body}, )); (my  $otherwise_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{otherwise}, )); if ($body_block->has_my_decl()) { ($body_block = Do->new( 'block' => $self->{body}, )) } else {  }; if (($has_otherwise && $otherwise_block->has_my_decl())) { ($otherwise_block = Do->new( 'block' => $self->{otherwise}, )) } else {  }; (my  $s = Python::tab($level) . 'if ' . $self->{cond}->emit_python() . ':
 ' . $body_block->emit_python_indented(($level + 1))); if ($has_otherwise) { ($s = $s . '
 ' . Python::tab($level) . 'else:
 ' . $otherwise_block->emit_python_indented(($level + 1))) } else {  }; return($s) }
@@ -216,7 +217,7 @@ sub cond { $_[0]->{cond} };
 sub continue { $_[0]->{continue} };
 sub body { $_[0]->{body} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{body}, )); if (($self->{init} && $self->{continue})) { die('not implemented (While)') } else {  }; Python::tab($level) . 'while ' . $self->{cond}->emit_python() . ':
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{body}, )); if ($body_block->has_my_decl()) { ($body_block = Do->new( 'block' => $self->{body}, )) } else {  }; if (($self->{init} && $self->{continue})) { die('not implemented (While)') } else {  }; Python::tab($level) . 'while ' . $self->{cond}->emit_python() . ':
 ' . $body_block->emit_python_indented(($level + 1)) }
 }
 
@@ -227,7 +228,7 @@ sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub topic { $_[0]->{topic} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{body}, )); Python::tab($level) . 'for ' . $self->{topic}->emit_python() . ' in ' . $self->{cond}->emit_python() . ':
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{body}, )); if ($body_block->has_my_decl()) { ($body_block = Do->new( 'block' => $self->{body}, )) } else {  }; Python::tab($level) . 'for ' . $self->{topic}->emit_python() . ' in ' . $self->{cond}->emit_python() . ':
 ' . $body_block->emit_python_indented(($level + 1)) }
 }
 
@@ -278,7 +279,7 @@ package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident()); MiniPerl6::Python::LexicalBlock::push_stmt(Sub->new( 'name' => $label,'block' => $self->{block},'sig' => Sig->new( 'invocant' => (undef),'positional' => [],'named' => {  }, ), )); return(Python::tab($level) . $label . '()') }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python()); MiniPerl6::Python::LexicalBlock::push_stmt_python(Sub->new( 'name' => $label,'block' => $self->{block},'sig' => Sig->new( 'invocant' => (undef),'positional' => [],'named' => {  }, ), )); return(Python::tab($level) . $label . '()') }
 }
 
 {

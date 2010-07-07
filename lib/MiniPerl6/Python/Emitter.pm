@@ -11,12 +11,23 @@ class MiniPerl6::Python::LexicalBlock {
 
     my $ident;
     my @anon_block;
-    sub push_stmt($block) { 
+    sub push_stmt_python($block) { 
         push @anon_block, $block; 
     }
-    sub get_ident {
+    sub get_ident_python {
         $ident = $ident + 1;
         return $ident;
+    }
+    method has_my_decl {
+        for @.block -> $decl {
+            if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
+                return 1;
+            }
+            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
+                return 1;
+            }
+        }
+        return 0;
     }
 
     method emit_python { $self.emit_python_indented(0) }
@@ -198,9 +209,9 @@ class Lit::Array {
                 $index = $index + 1;
             }
             push @block, $temp_array;
-            my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident;
+            my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
             # generate an anonymous sub in the current block
-            MiniPerl6::Python::LexicalBlock::push_stmt( 
+            MiniPerl6::Python::LexicalBlock::push_stmt_python( 
                     Sub.new( 
                         name  => $label, 
                         block => @block,
@@ -471,6 +482,14 @@ class If {
         my $has_otherwise = @.otherwise ?? 1 !! 0;
         my $body_block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
         my $otherwise_block = MiniPerl6::Python::LexicalBlock.new( block => @.otherwise );
+
+        if $body_block.has_my_decl {
+            $body_block = Do.new( block => @.body );
+        }
+        if $has_otherwise && $otherwise_block.has_my_decl {
+            $otherwise_block = Do.new( block => @.otherwise );
+        }
+
         my $s = Python::tab($level) ~   'if ' ~ $.cond.emit_python ~ ":\n" 
             ~ $body_block.emit_python_indented( $level + 1 );
         if ( $has_otherwise ) {
@@ -490,6 +509,9 @@ class While {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $body_block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
+        if $body_block.has_my_decl {
+            $body_block = Do.new( block => @.body );
+        }
         if $.init && $.continue {
             die "not implemented (While)"
             #    'for ( '
@@ -510,6 +532,9 @@ class For {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $body_block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
+        if $body_block.has_my_decl {
+            $body_block = Do.new( block => @.body );
+        }
         Python::tab($level)
             ~ 'for ' ~ $.topic.emit_python ~ " in " ~ $.cond.emit_python ~ ":\n"
                 ~ $body_block.emit_python_indented( $level + 1 );
@@ -623,9 +648,9 @@ class Do {
     has @.block;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident;
+        my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
         # generate an anonymous sub in the current block
-        MiniPerl6::Python::LexicalBlock::push_stmt( 
+        MiniPerl6::Python::LexicalBlock::push_stmt_python( 
                 Sub.new( 
                     name  => $label, 
                     block => @.block,
