@@ -154,7 +154,7 @@ sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{parameters}->emit_python() . ' = ' . $self->{arguments}->emit_python() }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; if (Main::isa($self->{parameters}, 'Index')) { return(Python::tab($level) . 'mp6_array_set(' . $self->{parameters}->obj()->emit_python() . ', ' . $self->{parameters}->index_exp()->emit_python() . ', ' . $self->{arguments}->emit_python() . ')') } else {  }; Python::tab($level) . $self->{parameters}->emit_python() . ' = ' . $self->{arguments}->emit_python() }
 }
 
 {

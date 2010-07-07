@@ -247,8 +247,15 @@ class Bind {
     has $.arguments;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        Python::tab($level) ~ 
-            $.parameters.emit_python ~ ' = ' ~ $.arguments.emit_python;
+        if $.parameters.isa( 'Index' ) {
+            return Python::tab($level)  
+                ~ 'mp6_array_set(' 
+                    ~ ($.parameters.obj).emit_python ~ ', '
+                    ~ ($.parameters.index_exp).emit_python ~ ', '
+                    ~ $.arguments.emit_python ~ ')'
+        }
+        Python::tab($level)  
+            ~ $.parameters.emit_python ~ ' = ' ~ $.arguments.emit_python;
     }
 }
 

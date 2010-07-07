@@ -22,7 +22,7 @@ See L<http://www.perl.com/perl/misc/Artistic.html>
 
 import sys
 
-__all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 'mp6_Undef', 'mp6_to_num']
+__all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 'mp6_Undef', 'mp6_to_num', 'mp6_array_set']
 
 def mp6_print(*msg):
     for m in msg:
@@ -46,6 +46,14 @@ def mp6_to_num(s):
             return float(s)
         except ValueError:
             return 0
+
+def mp6_array_set(arr, i, s):
+    while True:
+        try:
+            arr[i] = s
+            return s
+        except IndexError:
+            arr.append( mp6_Undef() )
 
 class mp6_Undef:
     def __str__(self):
