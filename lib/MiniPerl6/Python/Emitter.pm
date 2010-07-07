@@ -152,8 +152,68 @@ class Lit::Array {
     has @.array1;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        Python::tab($level) ~ 
-            '[' ~ (@.array1.>>emit_python).join(', ') ~ ']';
+        my $needs_interpolation = 0;
+        for @.array1 -> $item {
+            if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
+                || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' )
+            {
+                $needs_interpolation = 1;
+            }
+        }
+        if $needs_interpolation {
+            my @block;
+            my $temp_array = Var.new( 
+                                'name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
+            my $input_array = Var.new( 
+                                'name' => 'b', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
+            push @block, Decl.new( 
+                            'decl' => 'my',
+                            'type' => '',
+                            'var'  => $temp_array
+                        );
+            my $index = 0;
+            for @.array1 -> $item {
+                if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
+                    || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' )
+                {
+                    push @block, Call.new(
+                                    'method' => 'extend',
+                                    'arguments' => [ 
+                                        Index.new( obj => $input_array, index_exp => Val::Int.new( int => $index ) )
+                                    ],
+                                    'hyper' => '',
+                                    'invocant' => $temp_array
+                                );
+                }
+                else {
+                    push @block, Call.new(
+                                    'method' => 'push',
+                                    'arguments' => [ 
+                                        Index.new( obj => $input_array, index_exp => Val::Int.new( int => $index ) ) 
+                                    ],
+                                    'hyper' => '',
+                                    'invocant' => $temp_array
+                                );
+                }
+                $index = $index + 1;
+            }
+            push @block, $temp_array;
+            my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident;
+            # generate an anonymous sub in the current block
+            MiniPerl6::Python::LexicalBlock::push_stmt( 
+                    Sub.new( 
+                        name  => $label, 
+                        block => @block,
+                        sig   => Sig.new( invocant => undef, positional => [ $input_array ], named => {} ) 
+                    )
+                );
+            # call the anonymous sub
+            return Python::tab($level) ~ $label ~ "([" ~ (@.array1.>>emit_python).join(', ') ~ "])";
+        }
+        else {
+            Python::tab($level) ~ 
+                '[' ~ (@.array1.>>emit_python).join(', ') ~ ']';
+        }
     }
 }
 
@@ -293,9 +353,12 @@ class Call {
         };
 
         my $meth = $.method;
-        if  $meth eq 'postcircumfix:<( )>'  {
-             $meth = '';  
-        };
+        if $meth eq 'postcircumfix:<( )>' {
+            $meth = '';  
+        }
+        if $meth eq 'push' {
+            $meth = 'append';
+        }
         
         my $call = '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         if ($.hyper) {
