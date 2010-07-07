@@ -365,7 +365,8 @@ class Call {
 
         my $meth = $.method;
         if $meth eq 'postcircumfix:<( )>' {
-            $meth = '';  
+            return Python::tab($level) ~ 
+                $invocant ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         }
         
         my $call = '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
@@ -630,6 +631,20 @@ class Sub {
     has @.block;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
+        if ( $.name eq '' ) {
+            my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
+            # generate an anonymous sub in the current block
+            MiniPerl6::Python::LexicalBlock::push_stmt_python( 
+                    Sub.new( 
+                        name  => $label, 
+                        block => @.block,
+                        sig   => $.sig 
+                    )
+                );
+            # return a ref to the anonymous sub
+            return Python::tab($level) ~ $label;
+        }
+
         my $sig = $.sig;
         my $pos = $sig.positional;
         my @args;

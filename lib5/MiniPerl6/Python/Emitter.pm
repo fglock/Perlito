@@ -175,7 +175,7 @@ sub method { $_[0]->{method} };
 sub arguments { $_[0]->{arguments} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
 sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $invocant = $self->{invocant}->emit_python()); if ((($self->{method} eq 'perl') || (($self->{method} eq 'yaml') || (($self->{method} eq 'say') || (($self->{method} eq 'join') || (($self->{method} eq 'chars') || ($self->{method} eq 'isa'))))))) { if ($self->{hyper}) { return('map(lambda: Main.' . $self->{method} . '( self, ' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ') , ' . $invocant . ')
-') } else { return('Main.' . $self->{method} . '(' . $invocant . ', ' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')') } } else {  }; (my  $meth = $self->{method}); if (($meth eq 'postcircumfix:<( )>')) { ($meth = '') } else {  }; (my  $call = '.' . $meth . '(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')'); if ($self->{hyper}) { Python::tab($level) . '[ map { $_' . $call . ' } @{ ' . $invocant . ' } ]' } else { Python::tab($level) . $invocant . $call } }
+') } else { return('Main.' . $self->{method} . '(' . $invocant . ', ' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')') } } else {  }; (my  $meth = $self->{method}); if (($meth eq 'postcircumfix:<( )>')) { return(Python::tab($level) . $invocant . '(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')') } else {  }; (my  $call = '.' . $meth . '(' . Main::join([ map { $_->emit_python() } @{ $self->{arguments} } ], ', ') . ')'); if ($self->{hyper}) { Python::tab($level) . '[ map { $_' . $call . ' } @{ ' . $invocant . ' } ]' } else { Python::tab($level) . $invocant . $call } }
 }
 
 {
@@ -270,7 +270,7 @@ sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); my  $List_args; for my $field ( @{$pos} ) { push( @{$List_args}, $field->emit_python() ) }; (my  $block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1, )); Python::tab($level) . 'def ' . $self->{name} . '(' . Main::join($List_args, ', ') . '):
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; if (($self->{name} eq '')) { (my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python());MiniPerl6::Python::LexicalBlock::push_stmt_python(Sub->new( 'name' => $label,'block' => $self->{block},'sig' => $self->{sig}, ));return(Python::tab($level) . $label) } else {  }; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); my  $List_args; for my $field ( @{$pos} ) { push( @{$List_args}, $field->emit_python() ) }; (my  $block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1, )); Python::tab($level) . 'def ' . $self->{name} . '(' . Main::join($List_args, ', ') . '):
 ' . $block->emit_python_indented(($level + 1)) }
 }
 
