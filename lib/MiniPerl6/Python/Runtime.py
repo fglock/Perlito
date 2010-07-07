@@ -22,7 +22,7 @@ See L<http://www.perl.com/perl/misc/Artistic.html>
 
 import sys
 
-__all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 'mp6_Undef']
+__all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 'mp6_Undef', 'mp6_to_num']
 
 def mp6_print(*msg):
     for m in msg:
@@ -37,6 +37,15 @@ def mp6_warn(*msg):
     for m in msg:
         sys.stderr.write(str(m))
     sys.stderr.write("\n")
+
+def mp6_to_num(s): 
+    try:
+        return int(s)
+    except ValueError:
+        try:
+            return float(s)
+        except ValueError:
+            return 0
 
 class mp6_Undef:
     def __str__(self):

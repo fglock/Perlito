@@ -336,7 +336,7 @@ class Apply {
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
 
         if $code eq 'infix:<~>'  { return '(str('  ~ (@.arguments.>>emit_python).join(') + str(')  ~ '))' };
-        if $code eq 'infix:<+>'  { return '(float('  ~ (@.arguments.>>emit_python).join(') + float(')  ~ '))' };
+        if $code eq 'infix:<+>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') + mp6_to_num(')  ~ '))' };
         if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_python).join(' - ')  ~ ')' };
         if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_python).join(' * ')  ~ ')' };
         if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_python).join(' / ')  ~ ')' };
@@ -346,10 +346,10 @@ class Apply {
         if $code eq 'infix:<eq>' { return '(str('  ~ (@.arguments.>>emit_python).join(') == str(')  ~ '))' };
         if $code eq 'infix:<ne>' { return '(str('  ~ (@.arguments.>>emit_python).join(') != str(')  ~ '))' };
  
-        if $code eq 'infix:<==>' { return '(float('  ~ (@.arguments.>>emit_python).join(') == float(') ~ '))' };
-        if $code eq 'infix:<!=>' { return '(float('  ~ (@.arguments.>>emit_python).join(') != float(') ~ '))' };
-        if $code eq 'infix:<<>'  { return '(float('  ~ (@.arguments.>>emit_python).join(') < float(')  ~ '))' };
-        if $code eq 'infix:<>>'  { return '(float('  ~ (@.arguments.>>emit_python).join(') > float(')  ~ '))' };
+        if $code eq 'infix:<==>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') == mp6_to_num(') ~ '))' };
+        if $code eq 'infix:<!=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') != mp6_to_num(') ~ '))' };
+        if $code eq 'infix:<<>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') < mp6_to_num(')  ~ '))' };
+        if $code eq 'infix:<>>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') > mp6_to_num(')  ~ '))' };
 
         if $code eq 'ternary:<?? !!>' { 
             my $ast = 
@@ -365,6 +365,16 @@ class Apply {
             return $ast.emit_python;
         }
         
+        if $code eq 'substr' { 
+            return (@.arguments[0]).emit_python ~ '[' 
+                    ~ (@.arguments[1]).emit_python ~ ':' 
+                    ~ (@.arguments[1]).emit_python ~ ' + ' ~ (@.arguments[2]).emit_python 
+                ~ ']' 
+        } 
+        if $code eq 'index' { 
+            return (@.arguments[0]).emit_python ~ '.index(' ~ (@.arguments[1]).emit_python ~ ')' 
+        } 
+
         $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
     }
     method emit_python_indented( $level ) {
