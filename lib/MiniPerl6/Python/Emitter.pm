@@ -73,12 +73,10 @@ class MiniPerl6::Python::LexicalBlock {
                     MiniPerl6::Python::LexicalBlock.new( block => ($last_statement.otherwise), needs_return => 1 );
 
                 if $body_block.has_my_decl {
-                    # TODO - needs_return => 1
-                    $body_block = Do.new( block => ($last_statement.body) );
+                    $body_block = Return.new( result => Do.new( block => ($last_statement.body) ) );
                 }
                 if $has_otherwise && $otherwise_block.has_my_decl {
-                    # TODO - needs_return => 1
-                    $otherwise_block = Do.new( block => ($last_statement.otherwise) );
+                    $otherwise_block = Return.new( result => Do.new( block => ($last_statement.otherwise) ) );
                 }
 
                 $s2 = Python::tab($level) ~ 'if ' ~ $cond.emit_python ~ ":\n" 
