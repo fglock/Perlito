@@ -56,44 +56,33 @@ class MiniPerl6::Python::LexicalBlock {
             }
         }
         if @($has_decl) {
-            my @decl;
-            my $self_var = Var.new( 'name' => 'self', 'sigil' => '$', 'twigil' => '' );
+            my @names;
+            push @names, 'self';
             for @($has_decl) -> $decl {
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                    # TODO 
-                    push @decl, Bind.new(
-                                    parameters => Call.new(
-                                                    'arguments' => [],
-                                                    'hyper' => '',
-                                                    'invocant' => Proto.new( name => 'self' ),
-                                                    'method' => 'xyz'
-                                                ),
-                                    arguments => Val::Int.new( int => 0 ),
-                                );
+                    push @names, ($decl.var).name;
                 }
                 if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
-                    # TODO 
-                    push @decl, ($decl.parameters);
+                    push @names, (($decl.parameters).var).name ~ ' = ' ~ ($decl.arguments).emit_python;
                 }
             }
-            push @decl, $self_var;
-            push @s, (Method.new(
-                        name  => '__init__', 
-                        block => @decl,
-                        sig   => Sig.new(
-                                    'invocant' => $self_var,
-                                    'named' => {},
-                                    'positional' => []
-                                )
-                    )).emit_python_indented( $level );
+            push @s, Python::tab($level) ~ 'def __init__(' ~ @names.join(', ') ~ '):';
+            for @($has_decl) -> $decl {
+                if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
+                    push @s, Python::tab($level+1) ~ ($decl.var).emit_python ~ ' = ' ~ ($decl.var).name;
+                }
+                if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
+                    push @s, Python::tab($level+1) ~ (($decl.parameters).var).emit_python ~ ' = ' ~ (($decl.parameters).var).name;
+                }
+            }
         }
 
         for @($block) -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                push @s, $decl.emit_python_init( $level );
+                push @s, Python::tab($level) ~ ($decl.var).emit_python ~ ' = ' ~ $decl.emit_python_init;
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                push @s, ($decl.parameters).emit_python_init( $level );
+                push @s, Python::tab($level) ~ (($decl.parameters).var).emit_python ~ ' = ' ~ ($decl.parameters).emit_python_init;
             }
         }
 
@@ -213,7 +202,7 @@ class Val::Object {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            $.class.perl ~ '(' ~ %.fields.perl ~ ')';
+            $.class.emit_python ~ '(' ~ %.fields.emit_python ~ ')';
     }
 }
 
@@ -312,12 +301,12 @@ class Lit::Object {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $fields = @.fields;
-        my $str = '';
+        my @str;
         for @$fields -> $field { 
-            $str = $str ~ ($field[0]).emit_python ~ ' = ' ~ ($field[1]).emit_python ~ ',';
-        }; 
+            push @str, ($field[0]).buf ~ '=' ~ ($field[1]).emit_python;
+        }
         Python::tab($level) ~ 
-            $.class ~ '( ' ~ $str ~ ' )';
+            $.class ~ '(' ~ @str.join(', ') ~ ')';
     }
 }
 
@@ -383,6 +372,11 @@ class Bind {
                     ~ ($.parameters.index_exp).emit_python ~ ', '
                     ~ $.arguments.emit_python ~ ')'
         }
+        if $.parameters.isa( 'Call' ) {
+            # $var.attr = 3;
+            return Python::tab($level)  
+                ~ ($.parameters.invocant).emit_python ~ '.' ~ $.parameters.method ~ ' = ' ~ $.arguments.emit_python;
+        }
         Python::tab($level)  
             ~ $.parameters.emit_python ~ ' = ' ~ $.arguments.emit_python;
     }
@@ -406,9 +400,6 @@ class Call {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $invocant = $.invocant.emit_python;
-        if $.method eq 'new' {
-            # TODO
-        }
         if     ($.method eq 'perl')
             || ($.method eq 'yaml')
             || ($.method eq 'say' )
@@ -616,23 +607,17 @@ class Decl {
             ?? ( '' )
             !! $.var.emit_python );
     }
-    method emit_python_init( $level ) {
-        if $.decl eq 'my' {
-            my $str = Python::tab($level) ~ ($.var).emit_python ~ ' = ';
-            if ($.var).sigil eq '%' {
-                $str = $str ~ '{}';
-            }
-            elsif ($.var).sigil eq '@' {
-                $str = $str ~ 'mp6_Array([])';
-            }
-            else {
-                $str = $str ~ 'mp6_Undef()';
-            }
-            return $str;
+    method emit_python_init {
+        if ($.var).sigil eq '%' {
+            return '{}';
+        }
+        elsif ($.var).sigil eq '@' {
+            return 'mp6_Array([])';
         }
         else {
-            die "not implemented: Decl '" ~ $.decl ~ "'";
+            return 'mp6_Undef()';
         }
+        return '';
     }
 }
 
