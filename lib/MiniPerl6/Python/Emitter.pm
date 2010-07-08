@@ -43,36 +43,52 @@ class MiniPerl6::Python::LexicalBlock {
         }
 
         my $has_decl = [];
+        my $block = [];
         for @.block -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 push $has_decl, $decl;
             }
-            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
+            elsif $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
                 push $has_decl, $decl;
+            }
+            else {
+                push @($block), $decl;
             }
         }
         if @($has_decl) {
-            # TODO
+            my @decl;
+            my $self_var = Var.new( 'name' => 'self', 'sigil' => '$', 'twigil' => '' );
+            for @($has_decl) -> $decl {
+                if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
+                    # TODO 
+                    push @decl, Bind.new(
+                                    parameters => Call.new(
+                                                    'arguments' => [],
+                                                    'hyper' => '',
+                                                    'invocant' => Proto.new( name => 'self' ),
+                                                    'method' => 'xyz'
+                                                ),
+                                    arguments => Val::Int.new( int => 0 ),
+                                );
+                }
+                if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
+                    # TODO 
+                    push @decl, ($decl.parameters);
+                }
+            }
+            push @decl, $self_var;
             push @s, (Method.new(
                         name  => '__init__', 
-                        block => [],
+                        block => @decl,
                         sig   => Sig.new(
-                                    'invocant' => Var.new( 'name' => 'self', 'sigil' => '$', 'twigil' => '' ),
+                                    'invocant' => $self_var,
                                     'named' => {},
                                     'positional' => []
                                 )
                     )).emit_python_indented( $level );
-            # for @($has_decl) -> $decl {
-            #     if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-            #         push @s, $decl.emit_python_init( $level );
-            #     }
-            #     if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-            #         push @s, ($decl.parameters).emit_python_init( $level );
-            #     }
-            # }
         }
 
-        for @.block -> $decl {
+        for @($block) -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 push @s, $decl.emit_python_init( $level );
             }
@@ -83,10 +99,10 @@ class MiniPerl6::Python::LexicalBlock {
 
         my $last_statement;
         if $.needs_return {
-            $last_statement = pop @.block;
+            $last_statement = pop @($block);
         }
 
-        for @.block -> $stmt {
+        for @($block) -> $stmt {
             @anon_block = [];
             my $s2 = $stmt.emit_python_indented($level);
             for @anon_block -> $stmt {
@@ -390,6 +406,9 @@ class Call {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $invocant = $.invocant.emit_python;
+        if $.method eq 'new' {
+            # TODO
+        }
         if     ($.method eq 'perl')
             || ($.method eq 'yaml')
             || ($.method eq 'say' )
