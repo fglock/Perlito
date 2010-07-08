@@ -32,10 +32,44 @@ class MiniPerl6::Python::LexicalBlock {
 
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
+        if !(@.block) {
+            push @.block, Val::Undef.new();
+        }
+
         my @s;
         my @tmp;
         for @anon_block -> $stmt {
             @tmp.push( $stmt );
+        }
+
+        my $has_decl = [];
+        for @.block -> $decl {
+            if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
+                push $has_decl, $decl;
+            }
+            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
+                push $has_decl, $decl;
+            }
+        }
+        if @($has_decl) {
+            # TODO
+            push @s, (Method.new(
+                        name  => '__init__', 
+                        block => [],
+                        sig   => Sig.new(
+                                    'invocant' => Var.new( 'name' => 'self', 'sigil' => '$', 'twigil' => '' ),
+                                    'named' => {},
+                                    'positional' => []
+                                )
+                    )).emit_python_indented( $level );
+            # for @($has_decl) -> $decl {
+            #     if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
+            #         push @s, $decl.emit_python_init( $level );
+            #     }
+            #     if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
+            #         push @s, ($decl.parameters).emit_python_init( $level );
+            #     }
+            # }
         }
 
         for @.block -> $decl {
@@ -560,14 +594,8 @@ class Decl {
         my $name = $.var.name;
         Python::tab($level)
             ~ ( ( $decl eq 'has' )
-            ?? ( 'sub ' ~ $name ~ ' { ' ~
-                '@_ == 1 ' ~
-                    '? ( $_[0]->{' ~ $name ~ '} ) ' ~
-                    ': ( $_[0]->{' ~ $name ~ '} = $_[1] ) ' ~
-                '}' )
-            !! ( $.type 
-                ?? $.type ~ ' ' ~ $.var.emit_python
-                !! $.var.emit_python ) );
+            ?? ( '' )
+            !! $.var.emit_python );
     }
     method emit_python_init( $level ) {
         if $.decl eq 'my' {
@@ -608,28 +636,21 @@ class Method {
     has $.name;
     has $.sig;
     has @.block;
-    method emit_python {
+    method emit_python { $self.emit_python_indented(0) }
+    method emit_python_indented( $level ) {
         my $sig = $.sig;
         my $invocant = $sig.invocant; 
         my $pos = $sig.positional;
-        my $str = 'my $List__ = \@_; ';   # no strict "vars"; ';
-
-        my $pos = $sig.positional;
+        my @args;
+        @args.push( $invocant.emit_python );
         for @$pos -> $field { 
-            $str = $str ~ 'my ' ~ $field.emit_python ~ '; ';
-        }
-
-        my $bind = Bind.new( 
-            parameters => Lit::Array.new( array => $sig.positional ), 
-            arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
-        );
-        $str = $str ~ $bind.emit_python ~ '; ';
-
-        'sub ' ~ $.name ~ ' { ' ~ 
-          'my ' ~ $invocant.emit_python ~ ' = shift; ' ~
-          $str ~
-          (@.block.>>emit_python).join('; ') ~ 
-        ' }'
+            @args.push( $field.emit_python );
+        };
+        my $block = MiniPerl6::Python::LexicalBlock.new( 
+                block => @.block,
+                needs_return => 1 );
+        Python::tab($level) ~ 'def ' ~ $.name ~ "(" ~ @args.join(", ") ~ "):\n" 
+            ~ $block.emit_python_indented($level + 1) 
     }
 }
 
