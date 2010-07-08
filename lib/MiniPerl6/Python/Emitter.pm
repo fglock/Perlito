@@ -65,18 +65,28 @@ class MiniPerl6::Python::LexicalBlock {
             @anon_block = [];
             my $s2;
             if $last_statement.isa( 'If' ) {
-                my $cond      = $last_statement.cond;
-                my $body      = $last_statement.body;
-                my $otherwise = $last_statement.otherwise;
-                my $has_otherwise = $otherwise ?? 1 !! 0;
-                $body      = MiniPerl6::Python::LexicalBlock.new( block => $body, needs_return => 1 );
-                $otherwise = MiniPerl6::Python::LexicalBlock.new( block => $otherwise, needs_return => 1 );
+                my $cond            = $last_statement.cond;
+                my $has_otherwise   = $last_statement.otherwise ?? 1 !! 0;
+                my $body_block      = 
+                    MiniPerl6::Python::LexicalBlock.new( block => ($last_statement.body), needs_return => 1 );
+                my $otherwise_block = 
+                    MiniPerl6::Python::LexicalBlock.new( block => ($last_statement.otherwise), needs_return => 1 );
+
+                if $body_block.has_my_decl {
+                    # TODO - needs_return => 1
+                    $body_block = Do.new( block => ($last_statement.body) );
+                }
+                if $has_otherwise && $otherwise_block.has_my_decl {
+                    # TODO - needs_return => 1
+                    $otherwise_block = Do.new( block => ($last_statement.otherwise) );
+                }
+
                 $s2 = Python::tab($level) ~ 'if ' ~ $cond.emit_python ~ ":\n" 
-                    ~ $body.emit_python_indented( $level + 1 );
+                    ~ $body_block.emit_python_indented( $level + 1 );
                 if ( $has_otherwise ) {
                     $s2 = $s2 ~ "\n"
                         ~ Python::tab($level) ~ "else:\n" 
-                            ~ $otherwise.emit_python_indented($level+1);
+                            ~ $otherwise_block.emit_python_indented($level+1);
                 }
             }
             elsif $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
