@@ -288,7 +288,7 @@ package Use;
 sub new { shift; bless { @_ }, "Use" }
 sub mod { $_[0]->{mod} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'from ' . $self->{mod} . 'import *' }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . 'from ' . $self->{mod} . ' import *' }
 }
 
 1;

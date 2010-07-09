@@ -759,7 +759,7 @@ class Use {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) 
-            ~ 'from ' ~ $.mod ~ 'import *'
+            ~ 'from ' ~ $.mod ~ ' import *'
     }
 }
 
