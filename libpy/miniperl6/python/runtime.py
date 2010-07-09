@@ -64,23 +64,23 @@ class mp6_Array:
         return len(self.l) > 0
     def __iter__(self):
         return self.l.__iter__()
-    def extend(self, l):
+    def f_extend(self, l):
         self.l.extend(l.l)
-    def push(self, s):
+    def f_push(self, s):
         self.l.append(s)
-    def set(self, i, s):
+    def f_set(self, i, s):
         while True:
             try:
                 self.l[i] = s
                 return s
             except IndexError:
                 self.l.append( mp6_Undef() )
-    def shift(self):
+    def f_shift(self):
         try:
             return self.l.pop(0)
         except IndexError:
             return mp6_Undef()
-    def index(self, i):
+    def f_index(self, i):
         try:
             return self.l[i]
         except IndexError:

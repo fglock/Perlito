@@ -56,8 +56,10 @@ class MiniPerl6::Python::LexicalBlock {
             }
         }
         if @($has_decl) {
+
+            # create __init__
             my @names;
-            push @names, 'self';
+            push @names, 'v_self';
             for @($has_decl) -> $decl {
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                     push @names, ($decl.var).name;
@@ -75,6 +77,19 @@ class MiniPerl6::Python::LexicalBlock {
                     push @s, Python::tab($level+1) ~ (($decl.parameters).var).emit_python ~ ' = ' ~ (($decl.parameters).var).name;
                 }
             }
+
+            # create accessors
+            for @($has_decl) -> $decl {
+                if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
+                    push @s, Python::tab($level) ~ 'def f_' ~ ($decl.var).name ~ '(v_self):';
+                    push @s, Python::tab($level+1) ~ 'return ' ~ ($decl.var).emit_python;
+                }
+                if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
+                    push @s, Python::tab($level) ~ 'def f_' ~ (($decl.parameters).var).name ~ '(v_self):';
+                    push @s, Python::tab($level+1) ~ 'return ' ~ (($decl.parameters).var).emit_python;
+                }
+            }
+
         }
 
         for @($block) -> $decl {
@@ -267,7 +282,7 @@ class Lit::Array {
                 );
             # call the anonymous sub
             return Python::tab($level) 
-                ~ $label ~ "(mp6_Array([" ~ (@.array1.>>emit_python).join(', ') ~ "]))";
+                ~ "f_" ~ $label ~ "(mp6_Array([" ~ (@.array1.>>emit_python).join(', ') ~ "]))";
         }
         else {
             Python::tab($level)  
@@ -316,7 +331,7 @@ class Index {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            $.obj.emit_python ~ '.index(' ~ $.index_exp.emit_python ~ ')';
+            $.obj.emit_python ~ '.f_index(' ~ $.index_exp.emit_python ~ ')';
     }
 }
 
@@ -368,14 +383,14 @@ class Bind {
     method emit_python_indented( $level ) {
         if $.parameters.isa( 'Index' ) {
             return Python::tab($level)  
-                ~ ($.parameters.obj).emit_python ~ '.set('
+                ~ ($.parameters.obj).emit_python ~ '.f_set('
                     ~ ($.parameters.index_exp).emit_python ~ ', '
                     ~ $.arguments.emit_python ~ ')'
         }
         if $.parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return Python::tab($level)  
-                ~ ($.parameters.invocant).emit_python ~ '.' ~ $.parameters.method ~ ' = ' ~ $.arguments.emit_python;
+                ~ ($.parameters.invocant).emit_python ~ '.v_' ~ $.parameters.method ~ ' = ' ~ $.arguments.emit_python;
         }
         Python::tab($level)  
             ~ $.parameters.emit_python ~ ' = ' ~ $.arguments.emit_python;
@@ -420,8 +435,14 @@ class Call {
             return Python::tab($level) ~ 
                 $invocant ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         }
+        if     ( $meth eq 'values' ) 
+            || ( $meth eq 'keys' )
+        {
+            return Python::tab($level) ~ 
+                $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        }
         
-        my $call = '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        my $call = '.f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         if ($.hyper) {
             Python::tab($level) ~ 
                 '[ map { $_' ~ $call ~ ' } @{ ' ~ $invocant ~ ' } ]';
@@ -506,10 +527,10 @@ class Apply {
             return (@.arguments[0]).emit_python ~ '.index(' ~ (@.arguments[1]).emit_python ~ ')' 
         } 
         if $code eq 'shift' { 
-            return (@.arguments[0]).emit_python ~ '.shift()' 
+            return (@.arguments[0]).emit_python ~ '.f_shift()' 
         } 
 
-        $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        'f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
     }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ $self.emit_python 
@@ -653,7 +674,7 @@ class Method {
         my $block = MiniPerl6::Python::LexicalBlock.new( 
                 block => @.block,
                 needs_return => 1 );
-        Python::tab($level) ~ 'def ' ~ $.name ~ "(" ~ @args.join(", ") ~ "):\n" 
+        Python::tab($level) ~ 'def f_' ~ $.name ~ "(" ~ @args.join(", ") ~ "):\n" 
             ~ $block.emit_python_indented($level + 1) 
     }
 }
@@ -675,7 +696,7 @@ class Sub {
                     )
                 );
             # return a ref to the anonymous sub
-            return Python::tab($level) ~ $label;
+            return Python::tab($level) ~ 'f_' ~ $label;
         }
 
         my $sig = $.sig;
@@ -687,7 +708,7 @@ class Sub {
         my $block = MiniPerl6::Python::LexicalBlock.new( 
                 block => @.block,
                 needs_return => 1 );
-        Python::tab($level) ~ 'def ' ~ $.name ~ "(" ~ @args.join(", ") ~ "):\n" 
+        Python::tab($level) ~ 'def f_' ~ $.name ~ "(" ~ @args.join(", ") ~ "):\n" 
             ~ $block.emit_python_indented($level + 1) 
     }
 }
@@ -706,7 +727,7 @@ class Do {
                 )
             );
         # call the anonymous sub
-        return Python::tab($level) ~ $label ~ "()";
+        return Python::tab($level) ~ "f_" ~ $label ~ "()";
     }
 }
 
