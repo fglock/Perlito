@@ -57,36 +57,40 @@ class MiniPerl6::Python::LexicalBlock {
         }
         if @($has_decl) {
 
-            # create __init__
-            my @names;
-            push @names, 'v_self';
-            for @($has_decl) -> $decl {
-                if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                    push @names, ($decl.var).name;
-                }
-                if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
-                    push @names, (($decl.parameters).var).name ~ ' = ' ~ ($decl.arguments).emit_python;
-                }
-            }
-            push @s, Python::tab($level) ~ 'def __init__(' ~ @names.join(', ') ~ '):';
-            for @($has_decl) -> $decl {
-                if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                    push @s, Python::tab($level+1) ~ ($decl.var).emit_python ~ ' = ' ~ ($decl.var).name;
-                }
-                if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
-                    push @s, Python::tab($level+1) ~ (($decl.parameters).var).emit_python ~ ' = ' ~ (($decl.parameters).var).name;
-                }
-            }
+            # # create __init__
+            # my @names;
+            # push @names, 'v_self';
+            # for @($has_decl) -> $decl {
+            #     if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
+            #         push @names, ($decl.var).name;
+            #     }
+            #     if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
+            #         push @names, (($decl.parameters).var).name ~ ' = ' ~ ($decl.arguments).emit_python;
+            #     }
+            # }
+            # push @s, Python::tab($level) ~ 'def __init__(' ~ @names.join(', ') ~ '):';
+            # for @($has_decl) -> $decl {
+            #     if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
+            #         push @s, Python::tab($level+1) ~ ($decl.var).emit_python ~ ' = ' ~ ($decl.var).name;
+            #     }
+            #     if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
+            #         push @s, Python::tab($level+1) ~ (($decl.parameters).var).emit_python ~ ' = ' ~ (($decl.parameters).var).name;
+            #     }
+            # }
 
             # create accessors
             for @($has_decl) -> $decl {
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                    push @s, Python::tab($level) ~ 'def f_' ~ ($decl.var).name ~ '(v_self):';
+                    my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
+                    push @s, Python::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
                     push @s, Python::tab($level+1) ~ 'return ' ~ ($decl.var).emit_python;
+                    push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ ($decl.var).name ~ "':f_" ~ $label ~ "})";
                 }
                 if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
-                    push @s, Python::tab($level) ~ 'def f_' ~ (($decl.parameters).var).name ~ '(v_self):';
+                    my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
+                    push @s, Python::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
                     push @s, Python::tab($level+1) ~ 'return ' ~ (($decl.parameters).var).emit_python;
+                    push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ (($decl.parameters).var).name ~ "':f_" ~ $label ~ "})";
                 }
             }
 
@@ -166,9 +170,24 @@ class CompUnit {
     has @.body;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
+        my @s;
         my $block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
-        Python::tab($level) ~ 'class ' ~ $.name ~ ":\n" ~ 
-            $block.emit_python_indented($level + 1) ~ "\n"
+        my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
+
+        push @s, Python::tab($level)    ~   'try:';
+        push @s, Python::tab($level+1)  ~       'type(' ~ $.name ~ ")";
+        push @s, Python::tab($level)    ~   'except NameError:';
+        push @s, Python::tab($level+1)  ~       'class ' ~ $.name ~ ":";
+        push @s, Python::tab($level+2)  ~           "def __init__(v_self, **arg):";
+        push @s, Python::tab($level+3)  ~               "for kw in arg.keys():";
+        push @s, Python::tab($level+4)  ~                   "v_self.__dict__.update({'v_' + kw:arg[kw]})";
+        push @s, Python::tab($level)    ~   $.name ~ "_proto = " ~ $.name ~ "()"; 
+        push @s, Python::tab($level)    ~   'class ' ~ $label ~ ":";
+        push @s, Python::tab($level+1)  ~       'self = ' ~ $.name;
+
+        push @s,    $block.emit_python_indented($level + 1);
+
+        return @s.join( "\n" );
     }
 }
 
@@ -402,7 +421,7 @@ class Proto {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            $.name        
+            $.name ~ '_proto'
     }
 }
 
@@ -671,11 +690,15 @@ class Method {
         for @$pos -> $field { 
             @args.push( $field.emit_python );
         };
+        my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
         my $block = MiniPerl6::Python::LexicalBlock.new( 
                 block => @.block,
                 needs_return => 1 );
-        Python::tab($level) ~ 'def f_' ~ $.name ~ "(" ~ @args.join(", ") ~ "):\n" 
-            ~ $block.emit_python_indented($level + 1) 
+        my @s;
+        push @s, Python::tab($level) ~ 'def f_' ~ $label ~ "(" ~ @args.join(", ") ~ "):" 
+        push @s,    $block.emit_python_indented($level + 1);
+        push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
+        return @s.join("\n");
     }
 }
 
