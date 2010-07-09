@@ -342,14 +342,14 @@ class Var {
         # %x    => $Hash_x
         # &x    => $Code_x
         my $table = {
-            '$' => '',
+            '$' => 'v_',
             '@' => 'List_',
             '%' => 'Hash_',
             '&' => 'Code_',
         };
         return Python::tab($level) ~ (
                ( $.twigil eq '.' )
-            ?? ( 'self.' ~ $.name )
+            ?? ( 'v_self.v_' ~ $.name )
             !!  (    ( $.name eq '/' )
                 ??   ( $table{$.sigil} ~ 'MATCH' )
                 !!   ( $table{$.sigil} ~ $.name )
@@ -408,7 +408,7 @@ class Call {
             || ($.method eq 'isa')
         { 
             if ($.hyper) {
-            	return "map(lambda: Main." ~ $.method ~ "( self, " ~ (@.arguments.>>emit_python).join(', ') ~ ') , ' ~ $invocant ~ ")\n";
+            	return "map(lambda: Main." ~ $.method ~ "( v_self, " ~ (@.arguments.>>emit_python).join(', ') ~ ') , ' ~ $invocant ~ ")\n";
             }
             else {
                 return "Main." ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
@@ -450,7 +450,7 @@ class Apply {
             return '(' ~ $.code.emit_python ~ ').(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         };
 
-        if $code eq 'self'       { return 'self' };
+        if $code eq 'self'       { return 'v_self' };
 
         if $code eq 'say'        { return 'mp6_say('   ~ (@.arguments.>>emit_python).join(', ') ~ ')' } 
         if $code eq 'print'      { return 'mp6_print(' ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
