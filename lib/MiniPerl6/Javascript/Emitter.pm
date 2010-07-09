@@ -85,7 +85,7 @@ class CompUnit {
             ~ '  ' ~ $class_name ~ ' = new ' ~ $class_name ~ ';' ~ Main.newline;
         $str = $str  
             ~ '  ' ~ $class_name ~ '.f_isa = function (s) { return s == \'' ~ $.name ~ '\' };' ~ Main.newline
-            ~ '  ' ~ $class_name ~ '.f_perl = function () { return \'::' ~ $.name ~ '(\' + Main._dump(this) + \')\' };' ~ Main.newline;
+            ~ '  ' ~ $class_name ~ '.f_perl = function () { return \'' ~ $.name ~ '.new(\' + Main._dump(this) + \')\' };' ~ Main.newline;
         $str = $str  
             ~ '}' ~ Main.newline
             ~ '(function () {' ~ Main.newline
