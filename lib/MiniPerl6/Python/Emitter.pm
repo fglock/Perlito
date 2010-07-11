@@ -340,7 +340,7 @@ class Lit::Object {
             push @str, ($field[0]).buf ~ '=' ~ ($field[1]).emit_python;
         }
         Python::tab($level) ~ 
-            $.class ~ '(' ~ @str.join(', ') ~ ')';
+            Main::to_python_namespace($.class) ~ '(' ~ @str.join(', ') ~ ')';
     }
 }
 
@@ -421,7 +421,7 @@ class Proto {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            $.name ~ '_proto'
+            Main::to_python_namespace($.name) ~ '_proto'
     }
 }
 
@@ -502,7 +502,7 @@ class Apply {
         if $code eq 'prefix:<!>' { return 'not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
         if $code eq 'prefix:<?>' { return 'not (not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ '))' };
 
-        if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
+        if $code eq 'prefix:<$>' { return 'f_scalar(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
         if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
 
