@@ -461,14 +461,14 @@ class Call {
                 $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         }
         
-        my $call = '.f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         if ($.hyper) {
             Python::tab($level) ~ 
-                '[ map { $_' ~ $call ~ ' } @{ ' ~ $invocant ~ ' } ]';
+                'map(lambda x: x.' ~ $call ~ ', ' ~ $invocant ~ ')';
         }
         else {
             Python::tab($level) ~ 
-                $invocant ~ $call;
+                $invocant ~ '.' ~ $call;
         };
 
     }
