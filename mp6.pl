@@ -66,7 +66,8 @@ mp6 [switches] [programfile]
         -Blisp         run in SBCL (Lisp)
         -Bparrot       run in Parrot
         -Bperl5        run in Perl 5 
-        -Bpython       run in Python
+        -Bpython       run in Python 
+        -Bpython3      run in Python 3
         -Brhino        run in JVM using Rhino
         -Bv8           run in V8 (Javascript) using the \"v8\" command 
         -Bspidermonkey run in SpiderMonkey (Javascript) using the \"spidermonkey\" command
@@ -135,6 +136,13 @@ if ( $backend eq 'lisp' ) {
     $lib_spec = 'Lisp';
 }
 if ( $backend eq 'python' ) {
+    @cmd = ('python');
+    $backend = 'python';
+    $lib_spec = 'Python';
+}
+if ( $backend eq 'python3' ) {
+    @cmd = ('python3');
+    $backend = 'python';
     $lib_spec = 'Python';
 }
 
@@ -270,7 +278,7 @@ if ( $backend eq 'python' ) {
         print OUT $result, "\n";
         close(OUT);
         local $ENV{PYTHONPATH} = 'libpy';
-        exec( "python", "$tmp_filename.py", @args )
+        exec( @cmd, "$tmp_filename.py", @args )
             or die "can't execute";
     }
 }
