@@ -201,10 +201,10 @@ class CompUnit {
         push @s, Python::tab($level+3)  ~               "for kw in arg.keys():";
         push @s, Python::tab($level+4)  ~                   "v_self.__dict__.update({'v_' + kw:arg[kw]})";
         push @s, Python::tab($level)    ~   $name ~ "_proto = " ~ $name ~ "()"; 
-        push @s, Python::tab($level)    ~   'class ' ~ $label ~ ":";
+        push @s, Python::tab($level)    ~   'def ' ~ $label ~ "():";
         push @s, Python::tab($level+1)  ~       'self = ' ~ $name;
-
         push @s,    $block.emit_python_indented($level + 1);
+        push @s, Python::tab($level)    ~   $label ~ "()";
 
         return @s.join( "\n" );
     }
@@ -569,7 +569,7 @@ class Apply {
         } 
 
         if $.namespace {
-            return Main::to_go_namespace($.namespace) ~ '.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+            return Main::to_go_namespace($.namespace) ~ '_proto.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         }
         'f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
     }
@@ -730,8 +730,8 @@ class Sub {
     has @.block;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
+        my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
         if ( $.name eq '' ) {
-            my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
             # generate an anonymous sub in the current block
             MiniPerl6::Python::LexicalBlock::push_stmt_python( 
                     Sub.new( 
@@ -746,15 +746,26 @@ class Sub {
 
         my $sig = $.sig;
         my $pos = $sig.positional;
-        my @args;
+        my $args = [];
         for @$pos -> $field { 
-            @args.push( $field.emit_python );
+            $args.push( $field.emit_python );
         };
+        my $meth_args = [ 'self', @($args) ];
         my $block = MiniPerl6::Python::LexicalBlock.new( 
                 block => @.block,
                 needs_return => 1 );
-        Python::tab($level) ~ 'def f_' ~ $.name ~ "(" ~ @args.join(", ") ~ "):\n" 
-            ~ $block.emit_python_indented($level + 1) 
+        my $label2 = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
+        my @s;
+        push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ "):" 
+        push @s,    $block.emit_python_indented($level + 1); 
+
+        # decorate the sub such that it works as a method
+        push @s, Python::tab($level) ~ "global " ~ $label2; 
+        push @s, Python::tab($level) ~ $label2 ~ " = f_" ~ $.name;
+        push @s, Python::tab($level) ~ "def f_" ~ $label ~ "(" ~ $meth_args.join(", ") ~ "):";
+        push @s, Python::tab($level+1) ~    "return " ~ $label2 ~ "(" ~ $args.join(", ") ~ ")";
+        push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
+        return @s.join("\n");
     }
 }
 
