@@ -184,17 +184,25 @@ class CompUnit {
         my @s;
         my $block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
         my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
+        my $name = Main::to_go_namespace($.name);
 
+        for @.body -> $decl {
+            if $decl.isa('Use') {
+                push @s, Python::tab($level) ~ 'from ' ~ Main::to_go_namespace($decl.mod) ~ ' import *'
+            }
+        }
+
+        push @s, Python::tab($level)    ~   "__all__.extend(['" ~ $name ~ "', '" ~ $name ~ "_proto'])";
         push @s, Python::tab($level)    ~   'try:';
-        push @s, Python::tab($level+1)  ~       'type(' ~ $.name ~ ")";
+        push @s, Python::tab($level+1)  ~       'type(' ~ $name ~ ")";
         push @s, Python::tab($level)    ~   'except NameError:';
-        push @s, Python::tab($level+1)  ~       'class ' ~ $.name ~ ":";
+        push @s, Python::tab($level+1)  ~       'class ' ~ $name ~ ":";
         push @s, Python::tab($level+2)  ~           "def __init__(v_self, **arg):";
         push @s, Python::tab($level+3)  ~               "for kw in arg.keys():";
         push @s, Python::tab($level+4)  ~                   "v_self.__dict__.update({'v_' + kw:arg[kw]})";
-        push @s, Python::tab($level)    ~   $.name ~ "_proto = " ~ $.name ~ "()"; 
+        push @s, Python::tab($level)    ~   $name ~ "_proto = " ~ $name ~ "()"; 
         push @s, Python::tab($level)    ~   'class ' ~ $label ~ ":";
-        push @s, Python::tab($level+1)  ~       'self = ' ~ $.name;
+        push @s, Python::tab($level+1)  ~       'self = ' ~ $name;
 
         push @s,    $block.emit_python_indented($level + 1);
 
@@ -514,7 +522,7 @@ class Apply {
         if $code eq 'prefix:<?>' { return 'not (not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ '))' };
 
         if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
-        if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
+        if $code eq 'prefix:<@>' { return 'list(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
 
         if $code eq 'infix:<~>'  { return '(str('  ~ (@.arguments.>>emit_python).join(') + str(')  ~ '))' };
@@ -560,6 +568,9 @@ class Apply {
             return (@.arguments[0]).emit_python ~ '.f_shift()' 
         } 
 
+        if $.namespace {
+            return Main::to_go_namespace($.namespace) ~ '.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        }
         'f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
     }
     method emit_python_indented( $level ) {
@@ -769,8 +780,8 @@ class Use {
     has $.mod;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        Python::tab($level) 
-            ~ 'from ' ~ $.mod ~ ' import *'
+        # Python::tab($level) ~ 'from ' ~ Main::to_go_namespace($.mod) ~ ' import *'
+        return '';
     }
 }
 

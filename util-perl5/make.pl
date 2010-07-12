@@ -27,6 +27,11 @@ elsif ( $target_switch eq '-Cparrot' ) {
     $target_dir = 'libparrot';
     $target_suffix = '.pir';
 }
+elsif ( $target_switch eq '-Cpython' ) {
+    $backend    = 'python';    
+    $target_dir = 'libpy';
+    $target_suffix = '.py';
+}
 elsif ( $target_switch eq '-Cast-perl5' ) {
     $backend    = 'ast-perl5';    
     $target_dir = 'libast-perl5';
@@ -52,8 +57,9 @@ if ( test( "${target_dir}-new" ) ) {
 #---
 
 sub test {
+    warn "\n";
     warn "automatic testing is not implemented yet. Please use one of:\n";
-    for ( qw( perl5 lisp js go ) ) {
+    for ( qw( perl5 lisp js go python ) ) {
         warn "  prove -e \"perl mp6.pl -B$_\"\n"
     }
     return 0;
