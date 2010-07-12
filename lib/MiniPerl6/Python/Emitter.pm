@@ -351,7 +351,7 @@ class Lit::Object {
             push @str, Python::escape_reserved(($field[0]).buf) ~ '=' ~ ($field[1]).emit_python;
         }
         Python::tab($level) ~ 
-            Main::to_python_namespace($.class) ~ '(' ~ @str.join(', ') ~ ')';
+            Main::to_go_namespace($.class) ~ '(' ~ @str.join(', ') ~ ')';
     }
 }
 
@@ -432,7 +432,7 @@ class Proto {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            Main::to_python_namespace($.name) ~ '_proto'
+            Main::to_go_namespace($.name) ~ '_proto'
     }
 }
 

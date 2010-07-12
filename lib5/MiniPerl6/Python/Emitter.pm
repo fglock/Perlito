@@ -118,7 +118,7 @@ sub new { shift; bless { @_ }, "Lit::Object" }
 sub class { $_[0]->{class} };
 sub fields { $_[0]->{fields} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{fields}); my  $List_str; for my $field ( @{$fields} ) { push( @{$List_str}, Python::escape_reserved($field->[0]->buf()) . '=' . $field->[1]->emit_python() ) }; Python::tab($level) . Main::to_python_namespace($self->{class}) . '(' . Main::join($List_str, ', ') . ')' }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{fields}); my  $List_str; for my $field ( @{$fields} ) { push( @{$List_str}, Python::escape_reserved($field->[0]->buf()) . '=' . $field->[1]->emit_python() ) }; Python::tab($level) . Main::to_go_namespace($self->{class}) . '(' . Main::join($List_str, ', ') . ')' }
 }
 
 {
@@ -164,7 +164,7 @@ package Proto;
 sub new { shift; bless { @_ }, "Proto" }
 sub name { $_[0]->{name} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . Main::to_python_namespace($self->{name}) . '_proto' }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . Main::to_go_namespace($self->{name}) . '_proto' }
 }
 
 {

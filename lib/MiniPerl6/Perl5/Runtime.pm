@@ -286,12 +286,6 @@ package Main;
         $s =~ s/::/__/g;
         return $s;
     }
-    sub to_python_namespace {
-        my $s = $_[0];
-        my ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
-        $s =~ s/::/./g;
-        return $s;
-    }
 
 1;
 

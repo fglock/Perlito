@@ -23,7 +23,7 @@ See L<http://www.perl.com/perl/misc/Artistic.html>
 import sys
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 'mp6_to_num', 
-           'mp6_Undef', 'mp6_Array']
+           'mp6_Undef', 'mp6_Array', 'MiniPerl6__Match']
 
 def mp6_print(*msg):
     for m in msg:
@@ -95,4 +95,9 @@ class mp6_Undef:
         return 0.0
     def __nonzero__(self):
         return False
+
+class MiniPerl6__Match:
+    def __init__(v_self, **arg):
+        for kw in arg.keys():
+            v_self.__dict__.update({'v_' + kw:arg[kw]})
 
