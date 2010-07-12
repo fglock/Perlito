@@ -21,9 +21,13 @@ See L<http://www.perl.com/perl/misc/Artistic.html>
 """
 
 import sys
+import re
 
-__all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 'mp6_to_num', 
-           'mp6_Undef', 'mp6_Array', 'MiniPerl6__Match']
+__all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
+           'mp6_to_num', 'mp6_to_scalar', 
+           'mp6_Undef', 'mp6_Array', 
+           'MiniPerl6__Match',
+           'MiniPerl6__Grammar', 'MiniPerl6__Grammar_proto']
 
 def mp6_print(*msg):
     for m in msg:
@@ -38,6 +42,12 @@ def mp6_warn(*msg):
     for m in msg:
         sys.stderr.write(str(m))
     sys.stderr.write("\n")
+
+def mp6_to_scalar(v):
+    try:
+        return v.f_scalar()
+    except AttributeError:
+        return v
 
 def mp6_to_num(s): 
     try:
@@ -97,7 +107,33 @@ class mp6_Undef:
         return False
 
 class MiniPerl6__Match:
-    def __init__(v_self, **arg):
+    def __init__(self, **arg):
+        self.match = {}
         for kw in arg.keys():
-            v_self.__dict__.update({'v_' + kw:arg[kw]})
+            self.__dict__.update({'v_' + kw:arg[kw]})
+    def __str__(self):
+        if self.v_bool:
+            return self.v_str[self.v_c_from:self.v_to]
+        return ''
+    def __setitem__(self, k, v):
+        self.match[k] = v
+    def __getitem__(self, k):
+        return self.match[k] 
+    def f_scalar(self):
+        return str(self)
+
+try:        
+    type(MiniPerl6__Grammar)  
+except NameError:
+    class MiniPerl6__Grammar:
+        def __init__(self, **arg):
+            for kw in arg.keys():
+                self.__dict__.update({'v_' + kw:arg[kw]})
+        def f_word(self, s, pos):
+            m = re.match( r"\w", s[pos:] )
+            if m:
+                return MiniPerl6__Match(str=s, c_from=pos, to=pos+1, bool=1 )
+            return MiniPerl6__Match(bool=0)
+
+MiniPerl6__Grammar_proto = MiniPerl6__Grammar()
 

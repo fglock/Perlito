@@ -513,7 +513,7 @@ class Apply {
         if $code eq 'prefix:<!>' { return 'not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
         if $code eq 'prefix:<?>' { return 'not (not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ '))' };
 
-        if $code eq 'prefix:<$>' { return 'f_scalar(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
+        if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
         if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
 
