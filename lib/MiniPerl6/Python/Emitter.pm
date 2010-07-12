@@ -1,7 +1,18 @@
 use v6;
 
 class Python {
+    my %python_reserved = {
+        from => 1,
+    };
+
     sub tab($level) { "    " x $level }
+
+    sub escape_reserved($s) {
+        if %python_reserved{$s} {
+            return 'c_' ~ $s;
+        }
+        return $s;
+    }
 }
 
 class MiniPerl6::Python::LexicalBlock {
@@ -337,7 +348,7 @@ class Lit::Object {
         my $fields = @.fields;
         my @str;
         for @$fields -> $field { 
-            push @str, ($field[0]).buf ~ '=' ~ ($field[1]).emit_python;
+            push @str, Python::escape_reserved(($field[0]).buf) ~ '=' ~ ($field[1]).emit_python;
         }
         Python::tab($level) ~ 
             Main::to_python_namespace($.class) ~ '(' ~ @str.join(', ') ~ ')';
