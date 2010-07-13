@@ -26,13 +26,16 @@ class MiniPerl6::Python::AnonSub {
         my $pos = $sig.positional;
         my $args = [];
         for @$pos -> $field { 
-            $args.push( $field.emit_python );
+            $args.push( $field.emit_python_name );
         };
         my $block = MiniPerl6::Python::LexicalBlock.new( 
                 block => @.block,
                 needs_return => 1 );
         my @s;
         push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ "):";
+        for @($args) -> $field { 
+            push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
+        }
         if $.handles_return_exception {
             push @s, Python::tab($level+1) ~    "try:";
             push @s,    $block.emit_python_indented($level + 2);
@@ -141,10 +144,10 @@ class MiniPerl6::Python::LexicalBlock {
 
         for @($block) -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                push @s, Python::tab($level) ~ ($decl.var).emit_python ~ ' = ' ~ $decl.emit_python_init;
+                push @s, Python::tab($level) ~ ($decl.var).emit_python_name ~ ' = [' ~ $decl.emit_python_init ~ ']';
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                push @s, Python::tab($level) ~ (($decl.parameters).var).emit_python ~ ' = ' ~ ($decl.parameters).emit_python_init;
+                push @s, Python::tab($level) ~ (($decl.parameters).var).emit_python_name ~ ' = [' ~ ($decl.parameters).emit_python_init ~ ']';
             }
         }
 
@@ -424,20 +427,25 @@ class Var {
     has $.sigil;
     has $.twigil;
     has $.name;
+    my $table = {
+        '$' => 'v_',
+        '@' => 'List_',
+        '%' => 'Hash_',
+        '&' => 'Code_',
+    };
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        # Normalize the sigil here into $
-        # $x    => $x
-        # @x    => $List_x
-        # %x    => $Hash_x
-        # &x    => $Code_x
-        my $table = {
-            '$' => 'v_',
-            '@' => 'List_',
-            '%' => 'Hash_',
-            '&' => 'Code_',
-        };
         return Python::tab($level) ~ (
+               ( $.twigil eq '.' )
+            ?? ( 'v_self.v_' ~ $.name ~ '' )
+            !!  (    ( $.name eq '/' )
+                ??   ( $table{$.sigil} ~ 'MATCH' )
+                !!   ( $table{$.sigil} ~ $.name ~ '[0]' )
+                )
+            )
+    };
+    method emit_python_name {
+        return (
                ( $.twigil eq '.' )
             ?? ( 'v_self.v_' ~ $.name )
             !!  (    ( $.name eq '/' )
@@ -687,8 +695,8 @@ class For {
         if $body_block.has_my_decl {
             $body_block = Do.new( block => @.body );
         }
-        Python::tab($level)
-            ~ 'for ' ~ $.topic.emit_python ~ " in " ~ $.cond.emit_python ~ ":\n"
+        Python::tab($level) ~   'for ' ~ $.topic.emit_python_name ~ " in " ~ $.cond.emit_python ~ ":\n"
+        ~ Python::tab($level+1) ~     $.topic.emit_python_name ~ " = [" ~ $.topic.emit_python_name ~ "]\n"
                 ~ $body_block.emit_python_indented( $level + 1 );
     }
 }
@@ -744,17 +752,25 @@ class Method {
         my $sig = $.sig;
         my $invocant = $sig.invocant; 
         my $pos = $sig.positional;
-        my @args;
-        @args.push( $invocant.emit_python );
+        my $args = [];
+        my $default_args = [];
+        my $meth_args = [];
+        $meth_args.push( $invocant.emit_python_name );
         for @$pos -> $field { 
-            @args.push( $field.emit_python ~ '=mp6_Undef()' );
+            my $arg = $field.emit_python_name;
+            $args.push( $arg );
+            $default_args.push( $arg ~ '=mp6_Undef()' );
+            $meth_args.push( $arg ~ '=mp6_Undef()' );
         };
         my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
         my $block = MiniPerl6::Python::LexicalBlock.new( 
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Python::tab($level) ~ 'def f_' ~ $label ~ "(" ~ @args.join(", ") ~ "):";
+        push @s, Python::tab($level) ~ 'def f_' ~ $label ~ "(" ~ $meth_args.join(", ") ~ "):";
+        for @($args) -> $field { 
+            push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
+        };
         push @s, Python::tab($level+1) ~    "try:";
         push @s,    $block.emit_python_indented($level + 2);
         push @s, Python::tab($level+1) ~    "except mp6_Return, r:";
@@ -791,7 +807,7 @@ class Sub {
         my $default_args = [];
         my $meth_args = [ 'self' ];
         for @$pos -> $field { 
-            my $arg = $field.emit_python;
+            my $arg = $field.emit_python_name;
             $args.push( $arg );
             $default_args.push( $arg ~ '=mp6_Undef()' );
             $meth_args.push( $arg ~ '=mp6_Undef()' );
@@ -802,7 +818,13 @@ class Sub {
         my $label2 = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
         my @s;
         push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ "):" 
-        push @s,    $block.emit_python_indented($level + 1); 
+        for @($args) -> $field { 
+            push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
+        };
+        push @s, Python::tab($level+1) ~    "try:";
+        push @s,    $block.emit_python_indented($level + 2);
+        push @s, Python::tab($level+1) ~    "except mp6_Return, r:";
+        push @s, Python::tab($level+2) ~        "return r.value";
 
         # decorate the sub such that it works as a method
         push @s, Python::tab($level) ~ "global " ~ $label2; 

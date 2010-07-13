@@ -63,6 +63,11 @@ def mp6_to_num(s):
                 return int(s)
             except ValueError:
                 return 0
+        except AttributeError:
+            try:
+                return int(s)
+            except ValueError:
+                return 0
 
 class mp6_Array:
     def __init__(self, l):

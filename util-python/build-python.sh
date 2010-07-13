@@ -12,3 +12,5 @@ touch libpy/miniperl6/python/__init__.py
 
 cp lib/MiniPerl6/Python/Runtime.py libpy/miniperl6/python/runtime.py
 
+perl mp6.pl -Cpython lib/Test.pm > libpy/Test.py
+
