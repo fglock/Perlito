@@ -15,6 +15,28 @@ class Python {
     }
 }
 
+class MiniPerl6::Python::AnonSub {
+    has $.name;
+    has $.sig;
+    has @.block;
+    method emit_python { $self.emit_python_indented(0) }
+    method emit_python_indented( $level ) {
+        my $sig = $.sig;
+        my $pos = $sig.positional;
+        my $args = [];
+        for @$pos -> $field { 
+            $args.push( $field.emit_python );
+        };
+        my $block = MiniPerl6::Python::LexicalBlock.new( 
+                block => @.block,
+                needs_return => 1 );
+        my @s;
+        push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ "):" 
+        push @s,    $block.emit_python_indented($level + 1); 
+        return @s.join("\n");
+    }
+}
+
 class MiniPerl6::Python::LexicalBlock {
     has @.block;
     has $.needs_return;
@@ -312,7 +334,7 @@ class Lit::Array {
             my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
             # generate an anonymous sub in the current block
             MiniPerl6::Python::LexicalBlock::push_stmt_python( 
-                    Sub.new( 
+                    MiniPerl6::Python::AnonSub.new( 
                         name  => $label, 
                         block => @block,
                         sig   => Sig.new( invocant => undef, positional => [ $input_array ], named => {} ) 
@@ -734,7 +756,7 @@ class Sub {
         if ( $.name eq '' ) {
             # generate an anonymous sub in the current block
             MiniPerl6::Python::LexicalBlock::push_stmt_python( 
-                    Sub.new( 
+                    MiniPerl6::Python::AnonSub.new( 
                         name  => $label, 
                         block => @.block,
                         sig   => $.sig 
@@ -776,7 +798,7 @@ class Do {
         my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
         # generate an anonymous sub in the current block
         MiniPerl6::Python::LexicalBlock::push_stmt_python( 
-                Sub.new( 
+                MiniPerl6::Python::AnonSub.new( 
                     name  => $label, 
                     block => @.block,
                     sig   => Sig.new( invocant => undef, positional => [], named => {} ) 

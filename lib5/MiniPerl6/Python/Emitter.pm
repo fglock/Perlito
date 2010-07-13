@@ -12,6 +12,17 @@ sub escape_reserved { my $s = $_[0]; if ($Hash_python_reserved->{$s}) { return('
 }
 
 {
+package MiniPerl6::Python::AnonSub;
+sub new { shift; bless { @_ }, "MiniPerl6::Python::AnonSub" }
+sub name { $_[0]->{name} };
+sub sig { $_[0]->{sig} };
+sub block { $_[0]->{block} };
+sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $args = []); for my $field ( @{$pos} ) { push( @{$args}, $field->emit_python() ) }; (my  $block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1, )); my  $List_s; push( @{$List_s}, Python::tab($level) . 'def f_' . $self->{name} . '(' . Main::join($args, ', ') . '):' ); push( @{$List_s}, $block->emit_python_indented(($level + 1)) ); return(Main::join($List_s, '
+')) }
+}
+
+{
 package MiniPerl6::Python::LexicalBlock;
 sub new { shift; bless { @_ }, "MiniPerl6::Python::LexicalBlock" }
 sub block { $_[0]->{block} };
@@ -95,7 +106,7 @@ package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $needs_interpolation = 0); for my $item ( @{$self->{array1}} ) { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { ($needs_interpolation = 1) } else {  } }; if ($needs_interpolation) { my  $List_block;(my  $temp_array = Var->new( 'name' => 'a','namespace' => '','sigil' => '@','twigil' => '', ));(my  $input_array = Var->new( 'name' => 'b','namespace' => '','sigil' => '@','twigil' => '', ));push( @{$List_block}, Decl->new( 'decl' => 'my','type' => '','var' => $temp_array, ) );(my  $index = 0);for my $item ( @{$self->{array1}} ) { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { push( @{$List_block}, Call->new( 'method' => 'extend','arguments' => [Index->new( 'obj' => $input_array,'index_exp' => Val::Int->new( 'int' => $index, ), )],'hyper' => '','invocant' => $temp_array, ) ) } else { push( @{$List_block}, Call->new( 'method' => 'push','arguments' => [Index->new( 'obj' => $input_array,'index_exp' => Val::Int->new( 'int' => $index, ), )],'hyper' => '','invocant' => $temp_array, ) ) };($index = ($index + 1)) };push( @{$List_block}, $temp_array );(my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python());MiniPerl6::Python::LexicalBlock::push_stmt_python(Sub->new( 'name' => $label,'block' => $List_block,'sig' => Sig->new( 'invocant' => (undef),'positional' => [$input_array],'named' => {  }, ), ));return(Python::tab($level) . 'f_' . $label . '(mp6_Array([' . Main::join([ map { $_->emit_python() } @{ $self->{array1} } ], ', ') . ']))') } else { Python::tab($level) . 'mp6_Array([' . Main::join([ map { $_->emit_python() } @{ $self->{array1} } ], ', ') . '])' } }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $needs_interpolation = 0); for my $item ( @{$self->{array1}} ) { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { ($needs_interpolation = 1) } else {  } }; if ($needs_interpolation) { my  $List_block;(my  $temp_array = Var->new( 'name' => 'a','namespace' => '','sigil' => '@','twigil' => '', ));(my  $input_array = Var->new( 'name' => 'b','namespace' => '','sigil' => '@','twigil' => '', ));push( @{$List_block}, Decl->new( 'decl' => 'my','type' => '','var' => $temp_array, ) );(my  $index = 0);for my $item ( @{$self->{array1}} ) { if (((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>')))) { push( @{$List_block}, Call->new( 'method' => 'extend','arguments' => [Index->new( 'obj' => $input_array,'index_exp' => Val::Int->new( 'int' => $index, ), )],'hyper' => '','invocant' => $temp_array, ) ) } else { push( @{$List_block}, Call->new( 'method' => 'push','arguments' => [Index->new( 'obj' => $input_array,'index_exp' => Val::Int->new( 'int' => $index, ), )],'hyper' => '','invocant' => $temp_array, ) ) };($index = ($index + 1)) };push( @{$List_block}, $temp_array );(my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python());MiniPerl6::Python::LexicalBlock::push_stmt_python(MiniPerl6::Python::AnonSub->new( 'name' => $label,'block' => $List_block,'sig' => Sig->new( 'invocant' => (undef),'positional' => [$input_array],'named' => {  }, ), ));return(Python::tab($level) . 'f_' . $label . '(mp6_Array([' . Main::join([ map { $_->emit_python() } @{ $self->{array1} } ], ', ') . ']))') } else { Python::tab($level) . 'mp6_Array([' . Main::join([ map { $_->emit_python() } @{ $self->{array1} } ], ', ') . '])' } }
 }
 
 {
@@ -273,7 +284,7 @@ sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python()); if (($self->{name} eq '')) { MiniPerl6::Python::LexicalBlock::push_stmt_python(Sub->new( 'name' => $label,'block' => $self->{block},'sig' => $self->{sig}, ));return(Python::tab($level) . 'f_' . $label) } else {  }; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $args = []); for my $field ( @{$pos} ) { push( @{$args}, $field->emit_python() ) }; (my  $meth_args = ['self', @{$args}]); (my  $block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1, )); (my  $label2 = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python()); my  $List_s; push( @{$List_s}, Python::tab($level) . 'def f_' . $self->{name} . '(' . Main::join($args, ', ') . '):' ); push( @{$List_s}, $block->emit_python_indented(($level + 1)) ); push( @{$List_s}, Python::tab($level) . 'global ' . $label2 ); push( @{$List_s}, Python::tab($level) . $label2 . ' = f_' . $self->{name} ); push( @{$List_s}, Python::tab($level) . 'def f_' . $label . '(' . Main::join($meth_args, ', ') . '):' ); push( @{$List_s}, Python::tab(($level + 1)) . 'return ' . $label2 . '(' . Main::join($args, ', ') . ')' ); push( @{$List_s}, Python::tab($level) . 'self.__dict__.update({\'f_' . $self->{name} . '\':f_' . $label . '})' ); return(Main::join($List_s, '
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python()); if (($self->{name} eq '')) { MiniPerl6::Python::LexicalBlock::push_stmt_python(MiniPerl6::Python::AnonSub->new( 'name' => $label,'block' => $self->{block},'sig' => $self->{sig}, ));return(Python::tab($level) . 'f_' . $label) } else {  }; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $args = []); for my $field ( @{$pos} ) { push( @{$args}, $field->emit_python() ) }; (my  $meth_args = ['self', @{$args}]); (my  $block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1, )); (my  $label2 = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python()); my  $List_s; push( @{$List_s}, Python::tab($level) . 'def f_' . $self->{name} . '(' . Main::join($args, ', ') . '):' ); push( @{$List_s}, $block->emit_python_indented(($level + 1)) ); push( @{$List_s}, Python::tab($level) . 'global ' . $label2 ); push( @{$List_s}, Python::tab($level) . $label2 . ' = f_' . $self->{name} ); push( @{$List_s}, Python::tab($level) . 'def f_' . $label . '(' . Main::join($meth_args, ', ') . '):' ); push( @{$List_s}, Python::tab(($level + 1)) . 'return ' . $label2 . '(' . Main::join($args, ', ') . ')' ); push( @{$List_s}, Python::tab($level) . 'self.__dict__.update({\'f_' . $self->{name} . '\':f_' . $label . '})' ); return(Main::join($List_s, '
 ')) }
 }
 
@@ -282,7 +293,7 @@ package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python()); MiniPerl6::Python::LexicalBlock::push_stmt_python(Sub->new( 'name' => $label,'block' => $self->{block},'sig' => Sig->new( 'invocant' => (undef),'positional' => [],'named' => {  }, ), )); return(Python::tab($level) . 'f_' . $label . '()') }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python()); MiniPerl6::Python::LexicalBlock::push_stmt_python(MiniPerl6::Python::AnonSub->new( 'name' => $label,'block' => $self->{block},'sig' => Sig->new( 'invocant' => (undef),'positional' => [],'named' => {  }, ), )); return(Python::tab($level) . 'f_' . $label . '()') }
 }
 
 {
