@@ -2,6 +2,7 @@ use v6;
 
 class Python {
     my %python_reserved = {
+        class => 1,
         from => 1,
     };
 
@@ -277,7 +278,7 @@ class Val::Buf {
     has $.buf;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        Python::tab($level) ~ '"""' ~ $.buf ~ '"""' 
+        Python::tab($level) ~ '"' ~ Main::javascript_escape_string($.buf) ~ '"' 
     }
 }
 

@@ -6,7 +6,7 @@ our $MATCH = MiniPerl6::Match->new();
 {
 package Python;
 sub new { shift; bless { @_ }, "Python" }
-(my  $Hash_python_reserved = { 'from' => 1, });
+(my  $Hash_python_reserved = { 'class' => 1,'from' => 1, });
 sub tab { my $level = $_[0]; ('    ' x $level) };
 sub escape_reserved { my $s = $_[0]; if ($Hash_python_reserved->{$s}) { return('c_' . $s) } else {  }; return($s) }
 }
@@ -84,7 +84,7 @@ package Val::Buf;
 sub new { shift; bless { @_ }, "Val::Buf" }
 sub buf { $_[0]->{buf} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . '"""' . $self->{buf} . '"""' }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . '"' . Main::javascript_escape_string($self->{buf}) . '"' }
 }
 
 {
