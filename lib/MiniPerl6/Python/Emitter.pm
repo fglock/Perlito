@@ -188,6 +188,11 @@ class MiniPerl6::Python::LexicalBlock {
                             ~ $otherwise_block.emit_python_indented($level+1);
                 }
             }
+            elsif $last_statement.isa( 'Bind' ) {
+                $s2 = $last_statement.emit_python_indented( $level );
+                $s2 = $s2 ~ "\n"
+                        ~ Python::tab($level) ~ "return " ~ ($last_statement.parameters).emit_python;
+            }
             elsif $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
                 $s2 = $last_statement.emit_python_indented( $level );
             }
@@ -742,7 +747,7 @@ class Method {
         my @args;
         @args.push( $invocant.emit_python );
         for @$pos -> $field { 
-            @args.push( $field.emit_python );
+            @args.push( $field.emit_python ~ '=mp6_Undef()' );
         };
         my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
         my $block = MiniPerl6::Python::LexicalBlock.new( 
@@ -783,16 +788,20 @@ class Sub {
         my $sig = $.sig;
         my $pos = $sig.positional;
         my $args = [];
+        my $default_args = [];
+        my $meth_args = [ 'self' ];
         for @$pos -> $field { 
-            $args.push( $field.emit_python );
+            my $arg = $field.emit_python;
+            $args.push( $arg );
+            $default_args.push( $arg ~ '=mp6_Undef()' );
+            $meth_args.push( $arg ~ '=mp6_Undef()' );
         };
-        my $meth_args = [ 'self', @($args) ];
         my $block = MiniPerl6::Python::LexicalBlock.new( 
                 block => @.block,
                 needs_return => 1 );
         my $label2 = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
         my @s;
-        push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ "):" 
+        push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ "):" 
         push @s,    $block.emit_python_indented($level + 1); 
 
         # decorate the sub such that it works as a method
