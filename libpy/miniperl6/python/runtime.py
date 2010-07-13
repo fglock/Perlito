@@ -26,6 +26,7 @@ import re
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 
            'mp6_Undef', 'mp6_Array', 
+           'mp6_Return',
            'MiniPerl6__Match',
            'MiniPerl6__Grammar', 'MiniPerl6__Grammar_proto']
 
@@ -105,6 +106,10 @@ class mp6_Undef:
         return 0.0
     def __nonzero__(self):
         return False
+
+class mp6_Return(Exception):
+    def __init__(self, value):
+        self.value = value
 
 class MiniPerl6__Match:
     def __init__(self, **arg):

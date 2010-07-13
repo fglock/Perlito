@@ -19,6 +19,7 @@ class MiniPerl6::Python::AnonSub {
     has $.name;
     has $.sig;
     has @.block;
+    has $.handles_return_exception;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $sig = $.sig;
@@ -31,9 +32,18 @@ class MiniPerl6::Python::AnonSub {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ "):" 
-        push @s,    $block.emit_python_indented($level + 1); 
+        push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ "):";
+        if $.handles_return_exception {
+            push @s, Python::tab($level+1) ~    "try:";
+            push @s,    $block.emit_python_indented($level + 2);
+            push @s, Python::tab($level+1) ~    "except mp6_Return, r:";
+            push @s, Python::tab($level+2) ~        "return r.value";
+        }
+        else {
+            push @s,    $block.emit_python_indented($level + 1); 
+        }
         return @s.join("\n");
+
     }
 }
 
@@ -182,7 +192,7 @@ class MiniPerl6::Python::LexicalBlock {
                 $s2 = $last_statement.emit_python_indented( $level );
             }
             else {
-                $s2 = Python::tab($level) ~ 'return ' ~ $last_statement.emit_python
+                $s2 = Python::tab($level) ~ "return " ~ $last_statement.emit_python;
             }
 
             for @anon_block -> $stmt {
@@ -227,7 +237,6 @@ class CompUnit {
         push @s, Python::tab($level+1)  ~       'self = ' ~ $name;
         push @s,    $block.emit_python_indented($level + 1);
         push @s, Python::tab($level)    ~   $label ~ "()";
-
         return @s.join( "\n" );
     }
 }
@@ -337,7 +346,8 @@ class Lit::Array {
                     MiniPerl6::Python::AnonSub.new( 
                         name  => $label, 
                         block => @block,
-                        sig   => Sig.new( invocant => undef, positional => [ $input_array ], named => {} ) 
+                        sig   => Sig.new( invocant => undef, positional => [ $input_array ], named => {} ),
+                        handles_return_exception => 1,
                     )
                 );
             # call the anonymous sub
@@ -605,7 +615,7 @@ class Return {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            'return ' ~ $.result.emit_python
+            'raise mp6_Return(' ~ $.result.emit_python ~ ')';
     }
 }
 
@@ -739,8 +749,11 @@ class Method {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Python::tab($level) ~ 'def f_' ~ $label ~ "(" ~ @args.join(", ") ~ "):" 
-        push @s,    $block.emit_python_indented($level + 1);
+        push @s, Python::tab($level) ~ 'def f_' ~ $label ~ "(" ~ @args.join(", ") ~ "):";
+        push @s, Python::tab($level+1) ~    "try:";
+        push @s,    $block.emit_python_indented($level + 2);
+        push @s, Python::tab($level+1) ~    "except mp6_Return, r:";
+        push @s, Python::tab($level+2) ~        "return r.value";
         push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
         return @s.join("\n");
     }
@@ -759,7 +772,8 @@ class Sub {
                     MiniPerl6::Python::AnonSub.new( 
                         name  => $label, 
                         block => @.block,
-                        sig   => $.sig 
+                        sig   => $.sig, 
+                        handles_return_exception => 1,
                     )
                 );
             # return a ref to the anonymous sub
@@ -801,7 +815,8 @@ class Do {
                 MiniPerl6::Python::AnonSub.new( 
                     name  => $label, 
                     block => @.block,
-                    sig   => Sig.new( invocant => undef, positional => [], named => {} ) 
+                    sig   => Sig.new( invocant => undef, positional => [], named => {} ),
+                    handles_return_exception => 0,
                 )
             );
         # call the anonymous sub
