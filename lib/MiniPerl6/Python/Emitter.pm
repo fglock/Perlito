@@ -3,6 +3,7 @@ use v6;
 class Python {
     my %python_reserved = {
         class => 1,
+        continue => 1,
         from => 1,
     };
 
@@ -103,27 +104,6 @@ class MiniPerl6::Python::LexicalBlock {
             }
         }
         if @($has_decl) {
-
-            # # create __init__
-            # my @names;
-            # push @names, 'v_self';
-            # for @($has_decl) -> $decl {
-            #     if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-            #         push @names, ($decl.var).name;
-            #     }
-            #     if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
-            #         push @names, (($decl.parameters).var).name ~ ' = ' ~ ($decl.arguments).emit_python;
-            #     }
-            # }
-            # push @s, Python::tab($level) ~ 'def __init__(' ~ @names.join(', ') ~ '):';
-            # for @($has_decl) -> $decl {
-            #     if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-            #         push @s, Python::tab($level+1) ~ ($decl.var).emit_python ~ ' = ' ~ ($decl.var).name;
-            #     }
-            #     if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
-            #         push @s, Python::tab($level+1) ~ (($decl.parameters).var).emit_python ~ ' = ' ~ (($decl.parameters).var).name;
-            #     }
-            # }
 
             # create accessors
             for @($has_decl) -> $decl {
@@ -241,6 +221,8 @@ class CompUnit {
         push @s, Python::tab($level+2)  ~           "def __init__(v_self, **arg):";
         push @s, Python::tab($level+3)  ~               "for kw in arg.keys():";
         push @s, Python::tab($level+4)  ~                   "v_self.__dict__.update({'v_' + kw:arg[kw]})";
+        push @s, Python::tab($level+2)  ~           "def __setattr__(v_self, k, v):";
+        push @s, Python::tab($level+4)  ~                   "v_self.__dict__[k] = v";
         push @s, Python::tab($level)    ~   $name ~ "_proto = " ~ $name ~ "()"; 
         push @s, Python::tab($level)    ~   'def ' ~ $label ~ "():";
         push @s, Python::tab($level+1)  ~       'self = ' ~ $name;
@@ -474,7 +456,7 @@ class Bind {
         if $.parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return Python::tab($level)  
-                ~ ($.parameters.invocant).emit_python ~ '.v_' ~ $.parameters.method ~ ' = ' ~ $.arguments.emit_python;
+                ~ ($.parameters.invocant).emit_python ~ ".__setattr__('v_" ~ $.parameters.method ~ "', " ~ $.arguments.emit_python ~ ")";
         }
         Python::tab($level)  
             ~ $.parameters.emit_python ~ ' = ' ~ $.arguments.emit_python;
@@ -570,6 +552,9 @@ class Apply {
         if $code eq 'warn'       { return 'mp6_warn('  ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_python).join(' ')    ~ ']' };
+
+        if $code eq 'Int'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit             ~ ')' };
+        if $code eq 'Num'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit             ~ ')' };
 
         if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
         if $code eq 'prefix:<!>' { return 'not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };

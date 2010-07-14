@@ -18,4 +18,5 @@ perl mp6.pl -Cpython lib/MiniPerl6/Grammar/Control.pm > libpy/MiniPerl6__Grammar
 perl mp6.pl -Cpython lib/MiniPerl6/Grammar/Mapping.pm > libpy/MiniPerl6__Grammar__Mapping.py
 perl mp6.pl -Cpython lib/MiniPerl6/Grammar/Regex.pm > libpy/MiniPerl6__Grammar__Regex.py
 perl mp6.pl -Cpython lib/MiniPerl6/Emitter/Token.pm > libpy/MiniPerl6__Emitter__Token.py
+perl mp6.pl -Cpython lib/MiniPerl6/Eval.pm > libpy/MiniPerl6__Eval.py
 
