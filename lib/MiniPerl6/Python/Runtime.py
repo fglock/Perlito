@@ -25,10 +25,14 @@ import re
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 
+           'f_false',
            'mp6_Undef', 'mp6_Array', 
            'mp6_Return',
            'MiniPerl6__Match',
            'MiniPerl6__Grammar', 'MiniPerl6__Grammar_proto']
+
+def f_false():
+    return False
 
 def mp6_print(*msg):
     for m in msg:
@@ -67,6 +71,8 @@ def mp6_to_num(s):
             try:
                 return int(s)
             except ValueError:
+                return 0
+            except TypeError:
                 return 0
 
 class mp6_Array:
@@ -133,6 +139,8 @@ class MiniPerl6__Match:
         return self.match[k] 
     def f_scalar(self):
         return str(self)
+    def f_from(self):
+        return self.v_c_from
     def f_to(self):
         return self.v_to
 
@@ -145,6 +153,11 @@ except NameError:
                 self.__dict__.update({'v_' + kw:arg[kw]})
         def f_word(self, s, pos):
             m = re.match( r"\w", s[pos:] )
+            if m:
+                return MiniPerl6__Match(str=s, c_from=pos, to=pos+1, bool=1 )
+            return MiniPerl6__Match(bool=0)
+        def f_digit(self, s, pos):
+            m = re.match( r"\d", s[pos:] )
             if m:
                 return MiniPerl6__Match(str=s, c_from=pos, to=pos+1, bool=1 )
             return MiniPerl6__Match(bool=0)
