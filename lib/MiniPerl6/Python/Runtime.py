@@ -121,6 +121,8 @@ class MiniPerl6__Match:
         self.match = {}
         for kw in arg.keys():
             self.__dict__.update({'v_' + kw:arg[kw]})
+    def __setattr__(v_self, k, v):
+        v_self.__dict__[k] = v
     def __str__(self):
         if self.v_bool:
             return self.v_str[self.v_c_from:self.v_to]
@@ -131,6 +133,8 @@ class MiniPerl6__Match:
         return self.match[k] 
     def f_scalar(self):
         return str(self)
+    def f_to(self):
+        return self.v_to
 
 try:        
     type(MiniPerl6__Grammar)  

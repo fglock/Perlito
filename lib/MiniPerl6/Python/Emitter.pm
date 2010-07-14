@@ -551,10 +551,10 @@ class Apply {
         if $code eq 'print'      { return 'mp6_print(' ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
         if $code eq 'warn'       { return 'mp6_warn('  ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
 
-        if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_python).join(' ')    ~ ']' };
+        if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_python).join(' ')      ~ ']' };
 
-        if $code eq 'Int'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit             ~ ')' };
-        if $code eq 'Num'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit             ~ ')' };
+        if $code eq 'Int'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_python     ~ ')' };
+        if $code eq 'Num'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_python     ~ ')' };
 
         if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
         if $code eq 'prefix:<!>' { return 'not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
@@ -579,6 +579,13 @@ class Apply {
         if $code eq 'infix:<!=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') != mp6_to_num(') ~ '))' };
         if $code eq 'infix:<<>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') < mp6_to_num(')  ~ '))' };
         if $code eq 'infix:<>>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') > mp6_to_num(')  ~ '))' };
+
+        if $code eq 'exists'     {
+            my $arg = @.arguments[0];
+            if $arg.isa( 'Lookup' ) {
+                return '(' ~ ($arg.obj).emit_python ~ ').has_key(' ~ ($arg.index_exp).emit_python ~ ')';
+            }
+        }
 
         if $code eq 'ternary:<?? !!>' { 
             my $ast = 
