@@ -548,6 +548,14 @@ class Apply {
     }
     method emit_python {
         
+        # check that expressions don't overflow the Python parser stack
+        if (@.arguments[1]).isa('Apply') {
+            my $args2 = (@.arguments[1]).arguments;
+            if ($args2[1]).isa('Apply') {
+                $args2[1] = Do.new( block => [ $args2[1] ] );
+            }
+        }
+
         my $code = $.code;
 
         if $code.isa( 'Str' ) { }
