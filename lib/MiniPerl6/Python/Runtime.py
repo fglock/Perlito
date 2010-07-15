@@ -117,6 +117,10 @@ class mp6_Undef:
         return 0.0
     def __nonzero__(self):
         return False
+    def __add__(self, x):
+        return x
+    def __index__(self):
+        return 0
 
 class mp6_Return(Exception):
     def __init__(self, value):
@@ -125,6 +129,7 @@ class mp6_Return(Exception):
 class MiniPerl6__Match:
     def __init__(self, **arg):
         self.match = {}
+        self.v_to = mp6_Undef()
         for kw in arg.keys():
             self.__dict__.update({'v_' + kw:arg[kw]})
     def __setattr__(v_self, k, v):
@@ -154,13 +159,17 @@ except NameError:
         def f_word(self, s, pos):
             m = re.match( r"\w", s[pos:] )
             if m:
-                return MiniPerl6__Match(str=s, c_from=pos, to=pos+1, bool=1 )
+                return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
             return MiniPerl6__Match(bool=0)
         def f_digit(self, s, pos):
             m = re.match( r"\d", s[pos:] )
             if m:
-                return MiniPerl6__Match(str=s, c_from=pos, to=pos+1, bool=1 )
+                return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
             return MiniPerl6__Match(bool=0)
-
+        def f_is_newline(self, s, pos):
+            m = re.match( r"\r\n?|\n\r?", s[pos:] )
+            if m:
+                return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
+            return MiniPerl6__Match(bool=0)
 MiniPerl6__Grammar_proto = MiniPerl6__Grammar()
 
