@@ -129,7 +129,7 @@ class mp6_Return(Exception):
 class MiniPerl6__Match:
     def __init__(self, **arg):
         self.match = {}
-        self.v_to = mp6_Undef()
+        self.v_to = 0
         for kw in arg.keys():
             self.__dict__.update({'v_' + kw:arg[kw]})
     def __setattr__(v_self, k, v):
@@ -138,10 +138,14 @@ class MiniPerl6__Match:
         if self.v_bool:
             return self.v_str[self.v_c_from:self.v_to]
         return ''
+    def __nonzero__(self):
+        return self.v_bool
     def __setitem__(self, k, v):
         self.match[k] = v
     def __getitem__(self, k):
         return self.match[k] 
+    def __repr__(self):
+        return "Match.new(from => " + str(self.f_from()) + ", to => " + str(self.f_to()) + ", bool => " + str(self.v_bool) + ")" 
     def f_scalar(self):
         return str(self)
     def f_from(self):
@@ -163,6 +167,11 @@ except NameError:
             return MiniPerl6__Match(bool=0)
         def f_digit(self, s, pos):
             m = re.match( r"\d", s[pos:] )
+            if m:
+                return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
+            return MiniPerl6__Match(bool=0)
+        def f_space(self, s, pos):
+            m = re.match( r"\s", s[pos:] )
             if m:
                 return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
             return MiniPerl6__Match(bool=0)

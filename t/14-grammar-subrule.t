@@ -16,6 +16,9 @@ class Main {
     my $m = Main.alnums( '123abc', 0);
     say '# from: ', $m.from;
     say '# to:   ', $m.to;
+    if $m.to != 6 {
+        print "not ";
+    }
     say 'ok 1';
 }
 

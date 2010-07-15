@@ -422,7 +422,7 @@ class Var {
                ( $.twigil eq '.' )
             ?? ( 'v_self[0].v_' ~ $.name ~ '' )
             !!  (    ( $.name eq '/' )
-                ??   ( $table{$.sigil} ~ 'MATCH' )
+                ??   ( $table{$.sigil} ~ 'MATCH[0]' )
                 !!   ( $table{$.sigil} ~ $.name ~ '[0]' )
                 )
             )
@@ -546,6 +546,8 @@ class Apply {
         };
 
         if $code eq 'self'       { return 'v_self[0]' };
+        if $code eq 'make'       { return "v_MATCH[0].__setattr__('v_capture', " ~ (@.arguments[0]).emit_python ~ ')' }
+        if $code eq 'false'      { return 'False' };
 
         if $code eq 'say'        { return 'mp6_say('   ~ (@.arguments.>>emit_python).join(', ') ~ ')' } 
         if $code eq 'print'      { return 'mp6_print(' ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
@@ -556,8 +558,8 @@ class Apply {
         if $code eq 'Int'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_python     ~ ')' };
         if $code eq 'Num'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_python     ~ ')' };
 
-        if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
-        if $code eq 'prefix:<!>' { return 'not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
+        if $code eq 'prefix:<~>' { return 'str('   ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
+        if $code eq 'prefix:<!>' { return 'not ('  ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
         if $code eq 'prefix:<?>' { return 'not (not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ '))' };
 
         if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
