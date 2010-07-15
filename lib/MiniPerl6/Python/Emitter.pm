@@ -110,13 +110,13 @@ class MiniPerl6::Python::LexicalBlock {
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                     my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
                     push @s, Python::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
-                    push @s, Python::tab($level+1) ~ 'return ' ~ ($decl.var).emit_python;
+                    push @s, Python::tab($level+1) ~ 'return v_self.v_' ~ ($decl.var).name;
                     push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ ($decl.var).name ~ "':f_" ~ $label ~ "})";
                 }
                 if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
                     my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
                     push @s, Python::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
-                    push @s, Python::tab($level+1) ~ 'return ' ~ (($decl.parameters).var).emit_python;
+                    push @s, Python::tab($level+1) ~ 'return v_self.v_' ~ (($decl.parameters).var).name;
                     push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ (($decl.parameters).var).name ~ "':f_" ~ $label ~ "})";
                 }
             }
@@ -420,7 +420,7 @@ class Var {
     method emit_python_indented( $level ) {
         return Python::tab($level) ~ (
                ( $.twigil eq '.' )
-            ?? ( 'v_self.v_' ~ $.name ~ '' )
+            ?? ( 'v_self[0].v_' ~ $.name ~ '' )
             !!  (    ( $.name eq '/' )
                 ??   ( $table{$.sigil} ~ 'MATCH' )
                 !!   ( $table{$.sigil} ~ $.name ~ '[0]' )
@@ -430,7 +430,7 @@ class Var {
     method emit_python_name {
         return (
                ( $.twigil eq '.' )
-            ?? ( 'v_self.v_' ~ $.name )
+            ?? ( 'v_self[0].v_' ~ $.name )
             !!  (    ( $.name eq '/' )
                 ??   ( $table{$.sigil} ~ 'MATCH' )
                 !!   ( $table{$.sigil} ~ $.name )
@@ -489,7 +489,7 @@ class Call {
             || ($.method eq 'isa')
         { 
             if ($.hyper) {
-            	return "map(lambda: Main." ~ $.method ~ "( v_self, " ~ (@.arguments.>>emit_python).join(', ') ~ ') , ' ~ $invocant ~ ")\n";
+            	return "map(lambda: Main." ~ $.method ~ "( v_self[0], " ~ (@.arguments.>>emit_python).join(', ') ~ ') , ' ~ $invocant ~ ")\n";
             }
             else {
                 return "Main." ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
@@ -545,7 +545,7 @@ class Apply {
             return '(' ~ $.code.emit_python ~ ').(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         };
 
-        if $code eq 'self'       { return 'v_self' };
+        if $code eq 'self'       { return 'v_self[0]' };
 
         if $code eq 'say'        { return 'mp6_say('   ~ (@.arguments.>>emit_python).join(', ') ~ ')' } 
         if $code eq 'print'      { return 'mp6_print(' ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
@@ -769,6 +769,7 @@ class Method {
                 needs_return => 1 );
         my @s;
         push @s, Python::tab($level) ~ 'def f_' ~ $label ~ "(" ~ $meth_args.join(", ") ~ "):";
+        push @s, Python::tab($level+1) ~    $invocant.emit_python_name ~ " = [" ~ $invocant.emit_python_name ~ "]";
         for @($args) -> $field { 
             push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
         };
