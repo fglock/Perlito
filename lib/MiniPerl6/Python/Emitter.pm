@@ -224,6 +224,8 @@ class CompUnit {
         push @s, Python::tab($level+2)  ~           "def __setattr__(v_self, k, v):";
         push @s, Python::tab($level+4)  ~                   "v_self.__dict__[k] = v";
         push @s, Python::tab($level)    ~   $name ~ "_proto = " ~ $name ~ "()"; 
+        push @s, Python::tab($level)    ~   "__builtin__." ~ $name ~ " = " ~ $name ~ ""; 
+        push @s, Python::tab($level)    ~   "__builtin__." ~ $name ~ "_proto = " ~ $name ~ "_proto"; 
         push @s, Python::tab($level)    ~   'def ' ~ $label ~ "():";
         push @s, Python::tab($level+1)  ~       'self = ' ~ $name;
         push @s,    $block.emit_python_indented($level + 1);

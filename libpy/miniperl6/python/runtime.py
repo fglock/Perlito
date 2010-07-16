@@ -25,14 +25,10 @@ import re
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 
-           'f_false',
            'mp6_Undef', 'mp6_Array', 
            'mp6_Return',
            'MiniPerl6__Match',
            'MiniPerl6__Grammar', 'MiniPerl6__Grammar_proto']
-
-def f_false():
-    return False
 
 def mp6_print(*msg):
     for m in msg:
