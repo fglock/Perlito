@@ -24,5 +24,6 @@ perl mp6.pl -Cpython lib/MiniPerl6/Javascript/Emitter.pm > libpy/MiniPerl6__Java
 perl mp6.pl -Cpython lib/MiniPerl6/Lisp/Emitter.pm  > libpy/MiniPerl6__Lisp__Emitter.py
 perl mp6.pl -Cpython lib/MiniPerl6/Perl5/Emitter.pm > libpy/MiniPerl6__Perl5__Emitter.py
 perl mp6.pl -Cpython lib/MiniPerl6/Go/Emitter.pm    > libpy/MiniPerl6__Go__Emitter.py
-perl mp6.pl -Cpython util-go/mp6-go-main.pm         > ./mp6.py
+
+perl mp6.pl -Cpython util/mp6.pl                    > ./mp6.py
 
