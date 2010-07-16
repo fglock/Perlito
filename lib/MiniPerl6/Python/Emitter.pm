@@ -222,7 +222,9 @@ class CompUnit {
         push @s, Python::tab($level+3)  ~               "for kw in arg.keys():";
         push @s, Python::tab($level+4)  ~                   "v_self.__dict__.update({'v_' + kw:arg[kw]})";
         push @s, Python::tab($level+2)  ~           "def __setattr__(v_self, k, v):";
-        push @s, Python::tab($level+4)  ~                   "v_self.__dict__[k] = v";
+        push @s, Python::tab($level+3)  ~               "v_self.__dict__[k] = v";
+        push @s, Python::tab($level+2)  ~           "def f_isa(v_self, name):";
+        push @s, Python::tab($level+3)  ~               "return name == '" ~ $.name ~ "'";
         push @s, Python::tab($level)    ~   $name ~ "_proto = " ~ $name ~ "()"; 
         push @s, Python::tab($level)    ~   "__builtin__." ~ $name ~ " = " ~ $name ~ ""; 
         push @s, Python::tab($level)    ~   "__builtin__." ~ $name ~ "_proto = " ~ $name ~ "_proto"; 
@@ -494,7 +496,7 @@ class Call {
             	return "map(lambda: Main." ~ $.method ~ "( v_self[0], " ~ (@.arguments.>>emit_python).join(', ') ~ ') , ' ~ $invocant ~ ")\n";
             }
             else {
-                return "Main." ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+                return "mp6_" ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
             }
         };
 
@@ -614,9 +616,10 @@ class Apply {
         if $code eq 'index' { 
             return (@.arguments[0]).emit_python ~ '.index(' ~ (@.arguments[1]).emit_python ~ ')' 
         } 
-        if $code eq 'shift' { 
-            return (@.arguments[0]).emit_python ~ '.f_shift()' 
-        } 
+        if $code eq 'shift'   { return (@.arguments[0]).emit_python ~ '.f_shift()' } 
+        if $code eq 'pop'     { return (@.arguments[0]).emit_python ~ '.f_pop()'   } 
+        if $code eq 'push'    { return (@.arguments[0]).emit_python ~ '.f_push('    ~ (@.arguments[1]).emit_python ~ ')' } 
+        if $code eq 'unshift' { return (@.arguments[0]).emit_python ~ '.f_unshift(' ~ (@.arguments[1]).emit_python ~ ')' } 
 
         if $.namespace {
             return Main::to_go_namespace($.namespace) ~ '_proto.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';

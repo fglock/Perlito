@@ -24,7 +24,7 @@ import sys
 import re
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
-           'mp6_to_num', 'mp6_to_scalar', 
+           'mp6_to_num', 'mp6_to_scalar', 'mp6_isa',
            'mp6_Undef', 'mp6_Array', 
            'mp6_Return',
            'MiniPerl6__Match',
@@ -50,6 +50,13 @@ def mp6_to_scalar(v):
     except AttributeError:
         return v
 
+def mp6_isa(v, name):
+    try:
+        return v.f_isa(name)
+    except AttributeError:
+        print "Warning: Can't calculate .isa() on", v
+        return False
+
 def mp6_to_num(s): 
     try:
         c = coerce(s, 0);
@@ -70,6 +77,7 @@ def mp6_to_num(s):
                 return 0
             except TypeError:
                 return 0
+
 
 class mp6_Array:
     def __init__(self, l):
@@ -106,6 +114,9 @@ class mp6_Array:
             return self.l[i]
         except IndexError:
             return mp6_Undef()
+    def f_isa(self, name):
+        return name == 'Array'
+
 
 class mp6_Undef:
     def __str__(self):
@@ -120,10 +131,15 @@ class mp6_Undef:
         return x
     def __index__(self):
         return 0
+    def f_isa(self, name):
+        return name == 'Undef'
+
 
 class mp6_Return(Exception):
     def __init__(self, value):
         self.value = value
+    def f_isa(self, name):
+        return name == 'Exception::Return'
 
 class MiniPerl6__Match:
     def __init__(self, **arg):
@@ -157,10 +173,15 @@ class MiniPerl6__Match:
             except AttributeError:
                 return self.v_str[self.v_c_from:self.v_to]
         return mp6_Undef()
+    def has_key(self, k):
+        return self.match.has_key(k)
     def f_from(self):
         return self.v_c_from
     def f_to(self):
         return self.v_to
+    def f_isa(self, name):
+        return name == 'Match'
+
 
 try:        
     type(MiniPerl6__Grammar)  
@@ -189,5 +210,8 @@ except NameError:
             if m:
                 return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
             return MiniPerl6__Match(bool=0)
+        def f_isa(self, name):
+            return name == 'Grammar'
 MiniPerl6__Grammar_proto = MiniPerl6__Grammar()
+
 
