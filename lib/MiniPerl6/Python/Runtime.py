@@ -30,7 +30,9 @@ __all__ = ['mp6_print', 'mp6_say', 'mp6_warn',
            'mp6_Undef', 'mp6_Array', 
            'mp6_Return',
            'MiniPerl6__Match',
-           'MiniPerl6__Grammar', 'MiniPerl6__Grammar_proto']
+           'MiniPerl6__Grammar', 'MiniPerl6__Grammar_proto', 
+           'Main', 'Main_proto',
+           'IO', 'IO_proto']
 
 def mp6_print(*msg):
     for m in msg:
@@ -225,9 +227,64 @@ except NameError:
             if m:
                 return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
             return MiniPerl6__Match(bool=0)
+        def f_not_newline(self, s, pos):
+            m = re.match( r"\r|\n", s[pos:] )
+            if m:
+                return MiniPerl6__Match(bool=0)
+            return MiniPerl6__Match(str=s, c_from=pos, to=pos+1, bool=1 )
         def f_isa(self, name):
             return name == 'Grammar'
 MiniPerl6__Grammar_proto = MiniPerl6__Grammar()
+
+
+class Main:
+    def __init__(v_self, **arg):
+        for kw in arg.keys():
+            v_self.__dict__.update({'v_' + kw:arg[kw]})
+    def __setattr__(v_self, k, v):
+        v_self.__dict__[k] = v
+    def f_isa(v_self, name):
+        return name == 'Main'
+    def f_lisp_escape_string(self, s):
+        o = s.replace( "\\", "\\\\");
+        o = o.replace( '"', "\\\"");
+        return o;
+    def f_javascript_escape_string(self, s):
+        o = s.replace( "\\", "\\\\");
+        o = o.replace( '"', "\\\"");
+        o = o.replace( "\n", "\\n");
+        return o;
+    def f_perl_escape_string(self, s):
+        o = s.replace( "\\", "\\\\")
+        o = o.replace( "'", "\\'")
+        return o
+    def f_to_javascript_namespace(self, s):
+        o = s.replace( "::", "$");
+        return o;
+    def f_to_lisp_namespace(self, s):
+        o = s.replace( "::", "-");
+        return "mp-" + o;
+    def f_to_go_namespace(self, s):
+        o = s.replace( "::", "__");
+        return o
+Main_proto = Main()
+__builtin__.Main = Main
+__builtin__.Main_proto = Main_proto
+
+
+class IO:
+    def __init__(v_self, **arg):
+        for kw in arg.keys():
+            v_self.__dict__.update({'v_' + kw:arg[kw]})
+    def __setattr__(v_self, k, v):
+        v_self.__dict__[k] = v
+    def f_isa(v_self, name):
+        return name == 'IO'
+    def f_slurp(self, name):
+        return file(name).read()
+IO_proto = IO()
+__builtin__.IO = IO
+__builtin__.IO_proto = IO_proto
 
 
 __builtin__.List_ARGS = [mp6_Array([])]
