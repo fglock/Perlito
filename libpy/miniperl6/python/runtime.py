@@ -110,6 +110,11 @@ class mp6_Array:
             self.l.extend(l)
     def f_push(self, s):
         self.l.append(s)
+    def f_pop(self):
+        try:
+            return self.l.pop()
+        except IndexError:
+            return mp6_Undef()
     def f_set(self, i, s):
         while True:
             try:

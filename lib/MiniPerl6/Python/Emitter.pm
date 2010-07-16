@@ -225,6 +225,12 @@ class CompUnit {
         push @s, Python::tab($level+3)  ~               "v_self.__dict__[k] = v";
         push @s, Python::tab($level+2)  ~           "def f_isa(v_self, name):";
         push @s, Python::tab($level+3)  ~               "return name == '" ~ $.name ~ "'";
+
+        push @s, Python::tab($level+2)  ~           "def __getattr__(self, attr):";
+        push @s, Python::tab($level+3)  ~               "if attr[0:2] == 'v_':";
+        push @s, Python::tab($level+4)  ~                   "return mp6_Undef()";
+        push @s, Python::tab($level+3)  ~               "raise AttributeError(attr)";
+
         push @s, Python::tab($level+1)  ~       $name ~ "_proto = " ~ $name ~ "()"; 
         push @s, Python::tab($level+1)  ~       "__builtin__." ~ $name ~ " = " ~ $name ~ ""; 
         push @s, Python::tab($level+1)  ~       "__builtin__." ~ $name ~ "_proto = " ~ $name ~ "_proto"; 
