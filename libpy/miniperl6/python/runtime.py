@@ -245,6 +245,8 @@ class Main:
         v_self.__dict__[k] = v
     def f_isa(v_self, name):
         return name == 'Main'
+    def f_newline(self):
+        return "\n"
     def f_lisp_escape_string(self, s):
         o = s.replace( "\\", "\\\\");
         o = o.replace( '"', "\\\"");
