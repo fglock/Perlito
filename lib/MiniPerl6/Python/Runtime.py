@@ -83,7 +83,10 @@ class mp6_Array:
     def __iter__(self):
         return self.l.__iter__()
     def f_extend(self, l):
-        self.l.extend(l.l)
+        try:
+            self.l.extend(l.l)
+        except AttributeError:
+            self.l.extend(l)
     def f_push(self, s):
         self.l.append(s)
     def f_set(self, i, s):
@@ -141,9 +144,19 @@ class MiniPerl6__Match:
     def __getitem__(self, k):
         return self.match[k] 
     def __repr__(self):
-        return "Match.new(from => " + str(self.f_from()) + ", to => " + str(self.f_to()) + ", bool => " + str(self.v_bool) + ")" 
+        capture = ['']
+        try:
+            capture[0] = ", capture => " + str(self.v_capture)
+        except AttributeError:
+            capture[0] = ", capture => undef"
+        return "Match.new(from => " + str(self.f_from()) + ", to => " + str(self.f_to()) + ", bool => " + str(self.v_bool) + capture[0] + ")" 
     def f_scalar(self):
-        return str(self)
+        if self.v_bool:
+            try:
+                return self.v_capture
+            except AttributeError:
+                return self.v_str[self.v_c_from:self.v_to]
+        return mp6_Undef()
     def f_from(self):
         return self.v_c_from
     def f_to(self):
