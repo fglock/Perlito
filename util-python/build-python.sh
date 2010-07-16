@@ -12,6 +12,7 @@ touch libpy/miniperl6/python/__init__.py
 
 cp lib/MiniPerl6/Python/Runtime.py libpy/miniperl6/python/runtime.py
 
+perl mp6.pl -Cpython lib/MiniPerl6/Python/Prelude.pm > libpy/MiniPerl6__Python__Prelude.py
 perl mp6.pl -Cpython lib/Test.pm                    > libpy/Test.py
 perl mp6.pl -Cpython lib/MiniPerl6/Grammar.pm       > libpy/MiniPerl6__Grammar.py
 perl mp6.pl -Cpython lib/MiniPerl6/Grammar/Control.pm > libpy/MiniPerl6__Grammar__Control.py
