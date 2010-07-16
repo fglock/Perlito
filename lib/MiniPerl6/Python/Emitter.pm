@@ -366,7 +366,7 @@ class Lit::Hash {
             push @dict, (($field[0]).emit_python ~ ':' ~ ($field[1]).emit_python);
         }; 
         Python::tab($level) ~ 
-            '{' ~ @dict.join(', ') ~ '}';
+            'mp6_Hash({' ~ @dict.join(', ') ~ '})';
     }
 }
 
@@ -406,7 +406,7 @@ class Lookup {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            $.obj.emit_python ~ '[' ~ $.index_exp.emit_python ~ ']';
+            $.obj.emit_python ~ '.f_lookup(' ~ $.index_exp.emit_python ~ ')';
     }
 }
 
@@ -452,6 +452,12 @@ class Bind {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         if $.parameters.isa( 'Index' ) {
+            return Python::tab($level)  
+                ~ ($.parameters.obj).emit_python ~ '.f_set('
+                    ~ ($.parameters.index_exp).emit_python ~ ', '
+                    ~ $.arguments.emit_python ~ ')'
+        }
+        if $.parameters.isa( 'Lookup' ) {
             return Python::tab($level)  
                 ~ ($.parameters.obj).emit_python ~ '.f_set('
                     ~ ($.parameters.index_exp).emit_python ~ ', '
@@ -724,7 +730,7 @@ class Decl {
     }
     method emit_python_init {
         if ($.var).sigil eq '%' {
-            return '{}';
+            return 'mp6_Hash({})';
         }
         elsif ($.var).sigil eq '@' {
             return 'mp6_Array([])';

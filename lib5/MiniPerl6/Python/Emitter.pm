@@ -116,7 +116,7 @@ package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{hash1}); my  $List_dict; for my $field ( @{$fields} ) { push( @{$List_dict}, $field->[0]->emit_python() . ':' . $field->[1]->emit_python() ) }; Python::tab($level) . '{' . Main::join($List_dict, ', ') . '}' }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{hash1}); my  $List_dict; for my $field ( @{$fields} ) { push( @{$List_dict}, $field->[0]->emit_python() . ':' . $field->[1]->emit_python() ) }; Python::tab($level) . 'mp6_Hash({' . Main::join($List_dict, ', ') . '})' }
 }
 
 {
@@ -149,7 +149,7 @@ sub new { shift; bless { @_ }, "Lookup" }
 sub obj { $_[0]->{obj} };
 sub index_exp { $_[0]->{index_exp} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{obj}->emit_python() . '[' . $self->{index_exp}->emit_python() . ']' }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; Python::tab($level) . $self->{obj}->emit_python() . '.f_lookup(' . $self->{index_exp}->emit_python() . ')' }
 }
 
 {
@@ -171,7 +171,7 @@ sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; if (Main::isa($self->{parameters}, 'Index')) { return(Python::tab($level) . $self->{parameters}->obj()->emit_python() . '.f_set(' . $self->{parameters}->index_exp()->emit_python() . ', ' . $self->{arguments}->emit_python() . ')') } else {  }; if (Main::isa($self->{parameters}, 'Call')) { return(Python::tab($level) . $self->{parameters}->invocant()->emit_python() . '.__setattr__(\'v_' . $self->{parameters}->method() . '\', ' . $self->{arguments}->emit_python() . ')') } else {  }; Python::tab($level) . $self->{parameters}->emit_python() . ' = ' . $self->{arguments}->emit_python() }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; if (Main::isa($self->{parameters}, 'Index')) { return(Python::tab($level) . $self->{parameters}->obj()->emit_python() . '.f_set(' . $self->{parameters}->index_exp()->emit_python() . ', ' . $self->{arguments}->emit_python() . ')') } else {  }; if (Main::isa($self->{parameters}, 'Lookup')) { return(Python::tab($level) . $self->{parameters}->obj()->emit_python() . '.f_set(' . $self->{parameters}->index_exp()->emit_python() . ', ' . $self->{arguments}->emit_python() . ')') } else {  }; if (Main::isa($self->{parameters}, 'Call')) { return(Python::tab($level) . $self->{parameters}->invocant()->emit_python() . '.__setattr__(\'v_' . $self->{parameters}->method() . '\', ' . $self->{arguments}->emit_python() . ')') } else {  }; Python::tab($level) . $self->{parameters}->emit_python() . ' = ' . $self->{arguments}->emit_python() }
 }
 
 {
@@ -257,7 +257,7 @@ sub type { $_[0]->{type} };
 sub var { $_[0]->{var} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
 sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $decl = $self->{decl}); (my  $name = $self->{var}->name()); Python::tab($level) . (($decl eq 'has') ? '' : $self->{var}->emit_python()) };
-sub emit_python_init { my $self = $_[0]; if (($self->{var}->sigil() eq '%')) { return('{}') } else { if (($self->{var}->sigil() eq '@')) { return('mp6_Array([])') } else { return('mp6_Undef()') } }; return('') }
+sub emit_python_init { my $self = $_[0]; if (($self->{var}->sigil() eq '%')) { return('mp6_Hash({})') } else { if (($self->{var}->sigil() eq '@')) { return('mp6_Array([])') } else { return('mp6_Undef()') } }; return('') }
 }
 
 {

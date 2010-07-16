@@ -27,7 +27,7 @@ import __builtin__
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 'mp6_isa',
            'mp6_join', 
-           'mp6_Undef', 'mp6_Array', 
+           'mp6_Undef', 'mp6_Array', 'mp6_Hash',
            'mp6_Return',
            'MiniPerl6__Match',
            'MiniPerl6__Grammar', 'MiniPerl6__Grammar_proto', 
@@ -133,6 +133,39 @@ class mp6_Array:
         return str(self.l)
 
 
+class mp6_Hash:
+    def __init__(self, l):
+        self.l = l
+    def __str__(self):
+        return str(self.l)
+    def __int__(self):
+        return len(self.l)
+    def __nonzero__(self):
+        return len(self.l) > 0
+    def __iter__(self):
+        return self.l.__iter__()
+    def __getitem__(self, k):
+        return self.l.__getitem__(k) 
+    def values(self):
+        return self.l.values()
+    def keys(self):
+        return self.l.keys()
+    def has_key(self, k):
+        return self.l.has_key(k)
+    def f_set(self, i, s):
+        self.l[i] = s
+        return s
+    def f_lookup(self, i):
+        try:
+            return self.l[i]
+        except KeyError:
+            return mp6_Undef()
+    def f_isa(self, name):
+        return name == 'Hash'
+    def str(self):
+        return str(self.l)
+
+
 class mp6_Undef:
     def __str__(self):
         return ""
@@ -174,6 +207,14 @@ class MiniPerl6__Match:
         return self.v_bool
     def __setitem__(self, k, v):
         self.match[k] = v
+    def f_set(self, k, v):
+        self.match[k] = v
+        return v
+    def f_lookup(self, k):
+        try:
+            return self.match[k]
+        except KeyError:
+            return mp6_Undef()
     def __getitem__(self, k):
         return self.match[k] 
     def __repr__(self):
