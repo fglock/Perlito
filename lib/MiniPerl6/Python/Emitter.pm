@@ -213,10 +213,10 @@ class CompUnit {
             }
         }
 
-        push @s, Python::tab($level)    ~   "__all__.extend(['" ~ $name ~ "', '" ~ $name ~ "_proto'])";
         push @s, Python::tab($level)    ~   'try:';
         push @s, Python::tab($level+1)  ~       'type(' ~ $name ~ ")";
         push @s, Python::tab($level)    ~   'except NameError:';
+        push @s, Python::tab($level+1)  ~       "__all__.extend(['" ~ $name ~ "', '" ~ $name ~ "_proto'])";
         push @s, Python::tab($level+1)  ~       'class ' ~ $name ~ ":";
         push @s, Python::tab($level+2)  ~           "def __init__(v_self, **arg):";
         push @s, Python::tab($level+3)  ~               "for kw in arg.keys():";
@@ -225,9 +225,9 @@ class CompUnit {
         push @s, Python::tab($level+3)  ~               "v_self.__dict__[k] = v";
         push @s, Python::tab($level+2)  ~           "def f_isa(v_self, name):";
         push @s, Python::tab($level+3)  ~               "return name == '" ~ $.name ~ "'";
-        push @s, Python::tab($level)    ~   $name ~ "_proto = " ~ $name ~ "()"; 
-        push @s, Python::tab($level)    ~   "__builtin__." ~ $name ~ " = " ~ $name ~ ""; 
-        push @s, Python::tab($level)    ~   "__builtin__." ~ $name ~ "_proto = " ~ $name ~ "_proto"; 
+        push @s, Python::tab($level+1)  ~       $name ~ "_proto = " ~ $name ~ "()"; 
+        push @s, Python::tab($level+1)  ~       "__builtin__." ~ $name ~ " = " ~ $name ~ ""; 
+        push @s, Python::tab($level+1)  ~       "__builtin__." ~ $name ~ "_proto = " ~ $name ~ "_proto"; 
         push @s, Python::tab($level)    ~   'def ' ~ $label ~ "():";
         push @s, Python::tab($level+1)  ~       'self = ' ~ $name;
         push @s,    $block.emit_python_indented($level + 1);

@@ -22,6 +22,7 @@ See L<http://www.perl.com/perl/misc/Artistic.html>
 
 import sys
 import re
+import __builtin__
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 'mp6_isa',
@@ -116,6 +117,8 @@ class mp6_Array:
             return mp6_Undef()
     def f_isa(self, name):
         return name == 'Array'
+    def str(self):
+        return str(self.l)
 
 
 class mp6_Undef:
@@ -214,4 +217,7 @@ except NameError:
             return name == 'Grammar'
 MiniPerl6__Grammar_proto = MiniPerl6__Grammar()
 
+
+__builtin__.List_ARGS = [mp6_Array([])]
+List_ARGS[0].l.extend(sys.argv[1:])
 
