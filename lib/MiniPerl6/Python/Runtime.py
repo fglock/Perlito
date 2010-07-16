@@ -26,6 +26,7 @@ import __builtin__
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 'mp6_isa',
+           'mp6_join', 
            'mp6_Undef', 'mp6_Array', 
            'mp6_Return',
            'MiniPerl6__Match',
@@ -55,8 +56,17 @@ def mp6_isa(v, name):
     try:
         return v.f_isa(name)
     except AttributeError:
+        if name == 'Int' and type(v) == type(1):
+            return True
+        if name == 'Num' and type(v) == type(1.1):
+            return True
+        if name == 'Str' and type(v) == type("aa"):
+            return True
         print "Warning: Can't calculate .isa() on", v
         return False
+
+def mp6_join(l, s):
+    return s.join(l)
 
 def mp6_to_num(s): 
     try:
@@ -134,6 +144,8 @@ class mp6_Undef:
         return x
     def __index__(self):
         return 0
+    def __getitem__(self, k):
+        return self 
     def f_isa(self, name):
         return name == 'Undef'
 
