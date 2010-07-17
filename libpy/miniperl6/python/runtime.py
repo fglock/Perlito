@@ -26,7 +26,7 @@ import __builtin__
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 'mp6_isa',
-           'mp6_join', 
+           'mp6_join', 'mp6_index',
            'mp6_Undef', 'mp6_Array', 'mp6_Hash',
            'mp6_Return',
            'MiniPerl6__Match',
@@ -69,6 +69,12 @@ def mp6_isa(v, name):
 
 def mp6_join(l, s):
     return s.join(l)
+
+def mp6_index(s, s2):
+    try:
+        return s.index(s2)
+    except ValueError:
+        return -1
 
 def mp6_to_num(s): 
     try:

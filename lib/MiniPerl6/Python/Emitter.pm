@@ -509,7 +509,6 @@ class Call {
             || ($.method eq 'yaml')
             || ($.method eq 'say' )
             || ($.method eq 'join')
-            || ($.method eq 'chars')
             || ($.method eq 'isa')
         { 
             if ($.hyper) {
@@ -528,18 +527,18 @@ class Call {
         if     ( $meth eq 'values' ) 
             || ( $meth eq 'keys' )
         {
-            return Python::tab($level) ~ 
-                $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+            return Python::tab($level) ~ $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        }
+        if $meth eq 'chars' {
+            return Python::tab($level) ~ "len(" ~ $invocant ~ ")";
         }
         
         my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         if ($.hyper) {
-            Python::tab($level) ~ 
-                'map(lambda x: x.' ~ $call ~ ', ' ~ $invocant ~ ')';
+            Python::tab($level) ~ 'map(lambda x: x.' ~ $call ~ ', ' ~ $invocant ~ ')';
         }
         else {
-            Python::tab($level) ~ 
-                $invocant ~ '.' ~ $call;
+            Python::tab($level) ~ $invocant ~ '.' ~ $call;
         };
 
     }
@@ -634,7 +633,7 @@ class Apply {
                 ~ ']' 
         } 
         if $code eq 'index' { 
-            return (@.arguments[0]).emit_python ~ '.index(' ~ (@.arguments[1]).emit_python ~ ')' 
+            return 'mp6_index(' ~ (@.arguments[0]).emit_python ~ ', ' ~ (@.arguments[1]).emit_python ~ ')' 
         } 
         if $code eq 'shift'   { return (@.arguments[0]).emit_python ~ '.f_shift()' } 
         if $code eq 'pop'     { return (@.arguments[0]).emit_python ~ '.f_pop()'   } 
