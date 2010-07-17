@@ -720,24 +720,19 @@ class For {
     method emit_python_indented( $level ) {
         my $body_block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
         if $body_block.has_my_decl {
-            # $body_block = Do.new( block => @.body );
-
             # wrap the block into a call to anonymous subroutine 
-            $body_block = Call.new(
-                'method' => 'postcircumfix:<( )>',
-                'arguments' => [ $.topic ],
-                'hyper' => '',
-                'invocant' => Sub.new( 
-                    'name' => '',
-                    'sig' => Sig.new(
-                      'invocant' => undef,
-                      'named' => {},
-                      'positional' => [ $.topic ],
-                    ),
-                    'block' => @.body,
-                ),
-            );
-
+            my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
+            # generate an anonymous sub in the current block
+            MiniPerl6::Python::LexicalBlock::push_stmt_python( 
+                    MiniPerl6::Python::AnonSub.new( 
+                        name  => $label, 
+                        block => @.body,
+                        sig   => Sig.new( invocant => undef, positional => [ $.topic ], named => {} ),
+                        handles_return_exception => 0,
+                    )
+                );
+            return Python::tab($level) ~    'for ' ~ $.topic.emit_python_name ~ " in " ~ $.cond.emit_python ~ ":\n"
+                ~  Python::tab($level+1) ~      "f_" ~ $label ~ "(" ~ $.topic.emit_python_name ~ ")";
         }
         Python::tab($level) ~   'for ' ~ $.topic.emit_python_name ~ " in " ~ $.cond.emit_python ~ ":\n"
         ~ Python::tab($level+1) ~     $.topic.emit_python_name ~ " = [" ~ $.topic.emit_python_name ~ "]\n"

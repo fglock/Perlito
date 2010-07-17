@@ -244,7 +244,8 @@ sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub topic { $_[0]->{topic} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{body}, )); if ($body_block->has_my_decl()) { ($body_block = Call->new( 'method' => 'postcircumfix:<( )>','arguments' => [$self->{topic}],'hyper' => '','invocant' => Sub->new( 'name' => '','sig' => Sig->new( 'invocant' => (undef),'named' => {  },'positional' => [$self->{topic}], ),'block' => $self->{body}, ), )) } else {  }; Python::tab($level) . 'for ' . $self->{topic}->emit_python_name() . ' in ' . $self->{cond}->emit_python() . ':
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = MiniPerl6::Python::LexicalBlock->new( 'block' => $self->{body}, )); if ($body_block->has_my_decl()) { (my  $label = '_anon_' . MiniPerl6::Python::LexicalBlock::get_ident_python());MiniPerl6::Python::LexicalBlock::push_stmt_python(MiniPerl6::Python::AnonSub->new( 'name' => $label,'block' => $self->{body},'sig' => Sig->new( 'invocant' => (undef),'positional' => [$self->{topic}],'named' => {  }, ),'handles_return_exception' => 0, ));return(Python::tab($level) . 'for ' . $self->{topic}->emit_python_name() . ' in ' . $self->{cond}->emit_python() . ':
+' . Python::tab(($level + 1)) . 'f_' . $label . '(' . $self->{topic}->emit_python_name() . ')') } else {  }; Python::tab($level) . 'for ' . $self->{topic}->emit_python_name() . ' in ' . $self->{cond}->emit_python() . ':
 ' . Python::tab(($level + 1)) . $self->{topic}->emit_python_name() . ' = [' . $self->{topic}->emit_python_name() . ']
 ' . $body_block->emit_python_indented(($level + 1)) }
 }
