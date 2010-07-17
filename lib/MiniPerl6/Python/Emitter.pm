@@ -1,25 +1,12 @@
 use v6;
 
 class Python {
-    my %python_reserved = {
-        class => 1,
-        continue => 1,
-        from => 1,
-    };
-
     sub tab($level) { 
         my $s = '';
         my $count = $level;
         while $count > 0 {
             $s = $s ~ "    ";
             $count = $count - 1; 
-        }
-        return $s;
-    }
-
-    sub escape_reserved($s) {
-        if %python_reserved{$s} {
-            return 'c_' ~ $s;
         }
         return $s;
     }
@@ -228,7 +215,7 @@ class CompUnit {
         push @s, Python::tab($level+1)  ~       'class ' ~ $name ~ ":";
         push @s, Python::tab($level+2)  ~           "def __init__(v_self, **arg):";
         push @s, Python::tab($level+3)  ~               "for kw in arg.keys():";
-        push @s, Python::tab($level+4)  ~                   "v_self.__dict__.update({'v_' + kw:arg[kw]})";
+        push @s, Python::tab($level+4)  ~                   "v_self.__dict__.update({kw:arg[kw]})";
         push @s, Python::tab($level+2)  ~           "def __setattr__(v_self, k, v):";
         push @s, Python::tab($level+3)  ~               "v_self.__dict__[k] = v";
         push @s, Python::tab($level+2)  ~           "def f_isa(v_self, name):";
@@ -397,7 +384,7 @@ class Lit::Object {
         my $fields = @.fields;
         my @str;
         for @$fields -> $field { 
-            push @str, Python::escape_reserved(($field[0]).buf) ~ '=' ~ ($field[1]).emit_python;
+            push @str, "v_" ~ ($field[0]).buf ~ '=' ~ ($field[1]).emit_python;
         }
         Python::tab($level) ~ 
             Main::to_go_namespace($.class) ~ '(' ~ @str.join(', ') ~ ')';

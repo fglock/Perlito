@@ -236,13 +236,12 @@ class MiniPerl6__Match:
     def __init__(self, **arg):
         self.match = {}
         self.v_to = 0
-        for kw in arg.keys():
-            self.__dict__.update({'v_' + kw:arg[kw]})
+        self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
     def __str__(self):
         if self.v_bool:
-            return self.v_str[self.v_c_from:self.v_to]
+            return self.v_str[self.v_from:self.v_to]
         return ''
     def __nonzero__(self):
         return self.v_bool
@@ -270,12 +269,12 @@ class MiniPerl6__Match:
             try:
                 return self.v_capture
             except AttributeError:
-                return self.v_str[self.v_c_from:self.v_to]
+                return self.v_str[self.v_from:self.v_to]
         return mp6_Undef()
     def has_key(self, k):
         return self.match.has_key(k)
     def f_from(self):
-        return self.v_c_from
+        return self.v_from
     def f_to(self):
         return self.v_to
     def f_isa(self, name):
@@ -287,42 +286,40 @@ try:
 except NameError:
     class MiniPerl6__Grammar:
         def __init__(self, **arg):
-            for kw in arg.keys():
-                self.__dict__.update({'v_' + kw:arg[kw]})
+            self.__dict__.update(arg)
         def f_word(self, s, pos):
             m = re.match( r"\w", s[pos:] )
             if m:
-                return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
-            return MiniPerl6__Match(bool=0)
+                return MiniPerl6__Match(v_str=s, v_from=pos, v_to=m.end() + pos, v_bool=1 )
+            return MiniPerl6__Match(v_bool=0)
         def f_digit(self, s, pos):
             m = re.match( r"\d", s[pos:] )
             if m:
-                return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
-            return MiniPerl6__Match(bool=0)
+                return MiniPerl6__Match(v_str=s, v_from=pos, v_to=m.end() + pos, v_bool=1 )
+            return MiniPerl6__Match(v_bool=0)
         def f_space(self, s, pos):
             m = re.match( r"\s", s[pos:] )
             if m:
-                return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
-            return MiniPerl6__Match(bool=0)
+                return MiniPerl6__Match(v_str=s, v_from=pos, v_to=m.end() + pos, v_bool=1 )
+            return MiniPerl6__Match(v_bool=0)
         def f_is_newline(self, s, pos):
             m = re.match( r"\r\n?|\n\r?", s[pos:] )
             if m:
-                return MiniPerl6__Match(str=s, c_from=pos, to=m.end() + pos, bool=1 )
-            return MiniPerl6__Match(bool=0)
+                return MiniPerl6__Match(v_str=s, v_from=pos, v_to=m.end() + pos, v_bool=1 )
+            return MiniPerl6__Match(v_bool=0)
         def f_not_newline(self, s, pos):
             m = re.match( r"\r|\n", s[pos:] )
             if m:
-                return MiniPerl6__Match(bool=0)
-            return MiniPerl6__Match(str=s, c_from=pos, to=pos+1, bool=1 )
+                return MiniPerl6__Match(v_bool=0)
+            return MiniPerl6__Match(v_str=s, v_from=pos, v_to=pos+1, v_bool=1 )
         def f_isa(self, name):
             return name == 'Grammar'
 MiniPerl6__Grammar_proto = MiniPerl6__Grammar()
 
 
 class Main:
-    def __init__(v_self, **arg):
-        for kw in arg.keys():
-            v_self.__dict__.update({'v_' + kw:arg[kw]})
+    def __init__(self, **arg):
+        self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
     def f_isa(v_self, name):
@@ -358,8 +355,7 @@ __builtin__.Main_proto = Main_proto
 
 class IO:
     def __init__(v_self, **arg):
-        for kw in arg.keys():
-            v_self.__dict__.update({'v_' + kw:arg[kw]})
+        v_self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
     def f_isa(v_self, name):
