@@ -7,7 +7,15 @@ class Python {
         from => 1,
     };
 
-    sub tab($level) { "    " x $level }
+    sub tab($level) { 
+        my $s = '';
+        my $count = $level;
+        while $count > 0 {
+            $s = $s ~ "    ";
+            $count = $count - 1; 
+        }
+        return $s;
+    }
 
     sub escape_reserved($s) {
         if %python_reserved{$s} {

@@ -186,7 +186,7 @@ sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub topic { $_[0]->{topic} };
-sub emit_javascript { my $self = $_[0]; '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' . '(function (' . $self->{topic}->emit_javascript() . ') { ' . Main::join([ map { $_->emit_javascript() } @{ $self->{body} } ], ';') . ' })(a_[i_]) } })' . '(' . $self->{cond}->emit_javascript() . ')' }
+sub emit_javascript { my $self = $_[0]; (my  $body = MiniPerl6::Javascript::LexicalBlock->new( 'block' => $self->{body},'needs_return' => 0, )); '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' . '(function (' . $self->{topic}->emit_javascript() . ') { ' . $body->emit_javascript() . ' })(a_[i_]) } })' . '(' . $self->{cond}->emit_javascript() . ')' }
 }
 
 {

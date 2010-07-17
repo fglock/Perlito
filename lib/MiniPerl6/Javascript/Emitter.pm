@@ -646,9 +646,10 @@ class For {
     has @.body;
     has @.topic;
     method emit_javascript {
+        my $body      = MiniPerl6::Javascript::LexicalBlock.new( block => @.body, needs_return => 0 );
         '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' 
             ~ '(function (' ~ $.topic.emit_javascript ~ ') { '
-                ~ (@.body.>>emit_javascript).join(';') 
+                ~ $body.emit_javascript 
             ~ ' })(a_[i_]) } })' 
         ~ '(' ~ $.cond.emit_javascript ~ ')'
     }

@@ -7,7 +7,7 @@ our $MATCH = MiniPerl6::Match->new();
 package Python;
 sub new { shift; bless { @_ }, "Python" }
 (my  $Hash_python_reserved = { 'class' => 1,'continue' => 1,'from' => 1, });
-sub tab { my $level = $_[0]; ('    ' x $level) };
+sub tab { my $level = $_[0]; (my  $s = ''); (my  $count = $level); for ( ; ($count > 0);  ) { ($s = $s . '    '); ($count = ($count - 1)) }; return($s) };
 sub escape_reserved { my $s = $_[0]; if ($Hash_python_reserved->{$s}) { return('c_' . $s) } else {  }; return($s) }
 }
 

@@ -26,6 +26,7 @@ perl mp6.pl -Cpython lib/MiniPerl6/Lisp/Emitter.pm  > libpy/MiniPerl6__Lisp__Emi
 perl mp6.pl -Cpython lib/MiniPerl6/Perl5/Emitter.pm > libpy/MiniPerl6__Perl5__Emitter.py
 perl mp6.pl -Cpython lib/MiniPerl6/Go/Emitter.pm    > libpy/MiniPerl6__Go__Emitter.py
 perl mp6.pl -Cpython lib/MiniPerl6/Parrot/Emitter.pm > libpy/MiniPerl6__Parrot__Emitter.py
+perl mp6.pl -Cpython lib/MiniPerl6/Python/Emitter.pm > libpy/MiniPerl6__Python__Emitter.py
 
 perl mp6.pl -Cpython util/mp6.pl                    > ./mp6.py
 
