@@ -26,7 +26,7 @@ import __builtin__
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 'mp6_isa',
-           'mp6_join', 'mp6_index',
+           'mp6_join', 'mp6_index', 'mp6_perl',
            'mp6_Undef', 'mp6_Array', 'mp6_Hash',
            'mp6_Return',
            'MiniPerl6__Match',
@@ -97,6 +97,30 @@ def mp6_to_num(s):
             except TypeError:
                 return 0
 
+def _dump(o):
+    out = [];
+    for i in o.__dict__.keys():
+        out.append(i + " => " + mp6_perl(o.__dict__[i]))
+    return "X.new(" + ", ".join(out) + ")";
+
+def mp6_perl(o):
+    try:
+        return o.f_perl()
+    except AttributeError:
+        if type(o) == type(1):
+            return str(o)
+        if type(o) == type(1.1):
+            return str(o)
+        if type(o) == type("aa"):
+            return o.__repr__()
+        if type(o) == type([]):
+            return "[" + ", ".join(map(lambda x: mp6_perl(x), o)) + "]"
+        if type(o) == type({}):
+            out = [];
+            for i in o.keys():
+                out.append(i + " => " + mp6_perl(o[i]))
+            return "{" + ", ".join(out) + "}";
+        return _dump(o)
 
 class mp6_Array:
     def __init__(self, l):
@@ -109,6 +133,8 @@ class mp6_Array:
         return len(self.l) > 0
     def __iter__(self):
         return self.l.__iter__()
+    def f_perl(self):
+        return mp6_perl(self.l)
     def f_extend(self, l):
         try:
             self.l.extend(l.l)
@@ -157,6 +183,8 @@ class mp6_Hash:
         return self.l.__iter__()
     def __getitem__(self, k):
         return self.l.__getitem__(k) 
+    def f_perl(self):
+        return mp6_perl(self.l)
     def values(self):
         return self.l.values()
     def keys(self):
@@ -192,6 +220,8 @@ class mp6_Undef:
         return 0
     def __getitem__(self, k):
         return self 
+    def f_perl(self):
+        return "undef"
     def f_isa(self, name):
         return name == 'Undef'
 
