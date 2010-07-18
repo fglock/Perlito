@@ -342,29 +342,31 @@ token char_any {
     .
 }
 
+token char_any_single_quote {
+    <!before \' > <char_any>
+    [ <!before [ \' | \\ ] > . ]*
+}
+
+token char_any_double_quote {
+    <!before \" > .
+    [ <!before [ \" | \\ ] > . ]*
+}
+
 token single_quoted_unescape {
-    |  \\ \'  <single_quoted_unescape>  
-        { make "\'" ~ $<single_quoted_unescape> }
-    |  \\ \"  <single_quoted_unescape>  
-        { make "\"" ~ $<single_quoted_unescape> }
-    |  \\ \\  <single_quoted_unescape>  
-        { make "\\" ~ $<single_quoted_unescape> }
-    |  <!before \' > <char_any> <single_quoted_unescape>
+    |  \\ <char_any>  <single_quoted_unescape>  
         { make $<char_any> ~ $<single_quoted_unescape> }
+    |  <char_any_single_quote> <single_quoted_unescape>
+        { make $<char_any_single_quote> ~ $<single_quoted_unescape> }
     |  ''    
 }
 
 token double_quoted_unescape {
-    |  \\ \'  <double_quoted_unescape>  
-        { make '\'' ~ $<double_quoted_unescape> }
-    |  \\ \"  <double_quoted_unescape>  
-        { make '"' ~ $<double_quoted_unescape> }
-    |  \\ \\  <double_quoted_unescape>  
-        { make "\\" ~ $<double_quoted_unescape> }
     |  \\ n  <double_quoted_unescape>  
         { make Main.newline ~ $<double_quoted_unescape> }
-    |  <!before \" > <char_any> <double_quoted_unescape>
+    |  \\ <char_any>  <double_quoted_unescape>  
         { make $<char_any> ~ $<double_quoted_unescape> }
+    |  <char_any_double_quote> <double_quoted_unescape>
+        { make $<char_any_double_quote> ~ $<double_quoted_unescape> }
     |  ''    
 }
 
