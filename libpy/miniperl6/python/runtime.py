@@ -97,30 +97,6 @@ def mp6_to_num(s):
             except TypeError:
                 return 0
 
-def _dump(o):
-    out = [];
-    for i in o.__dict__.keys():
-        out.append(i + " => " + mp6_perl(o.__dict__[i]))
-    return "X.new(" + ", ".join(out) + ")";
-
-def mp6_perl(o):
-    try:
-        return o.f_perl()
-    except AttributeError:
-        if type(o) == type(1):
-            return str(o)
-        if type(o) == type(1.1):
-            return str(o)
-        if type(o) == type("aa"):
-            return o.__repr__()
-        if type(o) == type([]):
-            return "[" + ", ".join(map(lambda x: mp6_perl(x), o)) + "]"
-        if type(o) == type({}):
-            out = [];
-            for i in o.keys():
-                out.append(i + " => " + mp6_perl(o[i]))
-            return "{" + ", ".join(out) + "}";
-        return _dump(o)
 
 class mp6_Array:
     def __init__(self, l):
@@ -366,6 +342,32 @@ IO_proto = IO()
 __builtin__.IO = IO
 __builtin__.IO_proto = IO_proto
 
+
+def _dump(o):
+    out = [];
+    for i in o.__dict__.keys():
+        out.append(i[2:] + " => " + mp6_perl(o.__dict__[i]))
+    name = o.__class__.__name__.replace( "__", "::");
+    return name + ".new(" + ", ".join(out) + ")";
+
+def mp6_perl(o):
+    try:
+        return o.f_perl()
+    except AttributeError:
+        if type(o) == type(1):
+            return str(o)
+        if type(o) == type(1.1):
+            return str(o)
+        if type(o) == type("aa"):
+            return '"' + Main_proto.f_javascript_escape_string(o) + '"'
+        if type(o) == type([]):
+            return "[" + ", ".join(map(lambda x: mp6_perl(x), o)) + "]"
+        if type(o) == type({}):
+            out = [];
+            for i in o.keys():
+                out.append(i + " => " + mp6_perl(o[i]))
+            return "{" + ", ".join(out) + "}";
+        return _dump(o)
 
 __builtin__.List_ARGS = [mp6_Array([])]
 List_ARGS[0].l.extend(sys.argv[1:])
