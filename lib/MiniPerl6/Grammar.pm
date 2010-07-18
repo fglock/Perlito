@@ -353,8 +353,12 @@ token char_any_double_quote {
 }
 
 token single_quoted_unescape {
-    |  \\ <char_any>  <single_quoted_unescape>  
-        { make $<char_any> ~ $<single_quoted_unescape> }
+    |  \\ \\  <single_quoted_unescape>  
+        { make "\\" ~ $<single_quoted_unescape> }
+    |  \\ \'  <single_quoted_unescape>  
+        { make '\'' ~ $<single_quoted_unescape> }
+    |  \\   <single_quoted_unescape>  
+        { make "\\" ~ $<single_quoted_unescape> }
     |  <char_any_single_quote> <single_quoted_unescape>
         { make $<char_any_single_quote> ~ $<single_quoted_unescape> }
     |  ''    
