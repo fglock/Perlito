@@ -88,11 +88,17 @@ token parse {
         $backend = substr(@*ARGS[0], 2, 10);
         $execute = 0;
         shift @*ARGS;
+        if ($backend eq 'perl5') || ($backend eq 'python') {
+            $expand_use = 0;
+        }
     }
     if substr(@*ARGS[0], 0, 2) eq '-B' {
         $backend = substr(@*ARGS[0], 2, 10);
         $execute = 1;
         shift @*ARGS;
+        if ($backend eq 'perl5') || ($backend eq 'python') {
+            $expand_use = 0;
+        }
     }
     if (@*ARGS[0] eq '-V') || (@*ARGS[0] eq '--version') {
         $backend = '';
@@ -107,9 +113,9 @@ mp6 [switches] [programfile]
     -h --help
     -v --verbose
     -V --version
+    -Ctarget        target backend: go, js, lisp, parrot, perl5, python, ast-perl6
     --expand_use --noexpand_use
                     expand 'use' statements at compile time
-    -Ctarget        target backend: go, js, lisp, parrot, perl5, python, ast-perl6
     -e program      one line of program (omit programfile)
 ";
         shift @*ARGS;
