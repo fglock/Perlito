@@ -25,7 +25,7 @@ import re
 import __builtin__
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
-           'mp6_to_num', 'mp6_to_scalar', 'mp6_isa',
+           'mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'mp6_isa',
            'mp6_join', 'mp6_index', 'mp6_perl',
            'mp6_Undef', 'mp6_Array', 'mp6_Hash',
            'mp6_Return',
@@ -53,6 +53,21 @@ def mp6_to_scalar(v):
         return v.f_scalar()
     except AttributeError:
         return v
+
+def mp6_to_bool(o):
+    if type(o) == type(False):
+        return o
+    if type(o) == type(1):
+        return o != 0
+    if type(o) == type(1.1):
+        return o != 0
+    if type(o) == type("aa"):
+        return o != "" or o != "0"
+    if type(o) == type([]):
+        return len(o) != 0
+    if type(o) == type({}):
+        return len(o.keys) != 0
+    return True
 
 def mp6_isa(v, name):
     try:
@@ -210,36 +225,30 @@ class mp6_Return(Exception):
 
 class MiniPerl6__Match:
     def __init__(self, **arg):
-        self.match = {}
+        self.v_m = {}
         self.v_to = 0
         self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
+        return v
     def __str__(self):
         if self.v_bool:
             return self.v_str[self.v_from:self.v_to]
         return ''
     def __nonzero__(self):
-        return self.v_bool
+        return mp6_to_bool(self.v_bool)
     def __setitem__(self, k, v):
-        self.match[k] = v
+        self.v_m[k] = v
     def f_set(self, k, v):
-        self.match[k] = v
+        self.v_m[k] = v
         return v
     def f_lookup(self, k):
         try:
-            return self.match[k]
+            return self.v_m[k]
         except KeyError:
             return mp6_Undef()
     def __getitem__(self, k):
-        return self.match[k] 
-    def __repr__(self):
-        capture = ['']
-        try:
-            capture[0] = ", capture => " + str(self.v_capture)
-        except AttributeError:
-            capture[0] = ", capture => undef"
-        return "Match.new(from => " + str(self.f_from()) + ", to => " + str(self.f_to()) + ", bool => " + str(self.v_bool) + capture[0] + ")" 
+        return self.v_m[k] 
     def f_scalar(self):
         if self.v_bool:
             try:
@@ -248,7 +257,7 @@ class MiniPerl6__Match:
                 return self.v_str[self.v_from:self.v_to]
         return mp6_Undef()
     def has_key(self, k):
-        return self.match.has_key(k)
+        return self.v_m.has_key(k)
     def f_from(self):
         return self.v_from
     def f_to(self):
@@ -354,6 +363,8 @@ def mp6_perl(o):
     try:
         return o.f_perl()
     except AttributeError:
+        if type(o) == type(False):
+            return str(o)
         if type(o) == type(1):
             return str(o)
         if type(o) == type(1.1):
