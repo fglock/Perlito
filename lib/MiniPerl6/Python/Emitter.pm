@@ -585,8 +585,14 @@ class Apply {
         if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_python).join(' * ')  ~ ')' };
         if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_python).join(' / ')  ~ ')' };
         
-        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit_python).join(' and ') ~ ')' };
-        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit_python).join(' or ') ~ ')' };
+        if $code eq 'infix:<&&>' { 
+            return '(mp6_to_bool(' ~ (@.arguments[0]).emit_python ~ ') '
+                ~  'and mp6_to_bool(' ~ (@.arguments[1]).emit_python ~ '))' 
+        }
+        if $code eq 'infix:<||>' { 
+            return '(mp6_to_bool(' ~ (@.arguments[0]).emit_python ~ ') '
+                ~  'or mp6_to_bool(' ~ (@.arguments[1]).emit_python ~ '))' 
+        }
         if $code eq 'infix:<eq>' { return '(str('  ~ (@.arguments.>>emit_python).join(') == str(')  ~ '))' };
         if $code eq 'infix:<ne>' { return '(str('  ~ (@.arguments.>>emit_python).join(') != str(')  ~ '))' };
  

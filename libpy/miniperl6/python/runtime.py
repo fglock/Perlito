@@ -67,6 +67,8 @@ def mp6_to_bool(o):
         return len(o) != 0
     if type(o) == type({}):
         return len(o.keys) != 0
+    if type(o) == type(None):
+        return False
     return o.__nonzero__()
 
 def mp6_isa(v, name):
