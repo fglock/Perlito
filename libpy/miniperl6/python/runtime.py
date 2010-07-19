@@ -234,8 +234,11 @@ class MiniPerl6__Match:
         v_self.__dict__[k] = v
         return v
     def __str__(self):
-        if self.v_bool:
-            return self.v_str[self.v_from:self.v_to]
+        if mp6_to_bool(self.v_bool):
+            try:
+                return str(self.v_capture)
+            except AttributeError:
+                return self.v_str[self.v_from:self.v_to]
         return ''
     def __nonzero__(self):
         return mp6_to_bool(self.v_bool)
@@ -252,7 +255,7 @@ class MiniPerl6__Match:
     def __getitem__(self, k):
         return self.v_m[k] 
     def f_scalar(self):
-        if self.v_bool:
+        if mp6_to_bool(self.v_bool):
             try:
                 return self.v_capture
             except AttributeError:

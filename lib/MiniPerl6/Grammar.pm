@@ -343,7 +343,7 @@ token char_any {
 }
 
 token char_any_single_quote {
-    <!before \' > <char_any>
+    <!before \' > .
     [ <!before [ \' | \\ ] > . ]*
 }
 
