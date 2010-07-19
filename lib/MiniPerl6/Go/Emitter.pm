@@ -703,6 +703,7 @@ class Apply {
 
         if $code eq 'self'       { return 'v_self' };
         if $code eq 'false'      { return 'b_false()' };
+        if $code eq 'true'       { return 'b_true()' };
         if $code eq 'make'       { 
             return 
                   'func () *Any { ' 

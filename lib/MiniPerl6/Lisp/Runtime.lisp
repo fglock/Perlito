@@ -15,7 +15,8 @@
   (:export 
         #:sv-eq #:sv-bool #:sv-substr #:sv-say #:sv-print #:sv-index 
         #:sv-and #:sv-or #:sv-perl #:sv-scalar #:sv-string #:sv-undef
-        #:sv-defined #:sv-array-index #:sv-hash-lookup #:sv-add ))
+        #:sv-defined #:sv-array-index #:sv-hash-lookup #:sv-add 
+        #:sv-true ))
 (in-package mp-Main)
 
 (defparameter *mp6-args* ())
@@ -78,6 +79,9 @@
       (:documentation "check if a value is defined")))
 (defmethod sv-defined (x) t)
 (defmethod sv-defined ((x mp-Undef)) nil)
+
+(defun sv-true ()
+  T)
 
 (defun sv-say (l)
   (progn
@@ -166,7 +170,7 @@
       (:documentation "get a bool value")))
 (defmethod sv-bool (x) x)
 (defmethod sv-bool ((x mp-Undef)) nil)
-(defmethod sv-bool ((x number)) (not (eql x 0)))
+(defmethod sv-bool ((x number)) (not (or (eql x 0) (eql x 0.0))))
 (defmethod sv-bool ((x string)) (and (not (equal x "")) (not (equal x "0"))))
 (defmethod sv-bool ((x vector)) (not (eql (length x) 0)))
 

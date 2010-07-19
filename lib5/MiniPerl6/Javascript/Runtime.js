@@ -244,6 +244,9 @@ f_bool = function (o) {
   if ( typeof o == 'number' ) { return o }
   if ( typeof o.f_bool == 'function' ) { return o.v_bool }
   if ( typeof o.length == 'number' ) { return o.length }
+  if ( typeof o == 'string' ) { 
+    return o != '' && o != '0'
+  }
   return o;
 }
 f_pop = function (o) {
