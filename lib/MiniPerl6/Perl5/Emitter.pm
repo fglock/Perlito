@@ -1,5 +1,25 @@
 use v6;
 
+class Perl5 {
+    sub to_bool ($cond) {
+        if ( $cond.isa( 'Var' ) && $cond.sigil eq '@' )
+          || $cond.isa( 'Lit::Array' )
+        {
+            return Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+        }
+        if $cond.isa( 'Val::Num' ) || $cond.isa( 'Val::Buf' ) || $cond.isa( 'Val::Int' ) 
+          || $cond.isa( 'Val::Undef' )
+          || ( $cond.isa( 'Apply' ) &&
+                ( ($cond.code eq 'bool') || ($cond.code eq 'true') || ($cond.code eq 'false')
+                ) 
+             )
+        {
+            return $cond;
+        }
+        return Apply.new( code => 'bool', arguments => [ $cond ] );
+    }
+}
+
 class CompUnit {
     has $.name;
     has %.attributes;
@@ -351,6 +371,7 @@ class Apply {
 
         if $code eq 'self'       { return '$self' };
         if $code eq 'false'      { return '0' };
+        if $code eq 'true'       { return '1' };
 
         if $code eq 'make'       { return '($MATCH->{capture} = ('   ~ (@.arguments.>>emit).join(', ') ~ '))' };
 
@@ -365,13 +386,14 @@ class Apply {
 
         if $code eq 'Int'        { return '(0+' ~ (@.arguments[0]).emit             ~ ')' };
         if $code eq 'Num'        { return '(0+' ~ (@.arguments[0]).emit             ~ ')' };
+        if $code eq 'bool'       { return 'Main::bool('   ~ (@.arguments.>>emit).join(', ') ~ ')' };
 
         if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit).join(' ') ~ ')' };
         if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit).join(' ')     ~ ' ? 0 : 1)' };
         if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit).join(' ')     ~ ' ? 1 : 0)' };
 
         if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
-        if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
+        if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit).join(' ')     ~ ' || []}' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
 
         if $code eq 'infix:<~>'  { return ''   ~ (@.arguments.>>emit).join(' . ')   ~ ''  };
@@ -400,7 +422,7 @@ class Apply {
             {
                 $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
             }
-            return '(' ~ $cond.emit ~
+            return '(' ~ Perl5::to_bool($cond).emit ~
                  ' ? ' ~ (@.arguments[1]).emit ~
                  ' : ' ~ (@.arguments[2]).emit ~
                   ')' };
@@ -429,12 +451,7 @@ class If {
             my $if = If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
             return $if.emit;
         }
-        if   $cond.isa( 'Var' ) 
-          && $cond.sigil eq '@' 
-        {
-            $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-        };
-        return 'if (' ~ $cond.emit ~ ') { ' 
+        return 'if (' ~ Perl5::to_bool($cond).emit ~ ') { ' 
              ~   (@.body.>>emit).join(';') 
              ~ ' } ' 
              ~ 'else { ' 

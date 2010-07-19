@@ -62,12 +62,12 @@ def mp6_to_bool(o):
     if type(o) == type(1.1):
         return o != 0
     if type(o) == type("aa"):
-        return o != "" or o != "0"
+        return o != "" and o != "0"
     if type(o) == type([]):
         return len(o) != 0
     if type(o) == type({}):
         return len(o.keys) != 0
-    return True
+    return o.__nonzero__()
 
 def mp6_isa(v, name):
     try:
@@ -307,6 +307,8 @@ class Main:
         self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
+    def __nonzero__(self):
+        return 1
     def f_isa(v_self, name):
         return name == 'Main'
     def f_newline(self):
@@ -343,6 +345,8 @@ class IO:
         v_self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
+    def __nonzero__(self):
+        return 1
     def f_isa(v_self, name):
         return name == 'IO'
     def f_slurp(self, name):

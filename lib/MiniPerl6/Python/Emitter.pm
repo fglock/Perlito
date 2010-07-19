@@ -159,7 +159,7 @@ class MiniPerl6::Python::LexicalBlock {
                     $otherwise_block = Return.new( result => Do.new( block => ($last_statement.otherwise) ) );
                 }
 
-                $s2 = Python::tab($level) ~ 'if ' ~ $cond.emit_python ~ ":\n" 
+                $s2 = Python::tab($level) ~ 'if mp6_to_bool(' ~ $cond.emit_python ~ "):\n" 
                     ~ $body_block.emit_python_indented( $level + 1 );
                 if ( $has_otherwise ) {
                     $s2 = $s2 ~ "\n"
@@ -220,6 +220,8 @@ class CompUnit {
         push @s, Python::tab($level+3)  ~               "v_self.__dict__[k] = v";
         push @s, Python::tab($level+2)  ~           "def f_isa(v_self, name):";
         push @s, Python::tab($level+3)  ~               "return name == '" ~ $.name ~ "'";
+        push @s, Python::tab($level+2)  ~           "def __nonzero__(self):";
+        push @s, Python::tab($level+3)  ~               "return 1";
 
         push @s, Python::tab($level+2)  ~           "def __getattr__(self, attr):";
         push @s, Python::tab($level+3)  ~               "if attr[0:2] == 'v_':";
@@ -665,7 +667,7 @@ class If {
             $otherwise_block = Do.new( block => @.otherwise );
         }
 
-        my $s = Python::tab($level) ~   'if ' ~ $.cond.emit_python ~ ":\n" 
+        my $s = Python::tab($level) ~   'if mp6_to_bool(' ~ $.cond.emit_python ~ "):\n" 
             ~ $body_block.emit_python_indented( $level + 1 );
         if ( $has_otherwise ) {
             $s = $s ~ "\n"

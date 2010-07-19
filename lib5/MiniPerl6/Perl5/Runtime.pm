@@ -240,7 +240,13 @@ package Main;
             join($_[1], @{$_[0]} );
         }
     }
-    
+
+    sub bool { 
+        my $ref = ref($_[0]);
+        return scalar(@{$_[0]}) if $ref eq 'ARRAY';
+        return $_[0];
+    }
+
     # Lisp emitter
     sub to_lisp_identifier {
         my $s = $_[0];

@@ -11,8 +11,8 @@ sub to { $_[0]->{to} };
 sub str { $_[0]->{str} };
 sub bool { $_[0]->{bool} };
 sub capture { $_[0]->{capture} };
-sub scalar { my $self = $_[0]; if ($self->{bool}) { if (defined($self->{capture})) { return($self->{capture}) } else {  };return(substr($self->{str}, $self->{from}, ($self->{to} - $self->{from}))) } else { return('') } };
-sub string { my $self = $_[0]; if ($self->{bool}) { if (defined($self->{capture})) { return($self->{capture}) } else {  };return(substr($self->{str}, $self->{from}, ($self->{to} - $self->{from}))) } else { return('') } }
+sub scalar { my $self = $_[0]; if (Main::bool($self->{bool})) { if (Main::bool(defined($self->{capture}))) { return($self->{capture}) } else {  };return(substr($self->{str}, $self->{from}, ($self->{to} - $self->{from}))) } else { return('') } };
+sub string { my $self = $_[0]; if (Main::bool($self->{bool})) { if (Main::bool(defined($self->{capture}))) { return($self->{capture}) } else {  };return(substr($self->{str}, $self->{from}, ($self->{to} - $self->{from}))) } else { return('') } }
 }
 
 {
