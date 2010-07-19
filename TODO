@@ -44,6 +44,10 @@ MiniPerl6 in Parrot
 
 - fix die() parameter handling
 
+MiniPerl6 in Python
+
+- module loading uses mangled filenames (with underlines); it should use dot-separated names instead.
+
 Missing Backends
 
 - Haskell
@@ -102,4 +106,8 @@ Semantics
 
 - @a.values and %a.keys return Array (not List) 
   this is internally consistent with MiniPerl6, but it doesn't match the Perl 6 spec
+
+- In Perlito, @a = [] initializes @a to empty Array.
+  In rakudo, this creates an array with an array inside.
+  I don't know if this is a Perlito or a Rakudo bug.
 

@@ -12,7 +12,7 @@ class Main {
     use MiniPerl6::Emitter::Token;
 
     my $_V6_COMPILER_NAME    = 'MiniPerl6';
-    my $_V6_COMPILER_VERSION = '4.1';
+    my $_V6_COMPILER_VERSION = '5.0';
     my $source      = '';
     my $backend     = '';
     my $execute     = 0;

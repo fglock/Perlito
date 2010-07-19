@@ -1,8 +1,26 @@
 MiniPerl6 "Perlito" compiler
 
-- main Perlito repository: http://github.com/fglock/Perlito
+    This is Perlito, a compiler that implements a subset of Perl 6.
 
-- main Project web page: http://www.perlito.org
+Backends
+
+    Perlito can compile Perl 6 programs into one of the 'backend' 
+    languages:
+
+        Go, Lisp, Perl 5, Javascript, and Python 2.
+
+Web
+
+    Main Perlito repository: http://github.com/fglock/Perlito
+
+    Main Project web page: http://www.perlito.org
+
+    Run Perlito online, in the browser: http://perlcabal.org/~fglock/perlito.html
+
+Source code
+
+    The source code for Perlito can be found in the 'lib' directory.
+    Perlito is written in Perl 6.
 
 Go backend
 

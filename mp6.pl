@@ -6,7 +6,7 @@ use strict;
 
 BEGIN {
     $::_V6_COMPILER_NAME    = 'MiniPerl6';
-    $::_V6_COMPILER_VERSION = '4.1';
+    $::_V6_COMPILER_VERSION = '5.0';
 }
 
 use MiniPerl6::Perl5::Runtime;
