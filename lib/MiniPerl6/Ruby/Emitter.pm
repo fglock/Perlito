@@ -1,11 +1,41 @@
 use v6;
 
 class Ruby {
-    sub to_str ($cond) {
-        if $cond.isa( 'Val::Buf' ) {
-            return $cond.emit_ruby;
+    sub to_str ($op, $args) {
+        my @s;
+        for @($args) -> $cond {
+            if $cond.isa( 'Val::Buf' ) {
+                push @s, $cond.emit_ruby;
+            }
+            else {
+                push @s, '(' ~ $cond.emit_ruby ~ ').to_s';
+            }
         }
-        return '(' ~ $cond.emit_ruby ~ ').to_s';
+        return '(' ~ @s.join($op) ~ ')'
+    }
+    sub to_num ($op, $args) {
+        my @s;
+        for @($args) -> $cond {
+            if ($cond.isa( 'Val::Int' )) || ($cond.isa( 'Val::Num' )) {
+                push @s, $cond.emit_ruby;
+            }
+            else {
+                push @s, 'mp6_to_num(' ~ $cond.emit_ruby ~ ')'; 
+            }
+        }
+        return '(' ~ @s.join($op) ~ ')'
+    }
+    sub to_bool ($op, $args) {
+        my @s;
+        for @($args) -> $cond {
+            if ($cond.isa( 'Val::Int' )) || ($cond.isa( 'Val::Num' )) || ($cond.isa( 'Val::Bit' )) {
+                push @s, $cond.emit_ruby;
+            }
+            else {
+                push @s, 'mp6_to_bool(' ~ $cond.emit_ruby ~ ')'; 
+            }
+        }
+        return '(' ~ @s.join($op) ~ ')'
     }
     sub tab($level) { 
         my $s = '';
@@ -126,10 +156,10 @@ class MiniPerl6::Ruby::LexicalBlock {
 
         for @($block) -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                push @s, Ruby::tab($level) ~ ($decl.var).emit_ruby_name ~ ' = [' ~ $decl.emit_ruby_init ~ ']';
+                push @s, Ruby::tab($level) ~ ($decl.var).emit_ruby_name ~ ' = ' ~ $decl.emit_ruby_init ~ '';
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                push @s, Ruby::tab($level) ~ (($decl.parameters).var).emit_ruby_name ~ ' = [' ~ ($decl.parameters).emit_ruby_init ~ ']';
+                push @s, Ruby::tab($level) ~ (($decl.parameters).var).emit_ruby_name ~ ' = ' ~ ($decl.parameters).emit_ruby_init ~ '';
             }
         }
 
@@ -165,12 +195,16 @@ class MiniPerl6::Ruby::LexicalBlock {
                     $otherwise_block = Return.new( result => Do.new( block => ($last_statement.otherwise) ) );
                 }
 
-                $s2 = Ruby::tab($level) ~ 'if mp6_to_bool(' ~ $cond.emit_ruby ~ "):\n" 
+                $s2 = Ruby::tab($level) ~ 'if ' ~ Ruby::to_bool(' && ', [$cond]) ~ "\n" 
                     ~ $body_block.emit_ruby_indented( $level + 1 );
                 if ( $has_otherwise ) {
                     $s2 = $s2 ~ "\n"
                         ~ Ruby::tab($level) ~ "else:\n" 
-                            ~ $otherwise_block.emit_ruby_indented($level+1);
+                            ~ $otherwise_block.emit_ruby_indented($level+1)
+                        ~ Ruby::tab($level) ~ "end" 
+                }
+                else {
+                    $s2 = $s2 ~ "\n" ~ Ruby::tab($level) ~ "end" 
                 }
             }
             elsif $last_statement.isa( 'Bind' ) {
@@ -256,7 +290,7 @@ class Val::Buf {
 class Val::Undef {
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ 'mp6_Undef()'
+        Ruby::tab($level) ~ 'nil'
     }
 }
 
@@ -409,17 +443,17 @@ class Var {
     method emit_ruby_indented( $level ) {
         return Ruby::tab($level) ~ (
                ( $.twigil eq '.' )
-            ?? ( 'v_self[0].v_' ~ $.name ~ '' )
+            ?? ( 'v_self.v_' ~ $.name ~ '' )
             !!  (    ( $.name eq '/' )
-                ??   ( $table{$.sigil} ~ 'MATCH[0]' )
-                !!   ( $table{$.sigil} ~ $.name ~ '[0]' )
+                ??   ( $table{$.sigil} ~ 'MATCH' )
+                !!   ( $table{$.sigil} ~ $.name ~ '' )
                 )
             )
     };
     method emit_ruby_name {
         return (
                ( $.twigil eq '.' )
-            ?? ( 'v_self[0].v_' ~ $.name )
+            ?? ( 'v_self.v_' ~ $.name )
             !!  (    ( $.name eq '/' )
                 ??   ( $table{$.sigil} ~ 'MATCH' )
                 !!   ( $table{$.sigil} ~ $.name )
@@ -541,31 +575,19 @@ class Apply {
 
         if $code eq 'self'       { return 'v_self[0]' };
         if $code eq 'make'       { return "v_MATCH[0].__setattr__('v_capture', " ~ (@.arguments[0]).emit_ruby ~ ')' }
-        if $code eq 'false'      { return 'False' };
-        if $code eq 'true'       { return 'True' };
+        if $code eq 'false'      { return 'false' };
+        if $code eq 'true'       { return 'true' };
 
-        if $code eq 'say'        { 
-            my @s;
-            for @.arguments -> $arg {
-                push @s, Ruby::to_str($arg);
-            }
-            return 'puts(' ~ @s.join(' + ') ~ ')'; 
-        } 
-        if $code eq 'print'      { 
-            my @s;
-            for @.arguments -> $arg {
-                push @s, Ruby::to_str($arg);
-            }
-            return 'print(' ~ @s.join(' + ') ~ ')' 
-        }
+        if $code eq 'say'        { return 'puts'  ~ Ruby::to_str(' + ', @.arguments) } 
+        if $code eq 'print'      { return 'print' ~ Ruby::to_str(' + ', @.arguments) }
         if $code eq 'warn'       { return 'mp6_warn('  ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_ruby).join(' ')      ~ ']' };
 
-        if $code eq 'Int'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_ruby     ~ ')' };
-        if $code eq 'Num'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_ruby     ~ ')' };
+        if $code eq 'Int'        { return '(' ~ (@.arguments[0]).emit_ruby     ~ ').to_i' };
+        if $code eq 'Num'        { return '(' ~ (@.arguments[0]).emit_ruby     ~ ').to_f' };
 
-        if $code eq 'prefix:<~>' { return 'str('   ~ (@.arguments.>>emit_ruby).join(' ') ~ ')' };
+        if $code eq 'prefix:<~>' { return Ruby::to_str(' + ', @.arguments) };
         if $code eq 'prefix:<!>' { return 'not ('  ~ (@.arguments.>>emit_ruby).join(' ') ~ ')' };
         if $code eq 'prefix:<?>' { return 'not (not ('  ~ (@.arguments.>>emit_ruby).join(' ')    ~ '))' };
 
@@ -573,27 +595,21 @@ class Apply {
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_ruby).join(' ')    ~ ')' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_ruby).join(' ')    ~ '}' };
 
-        if $code eq 'infix:<~>'  { return '(str('  ~ (@.arguments.>>emit_ruby).join(') + str(')  ~ '))' };
-        if $code eq 'infix:<+>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_ruby).join(') + mp6_to_num(')  ~ '))' };
-        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_ruby).join(' - ')  ~ ')' };
-        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_ruby).join(' * ')  ~ ')' };
-        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_ruby).join(' / ')  ~ ')' };
+        if $code eq 'infix:<~>'  { return Ruby::to_str(' + ', @.arguments) };
+        if $code eq 'infix:<+>'  { return Ruby::to_num(' + ', @.arguments) };
+        if $code eq 'infix:<->'  { return Ruby::to_num(' - ', @.arguments) };
+        if $code eq 'infix:<*>'  { return Ruby::to_num(' * ', @.arguments) };
+        if $code eq 'infix:</>'  { return Ruby::to_num(' / ', @.arguments) };
         
-        if $code eq 'infix:<&&>' { 
-            return '(mp6_to_bool(' ~ (@.arguments[0]).emit_ruby ~ ') '
-                ~  'and mp6_to_bool(' ~ (@.arguments[1]).emit_ruby ~ '))' 
-        }
-        if $code eq 'infix:<||>' { 
-            return '(mp6_to_bool(' ~ (@.arguments[0]).emit_ruby ~ ') '
-                ~  'or mp6_to_bool(' ~ (@.arguments[1]).emit_ruby ~ '))' 
-        }
-        if $code eq 'infix:<eq>' { return '(str('  ~ (@.arguments.>>emit_ruby).join(') == str(')  ~ '))' };
-        if $code eq 'infix:<ne>' { return '(str('  ~ (@.arguments.>>emit_ruby).join(') != str(')  ~ '))' };
+        if $code eq 'infix:<&&>' { return Ruby::to_bool(' && ', @.arguments) }
+        if $code eq 'infix:<||>' { return Ruby::to_bool(' || ', @.arguments) } 
+        if $code eq 'infix:<eq>' { return Ruby::to_str(' == ', @.arguments) };
+        if $code eq 'infix:<ne>' { return Ruby::to_str(' != ', @.arguments) };
  
-        if $code eq 'infix:<==>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_ruby).join(') == mp6_to_num(') ~ '))' };
-        if $code eq 'infix:<!=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_ruby).join(') != mp6_to_num(') ~ '))' };
-        if $code eq 'infix:<<>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_ruby).join(') < mp6_to_num(')  ~ '))' };
-        if $code eq 'infix:<>>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_ruby).join(') > mp6_to_num(')  ~ '))' };
+        if $code eq 'infix:<==>' { return Ruby::to_num(' == ', @.arguments) };
+        if $code eq 'infix:<!=>' { return Ruby::to_num(' != ', @.arguments) };
+        if $code eq 'infix:<<>'  { return Ruby::to_num(' < ', @.arguments)  };
+        if $code eq 'infix:<>>'  { return Ruby::to_num(' > ', @.arguments)  };
 
         if $code eq 'exists'     {
             my $arg = @.arguments[0];
@@ -667,12 +683,16 @@ class If {
             $otherwise_block = Do.new( block => @.otherwise );
         }
 
-        my $s = Ruby::tab($level) ~   'if mp6_to_bool(' ~ $.cond.emit_ruby ~ "):\n" 
+        my $s = Ruby::tab($level) ~   'if ' ~ Ruby::to_bool(' && ', [$.cond]) ~ "\n" 
             ~ $body_block.emit_ruby_indented( $level + 1 );
         if ( $has_otherwise ) {
             $s = $s ~ "\n"
                 ~ Ruby::tab($level) ~ "else:\n" 
-                    ~ $otherwise_block.emit_ruby_indented($level+1);
+                    ~ $otherwise_block.emit_ruby_indented($level+1)
+                ~ Ruby::tab($level) ~ "end" 
+        }
+        else {
+            $s = $s ~ "\n" ~ Ruby::tab($level) ~ "end" 
         }
         return $s;
     }
@@ -751,7 +771,7 @@ class Decl {
             return 'mp6_Array([])';
         }
         else {
-            return 'mp6_Undef()';
+            return 'nil';
         }
         return '';
     }
@@ -788,8 +808,8 @@ class Method {
         for @$pos -> $field { 
             my $arg = $field.emit_ruby_name;
             $args.push( $arg );
-            $default_args.push( $arg ~ '=mp6_Undef()' );
-            $meth_args.push( $arg ~ '=mp6_Undef()' );
+            $default_args.push( $arg ~ '=nil' );
+            $meth_args.push( $arg ~ '=nil' );
         };
         my $label = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
         my $block = MiniPerl6::Ruby::LexicalBlock.new( 
@@ -839,8 +859,8 @@ class Sub {
         for @$pos -> $field { 
             my $arg = $field.emit_ruby_name;
             $args.push( $arg );
-            $default_args.push( $arg ~ '=mp6_Undef()' );
-            $meth_args.push( $arg ~ '=mp6_Undef()' );
+            $default_args.push( $arg ~ '=nil' );
+            $meth_args.push( $arg ~ '=nil' );
         };
         my $block = MiniPerl6::Ruby::LexicalBlock.new( 
                 block => @.block,
