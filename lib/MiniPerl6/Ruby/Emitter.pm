@@ -1,6 +1,12 @@
 use v6;
 
 class Ruby {
+    sub to_str ($cond) {
+        if $cond.isa( 'Val::Buf' ) {
+            return $cond.emit_ruby;
+        }
+        return '(' ~ $cond.emit_ruby ~ ').to_s';
+    }
     sub tab($level) { 
         my $s = '';
         my $count = $level;
@@ -538,8 +544,20 @@ class Apply {
         if $code eq 'false'      { return 'False' };
         if $code eq 'true'       { return 'True' };
 
-        if $code eq 'say'        { return 'puts('   ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' } 
-        if $code eq 'print'      { return 'print(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
+        if $code eq 'say'        { 
+            my @s;
+            for @.arguments -> $arg {
+                push @s, Ruby::to_str($arg);
+            }
+            return 'puts(' ~ @s.join(' + ') ~ ')'; 
+        } 
+        if $code eq 'print'      { 
+            my @s;
+            for @.arguments -> $arg {
+                push @s, Ruby::to_str($arg);
+            }
+            return 'print(' ~ @s.join(' + ') ~ ')' 
+        }
         if $code eq 'warn'       { return 'mp6_warn('  ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_ruby).join(' ')      ~ ']' };
