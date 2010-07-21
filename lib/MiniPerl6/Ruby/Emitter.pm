@@ -28,7 +28,17 @@ class Ruby {
     sub to_bool ($op, $args) {
         my @s;
         for @($args) -> $cond {
-            if ($cond.isa( 'Val::Int' )) || ($cond.isa( 'Val::Num' )) || ($cond.isa( 'Val::Bit' )) {
+            if ($cond.isa( 'Val::Int' )) 
+                || ($cond.isa( 'Val::Num' )) 
+                || ($cond.isa( 'Val::Bit' )) 
+            {
+                push @s, '(' ~ $cond.emit_ruby ~ ' != 0 )';
+            }
+            elsif  (($cond.isa( 'Apply' )) && ($cond.code eq 'infix:<||>'))
+                || (($cond.isa( 'Apply' )) && ($cond.code eq 'infix:<&&>'))
+                || (($cond.isa( 'Apply' )) && ($cond.code eq 'prefix:<!>'))
+                || (($cond.isa( 'Apply' )) && ($cond.code eq 'prefix:<?>'))
+            {
                 push @s, $cond.emit_ruby;
             }
             else {
@@ -65,7 +75,7 @@ class MiniPerl6::Ruby::AnonSub {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ "):";
+        push @s, Ruby::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ ")";
         for @($args) -> $field { 
             push @s, Ruby::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
         }
@@ -78,6 +88,7 @@ class MiniPerl6::Ruby::AnonSub {
         else {
             push @s,    $block.emit_ruby_indented($level + 1); 
         }
+        push @s, Ruby::tab($level) ~ "end";
         return @s.join("\n");
 
     }
@@ -140,14 +151,16 @@ class MiniPerl6::Ruby::LexicalBlock {
             for @($has_decl) -> $decl {
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                     my $label = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
-                    push @s, Ruby::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
+                    push @s, Ruby::tab($level) ~ 'def f_' ~ $label ~ '(v_self)';
                     push @s, Ruby::tab($level+1) ~ 'return v_self.v_' ~ ($decl.var).name;
+                    push @s, Ruby::tab($level) ~ "end";
                     push @s, Ruby::tab($level) ~ "self.__dict__.update({'f_" ~ ($decl.var).name ~ "':f_" ~ $label ~ "})";
                 }
                 if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
                     my $label = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
-                    push @s, Ruby::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
+                    push @s, Ruby::tab($level) ~ 'def f_' ~ $label ~ '(v_self)';
                     push @s, Ruby::tab($level+1) ~ 'return v_self.v_' ~ (($decl.parameters).var).name;
+                    push @s, Ruby::tab($level) ~ "end";
                     push @s, Ruby::tab($level) ~ "self.__dict__.update({'f_" ~ (($decl.parameters).var).name ~ "':f_" ~ $label ~ "})";
                 }
             }
@@ -199,9 +212,9 @@ class MiniPerl6::Ruby::LexicalBlock {
                     ~ $body_block.emit_ruby_indented( $level + 1 );
                 if ( $has_otherwise ) {
                     $s2 = $s2 ~ "\n"
-                        ~ Ruby::tab($level) ~ "else:\n" 
+                        ~ Ruby::tab($level) ~ "else\n" 
                             ~ $otherwise_block.emit_ruby_indented($level+1)
-                        ~ Ruby::tab($level) ~ "end" 
+                        ~ "\n" ~ Ruby::tab($level) ~ "end" 
                 }
                 else {
                     $s2 = $s2 ~ "\n" ~ Ruby::tab($level) ~ "end" 
@@ -619,27 +632,19 @@ class Apply {
         }
 
         if $code eq 'ternary:<?? !!>' { 
-            my $ast = 
-                Do.new( 
-                    block => [
-                        If.new(
-                            cond      => (@.arguments[0]),
-                            body      => [ @.arguments[1] ],
-                            otherwise => [ @.arguments[2] ],
-                        ),
-                    ]
-                );
-            return $ast.emit_ruby;
+            return '(' ~ Ruby::to_bool(' && ', [@.arguments[0]]) ~ ' ? ' 
+                    ~ (@.arguments[1]).emit_ruby ~ ' : ' 
+                    ~ (@.arguments[2]).emit_ruby ~ ')'
         }
         
         if $code eq 'substr' { 
             return (@.arguments[0]).emit_ruby ~ '[' 
-                    ~ (@.arguments[1]).emit_ruby ~ ':' 
-                    ~ (@.arguments[1]).emit_ruby ~ ' + ' ~ (@.arguments[2]).emit_ruby 
+                    ~ (@.arguments[1]).emit_ruby ~ ', ' 
+                    ~ (@.arguments[2]).emit_ruby 
                 ~ ']' 
         } 
         if $code eq 'index' { 
-            return 'mp6_index(' ~ (@.arguments[0]).emit_ruby ~ ', ' ~ (@.arguments[1]).emit_ruby ~ ')' 
+            return '(' ~ (@.arguments[0]).emit_ruby ~ ').index(' ~ (@.arguments[1]).emit_ruby ~ ')' 
         } 
         if $code eq 'shift'   { return (@.arguments[0]).emit_ruby ~ '.f_shift()' } 
         if $code eq 'pop'     { return (@.arguments[0]).emit_ruby ~ '.f_pop()'   } 
@@ -687,9 +692,9 @@ class If {
             ~ $body_block.emit_ruby_indented( $level + 1 );
         if ( $has_otherwise ) {
             $s = $s ~ "\n"
-                ~ Ruby::tab($level) ~ "else:\n" 
+                ~ Ruby::tab($level) ~ "else\n" 
                     ~ $otherwise_block.emit_ruby_indented($level+1)
-                ~ Ruby::tab($level) ~ "end" 
+                ~ "\n" ~ Ruby::tab($level) ~ "end" 
         }
         else {
             $s = $s ~ "\n" ~ Ruby::tab($level) ~ "end" 
@@ -816,7 +821,7 @@ class Method {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level) ~ 'def f_' ~ $label ~ "(" ~ $meth_args.join(", ") ~ "):";
+        push @s, Ruby::tab($level) ~ 'def f_' ~ $label ~ "(" ~ $meth_args.join(", ") ~ ")";
         push @s, Ruby::tab($level+1) ~    $invocant.emit_ruby_name ~ " = [" ~ $invocant.emit_ruby_name ~ "]";
         for @($args) -> $field { 
             push @s, Ruby::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
@@ -825,6 +830,7 @@ class Method {
         push @s,    $block.emit_ruby_indented($level + 2);
         push @s, Ruby::tab($level+1) ~    "except mp6_Return, r:";
         push @s, Ruby::tab($level+2) ~        "return r.value";
+        push @s, Ruby::tab($level) ~ "end";
         push @s, Ruby::tab($level) ~ "self.__dict__.update({'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
         return @s.join("\n");
     }
@@ -867,7 +873,7 @@ class Sub {
                 needs_return => 1 );
         my $label2 = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
         my @s;
-        push @s, Ruby::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ "):" 
+        push @s, Ruby::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ ")" 
         for @($args) -> $field { 
             push @s, Ruby::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
         };
@@ -875,12 +881,14 @@ class Sub {
         push @s,    $block.emit_ruby_indented($level + 2);
         push @s, Ruby::tab($level+1) ~    "except mp6_Return, r:";
         push @s, Ruby::tab($level+2) ~        "return r.value";
+        push @s, Ruby::tab($level) ~ "end";
 
         # decorate the sub such that it works as a method
         push @s, Ruby::tab($level) ~ "global " ~ $label2; 
         push @s, Ruby::tab($level) ~ $label2 ~ " = f_" ~ $.name;
-        push @s, Ruby::tab($level) ~ "def f_" ~ $label ~ "(" ~ $meth_args.join(", ") ~ "):";
+        push @s, Ruby::tab($level) ~ "def f_" ~ $label ~ "(" ~ $meth_args.join(", ") ~ ")";
         push @s, Ruby::tab($level+1) ~    "return " ~ $label2 ~ "(" ~ $args.join(", ") ~ ")";
+        push @s, Ruby::tab($level) ~ "end";
         push @s, Ruby::tab($level) ~ "self.__dict__.update({'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
         return @s.join("\n");
     }
@@ -890,18 +898,11 @@ class Do {
     has @.block;
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        my $label = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
-        # generate an anonymous sub in the current block
-        MiniPerl6::Ruby::LexicalBlock::push_stmt_ruby( 
-                MiniPerl6::Ruby::AnonSub.new( 
-                    name  => $label, 
-                    block => @.block,
-                    sig   => Sig.new( invocant => undef, positional => [], named => {} ),
-                    handles_return_exception => 0,
-                )
-            );
-        # call the anonymous sub
-        return Ruby::tab($level) ~ "f_" ~ $label ~ "()";
+        my @s;
+        push @s, Ruby::tab($level)   ~ "lambda{ || ";
+        push @s,    (MiniPerl6::Ruby::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_ruby($level+1);
+        push @s, Ruby::tab($level)   ~ "}.call()";
+        return @s.join("\n");
     }
 }
 

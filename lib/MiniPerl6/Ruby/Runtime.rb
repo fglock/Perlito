@@ -17,4 +17,19 @@
 # 
 # See L<http://www.perl.com/perl/misc/Artistic.html>
 
+def mp6_to_num (v)
+    if v.class == "".class
+        if v.index(".")
+            return v.to_f
+        end
+        return v.to_i
+    end
+    return v
+end
 
+def mp6_to_bool (v)
+    if v.class == "".class
+        return v != "0" && v != ""
+    end
+    return v
+end
