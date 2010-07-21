@@ -152,6 +152,11 @@ if ( $backend eq 'ruby' ) {
     $backend = 'ruby';
     $lib_spec = 'Ruby';
 }
+if ( $backend eq 'ruby1.9' ) {
+    @cmd = ('ruby1.9');
+    $backend = 'ruby';
+    $lib_spec = 'Ruby';
+}
 
 $source_filename = shift @args if @args;
 
