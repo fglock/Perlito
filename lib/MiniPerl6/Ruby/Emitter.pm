@@ -168,13 +168,23 @@ class MiniPerl6::Ruby::LexicalBlock {
 
         }
 
+        my $has_my_decl = 0;
+        my @my_decl;
+        my @my_init;
         for @($block) -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                push @s, Ruby::tab($level) ~ ($decl.var).emit_ruby_name ~ ' = ' ~ $decl.emit_ruby_init ~ '';
+                push @my_decl, ($decl.var).emit_ruby_name;
+                push @my_init, 'nil';
+                $has_my_decl = 1;
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                push @s, Ruby::tab($level) ~ (($decl.parameters).var).emit_ruby_name ~ ' = ' ~ ($decl.parameters).emit_ruby_init ~ '';
+                push @my_decl, (($decl.parameters).var).emit_ruby_name;
+                push @my_init, 'nil';
+                $has_my_decl = 1;
             }
+        }
+        if $has_my_decl {
+            push @s, Ruby::tab($level) ~ "lambda { |" ~ @my_decl.join(", ") ~ "|";
         }
 
         my $last_statement;
@@ -237,6 +247,10 @@ class MiniPerl6::Ruby::LexicalBlock {
                 @s.push( $stmt.emit_ruby_indented( $level ) );
             }
             @s.push( $s2 ); 
+        }
+
+        if $has_my_decl {
+            push @s, Ruby::tab($level) ~ "}.call(" ~ @my_init.join(", ") ~ ")";
         }
 
         @anon_block = @tmp;
@@ -730,24 +744,9 @@ class For {
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $body_block = MiniPerl6::Ruby::LexicalBlock.new( block => @.body );
-        if $body_block.has_my_decl {
-            # wrap the block into a call to anonymous subroutine 
-            my $label = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
-            # generate an anonymous sub in the current block
-            MiniPerl6::Ruby::LexicalBlock::push_stmt_ruby( 
-                    MiniPerl6::Ruby::AnonSub.new( 
-                        name  => $label, 
-                        block => @.body,
-                        sig   => Sig.new( invocant => undef, positional => [ $.topic ], named => {} ),
-                        handles_return_exception => 0,
-                    )
-                );
-            return Ruby::tab($level) ~    'for ' ~ $.topic.emit_ruby_name ~ " in " ~ $.cond.emit_ruby ~ ":\n"
-                ~  Ruby::tab($level+1) ~      "f_" ~ $label ~ "(" ~ $.topic.emit_ruby_name ~ ")";
-        }
-        Ruby::tab($level) ~   'for ' ~ $.topic.emit_ruby_name ~ " in " ~ $.cond.emit_ruby ~ ":\n"
-        ~ Ruby::tab($level+1) ~     $.topic.emit_ruby_name ~ " = [" ~ $.topic.emit_ruby_name ~ "]\n"
-                ~ $body_block.emit_ruby_indented( $level + 1 );
+        Ruby::tab($level) ~   'for ' ~ $.topic.emit_ruby_name ~ " in " ~ $.cond.emit_ruby ~ "\n"
+                ~ $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
+        ~ Ruby::tab($level) ~   'end'
     }
 }
 
