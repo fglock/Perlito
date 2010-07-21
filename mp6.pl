@@ -70,6 +70,7 @@ mp6 [switches] [programfile]
         -Bpython       run in Python 
         -Bpython3      run in Python 3
         -Bruby         run in Ruby 
+        -Bruby1.9      run in Ruby 1.9
         -Brhino        run in JVM using Rhino
         -Bv8           run in V8 (Javascript) using the \"v8\" command 
         -Bspidermonkey run in SpiderMonkey (Javascript) using the \"spidermonkey\" command
