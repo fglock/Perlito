@@ -75,20 +75,19 @@ class MiniPerl6::Ruby::AnonSub {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ ")";
-        for @($args) -> $field { 
-            push @s, Ruby::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
-        }
+        push @s, Ruby::tab($level)   ~ "f_" ~ $.name ~ " = lambda{ |" ~ $args.join(", ") ~ "| ";
+
         if $.handles_return_exception {
-            push @s, Ruby::tab($level+1) ~    "try:";
+            push @s, Ruby::tab($level+1) ~    "begin";
             push @s,    $block.emit_ruby_indented($level + 2);
-            push @s, Ruby::tab($level+1) ~    "except mp6_Return, r:";
+            push @s, Ruby::tab($level+1) ~    "rescue Mp6_Return => r";
             push @s, Ruby::tab($level+2) ~        "return r.value";
+            push @s, Ruby::tab($level+1) ~    "end";
         }
         else {
             push @s,    $block.emit_ruby_indented($level + 1); 
         }
-        push @s, Ruby::tab($level) ~ "end";
+        push @s, Ruby::tab($level)   ~ "}";
         return @s.join("\n");
 
     }
@@ -540,7 +539,7 @@ class Call {
         my $meth = $.method;
         if $meth eq 'postcircumfix:<( )>' {
             return Ruby::tab($level) ~ 
-                $invocant ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+                $invocant ~ '.call(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
         }
         if     ( $meth eq 'values' ) 
             || ( $meth eq 'keys' )
@@ -666,7 +665,7 @@ class Return {
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 
-            'raise mp6_Return(' ~ $.result.emit_ruby ~ ')';
+            'raise Mp6_Return.new(' ~ $.result.emit_ruby ~ ')';
     }
 }
 
@@ -826,10 +825,11 @@ class Method {
         for @($args) -> $field { 
             push @s, Ruby::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
         };
-        push @s, Ruby::tab($level+1) ~    "try:";
+        push @s, Ruby::tab($level+1) ~    "begin";
         push @s,    $block.emit_ruby_indented($level + 2);
-        push @s, Ruby::tab($level+1) ~    "except mp6_Return, r:";
+        push @s, Ruby::tab($level+1) ~    "rescue Mp6_Return => r";
         push @s, Ruby::tab($level+2) ~        "return r.value";
+        push @s, Ruby::tab($level+1) ~    "end";
         push @s, Ruby::tab($level) ~ "end";
         push @s, Ruby::tab($level) ~ "self.__dict__.update({'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
         return @s.join("\n");
@@ -877,10 +877,11 @@ class Sub {
         for @($args) -> $field { 
             push @s, Ruby::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
         };
-        push @s, Ruby::tab($level+1) ~    "try:";
+        push @s, Ruby::tab($level+1) ~    "begin";
         push @s,    $block.emit_ruby_indented($level + 2);
-        push @s, Ruby::tab($level+1) ~    "except mp6_Return, r:";
+        push @s, Ruby::tab($level+1) ~    "rescue Mp6_Return => r";
         push @s, Ruby::tab($level+2) ~        "return r.value";
+        push @s, Ruby::tab($level+1) ~    "end";
         push @s, Ruby::tab($level) ~ "end";
 
         # decorate the sub such that it works as a method
@@ -900,7 +901,7 @@ class Do {
     method emit_ruby_indented( $level ) {
         my @s;
         push @s, Ruby::tab($level)   ~ "lambda{ || ";
-        push @s,    (MiniPerl6::Ruby::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_ruby($level+1);
+        push @s,    (MiniPerl6::Ruby::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_ruby_indented($level+1);
         push @s, Ruby::tab($level)   ~ "}.call()";
         return @s.join("\n");
     }

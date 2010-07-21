@@ -17,6 +17,13 @@
 # 
 # See L<http://www.perl.com/perl/misc/Artistic.html>
 
+class Mp6_Return < Exception
+  attr :value
+  def initialize(v)
+    @value = v
+  end
+end
+
 def mp6_to_num (v)
     if v.class == "".class
         if v.index(".")
