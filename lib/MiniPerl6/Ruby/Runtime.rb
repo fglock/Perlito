@@ -17,6 +17,9 @@
 # 
 # See L<http://www.perl.com/perl/misc/Artistic.html>
 
+class Mp6_Array < Array
+end
+
 class Mp6_Return < Exception
   attr :value
   def initialize(v)

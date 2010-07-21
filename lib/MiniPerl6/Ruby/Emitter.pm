@@ -75,7 +75,9 @@ class MiniPerl6::Ruby::AnonSub {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level)   ~ "f_" ~ $.name ~ " = lambda{ |" ~ $args.join(", ") ~ "| ";
+        push @s, Ruby::tab($level)   
+            ~ ( $.name ?? ("f_" ~ $.name ~ " = ") !! "" )
+            ~ "lambda{ |" ~ $args.join(", ") ~ "| ";
 
         if $.handles_return_exception {
             push @s, Ruby::tab($level+1) ~    "begin";
@@ -345,10 +347,8 @@ class Lit::Array {
                     || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' )
                 {
                     push @block, Call.new(
-                                    'method' => 'extend',
-                                    'arguments' => [ 
-                                        Index.new( obj => $input_array, index_exp => Val::Int.new( int => $index ) )
-                                    ],
+                                    'method' => 'concat',
+                                    'arguments' => [ $item ],
                                     'hyper' => '',
                                     'invocant' => $temp_array
                                 );
@@ -356,9 +356,7 @@ class Lit::Array {
                 else {
                     push @block, Call.new(
                                     'method' => 'push',
-                                    'arguments' => [ 
-                                        Index.new( obj => $input_array, index_exp => Val::Int.new( int => $index ) ) 
-                                    ],
+                                    'arguments' => [ $item ],
                                     'hyper' => '',
                                     'invocant' => $temp_array
                                 );
@@ -367,22 +365,19 @@ class Lit::Array {
             }
             push @block, $temp_array;
             my $label = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
-            # generate an anonymous sub in the current block
-            MiniPerl6::Ruby::LexicalBlock::push_stmt_ruby( 
+            my $code =
                     MiniPerl6::Ruby::AnonSub.new( 
-                        name  => $label, 
+                        name  => '', 
                         block => @block,
-                        sig   => Sig.new( invocant => undef, positional => [ $input_array ], named => {} ),
-                        handles_return_exception => 1,
-                    )
-                );
+                        sig   => Sig.new( invocant => undef, positional => [], named => {} ),
+                        handles_return_exception => 0,
+                    );
             # call the anonymous sub
-            return Ruby::tab($level) 
-                ~ "f_" ~ $label ~ "(mp6_Array([" ~ (@.array1.>>emit_ruby).join(', ') ~ "]))";
+            return Ruby::tab($level) ~ $code.emit_ruby ~ ".call()";
         }
         else {
             Ruby::tab($level)  
-                ~ 'mp6_Array([' ~ (@.array1.>>emit_ruby).join(', ') ~ '])';
+                ~ 'Mp6_Array.new([' ~ (@.array1.>>emit_ruby).join(', ') ~ '])';
         }
     }
 }
@@ -427,7 +422,7 @@ class Index {
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 
-            $.obj.emit_ruby ~ '.f_index(' ~ $.index_exp.emit_ruby ~ ')';
+            $.obj.emit_ruby ~ '[' ~ $.index_exp.emit_ruby ~ ']';
     }
 }
 
@@ -447,9 +442,9 @@ class Var {
     has $.name;
     my $table = {
         '$' => 'v_',
-        '@' => 'List_',
-        '%' => 'Hash_',
-        '&' => 'Code_',
+        '@' => 'list_',
+        '%' => 'hash_',
+        '&' => 'code_',
     };
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
@@ -484,9 +479,9 @@ class Bind {
     method emit_ruby_indented( $level ) {
         if $.parameters.isa( 'Index' ) {
             return Ruby::tab($level)  
-                ~ ($.parameters.obj).emit_ruby ~ '.f_set('
-                    ~ ($.parameters.index_exp).emit_ruby ~ ', '
-                    ~ $.arguments.emit_ruby ~ ')'
+                ~ ($.parameters.obj).emit_ruby ~ '['
+                    ~ ($.parameters.index_exp).emit_ruby ~ '] = '
+                    ~ $.arguments.emit_ruby;
         }
         if $.parameters.isa( 'Lookup' ) {
             return Ruby::tab($level)  
@@ -543,6 +538,8 @@ class Call {
         }
         if     ( $meth eq 'values' ) 
             || ( $meth eq 'keys' )
+            || ( $meth eq 'push' )
+            || ( $meth eq 'concat' )
         {
             return Ruby::tab($level) ~ $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
         }
@@ -645,10 +642,10 @@ class Apply {
         if $code eq 'index' { 
             return '(' ~ (@.arguments[0]).emit_ruby ~ ').index(' ~ (@.arguments[1]).emit_ruby ~ ')' 
         } 
-        if $code eq 'shift'   { return (@.arguments[0]).emit_ruby ~ '.f_shift()' } 
-        if $code eq 'pop'     { return (@.arguments[0]).emit_ruby ~ '.f_pop()'   } 
-        if $code eq 'push'    { return (@.arguments[0]).emit_ruby ~ '.f_push('    ~ (@.arguments[1]).emit_ruby ~ ')' } 
-        if $code eq 'unshift' { return (@.arguments[0]).emit_ruby ~ '.f_unshift(' ~ (@.arguments[1]).emit_ruby ~ ')' } 
+        if $code eq 'shift'   { return (@.arguments[0]).emit_ruby ~ '.shift()' } 
+        if $code eq 'pop'     { return (@.arguments[0]).emit_ruby ~ '.pop()'   } 
+        if $code eq 'push'    { return (@.arguments[0]).emit_ruby ~ '.push('    ~ (@.arguments[1]).emit_ruby ~ ')' } 
+        if $code eq 'unshift' { return (@.arguments[0]).emit_ruby ~ '.unshift(' ~ (@.arguments[1]).emit_ruby ~ ')' } 
 
         if $.namespace {
             return Main::to_go_namespace($.namespace) ~ '_proto.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
@@ -772,7 +769,7 @@ class Decl {
             return 'mp6_Hash({})';
         }
         elsif ($.var).sigil eq '@' {
-            return 'mp6_Array([])';
+            return 'Mp6_Array.new()';
         }
         else {
             return 'nil';
