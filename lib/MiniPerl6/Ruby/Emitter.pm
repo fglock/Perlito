@@ -143,7 +143,7 @@ class MiniPerl6::Ruby::LexicalBlock {
                 push $has_decl, $decl;
             }
             else {
-                push @($block), $decl;
+                push $block, $decl;
             }
         }
         if @($has_decl) {
