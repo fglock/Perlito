@@ -267,9 +267,10 @@ class CompUnit {
             }
         }
 
-        push @s, Ruby::tab($level)    ~       'class ' ~ $name;
+        push @s, Ruby::tab($level)    ~     'class ' ~ $name;
+        # push @s, Ruby::tab($level+1)  ~         $name ~ '_proto = ' ~ $name ~ '.new()';
         push @s,    $block.emit_ruby_indented($level + 1);
-        push @s, Ruby::tab($level)    ~       "end";
+        push @s, Ruby::tab($level)    ~     "end";
         return @s.join( "\n" );
     }
 }
@@ -637,7 +638,7 @@ class Apply {
         if $code eq 'unshift' { return (@.arguments[0]).emit_ruby ~ '.unshift(' ~ (@.arguments[1]).emit_ruby ~ ')' } 
 
         if $.namespace {
-            return Main::to_go_namespace($.namespace) ~ '_proto.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+            return Main::to_go_namespace($.namespace) ~ '::f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
         }
         'f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
     }
@@ -789,7 +790,7 @@ class Method {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level) ~ 'def f_' ~ $.name ~ "(" ~ $meth_args.join(", ") ~ ")";
+        push @s, Ruby::tab($level) ~ 'def self.f_' ~ $.name ~ "(" ~ $meth_args.join(", ") ~ ")";
         push @s,    $block.emit_ruby_indented($level + 1);
         push @s, Ruby::tab($level) ~ "end";
         return @s.join("\n");
@@ -833,17 +834,9 @@ class Sub {
                 needs_return => 1 );
         my $label2 = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
         my @s;
-        push @s, Ruby::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ ")" 
+        push @s, Ruby::tab($level) ~ "def self.f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ ")" 
         push @s,    $block.emit_ruby_indented($level + 1);
         push @s, Ruby::tab($level) ~ "end";
-
-        # decorate the sub such that it works as a method
-        push @s, Ruby::tab($level) ~ "global " ~ $label2; 
-        push @s, Ruby::tab($level) ~ $label2 ~ " = f_" ~ $.name;
-        push @s, Ruby::tab($level) ~ "def f_" ~ $label ~ "(" ~ $meth_args.join(", ") ~ ")";
-        push @s, Ruby::tab($level+1) ~    "return " ~ $label2 ~ "(" ~ $args.join(", ") ~ ")";
-        push @s, Ruby::tab($level) ~ "end";
-        push @s, Ruby::tab($level) ~ "self.__dict__.update({'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
         return @s.join("\n");
     }
 }
