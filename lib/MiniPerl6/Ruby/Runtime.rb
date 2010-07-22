@@ -42,3 +42,33 @@ def mp6_to_bool (v)
     end
     return v
 end
+
+def mp6_to_scalar (v)
+    # TODO
+end
+
+class MiniPerl6__Match
+    $MiniPerl6__Match = MiniPerl6__Match.new()
+    namespace = $MiniPerl6__Match
+    attr_accessor :v_from
+    def f_from()
+        return self.v_from
+    end
+    attr_accessor :v_to
+    def f_to()
+        return self.v_to
+    end
+    attr_accessor :v_capture
+    def f_capture()
+        return self.v_capture
+    end
+    attr_accessor :v_str
+    def f_str()
+        return self.v_str
+    end
+    attr_accessor :v_bool
+    def f_bool()
+        return self.v_bool
+    end
+end
+

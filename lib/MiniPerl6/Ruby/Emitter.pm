@@ -160,16 +160,23 @@ class MiniPerl6::Ruby::LexicalBlock {
         my $has_my_decl = 0;
         my @my_decl;
         my @my_init;
+        my %my_seen;
         for @($block) -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                push @my_decl, ($decl.var).emit_ruby_name;
-                push @my_init, $decl.emit_ruby_init;
-                $has_my_decl = 1;
+                if !( %my_seen{ ($decl.var).name } ) {
+                    push @my_decl, ($decl.var).emit_ruby_name;
+                    push @my_init, $decl.emit_ruby_init;
+                    $has_my_decl = 1;
+                    %my_seen{ ($decl.var).name } = 1;
+                }
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                push @my_decl, (($decl.parameters).var).emit_ruby_name;
-                push @my_init, ($decl.parameters).emit_ruby_init;
-                $has_my_decl = 1;
+                if !( %my_seen{ (($decl.parameters).var).name } ) {
+                    push @my_decl, (($decl.parameters).var).emit_ruby_name;
+                    push @my_init, ($decl.parameters).emit_ruby_init;
+                    $has_my_decl = 1;
+                    %my_seen{ (($decl.parameters).var).name } = 1;
+                }
             }
         }
         if $has_my_decl {
