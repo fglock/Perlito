@@ -240,8 +240,9 @@ sub cond { $_[0]->{cond} };
 sub continue { $_[0]->{continue} };
 sub body { $_[0]->{body} };
 sub emit_ruby { my $self = $_[0]; $self->emit_ruby_indented(0) };
-sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = MiniPerl6::Ruby::LexicalBlock->new( 'block' => $self->{body}, )); if (Main::bool($body_block->has_my_decl())) { ($body_block = Do->new( 'block' => $self->{body}, )) } else {  }; if (Main::bool(($self->{init} && $self->{continue}))) { die('not implemented (While)') } else {  }; Ruby::tab($level) . 'while ' . $self->{cond}->emit_ruby() . ':
-' . $body_block->emit_ruby_indented(($level + 1)) }
+sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = MiniPerl6::Ruby::LexicalBlock->new( 'block' => $self->{body}, )); if (Main::bool($body_block->has_my_decl())) { ($body_block = Do->new( 'block' => $self->{body}, )) } else {  }; if (Main::bool(($self->{init} && $self->{continue}))) { die('not implemented (While)') } else {  }; Ruby::tab($level) . 'while ' . Ruby::to_bool(' && ', [$self->{cond}]) . '
+' . $body_block->emit_ruby_indented(($level + 1)) . '
+' . Ruby::tab($level) . 'end' }
 }
 
 {

@@ -715,9 +715,9 @@ class While {
             # ~  ( $.cond     ?? 'f_bool(' ~ $.cond.emit_ ~ '); ' !! '; ' )
             # ~  ( $.continue ?? $.continue.emit_         ~ ' '   !! ' '  )
         }
-        Ruby::tab($level)
-            ~ 'while ' ~ $.cond.emit_ruby ~ ":\n"
-                ~ $body_block.emit_ruby_indented( $level + 1 );
+        Ruby::tab($level) ~ 'while ' ~ Ruby::to_bool(' && ', [$.cond]) ~ "\n"
+                ~ $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
+        ~ Ruby::tab($level) ~ 'end'
     }
 }
 

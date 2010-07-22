@@ -41,5 +41,11 @@ def mp6_to_bool (v)
     if v.class == "".class
         return v != "0" && v != ""
     end
+    if v.class == 1.class
+        return v != 0
+    end
+    if v.class == [].class || v.class == Mp6_Array
+        return v.length != 0
+    end
     return v
 end
