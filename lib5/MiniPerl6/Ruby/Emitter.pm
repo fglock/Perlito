@@ -136,7 +136,7 @@ sub new { shift; bless { @_ }, "Lit::Object" }
 sub class { $_[0]->{class} };
 sub fields { $_[0]->{fields} };
 sub emit_ruby { my $self = $_[0]; $self->emit_ruby_indented(0) };
-sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{fields}); my  $List_str; for my $field ( @{$fields || []} ) { push( @{$List_str}, 'v_' . $field->[0]->buf() . '=' . $field->[1]->emit_ruby() ) }; Ruby::tab($level) . Main::to_go_namespace($self->{class}) . '(' . Main::join($List_str, ', ') . ')' }
+sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{fields}); my  $List_str; for my $field ( @{$fields || []} ) { push( @{$List_str}, 'v_' . $field->[0]->buf() . '=' . $field->[1]->emit_ruby() ) }; Ruby::tab($level) . Main::to_go_namespace($self->{class}) . '.new(' . Main::join($List_str, ', ') . ')' }
 }
 
 {

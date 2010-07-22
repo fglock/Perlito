@@ -410,7 +410,7 @@ class Lit::Object {
             push @str, "v_" ~ ($field[0]).buf ~ '=' ~ ($field[1]).emit_ruby;
         }
         Ruby::tab($level) ~ 
-            Main::to_go_namespace($.class) ~ '(' ~ @str.join(', ') ~ ')';
+            Main::to_go_namespace($.class) ~ '.new(' ~ @str.join(', ') ~ ')';
     }
 }
 
