@@ -27,6 +27,9 @@ def mp6_to_num (v)
         end
         return v.to_i
     end
+    if v == nil
+        return 0
+    end
     return v
 end
 

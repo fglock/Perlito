@@ -268,7 +268,7 @@ class CompUnit {
 
         for @.body -> $decl {
             if $decl.isa('Use') {
-                # push @s, Ruby::tab($level) ~ 'from ' ~ Main::to_go_namespace($decl.mod) ~ ' import *'
+                push @s, Ruby::tab($level) ~ "require '" ~ Main::to_go_namespace($decl.mod) ~ ".rb'"
             }
         }
 
@@ -523,7 +523,7 @@ class Call {
             	return $invocant ~ ".map {|x| x." ~ $.method ~ "(" ~ (@.arguments.>>emit_ruby).join(', ') ~ ")}";
             }
             else {
-                return "Mp6_" ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+                return "Mp6_" ~ $.method ~ '(' ~ ([ $.invocant, @.arguments].>>emit_ruby).join(', ') ~ ')';
             }
         };
 
@@ -562,15 +562,6 @@ class Apply {
             $self.emit_ruby
     }
     method emit_ruby {
-        
-        # check that expressions don't overflow the Ruby parser stack
-        if (@.arguments[1]).isa('Apply') {
-            my $args2 = (@.arguments[1]).arguments;
-            if ($args2[1]).isa('Apply') {
-                $args2[1] = Do.new( block => [ $args2[1] ] );
-            }
-        }
-
         my $code = $.code;
 
         if $code.isa( 'Str' ) { }
@@ -593,8 +584,8 @@ class Apply {
         if $code eq 'Num'        { return '(' ~ (@.arguments[0]).emit_ruby     ~ ').to_f' };
 
         if $code eq 'prefix:<~>' { return Ruby::to_str(' + ', @.arguments) };
-        if $code eq 'prefix:<!>' { return 'not ('  ~ (@.arguments.>>emit_ruby).join(' ') ~ ')' };
-        if $code eq 'prefix:<?>' { return 'not (not ('  ~ (@.arguments.>>emit_ruby).join(' ')    ~ '))' };
+        if $code eq 'prefix:<!>' { return '!('  ~ (@.arguments.>>emit_ruby).join(' ') ~ ')' };
+        if $code eq 'prefix:<?>' { return '!(!('  ~ (@.arguments.>>emit_ruby).join(' ')    ~ '))' };
 
         if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments.>>emit_ruby).join(' ')    ~ ')' };
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_ruby).join(' ')    ~ ')' };
