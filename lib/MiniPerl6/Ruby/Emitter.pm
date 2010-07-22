@@ -189,7 +189,7 @@ class MiniPerl6::Ruby::LexicalBlock {
 
         my $last_statement;
         if $.needs_return {
-            $last_statement = pop @($block);
+            $last_statement = pop $block;
         }
 
         for @($block) -> $stmt {
