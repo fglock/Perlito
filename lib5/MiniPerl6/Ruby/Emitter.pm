@@ -121,7 +121,7 @@ package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
 sub emit_ruby { my $self = $_[0]; $self->emit_ruby_indented(0) };
-sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{hash1}); my  $List_dict; for my $field ( @{$fields || []} ) { push( @{$List_dict}, $field->[0]->emit_ruby() . ':' . $field->[1]->emit_ruby() ) }; Ruby::tab($level) . 'mp6_Hash({' . Main::join($List_dict, ', ') . '})' }
+sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $fields = $self->{hash1}); my  $List_dict; for my $field ( @{$fields || []} ) { push( @{$List_dict}, $field->[0]->emit_ruby() . ' => ' . $field->[1]->emit_ruby() ) }; Ruby::tab($level) . '{' . Main::join($List_dict, ', ') . '}' }
 }
 
 {
@@ -154,7 +154,7 @@ sub new { shift; bless { @_ }, "Lookup" }
 sub obj { $_[0]->{obj} };
 sub index_exp { $_[0]->{index_exp} };
 sub emit_ruby { my $self = $_[0]; $self->emit_ruby_indented(0) };
-sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; Ruby::tab($level) . $self->{obj}->emit_ruby() . '.f_lookup(' . $self->{index_exp}->emit_ruby() . ')' }
+sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; Ruby::tab($level) . $self->{obj}->emit_ruby() . '[' . $self->{index_exp}->emit_ruby() . ']' }
 }
 
 {
@@ -176,7 +176,7 @@ sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
 sub emit_ruby { my $self = $_[0]; $self->emit_ruby_indented(0) };
-sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; if (Main::bool(Main::isa($self->{parameters}, 'Index'))) { return(Ruby::tab($level) . $self->{parameters}->obj()->emit_ruby() . '[' . $self->{parameters}->index_exp()->emit_ruby() . '] = ' . $self->{arguments}->emit_ruby()) } else {  }; if (Main::bool(Main::isa($self->{parameters}, 'Lookup'))) { return(Ruby::tab($level) . $self->{parameters}->obj()->emit_ruby() . '.f_set(' . $self->{parameters}->index_exp()->emit_ruby() . ', ' . $self->{arguments}->emit_ruby() . ')') } else {  }; if (Main::bool(Main::isa($self->{parameters}, 'Call'))) { return(Ruby::tab($level) . $self->{parameters}->invocant()->emit_ruby() . '.__setattr__(\'v_' . $self->{parameters}->method() . '\', ' . $self->{arguments}->emit_ruby() . ')') } else {  }; Ruby::tab($level) . $self->{parameters}->emit_ruby() . ' = ' . $self->{arguments}->emit_ruby() }
+sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; if (Main::bool(Main::isa($self->{parameters}, 'Index'))) { return(Ruby::tab($level) . $self->{parameters}->obj()->emit_ruby() . '[' . $self->{parameters}->index_exp()->emit_ruby() . '] = ' . $self->{arguments}->emit_ruby()) } else {  }; if (Main::bool(Main::isa($self->{parameters}, 'Lookup'))) { return(Ruby::tab($level) . $self->{parameters}->obj()->emit_ruby() . '[' . $self->{parameters}->index_exp()->emit_ruby() . '] = ' . $self->{arguments}->emit_ruby()) } else {  }; if (Main::bool(Main::isa($self->{parameters}, 'Call'))) { return(Ruby::tab($level) . $self->{parameters}->invocant()->emit_ruby() . '.__setattr__(\'v_' . $self->{parameters}->method() . '\', ' . $self->{arguments}->emit_ruby() . ')') } else {  }; Ruby::tab($level) . $self->{parameters}->emit_ruby() . ' = ' . $self->{arguments}->emit_ruby() }
 }
 
 {
@@ -264,7 +264,7 @@ sub type { $_[0]->{type} };
 sub var { $_[0]->{var} };
 sub emit_ruby { my $self = $_[0]; $self->emit_ruby_indented(0) };
 sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $decl = $self->{decl}); (my  $name = $self->{var}->name()); Ruby::tab($level) . (Main::bool(($decl eq 'has')) ? '' : $self->{var}->emit_ruby()) };
-sub emit_ruby_init { my $self = $_[0]; if (Main::bool(($self->{var}->sigil() eq '%'))) { return('mp6_Hash({})') } else { if (Main::bool(($self->{var}->sigil() eq '@'))) { return('Mp6_Array.new()') } else { return('nil') } }; return('') }
+sub emit_ruby_init { my $self = $_[0]; if (Main::bool(($self->{var}->sigil() eq '%'))) { return('{}') } else { if (Main::bool(($self->{var}->sigil() eq '@'))) { return('Mp6_Array.new()') } else { return('nil') } }; return('') }
 }
 
 {

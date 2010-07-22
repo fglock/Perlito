@@ -387,10 +387,10 @@ class Lit::Hash {
         my $fields = @.hash1;
         my @dict;
         for @$fields -> $field { 
-            push @dict, (($field[0]).emit_ruby ~ ':' ~ ($field[1]).emit_ruby);
+            push @dict, (($field[0]).emit_ruby ~ ' => ' ~ ($field[1]).emit_ruby);
         }; 
         Ruby::tab($level) ~ 
-            'mp6_Hash({' ~ @dict.join(', ') ~ '})';
+            '{' ~ @dict.join(', ') ~ '}';
     }
 }
 
@@ -430,7 +430,7 @@ class Lookup {
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 
-            $.obj.emit_ruby ~ '.f_lookup(' ~ $.index_exp.emit_ruby ~ ')';
+            $.obj.emit_ruby ~ '[' ~ $.index_exp.emit_ruby ~ ']';
     }
 }
 
@@ -483,9 +483,9 @@ class Bind {
         }
         if $.parameters.isa( 'Lookup' ) {
             return Ruby::tab($level)  
-                ~ ($.parameters.obj).emit_ruby ~ '.f_set('
-                    ~ ($.parameters.index_exp).emit_ruby ~ ', '
-                    ~ $.arguments.emit_ruby ~ ')'
+                ~ ($.parameters.obj).emit_ruby ~ '['
+                    ~ ($.parameters.index_exp).emit_ruby ~ '] = '
+                    ~ $.arguments.emit_ruby;
         }
         if $.parameters.isa( 'Call' ) {
             # $var.attr = 3;
@@ -749,7 +749,7 @@ class Decl {
     }
     method emit_ruby_init {
         if ($.var).sigil eq '%' {
-            return 'mp6_Hash({})';
+            return '{}';
         }
         elsif ($.var).sigil eq '@' {
             return 'Mp6_Array.new()';
