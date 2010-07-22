@@ -20,13 +20,6 @@
 class Mp6_Array < Array
 end
 
-class Mp6_Return < Exception
-  attr :value
-  def initialize(v)
-    @value = v
-  end
-end
-
 def mp6_to_num (v)
     if v.class == "".class
         if v.index(".")
