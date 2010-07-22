@@ -130,6 +130,11 @@ Python backend
     # using the mp6.pl compiler
     perl mp6.pl -Bpython -e 'class Main { say "hello, World!" }'
 
+Ruby backend
+
+    # initialize "./librb"
+    . util-ruby/build-ruby.sh
+
 AST output
 
     perl mp6.pl -Cast-json -e 'class Main { say "hello, World!" }'
