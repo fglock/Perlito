@@ -174,17 +174,17 @@ class MiniPerl6::Ruby::LexicalBlock {
         for @($block) -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 push @my_decl, ($decl.var).emit_ruby_name;
-                push @my_init, 'nil';
+                push @my_init, $decl.emit_ruby_init;
                 $has_my_decl = 1;
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
                 push @my_decl, (($decl.parameters).var).emit_ruby_name;
-                push @my_init, 'nil';
+                push @my_init, ($decl.parameters).emit_ruby_init;
                 $has_my_decl = 1;
             }
         }
         if $has_my_decl {
-            push @s, Ruby::tab($level) ~ "lambda { |" ~ @my_decl.join(", ") ~ "|";
+            push @s, Ruby::tab($level) ~ "Proc.new{ |" ~ @my_decl.join(", ") ~ "|";
         }
 
         my $last_statement;
@@ -346,16 +346,7 @@ class Lit::Array {
         }
         if $needs_interpolation {
             my @block;
-            my $temp_array = Var.new( 
-                                'name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
-            my $input_array = Var.new( 
-                                'name' => 'b', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
-            push @block, Decl.new( 
-                            'decl' => 'my',
-                            'type' => '',
-                            'var'  => $temp_array
-                        );
-            my $index = 0;
+            my $temp_array = Var.new( 'name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
             for @.array1 -> $item {
                 if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
                     || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' )
@@ -375,19 +366,12 @@ class Lit::Array {
                                     'invocant' => $temp_array
                                 );
                 }
-                $index = $index + 1;
             }
             push @block, $temp_array;
-            my $label = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
-            my $code =
-                    MiniPerl6::Ruby::AnonSub.new( 
-                        name  => '', 
-                        block => @block,
-                        sig   => Sig.new( invocant => undef, positional => [], named => {} ),
-                        handles_return_exception => 0,
-                    );
-            # call the anonymous sub
-            return Ruby::tab($level) ~ $code.emit_ruby ~ ".call()";
+            my $body_block = MiniPerl6::Ruby::LexicalBlock.new( block => @block );
+            return Ruby::tab($level) ~ "Proc.new { |list_a| " ~ "\n"
+                ~   $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
+                ~  Ruby::tab($level) ~ "}.call(Mp6_Array.new())";
         }
         else {
             Ruby::tab($level)  
@@ -896,8 +880,8 @@ class Do {
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my @s;
-        push @s, Ruby::tab($level)   ~ "lambda{ || ";
-        push @s,    (MiniPerl6::Ruby::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_ruby_indented($level+1);
+        push @s, Ruby::tab($level)   ~ "Proc.new{ || ";
+        push @s,    (MiniPerl6::Ruby::LexicalBlock.new( block => @.block, needs_return => 0 )).emit_ruby_indented($level+1);
         push @s, Ruby::tab($level)   ~ "}.call()";
         return @s.join("\n");
     }
