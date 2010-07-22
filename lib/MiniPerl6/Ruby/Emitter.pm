@@ -142,18 +142,16 @@ class MiniPerl6::Ruby::LexicalBlock {
             # create accessors
             for @($has_decl) -> $decl {
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                    my $label = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
-                    push @s, Ruby::tab($level) ~ 'def f_' ~ $label ~ '(v_self)';
-                    push @s, Ruby::tab($level+1) ~ 'return v_self.v_' ~ ($decl.var).name;
+                    push @s, Ruby::tab($level) ~ 'attr_accessor :v_' ~ ($decl.var).name;
+                    push @s, Ruby::tab($level) ~ 'def f_' ~ ($decl.var).name ~ '()';
+                    push @s, Ruby::tab($level+1) ~ 'return self.v_' ~ ($decl.var).name;
                     push @s, Ruby::tab($level) ~ "end";
-                    push @s, Ruby::tab($level) ~ "self.__dict__.update({'f_" ~ ($decl.var).name ~ "':f_" ~ $label ~ "})";
                 }
                 if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
-                    my $label = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
-                    push @s, Ruby::tab($level) ~ 'def f_' ~ $label ~ '(v_self)';
-                    push @s, Ruby::tab($level+1) ~ 'return v_self.v_' ~ (($decl.parameters).var).name;
+                    push @s, Ruby::tab($level) ~ 'attr_accessor :v_' ~ (($decl.parameters).var).name;
+                    push @s, Ruby::tab($level) ~ 'def f_' ~ (($decl.parameters).var).name ~ '()';
+                    push @s, Ruby::tab($level+1) ~ 'return self.v_' ~ (($decl.parameters).var).name;
                     push @s, Ruby::tab($level) ~ "end";
-                    push @s, Ruby::tab($level) ~ "self.__dict__.update({'f_" ~ (($decl.parameters).var).name ~ "':f_" ~ $label ~ "})";
                 }
             }
 
@@ -268,7 +266,8 @@ class CompUnit {
         }
 
         push @s, Ruby::tab($level)    ~     'class ' ~ $name;
-        # push @s, Ruby::tab($level+1)  ~         $name ~ '_proto = ' ~ $name ~ '.new()';
+        push @s, Ruby::tab($level+1)  ~         '$' ~ $name ~ ' = ' ~ $name ~ '.new()';
+        push @s, Ruby::tab($level+1)  ~         'namespace = $' ~ $name;
         push @s,    $block.emit_ruby_indented($level + 1);
         push @s, Ruby::tab($level)    ~     "end";
         return @s.join( "\n" );
@@ -399,10 +398,11 @@ class Lit::Object {
         my $fields = @.fields;
         my @str;
         for @$fields -> $field { 
-            push @str, "v_" ~ ($field[0]).buf ~ '=' ~ ($field[1]).emit_ruby;
+            push @str, "o.v_" ~ ($field[0]).buf ~ '=' ~ ($field[1]).emit_ruby ~ "; ";
         }
-        Ruby::tab($level) ~ 
-            Main::to_go_namespace($.class) ~ '.new(' ~ @str.join(', ') ~ ')';
+        Ruby::tab($level) ~ "Proc.new { |o| "
+            ~ @str.join(' ')
+            ~ "o }.call(" ~ Main::to_go_namespace($.class) ~ ".new)";
     }
 }
 
@@ -440,7 +440,7 @@ class Var {
     method emit_ruby_indented( $level ) {
         return Ruby::tab($level) ~ (
                ( $.twigil eq '.' )
-            ?? ( 'v_self.v_' ~ $.name ~ '' )
+            ?? ( 'self.v_' ~ $.name ~ '' )
             !!  (    ( $.name eq '/' )
                 ??   ( $table{$.sigil} ~ 'MATCH' )
                 !!   ( $table{$.sigil} ~ $.name ~ '' )
@@ -450,7 +450,7 @@ class Var {
     method emit_ruby_name {
         return (
                ( $.twigil eq '.' )
-            ?? ( 'v_self.v_' ~ $.name )
+            ?? ( 'self.v_' ~ $.name )
             !!  (    ( $.name eq '/' )
                 ??   ( $table{$.sigil} ~ 'MATCH' )
                 !!   ( $table{$.sigil} ~ $.name )
@@ -482,7 +482,7 @@ class Bind {
         if $.parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return Ruby::tab($level)  
-                ~ ($.parameters.invocant).emit_ruby ~ ".__setattr__('v_" ~ $.parameters.method ~ "', " ~ $.arguments.emit_ruby ~ ")";
+                ~ ($.parameters.invocant).emit_ruby ~ ".v_" ~ $.parameters.method ~ " = " ~ $.arguments.emit_ruby ~ "";
         }
         Ruby::tab($level)  
             ~ $.parameters.emit_ruby ~ ' = ' ~ $.arguments.emit_ruby;
@@ -493,8 +493,7 @@ class Proto {
     has $.name;
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ 
-            Main::to_go_namespace($.name) ~ '_proto'
+        Ruby::tab($level) ~ '$' ~ Main::to_go_namespace($.name) 
     }
 }
 
@@ -514,10 +513,10 @@ class Call {
             || ($.method eq 'isa')
         { 
             if ($.hyper) {
-            	return "map(lambda: Main." ~ $.method ~ "( v_self[0], " ~ (@.arguments.>>emit_ruby).join(', ') ~ ') , ' ~ $invocant ~ ")\n";
+            	return $invocant ~ ".map {|x| x." ~ $.method ~ "(" ~ (@.arguments.>>emit_ruby).join(', ') ~ ")}";
             }
             else {
-                return "mp6_" ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+                return "Mp6_" ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
             }
         };
 
@@ -539,7 +538,7 @@ class Call {
         
         my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
         if ($.hyper) {
-            Ruby::tab($level) ~ 'map(lambda x: x.' ~ $call ~ ', ' ~ $invocant ~ ')';
+            Ruby::tab($level) ~ $invocant ~ ".map {|x| x." ~ $call ~ "}";
         }
         else {
             Ruby::tab($level) ~ $invocant ~ '.' ~ $call;
@@ -572,8 +571,8 @@ class Apply {
             return '(' ~ $.code.emit_ruby ~ ').(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
         };
 
-        if $code eq 'self'       { return 'v_self[0]' };
-        if $code eq 'make'       { return "v_MATCH[0].__setattr__('v_capture', " ~ (@.arguments[0]).emit_ruby ~ ')' }
+        if $code eq 'self'       { return 'self' };
+        if $code eq 'make'       { return "v_MATCH.v_capture = " ~ (@.arguments[0]).emit_ruby ~ '' }
         if $code eq 'false'      { return 'false' };
         if $code eq 'true'       { return 'true' };
 
@@ -638,9 +637,9 @@ class Apply {
         if $code eq 'unshift' { return (@.arguments[0]).emit_ruby ~ '.unshift(' ~ (@.arguments[1]).emit_ruby ~ ')' } 
 
         if $.namespace {
-            return Main::to_go_namespace($.namespace) ~ '::f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+            return '$' ~ Main::to_go_namespace($.namespace) ~ '.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
         }
-        'f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+        'namespace.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
     }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ $self.emit_ruby 
@@ -779,7 +778,7 @@ class Method {
         my $args = [];
         my $default_args = [];
         my $meth_args = [];
-        $meth_args.push( $invocant.emit_ruby_name );
+        # $meth_args.push( $invocant.emit_ruby_name );
         for @$pos -> $field { 
             my $arg = $field.emit_ruby_name;
             $args.push( $arg );
@@ -790,7 +789,7 @@ class Method {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level) ~ 'def self.f_' ~ $.name ~ "(" ~ $meth_args.join(", ") ~ ")";
+        push @s, Ruby::tab($level) ~ 'def f_' ~ $.name ~ "(" ~ $meth_args.join(", ") ~ ")";
         push @s,    $block.emit_ruby_indented($level + 1);
         push @s, Ruby::tab($level) ~ "end";
         return @s.join("\n");
@@ -834,7 +833,7 @@ class Sub {
                 needs_return => 1 );
         my $label2 = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
         my @s;
-        push @s, Ruby::tab($level) ~ "def self.f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ ")" 
+        push @s, Ruby::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ ")" 
         push @s,    $block.emit_ruby_indented($level + 1);
         push @s, Ruby::tab($level) ~ "end";
         return @s.join("\n");
