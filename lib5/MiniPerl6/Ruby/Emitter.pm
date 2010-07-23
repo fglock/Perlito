@@ -285,7 +285,7 @@ sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
 sub emit_ruby { my $self = $_[0]; $self->emit_ruby_indented(0) };
-sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $args = []); (my  $default_args = []); (my  $meth_args = []); for my $field ( @{$pos || []} ) { (my  $arg = $field->emit_ruby_name());push( @{$args}, $arg );push( @{$default_args}, $arg . '=nil' );push( @{$meth_args}, $arg . '=nil' ) }; (my  $block = MiniPerl6::Ruby::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1, )); my  $List_s; push( @{$List_s}, Ruby::tab($level) . 'def f_' . $self->{name} . '(' . Main::join($meth_args, ', ') . ')' ); push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) ); push( @{$List_s}, Ruby::tab($level) . 'end' ); return(Main::join($List_s, '
+sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $args = []); (my  $default_args = []); (my  $meth_args = []); for my $field ( @{$pos || []} ) { (my  $arg = $field->emit_ruby_name());push( @{$args}, $arg );push( @{$default_args}, $arg . '=nil' );push( @{$meth_args}, $arg . '=nil' ) }; (my  $block = MiniPerl6::Ruby::LexicalBlock->new( 'block' => $self->{block},'needs_return' => 1, )); my  $List_s; push( @{$List_s}, Ruby::tab($level) . 'def f_' . $self->{name} . '(' . Main::join($meth_args, ', ') . ')' ); push( @{$List_s}, Ruby::tab(($level + 1)) . $invocant->emit_ruby_name() . ' = self' ); push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) ); push( @{$List_s}, Ruby::tab($level) . 'end' ); return(Main::join($List_s, '
 ')) }
 }
 

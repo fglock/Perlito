@@ -43,6 +43,9 @@ def mp6_to_bool (v)
     if v.class == [].class || v.class == Mp6_Array
         return v.length != 0
     end
+    if v.class == MiniPerl6__Match
+        return mp6_to_bool(v.v_bool)
+    end
     return v
 end
 

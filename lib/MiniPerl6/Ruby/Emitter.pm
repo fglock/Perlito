@@ -776,7 +776,6 @@ class Method {
         my $args = [];
         my $default_args = [];
         my $meth_args = [];
-        # $meth_args.push( $invocant.emit_ruby_name );
         for @$pos -> $field { 
             my $arg = $field.emit_ruby_name;
             $args.push( $arg );
@@ -787,9 +786,10 @@ class Method {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level) ~ 'def f_' ~ $.name ~ "(" ~ $meth_args.join(", ") ~ ")";
+        push @s, Ruby::tab($level)   ~  'def f_' ~ $.name ~ "(" ~ $meth_args.join(", ") ~ ")";
+        push @s, Ruby::tab($level+1) ~      $invocant.emit_ruby_name ~ " = self";
         push @s,    $block.emit_ruby_indented($level + 1);
-        push @s, Ruby::tab($level) ~ "end";
+        push @s, Ruby::tab($level)   ~  "end";
         return @s.join("\n");
     }
 }

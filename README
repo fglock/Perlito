@@ -148,6 +148,7 @@ Testing a backend using the Perl5 based compiler
     prove -e "perl mp6.pl -Blisp"
     prove -e "perl mp6.pl -Bgo"
     prove -e "perl mp6.pl -Bpython"
+    prove -e "perl mp6.pl -Bruby1.9"
 
 AUTHORS
 
