@@ -168,11 +168,11 @@ class C_MiniPerl6__Grammar
 end
 
 def _dump(o)
-    name = o.class.to_s.sub("__", "::").sub("C_","")
+    class_name = o.class.to_s.sub("__", "::").sub("C_","")
     attrs = ( o.methods.grep /^v_.+=/ ).map{ |x| 
                 meth = x.to_s.sub("=",""); name = meth.sub("v_",""); (name + " => " + mp6_perl(o.send(meth))) 
             }.join(", ")
-    return name + ".new(" + attrs + ")";
+    return class_name + ".new(" + attrs + ")";
 end
  
 def mp6_perl(o)
@@ -181,6 +181,9 @@ def mp6_perl(o)
     end
     if o == true
         return 'True'
+    end
+    if o == nil
+        return 'undef'
     end
     if o.class == String
         return "'" + o + "'"   # TODO escape

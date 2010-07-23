@@ -111,3 +111,5 @@ Semantics
   In rakudo, this creates an array with an array inside.
   I don't know if this is a Perlito or a Rakudo bug.
 
+- 'True' instead of 'true'
+

@@ -2,10 +2,10 @@
 rm -rf librb/
 
 mkdir librb
-mkdir librb/Miniperl6
-mkdir librb/Miniperl6/Ruby
+mkdir librb/MiniPerl6
+mkdir librb/MiniPerl6/Ruby
 
-cp lib/MiniPerl6/Ruby/Runtime.rb librb/Miniperl6/Ruby/Runtime.rb
+cp lib/MiniPerl6/Ruby/Runtime.rb librb/MiniPerl6/Ruby/Runtime.rb
 
 perl mp6.pl -Cruby lib/Test.pm                      > librb/Test.rb
 
