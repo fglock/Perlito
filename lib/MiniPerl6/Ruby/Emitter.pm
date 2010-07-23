@@ -272,8 +272,8 @@ class CompUnit {
             }
         }
 
-        push @s, Ruby::tab($level)    ~     'class ' ~ $name;
-        push @s, Ruby::tab($level+1)  ~         '$' ~ $name ~ ' = ' ~ $name ~ '.new()';
+        push @s, Ruby::tab($level)    ~     'class C_' ~ $name;
+        push @s, Ruby::tab($level+1)  ~         '$' ~ $name ~ ' = C_' ~ $name ~ '.new()';
         push @s, Ruby::tab($level+1)  ~         'namespace = $' ~ $name;
         push @s,    $block.emit_ruby_indented($level + 1);
         push @s, Ruby::tab($level)    ~     "end";
@@ -409,7 +409,7 @@ class Lit::Object {
         }
         Ruby::tab($level) ~ "Proc.new { |o| "
             ~ @str.join(' ')
-            ~ "o }.call(" ~ Main::to_go_namespace($.class) ~ ".new)";
+            ~ "o }.call(C_" ~ Main::to_go_namespace($.class) ~ ".new)";
     }
 }
 
@@ -523,7 +523,7 @@ class Call {
             	return $invocant ~ ".map {|x| x." ~ $.method ~ "(" ~ (@.arguments.>>emit_ruby).join(', ') ~ ")}";
             }
             else {
-                return "Mp6_" ~ $.method ~ '(' ~ ([ $.invocant, @.arguments].>>emit_ruby).join(', ') ~ ')';
+                return "mp6_" ~ $.method ~ '(' ~ ([ $.invocant, @.arguments].>>emit_ruby).join(', ') ~ ')';
             }
         };
 
@@ -610,7 +610,7 @@ class Apply {
         if $code eq 'exists'     {
             my $arg = @.arguments[0];
             if $arg.isa( 'Lookup' ) {
-                return '(' ~ ($arg.obj).emit_ruby ~ ').has_key(' ~ ($arg.index_exp).emit_ruby ~ ')';
+                return '(' ~ ($arg.obj).emit_ruby ~ ').has_key?(' ~ ($arg.index_exp).emit_ruby ~ ')';
             }
         }
 

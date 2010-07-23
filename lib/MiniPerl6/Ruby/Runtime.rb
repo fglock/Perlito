@@ -43,14 +43,14 @@ def mp6_to_bool (v)
     if v.class == [].class || v.class == Mp6_Array
         return v.length != 0
     end
-    if v.class == MiniPerl6__Match
+    if v.class == C_MiniPerl6__Match
         return mp6_to_bool(v.v_bool)
     end
     return v
 end
 
 def mp6_to_scalar (v)
-    if v.class == MiniPerl6__Match
+    if v.class == C_MiniPerl6__Match
         return v.f_scalar()
     end
     if v.class == Array
@@ -59,8 +59,8 @@ def mp6_to_scalar (v)
     return v
 end
 
-class MiniPerl6__Match < Hash
-    $MiniPerl6__Match = MiniPerl6__Match.new()
+class C_MiniPerl6__Match < Hash
+    $MiniPerl6__Match = C_MiniPerl6__Match.new()
     namespace = $MiniPerl6__Match
     attr_accessor :v_from
     def f_from()
@@ -97,12 +97,12 @@ class MiniPerl6__Match < Hash
     end
 end
 
-class MiniPerl6__Grammar
-    $MiniPerl6__Grammar = MiniPerl6__Grammar.new()
+class C_MiniPerl6__Grammar
+    $MiniPerl6__Grammar = C_MiniPerl6__Grammar.new()
     namespace = $MiniPerl6__Grammar
     def f_word(s, pos)
         /^\w/.match(s[pos..-1])
-        m = MiniPerl6__Match.new
+        m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
             m.v_from = pos
@@ -115,7 +115,7 @@ class MiniPerl6__Grammar
     end
     def f_digit(s, pos)
         /^\d/.match(s[pos..-1])
-        m = MiniPerl6__Match.new
+        m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
             m.v_from = pos
@@ -128,7 +128,7 @@ class MiniPerl6__Grammar
     end
     def f_space(s, pos)
         /^\s/.match(s[pos..-1])
-        m = MiniPerl6__Match.new
+        m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
             m.v_from = pos
@@ -141,7 +141,7 @@ class MiniPerl6__Grammar
     end
     def f_is_newline(s, pos)
         /^(\r\n?|\n\r?)/.match(s[pos..-1])
-        m = MiniPerl6__Match.new
+        m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
             m.v_from = pos
@@ -154,7 +154,7 @@ class MiniPerl6__Grammar
     end
     def f_not_newline(s, pos)
         /^(\r|\n)/.match(s[pos..-1])
-        m = MiniPerl6__Match.new
+        m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
             m.v_from = pos
@@ -167,3 +167,36 @@ class MiniPerl6__Grammar
     end
 end
 
+def _dump(o)
+    name = o.class.to_s.sub("__", "::").sub("C_","")
+    attrs = ( o.methods.grep /^v_.+=/ ).map{ |x| 
+                meth = x.to_s.sub("=",""); name = meth.sub("v_",""); (name + " => " + mp6_perl(o.send(meth))) 
+            }.join(", ")
+    return name + ".new(" + attrs + ")";
+end
+ 
+def mp6_perl(o)
+    if o == false
+        return 'False'
+    end
+    if o == true
+        return 'True'
+    end
+    if o.class == String
+        return "'" + o + "'"   # TODO escape
+    end
+    if o.class == Fixnum || o.class == Float || o.class == Bignum
+        return o.to_s
+    end
+    if o.class == Array || o.class == Mp6_Array
+        return "[" + (o.map{|x| mp6_perl(x)}).join(", ") + "]"
+    end
+    if o.class == Hash
+        out = []
+        for i in o.keys()
+            out.push(i + " => " + mp6_perl(o[i]))
+        end
+        return "{" + out.join(", ") + "}";
+    end
+    return _dump(o)
+end
