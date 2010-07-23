@@ -47,10 +47,16 @@ def mp6_to_bool (v)
 end
 
 def mp6_to_scalar (v)
-    # TODO
+    if v.class == MiniPerl6__Match
+        return v.f_scalar()
+    end
+    if v.class == Array
+        return v.length
+    end
+    return v
 end
 
-class MiniPerl6__Match
+class MiniPerl6__Match < Hash
     $MiniPerl6__Match = MiniPerl6__Match.new()
     namespace = $MiniPerl6__Match
     attr_accessor :v_from
@@ -72,6 +78,19 @@ class MiniPerl6__Match
     attr_accessor :v_bool
     def f_bool()
         return self.v_bool
+    end
+    def f_scalar()
+        if mp6_to_bool(self.v_bool)
+            if self.v_capture != nil
+                return self.v_capture
+            else
+                return self.v_str[self.v_from .. self.v_to-1]
+            end
+        end
+        return nil
+    end
+    def to_s()
+        return self.f_scalar().to_s()
     end
 end
 
