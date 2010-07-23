@@ -32,6 +32,11 @@ elsif ( $target_switch eq '-Cpython' ) {
     $target_dir = 'libpy';
     $target_suffix = '.py';
 }
+elsif ( $target_switch eq '-Cruby' ) {
+    $backend    = 'ruby';    
+    $target_dir = 'librb';
+    $target_suffix = '.rb';
+}
 elsif ( $target_switch eq '-Cast-perl5' ) {
     $backend    = 'ast-perl5';    
     $target_dir = 'libast-perl5';
