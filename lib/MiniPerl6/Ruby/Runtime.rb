@@ -75,3 +75,73 @@ class MiniPerl6__Match
     end
 end
 
+class MiniPerl6__Grammar
+    $MiniPerl6__Grammar = MiniPerl6__Grammar.new()
+    namespace = $MiniPerl6__Grammar
+    def f_word(s, pos)
+        /^\w/.match(s[pos..-1])
+        m = MiniPerl6__Match.new
+        if $~
+            m.v_str  = s
+            m.v_from = pos
+            m.v_to   = $~.end(0) + pos
+            m.v_bool = true
+        else
+            m.v_bool = false
+        end
+        return m
+    end
+    def f_digit(s, pos)
+        /^\d/.match(s[pos..-1])
+        m = MiniPerl6__Match.new
+        if $~
+            m.v_str  = s
+            m.v_from = pos
+            m.v_to   = $~.end(0) + pos
+            m.v_bool = true
+        else
+            m.v_bool = false
+        end
+        return m
+    end
+    def f_space(s, pos)
+        /^\s/.match(s[pos..-1])
+        m = MiniPerl6__Match.new
+        if $~
+            m.v_str  = s
+            m.v_from = pos
+            m.v_to   = $~.end(0) + pos
+            m.v_bool = true
+        else
+            m.v_bool = false
+        end
+        return m
+    end
+    def f_is_newline(s, pos)
+        /^(\r\n?|\n\r?)/.match(s[pos..-1])
+        m = MiniPerl6__Match.new
+        if $~
+            m.v_str  = s
+            m.v_from = pos
+            m.v_to   = $~.end(0) + pos
+            m.v_bool = true
+        else
+            m.v_bool = false
+        end
+        return m
+    end
+    def f_not_newline(s, pos)
+        /^(\r|\n)/.match(s[pos..-1])
+        m = MiniPerl6__Match.new
+        if $~
+            m.v_str  = s
+            m.v_from = pos
+            m.v_to   = $~.end(0) + pos
+            m.v_bool = true
+        else
+            m.v_bool = false
+        end
+        return m
+    end
+end
+
