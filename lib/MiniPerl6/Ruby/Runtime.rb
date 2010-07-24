@@ -21,7 +21,7 @@ class Mp6_Array < Array
 end
 
 def mp6_to_num (v)
-    if v.class == "".class
+    if v.class == String
         if v.index(".")
             return v.to_f
         end
@@ -34,13 +34,13 @@ def mp6_to_num (v)
 end
 
 def mp6_to_bool (v)
-    if v.class == "".class
+    if v.class == String
         return v != "0" && v != ""
     end
-    if v.class == 1.class
+    if v.class == Fixnum || v.class == Float || v.class == Bignum
         return v != 0
     end
-    if v.class == [].class || v.class == Mp6_Array
+    if v.class == Array || v.class == Mp6_Array
         return v.length != 0
     end
     if v.class == C_MiniPerl6__Match
@@ -53,7 +53,7 @@ def mp6_to_scalar (v)
     if v.class == C_MiniPerl6__Match
         return v.f_scalar()
     end
-    if v.class == Array
+    if v.class == Array || v.class == Mp6_Array
         return v.length
     end
     return v
@@ -101,7 +101,7 @@ class C_MiniPerl6__Grammar
     $MiniPerl6__Grammar = C_MiniPerl6__Grammar.new()
     namespace = $MiniPerl6__Grammar
     def f_word(s, pos)
-        /^\w/.match(s[pos..-1])
+        /^\w/.match(s[pos,1])
         m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
@@ -114,7 +114,7 @@ class C_MiniPerl6__Grammar
         return m
     end
     def f_digit(s, pos)
-        /^\d/.match(s[pos..-1])
+        /^\d/.match(s[pos,1])
         m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
@@ -127,12 +127,13 @@ class C_MiniPerl6__Grammar
         return m
     end
     def f_space(s, pos)
-        /^\s/.match(s[pos..-1])
+        /^(\s)/.match(s[pos,1])
         m = C_MiniPerl6__Match.new
         if $~
+            puts("  -- f_space " + pos.to_s + " " + ($~.end(1) + pos).to_s + "[" + s[pos..$~.end(1) + pos] + "]")
             m.v_str  = s
             m.v_from = pos
-            m.v_to   = $~.end(0) + pos
+            m.v_to   = $~.end(1) + pos
             m.v_bool = true
         else
             m.v_bool = false
@@ -140,7 +141,7 @@ class C_MiniPerl6__Grammar
         return m
     end
     def f_is_newline(s, pos)
-        /^(\r\n?|\n\r?)/.match(s[pos..-1])
+        /^(\r\n?|\n\r?)/.match(s[pos,2])
         m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
@@ -153,7 +154,7 @@ class C_MiniPerl6__Grammar
         return m
     end
     def f_not_newline(s, pos)
-        /^(\r|\n)/.match(s[pos..-1])
+        /^(\r|\n)/.match(s[pos,1])
         m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
