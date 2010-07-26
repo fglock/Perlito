@@ -17,7 +17,7 @@
 # 
 # See L<http://www.perl.com/perl/misc/Artistic.html>
 
-class Mp6_Array < Array
+class C_Array < Array
 end
 
 def mp6_to_num (v)
@@ -40,7 +40,7 @@ def mp6_to_bool (v)
     if v.class == Fixnum || v.class == Float || v.class == Bignum
         return v != 0
     end
-    if v.class == Array || v.class == Mp6_Array
+    if v.class == Array || v.class == C_Array
         return v.length != 0
     end
     if v.class == C_MiniPerl6__Match
@@ -53,10 +53,15 @@ def mp6_to_scalar (v)
     if v.class == C_MiniPerl6__Match
         return v.f_scalar()
     end
-    if v.class == Array || v.class == Mp6_Array
+    if v.class == Array || v.class == C_Array
         return v.length
     end
     return v
+end
+
+def mp6_isa(o, s)
+    class_name = o.class.to_s.sub("__", "::").sub("C_","")
+    return class_name == s
 end
 
 class C_MiniPerl6__Match < Hash
@@ -101,12 +106,12 @@ class C_MiniPerl6__Grammar
     $MiniPerl6__Grammar = C_MiniPerl6__Grammar.new()
     namespace = $MiniPerl6__Grammar
     def f_word(s, pos)
-        /^\w/.match(s[pos,1])
+        /^(\w)/.match(s[pos,1])
         m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
             m.v_from = pos
-            m.v_to   = $~.end(0) + pos
+            m.v_to   = $~.end(1) + pos
             m.v_bool = true
         else
             m.v_bool = false
@@ -114,12 +119,12 @@ class C_MiniPerl6__Grammar
         return m
     end
     def f_digit(s, pos)
-        /^\d/.match(s[pos,1])
+        /^(\d)/.match(s[pos,1])
         m = C_MiniPerl6__Match.new
         if $~
             m.v_str  = s
             m.v_from = pos
-            m.v_to   = $~.end(0) + pos
+            m.v_to   = $~.end(1) + pos
             m.v_bool = true
         else
             m.v_bool = false
@@ -145,7 +150,7 @@ class C_MiniPerl6__Grammar
         if $~
             m.v_str  = s
             m.v_from = pos
-            m.v_to   = $~.end(0) + pos
+            m.v_to   = $~.end(1) + pos
             m.v_bool = true
         else
             m.v_bool = false
@@ -158,7 +163,7 @@ class C_MiniPerl6__Grammar
         if $~
             m.v_str  = s
             m.v_from = pos
-            m.v_to   = $~.end(0) + pos
+            m.v_to   = $~.end(1) + pos
             m.v_bool = true
         else
             m.v_bool = false
@@ -191,7 +196,7 @@ def mp6_perl(o)
     if o.class == Fixnum || o.class == Float || o.class == Bignum
         return o.to_s
     end
-    if o.class == Array || o.class == Mp6_Array
+    if o.class == Array || o.class == C_Array
         return "[" + (o.map{|x| mp6_perl(x)}).join(", ") + "]"
     end
     if o.class == Hash

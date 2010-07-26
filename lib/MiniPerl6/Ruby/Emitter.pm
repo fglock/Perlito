@@ -369,11 +369,11 @@ class Lit::Array {
             my $body_block = MiniPerl6::Ruby::LexicalBlock.new( block => @block );
             return Ruby::tab($level) ~ "Proc.new { |list_a| " ~ "\n"
                 ~   $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
-                ~  Ruby::tab($level) ~ "}.call(Mp6_Array.new())";
+                ~  Ruby::tab($level) ~ "}.call(C_Array.new())";
         }
         else {
             Ruby::tab($level)  
-                ~ 'Mp6_Array.new([' ~ (@.array1.>>emit_ruby).join(', ') ~ '])';
+                ~ 'C_Array.new([' ~ (@.array1.>>emit_ruby).join(', ') ~ '])';
         }
     }
 }
@@ -584,8 +584,8 @@ class Apply {
         if $code eq 'Num'        { return '(' ~ (@.arguments[0]).emit_ruby     ~ ').to_f' };
 
         if $code eq 'prefix:<~>' { return Ruby::to_str(' + ', @.arguments) };
-        if $code eq 'prefix:<!>' { return '!('  ~ (@.arguments.>>emit_ruby).join(' ') ~ ')' };
-        if $code eq 'prefix:<?>' { return '!(!('  ~ (@.arguments.>>emit_ruby).join(' ')    ~ '))' };
+        if $code eq 'prefix:<!>' { return '!'   ~ Ruby::to_bool(' && ', @.arguments)       };
+        if $code eq 'prefix:<?>' { return '!(!' ~ Ruby::to_bool(' && ', @.arguments) ~ ')' };
 
         if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments.>>emit_ruby).join(' ')    ~ ')' };
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_ruby).join(' ')    ~ ')' };
@@ -740,7 +740,7 @@ class Decl {
             return '{}';
         }
         elsif ($.var).sigil eq '@' {
-            return 'Mp6_Array.new()';
+            return 'C_Array.new()';
         }
         else {
             return 'nil';
