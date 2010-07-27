@@ -125,15 +125,21 @@ Python backend
     . util-python/build-python.sh
 
     # using the mp6.py compiler
-    PYTHONPATH=libpy python mp6.py -Cpython -e "class Main { say 'hello, World' }" | PYTHONPATH=libpy python 
+    PYTHONPATH=libpy python mp6.py -Cpython -e 'class Main { say "hello, World!" }' | PYTHONPATH=libpy python 
 
     # using the mp6.pl compiler
     perl mp6.pl -Bpython -e 'class Main { say "hello, World!" }'
 
 Ruby backend
 
-    # initialize "./librb"
+    # initialize "./librb" and compile "mp6.rb"
     . util-ruby/build-ruby.sh
+
+    # using the mp6.rb compiler
+    RUBYLIB=librb ruby1.9 mp6.rb -Cruby -e 'class Main { say "hello, World!" }' | RUBYLIB=librb ruby1.9 
+
+    # using the mp6.pl compiler
+    perl mp6.pl -Bruby1.9 -e 'class Main { say "hello, World!" }'
 
 AST output
 
