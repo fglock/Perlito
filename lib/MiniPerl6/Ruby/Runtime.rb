@@ -233,19 +233,19 @@ class C_Main
         return "\n"
     end
     def f_lisp_escape_string(s)
-        o = s.gsub( "\\", "\\\\");
-        o = o.gsub( '"', "\\\"");
+        o = s.gsub( "\\", "\\\\\\");
+        o = o.gsub( '"',  "\\\\\"");
         return o;
     end
     def f_javascript_escape_string(s)
-        o = s.gsub( "\\", "\\\\");
-        o = o.gsub( '"', "\\\"");
-        o = o.gsub( "\n", "\\n");
+        o = s.gsub( "\\", "\\\\\\");
+        o = o.gsub( '"',  "\\\\\"");
+        o = o.gsub( "\n", "\\\\n");
         return o;
     end
     def f_perl_escape_string(s)
-        o = s.gsub( "\\", "\\\\")
-        o = o.gsub( "'", "\\\\\'")
+        o = s.gsub( "\\", "\\\\\\")
+        o = o.gsub( "'",  "\\\\\'")
         return o
     end
     def f_to_javascript_namespace(s)
