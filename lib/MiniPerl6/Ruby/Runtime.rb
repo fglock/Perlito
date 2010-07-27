@@ -17,6 +17,12 @@
 # 
 # See L<http://www.perl.com/perl/misc/Artistic.html>
 
+
+class C_Main
+end
+$Main = C_Main.new()
+
+
 def mp6_to_num (v)
     if v.class == String
         if v.index(".")
@@ -197,7 +203,7 @@ def mp6_perl(o)
         return 'undef'
     end
     if o.class == String
-        return "'" + o + "'"   # TODO escape
+        return "'" + $Main.f_perl_escape_string(o) + "'"   
     end
     if o.class == Fixnum || o.class == Float || o.class == Bignum
         return o.to_s
@@ -239,7 +245,7 @@ class C_Main
     end
     def f_perl_escape_string(s)
         o = s.gsub( "\\", "\\\\")
-        o = o.gsub( "'", "\\'")
+        o = o.gsub( "'", "\\\\\'")
         return o
     end
     def f_to_javascript_namespace(s)
