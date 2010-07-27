@@ -259,11 +259,11 @@ class CompUnit {
     has %.attributes;
     has %.methods;
     has @.body;
+
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my @s;
         my $block = MiniPerl6::Ruby::LexicalBlock.new( block => @.body );
-        my $label = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
         my $name = Main::to_go_namespace($.name);
 
         for @.body -> $decl {
@@ -369,11 +369,11 @@ class Lit::Array {
             my $body_block = MiniPerl6::Ruby::LexicalBlock.new( block => @block );
             return Ruby::tab($level) ~ "Proc.new { |list_a| " ~ "\n"
                 ~   $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
-                ~  Ruby::tab($level) ~ "}.call(C_Array.new())";
+                ~  Ruby::tab($level) ~ "}.call([])";
         }
         else {
             Ruby::tab($level)  
-                ~ 'C_Array.new([' ~ (@.array1.>>emit_ruby).join(', ') ~ '])';
+                ~ '[' ~ (@.array1.>>emit_ruby).join(', ') ~ ']';
         }
     }
 }
@@ -445,6 +445,9 @@ class Var {
     };
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
+        if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
+            return Ruby::tab($level) ~ 'ARGV'
+        }
         return Ruby::tab($level) ~ (
                ( $.twigil eq '.' )
             ?? ( 'self.v_' ~ $.name ~ '' )
@@ -516,7 +519,6 @@ class Call {
         if     ($.method eq 'perl')
             || ($.method eq 'yaml')
             || ($.method eq 'say' )
-            || ($.method eq 'join')
             || ($.method eq 'isa')
         { 
             if ($.hyper) {
@@ -535,12 +537,14 @@ class Call {
         if     ( $meth eq 'values' ) 
             || ( $meth eq 'keys' )
             || ( $meth eq 'push' )
+            || ( $meth eq 'shift' )
             || ( $meth eq 'concat' )
+            || ( $meth eq 'join')
         {
             return Ruby::tab($level) ~ $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
         }
         if $meth eq 'chars' {
-            return Ruby::tab($level) ~ "len(" ~ $invocant ~ ")";
+            return Ruby::tab($level) ~ "" ~ $invocant ~ ".length";
         }
         
         my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
@@ -576,7 +580,7 @@ class Apply {
 
         if $code eq 'say'        { return 'puts'  ~ Ruby::to_str(' + ', @.arguments) } 
         if $code eq 'print'      { return 'print' ~ Ruby::to_str(' + ', @.arguments) }
-        if $code eq 'warn'       { return 'mp6_warn('  ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
+        if $code eq 'warn'       { return '$stdout.puts('  ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_ruby).join(' ')      ~ ']' };
 
@@ -621,7 +625,7 @@ class Apply {
         }
         
         if $code eq 'substr' { 
-            return (@.arguments[0]).emit_ruby ~ '[' 
+            return Ruby::to_str(' + ', [@.arguments[0]]) ~ '[' 
                     ~ (@.arguments[1]).emit_ruby ~ ', ' 
                     ~ (@.arguments[2]).emit_ruby 
                 ~ ']' 
@@ -740,7 +744,7 @@ class Decl {
             return '{}';
         }
         elsif ($.var).sigil eq '@' {
-            return 'C_Array.new()';
+            return '[]';
         }
         else {
             return 'nil';
@@ -786,10 +790,10 @@ class Method {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level)   ~  'def f_' ~ $.name ~ "(" ~ $meth_args.join(", ") ~ ")";
+        push @s, Ruby::tab($level)   ~  'send( :define_method, "f_' ~ $.name ~ '".to_sym, lambda{ |' ~ $default_args.join(", ") ~ '|';
         push @s, Ruby::tab($level+1) ~      $invocant.emit_ruby_name ~ " = self";
         push @s,    $block.emit_ruby_indented($level + 1);
-        push @s, Ruby::tab($level)   ~  "end";
+        push @s, Ruby::tab($level)   ~  "} )";
         return @s.join("\n");
     }
 }
@@ -831,9 +835,9 @@ class Sub {
                 needs_return => 1 );
         my $label2 = "_anon_" ~ MiniPerl6::Ruby::LexicalBlock::get_ident_ruby;
         my @s;
-        push @s, Ruby::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ ")" 
+        push @s, Ruby::tab($level)   ~  'send( :define_method, "f_' ~ $.name ~ '".to_sym, lambda{ |' ~ $default_args.join(", ") ~ '|';
         push @s,    $block.emit_ruby_indented($level + 1);
-        push @s, Ruby::tab($level) ~ "end";
+        push @s, Ruby::tab($level) ~ "} )";
         return @s.join("\n");
     }
 }

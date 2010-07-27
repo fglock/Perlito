@@ -17,9 +17,6 @@
 # 
 # See L<http://www.perl.com/perl/misc/Artistic.html>
 
-class C_Array < Array
-end
-
 def mp6_to_num (v)
     if v.class == String
         if v.index(".")
@@ -40,7 +37,7 @@ def mp6_to_bool (v)
     if v.class == Fixnum || v.class == Float || v.class == Bignum
         return v != 0
     end
-    if v.class == Array || v.class == C_Array
+    if v.class == Array 
         return v.length != 0
     end
     if v.class == C_MiniPerl6__Match
@@ -53,7 +50,7 @@ def mp6_to_scalar (v)
     if v.class == C_MiniPerl6__Match
         return v.f_scalar()
     end
-    if v.class == Array || v.class == C_Array
+    if v.class == Array 
         return v.length
     end
     return v
@@ -61,6 +58,15 @@ end
 
 def mp6_isa(o, s)
     class_name = o.class.to_s.sub("__", "::").sub("C_","")
+    if s == 'Str'
+        return class_name == 'String'
+    end
+    if s == 'Int'
+        return class_name == 'Fixnum' || class_name == 'Bignum'
+    end
+    if s == 'Num'
+        return class_name == 'Float'
+    end
     return class_name == s
 end
 
@@ -196,7 +202,7 @@ def mp6_perl(o)
     if o.class == Fixnum || o.class == Float || o.class == Bignum
         return o.to_s
     end
-    if o.class == Array || o.class == C_Array
+    if o.class == Array 
         return "[" + (o.map{|x| mp6_perl(x)}).join(", ") + "]"
     end
     if o.class == Hash
@@ -207,4 +213,45 @@ def mp6_perl(o)
         return "{" + out.join(", ") + "}";
     end
     return _dump(o)
+end
+
+class IO
+    $IO = IO.new(1, "w")
+    def f_slurp(s)
+        IO.read(s)
+    end
+end
+
+class C_Main
+    def f_newline()
+        return "\n"
+    end
+    def f_lisp_escape_string(s)
+        o = s.gsub( "\\", "\\\\");
+        o = o.gsub( '"', "\\\"");
+        return o;
+    end
+    def f_javascript_escape_string(s)
+        o = s.gsub( "\\", "\\\\");
+        o = o.gsub( '"', "\\\"");
+        o = o.gsub( "\n", "\\n");
+        return o;
+    end
+    def f_perl_escape_string(s)
+        o = s.gsub( "\\", "\\\\")
+        o = o.gsub( "'", "\\'")
+        return o
+    end
+    def f_to_javascript_namespace(s)
+        o = s.gsub( "::", "$");
+        return o;
+    end
+    def f_to_lisp_namespace(s)
+        o = s.gsub( "::", "-");
+        return "mp-" + o;
+    end
+    def f_to_go_namespace(s)
+        o = s.gsub( "::", "__");
+        return o
+    end
 end
