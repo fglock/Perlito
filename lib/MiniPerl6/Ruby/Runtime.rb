@@ -167,12 +167,12 @@ class C_MiniPerl6__Grammar
         /^(\r|\n)/.match(s[pos,1])
         m = C_MiniPerl6__Match.new
         if $~
+            m.v_bool = false
+        else
             m.v_str  = s
             m.v_from = pos
-            m.v_to   = $~.end(1) + pos
+            m.v_to   = pos + 1
             m.v_bool = true
-        else
-            m.v_bool = false
         end
         return m
     end
