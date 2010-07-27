@@ -159,8 +159,7 @@ sub name { $_[0]->{name} };
 (my  $table = { '$' => 'v_','@' => 'List_','%' => 'Hash_','&' => 'Code_', });
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
 sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; return(Python::tab($level) . (Main::bool(($self->{twigil} eq '.')) ? 'v_self[0].v_' . $self->{name} . '' : (Main::bool(($self->{name} eq '/')) ? $table->{$self->{sigil}} . 'MATCH[0]' : $table->{$self->{sigil}} . $self->{name} . '[0]'))) };
-sub emit_python_name { my $self = $_[0]; return((Main::bool(($self->{twigil} eq '.')) ? 'v_self[0].v_' . $self->{name} : (Main::bool(($self->{name} eq '/')) ? $table->{$self->{sigil}} . 'MATCH' : $table->{$self->{sigil}} . $self->{name}))) };
-sub name { my $self = $_[0]; $self->{name} }
+sub emit_python_name { my $self = $_[0]; return((Main::bool(($self->{twigil} eq '.')) ? 'v_self[0].v_' . $self->{name} : (Main::bool(($self->{name} eq '/')) ? $table->{$self->{sigil}} . 'MATCH' : $table->{$self->{sigil}} . $self->{name}))) }
 }
 
 {

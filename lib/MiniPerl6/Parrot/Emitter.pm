@@ -279,9 +279,6 @@ class Var {
              # '  $P0 = find_lex \'' ~ self.full_name ~ '\'' ~ "\n" 
            )
     };
-    # method name {
-    #    $.name
-    # };
     method full_name {
         # Normalize the sigil here into $
         # $x    => $x
@@ -815,12 +812,6 @@ class Sig {
     method emit_parrot {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
-    #method invocant {
-    #    $.invocant
-    #};
-    #method positional {
-    #    $.positional
-    #}
 }
 
 class Method {

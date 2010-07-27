@@ -467,9 +467,6 @@ class Var {
                 )
             )
     };
-    method name {
-        $.name
-    };
 }
 
 class Bind {
@@ -760,12 +757,6 @@ class Sig {
     method emit_ruby {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
-    method invocant {
-        $.invocant
-    };
-    method positional {
-        $.positional
-    }
 }
 
 class Method {

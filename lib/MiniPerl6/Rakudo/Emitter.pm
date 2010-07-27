@@ -121,9 +121,6 @@ class Var {
             !!   ( $table{$.sigil} ~ $.name )
             )
     };
-    method name {
-        $.name
-    };
 }
 
 class Bind {

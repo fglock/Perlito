@@ -425,9 +425,9 @@ elsif ( $backend eq 'go' ) {
         unlink '6.out';
         warn "calling go compiler\n" if $verbose;
         my $result = `6g $tmp_filename.go`;
-        warn "go compiler: $result\n" if $verbose && $result;
+        warn "go compiler: $result\n" if $result; # $verbose && $result;
         $result = `6l $tmp_filename.6`;
-        warn "go linker: $result\n" if $verbose && $result;
+        warn "go linker: $result\n" if $result; # $verbose && $result;
     }
     if ( $execute ) {
         warn "now executing\n" if $verbose;

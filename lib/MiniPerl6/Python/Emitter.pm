@@ -443,9 +443,6 @@ class Var {
                 )
             )
     };
-    method name {
-        $.name
-    };
 }
 
 class Bind {
@@ -489,7 +486,6 @@ class Call {
     has $.hyper;
     has $.method;
     has @.arguments;
-    #has $.hyper;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $invocant = $.invocant.emit_python;
@@ -769,12 +765,6 @@ class Sig {
     method emit_python {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
-    method invocant {
-        $.invocant
-    };
-    method positional {
-        $.positional
-    }
 }
 
 class Method {
