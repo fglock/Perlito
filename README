@@ -22,7 +22,9 @@ Source code
     The source code for Perlito can be found in the 'lib' directory.
     Perlito is written in Perl 6.
 
-Go backend
+USING PERLITO
+
+Using the Go backend
 
     perl mp6.pl -Bgo t/04-op.t
 
@@ -41,7 +43,7 @@ Go backend
 
     See also: Go homepage at http://golang.org
 
-Java class backend
+Using the Java class backend
 
     perl mp6.pl -Bjava-class -e 'class Main { say "hello, World!" }'
     java tmp
@@ -55,7 +57,7 @@ Java class backend
 
     Requires Rhino's js.jar in CLASSPATH, see also: http://www.mozilla.org/rhino
 
-Javascript backend - browser
+Using the Javascript backend in the browser
 
     Open the file 'perlito.html' in a browser (Firefox, Chrome, or Safari).
 
@@ -63,7 +65,7 @@ Javascript backend - browser
 
     http://perlcabal.org/~fglock/perlito.html
 
-Javascript backend - command line
+Using the Javascript backend in the command line
 
     Executing from the command line requires Perl 5 and a javascript compiler (V8 or Rhino):
 
@@ -84,7 +86,7 @@ Javascript backend - command line
 
         Rhino homepage at http://www.mozilla.org/rhino
 
-Lisp backend
+Using the Lisp backend
 
     perl mp6.pl -Blisp -e 'class Main { say "hello, World!" }'
 
@@ -96,7 +98,7 @@ Lisp backend
 
     See also: SBCL homepage at http://www.sbcl.org
 
-Parrot backend
+Using the Parrot backend
 
     The parrot backend is not bootstrapped, and it doesn't pass all tests.
 
@@ -106,7 +108,7 @@ Parrot backend
 
     See also: Parrot homepage at http://www.parrot.org
 
-Perl 5 backend
+Using the Perl 5 backend
 
     perl mp6.pl -e 'class Main { say "hello, World!" }'
 
@@ -119,7 +121,7 @@ Perl 5 backend
     # testing the bootstrap 
     perl -Ilib5 mp6-perl5.pl -Cperl5 util/mp6.pl > mp6-new.pl
 
-Python backend
+Using the Python backend
 
     # initialize "./libpy" and compile "mp6.py"
     . util-python/build-python.sh
@@ -130,7 +132,7 @@ Python backend
     # using the mp6.pl compiler
     perl mp6.pl -Bpython -e 'class Main { say "hello, World!" }'
 
-Ruby backend
+Using the Ruby backend
 
     # initialize "./librb" and compile "mp6.rb"
     . util-ruby/build-ruby.sh
@@ -141,7 +143,7 @@ Ruby backend
     # using the mp6.pl compiler
     perl mp6.pl -Bruby1.9 -e 'class Main { say "hello, World!" }'
 
-AST output
+Producing AST output
 
     perl mp6.pl -Cast-json -e 'class Main { say "hello, World!" }'
 

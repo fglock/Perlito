@@ -272,9 +272,7 @@ sub new { shift; bless { @_ }, "Sig" }
 sub invocant { $_[0]->{invocant} };
 sub positional { $_[0]->{positional} };
 sub named { $_[0]->{named} };
-sub emit_ruby { my $self = $_[0]; ' print \'Signature - TODO\'; die \'Signature - TODO\'; ' };
-sub invocant { my $self = $_[0]; $self->{invocant} };
-sub positional { my $self = $_[0]; $self->{positional} }
+sub emit_ruby { my $self = $_[0]; ' print \'Signature - TODO\'; die \'Signature - TODO\'; ' }
 }
 
 {
