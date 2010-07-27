@@ -48,13 +48,17 @@ MiniPerl6 in Python
 
 - module loading uses mangled filenames (with underlines); it should use dot-separated names instead.
 
+MiniPerl6 in Ruby
+
+- module loading uses mangled filenames (with underlines); it should use dot-separated names instead.
+
 Missing Backends
 
 - Haskell
 
 - MO in MP6 
 
-- Python
+- Python - FIXED
 
 - Clojure
 
@@ -67,7 +71,7 @@ Missing Features
 - type annotations - FIXED
 
 - 'use v5' is not supported
-  (maybe not needed for MP6)
+  (maybe not needed for Perlito)
 
 - no 'state', 'constant'
 
@@ -85,7 +89,7 @@ Nice to Have
 
 - run some tests from the standard test suite
 
-- use Test.pm
+- use Test.pm - FIXED
 
 Grammar
 
@@ -104,12 +108,12 @@ Grammar
 
 Semantics
 
-- @a.values and %a.keys return Array (not List) 
-  this is internally consistent with MiniPerl6, but it doesn't match the Perl 6 spec
+- @a.values and %a.keys return Array
+  These should return a List 
 
 - In Perlito, @a = [] initializes @a to empty Array.
-  In rakudo, this creates an array with an array inside.
-  I don't know if this is a Perlito or a Rakudo bug.
+  This should create an array with an array inside.
 
-- 'True' instead of 'true'
+- Perlito implemented 'true' and 'false'
+  This should be 'True' and 'False'
 

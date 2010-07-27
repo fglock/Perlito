@@ -1,3 +1,7 @@
+6.0  2010-07-27
+- Ruby backend bootstrap.
+- more tests
+
 5.0  2010-07-19
 - Python backend bootstrap.
 - use variable assignment instead of binding - that is, use '=' instead of ':='
