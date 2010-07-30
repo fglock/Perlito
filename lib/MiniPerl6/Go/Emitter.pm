@@ -388,7 +388,9 @@ class Val::Int {
 
 class Val::Bit {
     has $.bit;
-    method emit_go { 'toBit(' ~ $.bit ~ ')' }
+    method emit_go { 
+        $.bit ?? 'b_true()' !! 'b_false()'
+    }
 }
 
 class Val::Num {
@@ -702,8 +704,8 @@ class Apply {
         };
 
         if $code eq 'self'       { return 'v_self' };
-        if $code eq 'false'      { return 'b_false()' };
-        if $code eq 'true'       { return 'b_true()' };
+        if $code eq 'False'      { return 'b_false()' };
+        if $code eq 'True'       { return 'b_true()' };
         if $code eq 'make'       { 
             return 
                   'func () *Any { ' 

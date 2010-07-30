@@ -438,7 +438,7 @@ class Apply {
         }
 
         if $code eq 'self'       { return 'sv-self' };
-        if $code eq 'false'      { return 'nil' };
+        if $code eq 'False'      { return 'nil' };
         if $code eq 'make'       { return '(return-from mp6-function '  ~ $args ~ ')' };
         if $code eq 'substr'     { return '(sv-substr '                 ~ $args ~ ')' };
         if $code eq 'say'        { return '(mp-Main::sv-say (list '     ~ $args ~ '))' };

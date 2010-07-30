@@ -168,7 +168,7 @@ class Val::Int {
 
 class Val::Bit {
     has $.bit;
-    method emit_javascript { $.bit }
+    method emit_javascript { $.bit ?? 'true' !! 'false' }
 }
 
 class Val::Num {
@@ -514,8 +514,8 @@ class Apply {
         }
 
         if $code eq 'self'       { return 'v_self' };
-        if $code eq 'false'      { return '0' };
-        if $code eq 'true'       { return '1' };
+        if $code eq 'False'      { return 'false' };
+        if $code eq 'True'       { return 'true' };
         if $code eq 'make'       { return '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
         if $code eq 'say'        { return 'f_say('    ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
         if $code eq 'print'      { return 'f_print('  ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };

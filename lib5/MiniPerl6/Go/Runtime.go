@@ -106,8 +106,8 @@ type exists_er interface {
 // constants
 var i_1 = toInt(1)
 var i_0 = toInt(0)
-var s_true = toStr("true")
-var s_false = toStr("false")
+var s_true = toStr("True")
+var s_false = toStr("False")
 var s_empty = toStr("")
 var s_undef = toStr("undef")
 

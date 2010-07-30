@@ -15,8 +15,8 @@ class Main {
     say ( "1"   ?? "" !! "not " ), "ok 8";
     say ( "aaa" ?? "" !! "not " ), "ok 9";
 
-    say ( false ?? "not " !! "" ), "ok 10 - bool";
-    say ( true  ?? "" !! "not " ), "ok 11";
+    say ( False ?? "not " !! "" ), "ok 10 - bool";
+    say ( True  ?? "" !! "not " ), "ok 11";
 
     say ( []    ?? "not " !! "" ), "ok 12 - array";
     say ( ["x"] ?? "" !! "not " ), "ok 13";

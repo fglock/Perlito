@@ -6,7 +6,7 @@ our $MATCH = MiniPerl6::Match->new();
 {
 package Rul;
 sub new { shift; bless { @_ }, "Rul" }
-sub constant { my $str = $_[0]; (my  $len = Main::chars($str, )); if (Main::bool(($str eq '\\'))) { ($str = '\\\\') } else {  }; if (Main::bool(($str eq '\''))) { ($str = '\\\'') } else {  }; if (Main::bool($len)) { '( ( \'' . $str . '\' eq substr( $str, $MATCH.to, ' . $len . ')) ' . '  ?? (1 + ( $MATCH.to = ' . $len . ' + $MATCH.to ))' . '  !! false ' . ')' } else { return('1') } }
+sub constant { my $str = $_[0]; (my  $len = Main::chars($str, )); if (Main::bool(($str eq '\\'))) { ($str = '\\\\') } else {  }; if (Main::bool(($str eq '\''))) { ($str = '\\\'') } else {  }; if (Main::bool($len)) { '( ( \'' . $str . '\' eq substr( $str, $MATCH.to, ' . $len . ')) ' . '  ?? (1 + ( $MATCH.to = ' . $len . ' + $MATCH.to ))' . '  !! False ' . ')' } else { return('1') } }
 }
 
 {
@@ -43,7 +43,7 @@ package Rul::Subrule;
 sub new { shift; bless { @_ }, "Rul::Subrule" }
 sub metasyntax { $_[0]->{metasyntax} };
 sub captures { $_[0]->{captures} };
-sub emit { my $self = $_[0]; (my  $meth = (Main::bool((1 + index($self->{metasyntax}, '.'))) ? $self->{metasyntax} : '$grammar.' . $self->{metasyntax})); my  $code; if (Main::bool(($self->{captures} == 1))) { ($code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' . $self->{metasyntax} . '\'} = $m2; 1 } else { false } ') } else { if (Main::bool(($self->{captures} > 1))) { ($code = 'if $m2 { ' . '$MATCH.to = $m2.to; ' . 'if exists $MATCH{\'' . $self->{metasyntax} . '\'} { ' . '($MATCH{\'' . $self->{metasyntax} . '\'}).push( $m2 ); ' . '} ' . 'else { ' . '$MATCH{\'' . $self->{metasyntax} . '\'} = [ $m2 ]; ' . '} ' . '1 ' . '} else { false } ') } else { ($code = 'if $m2 { $MATCH.to = $m2.to; 1 } else { false } ') } }; 'do { ' . 'my $m2 = ' . $meth . '($str, $MATCH.to); ' . $code . '}' };
+sub emit { my $self = $_[0]; (my  $meth = (Main::bool((1 + index($self->{metasyntax}, '.'))) ? $self->{metasyntax} : '$grammar.' . $self->{metasyntax})); my  $code; if (Main::bool(($self->{captures} == 1))) { ($code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' . $self->{metasyntax} . '\'} = $m2; 1 } else { False } ') } else { if (Main::bool(($self->{captures} > 1))) { ($code = 'if $m2 { ' . '$MATCH.to = $m2.to; ' . 'if exists $MATCH{\'' . $self->{metasyntax} . '\'} { ' . '($MATCH{\'' . $self->{metasyntax} . '\'}).push( $m2 ); ' . '} ' . 'else { ' . '$MATCH{\'' . $self->{metasyntax} . '\'} = [ $m2 ]; ' . '} ' . '1 ' . '} else { False } ') } else { ($code = 'if $m2 { $MATCH.to = $m2.to; 1 } else { False } ') } }; 'do { ' . 'my $m2 = ' . $meth . '($str, $MATCH.to); ' . $code . '}' };
 sub set_captures_to_array { my $self = $_[0]; if (Main::bool(($self->{captures} > 0))) { ($self->{captures} = ($self->{captures} + 1)) } else {  } }
 }
 
@@ -67,7 +67,7 @@ sub set_captures_to_array { my $self = $_[0];  }
 {
 package Rul::Dot;
 sub new { shift; bless { @_ }, "Rul::Dot" }
-sub emit { my $self = $_[0]; '( (\'\' ne substr( $str, $MATCH.to, 1 )) ' . '  ?? (1 + ($MATCH.to = 1 + $MATCH.to ))' . '  !! false ' . ')' };
+sub emit { my $self = $_[0]; '( (\'\' ne substr( $str, $MATCH.to, 1 )) ' . '  ?? (1 + ($MATCH.to = 1 + $MATCH.to ))' . '  !! False ' . ')' };
 sub set_captures_to_array { my $self = $_[0];  }
 }
 

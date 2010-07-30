@@ -554,8 +554,8 @@ class Apply {
 
         if $code eq 'self'       { return 'v_self[0]' };
         if $code eq 'make'       { return "v_MATCH[0].__setattr__('v_capture', " ~ (@.arguments[0]).emit_python ~ ')' }
-        if $code eq 'false'      { return 'False' };
-        if $code eq 'true'       { return 'True' };
+        if $code eq 'False'      { return 'False' };
+        if $code eq 'True'       { return 'True' };
 
         if $code eq 'say'        { return 'mp6_say('   ~ (@.arguments.>>emit_python).join(', ') ~ ')' } 
         if $code eq 'print'      { return 'mp6_print(' ~ (@.arguments.>>emit_python).join(', ') ~ ')' }

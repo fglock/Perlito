@@ -10,7 +10,7 @@ class Perl5 {
         if $cond.isa( 'Val::Num' ) || $cond.isa( 'Val::Buf' ) || $cond.isa( 'Val::Int' ) 
           || $cond.isa( 'Val::Undef' )
           || ( $cond.isa( 'Apply' ) &&
-                ( ($cond.code eq 'bool') || ($cond.code eq 'true') || ($cond.code eq 'false')
+                ( ($cond.code eq 'bool') || ($cond.code eq 'True') || ($cond.code eq 'False')
                 ) 
              )
         {
@@ -370,8 +370,8 @@ class Apply {
         }
 
         if $code eq 'self'       { return '$self' };
-        if $code eq 'false'      { return '0' };
-        if $code eq 'true'       { return '1' };
+        if $code eq 'False'      { return '0' };
+        if $code eq 'True'       { return '1' };
 
         if $code eq 'make'       { return '($MATCH->{capture} = ('   ~ (@.arguments.>>emit).join(', ') ~ '))' };
 

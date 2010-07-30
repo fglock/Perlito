@@ -305,7 +305,9 @@ class Val::Int {
 
 class Val::Bit {
     has $.bit;
-    method emit_lisp { $.bit }
+    method emit_lisp { 
+        $.bit ?? 'T' !! 'nil'
+    }
 }
 
 class Val::Num {
@@ -558,7 +560,8 @@ class Apply {
         }
 
         if $code eq 'self'       { return 'sv-self' };
-        if $code eq 'false'      { return 'nil' };
+        if $code eq 'False'      { return 'nil' };
+        if $code eq 'True'       { return 'T'   };
         if $code eq 'make'       { return '(setf (sv-capture sv-MATCH) '  ~ $args ~ ')' };
         if $code eq 'substr'     { return '(sv-substr '                 ~ $args ~ ')' };
         if $code eq 'say'        { return '(mp-Main::sv-say (list '     ~ $args ~ '))' };

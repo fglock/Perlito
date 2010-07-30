@@ -16,7 +16,7 @@ class Rul {
             if ( $len ) {
                 '( ( \'' ~ $str ~ '\' eq substr( $str, $MATCH.to, ' ~ $len ~ ')) ' ~
                 '  ?? (1 + ( $MATCH.to = ' ~ $len ~ ' + $MATCH.to ))' ~
-                '  !! false ' ~
+                '  !! False ' ~
                 ')';
             }
             else {
@@ -133,7 +133,7 @@ class Rul::Subrule {
 
         my $code;
         if $.captures == 1 {
-            $code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} = $m2; 1 } else { false } ' 
+            $code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} = $m2; 1 } else { False } ' 
         }
         elsif $.captures > 1 {
             # TODO: capture level > 2
@@ -146,10 +146,10 @@ class Rul::Subrule {
                     ~       '$MATCH{\'' ~ $.metasyntax ~ '\'} = [ $m2 ]; '
                     ~   '} '
                     ~   '1 '
-                    ~ '} else { false } ' 
+                    ~ '} else { False } ' 
         }
         else {
-            $code = 'if $m2 { $MATCH.to = $m2.to; 1 } else { false } ' 
+            $code = 'if $m2 { $MATCH.to = $m2.to; 1 } else { False } ' 
         }
 
         'do { ' 
@@ -197,7 +197,7 @@ class Rul::Dot {
     method emit {
         '( (\'\' ne substr( $str, $MATCH.to, 1 )) ' ~
         '  ?? (1 + ($MATCH.to = 1 + $MATCH.to ))' ~
-        '  !! false ' ~
+        '  !! False ' ~
         ')';
     }
     method set_captures_to_array { }

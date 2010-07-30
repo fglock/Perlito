@@ -28,9 +28,8 @@ class Ruby {
     sub to_bool ($op, $args) {
         my @s;
         for @($args) -> $cond {
-            if ($cond.isa( 'Val::Int' )) 
+            if     ($cond.isa( 'Val::Int' )) 
                 || ($cond.isa( 'Val::Num' )) 
-                || ($cond.isa( 'Val::Bit' )) 
             {
                 push @s, '(' ~ $cond.emit_ruby ~ ' != 0 )';
             }
@@ -38,6 +37,7 @@ class Ruby {
                 || (($cond.isa( 'Apply' )) && ($cond.code eq 'infix:<&&>'))
                 || (($cond.isa( 'Apply' )) && ($cond.code eq 'prefix:<!>'))
                 || (($cond.isa( 'Apply' )) && ($cond.code eq 'prefix:<?>'))
+                || ($cond.isa( 'Val::Bit' )) 
             {
                 push @s, $cond.emit_ruby;
             }
@@ -291,9 +291,9 @@ class Val::Int {
 
 class Val::Bit {
     has $.bit;
-    method emit_ruby { $.bit }
+    method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ $.bit 
+        Ruby::tab($level) ~ ( $.bit ?? 'true' !! 'false' )
     }
 }
 
@@ -572,8 +572,8 @@ class Apply {
 
         if $code eq 'self'       { return 'self' };
         if $code eq 'make'       { return "v_MATCH.v_capture = " ~ (@.arguments[0]).emit_ruby ~ '' }
-        if $code eq 'false'      { return 'false' };
-        if $code eq 'true'       { return 'true' };
+        if $code eq 'False'      { return 'false' };
+        if $code eq 'True'       { return 'true' };
 
         if $code eq 'say'        { return 'puts'  ~ Ruby::to_str(' + ', @.arguments) } 
         if $code eq 'print'      { return 'print' ~ Ruby::to_str(' + ', @.arguments) }

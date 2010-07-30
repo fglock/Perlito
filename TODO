@@ -116,6 +116,3 @@ Semantics
 - In Perlito, @a = [] initializes @a to empty Array.
   This should create an array with an array inside.
 
-- Perlito implemented 'true' and 'false'
-  This should be 'True' and 'False'
-

@@ -155,7 +155,7 @@ package IO;
 
 package Main;
 
-    sub true { 1 }
+    sub True { 1 }
     sub Str {
         local $_;
         if ( ref($_[0]) ) {
