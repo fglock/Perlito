@@ -473,9 +473,9 @@ class While {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
            'for ( '
-        ~  ( $.init     ?? $.init.emit      ~ '; ' !! '; ' )
-        ~  ( $cond      ?? $cond.emit       ~ '; ' !! '; ' )
-        ~  ( $.continue ?? $.continue.emit  ~ ' '  !! ' '  )
+        ~  ( $.init     ?? $.init.emit           ~ '; ' !! '; ' )
+        ~  ( $cond      ?? Perl5::to_bool($cond).emit ~ '; ' !! '; ' )
+        ~  ( $.continue ?? $.continue.emit       ~ ' '  !! ' '  )
         ~  ') { ' 
         ~       (@.body.>>emit).join('; ') 
         ~ ' }'
