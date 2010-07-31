@@ -1,23 +1,47 @@
 use v6;
 
 class Perl5 {
-    sub to_bool ($cond) {
-        if ( $cond.isa( 'Var' ) && $cond.sigil eq '@' )
-          || $cond.isa( 'Lit::Array' )
-        {
-            return Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+    # sub to_bool ($cond) {
+    #     if ( $cond.isa( 'Var' ) && $cond.sigil eq '@' )
+    #       || $cond.isa( 'Lit::Array' )
+    #     {
+    #         return Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+    #     }
+    #     if $cond.isa( 'Val::Num' ) || $cond.isa( 'Val::Buf' ) || $cond.isa( 'Val::Int' ) 
+    #       || $cond.isa( 'Val::Undef' )
+    #       || ( $cond.isa( 'Apply' ) &&
+    #             ( ($cond.code eq 'bool') || ($cond.code eq 'True') || ($cond.code eq 'False')
+    #             ) 
+    #          )
+    #     {
+    #         return $cond;
+    #     }
+    #     return Apply.new( code => 'bool', arguments => [ $cond ] );
+    # }
+
+    sub to_bool ($op, $args) {
+        my @s;
+        for @($args) -> $cond {
+            if     ($cond.isa( 'Val::Int' ))
+                || ($cond.isa( 'Val::Num' ))
+            {
+                push @s, '(' ~ $cond.emit ~ ' != 0 )';
+            }
+            elsif  (($cond.isa( 'Apply' )) && ($cond.code eq 'infix:<||>'))
+                || (($cond.isa( 'Apply' )) && ($cond.code eq 'infix:<&&>'))
+                || (($cond.isa( 'Apply' )) && ($cond.code eq 'prefix:<!>'))
+                || (($cond.isa( 'Apply' )) && ($cond.code eq 'prefix:<?>'))
+                || ($cond.isa( 'Val::Bit' ))
+            {
+                push @s, $cond.emit;
+            }
+            else {
+                push @s, 'Main::bool(' ~ $cond.emit ~ ')';
+            }
         }
-        if $cond.isa( 'Val::Num' ) || $cond.isa( 'Val::Buf' ) || $cond.isa( 'Val::Int' ) 
-          || $cond.isa( 'Val::Undef' )
-          || ( $cond.isa( 'Apply' ) &&
-                ( ($cond.code eq 'bool') || ($cond.code eq 'True') || ($cond.code eq 'False')
-                ) 
-             )
-        {
-            return $cond;
-        }
-        return Apply.new( code => 'bool', arguments => [ $cond ] );
+        return '(' ~ @s.join($op) ~ ')'
     }
+
 }
 
 class CompUnit {
@@ -389,8 +413,8 @@ class Apply {
         if $code eq 'bool'       { return 'Main::bool('   ~ (@.arguments.>>emit).join(', ') ~ ')' };
 
         if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit).join(' ') ~ ')' };
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit).join(' ')     ~ ' ? 0 : 1)' };
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit).join(' ')     ~ ' ? 1 : 0)' };
+        if $code eq 'prefix:<!>' { return '!'  ~ Perl5::to_bool(' && ', @.arguments) };
+        if $code eq 'prefix:<?>' { return Perl5::to_bool(' && ', @.arguments) };
 
         if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
         if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit).join(' ')     ~ ' || []}' };
@@ -407,8 +431,8 @@ class Apply {
         if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit).join(' <= ')  ~ ')' };
         if $code eq 'infix:<x>'  { return '('  ~ (@.arguments.>>emit).join(' x ')   ~ ')' };
         
-        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit).join(' && ')  ~ ')' };
-        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit).join(' || ')  ~ ')' };
+        if $code eq 'infix:<&&>' { return Perl5::to_bool(' && ', @.arguments) };
+        if $code eq 'infix:<||>' { return Perl5::to_bool(' || ', @.arguments) };
         if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit).join(' eq ')  ~ ')' };
         if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit).join(' ne ')  ~ ')' };
  
@@ -422,7 +446,7 @@ class Apply {
             {
                 $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
             }
-            return '(' ~ Perl5::to_bool($cond).emit ~
+            return '(' ~ Perl5::to_bool(' && ', [$cond]) ~
                  ' ? ' ~ (@.arguments[1]).emit ~
                  ' : ' ~ (@.arguments[2]).emit ~
                   ')' };
@@ -451,7 +475,7 @@ class If {
             my $if = If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
             return $if.emit;
         }
-        return 'if (' ~ Perl5::to_bool($cond).emit ~ ') { ' 
+        return 'if (' ~ Perl5::to_bool(' && ', [$cond]) ~ ') { ' 
              ~   (@.body.>>emit).join(';') 
              ~ ' } ' 
              ~ 'else { ' 
@@ -474,7 +498,7 @@ class While {
         };
            'for ( '
         ~  ( $.init     ?? $.init.emit           ~ '; ' !! '; ' )
-        ~  ( $cond      ?? Perl5::to_bool($cond).emit ~ '; ' !! '; ' )
+        ~  ( $cond      ?? Perl5::to_bool(' && ', [$cond]) ~ '; ' !! '; ' )
         ~  ( $.continue ?? $.continue.emit       ~ ' '  !! ' '  )
         ~  ') { ' 
         ~       (@.body.>>emit).join('; ') 
