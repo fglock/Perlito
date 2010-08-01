@@ -206,6 +206,8 @@ package Main;
                 if ref($o) eq 'ARRAY';
             return '{' . join( ", ", map { perl($_) . ' => ' . perl($o->{$_}) } keys %$o ) . '}' 
                 if ref($o) eq 'HASH';
+            return 'sub { ... }'
+                if ref($o) eq 'CODE';
         }
         else {
             return $o if (0+$o) eq $o;
