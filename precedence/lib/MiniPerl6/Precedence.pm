@@ -37,6 +37,7 @@ class MiniPerl6::Precedence {
     # - pair vs. block, hash vs. closure
     # - adverbs  1 == 100 :fuzz(3)
     # - function call without parenthesis
+    # - '|' in prefix position
 
     my $prec = 100;
     add_op( 'infix',    '.',   $prec, { no_space_before => True } );
@@ -74,8 +75,10 @@ class MiniPerl6::Precedence {
     add_op( 'infix',    '>',   $prec, { assoc => 'chain' } );
     $prec = $prec - 1;
     add_op( 'infix',    '&&',  $prec );
+    add_op( 'infix',    '&',   $prec );
     $prec = $prec - 1;
     add_op( 'infix',    '||',  $prec );
+    add_op( 'infix',    '|',   $prec );
     $prec = $prec - 1;
     add_op( 'ternary',  '??',  $prec, { second_op => '!!' } );
     $prec = $prec - 1;
@@ -135,10 +138,10 @@ class MiniPerl6::Precedence {
                 }
                 my $arg = [ pop($num_stack), pop($num_stack) ];
                 if     (($arg[1]).isa('Hash'))
-                    && (($Assoc{'list'}){ ($arg[1]){op} })
-                    && ($last_op eq (($arg[1]){op})) 
+                    && (($Assoc{'list'}){ ($arg[1]){'op'} })
+                    && ($last_op eq (($arg[1]){'op'})) 
                 {
-                    say "LISTOP: '$last_op' '$arg[1]{op}'";
+                    say "LISTOP: '$last_op' '$arg[1]{'op'}'";
                     push $num_stack,
                       {
                         op  => $last_op,
@@ -248,12 +251,29 @@ class MiniPerl6::Precedence {
                     $exec.();
                 }
                 my $res = precedence_parse($get_token, ($Operator{'postcircumfix'}){$token} );
+                my $pre_term = pop($num_stack);
                 say $res.perl;
-                push $num_stack,
-                  {
-                    op  => ['postcircumfix', $token ~ ' ' ~ ($Operator{'postcircumfix'}){$token}],
-                    val => [ pop($num_stack), $res[0] ]
-                  };
+                say "pre_term: ", $pre_term.perl, " token: ", $token;
+                if ($token eq '(') 
+                    && $pre_term.isa('Hash') 
+                    && ((($pre_term{'op'})[0] eq 'prefix') || (($pre_term{'op'})[0] eq 'infix'))
+                    && (($pre_term{'op'})[1] eq '.')
+                {
+                    # term.meth(...)
+                    say "term.meth(...)";
+                    push $num_stack,
+                      {
+                        op  => $pre_term{'op'},
+                        val => [ @($pre_term{'val'}), $res[0] ]
+                      };
+                }
+                else {
+                    push $num_stack,
+                      {
+                        op  => ['postcircumfix', $token ~ ' ' ~ ($Operator{'postcircumfix'}){$token}],
+                        val => [ $pre_term, $res[0] ]
+                      };
+                }
                 $token = '0';
             }
             elsif ($Operator{'circumfix'}){$token} {
@@ -277,7 +297,9 @@ class MiniPerl6::Precedence {
                 say "  push num ",$token;
                 $num_stack.push( $token );
             }
-            elsif ($Operator{'infix'}){$token} {   
+            elsif ($Operator{'infix'}){$token}    
+                || ($Operator{'list'}){$token} 
+            {   
                 my $pr = $Precedence{$token};
                 say "  is token";
                 say "      : ", $op_stack.perl;
@@ -309,7 +331,7 @@ class MiniPerl6::Precedence {
                 # say "         op: ", $op_stack.perl;
             }
             else {
-                die "Unknown token: \"$token\"";
+                die "Unknown token: '", $token, "'";
             }
             $last = $token;
             $token = $get_token.();

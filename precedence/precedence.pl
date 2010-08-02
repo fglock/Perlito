@@ -51,5 +51,13 @@ class Main {
     say $res.perl;
     say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
 
+    # TODO - test .() .[] .{}
+    $expr = [ '$v', '.', '[' , '0', ',', '1', ',', '2', ',', '3', ',', ']' ];
+    $last_pos = 0;
+    say "expr: " ~ $expr.perl;
+    my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
+    say $res.perl;
+    say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
+
 }
 
