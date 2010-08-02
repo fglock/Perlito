@@ -137,15 +137,15 @@ class MiniPerl6::Precedence {
                     die "Missing value after operator";
                 }
                 my $arg = [ pop($num_stack), pop($num_stack) ];
+                say "Assoc list ", $arg.perl;
                 if     (($arg[1]).isa('Hash'))
-                    && (($Assoc{'list'}){ ($arg[1]){'op'} })
-                    && ($last_op eq (($arg[1]){'op'})) 
+                    && ($last_op[1] eq ((($arg[1]){'op'})[1])) 
                 {
                     say "LISTOP: '$last_op' '$arg[1]{'op'}'";
                     push $num_stack,
                       {
                         op  => $last_op,
-                        val => [ $arg[0], @( ($arg[1]){val} ) ]
+                        val => [ $arg[0], @( ($arg[1]){'val'} ) ]
                       };
                     return;
                 }
