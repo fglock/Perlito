@@ -1,6 +1,7 @@
 
 class Main {
     use MiniPerl6::Precedence;
+    use MiniPerl6::Grammar;
 
     my $expr;
     my $last_pos;
@@ -65,6 +66,32 @@ class Main {
     my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
     say $res.perl;
     say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
+
+    token op_any { '|' | '&' }
+    token term_any { <MiniPerl6::Grammar.ident> }
+    token op_or_term { <op_any> | <term_any> | ' ' }
+    method exp_parse ($str, $pos) {
+        say "exp_parse ",$str," at ",$pos;
+        my $expr;
+        my $last_pos = $pos;
+        my $get_token = sub {
+            my $m = self.op_or_term($str, $last_pos);
+            if !$m {
+                return undef;
+            }
+            my $v = ~$m;
+            $last_pos = $m.to;
+            say "get_token " ~ $v;
+            return $v;
+        };
+        my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
+        say $res.perl;
+        return MiniPerl6::Match.new( 
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
+            capture => $res)
+    } 
+    my $res = Main.exp_parse( 'a|b|c&x', 0 );
+    say ($$res).perl;
 
 }
 
