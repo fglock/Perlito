@@ -66,6 +66,12 @@ class MiniPerl6::Precedence {
     add_op( 'infix',    '+',   $prec );
     add_op( 'infix',    '-',   $prec );
     $prec = $prec - 1;
+    add_op( 'infix',    '&',   $prec, { assoc => 'list' } );
+    add_op( 'prefix',   '&',   $prec );
+    $prec = $prec - 1;
+    add_op( 'infix',    '|',   $prec, { assoc => 'list' } );
+    add_op( 'prefix',   '|',   $prec );
+    $prec = $prec - 1;
     add_op( 'infix',    'ne',  $prec, { assoc => 'chain' } );
     add_op( 'infix',    'eq',  $prec, { assoc => 'chain' } );
     add_op( 'infix',    '<=',  $prec, { assoc => 'chain' } );
@@ -75,10 +81,8 @@ class MiniPerl6::Precedence {
     add_op( 'infix',    '>',   $prec, { assoc => 'chain' } );
     $prec = $prec - 1;
     add_op( 'infix',    '&&',  $prec );
-    add_op( 'infix',    '&',   $prec );
     $prec = $prec - 1;
     add_op( 'infix',    '||',  $prec );
-    add_op( 'infix',    '|',   $prec );
     $prec = $prec - 1;
     add_op( 'ternary',  '??',  $prec, { second_op => '!!' } );
     $prec = $prec - 1;
@@ -133,12 +137,21 @@ class MiniPerl6::Precedence {
                   { op => $last_op, val => [ pop($num_stack) ] };
             }
             elsif ($Assoc{'list'}){ $last_op[1] } {
-                if $num_stack < 2 {
-                    die "Missing value after operator";
+                say "num_stack is ", $num_stack.elems;
+                my $arg;
+                if $num_stack.elems < 2 {
+                    # die "Missing value after operator";
+                    $arg = [ pop($num_stack) ];
+                    push $num_stack, { op => [ 'postfix', $last_op[1] ], val => $arg };
+                    return;
                 }
-                my $arg = [ pop($num_stack), pop($num_stack) ];
+                else {
+                    $arg = [ pop($num_stack), pop($num_stack) ];
+                }
                 say "Assoc list ", $arg.perl;
                 if     (($arg[1]).isa('Hash'))
+                    && ($last_op[0] eq 'infix') 
+                    && (((($arg[1]){'op'})[0]) eq 'list') 
                     && ($last_op[1] eq ((($arg[1]){'op'})[1])) 
                 {
                     say "LISTOP: '$last_op' '$arg[1]{'op'}'";
@@ -149,7 +162,7 @@ class MiniPerl6::Precedence {
                       };
                     return;
                 }
-                push $num_stack, { op => $last_op, val => $arg };
+                push $num_stack, { op => ['list', $last_op[1]], val => $arg };
             }
             elsif ($Assoc{'chain'}){ $last_op } {
                 if $num_stack < 2 {
@@ -170,7 +183,6 @@ class MiniPerl6::Precedence {
                 }
                 push $num_stack, { op => ['infix', $last_op], val => $arg };
             }
-            # elsif ($Operator{'ternary'}){ $last_op }  {
             elsif $last_op[0] eq 'ternary' {
                 say "EXEC TERNARY";
                 say "  $num_stack   $last_op";
@@ -185,7 +197,7 @@ class MiniPerl6::Precedence {
             }
             else {
                 say "EXEC INFIX";
-                if ( $num_stack < 2 ) {
+                if ( $num_stack.elems < 2 ) {
                     die "Missing value after operator";
                 }
                 push $num_stack,

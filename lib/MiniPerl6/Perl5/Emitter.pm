@@ -356,6 +356,9 @@ class Call {
         if $.method eq 'shift' { 
             return 'shift( @{' ~ $invocant ~ '} )' 
         }
+        if $.method eq 'elems' { 
+            return 'scalar( @{' ~ $invocant ~ '} )' 
+        }
 
         my $meth = $.method;
         if  $meth eq 'postcircumfix:<( )>'  {
