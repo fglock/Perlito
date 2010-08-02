@@ -5,6 +5,7 @@ class MiniPerl6::Precedence {
     my $Precedence;    # integer 0..100
     my $Assoc;         # right, left, list
     my $Reserved;
+    my $Allow_space_before;
     
     sub add_op ( $fixity, $name, $precedence, $param ) {
         if !(defined($param)) {
@@ -17,6 +18,7 @@ class MiniPerl6::Precedence {
         # $Precedence{$full_name}   = $precedence;
         $Precedence{$name}        = $precedence;
         ($Assoc{$assoc}){$name}     = 1;
+        ($Allow_space_before{$fixity}){$name} = $param{'no_space_before'} ?? False !! True;
         $Reserved{$name}          = 1;
         # $Reserved{$full_name}     = 1;
         if $second_op {
@@ -34,70 +36,73 @@ class MiniPerl6::Precedence {
     # - parentheses vs. Parcel (x) (x,)
     # - pair vs. block, hash vs. closure
     # - adverbs  1 == 100 :fuzz(3)
+    # - function call without parenthesis
 
     my $prec = 100;
-    add_op( 'infix', '.', $prec );
-    add_op( 'postcircumfix', '(', $prec, { second_op => ')' } );
-    add_op( 'postcircumfix', '{', $prec, { second_op => '}' } );
-    add_op( 'postcircumfix', '[', $prec, { second_op => ']' } );
+    add_op( 'infix',    '.',   $prec, { no_space_before => True } );
+    add_op( 'prefix',   '.',   $prec );
+    add_op( 'postcircumfix', '(', $prec, { second_op => ')', no_space_before => True } );
+    add_op( 'postcircumfix', '{', $prec, { second_op => '}', no_space_before => True } );
+    add_op( 'postcircumfix', '[', $prec, { second_op => ']', no_space_before => True } );
     $prec = $prec - 1;
-    add_op( 'prefix',  '++', $prec );
-    add_op( 'prefix',  '--', $prec );
-    add_op( 'postfix', '++', $prec );
-    add_op( 'postfix', '--', $prec );
+    add_op( 'prefix',   '++',  $prec );
+    add_op( 'prefix',   '--',  $prec );
+    add_op( 'postfix',  '++',  $prec, { no_space_before => True } );
+    add_op( 'postfix',  '--',  $prec, { no_space_before => True } );
     $prec = $prec - 1;
-    add_op( 'infix', '**', $prec, { assoc => 'right' } );
+    add_op( 'infix',    '**',  $prec, { assoc => 'right' } );
     $prec = $prec - 1;
-    add_op( 'prefix', '+', $prec );
-    add_op( 'prefix', '-', $prec );
-    add_op( 'prefix', '$', $prec );
-    add_op( 'prefix', '@', $prec );
-    add_op( 'prefix', '%', $prec );
-    add_op( 'prefix', '!', $prec );
+    add_op( 'prefix',   '+',   $prec );
+    add_op( 'prefix',   '-',   $prec );
+    add_op( 'prefix',   '$',   $prec );
+    add_op( 'prefix',   '@',   $prec );
+    add_op( 'prefix',   '%',   $prec );
+    add_op( 'prefix',   '!',   $prec );
     $prec = $prec - 1;
-    add_op( 'infix', '*', $prec );
-    add_op( 'infix', '/', $prec );
+    add_op( 'infix',    '*',   $prec );
+    add_op( 'infix',    '/',   $prec );
     $prec = $prec - 1;
-    add_op( 'infix', '+', $prec );
-    add_op( 'infix', '-', $prec );
+    add_op( 'infix',    '+',   $prec );
+    add_op( 'infix',    '-',   $prec );
     $prec = $prec - 1;
-    add_op( 'infix', 'ne', $prec, { assoc => 'chain' } );
-    add_op( 'infix', 'eq', $prec, { assoc => 'chain' } );
-    add_op( 'infix', '<=', $prec, { assoc => 'chain' } );
-    add_op( 'infix', '>=', $prec, { assoc => 'chain' } );
-    add_op( 'infix', '==', $prec, { assoc => 'chain' } );
-    add_op( 'infix', '<',  $prec, { assoc => 'chain' } );
-    add_op( 'infix', '>',  $prec, { assoc => 'chain' } );
+    add_op( 'infix',    'ne',  $prec, { assoc => 'chain' } );
+    add_op( 'infix',    'eq',  $prec, { assoc => 'chain' } );
+    add_op( 'infix',    '<=',  $prec, { assoc => 'chain' } );
+    add_op( 'infix',    '>=',  $prec, { assoc => 'chain' } );
+    add_op( 'infix',    '==',  $prec, { assoc => 'chain' } );
+    add_op( 'infix',    '<',   $prec, { assoc => 'chain' } );
+    add_op( 'infix',    '>',   $prec, { assoc => 'chain' } );
     $prec = $prec - 1;
-    add_op( 'infix', '&&', $prec );
+    add_op( 'infix',    '&&',  $prec );
     $prec = $prec - 1;
-    add_op( 'infix', '||', $prec );
+    add_op( 'infix',    '||',  $prec );
     $prec = $prec - 1;
-    add_op( 'ternary', '??', $prec, { second_op => '!!' } );
+    add_op( 'ternary',  '??',  $prec, { second_op => '!!' } );
     $prec = $prec - 1;
-    add_op( 'infix', '=', $prec, { assoc => 'right' } );
-    add_op( 'infix', ':=', $prec, { assoc => 'right' } );
+    add_op( 'infix',    '=',   $prec, { assoc => 'right' } );
+    add_op( 'infix',    ':=',  $prec, { assoc => 'right' } );
     $prec = $prec - 1;
-    add_op( 'prefix', 'not', $prec );
+    add_op( 'prefix',   'not', $prec );
     $prec = $prec - 1;
-    add_op( 'list', ',', $prec, { assoc => 'list' } );
+    add_op( 'list',     ',',   $prec, { assoc => 'list' } );
     $prec = $prec - 1;
-    add_op( 'list', ';', $prec, { assoc => 'list' } );
+    add_op( 'list',     ';',   $prec, { assoc => 'list' } );
     $prec = $prec - 1;
-    add_op( 'infix', 'and', $prec );
+    add_op( 'infix',    'and', $prec );
     $prec = $prec - 1;
-    add_op( 'infix', 'or', $prec );
+    add_op( 'infix',    'or',  $prec );
     $prec = $prec - 1;
-    add_op( 'circumfix', '(', $prec, { second_op => ')' } );
-    add_op( 'circumfix', '[', $prec, { second_op => ']' } );
-    add_op( 'circumfix', '{', $prec, { second_op => '}' } );
+    add_op( 'circumfix', '(',  $prec, { second_op => ')' } );
+    add_op( 'circumfix', '[',  $prec, { second_op => ']' } );
+    add_op( 'circumfix', '{',  $prec, { second_op => '}' } );
     $prec = $prec - 1;
-    add_op( 'infix', '*start*', $prec );
+    add_op( 'infix',    '*start*', $prec );
     
     # say $Operator.perl;
     # say $Precedence.perl;    # integer
     # say $Assoc.perl;         # right, left, list
     # say $Reserved.perl;
+    say $Allow_space_before.perl;
 
     sub is_term ($s) {
         !($Reserved{$s})
@@ -199,9 +204,15 @@ class MiniPerl6::Precedence {
             if ($Operator{'prefix'}){$token}
                 && ( ($last eq '*start*') || !(is_term($last)) )
             {
+                say "PREFIX";
                 $op_stack.unshift( ['prefix', $token] );
             }
-            elsif ($Operator{'postfix'}){$token} && is_term($last) && !$last_has_space {
+            elsif ($Operator{'postfix'}){$token} && is_term($last) 
+                && (  ($Allow_space_before{'postfix'}){$token} 
+                   || !$last_has_space 
+                   )
+            {
+                say "POSTFIX";
                 my $pr = $Precedence{$token};
                 while $op_stack 
                     && ($pr <= $Precedence{ ($op_stack[0])[1] })
@@ -223,9 +234,13 @@ class MiniPerl6::Precedence {
                 push $num_stack, $res;
                 $op_stack.unshift( ['ternary', $token ~ ' ' ~ ($Operator{'ternary'}){$token} ] );
             }
-            elsif ($Operator{'postcircumfix'}){$token} && is_term($last) && !$last_has_space {
+            elsif ($Operator{'postcircumfix'}){$token} && is_term($last) 
+                && (  ($Allow_space_before{'postcircumfix'}){$token} 
+                   || !$last_has_space 
+                   )
+            {
                 # last term was a value
-                say "postcircumfix start: $token ";
+                say "postcircumfix start: '",$token,"' space:", $last_has_space, " allow_space:", (($Allow_space_before{'postcircumfix'}){$token});
                 my $pr = $Precedence{$token};
                 while $op_stack 
                     && ( $pr <= $Precedence{ ($op_stack[0])[1] } )
@@ -242,6 +257,9 @@ class MiniPerl6::Precedence {
                 $token = '0';
             }
             elsif ($Operator{'circumfix'}){$token} {
+                if ( is_term($last) ) {
+                    die "Value tokens must be separated by an operator";
+                }
                 say "circumfix start: $token ";
                 my $res = precedence_parse($get_token, ($Operator{'circumfix'}){$token} );
                 say $res.perl;
@@ -259,10 +277,18 @@ class MiniPerl6::Precedence {
                 say "  push num ",$token;
                 $num_stack.push( $token );
             }
-            elsif $Precedence{$token} > 1 {
+            elsif ($Operator{'infix'}){$token} {   
                 my $pr = $Precedence{$token};
                 say "  is token";
                 say "      : ", $op_stack.perl;
+
+                say "infix start: '",$token,"' space:", $last_has_space, " allow_space:", (($Allow_space_before{'infix'}){$token});
+                if $last_has_space
+                    && !( ($Allow_space_before{'postcircumfix'}){$token} )
+                {
+                    die "Value tokens must be separated by an operator";
+                }
+
                 if ($Assoc{'right'}){$token} {
                     while $op_stack 
                         && ( $pr < $Precedence{ ($op_stack[0])[1] } )
