@@ -103,10 +103,15 @@ class MiniPerl6::Precedence {
         !($Reserved{$s})
     }
     
+    sub is_space ($s) {
+        ($s eq '') || substr($s, 0, 1) eq ' '
+    }
+
     sub precedence_parse ($get_token, $end_token) {
         my $op_stack  = [];   # [category, name]
         my $num_stack = [];
         my $last = "*start*";
+        my $last_has_space = False;
     
         my $exec = sub {
             my $last_op = $op_stack.shift;
@@ -185,6 +190,9 @@ class MiniPerl6::Precedence {
     
         say "op_stack init ", $op_stack.perl;
         my $token = $get_token.();
+        if is_space($token) {
+            $token = $get_token.()
+        }
         while ($token ne '') && ($token ne $end_token) {
             say "token: '",$last,"' '",$token,"'";
             say "         op: ", $op_stack.perl;
@@ -193,7 +201,7 @@ class MiniPerl6::Precedence {
             {
                 $op_stack.unshift( ['prefix', $token] );
             }
-            elsif ($Operator{'postfix'}){$token} && is_term($last) {
+            elsif ($Operator{'postfix'}){$token} && is_term($last) && !$last_has_space {
                 my $pr = $Precedence{$token};
                 while $op_stack 
                     && ($pr <= $Precedence{ ($op_stack[0])[1] })
@@ -215,7 +223,7 @@ class MiniPerl6::Precedence {
                 push $num_stack, $res;
                 $op_stack.unshift( ['ternary', $token ~ ' ' ~ ($Operator{'ternary'}){$token} ] );
             }
-            elsif ($Operator{'postcircumfix'}){$token} && is_term($last) {
+            elsif ($Operator{'postcircumfix'}){$token} && is_term($last) && !$last_has_space {
                 # last term was a value
                 say "postcircumfix start: $token ";
                 my $pr = $Precedence{$token};
@@ -228,7 +236,7 @@ class MiniPerl6::Precedence {
                 say $res.perl;
                 push $num_stack,
                   {
-                    op  => 'postcircumfix:' ~ $token ~ ' ' ~ ($Operator{'postcircumfix'}){$token},
+                    op  => ['postcircumfix', $token ~ ' ' ~ ($Operator{'postcircumfix'}){$token}],
                     val => [ pop($num_stack), $res[0] ]
                   };
                 $token = '0';
@@ -279,6 +287,13 @@ class MiniPerl6::Precedence {
             }
             $last = $token;
             $token = $get_token.();
+            if is_space($token) {
+                $token = $get_token.()
+                $last_has_space = True;
+            }
+            else {
+                $last_has_space = False;
+            }
         }
         say "FINISH AT '",$token,"'";
         say "op_stack ", $op_stack.perl;

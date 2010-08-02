@@ -37,7 +37,7 @@ class Main {
     say $res.perl;
     say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
 
-    $expr = [ '$a', '[', '4', ']', '.', 'meth', '(', '123', ')' ];
+    $expr = [ ' ', '$a', '[', '4', ']', '.', 'meth', '(', '123', ')' ];
     $last_pos = 0;
     say "expr: " ~ $expr.perl;
     my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
