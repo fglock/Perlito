@@ -232,7 +232,7 @@ class MiniPerl6::Precedence {
         while $op_stack {
             $reduce.($op_stack, $num_stack);
         }
-        return $num_stack;
+        return $num_stack[0];
     }
 }
 

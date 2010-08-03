@@ -26,26 +26,37 @@ class Main {
         elsif MiniPerl6::Precedence::is_assoc_type('list', $last_op[1]) {
             my $arg;
             if $num_stack.elems < 2 {
-                $arg = [ pop($num_stack) ];
-                push $num_stack, { op => [ 'postfix', $last_op[1] ], val => $arg };
+                $arg = pop($num_stack);
+                push $num_stack, 
+                    Apply.new(
+                        namespace => '',
+                        code      => 'postfix:<' ~ $last_op[1] ~ '>',
+                        arguments => [ pop($num_stack) ],
+                      );
                 return;
             }
             else {
-                $arg = [ pop($num_stack), pop($num_stack) ];
+                my $v2 = pop($num_stack);
+                $arg = [ pop($num_stack), $v2 ];
             }
-            if     (($arg[1]).isa('Hash'))
+            if     (($arg[0]).isa('Apply'))
                 && ($last_op[0] eq 'infix') 
-                && (((($arg[1]){'op'})[0]) eq 'list') 
-                && ($last_op[1] eq ((($arg[1]){'op'})[1])) 
+                && (($arg[0]).code eq ('list:<' ~ $last_op[1] ~ '>')) 
             {
                 push $num_stack,
-                  {
-                    op  => $last_op,
-                    val => [ $arg[0], @( ($arg[1]){'val'} ) ]
-                  };
+                    Apply.new(
+                        namespace => '',
+                        code      => ($arg[0]).code,
+                        arguments => [ @( ($arg[0]).arguments ), $arg[1] ],
+                      );
                 return;
             }
-            push $num_stack, { op => ['list', $last_op[1]], val => $arg };
+            push $num_stack, 
+                Apply.new(
+                    namespace => '',
+                    code      => 'list:<' ~ $last_op[1] ~ '>',
+                    arguments => $arg,
+                  );
         }
         elsif MiniPerl6::Precedence::is_assoc_type('chain', $last_op[1]) {
             if $num_stack < 2 {
