@@ -16,7 +16,7 @@ class Main {
         return $v;
     };
 
-    $expr = [ '1', '??', '$a', '*', '$b', '!!', '9' ];
+    $expr = [ ['term','1'], ['op','??'], ['term','$a'], ['op','*'], ['term','$b'], ['op','!!'], ['term','9'] ];
     $last_pos = 0;
     say "expr: " ~ $expr.perl;
     my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
@@ -24,64 +24,25 @@ class Main {
     say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
 
 
-    $expr = [ '(', '3', '**', '4', '**', '6', ')' ];
-    $last_pos = 0;
-    say "expr: " ~ $expr.perl;
-    my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
-    say $res.perl;
-    say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
-
-    $expr = [ '$a', '[', '4', ']', '.', 'meth' ];
-    $last_pos = 0;
-    say "expr: " ~ $expr.perl;
-    my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
-    say $res.perl;
-    say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
-
-    $expr = [ ' ', '$a', '[', '4', ']', '.', 'meth', '(', '123', ')' ];
-    $last_pos = 0;
-    say "expr: " ~ $expr.perl;
-    my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
-    say $res.perl;
-    say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
-
-    $expr = [ '.', 'meth', '(', '123', ')' ];
-    $last_pos = 0;
-    say "expr: " ~ $expr.perl;
-    my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
-    say $res.perl;
-    say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
-
-    # TODO - test .() .[] .{}
-    $expr = [ '$v', '.', '[' , '0', ',', '1', ',', ',', '2', ',', '3', ',', ']' ];
-    $last_pos = 0;
-    say "expr: " ~ $expr.perl;
-    my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
-    say $res.perl;
-    say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
-
-    $expr = [ '$v', '.', '[' , '|', '1', '|', '2', '|', '3', '|', '4', ']' ];
-    $last_pos = 0;
-    say "expr: " ~ $expr.perl;
-    my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
-    say $res.perl;
-    say "expr at ", $last_pos, " '", $expr[$last_pos], "'";
-
-    token op_any { '|' | '&' }
-    token term_any { <MiniPerl6::Grammar.ident> }
-    token op_or_term { <op_any> | <term_any> | ' ' }
+    token lexer { 
+        | '|'   { make [ 'op', '|' ] }
+        | '&'   { make [ 'op', '&' ] }
+        | <MiniPerl6::Grammar.ident> 
+                { make [ 'term', ~$<MiniPerl6::Grammar.ident> ] }
+        | ' '+    { make [ 'space', ' ' ] }
+    }
     method exp_parse ($str, $pos) {
         say "exp_parse ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
-            my $m = self.op_or_term($str, $last_pos);
+            my $m = self.lexer($str, $last_pos);
             if !$m {
                 return undef;
             }
-            my $v = ~$m;
+            my $v = $$m;
             $last_pos = $m.to;
-            say "get_token " ~ $v;
+            say "lexer " ~ $v.perl;
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, '');
