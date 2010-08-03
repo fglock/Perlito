@@ -113,11 +113,11 @@ class Main {
           ]
         | <MiniPerl6::Grammar.var_ident>    { make $$<MiniPerl6::Grammar.var_ident> }     
         | <MiniPerl6::Grammar.val>          { make $$<MiniPerl6::Grammar.val>   }
-        | '(' <paren_parse>                 { make $$<paren_parse>              }
+        | '(' <paren_parse> ')'             { make $$<paren_parse>              }
     }
     token term_postcircumfix { 
         | '.' <term_base>               { make { send_method      => $$<term_base>   } }
-        | '('  <paren_parse>            { make { call_with_params => $$<paren_parse> } }
+        | '('  <paren_parse> ')'        { make { call_with_params => $$<paren_parse> } }
     }
     token term { 
         <term_base> <term_postcircumfix>*
@@ -134,17 +134,20 @@ class Main {
         | '+'                           { make [ 'op',      '+' ] }
         | '|'                           { make [ 'op',      '|' ] }
         | '&'                           { make [ 'op',      '&' ] }
-        | '??' <ternary_parse>          { make [ 'op',      '??',   $$<ternary_parse> ] }
+        | '??' <ternary_parse> '!!'     { make [ 'op',      '??',   $$<ternary_parse> ] }
+        | 'and' <before ' '|'('>  { make [ 'op',      'and' ] }
+        | 'or'  <before ' '|'('>  { make [ 'op',      'or'  ] }
+        | 'not' <before ' '|'('>  { make [ 'op',      'not' ] }
     }
 
     token list_lexer { 
+        | 'and' <before ' '|'('>  { make [ 'end',     'and' ] }
+        | 'or'  <before ' '|'('>  { make [ 'end',     'or'  ] }
+        | <operator>                    { make $$<operator> }
         | <term>                        { make [ 'term',    $$<term> ] }
         | ' '+                          { make [ 'space',   ' ' ] }
         | ')'                           { make [ 'end',     ')' ] }
         | ';'                           { make [ 'end',     ';' ] }
-        | 'or'                          { make [ 'end',     'or'  ] }
-        | 'and'                         { make [ 'end',     'and' ] }
-        | <operator>                    { make $$<operator> }
     }
     method list_parse ($str, $pos) {
         say "list_parse ",$str," at ",$pos;
@@ -156,7 +159,9 @@ class Main {
                 return undef;
             }
             my $v = $$m;
-            $last_pos = $m.to;
+            if $v[0] ne 'end' {
+                $last_pos = $m.to;
+            }
             say "list_lexer " ~ $v.perl;
             return $v;
         };
@@ -168,10 +173,10 @@ class Main {
 
 
     token ternary_lexer { 
+        | <operator>                    { make $$<operator> }
         | <term>                        { make [ 'term',    $$<term> ] }
         | ' '+                          { make [ 'space',   ' ' ] }
         | '!!'                          { make [ 'end',     ')' ] }
-        | <operator>                    { make $$<operator> }
     }
     method ternary_parse ($str, $pos) {
         say "ternary_parse ",$str," at ",$pos;
@@ -183,7 +188,9 @@ class Main {
                 die "Expected !! in ternary";
             }
             my $v = $$m;
-            $last_pos = $m.to;
+            if $v[0] ne 'end' {
+                $last_pos = $m.to;
+            }
             say "ternary_lexer " ~ $v.perl;
             return $v;
         };
@@ -195,10 +202,10 @@ class Main {
 
 
     token paren_lexer { 
+        | <operator>                    { make $$<operator> }
         | <term>                        { make [ 'term',    $$<term> ] }
         | ' '+                          { make [ 'space',   ' ' ] }
         | ')'                           { make [ 'end',     ')' ] }
-        | <operator>                    { make $$<operator> }
     }
     method paren_parse ($str, $pos) {
         say "paren_parse ",$str," at ",$pos;
@@ -210,7 +217,9 @@ class Main {
                 die "Expected closing parenthesis";
             }
             my $v = $$m;
-            $last_pos = $m.to;
+            if $v[0] ne 'end' {
+                $last_pos = $m.to;
+            }
             say "paren_lexer " ~ $v.perl;
             return $v;
         };
@@ -222,11 +231,11 @@ class Main {
 
 
     token lexer { 
+        | <operator>                    { make $$<operator> }
         | <term>                        { make [ 'term',    $$<term> ] }
         | ' '+                          { make [ 'space',   ' ' ] }
         | ';'                           { make [ 'end',     ';' ] }
         | '}'                           { make [ 'end',     '}' ] }
-        | <operator>                    { make $$<operator> }
     }
     method exp_parse ($str, $pos) {
         say "exp_parse ",$str," at ",$pos;
@@ -238,7 +247,9 @@ class Main {
                 return undef;
             }
             my $v = $$m;
-            $last_pos = $m.to;
+            if $v[0] ne 'end' {
+                $last_pos = $m.to;
+            }
             say "lexer " ~ $v.perl;
             return $v;
         };
@@ -264,7 +275,7 @@ class Main {
     say ($$res).perl;
     say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
 
-    my $s = '; a 1,2,3  ;...';
+    my $s = '; a 1,2,3 and b ;...';
     my $res = Main.exp_parse( $s, 1 );
     say ($$res).perl;
     say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
