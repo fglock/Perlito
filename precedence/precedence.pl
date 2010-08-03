@@ -77,14 +77,16 @@ class Main {
             push $num_stack, { op => ['infix', $last_op], val => $arg };
         }
         elsif $last_op[0] eq 'ternary' {
-            if ( $num_stack < 3 ) {
+            if ( $num_stack < 2 ) {
                 die "Missing value after ternary operator";
             }
+            my $v2 = pop($num_stack);
             push $num_stack,
-              {
-                op  => $last_op,
-                val => [ pop($num_stack), pop($num_stack), pop($num_stack) ]
-              };
+                Apply.new(
+                    namespace => '',
+                    code      => 'ternary:<' ~ $last_op[1] ~ ' ' ~ $last_op[2] ~ '>',
+                    arguments => [ pop($num_stack), $last_op[3], $v2 ],
+                  );
         }
         else {
             if ( $num_stack.elems < 2 ) {
@@ -102,12 +104,44 @@ class Main {
     
 
 
+    token ternary_lexer { 
+        | '+'                           { make [ 'op',      '+' ] }
+        | '|'                           { make [ 'op',      '|' ] }
+        | '&'                           { make [ 'op',      '&' ] }
+        | <MiniPerl6::Grammar.ident>    { make [ 'term',    ~$<MiniPerl6::Grammar.ident> ] }
+        | '(' <paren_parse>             { make [ 'term',    $$<paren_parse> ] }
+        | '??' <ternary_parse>          { make [ 'op',      '??',   $$<ternary_parse> ] }
+        | ' '+                          { make [ 'space',   ' ' ] }
+        | '!!'                          { make [ 'end',     ')' ] }
+    }
+    method ternary_parse ($str, $pos) {
+        say "ternary_parse ",$str," at ",$pos;
+        my $expr;
+        my $last_pos = $pos;
+        my $get_token = sub {
+            my $m = self.ternary_lexer($str, $last_pos);
+            if !$m {
+                die "Expected !! in ternary";
+            }
+            my $v = $$m;
+            $last_pos = $m.to;
+            say "ternary_lexer " ~ $v.perl;
+            return $v;
+        };
+        my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
+        say $res.perl;
+        return MiniPerl6::Match.new( 
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+    }
+
+
     token paren_lexer { 
         | '+'                           { make [ 'op',      '+' ] }
         | '|'                           { make [ 'op',      '|' ] }
         | '&'                           { make [ 'op',      '&' ] }
         | <MiniPerl6::Grammar.ident>    { make [ 'term',    ~$<MiniPerl6::Grammar.ident> ] }
         | '(' <paren_parse>             { make [ 'term',    $$<paren_parse> ] }
+        | '??' <ternary_parse>          { make [ 'op',      '??',   $$<ternary_parse> ] }
         | ' '+                          { make [ 'space',   ' ' ] }
         | ')'                           { make [ 'end',     ')' ] }
     }
@@ -138,6 +172,7 @@ class Main {
         | '&'                           { make [ 'op',      '&' ] }
         | <MiniPerl6::Grammar.ident>    { make [ 'term',    ~$<MiniPerl6::Grammar.ident> ] }
         | '(' <paren_parse>             { make [ 'term',    $$<paren_parse> ] }
+        | '??' <ternary_parse>          { make [ 'op',      '??',   $$<ternary_parse> ] }
         | ' '+                          { make [ 'space',   ' ' ] }
         | ';'                           { make [ 'end',     ';' ] }
         | '}'                           { make [ 'end',     '}' ] }
@@ -164,6 +199,11 @@ class Main {
 
 
     my $s = '; a|b| (c+y) & x ;...';
+    my $res = Main.exp_parse( $s, 1 );
+    say ($$res).perl;
+    say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
+
+    my $s = '; aaa ?? xxx !! yyy  ;...';
     my $res = Main.exp_parse( $s, 1 );
     say ($$res).perl;
     say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);

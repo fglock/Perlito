@@ -129,17 +129,6 @@ class MiniPerl6::Precedence {
                 }
                 $op_stack.unshift( ['postfix', $token[1]] );
             }
-            elsif ($Operator{'ternary'}){$token[1]} {
-                my $pr = $Precedence{$token[1]};
-                while $op_stack 
-                    && ($pr <= $Precedence{ ($op_stack[0])[1] } )
-                {
-                    $reduce.($op_stack, $num_stack);
-                }
-                my $res = (precedence_parse($get_token))[0];
-                push $num_stack, $res;
-                $op_stack.unshift( ['ternary', $token[1] ~ ' ' ~ ($Operator{'ternary'}){$token[1]} ] );
-            }
             elsif ($Operator{'postcircumfix'}){$token[1]} && (($last[0]) eq 'term') 
                 && (  ($Allow_space_before{'postcircumfix'}){$token[1]} 
                    || !$last_has_space 
@@ -193,8 +182,9 @@ class MiniPerl6::Precedence {
                 }
                 $num_stack.push( $token[1] );
             }
-            elsif ($Operator{'infix'}){$token[1]}    
+            elsif  ($Operator{'infix'}){$token[1]}    
                 || ($Operator{'list'}){$token[1]} 
+                || ($Operator{'ternary'}){$token[1]} 
             {   
                 my $pr = $Precedence{$token[1]};
                 if ($Assoc{'right'}){$token[1]} {
@@ -211,7 +201,15 @@ class MiniPerl6::Precedence {
                         $reduce.($op_stack, $num_stack);
                     }
                 }
-                $op_stack.unshift( ['infix', $token[1]] );
+                if ($Operator{'ternary'}){$token[1]} {
+                    $op_stack.unshift( [ 'ternary', 
+                                         $token[1],
+                                         ($Operator{'ternary'}){$token[1]}, 
+                                         $token[2] ] );
+                }
+                else {
+                    $op_stack.unshift( ['infix', $token[1]] );
+                }
             }
             else {
                 die "Unknown token: '", $token[1], "'";
