@@ -6,6 +6,10 @@ class MiniPerl6::Precedence {
     my $Assoc;         # right, left, list
     my $Allow_space_before;
     
+    sub is_assoc_type ($assoc_type, $op_name) {
+        return ($Assoc{$assoc_type}){$op_name} 
+    }
+
     sub add_op ( $fixity, $name, $precedence, $param ) {
         if !(defined($param)) {
             $param = {}
@@ -97,86 +101,11 @@ class MiniPerl6::Precedence {
     $prec = $prec - 1;
     add_op( 'infix',    '*start*', $prec );
     
-    sub precedence_parse ($get_token) {
+    sub precedence_parse ($get_token, $reduce) {
         my $op_stack  = [];   # [category, name]
         my $num_stack = [];
         my $last = ['op', '*start*'];
         my $last_has_space = False;
-    
-        my $reduce = sub {
-            my $last_op = $op_stack.shift;
-            if $last_op[0] eq 'prefix' {
-                push $num_stack,
-                  { op => $last_op, val => [ pop($num_stack) ] };
-            }
-            elsif $last_op[0] eq 'postfix' {
-                push $num_stack,
-                  { op => $last_op, val => [ pop($num_stack) ] };
-            }
-            elsif ($Assoc{'list'}){ $last_op[1] } {
-                my $arg;
-                if $num_stack.elems < 2 {
-                    $arg = [ pop($num_stack) ];
-                    push $num_stack, { op => [ 'postfix', $last_op[1] ], val => $arg };
-                    return;
-                }
-                else {
-                    $arg = [ pop($num_stack), pop($num_stack) ];
-                }
-                if     (($arg[1]).isa('Hash'))
-                    && ($last_op[0] eq 'infix') 
-                    && (((($arg[1]){'op'})[0]) eq 'list') 
-                    && ($last_op[1] eq ((($arg[1]){'op'})[1])) 
-                {
-                    push $num_stack,
-                      {
-                        op  => $last_op,
-                        val => [ $arg[0], @( ($arg[1]){'val'} ) ]
-                      };
-                    return;
-                }
-                push $num_stack, { op => ['list', $last_op[1]], val => $arg };
-            }
-            elsif ($Assoc{'chain'}){ $last_op } {
-                if $num_stack < 2 {
-                    die "Missing value after operator";
-                }
-                my $arg = [ pop($num_stack), pop($num_stack) ];
-                if ($arg[1]).isa('Hash')
-                    && ($Assoc{'chain'}){ ($arg[1]){op} } 
-                {
-                    push $num_stack,
-                      {
-                        op    => ['infix', $last_op],
-                        val   => [ $arg[0] ],
-                        chain => $arg[1]
-                      };
-                    return;
-                }
-                push $num_stack, { op => ['infix', $last_op], val => $arg };
-            }
-            elsif $last_op[0] eq 'ternary' {
-                if ( $num_stack < 3 ) {
-                    die "Missing value after ternary operator";
-                }
-                push $num_stack,
-                  {
-                    op  => $last_op,
-                    val => [ pop($num_stack), pop($num_stack), pop($num_stack) ]
-                  };
-            }
-            else {
-                if ( $num_stack.elems < 2 ) {
-                    die "Missing value after operator";
-                }
-                push $num_stack,
-                  {
-                    op  => $last_op,
-                    val => [ pop($num_stack), pop($num_stack) ]
-                  };
-            }
-        };
-    
         my $token = $get_token.();
         if ($token[0]) eq 'space' {
             $token = $get_token.()
@@ -196,7 +125,7 @@ class MiniPerl6::Precedence {
                 while $op_stack 
                     && ($pr <= $Precedence{ ($op_stack[0])[1] })
                 {
-                    $reduce.();
+                    $reduce.($op_stack, $num_stack);
                 }
                 $op_stack.unshift( ['postfix', $token[1]] );
             }
@@ -205,7 +134,7 @@ class MiniPerl6::Precedence {
                 while $op_stack 
                     && ($pr <= $Precedence{ ($op_stack[0])[1] } )
                 {
-                    $reduce.();
+                    $reduce.($op_stack, $num_stack);
                 }
                 my $res = (precedence_parse($get_token))[0];
                 push $num_stack, $res;
@@ -221,7 +150,7 @@ class MiniPerl6::Precedence {
                 while $op_stack 
                     && ( $pr <= $Precedence{ ($op_stack[0])[1] } )
                 {
-                    $reduce.();
+                    $reduce.($op_stack, $num_stack);
                 }
                 my $res = precedence_parse($get_token);
                 my $pre_term = pop($num_stack);
@@ -272,14 +201,14 @@ class MiniPerl6::Precedence {
                     while $op_stack 
                         && ( $pr < $Precedence{ ($op_stack[0])[1] } )
                     {
-                        $reduce.();
+                        $reduce.($op_stack, $num_stack);
                     }
                 }
                 else {
                     while $op_stack 
                         && ( $pr <= $Precedence{ ($op_stack[0])[1] } )
                     {
-                        $reduce.();
+                        $reduce.($op_stack, $num_stack);
                     }
                 }
                 $op_stack.unshift( ['infix', $token[1]] );
@@ -301,7 +230,7 @@ class MiniPerl6::Precedence {
             die "Unexpected end token: ",$token.perl;
         }
         while $op_stack {
-            $reduce.();
+            $reduce.($op_stack, $num_stack);
         }
         return $num_stack;
     }
