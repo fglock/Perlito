@@ -29,7 +29,7 @@ class Main {
         | '&'   { make [ 'op', '&' ] }
         | <MiniPerl6::Grammar.ident> 
                 { make [ 'term', ~$<MiniPerl6::Grammar.ident> ] }
-        | ' '+    { make [ 'space', ' ' ] }
+        | ' '+  { make [ 'space', ' ' ] }
     }
     method exp_parse ($str, $pos) {
         say "exp_parse ",$str," at ",$pos;
@@ -51,7 +51,7 @@ class Main {
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
             capture => $res)
     } 
-    my $res = Main.exp_parse( 'a|b|c&x', 0 );
+    my $res = Main.exp_parse( 'a|b|c & x', 0 );
     say ($$res).perl;
 
 }

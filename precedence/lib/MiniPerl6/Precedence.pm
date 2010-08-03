@@ -307,13 +307,7 @@ class MiniPerl6::Precedence {
                 my $pr = $Precedence{$token[1]};
                 say "  is token";
                 say "      : ", $op_stack.perl;
-
                 say "infix start: '",$token[1],"' space:", $last_has_space, " allow_space:", (($Allow_space_before{'infix'}){$token[1]});
-                if $last_has_space
-                    && !( ($Allow_space_before{'postcircumfix'}){$token[1]} )
-                {
-                    die "Value tokens must be separated by an operator";
-                }
 
                 if ($Assoc{'right'}){$token[1]} {
                     while $op_stack 
