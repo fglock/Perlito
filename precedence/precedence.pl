@@ -103,16 +103,75 @@ class Main {
     };
     
 
+    token term_base { 
+        | <MiniPerl6::Grammar.ident> 
+          [ ' '+ <list_parse>   { make { term => ~$<MiniPerl6::Grammar.ident>, 
+                                         call_with_params => $$<list_parse> 
+                                       } 
+                                }
+          |                     { make ~$<MiniPerl6::Grammar.ident> }
+          ]
+        | <MiniPerl6::Grammar.var_ident>    { make $$<MiniPerl6::Grammar.var_ident> }     
+        | <MiniPerl6::Grammar.val>          { make $$<MiniPerl6::Grammar.val>   }
+        | '(' <paren_parse>                 { make $$<paren_parse>              }
+    }
+    token term_postcircumfix { 
+        | '.' <term_base>               { make { send_method      => $$<term_base>   } }
+        | '('  <paren_parse>            { make { call_with_params => $$<paren_parse> } }
+    }
+    token term { 
+        <term_base> <term_postcircumfix>*
+            { make  $<term_postcircumfix>
+                    ?? { term => $$<term_base>, 
+                         post => ($<term_postcircumfix>).>>capture 
+                       } 
+                    !! $$<term_base>
+            }
+    }
 
-    token ternary_lexer { 
+    token operator { 
+        | ','                           { make [ 'op',      ',' ] }
         | '+'                           { make [ 'op',      '+' ] }
         | '|'                           { make [ 'op',      '|' ] }
         | '&'                           { make [ 'op',      '&' ] }
-        | <MiniPerl6::Grammar.ident>    { make [ 'term',    ~$<MiniPerl6::Grammar.ident> ] }
-        | '(' <paren_parse>             { make [ 'term',    $$<paren_parse> ] }
         | '??' <ternary_parse>          { make [ 'op',      '??',   $$<ternary_parse> ] }
+    }
+
+    token list_lexer { 
+        | <term>                        { make [ 'term',    $$<term> ] }
+        | ' '+                          { make [ 'space',   ' ' ] }
+        | ')'                           { make [ 'end',     ')' ] }
+        | ';'                           { make [ 'end',     ';' ] }
+        | 'or'                          { make [ 'end',     'or'  ] }
+        | 'and'                         { make [ 'end',     'and' ] }
+        | <operator>                    { make $$<operator> }
+    }
+    method list_parse ($str, $pos) {
+        say "list_parse ",$str," at ",$pos;
+        my $expr;
+        my $last_pos = $pos;
+        my $get_token = sub {
+            my $m = self.list_lexer($str, $last_pos);
+            if !$m {
+                return undef;
+            }
+            my $v = $$m;
+            $last_pos = $m.to;
+            say "list_lexer " ~ $v.perl;
+            return $v;
+        };
+        my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
+        say $res.perl;
+        return MiniPerl6::Match.new( 
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+    }
+
+
+    token ternary_lexer { 
+        | <term>                        { make [ 'term',    $$<term> ] }
         | ' '+                          { make [ 'space',   ' ' ] }
         | '!!'                          { make [ 'end',     ')' ] }
+        | <operator>                    { make $$<operator> }
     }
     method ternary_parse ($str, $pos) {
         say "ternary_parse ",$str," at ",$pos;
@@ -136,14 +195,10 @@ class Main {
 
 
     token paren_lexer { 
-        | '+'                           { make [ 'op',      '+' ] }
-        | '|'                           { make [ 'op',      '|' ] }
-        | '&'                           { make [ 'op',      '&' ] }
-        | <MiniPerl6::Grammar.ident>    { make [ 'term',    ~$<MiniPerl6::Grammar.ident> ] }
-        | '(' <paren_parse>             { make [ 'term',    $$<paren_parse> ] }
-        | '??' <ternary_parse>          { make [ 'op',      '??',   $$<ternary_parse> ] }
+        | <term>                        { make [ 'term',    $$<term> ] }
         | ' '+                          { make [ 'space',   ' ' ] }
         | ')'                           { make [ 'end',     ')' ] }
+        | <operator>                    { make $$<operator> }
     }
     method paren_parse ($str, $pos) {
         say "paren_parse ",$str," at ",$pos;
@@ -167,15 +222,11 @@ class Main {
 
 
     token lexer { 
-        | '+'                           { make [ 'op',      '+' ] }
-        | '|'                           { make [ 'op',      '|' ] }
-        | '&'                           { make [ 'op',      '&' ] }
-        | <MiniPerl6::Grammar.ident>    { make [ 'term',    ~$<MiniPerl6::Grammar.ident> ] }
-        | '(' <paren_parse>             { make [ 'term',    $$<paren_parse> ] }
-        | '??' <ternary_parse>          { make [ 'op',      '??',   $$<ternary_parse> ] }
+        | <term>                        { make [ 'term',    $$<term> ] }
         | ' '+                          { make [ 'space',   ' ' ] }
         | ';'                           { make [ 'end',     ';' ] }
         | '}'                           { make [ 'end',     '}' ] }
+        | <operator>                    { make $$<operator> }
     }
     method exp_parse ($str, $pos) {
         say "exp_parse ",$str," at ",$pos;
@@ -198,15 +249,24 @@ class Main {
     } 
 
 
-    my $s = '; a|b| (c+y) & x ;...';
+    my $s = '; $a|$b| ($c+$y) & $x ;...';
     my $res = Main.exp_parse( $s, 1 );
     say ($$res).perl;
     say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
 
-    my $s = '; aaa ?? xxx !! yyy  ;...';
+    my $s = '; $aaa ?? $xxx !! $yyy  ;...';
+    my $res = Main.exp_parse( $s, 1 );
+    say ($$res).perl;
+    say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
+
+    my $s = '; $a + b($c+$y).m($x) ;...';
+    my $res = Main.exp_parse( $s, 1 );
+    say ($$res).perl;
+    say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
+
+    my $s = '; a 1,2,3  ;...';
     my $res = Main.exp_parse( $s, 1 );
     say ($$res).perl;
     say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
 
 }
-

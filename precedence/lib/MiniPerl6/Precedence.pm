@@ -178,6 +178,8 @@ class MiniPerl6::Precedence {
             }
             elsif ($token[0]) eq 'term' {
                 if ($last[0]) eq 'term' {
+                    say "term 0: ", $last.perl;
+                    say "term 1: ", $token.perl;
                     die "Value tokens must be separated by an operator";
                 }
                 $num_stack.push( $token[1] );
