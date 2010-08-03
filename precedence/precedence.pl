@@ -2,18 +2,26 @@
 class Main {
     use MiniPerl6::Precedence;
     use MiniPerl6::Grammar;
-
+    use MiniPerl6::Perl5::Emitter;
 
    
-    my $reduce = sub ($op_stack, $num_stack) {
+    my $reduce_to_ast = sub ($op_stack, $num_stack) {
         my $last_op = $op_stack.shift;
         if $last_op[0] eq 'prefix' {
             push $num_stack,
-              { op => $last_op, val => [ pop($num_stack) ] };
+                Apply.new(
+                    namespace => '',
+                    code      => 'prefix:<' ~ $last_op[1] ~ '>',
+                    arguments => [ pop($num_stack) ],
+                  );
         }
         elsif $last_op[0] eq 'postfix' {
             push $num_stack,
-              { op => $last_op, val => [ pop($num_stack) ] };
+                Apply.new(
+                    namespace => '',
+                    code      => 'postfix:<' ~ $last_op[1] ~ '>',
+                    arguments => [ pop($num_stack) ],
+                  );
         }
         elsif MiniPerl6::Precedence::is_assoc_type('list', $last_op[1]) {
             my $arg;
@@ -71,11 +79,13 @@ class Main {
             if ( $num_stack.elems < 2 ) {
                 die "Missing value after operator";
             }
+            my $v2 = pop($num_stack);
             push $num_stack,
-              {
-                op  => $last_op,
-                val => [ pop($num_stack), pop($num_stack) ]
-              };
+                Apply.new(
+                    namespace => '',
+                    code      => 'infix:<' ~ $last_op[1] ~ '>',
+                    arguments => [ pop($num_stack), $v2 ],
+                  );
         }
     };
     
@@ -104,7 +114,7 @@ class Main {
             say "paren_lexer " ~ $v.perl;
             return $v;
         };
-        my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce);
+        my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
         say $res.perl;
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
@@ -135,7 +145,7 @@ class Main {
             say "lexer " ~ $v.perl;
             return $v;
         };
-        my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce);
+        my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
         say $res.perl;
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res)
