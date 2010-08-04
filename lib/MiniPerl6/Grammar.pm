@@ -330,10 +330,13 @@ token val_undef {
     { make Val::Undef.new( ) }
 }
 
+token exponent {
+    [ 'e' | 'E' ]  [ '+' | '-' | '' ]  \d+
+}
+
 token val_num {  
-    \d+ 
-    [   [ 'e' | 'E' ]   [ '+' | '-' | '' ]  \d+
-    |   \. \d+  [ [ 'e' | 'E' ]  [ '+' | '-' | '' ]  \d+ ]?
+    [   \. \d+    <.exponent>?
+    |   \d+     [ <.exponent>  |   \. \d+  <.exponent>? ]
     ]
     { make Val::Num.new( num => ~$/ ) }
 }
