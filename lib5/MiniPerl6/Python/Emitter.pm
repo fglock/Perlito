@@ -6,7 +6,7 @@ our $MATCH = MiniPerl6::Match->new();
 {
 package Python;
 sub new { shift; bless { @_ }, "Python" }
-sub tab { my $level = $_[0]; (my  $s = ''); (my  $count = $level); for ( ; ($count > 0);  ) { ($s = $s . '    '); ($count = ($count - 1)) }; return($s) }
+sub tab { my $level = $_[0]; (my  $s = ''); (my  $count = $level); for ( ; Main::bool(($count > 0));  ) { ($s = $s . '    '); ($count = ($count - 1)) }; return($s) }
 }
 
 {

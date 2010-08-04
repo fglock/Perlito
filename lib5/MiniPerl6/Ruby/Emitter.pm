@@ -9,7 +9,7 @@ sub new { shift; bless { @_ }, "Ruby" }
 sub to_str { my $op = $_[0]; my $args = $_[1]; my  $List_s; for my $cond ( @{$args || []} ) { if (Main::bool(Main::isa($cond, 'Val::Buf'))) { push( @{$List_s}, $cond->emit_ruby() ) } else { push( @{$List_s}, '(' . $cond->emit_ruby() . ').to_s' ) } }; return('(' . Main::join($List_s, $op) . ')') };
 sub to_num { my $op = $_[0]; my $args = $_[1]; my  $List_s; for my $cond ( @{$args || []} ) { if (Main::bool((Main::isa($cond, 'Val::Int') || Main::isa($cond, 'Val::Num')))) { push( @{$List_s}, $cond->emit_ruby() ) } else { push( @{$List_s}, 'mp6_to_num(' . $cond->emit_ruby() . ')' ) } }; return('(' . Main::join($List_s, $op) . ')') };
 sub to_bool { my $op = $_[0]; my $args = $_[1]; my  $List_s; for my $cond ( @{$args || []} ) { if (Main::bool((Main::isa($cond, 'Val::Int') || Main::isa($cond, 'Val::Num')))) { push( @{$List_s}, '(' . $cond->emit_ruby() . ' != 0 )' ) } else { if (Main::bool(((Main::isa($cond, 'Apply') && ($cond->code() eq 'infix:<||>')) || ((Main::isa($cond, 'Apply') && ($cond->code() eq 'infix:<&&>')) || ((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>')) || ((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<?>')) || Main::isa($cond, 'Val::Bit'))))))) { push( @{$List_s}, $cond->emit_ruby() ) } else { push( @{$List_s}, 'mp6_to_bool(' . $cond->emit_ruby() . ')' ) } } }; return('(' . Main::join($List_s, $op) . ')') };
-sub tab { my $level = $_[0]; (my  $s = ''); (my  $count = $level); for ( ; ($count > 0);  ) { ($s = $s . '    '); ($count = ($count - 1)) }; return($s) }
+sub tab { my $level = $_[0]; (my  $s = ''); (my  $count = $level); for ( ; Main::bool(($count > 0));  ) { ($s = $s . '    '); ($count = ($count - 1)) }; return($s) }
 }
 
 {
