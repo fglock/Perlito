@@ -10,6 +10,10 @@ class MiniPerl6::Precedence {
         return ($Assoc{$assoc_type}){$op_name} 
     }
 
+    sub is_fixity_type ($fixity_type, $op_name) {
+        return ($Operator{$fixity_type}){$op_name}
+    }
+
     sub add_op ( $fixity, $name, $precedence, $param ) {
         if !(defined($param)) {
             $param = {}
@@ -36,12 +40,13 @@ class MiniPerl6::Precedence {
     # - '|' in prefix position
 
     my $prec = 100;
-    add_op( 'infix',    '.',   $prec, { no_space_before => True } );
-    add_op( 'prefix',   '.',   $prec );
-    add_op( 'postcircumfix', '(', $prec, { second_op => ')', no_space_before => True } );
-    add_op( 'postcircumfix', '{', $prec, { second_op => '}', no_space_before => True } );
-    add_op( 'postcircumfix', '[', $prec, { second_op => ']', no_space_before => True } );
-    $prec = $prec - 1;
+    # add_op( 'infix',    '.',   $prec, { no_space_before => True } );
+    # add_op( 'prefix',   '.',   $prec );
+    # add_op( 'postcircumfix', '(', $prec, { second_op => ')', no_space_before => True } );
+    # add_op( 'postcircumfix', '{', $prec, { second_op => '}', no_space_before => True } );
+    # add_op( 'postcircumfix', '[', $prec, { second_op => ']', no_space_before => True } );
+    # $prec = $prec - 1;
+
     add_op( 'prefix',   '++',  $prec );
     add_op( 'prefix',   '--',  $prec );
     add_op( 'postfix',  '++',  $prec, { no_space_before => True } );
@@ -95,10 +100,10 @@ class MiniPerl6::Precedence {
     $prec = $prec - 1;
     add_op( 'infix',    'or',  $prec );
     $prec = $prec - 1;
-    add_op( 'circumfix', '(',  $prec, { second_op => ')' } );
-    add_op( 'circumfix', '[',  $prec, { second_op => ']' } );
-    add_op( 'circumfix', '{',  $prec, { second_op => '}' } );
-    $prec = $prec - 1;
+    # add_op( 'circumfix', '(',  $prec, { second_op => ')' } );
+    # add_op( 'circumfix', '[',  $prec, { second_op => ']' } );
+    # add_op( 'circumfix', '{',  $prec, { second_op => '}' } );
+    # $prec = $prec - 1;
     add_op( 'infix',    '*start*', $prec );
     
     sub precedence_parse ($get_token, $reduce) {
