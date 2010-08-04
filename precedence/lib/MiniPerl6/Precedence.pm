@@ -134,60 +134,81 @@ class MiniPerl6::Precedence {
                 }
                 $op_stack.unshift( ['postfix', $token[1]] );
             }
-            elsif ($Operator{'postcircumfix'}){$token[1]} && (($last[0]) eq 'term') 
-                && (  ($Allow_space_before{'postcircumfix'}){$token[1]} 
-                   || !$last_has_space 
-                   )
-            {
-                # last term was a value
-                my $pr = $Precedence{$token[1]};
-                while $op_stack.elems
-                    && ( $pr <= $Precedence{ ($op_stack[0])[1] } )
-                {
-                    $reduce.($op_stack, $num_stack);
+            # elsif ($Operator{'postcircumfix'}){$token[1]} && (($last[0]) eq 'term') 
+            #     && (  ($Allow_space_before{'postcircumfix'}){$token[1]} 
+            #        || !$last_has_space 
+            #        )
+            # {
+            #     # last term was a value
+            #     my $pr = $Precedence{$token[1]};
+            #     while $op_stack.elems
+            #         && ( $pr <= $Precedence{ ($op_stack[0])[1] } )
+            #     {
+            #         $reduce.($op_stack, $num_stack);
+            #     }
+            #     my $res = precedence_parse($get_token);
+            #     my $pre_term = pop($num_stack);
+            #     if ($token[1] eq '(') 
+            #         && $pre_term.isa('Hash') 
+            #         && ((($pre_term{'op'})[0] eq 'prefix') || (($pre_term{'op'})[0] eq 'infix'))
+            #         && (($pre_term{'op'})[1] eq '.')
+            #     {
+            #         # term.meth(...)
+            #         push $num_stack,
+            #           {
+            #             op  => $pre_term{'op'},
+            #             val => [ @($pre_term{'val'}), $res[0] ]
+            #           };
+            #     }
+            #     else {
+            #         push $num_stack,
+            #           {
+            #             op  => ['postcircumfix', $token[1] ~ ' ' ~ ($Operator{'postcircumfix'}){$token[1]}],
+            #             val => [ $pre_term, $res[0] ]
+            #           };
+            #     }
+            #     $token = ['term', '0'];
+            # }
+            # elsif ($Operator{'circumfix'}){$token[1]} {
+            #     if ($last[0]) eq 'term' {
+            #         say "term 0: ", $last.perl;
+            #         say "term 1: ", $token.perl;
+            #         die "Value tokens must be separated by an operator";
+            #     }
+            #     my $res = precedence_parse($get_token);
+            #     $num_stack.push(
+            #       {
+            #         op  => ['circumfix', $token[1] ~ ' ' ~ ($Operator{'circumfix'}){$token[1]}],
+            #         val => $res[0]
+            #       } );
+            #     $token = ['term', '0'];
+            # }
+            elsif ($token[0]) eq 'term' {
+                # check for postcircumfix: $a[b], x(y), %x{y}
+                say "term 0: ", $last.perl;
+                say "term 1: ", $token.perl;
+                if ($last[0]) ne 'term' {
+                    $num_stack.push( $token[1] );
                 }
-                my $res = precedence_parse($get_token);
-                my $pre_term = pop($num_stack);
-                if ($token[1] eq '(') 
-                    && $pre_term.isa('Hash') 
-                    && ((($pre_term{'op'})[0] eq 'prefix') || (($pre_term{'op'})[0] eq 'infix'))
-                    && (($pre_term{'op'})[1] eq '.')
+                elsif $last_has_space {
+                    die "Value tokens must be separated by an operator";
+                }
+                elsif (($token[1])[0] eq 'postcircumfix:()') && (($last[1])[0] eq 'apply_miss_params') {
+                    $token = [ 'term', [ 'apply', ($last[1])[1], ($token[1])[1] ] ];
+                    say "Maybe postcircumfix ", ($token[1]).perl;
+                }
+                elsif (($token[1])[0] eq 'postcircumfix:()') && (($last[1])[0] eq 'call_miss_params') {
+                    $token = [ 'term', [ 'call', ($last[1])[1], ($token[1])[1] ] ];
+                    say "Maybe postcircumfix ", ($token[1]).perl;
+                }
+                elsif (($token[1])[0] eq 'call_miss_params') && (($token[1])[1] eq '')
                 {
-                    # term.meth(...)
-                    push $num_stack,
-                      {
-                        op  => $pre_term{'op'},
-                        val => [ @($pre_term{'val'}), $res[0] ]
-                      };
+                    $token = [ 'term', [ 'call_miss_params', $last[1], ($token[1])[2] ] ];
+                    say "Maybe methcall ", ($token[1]).perl;
                 }
                 else {
-                    push $num_stack,
-                      {
-                        op  => ['postcircumfix', $token[1] ~ ' ' ~ ($Operator{'postcircumfix'}){$token[1]}],
-                        val => [ $pre_term, $res[0] ]
-                      };
-                }
-                $token = ['term', '0'];
-            }
-            elsif ($Operator{'circumfix'}){$token[1]} {
-                if ($last[0]) eq 'term' {
                     die "Value tokens must be separated by an operator";
                 }
-                my $res = precedence_parse($get_token);
-                $num_stack.push(
-                  {
-                    op  => ['circumfix', $token[1] ~ ' ' ~ ($Operator{'circumfix'}){$token[1]}],
-                    val => $res[0]
-                  } );
-                $token = ['term', '0'];
-            }
-            elsif ($token[0]) eq 'term' {
-                if ($last[0]) eq 'term' {
-                    say "term 0: ", $last.perl;
-                    say "term 1: ", $token.perl;
-                    die "Value tokens must be separated by an operator";
-                }
-                $num_stack.push( $token[1] );
             }
             elsif  ($Operator{'infix'}){$token[1]}    
                 || ($Operator{'list'}){$token[1]} 
@@ -237,7 +258,7 @@ class MiniPerl6::Precedence {
         while $op_stack.elems {
             $reduce.($op_stack, $num_stack);
         }
-        return $num_stack[0];
+        return $num_stack;
     }
 }
 

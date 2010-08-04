@@ -102,39 +102,20 @@ class MiniPerl6::Expression {
     };
     
 
-    token term_base { 
+    token term { 
+        | '.' <MiniPerl6::Grammar.ident> 
+          [ <.MiniPerl6::Grammar.ws> <list_parse>   
+            { make [ 'call',             '', ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
+          | { make [ 'call_miss_params', '', ~$<MiniPerl6::Grammar.ident> ] }
+          ]
         | <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-                                { make { term => ~$<MiniPerl6::Grammar.ident>, 
-                                         call_with_params => $$<list_parse> 
-                                       } 
-                                }
-          |                     { make ~$<MiniPerl6::Grammar.ident> }
+            { make [ 'apply',             ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
+          | { make [ 'apply_miss_params', ~$<MiniPerl6::Grammar.ident> ] }
           ]
-        | <MiniPerl6::Grammar.var_ident>    { make $$<MiniPerl6::Grammar.var_ident> }     
-        | <MiniPerl6::Grammar.val>          { make $$<MiniPerl6::Grammar.val>   }
-        | '(' <paren_parse> ')'             { make $$<paren_parse>              }
-    }
-    token term_postcircumfix { 
-        | '.' <term_base>                   { make { send_method      => $$<term_base>   } }
-        | '(' <paren_parse> ')'             { make { call_with_params => $$<paren_parse> } }
-    }
-    token term { 
-        <term_base> <term_postcircumfix>*
-            { make  $<term_postcircumfix>
-                    ?? { term => $$<term_base>, 
-                         post => ($<term_postcircumfix>).>>capture 
-                       } 
-                    !! $$<term_base>
-            }
-        |
-        '.' <term_base> <term_postcircumfix>*
-            { make  $<term_postcircumfix>
-                    ?? { send_method_to_default => $$<term_base>, 
-                         post => ($<term_postcircumfix>).>>capture 
-                       } 
-                    !! { send_method_to_default => $$<term_base> }
-            }
+        | <MiniPerl6::Grammar.var_ident>    { make [ 'term', $$<MiniPerl6::Grammar.var_ident> ] }     
+        | <MiniPerl6::Grammar.val>          { make [ 'term', $$<MiniPerl6::Grammar.val> ] }
+        | '(' <paren_parse> ')'             { make [ 'postcircumfix:()', $$<paren_parse> ] }
     }
 
     token operator { 
@@ -190,9 +171,12 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
-        say $res.perl;
+        say 'list_lexer return: ', $res.perl;
+        if $res.elems == 0 {
+            return MiniPerl6::Match.new(bool => 0);
+        }
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0]);
     }
 
 
@@ -221,7 +205,7 @@ class MiniPerl6::Expression {
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
         say $res.perl;
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0]);
     }
 
 
@@ -250,7 +234,7 @@ class MiniPerl6::Expression {
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
         say $res.perl;
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0]);
     }
 
 
@@ -280,7 +264,7 @@ class MiniPerl6::Expression {
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
         say $res.perl;
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res)
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0])
     } 
 
 }
