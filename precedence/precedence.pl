@@ -59,7 +59,7 @@ class Main {
                   );
         }
         elsif MiniPerl6::Precedence::is_assoc_type('chain', $last_op[1]) {
-            if $num_stack < 2 {
+            if $num_stack.elems < 2 {
                 die "Missing value after operator";
             }
             my $arg = [ pop($num_stack), pop($num_stack) ];
@@ -77,7 +77,7 @@ class Main {
             push $num_stack, { op => ['infix', $last_op], val => $arg };
         }
         elsif $last_op[0] eq 'ternary' {
-            if ( $num_stack < 2 ) {
+            if ( $num_stack.elems < 2 ) {
                 die "Missing value after ternary operator";
             }
             my $v2 = pop($num_stack);
@@ -116,8 +116,8 @@ class Main {
         | '(' <paren_parse> ')'             { make $$<paren_parse>              }
     }
     token term_postcircumfix { 
-        | '.' <term_base>               { make { send_method      => $$<term_base>   } }
-        | '('  <paren_parse> ')'        { make { call_with_params => $$<paren_parse> } }
+        | '.' <term_base>                   { make { send_method      => $$<term_base>   } }
+        | '(' <paren_parse> ')'             { make { call_with_params => $$<paren_parse> } }
     }
     token term { 
         <term_base> <term_postcircumfix>*
@@ -130,11 +130,14 @@ class Main {
     }
 
     token operator { 
+        | '??' <ternary_parse> '!!'     { make [ 'op',      '??',   $$<ternary_parse> ] }
+        | '.'                           { make [ 'op',      '.' ] }
         | ','                           { make [ 'op',      ',' ] }
         | '+'                           { make [ 'op',      '+' ] }
         | '|'                           { make [ 'op',      '|' ] }
         | '&'                           { make [ 'op',      '&' ] }
-        | '??' <ternary_parse> '!!'     { make [ 'op',      '??',   $$<ternary_parse> ] }
+        | '?'                           { make [ 'op',      '?' ] }
+        | '!'                           { make [ 'op',      '!' ] }
         | 'and' <before ' '|'('>  { make [ 'op',      'and' ] }
         | 'or'  <before ' '|'('>  { make [ 'op',      'or'  ] }
         | 'not' <before ' '|'('>  { make [ 'op',      'not' ] }
@@ -173,10 +176,10 @@ class Main {
 
 
     token ternary_lexer { 
+        | '!!'                          { make [ 'end',     ')' ] }
         | <operator>                    { make $$<operator> }
         | <term>                        { make [ 'term',    $$<term> ] }
         | ' '+                          { make [ 'space',   ' ' ] }
-        | '!!'                          { make [ 'end',     ')' ] }
     }
     method ternary_parse ($str, $pos) {
         say "ternary_parse ",$str," at ",$pos;
@@ -276,6 +279,11 @@ class Main {
     say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
 
     my $s = '; a 1,2,3 and b ;...';
+    my $res = Main.exp_parse( $s, 1 );
+    say ($$res).perl;
+    say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
+
+    my $s = '; .a && .1 ; && .meth && $a.meth ;...';
     my $res = Main.exp_parse( $s, 1 );
     say ($$res).perl;
     say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);

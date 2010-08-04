@@ -122,7 +122,7 @@ class MiniPerl6::Precedence {
                    )
             {
                 my $pr = $Precedence{$token[1]};
-                while $op_stack 
+                while $op_stack.elems
                     && ($pr <= $Precedence{ ($op_stack[0])[1] })
                 {
                     $reduce.($op_stack, $num_stack);
@@ -136,7 +136,7 @@ class MiniPerl6::Precedence {
             {
                 # last term was a value
                 my $pr = $Precedence{$token[1]};
-                while $op_stack 
+                while $op_stack.elems
                     && ( $pr <= $Precedence{ ($op_stack[0])[1] } )
                 {
                     $reduce.($op_stack, $num_stack);
@@ -190,14 +190,14 @@ class MiniPerl6::Precedence {
             {   
                 my $pr = $Precedence{$token[1]};
                 if ($Assoc{'right'}){$token[1]} {
-                    while $op_stack 
+                    while $op_stack.elems
                         && ( $pr < $Precedence{ ($op_stack[0])[1] } )
                     {
                         $reduce.($op_stack, $num_stack);
                     }
                 }
                 else {
-                    while $op_stack 
+                    while $op_stack.elems
                         && ( $pr <= $Precedence{ ($op_stack[0])[1] } )
                     {
                         $reduce.($op_stack, $num_stack);
@@ -229,7 +229,7 @@ class MiniPerl6::Precedence {
         if defined($token) && ($token[0] ne 'end') {
             die "Unexpected end token: ",$token.perl;
         }
-        while $op_stack {
+        while $op_stack.elems {
             $reduce.($op_stack, $num_stack);
         }
         return $num_stack[0];
