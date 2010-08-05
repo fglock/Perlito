@@ -120,11 +120,13 @@ class MiniPerl6::Precedence {
                 $token[0] = 'prefix';
                 $op_stack.unshift($token);
             }
-            elsif ($Operator{'postfix'}){$token[1]} && is_term($last) 
+            elsif  ($Operator{'postfix'}){$token[1]} 
+                && ( is_term($last) || ($Operator{'postfix'}){$last[1]} )
                 && (  ($Allow_space_before{'postfix'}){$token[1]} 
-                   || !$last_has_space 
+                   || !($last_has_space) 
                    )
             {
+                say $token[1], " looks like postfix";
                 my $pr = $Precedence{$token[1]};
                 while $op_stack.elems && ($pr <= $Precedence{ ($op_stack[0])[1] }) {
                     $reduce.($op_stack, $num_stack);

@@ -6,7 +6,7 @@ class MiniPerl6::Expression {
    
     sub pop_term ($num_stack) {
         my $v = $num_stack.pop;
-        if $v.isa('Array') && ($v[0] eq 'term') {
+        if $v.isa('Array') {
             say "** processing term ", $v.perl;
             if $v[1] eq 'methcall_no_params' {
                 say "  Call ", ($v[2]).perl;
@@ -36,9 +36,6 @@ class MiniPerl6::Expression {
                 say "  Lookup ", ($v[2]).perl;
                 return $v;
             }
-
-        }
-        if $v.isa('Array') {
             return $v[1];
         }
         return $v;
