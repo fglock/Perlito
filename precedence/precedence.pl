@@ -21,7 +21,7 @@ class Main {
     say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
     say;
 
-    my $s = '; a 1,2,3 and b ;...';
+    my $s = '; a 1,2,3 and .b 4,5,6 ;...';
     my $res = MiniPerl6::Expression.exp_parse( $s, 1 );
     say ($$res).perl;
     say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);

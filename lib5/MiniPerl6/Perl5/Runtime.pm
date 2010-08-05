@@ -59,15 +59,15 @@ use v5;
         "" . $_[0]->flat;
     }
     
-    sub perl {
-        my $o = $_[0];
-        my $key = "$o";
-        return "'!!! Recursive structure !!!'" if $Main::_seen{$key};
-        $Main::_seen{$key} = 1;
-        return __PACKAGE__ . ".new( " 
-                . join( ", ", map { Main::perl($_) . ' => ' . Main::perl($o->{$_}) } CORE::keys %$o ) 
-                . ")";
-    }
+    # sub perl {
+    #     my $o = $_[0];
+    #     my $key = "$o";
+    #     return "'!!! Recursive structure !!!'" if $Main::_seen{$key};
+    #     $Main::_seen{$key} = 1;
+    #     return __PACKAGE__ . ".new( " 
+    #             . join( ", ", map { Main::perl($_) . ' => ' . Main::perl($o->{$_}) } CORE::keys %$o ) 
+    #             . ")";
+    # }
     
     sub scalar {
         return \( $_[0]->flat );
@@ -200,8 +200,8 @@ package Main;
         my $o = shift;
         if ( ref($o) ) {
             my $key = "$o";
-            return "'!!! Recursive structure !!!'" if $Main::_seen{$key};
-            $Main::_seen{$key} = 1;
+            return "'!!! Recursive structure !!!' at $key" if $Main::_seen{$key} > 3;
+            $Main::_seen{$key}++;
             return '[' . join( ", ", map { perl($_) } @$o ) . ']' 
                 if ref($o) eq 'ARRAY';
             return '{' . join( ", ", map { perl($_) . ' => ' . perl($o->{$_}) } keys %$o ) . '}' 
@@ -217,7 +217,7 @@ package Main;
         return $can->($o) if $can;
 
         my $ref = ref($o);
-        return $ref . ".new( "
+        return $ref . ".new("
             . join( ", ", map { Main::perl($_) . ' => ' . Main::perl($o->{$_}) } CORE::keys %$o )
             . ")";
     }

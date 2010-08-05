@@ -7,35 +7,43 @@ class MiniPerl6::Expression {
     sub pop_term ($num_stack) {
         my $v = $num_stack.pop;
         if $v.isa('Array') {
-            say "** processing term ", $v.perl;
+            say "# ** processing term ", $v.perl;
             if $v[1] eq 'methcall_no_params' {
-                say "  Call ", ($v[2]).perl;
+                say "#   Call ", ($v[2]).perl;
+                $v = Call.new( invocant => $v[3], method => $v[2], arguments => [ ], hyper => 0 );
+                say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'funcall_no_params' {
-                say "  Apply ", ($v[2]).perl;
+                say "#   Apply ", ($v[2]).perl;
+                $v = Apply.new( code => $v[2], arguments => [ ], namespace => '' );
+                say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'methcall' {
-                say "  Call ", ($v[2]).perl;
+                say "#   Call ", ($v[2]).perl;
+                $v = Call.new( invocant => '', method => $v[2], arguments => $v[3], hyper => 0 );
+                say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'funcall' {
-                say "  Apply ", ($v[2]).perl;
+                say "#   Apply ", ($v[2]).perl;
+                $v = Apply.new( code => $v[2], arguments => $v[3], namespace => '' );
+                say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq '( )' {
-                say "  Plain parenthesis ", ($v[2]).perl;
+                say "#   Plain parenthesis ", ($v[2]).perl;
                 return $v;
             }
             if $v[1] eq '[ ]' {
-                say "  Array ", ($v[2]).perl;
+                say "#   Array ", ($v[2]).perl;
                 $v = Lit::Array.new( array1 => $v[2] );
-                say "    ", $v.perl;
+                say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq '{ }' {
-                say "  Code, Hash, or Pair", ($v[2]).perl;
+                say "#   Code, Hash, or Pair", ($v[2]).perl;
                 return $v;
             }
             return $v[1];
@@ -44,44 +52,44 @@ class MiniPerl6::Expression {
     }
 
     sub reduce_postfix ($op, $value) {
-        say "** reduce_postfix ", $op.perl;
-        say "  ", $value.perl;
+        say "# ** reduce_postfix ", $op.perl;
+        say "#   ", $value.perl;
         my $v = $op;
         if $v[1] eq 'methcall_no_params' {
-            say "  Call ", ($v[2]).perl;
+            say "#   Call ", ($v[2]).perl;
             push $v, $value;
             return $v;
         }
         if $v[1] eq 'funcall_no_params' {
-            say "  Apply ", ($v[2]).perl;
+            say "#   Apply ", ($v[2]).perl;
             push $v, $value;
             return $v;
         }
         if $v[1] eq 'methcall' {
-            say "  Call ", ($v[2]).perl;
+            say "#   Call ", ($v[2]).perl;
             push $v, $value;
             return $v;
         }
         if $v[1] eq 'funcall' {
-            say "  Apply ", ($v[2]).perl;
+            say "#   Apply ", ($v[2]).perl;
             push $v, $value;
             return $v;
         }
         if $v[1] eq '( )' {
-            say "  Params ", ($v[2]).perl;
+            say "#   Params ", ($v[2]).perl;
             push $v, $value;
             return $v;
         }
         if $v[1] eq '[ ]' {
-            say "  Index ", ($v[2]).perl;
+            say "#   Index ", ($v[2]).perl;
             $v = Index.new( obj => $value, index_exp => $v[2] );
-            say "    ", $v.perl;
+            say "#     ", $v.perl;
             return $v;
         }
         if $v[1] eq '{ }' {
-            say "  Lookup ", ($v[2]).perl;
+            say "#   Lookup ", ($v[2]).perl;
             $v = Lookup.new( obj => $value, index_exp => $v[2] );
-            say "    ", $v.perl;
+            say "#     ", $v.perl;
             return $v;
         }
         push $op, $value;
@@ -90,7 +98,7 @@ class MiniPerl6::Expression {
 
     my $reduce_to_ast = sub ($op_stack, $num_stack) {
         my $last_op = $op_stack.shift;
-        say "reduce_to_ast last_op=", $last_op.perl;
+        say "# reduce_to_ast last_op=", $last_op.perl;
         if $last_op[0] eq 'prefix' {
             push $num_stack,
                 Apply.new(
@@ -236,7 +244,7 @@ class MiniPerl6::Expression {
         | <operator>                                    { make $$<operator> }
     }
     method list_parse ($str, $pos) {
-        say "list_parse: input ",$str," at ",$pos;
+        say "# list_parse: input ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $is_first_token = True;
@@ -250,14 +258,14 @@ class MiniPerl6::Expression {
                 && ($v[0] eq 'op')
                 && !(MiniPerl6::Precedence::is_fixity_type('prefix', $v[1]))
             {
-                say "finishing list - first token is: ", $v[1];
+                say "# finishing list - first token is: ", $v[1];
                 $v[0] = 'end';
             }
             $is_first_token = False;   
             if $v[0] ne 'end' {
                 $last_pos = $m.to;
             }
-            say "list_lexer " ~ $v.perl;
+            say "# list_lexer " ~ $v.perl;
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
@@ -276,7 +284,7 @@ class MiniPerl6::Expression {
         | <operator>                    { make $$<operator> }
     }
     method ternary_parse ($str, $pos) {
-        say "ternary_parse input: ",$str," at ",$pos;
+        say "# ternary_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -288,7 +296,7 @@ class MiniPerl6::Expression {
             if $v[0] ne 'end' {
                 $last_pos = $m.to;
             }
-            say "ternary_lexer " ~ $v.perl;
+            say "# ternary_lexer " ~ $v.perl;
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
@@ -304,7 +312,7 @@ class MiniPerl6::Expression {
         | <operator>                    { make $$<operator> }
     }
     method curly_parse ($str, $pos) {
-        say "curly_parse input: ",$str," at ",$pos;
+        say "# curly_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -316,7 +324,7 @@ class MiniPerl6::Expression {
             if $v[0] ne 'end' {
                 $last_pos = $m.to;
             }
-            say "curly_lexer " ~ $v.perl;
+            say "# curly_lexer " ~ $v.perl;
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
@@ -332,7 +340,7 @@ class MiniPerl6::Expression {
         | <operator>                    { make $$<operator> }
     }
     method square_parse ($str, $pos) {
-        say "square_parse input: ",$str," at ",$pos;
+        say "# square_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -344,7 +352,7 @@ class MiniPerl6::Expression {
             if $v[0] ne 'end' {
                 $last_pos = $m.to;
             }
-            say "square_lexer " ~ $v.perl;
+            say "# square_lexer " ~ $v.perl;
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
@@ -360,7 +368,7 @@ class MiniPerl6::Expression {
         | <operator>                    { make $$<operator> }
     }
     method paren_parse ($str, $pos) {
-        say "paren_parse input: ",$str," at ",$pos;
+        say "# paren_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -372,7 +380,7 @@ class MiniPerl6::Expression {
             if $v[0] ne 'end' {
                 $last_pos = $m.to;
             }
-            say "paren_lexer " ~ $v.perl;
+            say "# paren_lexer " ~ $v.perl;
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
@@ -389,7 +397,7 @@ class MiniPerl6::Expression {
         | <operator>                    { make $$<operator> }
     }
     method exp_parse ($str, $pos) {
-        say "exp_parse input: ",$str," at ",$pos;
+        say "# exp_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -401,12 +409,12 @@ class MiniPerl6::Expression {
             if $v[0] ne 'end' {
                 $last_pos = $m.to;
             }
-            say "lexer " ~ $v.perl;
+            say "# lexer " ~ $v.perl;
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
         $res = pop_term($res);
-        say "exp_parse: result ", $res.perl;
+        say "# exp_parse: result ", $res.perl;
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res)
     } 
