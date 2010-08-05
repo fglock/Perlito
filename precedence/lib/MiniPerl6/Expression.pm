@@ -61,7 +61,6 @@ class MiniPerl6::Expression {
         }
         elsif ($last_op[0] eq 'postfix') || ($last_op[0] eq 'postfix_or_term') {
             $num_stack.push( reduce_postfix( $last_op, pop_term($num_stack) ) );
-            say "  num_stack ", $num_stack.perl; 
         }
         elsif MiniPerl6::Precedence::is_assoc_type('list', $last_op[1]) {
             my $arg;
@@ -148,10 +147,12 @@ class MiniPerl6::Expression {
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
         | '{'  <curly_parse>   '}'                      { make [ 'postfix_or_term',  '{ }',   $$<curly_parse>   ] }
         | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse> ] }
+        | '**'                                          { make [ 'op',          '**'  ] }
         | '++'                                          { make [ 'op',          '++'  ] }
         | '--'                                          { make [ 'op',          '--'  ] }
         | '||'                                          { make [ 'op',          '||'  ] }
         | '&&'                                          { make [ 'op',          '&&'  ] }
+        | '//'                                          { make [ 'op',          '//'  ] }
         | ','                                           { make [ 'op',          ','   ] }
         | '+'                                           { make [ 'op',          '+'   ] }
         | '-'                                           { make [ 'op',          '-'   ] }
@@ -159,6 +160,8 @@ class MiniPerl6::Expression {
         | '&'                                           { make [ 'op',          '&'   ] }
         | '?'                                           { make [ 'op',          '?'   ] }
         | '!'                                           { make [ 'op',          '!'   ] }
+        | '/'                                           { make [ 'op',          '/'   ] }
+        | '*'                                           { make [ 'op',          '*'   ] }
         | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'and' ] }
         | 'or'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'or'  ] }
         | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not' ] }
@@ -185,7 +188,7 @@ class MiniPerl6::Expression {
         | <operator>                                    { make $$<operator> }
     }
     method list_parse ($str, $pos) {
-        say "list_parse ",$str," at ",$pos;
+        say "list_parse: input ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $is_first_token = True;
@@ -224,7 +227,7 @@ class MiniPerl6::Expression {
         | <operator>                    { make $$<operator> }
     }
     method ternary_parse ($str, $pos) {
-        say "ternary_parse ",$str," at ",$pos;
+        say "ternary_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -251,7 +254,7 @@ class MiniPerl6::Expression {
         | <operator>                    { make $$<operator> }
     }
     method curly_parse ($str, $pos) {
-        say "curly_parse ",$str," at ",$pos;
+        say "curly_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -278,7 +281,7 @@ class MiniPerl6::Expression {
         | <operator>                    { make $$<operator> }
     }
     method square_parse ($str, $pos) {
-        say "square_parse ",$str," at ",$pos;
+        say "square_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -305,7 +308,7 @@ class MiniPerl6::Expression {
         | <operator>                    { make $$<operator> }
     }
     method paren_parse ($str, $pos) {
-        say "paren_parse ",$str," at ",$pos;
+        say "paren_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -333,7 +336,7 @@ class MiniPerl6::Expression {
         | <operator>                    { make $$<operator> }
     }
     method exp_parse ($str, $pos) {
-        say "exp_parse: input ",$str," at ",$pos;
+        say "exp_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {

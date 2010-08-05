@@ -84,6 +84,7 @@ class MiniPerl6::Precedence {
     add_op( 'infix',    '&&',  $prec );
     $prec = $prec - 1;
     add_op( 'infix',    '||',  $prec );
+    add_op( 'infix',    '//',  $prec );
     $prec = $prec - 1;
     add_op( 'ternary',  '?? !!',  $prec );
     $prec = $prec - 1;
@@ -116,11 +117,6 @@ class MiniPerl6::Precedence {
             $token = $get_token.()
         }
         while (defined($token)) && ($token[0] ne 'end') {
-
-            say $token[1], " checking";
-            say "  ", $token.perl;
-            say "  ", $last.perl;
-
             if ($Operator{'prefix'}){$token[1]} && ( ($last[1] eq '*start*') || !(is_term($last)) ) {
                 $token[0] = 'prefix';
                 $op_stack.unshift($token);
@@ -130,7 +126,6 @@ class MiniPerl6::Precedence {
                    || !($last_has_space) 
                    )
             {
-                say $token[1], " looks like postfix";
                 my $pr = $Precedence{$token[1]};
                 while $op_stack.elems && ($pr <= $Precedence{ ($op_stack[0])[1] }) {
                     $reduce.($op_stack, $num_stack);
