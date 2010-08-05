@@ -209,6 +209,10 @@ class MiniPerl6::Expression {
         | '||'                                          { make [ 'op',          '||'  ] }
         | '&&'                                          { make [ 'op',          '&&'  ] }
         | '//'                                          { make [ 'op',          '//'  ] }
+        | '=='                                          { make [ 'op',          '=='  ] }
+        | '=>'                                          { make [ 'op',          '=>'  ] }
+        | '<='                                          { make [ 'op',          '<='  ] }
+        | '!='                                          { make [ 'op',          '!='  ] }
         | ','                                           { make [ 'op',          ','   ] }
         | '+'                                           { make [ 'op',          '+'   ] }
         | '-'                                           { make [ 'op',          '-'   ] }
@@ -218,6 +222,8 @@ class MiniPerl6::Expression {
         | '!'                                           { make [ 'op',          '!'   ] }
         | '/'                                           { make [ 'op',          '/'   ] }
         | '*'                                           { make [ 'op',          '*'   ] }
+        | '<'                                           { make [ 'op',          '<'   ] }
+        | '>'                                           { make [ 'op',          '>'   ] }
         | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'and' ] }
         | 'or'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'or'  ] }
         | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not' ] }
