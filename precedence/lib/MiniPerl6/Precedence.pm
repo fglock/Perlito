@@ -40,6 +40,8 @@ class MiniPerl6::Precedence {
 
     my $prec = 100;
     add_op( 'postfix', '( )',                $prec, { no_space_before => True } );
+    add_op( 'postfix', '[ ]',                $prec, { no_space_before => True } );
+    add_op( 'postfix', '{ }',                $prec, { no_space_before => True } );
     add_op( 'postfix', 'funcall',            $prec, { no_space_before => True } );
     add_op( 'postfix', 'funcall_no_params',  $prec, { no_space_before => True } );
     add_op( 'postfix', 'methcall',           $prec, { no_space_before => True } );

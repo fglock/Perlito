@@ -99,6 +99,8 @@ class MiniPerl6::Expression {
     
     token operator { 
         | '('  <paren_parse>   ')'                      { make [ 'op_or_term',  '( )',   $$<paren_parse>   ] }
+        | '['  <square_parse>  ']'                      { make [ 'op_or_term',  '[ ]',   $$<square_parse>  ] }
+        | '{'  <curly_parse>   '}'                      { make [ 'op_or_term',  '{ }',   $$<curly_parse>   ] }
         | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse> ] }
         | '++'                                          { make [ 'op',          '++'  ] }
         | '--'                                          { make [ 'op',          '--'  ] }
@@ -144,7 +146,7 @@ class MiniPerl6::Expression {
         my $get_token = sub {
             my $m = self.list_lexer($str, $last_pos);
             if !$m {
-                return undef;
+                return [ 'end', '*end*' ];
             }
             my $v = $$m;
             if  $is_first_token 
@@ -172,7 +174,7 @@ class MiniPerl6::Expression {
 
 
     token ternary_lexer { 
-        | '!!'                          { make [ 'end',     ')' ] }
+        | '!!'                          { make [ 'end',     '!!' ] }
         | <operator>                    { make $$<operator> }
     }
     method ternary_parse ($str, $pos) {
@@ -189,6 +191,60 @@ class MiniPerl6::Expression {
                 $last_pos = $m.to;
             }
             say "ternary_lexer " ~ $v.perl;
+            return $v;
+        };
+        my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
+        say $res.perl;
+        return MiniPerl6::Match.new( 
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0]);
+    }
+
+
+    token curly_lexer { 
+        | '}'                           { make [ 'end',     '}' ] }
+        | <operator>                    { make $$<operator> }
+    }
+    method curly_parse ($str, $pos) {
+        say "curly_parse ",$str," at ",$pos;
+        my $expr;
+        my $last_pos = $pos;
+        my $get_token = sub {
+            my $m = self.curly_lexer($str, $last_pos);
+            if !$m {
+                die "Expected closing '}'";
+            }
+            my $v = $$m;
+            if $v[0] ne 'end' {
+                $last_pos = $m.to;
+            }
+            say "curly_lexer " ~ $v.perl;
+            return $v;
+        };
+        my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
+        say $res.perl;
+        return MiniPerl6::Match.new( 
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0]);
+    }
+
+
+    token square_lexer { 
+        | ']'                           { make [ 'end',     ']' ] }
+        | <operator>                    { make $$<operator> }
+    }
+    method square_parse ($str, $pos) {
+        say "square_parse ",$str," at ",$pos;
+        my $expr;
+        my $last_pos = $pos;
+        my $get_token = sub {
+            my $m = self.square_lexer($str, $last_pos);
+            if !$m {
+                die "Expected closing ']'";
+            }
+            my $v = $$m;
+            if $v[0] ne 'end' {
+                $last_pos = $m.to;
+            }
+            say "square_lexer " ~ $v.perl;
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
@@ -237,7 +293,7 @@ class MiniPerl6::Expression {
         my $get_token = sub {
             my $m = self.lexer($str, $last_pos);
             if !$m {
-                return undef;
+                return [ 'end', '*end*' ];
             }
             my $v = $$m;
             if $v[0] ne 'end' {

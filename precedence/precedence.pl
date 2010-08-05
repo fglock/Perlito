@@ -33,4 +33,16 @@ class Main {
     say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
     say;
 
+    my $s = '[1,2,3]';
+    my $res = MiniPerl6::Expression.exp_parse($s, 0);
+    say ($$res).perl;
+    say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
+    say;
+
+    my $s = '$a[5]';
+    my $res = MiniPerl6::Expression.exp_parse($s, 0);
+    say ($$res).perl;
+    say "from: ", $res.from, " to: ", $res.to, " tail: ", substr($s, $res.to);
+    say;
+
 }
