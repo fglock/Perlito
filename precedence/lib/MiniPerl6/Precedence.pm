@@ -18,9 +18,8 @@ class MiniPerl6::Precedence {
         if !(defined($param)) {
             $param = {}
         }
-        my $second_op = $param{'second_op'};
         my $assoc = $param{'assoc'} || 'left';
-        ($Operator{$fixity}){$name} = $second_op || 1;
+        ($Operator{$fixity}){$name} = 1;
         $Precedence{$name}          = $precedence;
         ($Assoc{$assoc}){$name}     = 1;
         ($Allow_space_before{$fixity}){$name} = $param{'no_space_before'} ?? False !! True;
@@ -40,13 +39,12 @@ class MiniPerl6::Precedence {
     # - '|' in prefix position
 
     my $prec = 100;
-    # add_op( 'infix',    '.',   $prec, { no_space_before => True } );
-    # add_op( 'prefix',   '.',   $prec );
-    # add_op( 'postcircumfix', '(', $prec, { second_op => ')', no_space_before => True } );
-    # add_op( 'postcircumfix', '{', $prec, { second_op => '}', no_space_before => True } );
-    # add_op( 'postcircumfix', '[', $prec, { second_op => ']', no_space_before => True } );
-    # $prec = $prec - 1;
-
+    add_op( 'postfix', '( )',                $prec, { no_space_before => True } );
+    add_op( 'postfix', 'funcall',            $prec, { no_space_before => True } );
+    add_op( 'postfix', 'funcall_no_params',  $prec, { no_space_before => True } );
+    add_op( 'postfix', 'methcall',           $prec, { no_space_before => True } );
+    add_op( 'postfix', 'methcall_no_params', $prec, { no_space_before => True } );
+    $prec = $prec - 1;
     add_op( 'prefix',   '++',  $prec );
     add_op( 'prefix',   '--',  $prec );
     add_op( 'postfix',  '++',  $prec, { no_space_before => True } );
@@ -85,7 +83,7 @@ class MiniPerl6::Precedence {
     $prec = $prec - 1;
     add_op( 'infix',    '||',  $prec );
     $prec = $prec - 1;
-    add_op( 'ternary',  '??',  $prec, { second_op => '!!' } );
+    add_op( 'ternary',  '?? !!',  $prec );
     $prec = $prec - 1;
     add_op( 'infix',    '=',   $prec, { assoc => 'right' } );
     add_op( 'infix',    ':=',  $prec, { assoc => 'right' } );
@@ -100,12 +98,12 @@ class MiniPerl6::Precedence {
     $prec = $prec - 1;
     add_op( 'infix',    'or',  $prec );
     $prec = $prec - 1;
-    # add_op( 'circumfix', '(',  $prec, { second_op => ')' } );
-    # add_op( 'circumfix', '[',  $prec, { second_op => ']' } );
-    # add_op( 'circumfix', '{',  $prec, { second_op => '}' } );
-    # $prec = $prec - 1;
     add_op( 'infix',    '*start*', $prec );
     
+    sub is_term ($token) {
+        ($token[0] eq 'term') || ($token[0] eq 'op_or_term')
+    }
+
     sub precedence_parse ($get_token, $reduce) {
         my $op_stack  = [];   # [category, name]
         my $num_stack = [];
@@ -116,128 +114,48 @@ class MiniPerl6::Precedence {
             $token = $get_token.()
         }
         while (defined($token)) && ($token[0] ne 'end') {
-            if ($Operator{'prefix'}){$token[1]}
-                && ( ($last[1] eq '*start*') || (($last[0]) ne 'term') )
-            {
-                $op_stack.unshift( ['prefix', $token[1]] );
+            if ($Operator{'prefix'}){$token[1]} && ( ($last[1] eq '*start*') || !(is_term($last)) ) {
+                $token[0] = 'prefix';
+                $op_stack.unshift($token);
             }
-            elsif ($Operator{'postfix'}){$token[1]} && (($last[0]) eq 'term') 
+            elsif ($Operator{'postfix'}){$token[1]} && is_term($last) 
                 && (  ($Allow_space_before{'postfix'}){$token[1]} 
                    || !$last_has_space 
                    )
             {
                 my $pr = $Precedence{$token[1]};
-                while $op_stack.elems
-                    && ($pr <= $Precedence{ ($op_stack[0])[1] })
-                {
+                while $op_stack.elems && ($pr <= $Precedence{ ($op_stack[0])[1] }) {
                     $reduce.($op_stack, $num_stack);
                 }
-                $op_stack.unshift( ['postfix', $token[1]] );
+                $token[0] = 'postfix';
+                $op_stack.unshift($token);
             }
-            # elsif ($Operator{'postcircumfix'}){$token[1]} && (($last[0]) eq 'term') 
-            #     && (  ($Allow_space_before{'postcircumfix'}){$token[1]} 
-            #        || !$last_has_space 
-            #        )
-            # {
-            #     # last term was a value
-            #     my $pr = $Precedence{$token[1]};
-            #     while $op_stack.elems
-            #         && ( $pr <= $Precedence{ ($op_stack[0])[1] } )
-            #     {
-            #         $reduce.($op_stack, $num_stack);
-            #     }
-            #     my $res = precedence_parse($get_token);
-            #     my $pre_term = pop($num_stack);
-            #     if ($token[1] eq '(') 
-            #         && $pre_term.isa('Hash') 
-            #         && ((($pre_term{'op'})[0] eq 'prefix') || (($pre_term{'op'})[0] eq 'infix'))
-            #         && (($pre_term{'op'})[1] eq '.')
-            #     {
-            #         # term.meth(...)
-            #         push $num_stack,
-            #           {
-            #             op  => $pre_term{'op'},
-            #             val => [ @($pre_term{'val'}), $res[0] ]
-            #           };
-            #     }
-            #     else {
-            #         push $num_stack,
-            #           {
-            #             op  => ['postcircumfix', $token[1] ~ ' ' ~ ($Operator{'postcircumfix'}){$token[1]}],
-            #             val => [ $pre_term, $res[0] ]
-            #           };
-            #     }
-            #     $token = ['term', '0'];
-            # }
-            # elsif ($Operator{'circumfix'}){$token[1]} {
-            #     if ($last[0]) eq 'term' {
-            #         say "term 0: ", $last.perl;
-            #         say "term 1: ", $token.perl;
-            #         die "Value tokens must be separated by an operator";
-            #     }
-            #     my $res = precedence_parse($get_token);
-            #     $num_stack.push(
-            #       {
-            #         op  => ['circumfix', $token[1] ~ ' ' ~ ($Operator{'circumfix'}){$token[1]}],
-            #         val => $res[0]
-            #       } );
-            #     $token = ['term', '0'];
-            # }
-            elsif ($token[0]) eq 'term' {
-                # check for postcircumfix: $a[b], x(y), %x{y}
-                say "term 0: ", $last.perl;
-                say "term 1: ", $token.perl;
-                if ($last[0]) ne 'term' {
-                    $num_stack.push( $token[1] );
-                }
-                elsif $last_has_space {
+            elsif is_term($token) {
+                if is_term($last) {
                     die "Value tokens must be separated by an operator";
                 }
-                elsif (($token[1])[0] eq 'postcircumfix:()') && (($last[1])[0] eq 'apply_miss_params') {
-                    $token = [ 'term', [ 'apply', ($last[1])[1], ($token[1])[1] ] ];
-                    say "Maybe postcircumfix ", ($token[1]).perl;
-                }
-                elsif (($token[1])[0] eq 'postcircumfix:()') && (($last[1])[0] eq 'call_miss_params') {
-                    $token = [ 'term', [ 'call', ($last[1])[1], ($token[1])[1] ] ];
-                    say "Maybe postcircumfix ", ($token[1]).perl;
-                }
-                elsif (($token[1])[0] eq 'call_miss_params') && (($token[1])[1] eq '')
-                {
-                    $token = [ 'term', [ 'call_miss_params', $last[1], ($token[1])[2] ] ];
-                    say "Maybe methcall ", ($token[1]).perl;
-                }
-                else {
-                    die "Value tokens must be separated by an operator";
-                }
+                $token[0] = 'term';
+                $num_stack.push($token);
             }
-            elsif  ($Operator{'infix'}){$token[1]}    
-                || ($Operator{'list'}){$token[1]} 
-                || ($Operator{'ternary'}){$token[1]} 
-            {   
+            elsif $Precedence{$token[1]} {   
                 my $pr = $Precedence{$token[1]};
                 if ($Assoc{'right'}){$token[1]} {
-                    while $op_stack.elems
-                        && ( $pr < $Precedence{ ($op_stack[0])[1] } )
-                    {
+                    while $op_stack.elems && ( $pr < $Precedence{ ($op_stack[0])[1] } ) {
                         $reduce.($op_stack, $num_stack);
                     }
                 }
                 else {
-                    while $op_stack.elems
-                        && ( $pr <= $Precedence{ ($op_stack[0])[1] } )
-                    {
+                    while $op_stack.elems && ( $pr <= $Precedence{ ($op_stack[0])[1] } ) {
                         $reduce.($op_stack, $num_stack);
                     }
                 }
                 if ($Operator{'ternary'}){$token[1]} {
-                    $op_stack.unshift( [ 'ternary', 
-                                         $token[1],
-                                         ($Operator{'ternary'}){$token[1]}, 
-                                         $token[2] ] );
+                    $token[0] = 'ternary';
                 }
                 else {
-                    $op_stack.unshift( ['infix', $token[1]] );
+                    $token[0] = 'infix';
                 }
+                $op_stack.unshift($token);
             }
             else {
                 die "Unknown token: '", $token[1], "'";

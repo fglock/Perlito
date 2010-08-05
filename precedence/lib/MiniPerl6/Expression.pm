@@ -15,12 +15,8 @@ class MiniPerl6::Expression {
                   );
         }
         elsif $last_op[0] eq 'postfix' {
-            push $num_stack,
-                Apply.new(
-                    namespace => '',
-                    code      => 'postfix:<' ~ $last_op[1] ~ '>',
-                    arguments => [pop($num_stack) ],
-                  );
+            push $last_op, pop($num_stack);
+            push $num_stack, $last_op;
         }
         elsif MiniPerl6::Precedence::is_assoc_type('list', $last_op[1]) {
             my $arg;
@@ -83,8 +79,8 @@ class MiniPerl6::Expression {
             push $num_stack,
                 Apply.new(
                     namespace => '',
-                    code      => 'ternary:<' ~ $last_op[1] ~ ' ' ~ $last_op[2] ~ '>',
-                    arguments => [ pop($num_stack), $last_op[3], $v2 ],
+                    code      => 'ternary:<' ~ $last_op[1] ~ '>',
+                    arguments => [ pop($num_stack), $last_op, $v2 ],
                   );
         }
         else {
@@ -101,49 +97,44 @@ class MiniPerl6::Expression {
         }
     };
     
-
-    token term { 
+    token operator { 
+        | '('  <paren_parse>   ')'                      { make [ 'op_or_term',  '( )',   $$<paren_parse>   ] }
+        | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse> ] }
+        | '++'                                          { make [ 'op',          '++'  ] }
+        | '--'                                          { make [ 'op',          '--'  ] }
+        | '||'                                          { make [ 'op',          '||'  ] }
+        | '&&'                                          { make [ 'op',          '&&'  ] }
+        | ','                                           { make [ 'op',          ','   ] }
+        | '+'                                           { make [ 'op',          '+'   ] }
+        | '-'                                           { make [ 'op',          '-'   ] }
+        | '|'                                           { make [ 'op',          '|'   ] }
+        | '&'                                           { make [ 'op',          '&'   ] }
+        | '?'                                           { make [ 'op',          '?'   ] }
+        | '!'                                           { make [ 'op',          '!'   ] }
+        | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'and' ] }
+        | 'or'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'or'  ] }
+        | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not' ] }
         | '.' <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-            { make [ 'call',             '', ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
-          | { make [ 'call_miss_params', '', ~$<MiniPerl6::Grammar.ident> ] }
+            { make [ 'op_or_term', 'methcall',           '', ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
+          | { make [ 'op_or_term', 'methcall_no_params', '', ~$<MiniPerl6::Grammar.ident>                 ] }
           ]
         | <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-            { make [ 'apply',             ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
-          | { make [ 'apply_miss_params', ~$<MiniPerl6::Grammar.ident> ] }
+            { make [ 'op_or_term', 'funcall',            '', ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
+          | { make [ 'op_or_term', 'funcall_no_params',  '', ~$<MiniPerl6::Grammar.ident>                 ] }
           ]
-        | <MiniPerl6::Grammar.var_ident>    { make [ 'term', $$<MiniPerl6::Grammar.var_ident> ] }     
-        | <MiniPerl6::Grammar.val>          { make [ 'term', $$<MiniPerl6::Grammar.val> ] }
-        | '(' <paren_parse> ')'             { make [ 'postcircumfix:()', $$<paren_parse> ] }
-    }
-
-    token operator { 
-        | '??' <ternary_parse> '!!'                     { make [ 'op',      '??',   $$<ternary_parse> ] }
-        | '++'                                          { make [ 'op',      '++'  ] }
-        | '--'                                          { make [ 'op',      '--'  ] }
-        | '||'                                          { make [ 'op',      '||'  ] }
-        | '&&'                                          { make [ 'op',      '&&'  ] }
-        | ','                                           { make [ 'op',      ','   ] }
-        | '+'                                           { make [ 'op',      '+'   ] }
-        | '-'                                           { make [ 'op',      '-'   ] }
-        | '|'                                           { make [ 'op',      '|'   ] }
-        | '&'                                           { make [ 'op',      '&'   ] }
-        | '?'                                           { make [ 'op',      '?'   ] }
-        | '!'                                           { make [ 'op',      '!'   ] }
-        | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',      'and' ] }
-        | 'or'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',      'or'  ] }
-        | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',      'not' ] }
+        | <MiniPerl6::Grammar.var_ident>                { make [ 'term', $$<MiniPerl6::Grammar.var_ident> ] }     
+        | <MiniPerl6::Grammar.val>                      { make [ 'term', $$<MiniPerl6::Grammar.val>       ] }
+        | <.MiniPerl6::Grammar.ws>                      { make [ 'space',   ' '                           ] }
     }
 
     token list_lexer { 
         | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'end',     'and' ] }
         | 'or'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'end',     'or'  ] }
-        | <operator>                                    { make $$<operator> }
-        | <term>                                        { make [ 'term',    $$<term> ] }
-        | <.MiniPerl6::Grammar.ws>                      { make [ 'space',   ' '   ] }
         | ')'                                           { make [ 'end',     ')'   ] }
         | ';'                                           { make [ 'end',     ';'   ] }
+        | <operator>                                    { make $$<operator> }
     }
     method list_parse ($str, $pos) {
         say "list_parse ",$str," at ",$pos;
@@ -183,8 +174,6 @@ class MiniPerl6::Expression {
     token ternary_lexer { 
         | '!!'                          { make [ 'end',     ')' ] }
         | <operator>                    { make $$<operator> }
-        | <term>                        { make [ 'term',    $$<term> ] }
-        | <.MiniPerl6::Grammar.ws>      { make [ 'space',   ' ' ] }
     }
     method ternary_parse ($str, $pos) {
         say "ternary_parse ",$str," at ",$pos;
@@ -210,10 +199,8 @@ class MiniPerl6::Expression {
 
 
     token paren_lexer { 
-        | <operator>                    { make $$<operator> }
-        | <term>                        { make [ 'term',    $$<term> ] }
-        | <.MiniPerl6::Grammar.ws>      { make [ 'space',   ' ' ] }
         | ')'                           { make [ 'end',     ')' ] }
+        | <operator>                    { make $$<operator> }
     }
     method paren_parse ($str, $pos) {
         say "paren_parse ",$str," at ",$pos;
@@ -239,14 +226,12 @@ class MiniPerl6::Expression {
 
 
     token lexer { 
-        | <operator>                    { make $$<operator> }
-        | <term>                        { make [ 'term',    $$<term> ] }
-        | <.MiniPerl6::Grammar.ws>      { make [ 'space',   ' ' ] }
         | ';'                           { make [ 'end',     ';' ] }
         | '}'                           { make [ 'end',     '}' ] }
+        | <operator>                    { make $$<operator> }
     }
     method exp_parse ($str, $pos) {
-        say "exp_parse ",$str," at ",$pos;
+        say "exp_parse: input ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -262,7 +247,7 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
-        say $res.perl;
+        say "exp_parse: result ", $res.perl;
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0])
     } 
