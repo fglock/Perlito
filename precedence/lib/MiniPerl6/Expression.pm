@@ -25,15 +25,17 @@ class MiniPerl6::Expression {
                 return $v;
             }
             if $v[1] eq '( )' {
-                say "  Params ", ($v[2]).perl;
+                say "  Plain parenthesis ", ($v[2]).perl;
                 return $v;
             }
             if $v[1] eq '[ ]' {
-                say "  Index ", ($v[2]).perl;
+                say "  Array ", ($v[2]).perl;
+                $v = Lit::Array.new( array1 => $v[2] );
+                say "    ", $v.perl;
                 return $v;
             }
             if $v[1] eq '{ }' {
-                say "  Lookup ", ($v[2]).perl;
+                say "  Code, Hash, or Pair", ($v[2]).perl;
                 return $v;
             }
             return $v[1];
@@ -44,6 +46,44 @@ class MiniPerl6::Expression {
     sub reduce_postfix ($op, $value) {
         say "** reduce_postfix ", $op.perl;
         say "  ", $value.perl;
+        my $v = $op;
+        if $v[1] eq 'methcall_no_params' {
+            say "  Call ", ($v[2]).perl;
+            push $v, $value;
+            return $v;
+        }
+        if $v[1] eq 'funcall_no_params' {
+            say "  Apply ", ($v[2]).perl;
+            push $v, $value;
+            return $v;
+        }
+        if $v[1] eq 'methcall' {
+            say "  Call ", ($v[2]).perl;
+            push $v, $value;
+            return $v;
+        }
+        if $v[1] eq 'funcall' {
+            say "  Apply ", ($v[2]).perl;
+            push $v, $value;
+            return $v;
+        }
+        if $v[1] eq '( )' {
+            say "  Params ", ($v[2]).perl;
+            push $v, $value;
+            return $v;
+        }
+        if $v[1] eq '[ ]' {
+            say "  Index ", ($v[2]).perl;
+            $v = Index.new( obj => $value, index_exp => $v[2] );
+            say "    ", $v.perl;
+            return $v;
+        }
+        if $v[1] eq '{ }' {
+            say "  Lookup ", ($v[2]).perl;
+            $v = Lookup.new( obj => $value, index_exp => $v[2] );
+            say "    ", $v.perl;
+            return $v;
+        }
         push $op, $value;
         return $op;
     }
@@ -59,7 +99,15 @@ class MiniPerl6::Expression {
                     arguments => [ pop_term($num_stack) ],
                   );
         }
-        elsif ($last_op[0] eq 'postfix') || ($last_op[0] eq 'postfix_or_term') {
+        elsif $last_op[0] eq 'postfix' {
+            push $num_stack,
+                Apply.new(
+                    namespace => '',
+                    code      => 'postfix:<' ~ $last_op[1] ~ '>',
+                    arguments => [ pop_term($num_stack) ],
+                  );
+        }
+        elsif $last_op[0] eq 'postfix_or_term' {
             $num_stack.push( reduce_postfix( $last_op, pop_term($num_stack) ) );
         }
         elsif MiniPerl6::Precedence::is_assoc_type('list', $last_op[1]) {
@@ -125,7 +173,7 @@ class MiniPerl6::Expression {
                 Apply.new(
                     namespace => '',
                     code      => 'ternary:<' ~ $last_op[1] ~ '>',
-                    arguments => [ pop_term($num_stack), $last_op, $v2 ],
+                    arguments => [ pop_term($num_stack), $last_op[2], $v2 ],
                   );
         }
         else {
@@ -217,8 +265,9 @@ class MiniPerl6::Expression {
         if $res.elems == 0 {
             return MiniPerl6::Match.new(bool => 0);
         }
+        $res = pop_term($res);
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0]);
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
     }
 
 
@@ -243,9 +292,10 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
+        $res = pop_term($res);
         say $res.perl;
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0]);
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
     }
 
 
@@ -270,9 +320,10 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
+        $res = pop_term($res);
         say $res.perl;
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0]);
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
     }
 
 
@@ -297,9 +348,10 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
+        $res = pop_term($res);
         say $res.perl;
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0]);
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
     }
 
 
@@ -324,9 +376,10 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
+        $res = pop_term($res);
         say $res.perl;
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0]);
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
     }
 
 
@@ -352,9 +405,10 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
+        $res = pop_term($res);
         say "exp_parse: result ", $res.perl;
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res[0])
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res)
     } 
 
 }
