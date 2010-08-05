@@ -103,7 +103,7 @@ class MiniPerl6::Precedence {
     add_op( 'infix',    '*start*', $prec );
     
     sub is_term ($token) {
-        ($token[0] eq 'term') || ($token[0] eq 'op_or_term')
+        ($token[0] eq 'term') || ($token[0] eq 'postfix_or_term')
     }
 
     sub precedence_parse ($get_token, $reduce) {
@@ -116,12 +116,16 @@ class MiniPerl6::Precedence {
             $token = $get_token.()
         }
         while (defined($token)) && ($token[0] ne 'end') {
+
+            say $token[1], " checking";
+            say "  ", $token.perl;
+            say "  ", $last.perl;
+
             if ($Operator{'prefix'}){$token[1]} && ( ($last[1] eq '*start*') || !(is_term($last)) ) {
                 $token[0] = 'prefix';
                 $op_stack.unshift($token);
             }
-            elsif  ($Operator{'postfix'}){$token[1]} 
-                && ( is_term($last) || ($Operator{'postfix'}){$last[1]} )
+            elsif ($Operator{'postfix'}){$token[1]} && is_term($last) 
                 && (  ($Allow_space_before{'postfix'}){$token[1]} 
                    || !($last_has_space) 
                    )
@@ -131,7 +135,9 @@ class MiniPerl6::Precedence {
                 while $op_stack.elems && ($pr <= $Precedence{ ($op_stack[0])[1] }) {
                     $reduce.($op_stack, $num_stack);
                 }
-                $token[0] = 'postfix';
+                if ($token[0]) ne 'postfix_or_term' {
+                    $token[0] = 'postfix';
+                }
                 $op_stack.unshift($token);
             }
             elsif is_term($token) {

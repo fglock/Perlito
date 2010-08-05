@@ -50,6 +50,7 @@ class MiniPerl6::Expression {
 
     my $reduce_to_ast = sub ($op_stack, $num_stack) {
         my $last_op = $op_stack.shift;
+        say "reduce_to_ast last_op=", $last_op.perl;
         if $last_op[0] eq 'prefix' {
             push $num_stack,
                 Apply.new(
@@ -58,8 +59,9 @@ class MiniPerl6::Expression {
                     arguments => [ pop_term($num_stack) ],
                   );
         }
-        elsif $last_op[0] eq 'postfix' {
+        elsif ($last_op[0] eq 'postfix') || ($last_op[0] eq 'postfix_or_term') {
             $num_stack.push( reduce_postfix( $last_op, pop_term($num_stack) ) );
+            say "  num_stack ", $num_stack.perl; 
         }
         elsif MiniPerl6::Precedence::is_assoc_type('list', $last_op[1]) {
             my $arg;
@@ -142,9 +144,9 @@ class MiniPerl6::Expression {
     };
     
     token operator { 
-        | '('  <paren_parse>   ')'                      { make [ 'op_or_term',  '( )',   $$<paren_parse>   ] }
-        | '['  <square_parse>  ']'                      { make [ 'op_or_term',  '[ ]',   $$<square_parse>  ] }
-        | '{'  <curly_parse>   '}'                      { make [ 'op_or_term',  '{ }',   $$<curly_parse>   ] }
+        | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
+        | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
+        | '{'  <curly_parse>   '}'                      { make [ 'postfix_or_term',  '{ }',   $$<curly_parse>   ] }
         | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse> ] }
         | '++'                                          { make [ 'op',          '++'  ] }
         | '--'                                          { make [ 'op',          '--'  ] }
@@ -162,13 +164,13 @@ class MiniPerl6::Expression {
         | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not' ] }
         | '.' <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-            { make [ 'op_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
-          | { make [ 'op_or_term', 'methcall_no_params', ~$<MiniPerl6::Grammar.ident>                 ] }
+            { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
+          | { make [ 'postfix_or_term', 'methcall_no_params', ~$<MiniPerl6::Grammar.ident>                 ] }
           ]
         | <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-            { make [ 'op_or_term', 'funcall',            ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
-          | { make [ 'op_or_term', 'funcall_no_params',  ~$<MiniPerl6::Grammar.ident>                 ] }
+            { make [ 'postfix_or_term', 'funcall',            ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
+          | { make [ 'postfix_or_term', 'funcall_no_params',  ~$<MiniPerl6::Grammar.ident>                 ] }
           ]
         | <MiniPerl6::Grammar.var_ident>                { make [ 'term', $$<MiniPerl6::Grammar.var_ident> ] }     
         | <MiniPerl6::Grammar.val>                      { make [ 'term', $$<MiniPerl6::Grammar.val>       ] }
