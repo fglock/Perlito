@@ -4,6 +4,53 @@ class MiniPerl6::Expression {
     use MiniPerl6::Grammar;
     use MiniPerl6::Perl5::Emitter;
    
+    sub pop_term ($num_stack) {
+        my $v = $num_stack.pop;
+        if $v.isa('Array') && ($v[0] eq 'term') {
+            say "** processing term ", $v.perl;
+            if $v[1] eq 'methcall_no_params' {
+                say "  Call ", ($v[2]).perl;
+                return $v;
+            }
+            if $v[1] eq 'funcall_no_params' {
+                say "  Apply ", ($v[2]).perl;
+                return $v;
+            }
+            if $v[1] eq 'methcall' {
+                say "  Call ", ($v[2]).perl;
+                return $v;
+            }
+            if $v[1] eq 'funcall' {
+                say "  Apply ", ($v[2]).perl;
+                return $v;
+            }
+            if $v[1] eq '( )' {
+                say "  Params ", ($v[2]).perl;
+                return $v;
+            }
+            if $v[1] eq '[ ]' {
+                say "  Index ", ($v[2]).perl;
+                return $v;
+            }
+            if $v[1] eq '{ }' {
+                say "  Lookup ", ($v[2]).perl;
+                return $v;
+            }
+
+        }
+        if $v.isa('Array') {
+            return $v[1];
+        }
+        return $v;
+    }
+
+    sub reduce_postfix ($op, $value) {
+        say "** reduce_postfix ", $op.perl;
+        say "  ", $value.perl;
+        push $op, $value;
+        return $op;
+    }
+
     my $reduce_to_ast = sub ($op_stack, $num_stack) {
         my $last_op = $op_stack.shift;
         if $last_op[0] eq 'prefix' {
@@ -11,28 +58,27 @@ class MiniPerl6::Expression {
                 Apply.new(
                     namespace => '',
                     code      => 'prefix:<' ~ $last_op[1] ~ '>',
-                    arguments => [ pop($num_stack) ],
+                    arguments => [ pop_term($num_stack) ],
                   );
         }
         elsif $last_op[0] eq 'postfix' {
-            push $last_op, pop($num_stack);
-            push $num_stack, $last_op;
+            $num_stack.push( reduce_postfix( $last_op, pop_term($num_stack) ) );
         }
         elsif MiniPerl6::Precedence::is_assoc_type('list', $last_op[1]) {
             my $arg;
             if $num_stack.elems < 2 {
-                $arg = pop($num_stack);
+                $arg = pop_term($num_stack);
                 push $num_stack, 
                     Apply.new(
                         namespace => '',
                         code      => 'postfix:<' ~ $last_op[1] ~ '>',
-                        arguments => [ pop($num_stack) ],
+                        arguments => [ pop_term($num_stack) ],
                       );
                 return;
             }
             else {
-                my $v2 = pop($num_stack);
-                $arg = [ pop($num_stack), $v2 ];
+                my $v2 = pop_term($num_stack);
+                $arg = [ pop_term($num_stack), $v2 ];
             }
             if     (($arg[0]).isa('Apply'))
                 && ($last_op[0] eq 'infix') 
@@ -57,7 +103,8 @@ class MiniPerl6::Expression {
             if $num_stack.elems < 2 {
                 die "Missing value after operator";
             }
-            my $arg = [ pop($num_stack), pop($num_stack) ];
+            my $v2 = pop_term($num_stack);
+            my $arg = [ pop_term($num_stack), $v2 ];
             if ($arg[1]).isa('Hash')
                 && MiniPerl6::Precedence::is_assoc_type('chain', ($arg[1]){op} ) 
             {
@@ -75,24 +122,24 @@ class MiniPerl6::Expression {
             if ( $num_stack.elems < 2 ) {
                 die "Missing value after ternary operator";
             }
-            my $v2 = pop($num_stack);
+            my $v2 = pop_term($num_stack);
             push $num_stack,
                 Apply.new(
                     namespace => '',
                     code      => 'ternary:<' ~ $last_op[1] ~ '>',
-                    arguments => [ pop($num_stack), $last_op, $v2 ],
+                    arguments => [ pop_term($num_stack), $last_op, $v2 ],
                   );
         }
         else {
             if ( $num_stack.elems < 2 ) {
                 die "Missing value after operator";
             }
-            my $v2 = pop($num_stack);
+            my $v2 = pop_term($num_stack);
             push $num_stack,
                 Apply.new(
                     namespace => '',
                     code      => 'infix:<' ~ $last_op[1] ~ '>',
-                    arguments => [ pop($num_stack), $v2 ],
+                    arguments => [ pop_term($num_stack), $v2 ],
                   );
         }
     };
@@ -118,13 +165,13 @@ class MiniPerl6::Expression {
         | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not' ] }
         | '.' <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-            { make [ 'op_or_term', 'methcall',           '', ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
-          | { make [ 'op_or_term', 'methcall_no_params', '', ~$<MiniPerl6::Grammar.ident>                 ] }
+            { make [ 'op_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
+          | { make [ 'op_or_term', 'methcall_no_params', ~$<MiniPerl6::Grammar.ident>                 ] }
           ]
         | <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-            { make [ 'op_or_term', 'funcall',            '', ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
-          | { make [ 'op_or_term', 'funcall_no_params',  '', ~$<MiniPerl6::Grammar.ident>                 ] }
+            { make [ 'op_or_term', 'funcall',            ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
+          | { make [ 'op_or_term', 'funcall_no_params',  ~$<MiniPerl6::Grammar.ident>                 ] }
           ]
         | <MiniPerl6::Grammar.var_ident>                { make [ 'term', $$<MiniPerl6::Grammar.var_ident> ] }     
         | <MiniPerl6::Grammar.val>                      { make [ 'term', $$<MiniPerl6::Grammar.val>       ] }
