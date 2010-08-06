@@ -44,7 +44,6 @@ class MiniPerl6::Precedence {
     add_op( 'postfix', '.{ }',               $prec, { no_space_before => True } );
     add_op( 'postfix', '( )',                $prec, { no_space_before => True } );
     add_op( 'postfix', '[ ]',                $prec, { no_space_before => True } );
-    add_op( 'postfix', '{ }',                $prec, { no_space_before => True } );
     add_op( 'postfix', 'funcall',            $prec, { no_space_before => True } );
     add_op( 'postfix', 'funcall_no_params',  $prec, { no_space_before => True } );
     add_op( 'postfix', 'methcall',           $prec, { no_space_before => True } );
@@ -97,7 +96,6 @@ class MiniPerl6::Precedence {
     add_op( 'prefix',   'not', $prec );
     $prec = $prec - 1;
     add_op( 'list',     ',',   $prec, { assoc => 'list' } );
-    add_op( 'infix',    '=>',  $prec );
     $prec = $prec - 1;
     add_op( 'list',     ';',   $prec, { assoc => 'list' } );
     $prec = $prec - 1;
