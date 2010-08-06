@@ -3,7 +3,7 @@ class Main {
     use Test;
     use MiniPerl6::Expression;
    
-    Test::plan 36;
+    Test::plan 38;
     Test::ok( 
         ($(MiniPerl6::Expression.exp_parse( "123", 0))).perl eq 
         "Val::Int.new('int' => 123)",
@@ -133,6 +133,15 @@ class Main {
         "Lit::Hash.new('hash1' => '')",
         "hash");
 
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "%a{}", 0)).capture).perl eq 
+        "Lookup.new('index_exp' => '', 'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''))",
+        "whole hash");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "@a[]", 0)).capture).perl eq 
+        "Index.new('index_exp' => '', 'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''))",
+        "whole array");
+
     say "# Block terminates an expression";
     Test::ok( 
         ((MiniPerl6::Expression.exp_parse( "2 { 3 }", 0)).capture).perl eq 
@@ -143,13 +152,13 @@ class Main {
         "Lookup.new('index_exp' => Val::Int.new('int' => 3), 'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''))",
         "hash subscript - block doesn't end expression");
     Test::ok( 
-        ((MiniPerl6::Expression.exp_parse( "%a{}", 0)).capture).perl eq 
-        "Lookup.new('index_exp' => '', 'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''))",
-        "whole hash");
+        ((MiniPerl6::Expression.exp_parse( "x 2, { 3 } + 4", 0)).capture).perl eq 
+        "Apply.new('arguments' => [Apply.new('arguments' => Apply.new('arguments' => [Val::Int.new('int' => 2), Lit::Block.new('stmts' => [Val::Int.new('int' => 3)])], 'code' => 'list:<,>', 'namespace' => ''), 'code' => 'x', 'namespace' => ''), Val::Int.new('int' => 4)], 'code' => 'infix:<+>', 'namespace' => '')",
+        "block ends list");
     Test::ok( 
-        ((MiniPerl6::Expression.exp_parse( "@a[]", 0)).capture).perl eq 
-        "Index.new('index_exp' => '', 'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''))",
-        "whole array");
+        ((MiniPerl6::Expression.exp_parse( "x { 3 }, 2 + 4", 0)).capture).perl eq 
+        "Apply.new('arguments' => Apply.new('arguments' => [Lit::Block.new('stmts' => [Val::Int.new('int' => 3)]), Apply.new('arguments' => [Val::Int.new('int' => 2), Val::Int.new('int' => 4)], 'code' => 'infix:<+>', 'namespace' => '')], 'code' => 'list:<,>', 'namespace' => ''), 'code' => 'x', 'namespace' => '')",
+        "block doesn't end list");
 
     # TODO
 

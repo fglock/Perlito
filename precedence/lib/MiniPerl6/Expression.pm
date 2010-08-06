@@ -335,12 +335,33 @@ class MiniPerl6::Expression {
         my $expr;
         my $last_pos = $pos;
         my $is_first_token = True;
+        my $block_terminator = 0;
         my $get_token = sub {
             my $m = self.list_lexer($str, $last_pos);
             if !$m {
                 return [ 'end', '*end*' ];
             }
             my $v = $$m;
+            say "# list_lexer got " ~ $v.perl;
+
+            # a sequence ( block - space - not_comma_or_colon ) terminates the list
+            if ($block_terminator == 1) {
+                if (($v[0]) eq 'space') {
+                    # ignore
+                }
+                elsif ($block_terminator == 1) && (($v[0]) eq 'op') && (($v[1]) eq ',') { 
+                    # TODO - test for colon
+                    $block_terminator = 0;
+                }
+                else {
+                    # end of list
+                    $v[0] = 'end';
+                }
+            }
+            elsif ($block_terminator == 0) && (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') {
+                $block_terminator = 1;
+            }
+
             if  $is_first_token 
                 && ($v[0] eq 'op')
                 && !(MiniPerl6::Precedence::is_fixity_type('prefix', $v[1]))
