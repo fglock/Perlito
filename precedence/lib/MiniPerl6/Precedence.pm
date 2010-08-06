@@ -48,6 +48,8 @@ class MiniPerl6::Precedence {
     add_op( 'postfix', 'funcall_no_params',  $prec, { no_space_before => True } );
     add_op( 'postfix', 'methcall',           $prec, { no_space_before => True } );
     add_op( 'postfix', 'methcall_no_params', $prec, { no_space_before => True } );
+    add_op( 'postfix', 'block',              $prec, { no_space_before => True } );
+    add_op( 'postfix', 'hash',               $prec, { no_space_before => True } );
     $prec = $prec - 1;
     add_op( 'prefix',   '++',  $prec );
     add_op( 'prefix',   '--',  $prec );
@@ -137,7 +139,19 @@ class MiniPerl6::Precedence {
                 }
                 $op_stack.unshift($token);
             }
+            elsif ($token[1] eq 'block') && is_term($last) && $last_has_space {
+                # a block in this position terminates the current expression
+                while $op_stack.elems {
+                    $reduce.($op_stack, $num_stack);
+                }
+                return $num_stack;
+            }
             elsif is_term($token) {
+                say "# ** two terms in a row ";
+                say "#      last:  ", $last.perl;
+                say "#      token: ", $token.perl;
+                say "#      space: ", $last_has_space;
+
                 if is_term($last) {
                     die "Value tokens must be separated by an operator";
                 }

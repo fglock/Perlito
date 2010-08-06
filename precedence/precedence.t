@@ -3,7 +3,7 @@ class Main {
     use Test;
     use MiniPerl6::Expression;
    
-    Test::plan 31;
+    Test::plan 36;
     Test::ok( 
         ($(MiniPerl6::Expression.exp_parse( "123", 0))).perl eq 
         "Val::Int.new('int' => 123)",
@@ -128,7 +128,28 @@ class Main {
         ((MiniPerl6::Expression.exp_parse( "{ pair $a, 3 }", 0)).capture).perl eq 
         "Lit::Hash.new('hash1' => Apply.new('arguments' => Apply.new('arguments' => [Var.new('name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), Val::Int.new('int' => 3)], 'code' => 'list:<,>', 'namespace' => ''), 'code' => 'pair', 'namespace' => ''))",
         "pair");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "{ }", 0)).capture).perl eq 
+        "Lit::Hash.new('hash1' => '')",
+        "hash");
 
+    say "# Block terminates an expression";
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "2 { 3 }", 0)).capture).perl eq 
+        "Val::Int.new('int' => 2)",
+        "block ends expression");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "%a{ 3 }", 0)).capture).perl eq 
+        "Lookup.new('index_exp' => Val::Int.new('int' => 3), 'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''))",
+        "hash subscript - block doesn't end expression");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "%a{}", 0)).capture).perl eq 
+        "Lookup.new('index_exp' => '', 'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''))",
+        "whole hash");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "@a[]", 0)).capture).perl eq 
+        "Index.new('index_exp' => '', 'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''))",
+        "whole array");
 
     # TODO
 

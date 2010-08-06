@@ -86,9 +86,9 @@ class MiniPerl6::Expression {
 
     sub reduce_postfix ($op, $value) {
         my $v = $op;
-        # say "# ** reduce_postfix ", $op.perl;
-        # say "#      value: ", $value.perl;
-        # say "#      v:     ", $v.perl;
+        say "# ** reduce_postfix ", $op.perl;
+        say "#      value: ", $value.perl;
+        say "#      v:     ", $v.perl;
         if $v[1] eq 'methcall_no_params' {
             # say "#   Call ", ($v[2]).perl;
             $v = Call.new( invocant => $value, method => $v[2], arguments => undef, hyper => 0 );
@@ -134,6 +134,16 @@ class MiniPerl6::Expression {
             # say "#   Lookup ", ($v[2]).perl;
             $v = Lookup.new( obj => $value, index_exp => $v[2] );
             # say "#     ", $v.perl;
+            return $v;
+        }
+        if $v[1] eq 'block' {
+            say "#   Lookup (was Block)", ($v[2]).perl;
+            $v = Lookup.new( obj => $value, index_exp => ($v[2])[0] );
+            return $v;
+        }
+        if $v[1] eq 'hash' {
+            say "#   Lookup (was Hash or Pair)", ($v[2]).perl;
+            $v = Lookup.new( obj => $value, index_exp => $v[2] );
             return $v;
         }
         if $v[1] eq '.( )' {
@@ -265,11 +275,12 @@ class MiniPerl6::Expression {
         | '{'  <.MiniPerl6::Grammar.ws>?
             [ [ <before <.MiniPerl6::Grammar.pair> <.MiniPerl6::Grammar.ws>? ','>
               | <before 'pair' <!before <.MiniPerl6::Grammar.word> > >
+              | <before '}' >
               ]
               <curly_parse> <.MiniPerl6::Grammar.ws>? '}'
-                    { make [ 'term', 'hash',  $$<curly_parse> ] }
+                    { make [ 'postfix_or_term', 'hash',  $$<curly_parse> ] }
             | <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
-                    { make [ 'term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
+                    { make [ 'postfix_or_term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
             ]
 
         | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse>  ] }
