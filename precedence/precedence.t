@@ -3,7 +3,7 @@ class Main {
     use Test;
     use MiniPerl6::Expression;
    
-    Test::plan 24;
+    Test::plan 27;
     Test::ok( 
         ($(MiniPerl6::Expression.exp_parse( "123", 0))).perl eq 
         "Val::Int.new('int' => 123)",
@@ -100,6 +100,18 @@ class Main {
         ((MiniPerl6::Expression.exp_parse( "$a.push 30", 0)).capture).perl eq 
         "Call.new('arguments' => Val::Int.new('int' => 30), 'hyper' => 0, 'invocant' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'method' => 'push')",
         "method call no parentheses");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "$a => 30", 0)).capture).perl eq 
+        "Apply.new('arguments' => [Var.new('name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), Val::Int.new('int' => 30)], 'code' => 'infix:<=>>', 'namespace' => '')",
+        "fat arrow");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "{ 12 }", 0)).capture).perl eq 
+        "Lit::Block.new('stmts' => [Val::Int.new('int' => 12)])",
+        "block");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "{ 13; 14 }", 0)).capture).perl eq 
+        "Lit::Block.new('stmts' => [Val::Int.new('int' => 13), Val::Int.new('int' => 14)])",
+        "block");
 
 
     # TODO

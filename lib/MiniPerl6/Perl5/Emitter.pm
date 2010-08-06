@@ -74,6 +74,10 @@ class Val::Object {
     }
 }
 
+class Lit::Block {
+    has @.stmts;
+}
+
 class Lit::Array {
     has @.array1;
     method emit {

@@ -46,6 +46,7 @@ class MiniPerl6::Expression {
             }
             if $v[1] eq '{ }' {
                 say "#   Code, Hash, or Pair", ($v[2]).perl;
+                $v = Lit::Block.new( stmts => $v[2] );
                 return $v;
             }
             if $v[1] eq '.( )' {
@@ -247,7 +248,8 @@ class MiniPerl6::Expression {
         | '.{' <curly_parse>   '}'                      { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
-        | '{'  <curly_parse>   '}'                      { make [ 'postfix_or_term',  '{ }',   $$<curly_parse>   ] }
+        | '{'  <.MiniPerl6::Grammar.ws>? <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'      
+               { make [ 'postfix_or_term',  '{ }',   $$<MiniPerl6::Grammar.exp_stmts>   ] }
         | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse> ] }
         | '**'                                          { make [ 'op',          '**'  ] }
         | '++'                                          { make [ 'op',          '++'  ] }

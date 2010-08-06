@@ -70,6 +70,12 @@ sub emit { my $self = $_[0]; 'bless(' . Main::perl($self->{fields}, ) . ', ' . M
 }
 
 {
+package Lit::Block;
+sub new { shift; bless { @_ }, "Lit::Block" }
+sub stmts { $_[0]->{stmts} }
+}
+
+{
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
