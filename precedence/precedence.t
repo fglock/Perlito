@@ -3,7 +3,7 @@ class Main {
     use Test;
     use MiniPerl6::Expression;
    
-    Test::plan 30;
+    Test::plan 31;
     Test::ok( 
         ($(MiniPerl6::Expression.exp_parse( "123", 0))).perl eq 
         "Val::Int.new('int' => 123)",
@@ -102,7 +102,7 @@ class Main {
         "method call no parentheses");
     Test::ok( 
         ((MiniPerl6::Expression.exp_parse( "a => 30", 0)).capture).perl eq 
-        "Apply.new('arguments' => [Val::Buf.new('buf' => 'a'), Val::Int.new('int' => 30)], 'code' => 'Pair', 'namespace' => '')",
+        "Apply.new('arguments' => [Val::Buf.new('buf' => 'a'), Val::Int.new('int' => 30)], 'code' => 'pair', 'namespace' => '')",
         "fat arrow");
     Test::ok( 
         ((MiniPerl6::Expression.exp_parse( "{ 12 }", 0)).capture).perl eq 
@@ -114,15 +114,19 @@ class Main {
         "block");
     Test::ok( 
         ((MiniPerl6::Expression.exp_parse( "{ a => 2, }", 0)).capture).perl eq 
-        "Lit::Hash.new('hash1' => Apply.new('arguments' => [Apply.new('arguments' => [Val::Buf.new('buf' => 'a'), Val::Int.new('int' => 2)], 'code' => 'Pair', 'namespace' => '')], 'code' => 'postfix:<,>', 'namespace' => ''))",
+        "Lit::Hash.new('hash1' => Apply.new('arguments' => [Apply.new('arguments' => [Val::Buf.new('buf' => 'a'), Val::Int.new('int' => 2)], 'code' => 'pair', 'namespace' => '')], 'code' => 'postfix:<,>', 'namespace' => ''))",
         "hash or pair");
     Test::ok( 
         ((MiniPerl6::Expression.exp_parse( "{a => 2, x => 3}", 0)).capture).perl eq 
-        "Lit::Hash.new('hash1' => Apply.new('arguments' => [Apply.new('arguments' => [Val::Buf.new('buf' => 'a'), Val::Int.new('int' => 2)], 'code' => 'Pair', 'namespace' => ''), Apply.new('arguments' => [Val::Buf.new('buf' => 'x'), Val::Int.new('int' => 3)], 'code' => 'Pair', 'namespace' => '')], 'code' => 'list:<,>', 'namespace' => ''))",
+        "Lit::Hash.new('hash1' => Apply.new('arguments' => [Apply.new('arguments' => [Val::Buf.new('buf' => 'a'), Val::Int.new('int' => 2)], 'code' => 'pair', 'namespace' => ''), Apply.new('arguments' => [Val::Buf.new('buf' => 'x'), Val::Int.new('int' => 3)], 'code' => 'pair', 'namespace' => '')], 'code' => 'list:<,>', 'namespace' => ''))",
         "hash");
     Test::ok( 
         ((MiniPerl6::Expression.exp_parse( ":$a", 0)).capture).perl eq 
-        "Apply.new('arguments' => [Val::Buf.new('buf' => 'a'), Var.new('name' => 'a', 'sigil' => '$', 'twigil' => '')], 'code' => 'Pair', 'namespace' => '')",
+        "Apply.new('arguments' => [Val::Buf.new('buf' => 'a'), Var.new('name' => 'a', 'sigil' => '$', 'twigil' => '')], 'code' => 'pair', 'namespace' => '')",
+        "pair");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "{ pair $a, 3 }", 0)).capture).perl eq 
+        "Lit::Hash.new('hash1' => Apply.new('arguments' => Apply.new('arguments' => [Var.new('name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), Val::Int.new('int' => 3)], 'code' => 'list:<,>', 'namespace' => ''), 'code' => 'pair', 'namespace' => ''))",
         "pair");
 
 
@@ -138,6 +142,6 @@ class Main {
     #     "pair");
     # Test::ok( 
     #     ((MiniPerl6::Expression.exp_parse( "{1,2,3,4}", 0)).capture).perl eq 
-    #     "Lit::Hash.new('hash1' => Apply.new('arguments' => [Apply.new('arguments' => [Val::Buf.new('buf' => 'a'), Val::Int.new('int' => 2)], 'code' => 'Pair', 'namespace' => ''), Apply.new('arguments' => [Val::Buf.new('buf' => 'x'), Val::Int.new('int' => 3)], 'code' => 'Pair', 'namespace' => '')], 'code' => 'list:<,>', 'namespace' => ''))",
+    #     "Lit::Hash.new('hash1' => Apply.new('arguments' => [Apply.new('arguments' => [Val::Buf.new('buf' => 'a'), Val::Int.new('int' => 2)], 'code' => 'pair', 'namespace' => ''), Apply.new('arguments' => [Val::Buf.new('buf' => 'x'), Val::Int.new('int' => 3)], 'code' => 'pair', 'namespace' => '')], 'code' => 'list:<,>', 'namespace' => ''))",
     #     "block");
 }

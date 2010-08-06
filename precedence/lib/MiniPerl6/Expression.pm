@@ -75,7 +75,7 @@ class MiniPerl6::Expression {
             if ($v[1]).isa('Array') && ((($v[1]).elems) == 2) {
                 # say "#   old style Pair ", $v.perl;
                 #   old style Pair - wrap it into a subroutine for now
-                $v = Apply.new( code => 'Pair', arguments => $v[1], namespace => '' );
+                $v = Apply.new( code => 'pair', arguments => $v[1], namespace => '' );
                 # say "#     ", $v.perl;
                 return $v;
             }
@@ -263,7 +263,9 @@ class MiniPerl6::Expression {
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
 
         | '{'  <.MiniPerl6::Grammar.ws>?
-            [ <before <.MiniPerl6::Grammar.pair> <.MiniPerl6::Grammar.ws>? ','>
+            [ [ <before <.MiniPerl6::Grammar.pair> <.MiniPerl6::Grammar.ws>? ','>
+              | <before 'pair' <!before <.MiniPerl6::Grammar.word> > >
+              ]
               <curly_parse> <.MiniPerl6::Grammar.ws>? '}'
                     { make [ 'term', 'hash',  $$<curly_parse> ] }
             | <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
@@ -488,7 +490,7 @@ class MiniPerl6::Expression {
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
         $res = pop_term($res);
-        # say "# exp_parse result: ", $res.perl;
+        say "# exp_parse result: ", $res.perl;
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res)
     } 
