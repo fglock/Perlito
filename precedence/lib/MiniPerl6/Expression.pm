@@ -319,6 +319,9 @@ class MiniPerl6::Expression {
           | { make [ 'postfix_or_term', 'funcall_no_params',  ~$<MiniPerl6::Grammar.ident>                 ] }
           ]
         | <MiniPerl6::Grammar.var_ident>                { make [ 'term', $$<MiniPerl6::Grammar.var_ident> ] }     
+        | '$'                                           { make [ 'op',          '$'   ] }
+        | '@'                                           { make [ 'op',          '@'   ] }
+        | '%'                                           { make [ 'op',          '%'   ] }
         | <MiniPerl6::Grammar.val>                      { make [ 'term', $$<MiniPerl6::Grammar.val>       ] }
         | <.MiniPerl6::Grammar.ws>                      { make [ 'space',   ' '                           ] }
     }

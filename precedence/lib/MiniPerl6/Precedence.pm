@@ -37,6 +37,7 @@ class MiniPerl6::Precedence {
     # - adverbs  1 == 100 :fuzz(3)
     # - function call without parentheses
     # - '|' in prefix position
+    # - statement-ending blocks (S04)
 
     my $prec = 100;
     add_op( 'postfix', '.( )',               $prec, { no_space_before => True } );

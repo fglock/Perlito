@@ -3,7 +3,7 @@ class Main {
     use Test;
     use MiniPerl6::Expression;
    
-    Test::plan 38;
+    Test::plan 41;
     Test::ok( 
         ($(MiniPerl6::Expression.exp_parse( "123", 0))).perl eq 
         "Val::Int.new('int' => 123)",
@@ -160,7 +160,24 @@ class Main {
         "Apply.new('arguments' => Apply.new('arguments' => [Lit::Block.new('stmts' => [Val::Int.new('int' => 3)]), Apply.new('arguments' => [Val::Int.new('int' => 2), Val::Int.new('int' => 4)], 'code' => 'infix:<+>', 'namespace' => '')], 'code' => 'list:<,>', 'namespace' => ''), 'code' => 'x', 'namespace' => '')",
         "block doesn't end list");
 
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "2**3**4", 0)).capture).perl eq 
+        "Apply.new('arguments' => [Val::Int.new('int' => 2), Apply.new('arguments' => [Val::Int.new('int' => 3), Val::Int.new('int' => 4)], 'code' => 'infix:<**>', 'namespace' => '')], 'code' => 'infix:<**>', 'namespace' => '')",
+        "assoc right");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "$a++ && --$b", 0)).capture).perl eq 
+        "Apply.new('arguments' => [Apply.new('arguments' => [Var.new('name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '')], 'code' => 'postfix:<++>', 'namespace' => ''), Apply.new('arguments' => [Var.new('name' => 'b', 'namespace' => '', 'sigil' => '$', 'twigil' => '')], 'code' => 'prefix:<-->', 'namespace' => '')], 'code' => 'infix:<&&>', 'namespace' => '')",
+        "autoincrement, autodecrement");
+    Test::ok( 
+        ((MiniPerl6::Expression.exp_parse( "@%$a[2]", 0)).capture).perl eq 
+        "Apply.new('arguments' => [Apply.new('arguments' => [Index.new('index_exp' => Val::Int.new('int' => 2), 'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => ''))], 'code' => 'prefix:<%>', 'namespace' => '')], 'code' => 'prefix:<@>', 'namespace' => '')",
+        "prefixes");
+
     # TODO
+
+    # chain ops: ne, eq, ...
+    # |a|b
+    # !!
 
     # Test::ok( 
     #     ((MiniPerl6::Expression.exp_parse( "$a => 30, $b => 31", 0)).capture).perl eq 
