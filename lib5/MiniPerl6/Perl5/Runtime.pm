@@ -195,7 +195,7 @@ package Main;
             $Main::_seen{$key}++;
             return '[' . join( ", ", map { perl($_) } @$o ) . ']' 
                 if ref($o) eq 'ARRAY';
-            return '{' . join( ", ", map { perl($_) . ' => ' . perl($o->{$_}) } keys %$o ) . '}' 
+            return '{' . join( ", ", map { perl($_) . ' => ' . perl($o->{$_}) } sort {$a cmp $b} keys(%$o) ) . '}' 
                 if ref($o) eq 'HASH';
             return 'sub { ... }'
                 if ref($o) eq 'CODE';
@@ -209,7 +209,7 @@ package Main;
 
         my $ref = ref($o);
         return $ref . ".new("
-            . join( ", ", map { Main::perl($_) . ' => ' . Main::perl($o->{$_}) } CORE::keys %$o )
+            . join( ", ", map { Main::perl($_) . ' => ' . Main::perl($o->{$_}) } sort {$a cmp $b} CORE::keys(%$o) )
             . ")";
     }
     

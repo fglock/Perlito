@@ -10,19 +10,19 @@ class MiniPerl6::Expression {
             say "# ** processing term ", $v.perl;
             if $v[1] eq 'methcall_no_params' {
                 say "#   Call ", ($v[2]).perl;
-                $v = Call.new( invocant => $v[3], method => $v[2], arguments => [ ], hyper => 0 );
+                $v = Call.new( invocant => $v[3], method => $v[2], arguments => undef, hyper => 0 );
                 say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'funcall_no_params' {
                 say "#   Apply ", ($v[2]).perl;
-                $v = Apply.new( code => $v[2], arguments => [ ], namespace => '' );
+                $v = Apply.new( code => $v[2], arguments => undef, namespace => '' );
                 say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'methcall' {
                 say "#   Call ", ($v[2]).perl;
-                $v = Call.new( invocant => '', method => $v[2], arguments => $v[3], hyper => 0 );
+                $v = Call.new( invocant => undef, method => $v[2], arguments => $v[3], hyper => 0 );
                 say "#     ", $v.perl;
                 return $v;
             }
@@ -33,7 +33,9 @@ class MiniPerl6::Expression {
                 return $v;
             }
             if $v[1] eq '( )' {
-                say "#   Plain parenthesis ", ($v[2]).perl;
+                say "#   Plain parentheses ", ($v[2]).perl;
+                $v = Apply.new( code => 'circumfix:<( )>', arguments => $v[2], namespace => '' );
+                say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq '[ ]' {
@@ -46,38 +48,67 @@ class MiniPerl6::Expression {
                 say "#   Code, Hash, or Pair", ($v[2]).perl;
                 return $v;
             }
+            if $v[1] eq '.( )' {
+                say "#   Params ", ($v[2]).perl;
+                say "#     v:     ", $v.perl;
+                $v = Call.new( invocant => undef, method => 'postcircumfix:<( )>', arguments => $v[2], hyper => 0 );
+                return $v;
+            }
+            if $v[1] eq '.[ ]' {
+                say "#   Index ", ($v[2]).perl;
+                $v = Index.new( obj => undef, index_exp => $v[2] );
+                say "#     ", $v.perl;
+                return $v;
+            }
+            if $v[1] eq '.{ }' {
+                say "#   Lookup ", ($v[2]).perl;
+                $v = Lookup.new( obj => undef, index_exp => $v[2] );
+                say "#     ", $v.perl;
+                return $v;
+            }
             return $v[1];
         }
         return $v;
     }
 
     sub reduce_postfix ($op, $value) {
-        say "# ** reduce_postfix ", $op.perl;
-        say "#   ", $value.perl;
         my $v = $op;
+        say "# ** reduce_postfix ", $op.perl;
+        say "#      value: ", $value.perl;
+        say "#      v:     ", $v.perl;
         if $v[1] eq 'methcall_no_params' {
             say "#   Call ", ($v[2]).perl;
-            push $v, $value;
+            $v = Call.new( invocant => $value, method => $v[2], arguments => undef, hyper => 0 );
             return $v;
         }
         if $v[1] eq 'funcall_no_params' {
+            die "unexpected function call";
             say "#   Apply ", ($v[2]).perl;
             push $v, $value;
             return $v;
         }
         if $v[1] eq 'methcall' {
             say "#   Call ", ($v[2]).perl;
-            push $v, $value;
+            $v = Call.new( invocant => $value, method => $v[2], arguments => $v[3], hyper => 0 );
             return $v;
         }
         if $v[1] eq 'funcall' {
+            die "unexpected function call";
             say "#   Apply ", ($v[2]).perl;
             push $v, $value;
             return $v;
         }
         if $v[1] eq '( )' {
             say "#   Params ", ($v[2]).perl;
-            push $v, $value;
+            if $value.isa('Apply') && !(defined($value.arguments)) {
+                $value.arguments = $v[2];
+                return $value;
+            }
+            if $value.isa('Call') && !(defined($value.arguments)) {
+                $value.arguments = $v[2];
+                return $value;
+            }
+            $v = Call.new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $v[2], hyper => 0 );
             return $v;
         }
         if $v[1] eq '[ ]' {
@@ -90,6 +121,18 @@ class MiniPerl6::Expression {
             say "#   Lookup ", ($v[2]).perl;
             $v = Lookup.new( obj => $value, index_exp => $v[2] );
             say "#     ", $v.perl;
+            return $v;
+        }
+        if $v[1] eq '.( )' {
+            $v = Call.new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $v[2], hyper => 0 );
+            return $v;
+        }
+        if $v[1] eq '.[ ]' {
+            $v = Call.new( invocant => $value, method => 'postcircumfix:<[ ]>', arguments => $v[2], hyper => 0 );
+            return $v;
+        }
+        if $v[1] eq '.{ }' {
+            $v = Call.new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v[2], hyper => 0 );
             return $v;
         }
         push $op, $value;
@@ -199,6 +242,9 @@ class MiniPerl6::Expression {
     };
     
     token operator { 
+        | '.(' <paren_parse>   ')'                      { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
+        | '.[' <square_parse>  ']'                      { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
+        | '.{' <curly_parse>   '}'                      { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
         | '{'  <curly_parse>   '}'                      { make [ 'postfix_or_term',  '{ }',   $$<curly_parse>   ] }

@@ -35,10 +35,13 @@ class MiniPerl6::Precedence {
     # - parentheses vs. Parcel (x) (x,)
     # - pair vs. block, hash vs. closure
     # - adverbs  1 == 100 :fuzz(3)
-    # - function call without parenthesis
+    # - function call without parentheses
     # - '|' in prefix position
 
     my $prec = 100;
+    add_op( 'postfix', '.( )',               $prec, { no_space_before => True } );
+    add_op( 'postfix', '.[ ]',               $prec, { no_space_before => True } );
+    add_op( 'postfix', '.{ }',               $prec, { no_space_before => True } );
     add_op( 'postfix', '( )',                $prec, { no_space_before => True } );
     add_op( 'postfix', '[ ]',                $prec, { no_space_before => True } );
     add_op( 'postfix', '{ }',                $prec, { no_space_before => True } );
