@@ -16,7 +16,7 @@ class MiniPerl6::Expression {
             }
             if $v[1] eq 'funcall_no_params' {
                 say "#   Apply ", ($v[2]).perl;
-                $v = Apply.new( code => $v[2], arguments => undef, namespace => '' );
+                $v = Apply.new( code => $v[3], arguments => undef, namespace => $v[2] );
                 say "#     ", $v.perl;
                 return $v;
             }
@@ -28,7 +28,7 @@ class MiniPerl6::Expression {
             }
             if $v[1] eq 'funcall' {
                 say "#   Apply ", ($v[2]).perl;
-                $v = Apply.new( code => $v[2], arguments => $v[3], namespace => '' );
+                $v = Apply.new( code => $v[3], arguments => $v[4], namespace => $v[2] );
                 say "#     ", $v.perl;
                 return $v;
             }
@@ -291,10 +291,14 @@ class MiniPerl6::Expression {
             { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse>  ] }
           | { make [ 'postfix_or_term', 'methcall_no_params', ~$<MiniPerl6::Grammar.ident>                  ] }
           ]
-        | <MiniPerl6::Grammar.ident> 
+        | <MiniPerl6::Grammar.optional_namespace_before_ident> <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-            { make [ 'postfix_or_term', 'funcall',            ~$<MiniPerl6::Grammar.ident>, $$<list_parse>  ] }
-          | { make [ 'postfix_or_term', 'funcall_no_params',  ~$<MiniPerl6::Grammar.ident>                  ] }
+            { make [ 'postfix_or_term', 'funcall',            
+                     ~$<MiniPerl6::Grammar.optional_namespace_before_ident>,
+                     ~$<MiniPerl6::Grammar.ident>, $$<list_parse>  ] }
+          | { make [ 'postfix_or_term', 'funcall_no_params',  
+                     ~$<MiniPerl6::Grammar.optional_namespace_before_ident>,
+                     ~$<MiniPerl6::Grammar.ident>                  ] }
           ]
         | <MiniPerl6::Grammar.val>                      { make [ 'term', $$<MiniPerl6::Grammar.val>         ] }
         | <.MiniPerl6::Grammar.ws>                      { make [ 'space',   ' '                             ] }
