@@ -144,9 +144,11 @@ class MiniPerl6::Precedence {
             }
             elsif ($token[1] eq 'block') && is_term($last) && $last_has_space {
                 # a block in this position terminates the current expression
+                say "# there is a block after the expression: ", $token.perl;
                 while $op_stack.elems {
                     $reduce.($op_stack, $num_stack);
                 }
+                $num_stack.push($token);  # save the block
                 return $num_stack;
             }
             elsif is_term($token) {

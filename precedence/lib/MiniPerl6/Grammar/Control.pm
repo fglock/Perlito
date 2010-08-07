@@ -15,16 +15,15 @@ token control {
 };
 
 token if {
-    if <.ws>  <exp>  <.opt_ws>
-    \{ <.opt_ws> <exp_stmts> <.opt_ws> \} 
+    if <.ws>  <exp>  
     [
         <.opt_ws>
         else <.opt_ws> 
         \{ <.opt_ws> <exp_stmts2> <.opt_ws> \}
         { 
             make If.new( 
-                cond => $$<exp>, 
-                body => $$<exp_stmts>, 
+                cond => ($$<exp>){'exp'}, 
+                body => ($$<exp>){'end_block'}, 
                 otherwise => $$<exp_stmts2>,
             );
         }
@@ -33,16 +32,16 @@ token if {
         els <if> 
         { 
             make If.new( 
-                cond => $$<exp>, 
-                body => $$<exp_stmts>, 
+                cond => ($$<exp>){'exp'}, 
+                body => ($$<exp>){'end_block'}, 
                 otherwise => [ $$<if> ],
             );
         }
     |
         { 
             make If.new( 
-                cond => $$<exp>, 
-                body => $$<exp_stmts>, 
+                cond => ($$<exp>){'exp'}, 
+                body => ($$<exp>){'end_block'}, 
                 otherwise => [ ],
              ) 
         }
@@ -50,8 +49,10 @@ token if {
 };
 
 token when {
-    when <.ws> <exp_seq> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
-    { make When.new( parameters => $$<exp_seq>, body => $$<exp_stmts> ) }
+    when <.ws> <exp> 
+    { make When.new( 
+                parameters => ($$<exp>){'exp'}, 
+                body       => ($$<exp>){'end_block'} ) }
 };
 
 token for {
@@ -60,8 +61,10 @@ token for {
 };
 
 token while {
-    while <.ws> <exp> <.ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
-    { make While.new( cond => $$<exp>, body => $$<exp_stmts> ) }
+    while <.ws> <exp> 
+    { make While.new( 
+                cond => ($$<exp>){'exp'}, 
+                body => ($$<exp>){'end_block'} ) }
 };
 
 token loop {
