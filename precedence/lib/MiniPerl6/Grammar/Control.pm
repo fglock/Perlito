@@ -3,19 +3,8 @@ use v6;
 
 grammar MiniPerl6::Grammar {
 
-
-token control {
-    | <ctrl_return> { make $$<ctrl_return> }   # return 123;
-    | <ctrl_leave>  { make $$<ctrl_leave>  }   # last; break;
-    | <if>     { make $$<if>     }   # 1 ?? 2 !! 3
-    | <when>   { make $$<when>   }   # when 3 { ... }
-    | <for>    { make $$<for>    }   # $x.map(-> $i {...})
-    | <while>  { make $$<while>  }   # while ... { ... }
-    | <loop>   { make $$<loop>   }   # loop { ... }
-};
-
 token if {
-    if <.ws>  <exp>  
+    if <.ws> <exp>  
     [
         <.opt_ws>
         else <.opt_ws> 
@@ -25,7 +14,7 @@ token if {
                 cond => ($$<exp>){'exp'}, 
                 body => ($$<exp>){'end_block'}, 
                 otherwise => $$<exp_stmts2>,
-            );
+            )
         }
     |
         <.opt_ws>
@@ -35,7 +24,7 @@ token if {
                 cond => ($$<exp>){'exp'}, 
                 body => ($$<exp>){'end_block'}, 
                 otherwise => [ $$<if> ],
-            );
+            )
         }
     |
         { 
@@ -46,26 +35,26 @@ token if {
              ) 
         }
     ]
-};
+}
 
 token when {
     when <.ws> <exp> 
     { make When.new( 
                 parameters => ($$<exp>){'exp'}, 
                 body       => ($$<exp>){'end_block'} ) }
-};
+}
 
 token for {
     for <.ws> <exp> <.opt_ws> '->' <.opt_ws> <var_ident> <.ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
     { make For.new( cond => $$<exp>, topic => $$<var_ident>, body => $$<exp_stmts> ) }
-};
+}
 
 token while {
     while <.ws> <exp> 
     { make While.new( 
                 cond => ($$<exp>){'exp'}, 
                 body => ($$<exp>){'end_block'} ) }
-};
+}
 
 token loop {
     loop <.ws> 
@@ -84,21 +73,7 @@ token loop {
         ]
 }
 
-token ctrl_leave {
-    leave
-    { make Leave.new() }
-};
-
-token ctrl_return {
-    return [ <before '(' > | <.ws> ] <exp>
-    { make Return.new( result => $$<exp> ) }
-    |
-    return 
-    { make Return.new( result => Val::Undef.new() ) }
-};
-
 }
-
 
 =begin
 

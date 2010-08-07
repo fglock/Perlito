@@ -251,9 +251,12 @@ else {
         };
         my $pos = 0;
         $load_module->( "MiniPerl6::${lib_spec}::Prelude" );
-        while ( $pos < length($source) ) {
-            warn "parsing at pos $pos\n" if $verbose;
+        my $len = length($source);
+        while ( $pos < $len ) {
             my $p = MiniPerl6::Grammar->comp_unit( $source, $pos );
+            if ( !$p && $pos < $len ) {
+                die "Syntax error at pos ", $p->to, "\n";
+            }
             for my $use (  
                 map  { $_->{mod} } 
                 grep { $_->isa("Use") } @{$$p->{body}} )
@@ -266,9 +269,12 @@ else {
     }
     else {
         my $pos = 0;
-        while ( $pos < length($source) ) {
-            warn "parsing at pos $pos\n" if $verbose;
+        my $len = length($source);
+        while ( $pos < $len ) {
             my $p = MiniPerl6::Grammar->comp_unit( $source, $pos );
+            if ( !$p && $pos < $len ) {
+                die "Syntax error at pos ", $p->to, "\n";
+            }
             push @comp_unit, $$p;
             $pos = $p->to;
         }

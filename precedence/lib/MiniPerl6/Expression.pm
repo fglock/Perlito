@@ -526,7 +526,9 @@ class MiniPerl6::Expression {
         my $last_pos = $pos;
         my $get_token = sub {
             my $m = self.exp_lexer($str, $last_pos);
+            say "# lexer got: " ~ $m.perl;
             if !$m {
+                say "# lexer: end of string";
                 return [ 'end', '*end*' ];
             }
             my $v = $$m;
@@ -537,7 +539,9 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
+        say "# exp terminated";
         if $res.elems == 0 {
+            say "# exp terminated with false";
             return MiniPerl6::Match.new(bool => 0);
         }
         # if the expression terminates in a block, the block was pushed to num_stack

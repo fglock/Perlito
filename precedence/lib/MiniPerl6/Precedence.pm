@@ -83,6 +83,7 @@ class MiniPerl6::Precedence {
     add_op( 'infix',    '<=',  $prec, { assoc => 'chain' } );
     add_op( 'infix',    '>=',  $prec, { assoc => 'chain' } );
     add_op( 'infix',    '==',  $prec, { assoc => 'chain' } );
+    add_op( 'infix',    '!=',  $prec, { assoc => 'chain' } );
     add_op( 'infix',    '<',   $prec, { assoc => 'chain' } );
     add_op( 'infix',    '>',   $prec, { assoc => 'chain' } );
     $prec = $prec - 1;
@@ -120,10 +121,12 @@ class MiniPerl6::Precedence {
         my $last = ['op', '*start*'];
         my $last_has_space = False;
         my $token = $get_token.();
+        say "# precedence get_token: (0) ", $token.perl;
         if ($token[0]) eq 'space' {
             $token = $get_token.()
         }
         while (defined($token)) && ($token[0] ne 'end') {
+            say "# precedence get_token: (1) ", $token.perl;
             if ($Operator{'prefix'}){$token[1]} && ( ($last[1] eq '*start*') || !(is_term($last)) ) {
                 $token[0] = 'prefix';
                 $op_stack.unshift($token);
@@ -188,6 +191,7 @@ class MiniPerl6::Precedence {
             }
             $last = $token;
             $token = $get_token.();
+            say "# precedence get_token: (2) ", $token.perl;
             if $token[0] eq 'space' {
                 $token = $get_token.()
                 $last_has_space = True;
@@ -202,6 +206,7 @@ class MiniPerl6::Precedence {
         while $op_stack.elems {
             $reduce.($op_stack, $num_stack);
         }
+        say "# precedence return";
         return $num_stack;
     }
 }

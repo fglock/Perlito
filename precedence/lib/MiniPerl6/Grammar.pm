@@ -95,8 +95,11 @@ token exp {
         { make $$<MiniPerl6::Expression.exp_parse> }
 }
 token exp_stmt {
-    | <control>
-        { make $$<control> }
+    | <if>     { make $$<if>     }   # 1 ?? 2 !! 3
+    | <when>   { make $$<when>   }   # when 3 { ... }
+    | <for>    { make $$<for>    }   # $x.map(-> $i {...})
+    | <while>  { make $$<while>  }   # while ... { ... }
+    | <loop>   { make $$<loop>   }   # loop { ... }
     | <MiniPerl6::Expression.exp_parse>
         { make $$<MiniPerl6::Expression.exp_parse> }
 }
@@ -145,12 +148,6 @@ token val_bit {
     | 'True'       { make Val::Bit.new( bit => 1 ) }
     | 'False'      { make Val::Bit.new( bit => 0 ) }
 }
-
-
-}
-    #---- split into compilation units in order to use less RAM...
-grammar MiniPerl6::Grammar {
-
 
 token digits {  \d+  }
 
@@ -385,7 +382,7 @@ The Pugs homepage at L<http://pugscode.org/>.
 
 =head1 COPYRIGHT
 
-Copyright 2006, 2009 by Flavio Soibelmann Glock, Audrey Tang and others.
+Copyright 2006, 2009, 2010 by Flavio Soibelmann Glock, Audrey Tang and others.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
