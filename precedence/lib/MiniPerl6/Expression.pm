@@ -304,10 +304,12 @@ class MiniPerl6::Expression {
         | '=>'                                          { make [ 'op',          '=>'  ] }
         | '=='                                          { make [ 'op',          '=='  ] }
         | '<='                                          { make [ 'op',          '<='  ] }
+        | ':='                                          { make [ 'op',          ':='  ] }
         | '!='                                          { make [ 'op',          '!='  ] }
         | ','                                           { make [ 'op',          ','   ] }
         | '+'                                           { make [ 'op',          '+'   ] }
         | '-'                                           { make [ 'op',          '-'   ] }
+        | '~'                                           { make [ 'op',          '~'   ] }
         | '|'                                           { make [ 'op',          '|'   ] }
         | '&'                                           { make [ 'op',          '&'   ] }
         | '?'                                           { make [ 'op',          '?'   ] }
@@ -315,12 +317,19 @@ class MiniPerl6::Expression {
         | '/'                                           { make [ 'op',          '/'   ] }
         | '*'                                           { make [ 'op',          '*'   ] }
         | '<'                                           { make [ 'op',          '<'   ] }
+        | '='                                           { make [ 'op',          '='   ] }
         | '>'                                           { make [ 'op',          '>'   ] }
         | <MiniPerl6::Grammar.ident> <before <.MiniPerl6::Grammar.ws>? '=>' >   # autoquote
             { make [ 'term', Val::Buf.new( buf => ~$<MiniPerl6::Grammar.ident> ) ] }
         | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'and' ] }
         | 'or'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'or'  ] }
         | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not' ] }
+        | 'eq'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'eq'  ] }
+        | 'ne'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'ne'  ] }
+        | 'lt'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'lt'  ] }
+        | 'le'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'le'  ] }
+        | 'gt'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'gt'  ] }
+        | 'ge'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'ge'  ] }
         | '.' <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
             { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
