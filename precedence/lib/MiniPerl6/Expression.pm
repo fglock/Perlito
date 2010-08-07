@@ -268,12 +268,8 @@ class MiniPerl6::Expression {
     # TODO
     # token pair {
     #     |   \: <var_sigil> <ident>                  #  :$var
-    #         {
-    #             make [
     #                 Val::Buf.new( buf => ~$<ident> ),
     #                 Var.new( sigil => ~$$<var_sigil>, twigil => '', name => $$<ident> ) ]
-    #         }
-    # };
 
     token operator { 
         | '.(' <paren_parse>   ')'                      { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
@@ -281,71 +277,27 @@ class MiniPerl6::Expression {
         | '.{' <curly_parse>   '}'                      { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
-
         | '{'  <.MiniPerl6::Grammar.ws>?
-            [ [  ### <before <.MiniPerl6::Grammar.pair> <.MiniPerl6::Grammar.ws>? ','>
-              | <before 'pair' <!before <.MiniPerl6::Grammar.word> > >
-              | <before '}' >
-              ]
-              <curly_parse> <.MiniPerl6::Grammar.ws>? '}'
-                    { make [ 'postfix_or_term', 'hash',  $$<curly_parse> ] }
-            | <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
+               <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
                     { make [ 'postfix_or_term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
-            ]
-
         | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse>  ] }
-        ### | <MiniPerl6::Grammar.pair>                     { make [ 'term',        $$<MiniPerl6::Grammar.pair> ] }
-        | '**'                                          { make [ 'op',          '**'  ] }
-        | '++'                                          { make [ 'op',          '++'  ] }
-        | '--'                                          { make [ 'op',          '--'  ] }
-        | '||'                                          { make [ 'op',          '||'  ] }
-        | '&&'                                          { make [ 'op',          '&&'  ] }
-        | '//'                                          { make [ 'op',          '//'  ] }
-        | '=>'                                          { make [ 'op',          '=>'  ] }
-        | '=='                                          { make [ 'op',          '=='  ] }
-        | '<='                                          { make [ 'op',          '<='  ] }
-        | ':='                                          { make [ 'op',          ':='  ] }
-        | '!='                                          { make [ 'op',          '!='  ] }
-        | ','                                           { make [ 'op',          ','   ] }
-        | '+'                                           { make [ 'op',          '+'   ] }
-        | '-'                                           { make [ 'op',          '-'   ] }
-        | '~'                                           { make [ 'op',          '~'   ] }
-        | '|'                                           { make [ 'op',          '|'   ] }
-        | '&'                                           { make [ 'op',          '&'   ] }
-        | '?'                                           { make [ 'op',          '?'   ] }
-        | '!'                                           { make [ 'op',          '!'   ] }
-        | '/'                                           { make [ 'op',          '/'   ] }
-        | '*'                                           { make [ 'op',          '*'   ] }
-        | '<'                                           { make [ 'op',          '<'   ] }
-        | '='                                           { make [ 'op',          '='   ] }
-        | '>'                                           { make [ 'op',          '>'   ] }
+        | <MiniPerl6::Grammar.var_ident>                { make [ 'term', $$<MiniPerl6::Grammar.var_ident>   ] }     
+        | <MiniPerl6::Precedence.op_parse>              { make [ 'op',   ~$<MiniPerl6::Precedence.op_parse> ] }
         | <MiniPerl6::Grammar.ident> <before <.MiniPerl6::Grammar.ws>? '=>' >   # autoquote
             { make [ 'term', Val::Buf.new( buf => ~$<MiniPerl6::Grammar.ident> ) ] }
         | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'and' ] }
-        | 'or'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'or'  ] }
-        | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not' ] }
-        | 'eq'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'eq'  ] }
-        | 'ne'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'ne'  ] }
-        | 'lt'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'lt'  ] }
-        | 'le'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'le'  ] }
-        | 'gt'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'gt'  ] }
-        | 'ge'  <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'ge'  ] }
         | '.' <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-            { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
-          | { make [ 'postfix_or_term', 'methcall_no_params', ~$<MiniPerl6::Grammar.ident>                 ] }
+            { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse>  ] }
+          | { make [ 'postfix_or_term', 'methcall_no_params', ~$<MiniPerl6::Grammar.ident>                  ] }
           ]
         | <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-            { make [ 'postfix_or_term', 'funcall',            ~$<MiniPerl6::Grammar.ident>, $$<list_parse> ] }
-          | { make [ 'postfix_or_term', 'funcall_no_params',  ~$<MiniPerl6::Grammar.ident>                 ] }
+            { make [ 'postfix_or_term', 'funcall',            ~$<MiniPerl6::Grammar.ident>, $$<list_parse>  ] }
+          | { make [ 'postfix_or_term', 'funcall_no_params',  ~$<MiniPerl6::Grammar.ident>                  ] }
           ]
-        | <MiniPerl6::Grammar.var_ident>                { make [ 'term', $$<MiniPerl6::Grammar.var_ident> ] }     
-        | '$'                                           { make [ 'op',          '$'   ] }
-        | '@'                                           { make [ 'op',          '@'   ] }
-        | '%'                                           { make [ 'op',          '%'   ] }
-        | <MiniPerl6::Grammar.val>                      { make [ 'term', $$<MiniPerl6::Grammar.val>       ] }
-        | <.MiniPerl6::Grammar.ws>                      { make [ 'space',   ' '                           ] }
+        | <MiniPerl6::Grammar.val>                      { make [ 'term', $$<MiniPerl6::Grammar.val>         ] }
+        | <.MiniPerl6::Grammar.ws>                      { make [ 'space',   ' '                             ] }
     }
 
     token list_lexer { 

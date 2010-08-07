@@ -14,6 +14,30 @@ class MiniPerl6::Precedence {
         return ($Operator{$fixity_type}){$op_name}
     }
 
+    my $Op1;
+    my $Op2;
+    method op_parse ($str, $pos) {
+        if exists($Op2{substr($str, $pos, 2)}) {
+            my $c1 = substr($str, $pos+1, 1);
+            my $c2 = substr($str, $pos+2, 1);
+            if  ($c1 ge 'a') && ($c1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
+            }
+            else {
+                return MiniPerl6::Match.new( 'str' => $str, 'from' => $pos, 'to' => $pos+2, 'bool' => 1 );
+            }
+        }
+        if exists($Op1{substr($str, $pos, 1)}) {
+            my $c1 = substr($str, $pos,   1);
+            my $c2 = substr($str, $pos+1, 1);
+            if  ($c1 ge 'a') && ($c1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
+            }
+            else {
+                return MiniPerl6::Match.new( 'str' => $str, 'from' => $pos, 'to' => $pos+1, 'bool' => 1 );
+            }
+        }
+        return MiniPerl6::Match.new( bool => 0 );
+    }
+
     sub add_op ( $fixity, $name, $precedence, $param ) {
         if !(defined($param)) {
             $param = {}
@@ -23,6 +47,12 @@ class MiniPerl6::Precedence {
         $Precedence{$name}          = $precedence;
         ($Assoc{$assoc}){$name}     = 1;
         ($Allow_space_before{$fixity}){$name} = $param{'no_space_before'} ?? False !! True;
+        if ($name.chars) == 1 {
+            $Op1{$name} = 1;
+        }
+        elsif ($name.chars) == 2 {
+            $Op2{$name} = 1;
+        }
     }
     
 

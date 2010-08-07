@@ -418,6 +418,8 @@ class Apply {
         if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit).join(' || ')  ~ ')' };
         if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit).join(' eq ')  ~ ')' };
         if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit).join(' ne ')  ~ ')' };
+        if $code eq 'infix:<le>' { return '('  ~ (@.arguments.>>emit).join(' le ')  ~ ')' };
+        if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit).join(' ge ')  ~ ')' };
  
         if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit).join(' == ')  ~ ')' };
         if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit).join(' != ')  ~ ')' };
