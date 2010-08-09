@@ -3,6 +3,21 @@ use v6;
 
 grammar MiniPerl6::Grammar {
 
+token unless {
+    unless <.ws> <exp>  
+        { 
+            my $body = ($$<exp>){'end_block'};
+            if !(defined($body)) {
+                die "Missing code block in 'unless'";
+            }
+            make If.new( 
+                cond => ($$<exp>){'exp'}, 
+                body => [ ], 
+                otherwise => $body,
+             ) 
+        }
+}
+
 token if {
     if <.ws> <exp>  
     [
