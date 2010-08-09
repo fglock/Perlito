@@ -1,6 +1,10 @@
 
 class MiniPerl6::Precedence {
 
+    has $.get_token;
+    has $.reduce;
+    has $.end_token;
+
     my $Operator;
     my $Precedence;    # integer 0..100
     my $Assoc;         # right, left, list
@@ -16,23 +20,40 @@ class MiniPerl6::Precedence {
 
     my $Op1;
     my $Op2;
+    my $end_token;
     method op_parse ($str, $pos) {
+        for @($end_token) -> $tok {
+            my $l = $tok.chars;
+            my $s = substr($str, $pos, $l);
+            if $s eq $tok {
+                my $c1 = substr($str, $pos+$l-1, 1);
+                my $c2 = substr($str, $pos+$l, 1);
+                if  ($c1 ge 'a') && ($c1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
+                }
+                else {
+                    return MiniPerl6::Match.new( 'str' => $str, 'from' => $pos, 'to' => $pos+2, 'bool' => 1,
+                        capture => ['end', $s] );
+                }
+            }
+        }
         if exists($Op2{substr($str, $pos, 2)}) {
             my $c1 = substr($str, $pos+1, 1);
             my $c2 = substr($str, $pos+2, 1);
             if  ($c1 ge 'a') && ($c1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
             }
             else {
-                return MiniPerl6::Match.new( 'str' => $str, 'from' => $pos, 'to' => $pos+2, 'bool' => 1 );
+                return MiniPerl6::Match.new( 'str' => $str, 'from' => $pos, 'to' => $pos+2, 'bool' => 1,
+                    capture => [ 'op', substr($str, $pos, 2) ] );
             }
         }
-        if exists($Op1{substr($str, $pos, 1)}) {
-            my $c1 = substr($str, $pos,   1);
+        my $c1 = substr($str, $pos, 1);
+        if exists($Op1{$c1}) {
             my $c2 = substr($str, $pos+1, 1);
             if  ($c1 ge 'a') && ($c1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
             }
             else {
-                return MiniPerl6::Match.new( 'str' => $str, 'from' => $pos, 'to' => $pos+1, 'bool' => 1 );
+                return MiniPerl6::Match.new( 'str' => $str, 'from' => $pos, 'to' => $pos+1, 'bool' => 1,
+                    capture => ['op', $c1] );
             }
         }
         return MiniPerl6::Match.new( bool => 0 );
@@ -152,7 +173,10 @@ class MiniPerl6::Precedence {
         ($token[0] eq 'term') || ($token[0] eq 'postfix_or_term')
     }
 
-    sub precedence_parse ($get_token, $reduce) {
+    method precedence_parse {
+        my $get_token = self.get_token;
+        my $reduce    = self.reduce;
+        $end_token    = self.end_token;
         my $op_stack  = [];   # [category, name]
         my $num_stack = [];
         my $last = ['op', '*start*'];
