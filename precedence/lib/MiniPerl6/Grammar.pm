@@ -96,6 +96,7 @@ token exp {
 }
 token exp_stmt {
     | <if>     { make $$<if>     }   # 1 ?? 2 !! 3
+    | <unless> { make $$<unless> }   # 1 ?? 2 !! 3
     | <when>   { make $$<when>   }   # when 3 { ... }
     | <for>    { make $$<for>    }   # $x.map(-> $i {...})
     | <while>  { make $$<while>  }   # while ... { ... }

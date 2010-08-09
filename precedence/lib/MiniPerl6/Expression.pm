@@ -262,9 +262,17 @@ class MiniPerl6::Expression {
         | '.{' <curly_parse>   '}'                      { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
+
+
+        # TODO: general rule for terms that terminate in a block
+        #       {...}  ->$v{...}  sub...{...}   method...{...}   do{...}
         | '{'  <.MiniPerl6::Grammar.ws>?
                <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
                     { make [ 'postfix_or_term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
+        | <MiniPerl6::Grammar.method_def>               { make [ 'term', $$<MiniPerl6::Grammar.method_def>  ] }
+        | <MiniPerl6::Grammar.sub_def>                  { make [ 'term', $$<MiniPerl6::Grammar.sub_def>     ] }
+
+
         | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse>  ] }
         | <MiniPerl6::Grammar.var_ident>                { make [ 'term', $$<MiniPerl6::Grammar.var_ident>   ] }     
         | <MiniPerl6::Precedence.op_parse>              { make $$<MiniPerl6::Precedence.op_parse>             }
@@ -276,8 +284,6 @@ class MiniPerl6::Expression {
             { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse>  ] }
           | { make [ 'postfix_or_term', 'methcall_no_params', ~$<MiniPerl6::Grammar.ident>                  ] }
           ]
-        | <MiniPerl6::Grammar.method_def>               { make [ 'term', $$<MiniPerl6::Grammar.method_def>  ] }
-        | <MiniPerl6::Grammar.sub_def>                  { make [ 'term', $$<MiniPerl6::Grammar.sub_def>     ] }
         | <MiniPerl6::Grammar.optional_namespace_before_ident> <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
             { make [ 'postfix_or_term', 'funcall',            
