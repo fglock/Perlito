@@ -45,13 +45,9 @@ class MiniPerl6::Expression {
                 return $v;
             }
             if $v[1] eq 'block' {
-                say "#   Block", ($v[2]).perl;
+                say "#   Block, Hash, or Pair ", ($v[2]).perl;
                 $v = Lit::Block.new( stmts => $v[2] );
-                return $v;
-            }
-            if $v[1] eq 'hash' {
-                say "#   Hash or Pair", ($v[2]).perl;
-                $v = Lit::Hash.new( hash1 => $v[2] );
+                # TODO: $v = Lit::Hash.new( hash1 => $v[2] );
                 return $v;
             }
             if $v[1] eq '.( )' {
@@ -130,20 +126,9 @@ class MiniPerl6::Expression {
             say "#     ", $v.perl;
             return $v;
         }
-        if $v[1] eq '{ }' {
-            say "#   Lookup ", ($v[2]).perl;
-            $v = Lookup.new( obj => $value, index_exp => $v[2] );
-            say "#     ", $v.perl;
-            return $v;
-        }
         if $v[1] eq 'block' {
             say "#   Lookup (was Block)", ($v[2]).perl;
             $v = Lookup.new( obj => $value, index_exp => ($v[2])[0] );
-            return $v;
-        }
-        if $v[1] eq 'hash' {
-            say "#   Lookup (was Hash or Pair)", ($v[2]).perl;
-            $v = Lookup.new( obj => $value, index_exp => $v[2] );
             return $v;
         }
         if $v[1] eq '.( )' {
@@ -304,37 +289,38 @@ class MiniPerl6::Expression {
         | <.MiniPerl6::Grammar.ws>                      { make [ 'space',   ' '                             ] }
     }
 
+    token has_newline_after {
+        |    '#' 
+        |    <.MiniPerl6::Grammar.is_newline> 
+        |    <.MiniPerl6::Grammar.space>  <.has_newline_after>
+    }
+    token has_no_comma_or_colon_after {
+        <.MiniPerl6::Grammar.ws> <!before [ ',' | ':' ]> .
+    }
+
     method list_parse ($str, $pos) {
         say "# list_parse: input ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $is_first_token = True;
-        my $block_terminator = 0;
+        my $lexer_stack = [];
         my $get_token = sub {
-            my $m = self.operator($str, $last_pos);
-            if !$m {
-                return [ 'end', '*end*' ];
+            my $v;
+            if $lexer_stack.elems {
+                $v = $lexer_stack.pop;
             }
-            my $v = $$m;
+            else {
+                my $m = self.operator($str, $last_pos);
+                say "# list lexer got: " ~ $m.perl;
+                if !$m {
+                    return [ 'end', '*end*' ];
+                }
+                $v = $$m;
+                if $v[0] ne 'end' {
+                    $last_pos = $m.to;
+                }
+            }
             say "# list_lexer got " ~ $v.perl;
-
-            # a sequence ( block - space - not_comma_or_colon ) terminates the list
-            if ($block_terminator == 1) {
-                if (($v[0]) eq 'space') {
-                    # ignore
-                }
-                elsif ($block_terminator == 1) && (($v[0]) eq 'op') && (($v[1]) eq ',') { 
-                    # TODO - test for colon
-                    $block_terminator = 0;
-                }
-                else {
-                    # end of list
-                    $v[0] = 'end';
-                }
-            }
-            elsif ($block_terminator == 0) && (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') {
-                $block_terminator = 1;
-            }
 
             if  $is_first_token 
                 && ($v[0] eq 'op')
@@ -344,10 +330,19 @@ class MiniPerl6::Expression {
                 $v[0] = 'end';
             }
             $is_first_token = False;   
-            if $v[0] ne 'end' {
-                $last_pos = $m.to;
-            }
             say "# list_lexer " ~ $v.perl;
+
+            if (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') {
+                if self.has_newline_after($str, $last_pos) {
+                    # a block followed by newline terminates the expression
+                    $lexer_stack.push( [ 'end', '*end*' ] );
+                }
+                elsif self.has_no_comma_or_colon_after($str, $last_pos) {
+                    # a sequence ( block - space - not_comma_or_colon ) terminates the list
+                    $lexer_stack.push( [ 'end', '*end*' ] );
+                }
+            } 
+
             return $v;
         };
         my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
@@ -362,111 +357,42 @@ class MiniPerl6::Expression {
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
     }
 
+    method circumfix_parse ($str, $pos, $delimiter) {
+        say "# circumfix_parse input: ",$str," at ",$pos;
+        my $expr;
+        my $last_pos = $pos;
+        my $get_token = sub {
+            my $m = self.operator($str, $last_pos);
+            if !$m {
+                die "Expected closing delimiter: ", $delimiter;
+            }
+            my $v = $$m;
+            if $v[0] ne 'end' {
+                $last_pos = $m.to;
+            }
+            say "# circumfix_lexer " ~ $v.perl;
+            return $v;
+        };
+        my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
+            end_token => $delimiter );
+        my $res = $prec.precedence_parse;
+        $res = pop_term($res);
+        say "# circumfix_parse return: ", $res.perl;
+        return MiniPerl6::Match.new( 
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+    }
+
     method ternary_parse ($str, $pos) {
-        say "# ternary_parse input: ",$str," at ",$pos;
-        my $expr;
-        my $last_pos = $pos;
-        my $get_token = sub {
-            my $m = self.operator($str, $last_pos);
-            if !$m {
-                die "Expected !! in ternary";
-            }
-            my $v = $$m;
-            if $v[0] ne 'end' {
-                $last_pos = $m.to;
-            }
-            say "# ternary_lexer " ~ $v.perl;
-            return $v;
-        };
-        my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
-            end_token => [ '!!' ] );
-        my $res = $prec.precedence_parse;
-        $res = pop_term($res);
-        say "# ternary_parse return: ", $res.perl;
-        return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+        return self.circumfix_parse($str, $pos, ['!!']);
     }
-
     method curly_parse ($str, $pos) {
-        say "# curly_parse input: ",$str," at ",$pos;
-        my $expr;
-        my $last_pos = $pos;
-        my $get_token = sub {
-            my $m = self.operator($str, $last_pos);
-            if !$m {
-                die "Expected closing '}'";
-            }
-            my $v = $$m;
-            if $v[0] ne 'end' {
-                $last_pos = $m.to;
-            }
-            say "# curly_lexer " ~ $v.perl;
-            return $v;
-        };
-        my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
-            end_token => [ '}' ] );
-        my $res = $prec.precedence_parse;
-        $res = pop_term($res);
-        say "# curly_parse return: ", $res.perl;
-        return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+        return self.circumfix_parse($str, $pos, ['}']);
     }
-
     method square_parse ($str, $pos) {
-        say "# square_parse input: ",$str," at ",$pos;
-        my $expr;
-        my $last_pos = $pos;
-        my $get_token = sub {
-            my $m = self.operator($str, $last_pos);
-            if !$m {
-                die "Expected closing ']'";
-            }
-            my $v = $$m;
-            if $v[0] ne 'end' {
-                $last_pos = $m.to;
-            }
-            say "# square_lexer " ~ $v.perl;
-            return $v;
-        };
-        my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
-            end_token => [ ']' ] );
-        my $res = $prec.precedence_parse;
-        $res = pop_term($res);
-        say "# square_parse return: ", $res.perl;
-        return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+        return self.circumfix_parse($str, $pos, [']']);
     }
-
     method paren_parse ($str, $pos) {
-        say "# paren_parse input: ",$str," at ",$pos;
-        my $expr;
-        my $last_pos = $pos;
-        my $get_token = sub {
-            my $m = self.operator($str, $last_pos);
-            if !$m {
-                die "Expected closing parenthesis";
-            }
-            my $v = $$m;
-            if $v[0] ne 'end' {
-                $last_pos = $m.to;
-            }
-            say "# paren_lexer " ~ $v.perl;
-            return $v;
-        };
-        my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
-            end_token => [ ')' ] );
-        my $res = $prec.precedence_parse;
-        $res = pop_term($res);
-        say "# paren_parse return: ", $res.perl;
-        return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
-    }
-
-
-    token has_newline_after {
-        |    '#' 
-        |    <.MiniPerl6::Grammar.is_newline> 
-        |    <.MiniPerl6::Grammar.space>  <.has_newline_after>
+        return self.circumfix_parse($str, $pos, [')']);
     }
 
     method exp_parse ($str, $pos) {
@@ -475,19 +401,22 @@ class MiniPerl6::Expression {
         my $last_pos = $pos;
         my $lexer_stack = [];
         my $get_token = sub {
-            my $m = $lexer_stack.elems 
-                ?? $lexer_stack.pop
-                !! self.operator($str, $last_pos);
-            say "# lexer got: " ~ $m.perl;
-            if !$m {
-                say "# lexer: end of string";
-                return [ 'end', '*end*' ];
+            my $v;
+            if $lexer_stack.elems {
+                $v = $lexer_stack.pop;
             }
-            my $v = $$m;
-            if $v[0] ne 'end' {
-                $last_pos = $m.to;
+            else {
+                my $m = self.operator($str, $last_pos);
+                say "# exp lexer got: " ~ $m.perl;
+                if !$m {
+                    return [ 'end', '*end*' ];
+                }
+                $v = $$m;
+                if $v[0] ne 'end' {
+                    $last_pos = $m.to;
+                }
             }
-            say "# lexer " ~ $v.perl;
+            say "# exp_lexer got " ~ $v.perl;
 
             if (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') {
                 # a block followed by newline terminates the expression
@@ -499,7 +428,7 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast, 
-            end_token => [ '}', ';' ] );
+            end_token => [ '}', ';', '->' ] );
         my $res = $prec.precedence_parse;
         say "# exp terminated";
         if $res.elems == 0 {

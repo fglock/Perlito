@@ -10,9 +10,13 @@ token if {
         else <.opt_ws> 
         \{ <.opt_ws> <exp_stmts2> <.opt_ws> \}
         { 
+            my $body = ($$<exp>){'end_block'};
+            if !(defined($body)) {
+                die "Missing code block in 'if'";
+            }
             make If.new( 
                 cond => ($$<exp>){'exp'}, 
-                body => ($$<exp>){'end_block'}, 
+                body => $body, 
                 otherwise => $$<exp_stmts2>,
             )
         }
@@ -20,17 +24,25 @@ token if {
         <.opt_ws>
         els <if> 
         { 
+            my $body = ($$<exp>){'end_block'};
+            if !(defined($body)) {
+                die "Missing code block in 'if'";
+            }
             make If.new( 
                 cond => ($$<exp>){'exp'}, 
-                body => ($$<exp>){'end_block'}, 
+                body => $body, 
                 otherwise => [ $$<if> ],
             )
         }
     |
         { 
+            my $body = ($$<exp>){'end_block'};
+            if !(defined($body)) {
+                die "Missing code block in 'if'";
+            }
             make If.new( 
                 cond => ($$<exp>){'exp'}, 
-                body => ($$<exp>){'end_block'}, 
+                body => $body, 
                 otherwise => [ ],
              ) 
         }
@@ -39,9 +51,15 @@ token if {
 
 token when {
     when <.ws> <exp> 
-    { make When.new( 
+    { 
+        my $body = ($$<exp>){'end_block'};
+        if !(defined($body)) {
+            die "Missing code block in 'when'";
+        }
+        make When.new( 
                 parameters => ($$<exp>){'exp'}, 
-                body       => ($$<exp>){'end_block'} ) }
+                body       => $body ) 
+    }
 }
 
 token for {
@@ -51,9 +69,15 @@ token for {
 
 token while {
     while <.ws> <exp> 
-    { make While.new( 
+    {
+        my $body = ($$<exp>){'end_block'};
+        if !(defined($body)) {
+            die "Missing code block in 'while'";
+        }
+        make While.new( 
                 cond => ($$<exp>){'exp'}, 
-                body => ($$<exp>){'end_block'} ) }
+                body => $body ) 
+    }
 }
 
 token loop {
