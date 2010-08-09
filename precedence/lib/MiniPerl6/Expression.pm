@@ -480,6 +480,12 @@ class MiniPerl6::Expression {
     }
 
 
+    token has_newline_after {
+        |    '#' 
+        |    <.MiniPerl6::Grammar.is_newline> 
+        |    <.MiniPerl6::Grammar.space>  <.has_newline_after>
+    }
+
     token exp_lexer { 
         | ';'                           { make [ 'end',     ';' ] }
         | '}'                           { make [ 'end',     '}' ] }
@@ -489,8 +495,11 @@ class MiniPerl6::Expression {
         say "# exp_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
+        my $lexer_stack = [];
         my $get_token = sub {
-            my $m = self.exp_lexer($str, $last_pos);
+            my $m = $lexer_stack.elems 
+                ?? $lexer_stack.pop
+                !! self.exp_lexer($str, $last_pos);
             say "# lexer got: " ~ $m.perl;
             if !$m {
                 say "# lexer: end of string";
@@ -501,6 +510,14 @@ class MiniPerl6::Expression {
                 $last_pos = $m.to;
             }
             say "# lexer " ~ $v.perl;
+
+            if (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') {
+                # a block followed by newline terminates the expression
+                if self.has_newline_after($str, $last_pos) {
+                    $lexer_stack.push( [ 'end', '*end*' ] );
+                }
+            } 
+
             return $v;
         };
         my $res = MiniPerl6::Precedence::precedence_parse($get_token, $reduce_to_ast);
