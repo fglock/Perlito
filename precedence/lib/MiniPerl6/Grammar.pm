@@ -109,10 +109,6 @@ token opt_ident {
     | ''     { make 'postcircumfix:<( )>' }
 }
 
-token sub_or_method_name {
-    <full_ident> [ \. <ident> ]?
-}
-
 token opt_type {
     |   '::'?  <full_ident>   { make $$<full_ident> }
     |   ''                              { make '' }

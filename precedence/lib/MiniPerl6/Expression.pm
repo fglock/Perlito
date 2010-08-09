@@ -276,6 +276,8 @@ class MiniPerl6::Expression {
             { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse>  ] }
           | { make [ 'postfix_or_term', 'methcall_no_params', ~$<MiniPerl6::Grammar.ident>                  ] }
           ]
+        | <MiniPerl6::Grammar.method_def>               { make [ 'term', $$<MiniPerl6::Grammar.method_def>  ] }
+        | <MiniPerl6::Grammar.sub_def>                  { make [ 'term', $$<MiniPerl6::Grammar.sub_def>     ] }
         | <MiniPerl6::Grammar.optional_namespace_before_ident> <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
             { make [ 'postfix_or_term', 'funcall',            

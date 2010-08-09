@@ -161,8 +161,9 @@ class MiniPerl6::Precedence {
     $prec = $prec - 1;
     add_op( 'list',     ',',   $prec, { assoc => 'list' } );
     $prec = $prec - 1;
-    add_op( 'list',     ';',   $prec, { assoc => 'list' } );
-    $prec = $prec - 1;
+    # TODO - semicolon
+    # add_op( 'list',     ';',   $prec, { assoc => 'list' } );
+    # $prec = $prec - 1;
     add_op( 'infix',    'and', $prec );
     $prec = $prec - 1;
     add_op( 'infix',    'or',  $prec );
