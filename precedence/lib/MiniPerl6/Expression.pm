@@ -266,7 +266,7 @@ class MiniPerl6::Expression {
 
         # TODO: general rule for terms that terminate in a block
         #       {...}  ->$v{...}  sub...{...}   method...{...}   do{...}
-        | '->' <.MiniPerl6::Grammar.ws>? <var_ident> <.MiniPerl6::Grammar.ws> 
+        | '->' <.MiniPerl6::Grammar.ws>? <MiniPerl6::Grammar.var_ident> <.MiniPerl6::Grammar.ws> 
           '{'  <.MiniPerl6::Grammar.ws>?
                <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
                     { make [ 'postfix_or_term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
@@ -433,7 +433,11 @@ class MiniPerl6::Expression {
             }
             say "# exp_lexer got " ~ $v.perl;
 
-            if (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') {
+            if     ( (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') )
+                || ( (($v[0]) eq 'term') && (($v[1]).isa('Sub')) )
+                || ( (($v[0]) eq 'term') && (($v[1]).isa('Method')) )
+                || ( (($v[0]) eq 'term') && (($v[1]).isa('Do')) )   
+            {
                 # a block followed by newline terminates the expression
                 if self.has_newline_after($str, $last_pos) {
                     $terminated = 1;
