@@ -95,17 +95,6 @@ token exp {
         { make $$<MiniPerl6::Expression.exp_parse> }
 }
 
-# token exp_stmt {
-#     | <if>     { make $$<if>     }   # 1 ?? 2 !! 3
-#     | <unless> { make $$<unless> }   # 1 ?? 2 !! 3
-#     | <when>   { make $$<when>   }   # when 3 { ... }
-#     | <for>    { make $$<for>    }   # $x.map(-> $i {...})
-#     | <while>  { make $$<while>  }   # while ... { ... }
-#     | <loop>   { make $$<loop>   }   # loop { ... }
-#     | <MiniPerl6::Expression.exp_parse>
-#         { make $$<MiniPerl6::Expression.exp_parse> }
-# }
-
 token opt_ident {  
     | <ident>  { make $$<ident> }
     | ''     { make 'postcircumfix:<( )>' }
@@ -238,10 +227,6 @@ token exp_seq {
         { make [] }
 }
 
-}
-    #---- split into compilation units in order to use less RAM...
-grammar MiniPerl6::Grammar {
-
 token lit {
     <lit_object> { make $$<lit_object> }  # Tree.new(a => x, b => y);
 }
@@ -324,10 +309,6 @@ token sub_def {
     [   \}     | { say '*** Syntax Error in sub \'', $$<name>, '\''; die 'error in Block'; } ]
     { make Sub.new( name => $$<opt_name>, sig => $$<method_sig>, block => $$<exp_stmts> ) }
 }
-
-}
-    #---- split into compilation units in order to use less RAM...
-grammar MiniPerl6::Grammar {
 
 token token {
     # { say 'parsing Token' }
