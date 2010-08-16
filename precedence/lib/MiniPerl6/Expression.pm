@@ -275,7 +275,9 @@ class MiniPerl6::Expression {
                     { make [ 'postfix_or_term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
         | <MiniPerl6::Grammar.method_def>               { make [ 'term', $$<MiniPerl6::Grammar.method_def>  ] }
         | <MiniPerl6::Grammar.sub_def>                  { make [ 'term', $$<MiniPerl6::Grammar.sub_def>     ] }
-
+        | <MiniPerl6::Grammar.token>                    { make [ 'term', $$<MiniPerl6::Grammar.token>       ] }
+        | 'do' <.MiniPerl6::Grammar.ws> <statement_parse>
+                    { make [ 'term', Do.new( block => $$<statement_parse> ) ] }
 
         | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse>  ] }
         | <MiniPerl6::Grammar.var_ident>                { make [ 'term', $$<MiniPerl6::Grammar.var_ident>   ] }     
@@ -376,7 +378,7 @@ class MiniPerl6::Expression {
         my $get_token = sub {
             my $m = self.operator($str, $last_pos);
             if !$m {
-                die "Expected closing delimiter: ", $delimiter;
+                die "Expected closing delimiter: ", @($delimiter);
             }
             my $v = $$m;
             if $v[0] ne 'end' {
