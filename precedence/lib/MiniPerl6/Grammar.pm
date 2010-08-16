@@ -94,16 +94,17 @@ token exp {
     <MiniPerl6::Expression.exp_parse>
         { make $$<MiniPerl6::Expression.exp_parse> }
 }
-token exp_stmt {
-    | <if>     { make $$<if>     }   # 1 ?? 2 !! 3
-    | <unless> { make $$<unless> }   # 1 ?? 2 !! 3
-    | <when>   { make $$<when>   }   # when 3 { ... }
-    | <for>    { make $$<for>    }   # $x.map(-> $i {...})
-    | <while>  { make $$<while>  }   # while ... { ... }
-    | <loop>   { make $$<loop>   }   # loop { ... }
-    | <MiniPerl6::Expression.exp_parse>
-        { make $$<MiniPerl6::Expression.exp_parse> }
-}
+
+# token exp_stmt {
+#     | <if>     { make $$<if>     }   # 1 ?? 2 !! 3
+#     | <unless> { make $$<unless> }   # 1 ?? 2 !! 3
+#     | <when>   { make $$<when>   }   # when 3 { ... }
+#     | <for>    { make $$<for>    }   # $x.map(-> $i {...})
+#     | <while>  { make $$<while>  }   # while ... { ... }
+#     | <loop>   { make $$<loop>   }   # loop { ... }
+#     | <MiniPerl6::Expression.exp_parse>
+#         { make $$<MiniPerl6::Expression.exp_parse> }
+# }
 
 token opt_ident {  
     | <ident>  { make $$<ident> }
@@ -211,13 +212,13 @@ token val_int {
 }
 
 token exp_stmts {
-    | <exp_stmt>
+    | <MiniPerl6::Expression.statement_parse>
         [
         |   <.opt_ws> [ \; | '' ] <.opt_ws> <exp_stmts>
             <.opt_ws> [ \; <.opt_ws> | '' ]
-            { make [ $$<exp_stmt>, @( $$<exp_stmts> ) ] }
+            { make [ $$<MiniPerl6::Expression.statement_parse>, @( $$<exp_stmts> ) ] }
         |   <.opt_ws> [ \; <.opt_ws> | '' ]
-            { make [ $$<exp_stmt> ] }
+            { make [ $$<MiniPerl6::Expression.statement_parse> ] }
         ]
     | { make [] }
 }

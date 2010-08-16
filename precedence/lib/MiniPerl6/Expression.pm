@@ -266,6 +266,10 @@ class MiniPerl6::Expression {
 
         # TODO: general rule for terms that terminate in a block
         #       {...}  ->$v{...}  sub...{...}   method...{...}   do{...}
+        | '->' <.MiniPerl6::Grammar.ws>? <var_ident> <.MiniPerl6::Grammar.ws> 
+          '{'  <.MiniPerl6::Grammar.ws>?
+               <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
+                    { make [ 'postfix_or_term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
         | '{'  <.MiniPerl6::Grammar.ws>?
                <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
                     { make [ 'postfix_or_term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
@@ -408,6 +412,7 @@ class MiniPerl6::Expression {
         my $expr;
         my $last_pos = $pos;
         my $lexer_stack = [];
+        my $terminated = 0;
         my $get_token = sub {
             my $v;
             if $lexer_stack.elems {
@@ -429,6 +434,7 @@ class MiniPerl6::Expression {
             if (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') {
                 # a block followed by newline terminates the expression
                 if self.has_newline_after($str, $last_pos) {
+                    $terminated = 1;
                     $lexer_stack.push( [ 'end', '*end*' ] );
                 }
             } 
@@ -436,7 +442,7 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast, 
-            end_token => [ '}', ';', '->' ] );
+            end_token => [ '}', ';', 'if', 'unless', 'when', 'for', 'while', 'loop' ] );
         my $res = $prec.precedence_parse;
         say "# exp terminated";
         if $res.elems == 0 {
@@ -454,8 +460,70 @@ class MiniPerl6::Expression {
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
             capture => {
-                exp => $res,
-                end_block => $block } )
+                exp        => $res,
+                end_block  => $block,
+                terminated => $terminated } )
+    } 
+
+    token exp_stmt {
+        | <MiniPerl6::Grammar.if>     { make $$<MiniPerl6::Grammar.if>     }   
+        | <MiniPerl6::Grammar.unless> { make $$<MiniPerl6::Grammar.unless> }   
+        | <MiniPerl6::Grammar.when>   { make $$<MiniPerl6::Grammar.when>   }   
+        | <MiniPerl6::Grammar.for>    { make $$<MiniPerl6::Grammar.for>    }   
+        | <MiniPerl6::Grammar.while>  { make $$<MiniPerl6::Grammar.while>  }   
+        | <MiniPerl6::Grammar.loop>   { make $$<MiniPerl6::Grammar.loop>   }   
+    }
+
+    token statement_modifier {
+        'if' | 'unless' | 'when' | 'for' | 'while' | 'loop'
+    }
+
+    method statement_parse ($str, $pos) {
+        say "# statement_parse input: ",$str," at ",$pos;
+        my $expr;
+        my $last_pos = $pos;
+        my $lexer_stack = [];
+        my $res = self.exp_stmt($str, $pos);
+        if $res {
+            say "# statement result: ", $res.perl;
+            return $res;
+        }
+        $res = self.exp_parse($str, $pos);
+        if !($res) {
+            say "# not a statement or expression";
+            return $res;
+        }
+        if ($$res){'end_block'} {
+            die "Unexpected block after expression";
+        }
+        if ($$res){'terminated'} {
+            say "# statement expression terminated result: ", $res.perl;
+            return $res;
+        }
+        say "# look for a statement modifier";
+        my $modifier = self.statement_modifier($str, $res.to);
+        if !($modifier) {
+            say "# statement expression no modifier result: ", $res.perl;
+            # TODO - require a statement terminator 
+            return $res;
+        }
+        my $modifier_exp = self.exp_parse($str, $modifier.to);
+        say "# statement modifier [", $modifier, "] exp: ", $modifier_exp.perl;
+        if !($modifier_exp) {
+            die "Expected expression after '", $modifier, "'";
+        }
+        if ($$modifier_exp){'end_block'} {
+            die "Unexpected block after expression";
+        }
+        # TODO - require a statement terminator 
+        say "# statement_parse modifier result: ", $modifier_exp.perl;
+        return MiniPerl6::Match.new( 
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
+            capture => {
+                exp          => $res,
+                modifier     => ~$modifier,
+                modifier_exp => $$modifier_exp } )
     } 
 
 }
+

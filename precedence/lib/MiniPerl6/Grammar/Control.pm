@@ -78,7 +78,7 @@ token when {
 }
 
 token for {
-    for <.ws> <exp> <.opt_ws> '->' <.opt_ws> <var_ident> <.ws> \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
+    for <.ws> <exp> 
     { make For.new( cond => $$<exp>, topic => $$<var_ident>, body => $$<exp_stmts> ) }
 }
 
