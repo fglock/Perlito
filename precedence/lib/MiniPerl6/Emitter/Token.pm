@@ -50,7 +50,7 @@ class Rul::Quantifier {
                 ~       '} '
                 ~       'else { '
                 ~           '$last_match_null = 0; '
-                ~       '} '
+                ~       '}; '
                 ~       '$last_pos = $MATCH.to; '
                 ~       '$count = $count + 1; '
                 ~   '}; ' 
@@ -71,7 +71,7 @@ class Rul::Quantifier {
                 ~       '} '
                 ~       'else { '
                 ~           '$last_match_null = 0; '
-                ~       '} '
+                ~       '}; '
                 ~       '$last_pos = $MATCH.to; '
                 ~   '}; ' 
                 ~   '$MATCH.to = $last_pos; '
@@ -104,7 +104,7 @@ class Rul::Or {
     has @.or_list;
     method emit {
         '(do { ' ~
-            'my $pos1 = $MATCH.to; (do{ ' ~ 
+            'my $pos1 = $MATCH.to; (do { ' ~ 
             (@.or_list.>>emit).join('}) || (do { $MATCH.to = $pos1; ') ~
         '}) })';
     }
@@ -133,7 +133,7 @@ class Rul::Subrule {
 
         my $code;
         if $.captures == 1 {
-            $code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} = $m2; 1 } else { False } ' 
+            $code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} = $m2; 1 } else { False }; ' 
         }
         elsif $.captures > 1 {
             # TODO: capture level > 2
@@ -144,12 +144,12 @@ class Rul::Subrule {
                     ~   '} '
                     ~   'else { ' 
                     ~       '$MATCH{\'' ~ $.metasyntax ~ '\'} = [ $m2 ]; '
-                    ~   '} '
+                    ~   '}; '
                     ~   '1 '
-                    ~ '} else { False } ' 
+                    ~ '} else { False }; ' 
         }
         else {
-            $code = 'if $m2 { $MATCH.to = $m2.to; 1 } else { False } ' 
+            $code = 'if $m2 { $MATCH.to = $m2.to; 1 } else { False }; ' 
         }
 
         '(do { ' 

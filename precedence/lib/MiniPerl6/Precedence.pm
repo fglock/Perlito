@@ -177,6 +177,7 @@ class MiniPerl6::Precedence {
     method precedence_parse {
         my $get_token = self.get_token;
         my $reduce    = self.reduce;
+        my $last_end_token = $end_token;
         $end_token    = self.end_token;
         my $op_stack  = [];   # [category, name]
         my $num_stack = [];
@@ -214,6 +215,7 @@ class MiniPerl6::Precedence {
                     $reduce.($op_stack, $num_stack);
                 }
                 $num_stack.push($token);  # save the block
+                $end_token = $last_end_token;  # restore previous 'end token' context
                 return $num_stack;
             }
             elsif is_term($token) {
@@ -269,6 +271,7 @@ class MiniPerl6::Precedence {
             $reduce.($op_stack, $num_stack);
         }
         say "# precedence return";
+        $end_token = $last_end_token;  # restore previous 'end token' context
         return $num_stack;
     }
 }
