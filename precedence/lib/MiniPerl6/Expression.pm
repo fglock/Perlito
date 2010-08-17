@@ -22,12 +22,20 @@ class MiniPerl6::Expression {
             }
             if $v[1] eq 'methcall' {
                 say "#   Call ", ($v[2]).perl;
+                if ($v[3]){'end_block'} {
+                    say "# pop_term: found end_block in Call";
+                    $num_stack.unshift( ($v[3]){'end_block'} );
+                }
                 $v = Call.new( invocant => undef, method => $v[2], arguments => $v[3], hyper => 0 );
                 say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'funcall' {
                 say "#   Apply ", ($v[2]).perl;
+                if ($v[4]){'end_block'} {
+                    say "# pop_term: found end_block in Apply";
+                    $num_stack.unshift( ($v[4]){'end_block'} );
+                }
                 $v = Apply.new( code => $v[3], arguments => $v[4], namespace => $v[2] );
                 say "#     ", $v.perl;
                 return $v;
@@ -318,6 +326,7 @@ class MiniPerl6::Expression {
         my $last_pos = $pos;
         my $is_first_token = True;
         my $lexer_stack = [];
+        my $terminated = 0;
         my $get_token = sub {
             my $v;
             if $lexer_stack.elems {
@@ -349,10 +358,12 @@ class MiniPerl6::Expression {
             if (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') {
                 if self.has_newline_after($str, $last_pos) {
                     # a block followed by newline terminates the expression
+                    $terminated = 1;
                     $lexer_stack.push( [ 'end', '*end*' ] );
                 }
                 elsif self.has_no_comma_or_colon_after($str, $last_pos) {
                     # a sequence ( block - space - not_comma_or_colon ) terminates the list
+                    $terminated = 1;
                     $lexer_stack.push( [ 'end', '*end*' ] );
                 }
             } 
@@ -372,14 +383,17 @@ class MiniPerl6::Expression {
             $block = pop_term($res);
             say "# list exp terminated with a block: ", $block.perl;
         }
-        $res = pop_term($res);
+        my $result = pop_term($res);
+        if $res.elems > 0 {
+            $block = pop_term($res);
+            say "# list exp terminated with a block (2): ", $block.perl;
+        }
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
             capture => {
-                exp        => $res,
+                exp        => $result,
                 end_block  => $block,
-                # terminated => $terminated 
-            } )
+                terminated => $terminated } )
     }
 
     method circumfix_parse ($str, $pos, $delimiter) {
@@ -472,12 +486,16 @@ class MiniPerl6::Expression {
             $block = pop_term($res);
             say "# exp terminated with a block: ", $block.perl;
         }
-        $res = pop_term($res);
-        say "# exp_parse result: ", $res.perl;
+        my $result = pop_term($res);
+        if $res.elems > 0 {
+            $block = pop_term($res);
+            say "# exp terminated with a block (2): ", $block.perl;
+        }
+        say "# exp_parse result: ", $result.perl;
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
             capture => {
-                exp        => $res,
+                exp        => $result,
                 end_block  => $block,
                 terminated => $terminated } )
     } 
