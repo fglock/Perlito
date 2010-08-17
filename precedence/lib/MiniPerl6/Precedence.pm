@@ -249,7 +249,7 @@ class MiniPerl6::Precedence {
             elsif ($token[1] eq 'block') && is_term($last) && $last_has_space {
                 # a block in this position terminates the current expression
                 say "# there is a block after the expression: ", $token.perl;
-                while $op_stack.elems {
+                while $op_stack.elems() {
                     $reduce.($op_stack, $num_stack);
                 }
                 $num_stack.push($token);  # save the block
@@ -295,7 +295,7 @@ class MiniPerl6::Precedence {
             $token = $get_token.();
             say "# precedence get_token: (2) ", $token.perl;
             if $token[0] eq 'space' {
-                $token = $get_token.()
+                $token = $get_token.();
                 $last_has_space = True;
             }
             else {
@@ -305,7 +305,7 @@ class MiniPerl6::Precedence {
         if defined($token) && ($token[0] ne 'end') {
             die "Unexpected end token: ",$token.perl;
         }
-        while $op_stack.elems {
+        while $op_stack.elems() {
             $reduce.($op_stack, $num_stack);
         }
         say "# precedence return";
