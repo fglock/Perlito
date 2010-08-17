@@ -22,6 +22,7 @@ class MiniPerl6::Precedence {
     my $Op2;
     my $end_token;
     method op_parse ($str, $pos) {
+        my $from = $pos;
         for @($end_token) -> $tok {
             my $l = $tok.chars;
             my $s = substr($str, $pos, $l);
@@ -31,29 +32,66 @@ class MiniPerl6::Precedence {
                 if  ($c1 ge 'a') && ($c1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
                 }
                 else {
-                    return MiniPerl6::Match.new( 'str' => $str, 'from' => $pos, 'to' => $pos+2, 'bool' => 1,
+                    return MiniPerl6::Match.new( 'str' => $str, 'from' => $from, 'to' => $pos+2, 'bool' => 1,
                         capture => ['end', $s] );
                 }
             }
         }
-        if exists($Op2{substr($str, $pos, 2)}) {
+        my $c01 = substr($str, $pos, 1);
+        my $c02 = substr($str, $pos, 2);
+        my $hyper_left = 0;
+        my $hyper_right = 0;
+        if ($c01 eq '«') || ($c01 eq '»') {
+            $hyper_left = $c01;
+            $pos = $pos + 1;
+            $c02 = substr($str, $pos, 2);
+        }
+        elsif ($c02 eq '<<') || ($c02 eq '>>') {
+            $hyper_left = $c02;
+            $pos = $pos + 2;
+            $c02 = substr($str, $pos, 2);
+        }
+        my $op2 = $c02;
+        if exists($Op2{$op2}) {
             my $c1 = substr($str, $pos+1, 1);
             my $c2 = substr($str, $pos+2, 1);
             if  ($c1 ge 'a') && ($c1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
             }
             else {
-                return MiniPerl6::Match.new( 'str' => $str, 'from' => $pos, 'to' => $pos+2, 'bool' => 1,
-                    capture => [ 'op', substr($str, $pos, 2) ] );
+                $pos = $pos + 2;
+                my $c01 = substr($str, $pos, 1);
+                my $c02 = substr($str, $pos, 2);
+                if ($c01 eq '«') || ($c01 eq '»') {
+                    $hyper_right = $c01;
+                    $pos = $pos + 1;
+                }
+                elsif ($c02 eq '<<') || ($c02 eq '>>') {
+                    $hyper_right = $c02;
+                    $pos = $pos + 2;
+                }
+                return MiniPerl6::Match.new( 'str' => $str, 'from' => $from, 'to' => $pos, 'bool' => 1,
+                    capture => [ 'op', $op2, { 'hyper_left' => $hyper_left, 'hyper_right' => $hyper_right } ] );
             }
         }
-        my $c1 = substr($str, $pos, 1);
-        if exists($Op1{$c1}) {
+        my $op1 = substr($str, $pos, 1);
+        if exists($Op1{$op1}) {
             my $c2 = substr($str, $pos+1, 1);
-            if  ($c1 ge 'a') && ($c1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
+            if  ($op1 ge 'a') && ($op1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
             }
             else {
-                return MiniPerl6::Match.new( 'str' => $str, 'from' => $pos, 'to' => $pos+1, 'bool' => 1,
-                    capture => ['op', $c1] );
+                $pos = $pos + 1;
+                my $c01 = substr($str, $pos, 1);
+                my $c02 = substr($str, $pos, 2);
+                if ($c01 eq '«') || ($c01 eq '»') {
+                    $hyper_right = $c01;
+                    $pos = $pos + 1;
+                }
+                elsif ($c02 eq '<<') || ($c02 eq '>>') {
+                    $hyper_right = $c02;
+                    $pos = $pos + 2;
+                }
+                return MiniPerl6::Match.new( 'str' => $str, 'from' => $from, 'to' => $pos, 'bool' => 1,
+                    capture => ['op', $op1, { 'hyper_left' => $hyper_left, 'hyper_right' => $hyper_right } ] );
             }
         }
         return MiniPerl6::Match.new( bool => 0 );
