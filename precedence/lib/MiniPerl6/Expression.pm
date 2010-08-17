@@ -366,9 +366,20 @@ class MiniPerl6::Expression {
         if $res.elems == 0 {
             return MiniPerl6::Match.new(bool => 0);
         }
+        # if the expression terminates in a block, the block was pushed to num_stack
+        my $block;
+        if $res.elems > 1 {
+            $block = pop_term($res);
+            say "# list exp terminated with a block: ", $block.perl;
+        }
         $res = pop_term($res);
         return MiniPerl6::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
+            capture => {
+                exp        => $res,
+                end_block  => $block,
+                # terminated => $terminated 
+            } )
     }
 
     method circumfix_parse ($str, $pos, $delimiter) {
