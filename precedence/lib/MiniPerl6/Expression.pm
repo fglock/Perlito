@@ -360,7 +360,7 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
-            end_token => [ 'and', 'or', ']', ')', '}', ';', 'if', 'unless', 'when', 'for', 'while', 'loop' ] );
+            end_token => [ 'and', 'or', '!!', ']', ')', '}', ';', 'if', 'unless', 'when', 'for', 'while', 'loop' ] );
         my $res = $prec.precedence_parse;
         say "# list_lexer return: ", $res.perl;
         if $res.elems == 0 {
