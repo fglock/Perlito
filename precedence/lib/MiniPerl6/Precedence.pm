@@ -154,6 +154,7 @@ class MiniPerl6::Precedence {
     add_op( 'prefix',   '@',   $prec );
     add_op( 'prefix',   '%',   $prec );
     add_op( 'prefix',   '!',   $prec );
+    add_op( 'prefix',   '?',   $prec );
     $prec = $prec - 1;
     add_op( 'infix',    '*',   $prec );
     add_op( 'infix',    '/',   $prec );
@@ -222,12 +223,12 @@ class MiniPerl6::Precedence {
         my $last = ['op', '*start*'];
         my $last_has_space = False;
         my $token = $get_token.();
-        say "# precedence get_token: (0) ", $token.perl;
+        # say "# precedence get_token: (0) ", $token.perl;
         if ($token[0]) eq 'space' {
             $token = $get_token.()
         }
         while (defined($token)) && ($token[0] ne 'end') {
-            say "# precedence get_token: (1) ", $token.perl;
+            # say "# precedence get_token: (1) ", $token.perl;
             if ($Operator{'prefix'}){$token[1]} && ( ($last[1] eq '*start*') || !(is_term($last)) ) {
                 $token[0] = 'prefix';
                 $op_stack.unshift($token);
@@ -248,7 +249,7 @@ class MiniPerl6::Precedence {
             }
             elsif ($token[1] eq 'block') && is_term($last) && $last_has_space {
                 # a block in this position terminates the current expression
-                say "# there is a block after the expression: ", $token.perl;
+                # say "# there is a block after the expression: ", $token.perl;
                 while $op_stack.elems() {
                     $reduce.($op_stack, $num_stack);
                 }
@@ -257,12 +258,15 @@ class MiniPerl6::Precedence {
                 return $num_stack;
             }
             elsif is_term($token) {
-                say "# ** two terms in a row ";
-                say "#      last:  ", $last.perl;
-                say "#      token: ", $token.perl;
-                say "#      space: ", $last_has_space;
+                # say "# ** two terms in a row ";
+                # say "#      last:  ", $last.perl;
+                # say "#      token: ", $token.perl;
+                # say "#      space: ", $last_has_space;
 
                 if is_term($last) {
+                    say "#      last:  ", $last.perl;
+                    say "#      token: ", $token.perl;
+                    say "#      space: ", $last_has_space;
                     die "Value tokens must be separated by an operator";
                 }
                 $token[0] = 'term';
@@ -293,7 +297,7 @@ class MiniPerl6::Precedence {
             }
             $last = $token;
             $token = $get_token.();
-            say "# precedence get_token: (2) ", $token.perl;
+            # say "# precedence get_token: (2) ", $token.perl;
             if $token[0] eq 'space' {
                 $token = $get_token.();
                 $last_has_space = True;
@@ -308,7 +312,7 @@ class MiniPerl6::Precedence {
         while $op_stack.elems() {
             $reduce.($op_stack, $num_stack);
         }
-        say "# precedence return";
+        # say "# precedence return";
         $end_token = $last_end_token;  # restore previous 'end token' context
         return $num_stack;
     }

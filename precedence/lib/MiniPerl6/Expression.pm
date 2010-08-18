@@ -264,6 +264,10 @@ class MiniPerl6::Expression {
     #                 Val::Buf.new( buf => ~$<ident> ),
     #                 Var.new( sigil => ~$$<var_sigil>, twigil => '', name => $$<ident> ) ]
 
+    token capture_name {
+        <MiniPerl6::Grammar.full_ident> [ \. <MiniPerl6::Grammar.ident> ]?
+    }
+
     token operator { 
         | '.(' <paren_parse>   ')'                      { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
         | '.[' <square_parse>  ']'                      { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
@@ -289,6 +293,11 @@ class MiniPerl6::Expression {
 
         | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse>  ] }
         | <MiniPerl6::Grammar.var_ident>                { make [ 'term', $$<MiniPerl6::Grammar.var_ident>   ] }     
+        | '$<' <capture_name> '>'
+            { make [ 'term', Lookup.new(
+                obj   => Var.new( sigil => '$', twigil => '', name => '/' ),
+                index_exp => Val::Buf.new( buf => $$<sub_or_method_name> )
+            ) ] } 
         | <MiniPerl6::Precedence.op_parse>              { make $$<MiniPerl6::Precedence.op_parse>             }
         | <MiniPerl6::Grammar.ident> <before <.MiniPerl6::Grammar.ws>? '=>' >   # autoquote
             { make [ 'term', Val::Buf.new( buf => ~$<MiniPerl6::Grammar.ident> ) ] }
@@ -329,7 +338,7 @@ class MiniPerl6::Expression {
         my $terminated = 0;
         my $get_token = sub {
             my $v;
-            if $lexer_stack.elems {
+            if $lexer_stack.elems() {
                 $v = $lexer_stack.pop;
             }
             else {
@@ -371,7 +380,7 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
-            end_token => [ 'and', 'or', '!!', ']', ')', '}', ';', 'if', 'unless', 'when', 'for', 'while', 'loop' ] );
+            end_token => [ 'and', 'or', '!!', ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
         my $res = $prec.precedence_parse;
         say "# list_lexer return: ", $res.perl;
         if $res.elems == 0 {
@@ -442,7 +451,7 @@ class MiniPerl6::Expression {
         my $terminated = 0;
         my $get_token = sub {
             my $v;
-            if $lexer_stack.elems {
+            if $lexer_stack.elems() {
                 $v = $lexer_stack.pop;
             }
             else {
@@ -473,7 +482,7 @@ class MiniPerl6::Expression {
             return $v;
         };
         my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast, 
-            end_token => [ ']', ')', '}', ';', 'if', 'unless', 'when', 'for', 'while', 'loop' ] );
+            end_token => [ ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
         my $res = $prec.precedence_parse;
         say "# exp terminated";
         if $res.elems == 0 {
