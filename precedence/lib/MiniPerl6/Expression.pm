@@ -302,6 +302,7 @@ class MiniPerl6::Expression {
         | <MiniPerl6::Grammar.ident> <before <.MiniPerl6::Grammar.ws>? '=>' >   # autoquote
             { make [ 'term', Val::Buf.new( buf => ~$<MiniPerl6::Grammar.ident> ) ] }
         | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'and'                       ] }
+        | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not'                       ] }
         | '.' <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
             { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse>  ] }
