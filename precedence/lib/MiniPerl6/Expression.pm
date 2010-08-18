@@ -48,7 +48,14 @@ class MiniPerl6::Expression {
             }
             if $v[1] eq '[ ]' {
                 say "#   Array ", ($v[2]).perl;
-                $v = Lit::Array.new( array1 => $v[2] );
+                my $param_list = $v[2];
+                if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
+                    $param_list = $param_list.arguments;
+                }
+                else {
+                    $param_list = [ $param_list ];
+                }
+                $v = Lit::Array.new( array1 => $param_list );
                 say "#     ", $v.perl;
                 return $v;
             }
