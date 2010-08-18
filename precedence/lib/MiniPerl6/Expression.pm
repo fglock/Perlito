@@ -182,12 +182,19 @@ class MiniPerl6::Expression {
         elsif MiniPerl6::Precedence::is_assoc_type('list', $last_op[1]) {
             my $arg;
             if $num_stack.elems < 2 {
-                push $num_stack, 
-                    Apply.new(
-                        namespace => '',
-                        code      => 'postfix:<' ~ $last_op[1] ~ '>',
-                        arguments => [ pop_term($num_stack) ],
-                      );
+                my $v2 = pop_term($num_stack);
+                if ($v2.isa('Apply')) && ($v2.code eq ('list:<' ~ $last_op[1] ~ '>')) {
+                    ($v2.arguments).push( undef );
+                    $num_stack.push( $v2 );
+                }
+                else {
+                    push $num_stack, 
+                        Apply.new(
+                            namespace => '',
+                            code      => 'infix:<' ~ $last_op[1] ~ '>',
+                            arguments => [ $v2, undef ],
+                          );
+                }
                 return;
             }
             else {
@@ -282,7 +289,7 @@ class MiniPerl6::Expression {
         | '->' <.MiniPerl6::Grammar.ws>? <list_parse> 
                     { 
                         my $block = ($$<list_parse>){'end_block'};
-                        if $block.sig {
+                        if $block.sig() {
                             die "Signature error in block"
                         }
                         make [ 'postfix_or_term', 'block', $block.stmts, ($$<list_parse>){'exp'} ] 

@@ -228,7 +228,14 @@ class MiniPerl6::Precedence {
             $token = $get_token.()
         }
         while (defined($token)) && ($token[0] ne 'end') {
-            # say "# precedence get_token: (1) ", $token.perl;
+            say "# precedence      last: (1) ", $last.perl;
+            say "# precedence get_token: (1) ", $token.perl;
+
+            if ($token[1] eq ',') && ( ($last[1] eq '*start*') || ($last[1] eq ',') ) {
+                # allow (,,,)
+                $num_stack.push( ['term', undef] );
+            }
+
             if ($Operator{'prefix'}){$token[1]} && ( ($last[1] eq '*start*') || !(is_term($last)) ) {
                 $token[0] = 'prefix';
                 $op_stack.unshift($token);
