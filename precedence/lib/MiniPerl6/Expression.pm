@@ -350,6 +350,13 @@ class MiniPerl6::Expression {
             my $v;
             if $lexer_stack.elems() {
                 $v = $lexer_stack.pop;
+                if  $is_first_token 
+                    && ($v[0] eq 'op')
+                    && !(MiniPerl6::Precedence::is_fixity_type('prefix', $v[1]))
+                {
+                    say "# finishing list - first token is: ", $v[1];
+                    $v[0] = 'end';
+                }
             }
             else {
                 my $m = self.operator($str, $last_pos);
@@ -358,19 +365,19 @@ class MiniPerl6::Expression {
                     return [ 'end', '*end*' ];
                 }
                 $v = $$m;
+                if  $is_first_token 
+                    && ($v[0] eq 'op')
+                    && !(MiniPerl6::Precedence::is_fixity_type('prefix', $v[1]))
+                {
+                    say "# finishing list - first token is: ", $v[1];
+                    $v[0] = 'end';
+                }
                 if $v[0] ne 'end' {
                     $last_pos = $m.to;
                 }
             }
             say "# list_lexer got " ~ $v.perl;
 
-            if  $is_first_token 
-                && ($v[0] eq 'op')
-                && !(MiniPerl6::Precedence::is_fixity_type('prefix', $v[1]))
-            {
-                say "# finishing list - first token is: ", $v[1];
-                $v[0] = 'end';
-            }
             $is_first_token = False;   
             say "# list_lexer " ~ $v.perl;
 
