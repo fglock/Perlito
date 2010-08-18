@@ -10,7 +10,7 @@ class MiniPerl6::Expression {
             say "# ** processing term ", $v.perl;
             if $v[1] eq 'methcall_no_params' {
                 say "#   Call ", ($v[2]).perl;
-                $v = Call.new( invocant => $v[3], method => $v[2], arguments => undef, hyper => 0 );
+                $v = Call.new( invocant => undef, method => $v[2], arguments => undef, hyper => $v[3] );
                 say "#     ", $v.perl;
                 return $v;
             }
@@ -26,7 +26,7 @@ class MiniPerl6::Expression {
                     say "# pop_term: found end_block in Call";
                     $num_stack.unshift( ($v[3]){'end_block'} );
                 }
-                $v = Call.new( invocant => undef, method => $v[2], arguments => $v[3], hyper => 0 );
+                $v = Call.new( invocant => undef, method => $v[2], arguments => $v[3], hyper => $v[4] );
                 say "#     ", $v.perl;
                 return $v;
             }
@@ -95,7 +95,7 @@ class MiniPerl6::Expression {
         say "#      v:     ", $v.perl;
         if $v[1] eq 'methcall_no_params' {
             say "#   Call ", ($v[2]).perl;
-            $v = Call.new( invocant => $value, method => $v[2], arguments => undef, hyper => 0 );
+            $v = Call.new( invocant => $value, method => $v[2], arguments => undef, hyper => $v[3] );
             return $v;
         }
         if $v[1] eq 'funcall_no_params' {
@@ -106,7 +106,7 @@ class MiniPerl6::Expression {
         }
         if $v[1] eq 'methcall' {
             say "#   Call ", ($v[2]).perl;
-            $v = Call.new( invocant => $value, method => $v[2], arguments => $v[3], hyper => 0 );
+            $v = Call.new( invocant => $value, method => $v[2], arguments => $v[3], hyper => $v[4] );
             return $v;
         }
         if $v[1] eq 'funcall' {
@@ -268,6 +268,10 @@ class MiniPerl6::Expression {
         <MiniPerl6::Grammar.full_ident> [ \. <MiniPerl6::Grammar.ident> ]?
     }
 
+    token hyper_op {
+        '>>'?
+    }
+
     token operator { 
         | '.(' <paren_parse>   ')'                      { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
         | '.[' <square_parse>  ']'                      { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
@@ -303,10 +307,10 @@ class MiniPerl6::Expression {
             { make [ 'term', Val::Buf.new( buf => ~$<MiniPerl6::Grammar.ident> ) ] }
         | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'and'                       ] }
         | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not'                       ] }
-        | '.' <MiniPerl6::Grammar.ident> 
+        | '.' <hyper_op> <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
-            { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse>  ] }
-          | { make [ 'postfix_or_term', 'methcall_no_params', ~$<MiniPerl6::Grammar.ident>                  ] }
+            { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse>, $$<hyper_op>  ] }
+          | { make [ 'postfix_or_term', 'methcall_no_params', ~$<MiniPerl6::Grammar.ident>, $$<hyper_op>                  ] }
           ]
         | <MiniPerl6::Grammar.optional_namespace_before_ident> <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
