@@ -212,21 +212,6 @@ token exp_stmts {
     | { make [] }
 }
 
-token exp_seq {
-    | <exp>
-        # { say 'exp_seq: matched <exp>' }
-        [
-        |   <.opt_ws> \, <.opt_ws> <exp_seq> 
-            <.opt_ws> [ \, <.opt_ws> | '' ]
-            { make [ $$<exp>, @( $$<exp_seq> ) ] }
-        |   <.opt_ws> [ \, <.opt_ws> | '' ]
-            { make [ $$<exp> ] }
-        ]
-    | 
-        # { say 'exp_seq: end of match' }
-        { make [] }
-}
-
 token lit {
     <lit_object> { make $$<lit_object> }  # Tree.new(a => x, b => y);
 }
@@ -263,12 +248,12 @@ token var_invocant {
 token args_sig {
     <var_invocant>
     <.opt_ws> 
-    # TODO - exp_seq / exp_mapping == positional / named 
-    <exp_seq> 
+    # TODO - MiniPerl6::Expression.list_parse / exp_mapping == positional / named 
+    <MiniPerl6::Expression.list_parse>
     {
         # say ' invocant: ', ($$<var_invocant>).perl;
-        # say ' positional: ', ($$<exp_seq>).perl;
-        make Sig.new( invocant => $$<var_invocant>, positional => $$<exp_seq>, named => { } );
+        # say ' positional: ', ($$<>).perl;
+        make Sig.new( invocant => $$<var_invocant>, positional => ($$<MiniPerl6::Expression.list_parse>){'exp'}, named => { } );
     }
 }
 

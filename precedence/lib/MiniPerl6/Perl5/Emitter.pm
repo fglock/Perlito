@@ -75,6 +75,7 @@ class Val::Object {
 }
 
 class Lit::Block {
+    has $.sig;
     has @.stmts;
 }
 

@@ -54,7 +54,7 @@ class MiniPerl6::Expression {
             }
             if $v[1] eq 'block' {
                 say "#   Block, Hash, or Pair ", ($v[2]).perl;
-                $v = Lit::Block.new( stmts => $v[2] );
+                $v = Lit::Block.new( stmts => $v[2], sig => $v[3] );
                 # TODO: $v = Lit::Hash.new( hash1 => $v[2] );
                 return $v;
             }
@@ -279,13 +279,14 @@ class MiniPerl6::Expression {
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
 
-
-        # TODO: general rule for terms that terminate in a block
-        #       {...}  ->$v{...}  sub...{...}   method...{...}   do{...}
-        | '->' <.MiniPerl6::Grammar.ws>? <MiniPerl6::Grammar.var_ident> <.MiniPerl6::Grammar.ws> 
-          '{'  <.MiniPerl6::Grammar.ws>?
-               <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
-                    { make [ 'postfix_or_term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
+        | '->' <.MiniPerl6::Grammar.ws>? <list_parse> 
+                    { 
+                        my $block = ($$<list_parse>){'end_block'};
+                        if $block.sig {
+                            die "Signature error in block"
+                        }
+                        make [ 'postfix_or_term', 'block', $block.stmts, ($$<list_parse>){'exp'} ] 
+                    }
         | '{'  <.MiniPerl6::Grammar.ws>?
                <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
                     { make [ 'postfix_or_term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
@@ -307,6 +308,8 @@ class MiniPerl6::Expression {
             { make [ 'term', Val::Buf.new( buf => ~$<MiniPerl6::Grammar.ident> ) ] }
         | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'and'                       ] }
         | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not'                       ] }
+        | 'use' <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.full_ident>  [ - <MiniPerl6::Grammar.ident> ]?      
+            { make [ 'term', Use.new( mod => $$<MiniPerl6::Grammar.full_ident> ) ] }
         | '.' <hyper_op> <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
             { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse>, $$<hyper_op>  ] }
@@ -389,7 +392,12 @@ class MiniPerl6::Expression {
         my $res = $prec.precedence_parse;
         say "# list_lexer return: ", $res.perl;
         if $res.elems == 0 {
-            return MiniPerl6::Match.new(bool => 0);
+            return MiniPerl6::Match.new( 
+                'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
+                capture => {
+                    exp        => undef,
+                    end_block  => undef,
+                    terminated => undef } )
         }
         # if the expression terminates in a block, the block was pushed to num_stack
         my $block;
@@ -547,6 +555,7 @@ class MiniPerl6::Expression {
         }
         if ($$res){'terminated'} {
             say "# statement expression terminated result: ", $res.perl;
+            $res.capture = ($$res){'exp'};
             return $res;
         }
         say "# look for a statement modifier";
@@ -554,6 +563,7 @@ class MiniPerl6::Expression {
         if !($modifier) {
             say "# statement expression no modifier result: ", $res.perl;
             # TODO - require a statement terminator 
+            $res.capture = ($$res){'exp'};
             return $res;
         }
         my $modifier_exp = self.exp_parse($str, $modifier.to);
@@ -569,9 +579,9 @@ class MiniPerl6::Expression {
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
             capture => {
-                exp          => $res,
+                exp          => ($$res){'exp'},
                 modifier     => ~$modifier,
-                modifier_exp => $$modifier_exp } )
+                modifier_exp => ($$modifier_exp){'exp'} } )
     } 
 
 }
