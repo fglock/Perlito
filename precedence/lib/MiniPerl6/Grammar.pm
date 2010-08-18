@@ -95,6 +95,11 @@ token exp {
         { make $$<MiniPerl6::Expression.exp_parse> }
 }
 
+token exp2 {
+    <MiniPerl6::Expression.exp_parse>
+        { make $$<MiniPerl6::Expression.exp_parse> }
+}
+
 token opt_ident {  
     | <ident>  { make $$<ident> }
     | ''     { make 'postcircumfix:<( )>' }

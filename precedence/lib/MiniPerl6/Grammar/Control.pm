@@ -22,17 +22,20 @@ token if {
     if <.ws> <exp>  
     [
         <.opt_ws>
-        else <.opt_ws> 
-        \{ <.opt_ws> <exp_stmts2> <.opt_ws> \}
+        else <exp2> 
         { 
             my $body = ($$<exp>){'end_block'};
+            my $otherwise = ($$<exp2>){'exp'};
             if !(defined($body)) {
                 die "Missing code block in 'if'";
             }
+            if !(defined($otherwise)) {
+                die "Missing code block in 'else'";
+            }
             make If.new( 
-                cond => ($$<exp>){'exp'}, 
-                body => $body, 
-                otherwise => $$<exp_stmts2>,
+                cond      => ($$<exp>){'exp'}, 
+                body      => $body, 
+                otherwise => $otherwise,
             )
         }
     |
@@ -79,7 +82,13 @@ token when {
 
 token for {
     for <.ws> <exp> 
-    { make For.new( cond => $$<exp>, topic => $$<var_ident>, body => $$<exp_stmts> ) }
+    { 
+        my $body = ($$<exp>){'end_block'};
+        if !(defined($body)) {
+            die "Missing code block in 'when'";
+        }
+        make For.new( cond => ($$<exp>){'exp'}, topic => undef, body => $body ) 
+    }
 }
 
 token while {
@@ -96,20 +105,22 @@ token while {
 }
 
 token loop {
-    loop <.ws> 
-        [ 
-            \{ <.opt_ws> <exp_stmts> <.opt_ws> \}
-            { make While.new( cond => Val::Bit.new( bit => 1 ), body => $$<exp_stmts> ) }
-        |
-            \( <.opt_ws> <exp_stmts>  <.opt_ws> \) <.opt_ws>
-            \{ <.opt_ws> <exp_stmts2> <.opt_ws> \}
-            { make While.new( 
-                        init     => ($$<exp_stmts>)[0],
-                        cond     => ($$<exp_stmts>)[1], 
-                        continue => ($$<exp_stmts>)[2], 
-                        body     =>  $$<exp_stmts2> )
+    loop <.ws> <exp>
+    {
+        my $body = ($$<exp>){'end_block'};
+        if !(defined($body)) {
+            $body = ($$<exp>){'exp'};
+            if $body.isa( 'Lit::Block' ) {
+                make While.new( cond => Val::Bit.new( bit => 1 ), body => $body )
             }
-        ]
+            else {
+                die "Missing code block in 'loop'";
+            }
+        }
+        else {
+            die "'loop' with parameters is not implemented";
+        }
+    }
 }
 
 }
