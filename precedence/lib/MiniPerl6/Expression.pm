@@ -26,7 +26,7 @@ class MiniPerl6::Expression {
                     say "# pop_term: found end_block in Call";
                     $num_stack.unshift( ($v[3]){'end_block'} );
                 }
-                $v = Call.new( invocant => undef, method => $v[2], arguments => $v[3], hyper => $v[4] );
+                $v = Call.new( invocant => undef, method => $v[2], arguments => ($v[3]){'exp'}, hyper => $v[4] );
                 say "#     ", $v.perl;
                 return $v;
             }
@@ -36,7 +36,7 @@ class MiniPerl6::Expression {
                     say "# pop_term: found end_block in Apply";
                     $num_stack.unshift( ($v[4]){'end_block'} );
                 }
-                $v = Apply.new( code => $v[3], arguments => $v[4], namespace => $v[2] );
+                $v = Apply.new( code => $v[3], arguments => ($v[4]){'exp'}, namespace => $v[2] );
                 say "#     ", $v.perl;
                 return $v;
             }
@@ -106,7 +106,7 @@ class MiniPerl6::Expression {
         }
         if $v[1] eq 'methcall' {
             say "#   Call ", ($v[2]).perl;
-            $v = Call.new( invocant => $value, method => $v[2], arguments => $v[3], hyper => $v[4] );
+            $v = Call.new( invocant => $value, method => $v[2], arguments => ($v[3]){'exp'}, hyper => $v[4] );
             return $v;
         }
         if $v[1] eq 'funcall' {
@@ -310,6 +310,8 @@ class MiniPerl6::Expression {
         | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not'                       ] }
         | 'use' <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.full_ident>  [ - <MiniPerl6::Grammar.ident> ]?      
             { make [ 'term', Use.new( mod => $$<MiniPerl6::Grammar.full_ident> ) ] }
+        | <MiniPerl6::Grammar.declarator> <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.opt_type> <.MiniPerl6::Grammar.opt_ws> <MiniPerl6::Grammar.var_ident>   # my Int $variable
+            { make [ 'term', Decl.new( decl => $$<MiniPerl6::Grammar.declarator>, type => $$<MiniPerl6::Grammar.opt_type>, var => $$<MiniPerl6::Grammar.var_ident> ) ] }
         | '.' <hyper_op> <MiniPerl6::Grammar.ident> 
           [ <.MiniPerl6::Grammar.ws> <list_parse>   
             { make [ 'postfix_or_term', 'methcall',           ~$<MiniPerl6::Grammar.ident>, $$<list_parse>, $$<hyper_op>  ] }
