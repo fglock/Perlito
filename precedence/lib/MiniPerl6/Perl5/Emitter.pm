@@ -105,7 +105,9 @@ class Lit::Hash {
         my $fields = @.hash1;
         my $str = '';
         for @$fields -> $field { 
-            $str = $str ~ ($field[0]).emit ~ ' => ' ~ ($field[1]).emit ~ ',';
+            if defined($field) {
+                $str = $str ~ $field.emit ~ ',';
+            }
         }; 
         '{ ' ~ $str ~ ' }';
     }
@@ -461,15 +463,19 @@ class Return {
 
 class If {
     has $.cond;
-    has @.body;
-    has @.otherwise;
+    has $.body;
+    has $.otherwise;
     method emit {
         return 'if (' ~ Perl5::to_bool($.cond).emit ~ ') { ' 
-             ~   ((@.body).emit) 
+             ~   (($.body).emit) 
              ~ ' } ' 
-             ~ 'else { ' 
-             ~   ((@.otherwise).emit) 
-             ~ ' }';
+             ~  ($.otherwise 
+                ??  ( 'else { ' 
+                    ~   (($.otherwise).emit) 
+                    ~ ' }'
+                    )
+                !! '' 
+                );
     }
 }
 

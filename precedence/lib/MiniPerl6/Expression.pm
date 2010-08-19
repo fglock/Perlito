@@ -6,7 +6,13 @@ class MiniPerl6::Expression {
    
     sub expand_list ($param_list) {
         if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
-            return $param_list.arguments;
+            my $args = [];
+            for @($param_list.arguments) -> $v {
+                if defined($v) {
+                    $args.push($v);
+                }
+            }
+            return $args;
         }
         elsif $param_list eq '*undef*' {
             return [];
@@ -36,7 +42,7 @@ class MiniPerl6::Expression {
             say "#  not Apply -- not hash";
             return $o
         }
-        if ($stmt.code) eq 'list:<=>>' {
+        if ($stmt.code) eq 'infix:<=>>' {
             # the argument is a single pair
             say "#  single pair -- is hash";
             return Lit::Hash.new(hash1 => [ $stmt ])
@@ -51,7 +57,7 @@ class MiniPerl6::Expression {
         if !($item.isa('Apply')) {
             return $o
         }
-        if ($item.code) eq 'list:<=>>' {
+        if ($item.code) eq 'infix:<=>>' {
             # the argument is a single pair
             return Lit::Hash.new(hash1 => $stmt.arguments)
         }
