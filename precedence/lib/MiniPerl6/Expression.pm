@@ -4,6 +4,48 @@ class MiniPerl6::Expression {
     use MiniPerl6::Grammar;
     use MiniPerl6::Perl5::Emitter;
    
+    sub block_or_hash ($o) {
+        say "# block_or_hash? ", $o.perl;
+        if defined($o.sig) {
+            say "#  has sig -- not a block";
+            return $o
+        }
+        my $stmts = $o.stmts;
+        if !(defined $stmts) {
+            say "#  no contents -- empty hash";
+            return Lit::Hash.new(hash1 => [])
+        }
+        if ($stmts.elems) != 1 {
+            say "#  more statements -- not hash";
+            return $o
+        }
+        my $stmt = $stmts[0];
+        if !($stmt.isa('Apply')) {
+            say "#  not Apply -- not hash";
+            return $o
+        }
+        if ($stmt.code) eq 'list:<=>>' {
+            # the argument is a single pair
+            say "#  single pair -- is hash";
+            return Lit::Hash.new(hash1 => $stmt)
+        }
+        if ($stmt.code) ne 'list:<,>' {
+            say "#  not a list -- not hash";
+            return $o
+        }
+        # the argument is a list -- check that the first item looks like a pair
+        my $item = ($stmt.arguments)[0];
+        say "#  item: ", $item.perl;
+        if !($item.isa('Apply')) {
+            return $o
+        }
+        if ($item.code) eq 'list:<=>>' {
+            # the argument is a single pair
+            return Lit::Hash.new(hash1 => $stmt)
+        }
+        return $o;
+    }
+
     sub pop_term ($num_stack) {
         my $v = $num_stack.pop;
         if $v.isa('Array') {
@@ -62,6 +104,7 @@ class MiniPerl6::Expression {
             if $v[1] eq 'block' {
                 say "#   Block, Hash, or Pair ", ($v[2]).perl;
                 $v = Lit::Block.new( stmts => $v[2], sig => $v[3] );
+                $v = block_or_hash($v);
                 # TODO: $v = Lit::Hash.new( hash1 => $v[2] );
                 return $v;
             }
@@ -198,7 +241,7 @@ class MiniPerl6::Expression {
                     push $num_stack, 
                         Apply.new(
                             namespace => '',
-                            code      => 'infix:<' ~ $last_op[1] ~ '>',
+                            code      => 'list:<' ~ $last_op[1] ~ '>',
                             arguments => [ $v2, undef ],
                           );
                 }
