@@ -4,6 +4,18 @@ class MiniPerl6::Expression {
     use MiniPerl6::Grammar;
     use MiniPerl6::Perl5::Emitter;
    
+    sub expand_list ($param_list) {
+        if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
+            return $param_list.arguments;
+        }
+        elsif $param_list eq '*undef*' {
+            return [];
+        }
+        else {
+            return [ $param_list ];
+        }
+    }
+
     sub block_or_hash ($o) {
         say "# block_or_hash? ", $o.perl;
         if defined($o.sig) {
@@ -68,16 +80,7 @@ class MiniPerl6::Expression {
                     say "# pop_term: found end_block in Call";
                     $num_stack.unshift( ($v[3]){'end_block'} );
                 }
-                my $param_list = ($v[3]){'exp'};
-                if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
-                    $param_list = $param_list.arguments;
-                }
-                elsif $param_list eq '*undef*' {
-                    $param_list = [];
-                }
-                else {
-                    $param_list = [ $param_list ];
-                }
+                my $param_list = expand_list( ($v[3]){'exp'} );
                 $v = Call.new( invocant => undef, method => $v[2], arguments => $param_list, hyper => $v[4] );
                 say "#     ", $v.perl;
                 return $v;
@@ -88,48 +91,21 @@ class MiniPerl6::Expression {
                     say "# pop_term: found end_block in Apply";
                     $num_stack.unshift( ($v[4]){'end_block'} );
                 }
-                my $param_list = ($v[4]){'exp'};
-                if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
-                    $param_list = $param_list.arguments;
-                }
-                elsif $param_list eq '*undef*' {
-                    $param_list = [];
-                }
-                else {
-                    $param_list = [ $param_list ];
-                }
+                my $param_list = expand_list( ($v[4]){'exp'} );
                 $v = Apply.new( code => $v[3], arguments => $param_list, namespace => $v[2] );
                 say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq '( )' {
                 say "#   Plain parentheses ", ($v[2]).perl;
-                my $param_list = $v[2];
-                if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
-                    $param_list = $param_list.arguments;
-                }
-                elsif $param_list eq '*undef*' {
-                    $param_list = [];
-                }
-                else {
-                    $param_list = [ $param_list ];
-                }
+                my $param_list = expand_list($v[2]);
                 $v = Apply.new( code => 'circumfix:<( )>', arguments => $param_list, namespace => '' );
                 say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq '[ ]' {
                 say "#   Array ", ($v[2]).perl;
-                my $param_list = $v[2];
-                if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
-                    $param_list = $param_list.arguments;
-                }
-                elsif $param_list eq '*undef*' {
-                    $param_list = [];
-                }
-                else {
-                    $param_list = [ $param_list ];
-                }
+                my $param_list = expand_list($v[2]);
                 $v = Lit::Array.new( array1 => $param_list );
                 say "#     ", $v.perl;
                 return $v;
@@ -189,16 +165,7 @@ class MiniPerl6::Expression {
         }
         if $v[1] eq 'methcall' {
             say "#   Call ", ($v[2]).perl;
-            my $param_list = ($v[3]){'exp'};
-            if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
-                $param_list = $param_list.arguments;
-            }
-            elsif $param_list eq '*undef*' {
-                $param_list = [];
-            }
-            else {
-                $param_list = [ $param_list ];
-            }
+            my $param_list = expand_list(($v[3]){'exp'});
             $v = Call.new( invocant => $value, method => $v[2], arguments => $param_list, hyper => $v[4] );
             return $v;
         }
@@ -210,16 +177,7 @@ class MiniPerl6::Expression {
         }
         if $v[1] eq '( )' {
             say "#   Params ", ($v[2]).perl;
-            my $param_list = $v[2];
-            if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
-                $param_list = $param_list.arguments;
-            }
-            elsif $param_list eq '*undef*' {
-                $param_list = [];
-            }
-            else {
-                $param_list = [ $param_list ];
-            }
+            my $param_list = expand_list($v[2]);
             if $value.isa('Apply') && !(defined($value.arguments)) {
                 $value.arguments = $param_list;
                 return $value;
@@ -243,16 +201,7 @@ class MiniPerl6::Expression {
             return $v;
         }
         if $v[1] eq '.( )' {
-            my $param_list = $v[2];
-            if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
-                $param_list = $param_list.arguments;
-            }
-            elsif $param_list eq '*undef*' {
-                $param_list = [];
-            }
-            else {
-                $param_list = [ $param_list ];
-            }
+            my $param_list = expand_list($v[2]);
             $v = Call.new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list, hyper => 0 );
             return $v;
         }
