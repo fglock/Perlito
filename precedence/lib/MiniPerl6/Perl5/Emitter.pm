@@ -77,6 +77,9 @@ class Val::Object {
 class Lit::Block {
     has $.sig;
     has @.stmts;
+    method emit {
+        (@.stmts.>>emit).join('; ') 
+    }
 }
 
 class Lit::Array {
@@ -588,31 +591,11 @@ class Sub {
         my $sig = $.sig;
         my $pos = $sig.positional;
         my $str = '';
-
-        # my $str = 'my $List__ = \\@_; ';  
-        #
-        # # TODO - follow recursively
-        # for @$pos -> $field { 
-        #    if ( $field.isa('Lit::Array') ) {
-        #        $str = $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
-        #    }
-        #    else {
-        #        $str = $str ~ 'my ' ~ $field.emit ~ '; ';
-        #    };
-        # };
-        #
-        # my $bind = Bind.new( 
-        #    parameters => Lit::Array.new( array1 => $sig.positional ), 
-        #    arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
-        # );
-        # $str = $str ~ $bind.emit ~ '; ';
-
         my $i = 0;
         for @$pos -> $field { 
             $str = $str ~ 'my ' ~ $field.emit ~ ' = $_[' ~ $i ~ ']; ';
             $i = $i + 1;
         }
-
         'sub ' ~ $.name ~ ' { ' ~ 
           $str ~
           (@.block.>>emit).join('; ') ~ 
@@ -621,11 +604,9 @@ class Sub {
 }
 
 class Do {
-    has @.block;
+    has $.block;
     method emit {
-        'do { ' ~ 
-          (@.block.>>emit).join('; ') ~ 
-        ' }'
+        'do { ' ~ ($.block.emit) ~ ' }'
     }
 }
 

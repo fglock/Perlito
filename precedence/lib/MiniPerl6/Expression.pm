@@ -225,7 +225,17 @@ class MiniPerl6::Expression {
             return $v;
         }
         if $v[1] eq '.( )' {
-            $v = Call.new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $v[2], hyper => 0 );
+            my $param_list = $v[2];
+            if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
+                $param_list = $param_list.arguments;
+            }
+            elsif $param_list eq '*undef*' {
+                $param_list = [];
+            }
+            else {
+                $param_list = [ $param_list ];
+            }
+            $v = Call.new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list, hyper => 0 );
             return $v;
         }
         if $v[1] eq '.[ ]' {
@@ -551,6 +561,10 @@ class MiniPerl6::Expression {
         my $res = $prec.precedence_parse;
         $res = pop_term($res);
         say "# circumfix_parse return: ", $res.perl;
+        if !(defined($res)) {
+            # can't return undef in a capture (BUG in Match object?)
+            $res = '*undef*';
+        }
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
     }
