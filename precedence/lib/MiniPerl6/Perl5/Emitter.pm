@@ -484,7 +484,7 @@ class While {
     has $.init;
     has $.cond;
     has $.continue;
-    has @.body;
+    has $.body;
     method emit {
         my $cond = $.cond;
         if   $cond.isa( 'Var' ) 
@@ -497,15 +497,14 @@ class While {
         ~  ( $cond      ?? Perl5::to_bool($cond).emit ~ '; ' !! '; ' )
         ~  ( $.continue ?? $.continue.emit       ~ ' '  !! ' '  )
         ~  ') { ' 
-        ~       (@.body.>>emit).join('; ') 
+        ~       $.body.emit 
         ~ ' }'
     }
 }
 
 class For {
     has $.cond;
-    has @.body;
-    has @.topic;
+    has $.body;
     method emit {
         my $cond = $.cond;
         if   $cond.isa( 'Var' ) 
@@ -513,8 +512,8 @@ class For {
         {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        return  'for my ' ~ $.topic.emit ~ ' ( ' ~ $cond.emit ~ ' ) { ' 
-             ~   (@.body.>>emit).join(';') 
+        return  'for my ' ~ (($.body).sig).emit ~ ' ( ' ~ $cond.emit ~ ' ) { ' 
+             ~   $.body.emit 
              ~ ' }';
     }
 }

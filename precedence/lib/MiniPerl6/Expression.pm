@@ -72,6 +72,9 @@ class MiniPerl6::Expression {
                 if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
                     $param_list = $param_list.arguments;
                 }
+                elsif $param_list eq '*undef*' {
+                    $param_list = [];
+                }
                 else {
                     $param_list = [ $param_list ];
                 }
@@ -89,6 +92,9 @@ class MiniPerl6::Expression {
                 if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
                     $param_list = $param_list.arguments;
                 }
+                elsif $param_list eq '*undef*' {
+                    $param_list = [];
+                }
                 else {
                     $param_list = [ $param_list ];
                 }
@@ -102,6 +108,9 @@ class MiniPerl6::Expression {
                 if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
                     $param_list = $param_list.arguments;
                 }
+                elsif $param_list eq '*undef*' {
+                    $param_list = [];
+                }
                 else {
                     $param_list = [ $param_list ];
                 }
@@ -114,6 +123,9 @@ class MiniPerl6::Expression {
                 my $param_list = $v[2];
                 if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
                     $param_list = $param_list.arguments;
+                }
+                elsif $param_list eq '*undef*' {
+                    $param_list = [];
                 }
                 else {
                     $param_list = [ $param_list ];
@@ -181,6 +193,9 @@ class MiniPerl6::Expression {
             if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
                 $param_list = $param_list.arguments;
             }
+            elsif $param_list eq '*undef*' {
+                $param_list = [];
+            }
             else {
                 $param_list = [ $param_list ];
             }
@@ -198,6 +213,9 @@ class MiniPerl6::Expression {
             my $param_list = $v[2];
             if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
                 $param_list = $param_list.arguments;
+            }
+            elsif $param_list eq '*undef*' {
+                $param_list = [];
             }
             else {
                 $param_list = [ $param_list ];
