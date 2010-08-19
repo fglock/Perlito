@@ -27,7 +27,7 @@ class MiniPerl6::Expression {
         if ($stmt.code) eq 'list:<=>>' {
             # the argument is a single pair
             say "#  single pair -- is hash";
-            return Lit::Hash.new(hash1 => $stmt)
+            return Lit::Hash.new(hash1 => [ $stmt ])
         }
         if ($stmt.code) ne 'list:<,>' {
             say "#  not a list -- not hash";
@@ -41,7 +41,7 @@ class MiniPerl6::Expression {
         }
         if ($item.code) eq 'list:<=>>' {
             # the argument is a single pair
-            return Lit::Hash.new(hash1 => $stmt)
+            return Lit::Hash.new(hash1 => $stmt.arguments)
         }
         return $o;
     }
@@ -68,7 +68,14 @@ class MiniPerl6::Expression {
                     say "# pop_term: found end_block in Call";
                     $num_stack.unshift( ($v[3]){'end_block'} );
                 }
-                $v = Call.new( invocant => undef, method => $v[2], arguments => ($v[3]){'exp'}, hyper => $v[4] );
+                my $param_list = ($v[3]){'exp'};
+                if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
+                    $param_list = $param_list.arguments;
+                }
+                else {
+                    $param_list = [ $param_list ];
+                }
+                $v = Call.new( invocant => undef, method => $v[2], arguments => $param_list, hyper => $v[4] );
                 say "#     ", $v.perl;
                 return $v;
             }
@@ -78,7 +85,14 @@ class MiniPerl6::Expression {
                     say "# pop_term: found end_block in Apply";
                     $num_stack.unshift( ($v[4]){'end_block'} );
                 }
-                $v = Apply.new( code => $v[3], arguments => ($v[4]){'exp'}, namespace => $v[2] );
+                my $param_list = ($v[4]){'exp'};
+                if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
+                    $param_list = $param_list.arguments;
+                }
+                else {
+                    $param_list = [ $param_list ];
+                }
+                $v = Apply.new( code => $v[3], arguments => $param_list, namespace => $v[2] );
                 say "#     ", $v.perl;
                 return $v;
             }
@@ -156,7 +170,14 @@ class MiniPerl6::Expression {
         }
         if $v[1] eq 'methcall' {
             say "#   Call ", ($v[2]).perl;
-            $v = Call.new( invocant => $value, method => $v[2], arguments => ($v[3]){'exp'}, hyper => $v[4] );
+            my $param_list = ($v[3]){'exp'};
+            if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
+                $param_list = $param_list.arguments;
+            }
+            else {
+                $param_list = [ $param_list ];
+            }
+            $v = Call.new( invocant => $value, method => $v[2], arguments => $param_list, hyper => $v[4] );
             return $v;
         }
         if $v[1] eq 'funcall' {
