@@ -258,7 +258,10 @@ token args_sig {
     {
         # say ' invocant: ', ($$<var_invocant>).perl;
         # say ' positional: ', ($$<>).perl;
-        make Sig.new( invocant => $$<var_invocant>, positional => ($$<MiniPerl6::Expression.list_parse>){'exp'}, named => { } );
+        make Sig.new( 
+            invocant    => $$<var_invocant>, 
+            positional  => MiniPerl6::Expression::expand_list(($$<MiniPerl6::Expression.list_parse>){'exp'}), 
+            named       => { } );
     }
 }
 

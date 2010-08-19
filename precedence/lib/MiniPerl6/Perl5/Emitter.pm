@@ -427,6 +427,7 @@ class Apply {
  
         if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit).join(' == ')  ~ ')' };
         if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit).join(' != ')  ~ ')' };
+        if $code eq 'infix:<=>>' { return '('  ~ (@.arguments.>>emit).join(' => ')  ~ ')' };
 
         if $code eq 'ternary:<?? !!>' { 
             my $cond = @.arguments[0];
@@ -463,19 +464,11 @@ class If {
     has @.body;
     has @.otherwise;
     method emit {
-        my $cond = $.cond;
-
-        # if   $cond.isa( 'Apply' ) 
-        #   && $cond.code eq 'prefix:<!>' 
-        # {
-        #     my $if = If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
-        #     return $if.emit;
-        # }
-        return 'if (' ~ Perl5::to_bool($cond).emit ~ ') { ' 
-             ~   ((@.body.stmts).>>emit).join(';') 
+        return 'if (' ~ Perl5::to_bool($.cond).emit ~ ') { ' 
+             ~   ((@.body).emit) 
              ~ ' } ' 
              ~ 'else { ' 
-             ~   (@.otherwise.>>emit).join(';') 
+             ~   ((@.otherwise).emit) 
              ~ ' }';
     }
 }
