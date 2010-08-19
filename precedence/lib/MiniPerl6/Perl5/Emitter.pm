@@ -105,9 +105,7 @@ class Lit::Hash {
         my $fields = @.hash1;
         my $str = '';
         for @$fields -> $field { 
-            if defined($field) {
-                $str = $str ~ $field.emit ~ ',';
-            }
+            $str = $str ~ $field.emit ~ ',';
         }; 
         '{ ' ~ $str ~ ' }';
     }

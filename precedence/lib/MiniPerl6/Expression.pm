@@ -58,8 +58,10 @@ class MiniPerl6::Expression {
             return $o
         }
         if ($item.code) eq 'infix:<=>>' {
-            # the argument is a single pair
-            return Lit::Hash.new(hash1 => $stmt.arguments)
+            # the first argument is a pair
+            say "#  block: ", $o.perl;
+            say "#  hash with args: ", ( expand_list($stmt.arguments) ).perl;
+            return Lit::Hash.new(hash1 => expand_list(($stmt.arguments)[0]))
         }
         return $o;
     }
