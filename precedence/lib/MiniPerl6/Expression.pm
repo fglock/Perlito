@@ -98,7 +98,14 @@ class MiniPerl6::Expression {
             }
             if $v[1] eq '( )' {
                 say "#   Plain parentheses ", ($v[2]).perl;
-                $v = Apply.new( code => 'circumfix:<( )>', arguments => $v[2], namespace => '' );
+                my $param_list = $v[2];
+                if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
+                    $param_list = $param_list.arguments;
+                }
+                else {
+                    $param_list = [ $param_list ];
+                }
+                $v = Apply.new( code => 'circumfix:<( )>', arguments => $param_list, namespace => '' );
                 say "#     ", $v.perl;
                 return $v;
             }
@@ -188,15 +195,22 @@ class MiniPerl6::Expression {
         }
         if $v[1] eq '( )' {
             say "#   Params ", ($v[2]).perl;
+            my $param_list = $v[2];
+            if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
+                $param_list = $param_list.arguments;
+            }
+            else {
+                $param_list = [ $param_list ];
+            }
             if $value.isa('Apply') && !(defined($value.arguments)) {
-                $value.arguments = $v[2];
+                $value.arguments = $param_list;
                 return $value;
             }
             if $value.isa('Call') && !(defined($value.arguments)) {
-                $value.arguments = $v[2];
+                $value.arguments = $param_list;
                 return $value;
             }
-            $v = Call.new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $v[2], hyper => 0 );
+            $v = Call.new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list, hyper => 0 );
             return $v;
         }
         if $v[1] eq '[ ]' {
@@ -297,18 +311,29 @@ class MiniPerl6::Expression {
             }
             my $v2 = pop_term($num_stack);
             my $arg = [ pop_term($num_stack), $v2 ];
-            if ($arg[1]).isa('Hash')
-                && MiniPerl6::Precedence::is_assoc_type('chain', ($arg[1]){op} ) 
-            {
-                push $num_stack,
-                  {
-                    op    => ['infix', $last_op],
-                    val   => [ $arg[0] ],
-                    chain => $arg[1]
-                  };
-                return;
-            }
-            push $num_stack, { op => ['infix', $last_op], val => $arg };
+            say "# assoc chain: ", $arg.perl;
+
+            # TODO - create a special AST node for assoc chain?
+            # if ($arg[0]).isa('Apply')
+            #     && MiniPerl6::Precedence::is_assoc_type('chain', ($arg[1]){op} ) 
+            # {
+            #     push $num_stack,
+            #         Apply.new(
+            #             namespace => '',
+            #             code      => 'infix:<' ~ $last_op[1] ~ '>',
+            #             arguments => {
+            #                 val   => [ $arg[0] ],
+            #                 chain => $arg[1]
+            #             }
+            #         );
+            #     return;
+            # }
+            push $num_stack, 
+                    Apply.new(
+                        namespace => '',
+                        code      => 'infix:<' ~ $last_op[1] ~ '>',
+                        arguments => $arg
+                    );
         }
         elsif $last_op[0] eq 'ternary' {
             if ( $num_stack.elems < 2 ) {

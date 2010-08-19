@@ -404,7 +404,7 @@ class Apply {
         if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit).join(' ')     ~ ' || []}' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
 
-        if $code eq 'infix:<~>'  { return ''   ~ (@.arguments.>>emit).join(' . ')   ~ ''  };
+        if $code eq 'list:<~>'   { return ''   ~ (@.arguments.>>emit).join(' . ')   ~ ''  };
         if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit).join(' + ')   ~ ')' };
         if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit).join(' - ')   ~ ')' };
         if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit).join(' * ')   ~ ')' };
@@ -437,6 +437,13 @@ class Apply {
                  ' : ' ~ (@.arguments[2]).emit ~
                   ')' };
         
+        if $code eq 'circumfix:<( )>' {
+            return '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+        }
+        if $code eq 'infix:<=>' { 
+            return ( Bind.new( parameters => (@.arguments[0]), arguments => (@.arguments[1]) ) ).emit;
+        }
+
         $code ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
     }
 }
@@ -455,14 +462,14 @@ class If {
     method emit {
         my $cond = $.cond;
 
-        if   $cond.isa( 'Apply' ) 
-          && $cond.code eq 'prefix:<!>' 
-        {
-            my $if = If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
-            return $if.emit;
-        }
+        # if   $cond.isa( 'Apply' ) 
+        #   && $cond.code eq 'prefix:<!>' 
+        # {
+        #     my $if = If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
+        #     return $if.emit;
+        # }
         return 'if (' ~ Perl5::to_bool($cond).emit ~ ') { ' 
-             ~   (@.body.>>emit).join(';') 
+             ~   ((@.body.stmts).>>emit).join(';') 
              ~ ' } ' 
              ~ 'else { ' 
              ~   (@.otherwise.>>emit).join(';') 
