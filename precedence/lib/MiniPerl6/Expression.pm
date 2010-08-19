@@ -492,7 +492,7 @@ class MiniPerl6::Expression {
             return MiniPerl6::Match.new( 
                 'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
                 capture => {
-                    exp        => undef,
+                    exp        => '*undef*',
                     end_block  => undef,
                     terminated => undef } )
         }
