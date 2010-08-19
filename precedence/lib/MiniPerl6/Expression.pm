@@ -402,6 +402,14 @@ class MiniPerl6::Expression {
             { make [ 'postfix_or_term', 'funcall',            
                      ~$<MiniPerl6::Grammar.optional_namespace_before_ident>,
                      ~$<MiniPerl6::Grammar.ident>, $$<list_parse>  ] }
+          | <before '.'>
+            { my $namespace = ~$<MiniPerl6::Grammar.optional_namespace_before_ident>;
+              my $name      = ~$<MiniPerl6::Grammar.ident>;
+              if $namespace {
+                $name = $namespace ~ '::' ~ $name;
+              }
+              make [ 'term', Proto.new( name => $name )            ] 
+            }
           | { make [ 'postfix_or_term', 'funcall_no_params',  
                      ~$<MiniPerl6::Grammar.optional_namespace_before_ident>,
                      ~$<MiniPerl6::Grammar.ident>                  ] }
