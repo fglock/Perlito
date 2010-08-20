@@ -293,7 +293,7 @@ class MiniPerl6::Expression {
         }
         elsif MiniPerl6::Precedence::is_assoc_type('chain', $last_op[1]) {
             if $num_stack.elems < 2 {
-                die "Missing value after operator";
+                die("Missing value after operator " ~ $last_op[1]);
             }
             my $v2 = pop_term($num_stack);
             my $arg = [ pop_term($num_stack), $v2 ];
@@ -335,7 +335,7 @@ class MiniPerl6::Expression {
         }
         else {
             if ( $num_stack.elems < 2 ) {
-                die "Missing value after operator";
+                die("missing value after operator " ~ $last_op[1]);
             }
             my $v2 = pop_term($num_stack);
             push $num_stack,
@@ -514,13 +514,15 @@ class MiniPerl6::Expression {
         # if the expression terminates in a block, the block was pushed to num_stack
         my $block;
         if $res.elems > 1 {
-            $block = pop_term($res);
-            # say "# list exp terminated with a block: ", $block.perl;
+            $block = $res.pop; # pop_term($res);
+            $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
+            say "# list exp terminated with a block: ", $block.perl;
         }
         my $result = pop_term($res);
         if $res.elems > 0 {
-            $block = pop_term($res);
-            # say "# list exp terminated with a block (2): ", $block.perl;
+            $block = $res.pop; # pop_term($res);
+            $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
+            say "# list exp terminated with a block (2): ", $block.perl;
         }
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
@@ -621,13 +623,15 @@ class MiniPerl6::Expression {
         # if the expression terminates in a block, the block was pushed to num_stack
         my $block;
         if $res.elems > 1 {
-            $block = pop_term($res);
-            # say "# exp terminated with a block: ", $block.perl;
+            $block = $res.pop; # pop_term($res);
+            $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
+            say "# exp terminated with a block: ", $block.perl;
         }
         my $result = pop_term($res);
         if $res.elems > 0 {
-            $block = pop_term($res);
-            # say "# exp terminated with a block (2): ", $block.perl;
+            $block = $res.pop; # pop_term($res);
+            $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
+            say "# exp terminated with a block (2): ", $block.perl;
         }
         # say "# exp_parse result: ", $result.perl;
         return MiniPerl6::Match.new( 
