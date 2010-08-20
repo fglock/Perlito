@@ -399,6 +399,8 @@ class MiniPerl6::Expression {
         | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not'                       ] }
         | 'use' <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.full_ident>  [ - <MiniPerl6::Grammar.ident> ]?      
             { make [ 'term', Use.new( mod => $$<MiniPerl6::Grammar.full_ident> ) ] }
+        | [ 'class' | 'grammar' ] <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.grammar>       
+            { make [ 'term', $$<MiniPerl6::Grammar.grammar> ] }
         | <MiniPerl6::Grammar.declarator> <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.opt_type> <.MiniPerl6::Grammar.opt_ws> <MiniPerl6::Grammar.var_ident>   # my Int $variable
             { make [ 'term', Decl.new( decl => $$<MiniPerl6::Grammar.declarator>, type => $$<MiniPerl6::Grammar.opt_type>, var => $$<MiniPerl6::Grammar.var_ident> ) ] }
         | '.' <hyper_op> <MiniPerl6::Grammar.ident> 

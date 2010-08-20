@@ -6,9 +6,6 @@ use MiniPerl6::Expression;
 use MiniPerl6::Grammar::Regex;
 use MiniPerl6::Grammar::Control;
  
-my $Class_name;  # for diagnostic messages
-sub get_class_name { $Class_name } 
-
 token ident {
     [ <!before \d ><.word> | _ ]   [ <.word> | _ | <.digit> ]*
 }
@@ -62,9 +59,14 @@ token comp_unit {
     <.ws>? [ \; <.ws>? ]?
     [ 'use' <.ws> 'v6'  [ '-' <ident> ]?  <.ws>? \; <.ws>? ]?
     
-    [ 'class' | 'grammar' ]  <.ws> <full_ident> <.ws>? 
+    [ 'class' | 'grammar' ]  <.ws> <grammar>
+        { make $$<grammar> }
+}
+
+token grammar {
+    # [ 'class' | 'grammar' ]  <.ws>
+    <full_ident> <.ws>? 
     '{'
-        { $Class_name = ~$<full_ident> }
         <.ws>?
         <exp_stmts>
         <.ws>?
@@ -259,7 +261,7 @@ token method_def {
           <exp_stmts> 
           # { say ' got statement list ', ($$<exp_stmts>).perl } 
         <.opt_ws> 
-    [   \}     | { say '*** Syntax Error in method \'', get_class_name(), '.', $$<name>, '\' near pos=', $/.to; die 'error in Block'; } ]
+    [   \}     | { die 'Syntax Error in method \'.', $$<name>, '\' near pos=', $/.to; } ]
     {
         # say ' block: ', ($$<exp_stmts>).perl;
         make Method.new( name => $$<opt_name>, sig => $$<method_sig>, block => $$<exp_stmts> );
@@ -272,7 +274,7 @@ token sub_def {
     <method_sig>
     <.opt_ws> \{ <.opt_ws>  
           <exp_stmts> <.opt_ws> 
-    [   \}     | { say '*** Syntax Error in sub \'', $$<name>, '\''; die 'error in Block'; } ]
+    [   \}     | { die 'Syntax Error in sub \'', $$<name>, '\''; } ]
     { make Sub.new( name => $$<opt_name>, sig => $$<method_sig>, block => $$<exp_stmts> ) }
 }
 
