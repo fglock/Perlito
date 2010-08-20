@@ -5,6 +5,7 @@ class MiniPerl6::Expression {
     use MiniPerl6::Perl5::Emitter;
    
     sub expand_list ($param_list) {
+        # say "# expand_list: ", $param_list.perl;
         if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
             my $args = [];
             for @($param_list.arguments) -> $v {
@@ -23,45 +24,45 @@ class MiniPerl6::Expression {
     }
 
     sub block_or_hash ($o) {
-        say "# block_or_hash? ", $o.perl;
+        # say "# block_or_hash? ", $o.perl;
         if defined($o.sig) {
-            say "#  has sig -- not a block";
+            # say "#  has sig -- not a block";
             return $o
         }
         my $stmts = $o.stmts;
         if !(defined $stmts) {
-            say "#  no contents -- empty hash";
+            # say "#  no contents -- empty hash";
             return Lit::Hash.new(hash1 => [])
         }
         if ($stmts.elems) != 1 {
-            say "#  more statements -- not hash";
+            # say "#  more statements -- not hash";
             return $o
         }
         my $stmt = $stmts[0];
         if !($stmt.isa('Apply')) {
-            say "#  not Apply -- not hash";
+            # say "#  not Apply -- not hash";
             return $o
         }
         if ($stmt.code) eq 'infix:<=>>' {
             # the argument is a single pair
-            say "#  single pair -- is hash";
+            # say "#  single pair -- is hash";
             return Lit::Hash.new(hash1 => [ $stmt ])
         }
         if ($stmt.code) ne 'list:<,>' {
-            say "#  not a list -- not hash";
+            # say "#  not a list -- not hash";
             return $o
         }
         # the argument is a list -- check that the first item looks like a pair
         my $item = ($stmt.arguments)[0];
-        say "#  item: ", $item.perl;
+        # say "#  item: ", $item.perl;
         if !($item.isa('Apply')) {
             return $o
         }
         if ($item.code) eq 'infix:<=>>' {
             # the first argument is a pair
-            say "#  block: ", $o.perl;
-            say "#  hash with args: ", ( expand_list($stmt.arguments) ).perl;
-            return Lit::Hash.new(hash1 => expand_list(($stmt.arguments)[0]))
+            # say "#  block: ", $o.perl;
+            # say "#  hash with args: ", ( expand_list($stmt.arguments) ).perl;
+            return Lit::Hash.new(hash1 => expand_list($stmt))
         }
         return $o;
     }
@@ -69,85 +70,85 @@ class MiniPerl6::Expression {
     sub pop_term ($num_stack) {
         my $v = $num_stack.pop;
         if $v.isa('Array') {
-            say "# ** processing term ", $v.perl;
+            # say "# ** processing term ", $v.perl;
             if $v[1] eq 'methcall_no_params' {
-                say "#   Call ", ($v[2]).perl;
+                # say "#   Call ", ($v[2]).perl;
                 $v = Call.new( invocant => undef, method => $v[2], arguments => undef, hyper => $v[3] );
-                say "#     ", $v.perl;
+                # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'funcall_no_params' {
-                say "#   Apply ", ($v[2]).perl;
+                # say "#   Apply ", ($v[2]).perl;
                 $v = Apply.new( code => $v[3], arguments => undef, namespace => $v[2] );
-                say "#     ", $v.perl;
+                # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'methcall' {
-                say "#   Call ", ($v[2]).perl;
+                # say "#   Call ", ($v[2]).perl;
                 if ($v[3]){'end_block'} {
-                    say "# pop_term: found end_block in Call";
+                    # say "# pop_term: found end_block in Call";
                     $num_stack.unshift( ($v[3]){'end_block'} );
                 }
                 my $param_list = expand_list( ($v[3]){'exp'} );
                 $v = Call.new( invocant => undef, method => $v[2], arguments => $param_list, hyper => $v[4] );
-                say "#     ", $v.perl;
+                # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'funcall' {
-                say "#   Apply ", ($v[2]).perl;
+                # say "#   Apply ", ($v[2]).perl;
                 if ($v[4]){'end_block'} {
-                    say "# pop_term: found end_block in Apply";
+                    # say "# pop_term: found end_block in Apply";
                     $num_stack.unshift( ($v[4]){'end_block'} );
                 }
                 my $param_list = expand_list( ($v[4]){'exp'} );
                 $v = Apply.new( code => $v[3], arguments => $param_list, namespace => $v[2] );
-                say "#     ", $v.perl;
+                # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq '( )' {
-                say "#   Plain parentheses ", ($v[2]).perl;
+                # say "#   Plain parentheses ", ($v[2]).perl;
                 my $param_list = expand_list($v[2]);
                 $v = Apply.new( code => 'circumfix:<( )>', arguments => $param_list, namespace => '' );
-                say "#     ", $v.perl;
+                # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq '[ ]' {
-                say "#   Array ", ($v[2]).perl;
+                # say "#   Array ", ($v[2]).perl;
                 my $param_list = expand_list($v[2]);
                 $v = Lit::Array.new( array1 => $param_list );
-                say "#     ", $v.perl;
+                # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'block' {
-                say "#   Block, Hash, or Pair ", ($v[2]).perl;
+                # say "#   Block, Hash, or Pair ", ($v[2]).perl;
                 $v = Lit::Block.new( stmts => $v[2], sig => $v[3] );
                 $v = block_or_hash($v);
                 # TODO: $v = Lit::Hash.new( hash1 => $v[2] );
                 return $v;
             }
             if $v[1] eq '.( )' {
-                say "#   Params ", ($v[2]).perl;
-                say "#     v:     ", $v.perl;
+                # say "#   Params ", ($v[2]).perl;
+                # say "#     v:     ", $v.perl;
                 $v = Call.new( invocant => undef, method => 'postcircumfix:<( )>', arguments => $v[2], hyper => 0 );
                 return $v;
             }
             if $v[1] eq '.[ ]' {
-                say "#   Index ", ($v[2]).perl;
+                # say "#   Index ", ($v[2]).perl;
                 $v = Index.new( obj => undef, index_exp => $v[2] );
-                say "#     ", $v.perl;
+                # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq '.{ }' {
-                say "#   Lookup ", ($v[2]).perl;
+                # say "#   Lookup ", ($v[2]).perl;
                 $v = Lookup.new( obj => undef, index_exp => $v[2] );
-                say "#     ", $v.perl;
+                # say "#     ", $v.perl;
                 return $v;
             }
             if ($v[1]).isa('Array') && ((($v[1]).elems) == 2) {
-                say "#   old style Pair ", $v.perl;
+                # say "#   old style Pair ", $v.perl;
                 #   old style Pair - wrap it into a subroutine for now
                 $v = Apply.new( code => 'pair', arguments => $v[1], namespace => '' );
-                say "#     ", $v.perl;
+                # say "#     ", $v.perl;
                 return $v;
             }
             return $v[1];
@@ -157,34 +158,34 @@ class MiniPerl6::Expression {
 
     sub reduce_postfix ($op, $value) {
         my $v = $op;
-        say "# ** reduce_postfix ", $op.perl;
-        say "#      value: ", $value.perl;
-        say "#      v:     ", $v.perl;
+        # say "# ** reduce_postfix ", $op.perl;
+        # say "#      value: ", $value.perl;
+        # say "#      v:     ", $v.perl;
         if $v[1] eq 'methcall_no_params' {
-            say "#   Call ", ($v[2]).perl;
+            # say "#   Call ", ($v[2]).perl;
             $v = Call.new( invocant => $value, method => $v[2], arguments => undef, hyper => $v[3] );
             return $v;
         }
         if $v[1] eq 'funcall_no_params' {
             die "unexpected function call";
-            say "#   Apply ", ($v[2]).perl;
+            # say "#   Apply ", ($v[2]).perl;
             push $v, $value;
             return $v;
         }
         if $v[1] eq 'methcall' {
-            say "#   Call ", ($v[2]).perl;
+            # say "#   Call ", ($v[2]).perl;
             my $param_list = expand_list(($v[3]){'exp'});
             $v = Call.new( invocant => $value, method => $v[2], arguments => $param_list, hyper => $v[4] );
             return $v;
         }
         if $v[1] eq 'funcall' {
             die "unexpected function call";
-            say "#   Apply ", ($v[2]).perl;
+            # say "#   Apply ", ($v[2]).perl;
             push $v, $value;
             return $v;
         }
         if $v[1] eq '( )' {
-            say "#   Params ", ($v[2]).perl;
+            # say "#   Params ", ($v[2]).perl;
             my $param_list = expand_list($v[2]);
             if $value.isa('Apply') && !(defined($value.arguments)) {
                 $value.arguments = $param_list;
@@ -198,13 +199,13 @@ class MiniPerl6::Expression {
             return $v;
         }
         if $v[1] eq '[ ]' {
-            say "#   Index ", ($v[2]).perl;
+            # say "#   Index ", ($v[2]).perl;
             $v = Index.new( obj => $value, index_exp => $v[2] );
-            say "#     ", $v.perl;
+            # say "#     ", $v.perl;
             return $v;
         }
         if $v[1] eq 'block' {
-            say "#   Lookup (was Block)", ($v[2]).perl;
+            # say "#   Lookup (was Block)", ($v[2]).perl;
             $v = Lookup.new( obj => $value, index_exp => ($v[2])[0] );
             return $v;
         }
@@ -227,9 +228,9 @@ class MiniPerl6::Expression {
 
     my $reduce_to_ast = sub ($op_stack, $num_stack) {
         my $last_op = $op_stack.shift;
-        say "# reduce_to_ast ";
-        say "#     last_op: ", $last_op.perl;
-        say "#   num_stack: ", $num_stack;
+        # say "# reduce_to_ast ";
+        # say "#     last_op: ", $last_op.perl;
+        # say "#   num_stack: ", $num_stack;
         if $last_op[0] eq 'prefix' {
             push $num_stack,
                 Apply.new(
@@ -296,7 +297,7 @@ class MiniPerl6::Expression {
             }
             my $v2 = pop_term($num_stack);
             my $arg = [ pop_term($num_stack), $v2 ];
-            say "# assoc chain: ", $arg.perl;
+            # say "# assoc chain: ", $arg.perl;
 
             # TODO - create a special AST node for assoc chain?
             # if ($arg[0]).isa('Apply')
@@ -436,7 +437,7 @@ class MiniPerl6::Expression {
     }
 
     method list_parse ($str, $pos) {
-        say "# list_parse: input ",$str," at ",$pos;
+        # say "# list_parse: input ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $is_first_token = True;
@@ -450,13 +451,13 @@ class MiniPerl6::Expression {
                     && ($v[0] eq 'op')
                     && !(MiniPerl6::Precedence::is_fixity_type('prefix', $v[1]))
                 {
-                    say "# finishing list - first token is: ", $v[1];
+                    # say "# finishing list - first token is: ", $v[1];
                     $v[0] = 'end';
                 }
             }
             else {
                 my $m = self.operator($str, $last_pos);
-                say "# list lexer got: " ~ $m.perl;
+                # say "# list lexer got: " ~ $m.perl;
                 if !$m {
                     return [ 'end', '*end*' ];
                 }
@@ -465,17 +466,17 @@ class MiniPerl6::Expression {
                     && ($v[0] eq 'op')
                     && !(MiniPerl6::Precedence::is_fixity_type('prefix', $v[1]))
                 {
-                    say "# finishing list - first token is: ", $v[1];
+                    # say "# finishing list - first token is: ", $v[1];
                     $v[0] = 'end';
                 }
                 if $v[0] ne 'end' {
                     $last_pos = $m.to;
                 }
             }
-            say "# list_lexer got " ~ $v.perl;
+            # say "# list_lexer got " ~ $v.perl;
 
             $is_first_token = False;   
-            say "# list_lexer " ~ $v.perl;
+            # say "# list_lexer " ~ $v.perl;
 
             if (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') {
                 if self.has_newline_after($str, $last_pos) {
@@ -495,7 +496,7 @@ class MiniPerl6::Expression {
         my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
             end_token => [ 'and', 'or', '!!', ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
         my $res = $prec.precedence_parse;
-        say "# list_lexer return: ", $res.perl;
+        # say "# list_lexer return: ", $res.perl;
         if $res.elems == 0 {
             return MiniPerl6::Match.new( 
                 'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
@@ -508,12 +509,12 @@ class MiniPerl6::Expression {
         my $block;
         if $res.elems > 1 {
             $block = pop_term($res);
-            say "# list exp terminated with a block: ", $block.perl;
+            # say "# list exp terminated with a block: ", $block.perl;
         }
         my $result = pop_term($res);
         if $res.elems > 0 {
             $block = pop_term($res);
-            say "# list exp terminated with a block (2): ", $block.perl;
+            # say "# list exp terminated with a block (2): ", $block.perl;
         }
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
@@ -524,7 +525,7 @@ class MiniPerl6::Expression {
     }
 
     method circumfix_parse ($str, $pos, $delimiter) {
-        say "# circumfix_parse input: ",$str," at ",$pos;
+        # say "# circumfix_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
@@ -536,14 +537,14 @@ class MiniPerl6::Expression {
             if $v[0] ne 'end' {
                 $last_pos = $m.to;
             }
-            say "# circumfix_lexer " ~ $v.perl;
+            # say "# circumfix_lexer " ~ $v.perl;
             return $v;
         };
         my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
             end_token => $delimiter );
         my $res = $prec.precedence_parse;
         $res = pop_term($res);
-        say "# circumfix_parse return: ", $res.perl;
+        # say "# circumfix_parse return: ", $res.perl;
         if !(defined($res)) {
             # can't return undef in a capture (BUG in Match object?)
             $res = '*undef*';
@@ -566,7 +567,7 @@ class MiniPerl6::Expression {
     }
 
     method exp_parse ($str, $pos) {
-        say "# exp_parse input: ",$str," at ",$pos;
+        # say "# exp_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $lexer_stack = [];
@@ -578,7 +579,7 @@ class MiniPerl6::Expression {
             }
             else {
                 my $m = self.operator($str, $last_pos);
-                say "# exp lexer got: " ~ $m.perl;
+                # say "# exp lexer got: " ~ $m.perl;
                 if !$m {
                     return [ 'end', '*end*' ];
                 }
@@ -587,7 +588,7 @@ class MiniPerl6::Expression {
                     $last_pos = $m.to;
                 }
             }
-            say "# exp_lexer got " ~ $v.perl;
+            # say "# exp_lexer got " ~ $v.perl;
 
             if     ( (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') )
                 || ( (($v[0]) eq 'term') && (($v[1]).isa('Sub')) )
@@ -606,23 +607,23 @@ class MiniPerl6::Expression {
         my $prec = MiniPerl6::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast, 
             end_token => [ ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
         my $res = $prec.precedence_parse;
-        say "# exp terminated";
+        # say "# exp terminated";
         if $res.elems == 0 {
-            say "# exp terminated with false";
+            # say "# exp terminated with false";
             return MiniPerl6::Match.new(bool => 0);
         }
         # if the expression terminates in a block, the block was pushed to num_stack
         my $block;
         if $res.elems > 1 {
             $block = pop_term($res);
-            say "# exp terminated with a block: ", $block.perl;
+            # say "# exp terminated with a block: ", $block.perl;
         }
         my $result = pop_term($res);
         if $res.elems > 0 {
             $block = pop_term($res);
-            say "# exp terminated with a block (2): ", $block.perl;
+            # say "# exp terminated with a block (2): ", $block.perl;
         }
-        say "# exp_parse result: ", $result.perl;
+        # say "# exp_parse result: ", $result.perl;
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
             capture => {
@@ -645,38 +646,38 @@ class MiniPerl6::Expression {
     }
 
     method statement_parse ($str, $pos) {
-        say "# statement_parse input: ",$str," at ",$pos;
+        # say "# statement_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $lexer_stack = [];
         my $res = self.exp_stmt($str, $pos);
         if $res {
-            say "# statement result: ", $res.perl;
+            # say "# statement result: ", $res.perl;
             return $res;
         }
         $res = self.exp_parse($str, $pos);
         if !($res) {
-            say "# not a statement or expression";
+            # say "# not a statement or expression";
             return $res;
         }
         if ($$res){'end_block'} {
             die "Unexpected block after expression";
         }
         if ($$res){'terminated'} {
-            say "# statement expression terminated result: ", $res.perl;
+            # say "# statement expression terminated result: ", $res.perl;
             $res.capture = ($$res){'exp'};
             return $res;
         }
-        say "# look for a statement modifier";
+        # say "# look for a statement modifier";
         my $modifier = self.statement_modifier($str, $res.to);
         if !($modifier) {
-            say "# statement expression no modifier result: ", $res.perl;
+            # say "# statement expression no modifier result: ", $res.perl;
             # TODO - require a statement terminator 
             $res.capture = ($$res){'exp'};
             return $res;
         }
         my $modifier_exp = self.exp_parse($str, $modifier.to);
-        say "# statement modifier [", $modifier, "] exp: ", $modifier_exp.perl;
+        # say "# statement modifier [", $modifier, "] exp: ", $modifier_exp.perl;
         if !($modifier_exp) {
             die "Expected expression after '", $modifier, "'";
         }
@@ -684,7 +685,7 @@ class MiniPerl6::Expression {
             die "Unexpected block after expression";
         }
         # TODO - require a statement terminator 
-        say "# statement_parse modifier result: ", $modifier_exp.perl;
+        # say "# statement_parse modifier result: ", $modifier_exp.perl;
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
             capture => {
