@@ -61,14 +61,6 @@ class Val::Buf {
     method emit { '\'' ~ Main::perl_escape_string($.buf) ~ '\'' }
 }
 
-class Val::Object {
-    has $.class;
-    has %.fields;
-    method emit {
-        'bless(' ~ %.fields.perl ~ ', ' ~ $.class.perl ~ ')';
-    }
-}
-
 class Lit::Block {
     has $.sig;
     has @.stmts;
@@ -103,25 +95,6 @@ class Lit::Hash {
             $str = $str ~ $field.emit ~ ',';
         }; 
         '{ ' ~ $str ~ ' }';
-    }
-}
-
-class Lit::Code {
-    # XXX
-}
-
-class Lit::Object {
-    has $.class;
-    has @.fields;
-    method emit {
-        # $.class ~ '->new( ' ~ @.fields.>>emit.join(', ') ~ ' )';
-        my $fields = @.fields;
-        my $str = '';
-        # say @fields.map(sub { $_[0].emit ~ ' => ' ~ $_[1].emit}).join(', ') ~ ')';
-        for @$fields -> $field { 
-            $str = $str ~ ($field[0]).emit ~ ' => ' ~ ($field[1]).emit ~ ',';
-        }; 
-        $.class ~ '->new( ' ~ $str ~ ' )';
     }
 }
 
@@ -412,27 +385,6 @@ class Apply {
             return $str ~ $parameters.emit ~ ' }';
         }
 
-        if $parameters.isa( 'Lit::Object' ) {
-
-            #  Obj.new(:$a, :$b) = $obj
-
-            my $class = $parameters.class;
-            my $a     = $parameters.fields;
-            my $b     = $arguments;
-            my $str   = 'do { ';
-            my $i     = 0;
-            my $arg;
-            for @$a -> $var {
-                $str = $str ~ ' ' 
-                    ~ emit_bind( $var[1], 
-                            Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
-                        ) 
-                    ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $parameters.emit ~ ' }';
-        }
-    
         '(' ~ $parameters.emit ~ ' = ' ~ $arguments.emit ~ ')';
     }
 }

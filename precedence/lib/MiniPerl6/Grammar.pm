@@ -211,27 +211,6 @@ token exp_stmts {
     | { make [] }
 }
 
-token lit {
-    <lit_object> { make $$<lit_object> }  # Tree.new(a => x, b => y);
-}
-
-token lit_object {
-    '::'
-    <full_ident>
-    \( 
-    [
-        <.opt_ws> <exp_mapping> <.opt_ws> \)
-        {
-            # say 'Parsing Lit::Object ', $$<full_ident>, ($$<exp_mapping>).perl;
-            make Lit::Object.new(
-                class  => $$<full_ident>,
-                fields => $$<exp_mapping>
-            )
-        }
-    | { say '*** Syntax Error parsing Constructor'; die() }
-    ]
-}
-
 token opt_name {  <ident>?  }
 
 token var_invocant {
