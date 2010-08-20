@@ -30,7 +30,7 @@ class MiniPerl6::Expression {
             return $o
         }
         my $stmts = $o.stmts;
-        if !(defined $stmts) {
+        if (!(defined $stmts)) || (($stmts.elems) == 0) {
             # say "#  no contents -- empty hash";
             return Lit::Hash.new(hash1 => [])
         }
