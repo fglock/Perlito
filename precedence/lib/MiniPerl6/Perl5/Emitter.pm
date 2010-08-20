@@ -22,18 +22,18 @@ class Perl5 {
 class CompUnit {
     has $.name;
     has @.body;
-    method emit {
+    method emit_perl5 {
           "{\n"
         ~ 'package ' ~ $.name ~ ";" ~ "\n" 
         ~ 'sub new { shift; bless { @_ }, "' ~ $.name ~ '" }'  ~ "\n" 
-        ~ (@.body.>>emit).join( ";" ~ "\n" ) ~ "\n"
+        ~ (@.body.>>emit_perl5).join( ";" ~ "\n" ) ~ "\n"
         ~ "}\n"
         ~ "\n"
     }
     sub emit_perl5_program( $comp_units ) {
         my $str = '';
         for @($comp_units) -> $comp_unit {
-            $str = $str ~ $comp_unit.emit
+            $str = $str ~ $comp_unit.emit_perl5
         }
         return $str;
     }
@@ -41,43 +41,43 @@ class CompUnit {
 
 class Val::Int {
     has $.int;
-    method emit { $.int }
+    method emit_perl5 { $.int }
 }
 
 class Val::Bit {
     has $.bit;
-    method emit { $.bit }
+    method emit_perl5 { $.bit }
 }
 
 class Val::Num {
     has $.num;
-    method emit { $.num }
+    method emit_perl5 { $.num }
 }
 
 class Val::Buf {
     has $.buf;
-    method emit { '\'' ~ Main::perl_escape_string($.buf) ~ '\'' }
+    method emit_perl5 { '\'' ~ Main::perl_escape_string($.buf) ~ '\'' }
 }
 
 class Lit::Block {
     has $.sig;
     has @.stmts;
-    method emit {
-        (@.stmts.>>emit).join('; ') 
+    method emit_perl5 {
+        (@.stmts.>>emit_perl5).join('; ') 
     }
 }
 
 class Lit::Array {
     has @.array1;
-    method emit {
+    method emit_perl5 {
         my @s;
         for @.array1 -> $item {
             if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
             {
-                push @s, '@{' ~ $item.emit ~ '}';
+                push @s, '@{' ~ $item.emit_perl5 ~ '}';
             }
             else {
-                push @s, $item.emit;
+                push @s, $item.emit_perl5;
             }
         }
         '[' ~ @s.join(', ') ~ ']';
@@ -86,11 +86,11 @@ class Lit::Array {
 
 class Lit::Hash {
     has @.hash1;
-    method emit {
+    method emit_perl5 {
         my $fields = @.hash1;
         my $str = '';
         for @$fields -> $field { 
-            $str = $str ~ $field.emit ~ ',';
+            $str = $str ~ $field.emit_perl5 ~ ',';
         }; 
         '{ ' ~ $str ~ ' }';
     }
@@ -99,16 +99,16 @@ class Lit::Hash {
 class Index {
     has $.obj;
     has $.index_exp;
-    method emit {
-        $.obj.emit ~ '->[' ~ $.index_exp.emit ~ ']';
+    method emit_perl5 {
+        $.obj.emit_perl5 ~ '->[' ~ $.index_exp.emit_perl5 ~ ']';
     }
 }
 
 class Lookup {
     has $.obj;
     has $.index_exp;
-    method emit {
-        $.obj.emit ~ '->{' ~ $.index_exp.emit ~ '}';
+    method emit_perl5 {
+        $.obj.emit_perl5 ~ '->{' ~ $.index_exp.emit_perl5 ~ '}';
     }
 }
 
@@ -117,7 +117,7 @@ class Var {
     has $.twigil;
     has $.namespace;
     has $.name;
-    method emit {
+    method emit_perl5 {
         # Normalize the sigil here into $
         # $x    => $x
         # @x    => $List_x
@@ -156,7 +156,7 @@ class Var {
 
 class Proto {
     has $.name;
-    method emit {
+    method emit_perl5 {
         ~$.name        
     }
 }
@@ -166,8 +166,8 @@ class Call {
     has $.hyper;
     has $.method;
     has @.arguments;
-    method emit {
-        my $invocant = $.invocant.emit;
+    method emit_perl5 {
+        my $invocant = $.invocant.emit_perl5;
         if $invocant eq 'self' {
             $invocant = '$self';
         }
@@ -202,18 +202,18 @@ class Call {
         { 
             if ($.hyper) {
                 return 
-                    '[ map { Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit).join(', ') ~ ')' ~ ' } @{ ' ~ $invocant ~ ' } ]';
+                    '[ map { Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' ~ ' } @{ ' ~ $invocant ~ ' } ]';
             }
             else {
                 return
-                    'Main::' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit).join(', ') ~ ')';
+                    'Main::' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
             }
         };
         if $.method eq 'push' { 
-            return 'push( @{' ~ $invocant ~ '}, '~ (@.arguments.>>emit).join(', ') ~ ' )' 
+            return 'push( @{' ~ $invocant ~ '}, '~ (@.arguments.>>emit_perl5).join(', ') ~ ' )' 
         }
         if $.method eq 'unshift' { 
-            return 'unshift( @{' ~ $invocant ~ '}, '~ (@.arguments.>>emit).join(', ') ~ ' )' 
+            return 'unshift( @{' ~ $invocant ~ '}, '~ (@.arguments.>>emit_perl5).join(', ') ~ ' )' 
         }
         if $.method eq 'pop' { 
             return 'pop( @{' ~ $invocant ~ '} )' 
@@ -230,7 +230,7 @@ class Call {
              $meth = '';  
         }
         
-        my $call = '->' ~ $meth ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+        my $call = '->' ~ $meth ~ '(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
         if ($.hyper) {
             if !(  $.invocant.isa( 'Apply' )
                 && $.invocant.code eq 'prefix:<@>' )
@@ -249,7 +249,7 @@ class Apply {
     has $.code;
     has @.arguments;
     has $.namespace;
-    method emit {
+    method emit_perl5 {
         my $ns = '';
         if $.namespace {
             $ns = $.namespace ~ '::';
@@ -258,57 +258,57 @@ class Apply {
 
         if $code.isa( 'Str' ) { }
         else {
-            return '(' ~ $.code.emit ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+            return '(' ~ $.code.emit_perl5 ~ ')->(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
         }
 
         if $code eq 'self'       { return '$self' };
         if $code eq 'False'      { return '0' };
         if $code eq 'True'       { return '1' };
 
-        if $code eq 'make'       { return '($MATCH->{capture} = ('   ~ (@.arguments.>>emit).join(', ') ~ '))' };
+        if $code eq 'make'       { return '($MATCH->{capture} = ('   ~ (@.arguments.>>emit_perl5).join(', ') ~ '))' };
 
-        if $code eq 'say'        { return 'Main::say('   ~ (@.arguments.>>emit).join(', ') ~ ')' };
-        if $code eq 'print'      { return 'Main::print(' ~ (@.arguments.>>emit).join(', ') ~ ')' };
-        if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>emit).join(', ') ~ ')' };
+        if $code eq 'say'        { return 'Main::say('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' };
+        if $code eq 'print'      { return 'Main::print(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' };
+        if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' };
 
-        if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
-        if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>emit).join(' ')  ~ '} )' };
-        if $code eq 'push'       { return 'push( @{' ~ (@.arguments[0]).emit ~ '}, ' ~ (@.arguments[1]).emit ~ ' )' };
-        if $code eq 'shift'      { return 'shift( @{' ~ (@.arguments.>>emit).join(' ')    ~ '} )' };
+        if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' };
+        if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>emit_perl5).join(' ')  ~ '} )' };
+        if $code eq 'push'       { return 'push( @{' ~ (@.arguments[0]).emit_perl5 ~ '}, ' ~ (@.arguments[1]).emit_perl5 ~ ' )' };
+        if $code eq 'shift'      { return 'shift( @{' ~ (@.arguments.>>emit_perl5).join(' ')    ~ '} )' };
 
-        if $code eq 'Int'        { return '(0+' ~ (@.arguments[0]).emit             ~ ')' };
-        if $code eq 'Num'        { return '(0+' ~ (@.arguments[0]).emit             ~ ')' };
-        if $code eq 'bool'       { return 'Main::bool('   ~ (@.arguments.>>emit).join(', ') ~ ')' };
+        if $code eq 'Int'        { return '(0+' ~ (@.arguments[0]).emit_perl5             ~ ')' };
+        if $code eq 'Num'        { return '(0+' ~ (@.arguments[0]).emit_perl5             ~ ')' };
+        if $code eq 'bool'       { return 'Main::bool('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' };
 
-        if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit).join(' ') ~ ')' };
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit).join(' ')     ~ ' ? 0 : 1)' };
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit).join(' ')     ~ ' ? 1 : 0)' };
+        if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' };
+        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' ? 0 : 1)' };
+        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' ? 1 : 0)' };
 
-        if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
-        if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit).join(' ')     ~ ' || []}' };
-        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit).join(' ')     ~ '}' };
+        if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' };
+        if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' || []}' };
+        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' };
 
-        if $code eq 'list:<~>'   { return ''   ~ (@.arguments.>>emit).join(' . ')   ~ ''  };
-        if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit).join(' + ')   ~ ')' };
-        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit).join(' - ')   ~ ')' };
-        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit).join(' * ')   ~ ')' };
-        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit).join(' / ')   ~ ')' };
-        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit).join(' > ')   ~ ')' };
-        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit).join(' < ')   ~ ')' };
-        if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit).join(' >= ')  ~ ')' };
-        if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit).join(' <= ')  ~ ')' };
-        if $code eq 'infix:<x>'  { return '('  ~ (@.arguments.>>emit).join(' x ')   ~ ')' };
+        if $code eq 'list:<~>'   { return ''   ~ (@.arguments.>>emit_perl5).join(' . ')   ~ ''  };
+        if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' + ')   ~ ')' };
+        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_perl5).join(' - ')   ~ ')' };
+        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' * ')   ~ ')' };
+        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' / ')   ~ ')' };
+        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' > ')   ~ ')' };
+        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' < ')   ~ ')' };
+        if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_perl5).join(' >= ')  ~ ')' };
+        if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_perl5).join(' <= ')  ~ ')' };
+        if $code eq 'infix:<x>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' x ')   ~ ')' };
         
-        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit).join(' && ')  ~ ')' };
-        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit).join(' || ')  ~ ')' };
-        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit).join(' eq ')  ~ ')' };
-        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit).join(' ne ')  ~ ')' };
-        if $code eq 'infix:<le>' { return '('  ~ (@.arguments.>>emit).join(' le ')  ~ ')' };
-        if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit).join(' ge ')  ~ ')' };
+        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit_perl5).join(' && ')  ~ ')' };
+        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit_perl5).join(' || ')  ~ ')' };
+        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_perl5).join(' eq ')  ~ ')' };
+        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ne ')  ~ ')' };
+        if $code eq 'infix:<le>' { return '('  ~ (@.arguments.>>emit_perl5).join(' le ')  ~ ')' };
+        if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ge ')  ~ ')' };
  
-        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit).join(' == ')  ~ ')' };
-        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit).join(' != ')  ~ ')' };
-        if $code eq 'infix:<=>>' { return '('  ~ (@.arguments.>>emit).join(' => ')  ~ ')' };
+        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_perl5).join(' == ')  ~ ')' };
+        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_perl5).join(' != ')  ~ ')' };
+        if $code eq 'infix:<=>>' { return '('  ~ (@.arguments.>>emit_perl5).join(' => ')  ~ ')' };
 
         if $code eq 'ternary:<?? !!>' { 
             my $cond = @.arguments[0];
@@ -317,19 +317,19 @@ class Apply {
             {
                 $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
             }
-            return '(' ~ Perl5::to_bool($cond).emit ~
-                 ' ? ' ~ (@.arguments[1]).emit ~
-                 ' : ' ~ (@.arguments[2]).emit ~
+            return '(' ~ Perl5::to_bool($cond).emit_perl5 ~
+                 ' ? ' ~ (@.arguments[1]).emit_perl5 ~
+                 ' : ' ~ (@.arguments[2]).emit_perl5 ~
                   ')' };
         
         if $code eq 'circumfix:<( )>' {
-            return '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+            return '(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
         }
         if $code eq 'infix:<=>' { 
             return emit_bind( @.arguments[0], @.arguments[1] );
         }
 
-        $code ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+        $code ~ '(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
     }
 
     sub emit_bind ($parameters, $arguments) {
@@ -338,7 +338,7 @@ class Apply {
             # $obj.a = 3
 
             my $a = $parameters;
-            return '((' ~ ($a.invocant).emit ~ ')->{' ~ $a.method ~ '} = ' ~ $arguments.emit ~ ')';
+            return '((' ~ ($a.invocant).emit_perl5 ~ ')->{' ~ $a.method ~ '} = ' ~ $arguments.emit_perl5 ~ ')';
         }
 
         if $parameters.isa( 'Lit::Array' ) {
@@ -359,7 +359,7 @@ class Apply {
                     ~ '; ';
                 $i = $i + 1;
             };
-            return $str ~ $parameters.emit ~ ' }';
+            return $str ~ $parameters.emit_perl5 ~ ' }';
         }
         if $parameters.isa( 'Lit::Hash' ) {
 
@@ -380,10 +380,10 @@ class Apply {
                 $str = $str ~ ' ' ~ emit_bind( $var[1], $arg ) ~ '; ';
                 $i = $i + 1;
             }
-            return $str ~ $parameters.emit ~ ' }';
+            return $str ~ $parameters.emit_perl5 ~ ' }';
         }
 
-        '(' ~ $parameters.emit ~ ' = ' ~ $arguments.emit ~ ')';
+        '(' ~ $parameters.emit_perl5 ~ ' = ' ~ $arguments.emit_perl5 ~ ')';
     }
 }
 
@@ -391,13 +391,13 @@ class If {
     has $.cond;
     has $.body;
     has $.otherwise;
-    method emit {
-        return 'if (' ~ Perl5::to_bool($.cond).emit ~ ') { ' 
-             ~   (($.body).emit) 
+    method emit_perl5 {
+        return 'if (' ~ Perl5::to_bool($.cond).emit_perl5 ~ ') { ' 
+             ~   (($.body).emit_perl5) 
              ~ ' } ' 
              ~  ($.otherwise 
                 ??  ( 'else { ' 
-                    ~   (($.otherwise).emit) 
+                    ~   (($.otherwise).emit_perl5) 
                     ~ ' }'
                     )
                 !! '' 
@@ -410,7 +410,7 @@ class While {
     has $.cond;
     has $.continue;
     has $.body;
-    method emit {
+    method emit_perl5 {
         my $cond = $.cond;
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
@@ -418,11 +418,11 @@ class While {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
            'for ( '
-        ~  ( $.init     ?? $.init.emit           ~ '; ' !! '; ' )
-        ~  ( $cond      ?? Perl5::to_bool($cond).emit ~ '; ' !! '; ' )
-        ~  ( $.continue ?? $.continue.emit       ~ ' '  !! ' '  )
+        ~  ( $.init     ?? $.init.emit_perl5           ~ '; ' !! '; ' )
+        ~  ( $cond      ?? Perl5::to_bool($cond).emit_perl5 ~ '; ' !! '; ' )
+        ~  ( $.continue ?? $.continue.emit_perl5       ~ ' '  !! ' '  )
         ~  ') { ' 
-        ~       $.body.emit 
+        ~       $.body.emit_perl5 
         ~ ' }'
     }
 }
@@ -430,15 +430,15 @@ class While {
 class For {
     has $.cond;
     has $.body;
-    method emit {
+    method emit_perl5 {
         my $cond = $.cond;
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        return  'for my ' ~ (($.body).sig).emit ~ ' ( ' ~ $cond.emit ~ ' ) { ' 
-             ~   $.body.emit 
+        return  'for my ' ~ (($.body).sig).emit_perl5 ~ ' ( ' ~ $cond.emit_perl5 ~ ' ) { ' 
+             ~   $.body.emit_perl5 
              ~ ' }';
     }
 }
@@ -447,12 +447,12 @@ class Decl {
     has $.decl;
     has $.type;
     has $.var;
-    method emit {
+    method emit_perl5 {
         my $decl = $.decl;
         my $name = $.var.plain_name;
            ( $decl eq 'has' )
         ?? ( 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} }' )
-        !! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit;
+        !! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_perl5;
     }
 }
 
@@ -460,7 +460,7 @@ class Sig {
     has $.invocant;
     has $.positional;
     has $.named;
-    method emit {
+    method emit_perl5 {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
 }
@@ -469,7 +469,7 @@ class Method {
     has $.name;
     has $.sig;
     has @.block;
-    method emit {
+    method emit_perl5 {
         my $sig = $.sig;
         my $invocant = $sig.invocant; 
         my $pos = $sig.positional;
@@ -477,14 +477,14 @@ class Method {
 
         my $i = 1;
         for @$pos -> $field { 
-            $str = $str ~ 'my ' ~ $field.emit ~ ' = $_[' ~ $i ~ ']; ';
+            $str = $str ~ 'my ' ~ $field.emit_perl5 ~ ' = $_[' ~ $i ~ ']; ';
             $i = $i + 1;
         }
 
         'sub ' ~ $.name ~ ' { ' ~ 
-          'my ' ~ $invocant.emit ~ ' = $_[0]; ' ~
+          'my ' ~ $invocant.emit_perl5 ~ ' = $_[0]; ' ~
           $str ~
-          (@.block.>>emit).join('; ') ~ 
+          (@.block.>>emit_perl5).join('; ') ~ 
         ' }'
     }
 }
@@ -493,32 +493,32 @@ class Sub {
     has $.name;
     has $.sig;
     has @.block;
-    method emit {
+    method emit_perl5 {
         my $sig = $.sig;
         my $pos = $sig.positional;
         my $str = '';
         my $i = 0;
         for @$pos -> $field { 
-            $str = $str ~ 'my ' ~ $field.emit ~ ' = $_[' ~ $i ~ ']; ';
+            $str = $str ~ 'my ' ~ $field.emit_perl5 ~ ' = $_[' ~ $i ~ ']; ';
             $i = $i + 1;
         }
         'sub ' ~ $.name ~ ' { ' ~ 
           $str ~
-          (@.block.>>emit).join('; ') ~ 
+          (@.block.>>emit_perl5).join('; ') ~ 
         ' }'
     }
 }
 
 class Do {
     has $.block;
-    method emit {
-        'do { ' ~ ($.block.emit) ~ ' }'
+    method emit_perl5 {
+        'do { ' ~ ($.block.emit_perl5) ~ ' }'
     }
 }
 
 class Use {
     has $.mod;
-    method emit {
+    method emit_perl5 {
         'use ' ~ $.mod
     }
 }
@@ -531,7 +531,7 @@ MiniPerl6::Perl5::Emit - Code generator for MiniPerl6-in-Perl5
 
 =head1 SYNOPSIS
 
-    $program.emit  # generated Perl5 code
+    $program.emit_perl5  # generated Perl5 code
 
 =head1 DESCRIPTION
 
