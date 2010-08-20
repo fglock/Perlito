@@ -58,7 +58,6 @@ token parse {
 token comp_unit {
     <.ws>? [ \; <.ws>? ]?
     [ 'use' <.ws> 'v6'  [ '-' <ident> ]?  <.ws>? \; <.ws>? ]?
-    
     [ 'class' | 'grammar' ]  <.ws> <grammar>
         { make $$<grammar> }
 }
@@ -126,13 +125,6 @@ token var_ident {
             name        => ~$<var_name>,
         )
     }
-}
-
-token val {
-    | <val_num>    { make $$<val_num>   }  # 123.456
-    | <val_int>    { make $$<val_int>   }  # 123
-    | <val_bit>    { make $$<val_bit>   }  # True, False
-    | <val_buf>    { make $$<val_buf>   }  # 'moose'
 }
 
 token val_bit {

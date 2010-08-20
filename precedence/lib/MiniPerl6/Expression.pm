@@ -425,7 +425,11 @@ class MiniPerl6::Expression {
                      ~$<MiniPerl6::Grammar.optional_namespace_before_ident>,
                      ~$<MiniPerl6::Grammar.ident>                  ] }
           ]
-        | <MiniPerl6::Grammar.val>                      { make [ 'term', $$<MiniPerl6::Grammar.val>         ] }
+        | <MiniPerl6::Grammar.val_num>    { make [ 'term', $$<MiniPerl6::Grammar.val_num> ]  }  # 123.456
+        | <MiniPerl6::Grammar.val_int>    { make [ 'term', $$<MiniPerl6::Grammar.val_int> ]  }  # 123
+        | <MiniPerl6::Grammar.val_bit>    { make [ 'term', $$<MiniPerl6::Grammar.val_bit> ]  }  # True, False
+        | <MiniPerl6::Grammar.val_buf>    { make [ 'term', $$<MiniPerl6::Grammar.val_buf> ]  }  # 'moose'
+
         | <.MiniPerl6::Grammar.ws>                      { make [ 'space',   ' '                             ] }
     }
 
