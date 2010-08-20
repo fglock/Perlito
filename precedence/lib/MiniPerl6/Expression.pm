@@ -390,7 +390,7 @@ class MiniPerl6::Expression {
         | '$<' <capture_name> '>'
             { make [ 'term', Lookup.new(
                 obj   => Var.new( sigil => '$', twigil => '', name => '/' ),
-                index_exp => Val::Buf.new( buf => $$<sub_or_method_name> )
+                index_exp => Val::Buf.new( buf => ~$<capture_name> )
             ) ] } 
         | <MiniPerl6::Precedence.op_parse>              { make $$<MiniPerl6::Precedence.op_parse>             }
         | <MiniPerl6::Grammar.ident> <before <.MiniPerl6::Grammar.ws>? '=>' >   # autoquote
