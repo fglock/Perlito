@@ -437,13 +437,6 @@ class Apply {
     }
 }
 
-class Return {
-    has $.result;
-    method emit {
-        return 'return(' ~ $.result.emit ~ ')';
-    }
-}
-
 class If {
     has $.cond;
     has $.body;
