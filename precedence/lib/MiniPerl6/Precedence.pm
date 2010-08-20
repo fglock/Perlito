@@ -18,12 +18,16 @@ class MiniPerl6::Precedence {
         return ($Operator{$fixity_type}){$op_name}
     }
 
+    sub is_term ($token) {
+        ($token[0] eq 'term') || ($token[0] eq 'postfix_or_term')
+    }
+
     my $Op1;
     my $Op2;
-    my $end_token;
+    my $End_token;
     method op_parse ($str, $pos) {
         my $from = $pos;
-        for @($end_token) -> $tok {
+        for @($End_token) -> $tok {
             my $l = $tok.chars;
             my $s = substr($str, $pos, $l);
             if $s eq $tok {
@@ -209,20 +213,16 @@ class MiniPerl6::Precedence {
     $prec = $prec - 1;
     add_op( 'infix',    '*start*', $prec );
     
-    sub is_term ($token) {
-        ($token[0] eq 'term') || ($token[0] eq 'postfix_or_term')
-    }
-
     method precedence_parse {
         my $get_token = self.get_token;
         my $reduce    = self.reduce;
-        my $last_end_token = $end_token;
-        $end_token    = self.end_token;
+        my $last_end_token = $End_token;
+        $End_token    = self.end_token;
         my $op_stack  = [];   # [category, name]
         my $num_stack = [];
-        my $last = ['op', '*start*'];
+        my $last      = ['op', '*start*'];
         my $last_has_space = False;
-        my $token = $get_token.();
+        my $token     = $get_token.();
         # say "# precedence get_token: (0) ", $token.perl;
         if ($token[0]) eq 'space' {
             $token = $get_token.()
@@ -230,12 +230,10 @@ class MiniPerl6::Precedence {
         while (defined($token)) && ($token[0] ne 'end') {
             # say "# precedence      last: (1) ", $last.perl;
             # say "# precedence get_token: (1) ", $token.perl;
-
             if ($token[1] eq ',') && ( ($last[1] eq '*start*') || ($last[1] eq ',') ) {
                 # allow (,,,)
                 $num_stack.push( ['term', undef] );
             }
-
             if ($Operator{'prefix'}){$token[1]} && ( ($last[1] eq '*start*') || !(is_term($last)) ) {
                 $token[0] = 'prefix';
                 $op_stack.unshift($token);
@@ -261,7 +259,7 @@ class MiniPerl6::Precedence {
                     $reduce.($op_stack, $num_stack);
                 }
                 $num_stack.push($token);  # save the block
-                $end_token = $last_end_token;  # restore previous 'end token' context
+                $End_token = $last_end_token;  # restore previous 'end token' context
                 return $num_stack;
             }
             elsif is_term($token) {
@@ -269,7 +267,6 @@ class MiniPerl6::Precedence {
                 # say "#      last:  ", $last.perl;
                 # say "#      token: ", $token.perl;
                 # say "#      space: ", $last_has_space;
-
                 if is_term($last) {
                     say "#      last:  ", $last.perl;
                     say "#      token: ", $token.perl;
@@ -320,8 +317,48 @@ class MiniPerl6::Precedence {
             $reduce.($op_stack, $num_stack);
         }
         # say "# precedence return";
-        $end_token = $last_end_token;  # restore previous 'end token' context
+        $End_token = $last_end_token;  # restore previous 'end token' context
         return $num_stack;
     }
 }
+
+=begin
+
+=head1 NAME
+
+MiniPerl6::Precedence - precedence parser for MiniPerl6
+
+=head1 SYNOPSIS
+
+    my $prec = MiniPerl6::Precedence.new(
+        get_token => $get_token, 
+        reduce    => $reduce_to_ast,
+        end_token => [ ']', ')', '}', ';' ] );
+    my $res = $prec.precedence_parse;
+
+=head1 DESCRIPTION
+
+This module resolves the operator precedence in Perl 6 expressions.
+
+=head1 AUTHORS
+
+Flavio Soibelmann Glock <fglock@gmail.com>.
+The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
+
+=head1 SEE ALSO
+
+The Perl 6 homepage at L<http://dev.perl.org/perl6>.
+
+The Pugs homepage at L<http://pugscode.org/>.
+
+=head1 COPYRIGHT
+
+Copyright 2010 by Flavio Soibelmann Glock and others.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+See L<http://www.perl.com/perl/misc/Artistic.html>
+
+=end
 
