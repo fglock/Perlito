@@ -8,7 +8,6 @@ class Perl5 {
             return Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         }
         if $cond.isa( 'Val::Num' ) || $cond.isa( 'Val::Buf' ) || $cond.isa( 'Val::Int' ) 
-          || $cond.isa( 'Val::Undef' )
           || ( $cond.isa( 'Apply' ) &&
                 ( ($cond.code eq 'bool') || ($cond.code eq 'True') || ($cond.code eq 'False')
                 ) 
@@ -60,10 +59,6 @@ class Val::Num {
 class Val::Buf {
     has $.buf;
     method emit { '\'' ~ Main::perl_escape_string($.buf) ~ '\'' }
-}
-
-class Val::Undef {
-    method emit { '(undef)' }
 }
 
 class Val::Object {
@@ -186,91 +181,6 @@ class Var {
         }
         return $.name
     };
-}
-
-class Bind {
-    has $.parameters;
-    has $.arguments;
-    method emit {
-        if $.parameters.isa( 'Call' ) {
-
-            # $obj.a = 3
-
-            my $a = $.parameters;
-            return '((' ~ ($a.invocant).emit ~ ')->{' ~ $a.method ~ '} = ' ~ $.arguments.emit ~ ')';
-        }
-
-        if $.parameters.isa( 'Lit::Array' ) {
-            
-            #  [$a, [$b, $c]] = [1, [2, 3]]
-            
-            my $a = $.parameters.array1;
-            #my $b = $.arguments.array1;
-            my $str = 'do { ';
-            my $i = 0;
-            for @$a -> $var { 
-                my $bind = Bind.new( 
-                    parameters => $var, 
-                    # arguments => ($b[$i]) );
-                    arguments  => Index.new(
-                        obj    => $.arguments,
-                        index_exp  => Val::Int.new( int => $i )
-                    )
-                );
-                $str = $str ~ ' ' ~ $bind.emit ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit ~ ' }';
-        }
-        if $.parameters.isa( 'Lit::Hash' ) {
-
-            #  {:$a, :$b} = { a => 1, b => [2, 3]}
-
-            my $a = $.parameters.hash1;
-            my $b = $.arguments.hash1;
-            my $str = 'do { ';
-            my $i = 0;
-            my $arg;
-            for @$a -> $var {
-
-                $arg = Val::Undef.new();
-                for @$b -> $var2 {
-                    #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
-                    if ($var2[0]).buf eq ($var[0]).buf() {
-                        $arg = $var2[1];
-                    }
-                }
-
-                my $bind = Bind.new( parameters => $var[1], arguments => $arg );
-                $str = $str ~ ' ' ~ $bind.emit ~ '; ';
-                $i = $i + 1;
-            }
-            return $str ~ $.parameters.emit ~ ' }';
-        }
-
-        if $.parameters.isa( 'Lit::Object' ) {
-
-            #  Obj.new(:$a, :$b) = $obj
-
-            my $class = $.parameters.class;
-            my $a     = $.parameters.fields;
-            my $b     = $.arguments;
-            my $str   = 'do { ';
-            my $i     = 0;
-            my $arg;
-            for @$a -> $var {
-                my $bind = Bind.new( 
-                    parameters => $var[1], 
-                    arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
-                );
-                $str = $str ~ ' ' ~ $bind.emit ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit ~ ' }';
-        }
-    
-        '(' ~ $.parameters.emit ~ ' = ' ~ $.arguments.emit ~ ')';
-    }
 }
 
 class Proto {
@@ -445,10 +355,85 @@ class Apply {
             return '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         }
         if $code eq 'infix:<=>' { 
-            return ( Bind.new( parameters => (@.arguments[0]), arguments => (@.arguments[1]) ) ).emit;
+            return emit_bind( @.arguments[0], @.arguments[1] );
         }
 
         $code ~ '(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+    }
+
+    sub emit_bind ($parameters, $arguments) {
+        if $parameters.isa( 'Call' ) {
+
+            # $obj.a = 3
+
+            my $a = $parameters;
+            return '((' ~ ($a.invocant).emit ~ ')->{' ~ $a.method ~ '} = ' ~ $arguments.emit ~ ')';
+        }
+
+        if $parameters.isa( 'Lit::Array' ) {
+            
+            #  [$a, [$b, $c]] = [1, [2, 3]]
+            
+            my $a = $parameters.array1;
+            my $str = 'do { ';
+            my $i = 0;
+            for @$a -> $var { 
+                $str = $str ~ ' ' 
+                    ~ emit_bind( $var, 
+                            Index.new(
+                                obj    => $arguments,
+                                index_exp  => Val::Int.new( int => $i )
+                            )
+                        ) 
+                    ~ '; ';
+                $i = $i + 1;
+            };
+            return $str ~ $parameters.emit ~ ' }';
+        }
+        if $parameters.isa( 'Lit::Hash' ) {
+
+            #  {:$a, :$b} = { a => 1, b => [2, 3]}
+
+            my $a = $parameters.hash1;
+            my $b = $arguments.hash1;
+            my $str = 'do { ';
+            my $i = 0;
+            my $arg;
+            for @$a -> $var {
+                $arg = Apply.new(code => 'undef', arguments => []);
+                for @$b -> $var2 {
+                    if ($var2[0]).buf eq ($var[0]).buf() {
+                        $arg = $var2[1];
+                    }
+                }
+                $str = $str ~ ' ' ~ emit_bind( $var[1], $arg ) ~ '; ';
+                $i = $i + 1;
+            }
+            return $str ~ $parameters.emit ~ ' }';
+        }
+
+        if $parameters.isa( 'Lit::Object' ) {
+
+            #  Obj.new(:$a, :$b) = $obj
+
+            my $class = $parameters.class;
+            my $a     = $parameters.fields;
+            my $b     = $arguments;
+            my $str   = 'do { ';
+            my $i     = 0;
+            my $arg;
+            for @$a -> $var {
+                $str = $str ~ ' ' 
+                    ~ emit_bind( $var[1], 
+                            Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
+                        ) 
+                    ~ '; ';
+                $i = $i + 1;
+            };
+            return $str ~ $parameters.emit ~ ' }';
+        }
+    
+        '(' ~ $parameters.emit ~ ' = ' ~ $arguments.emit ~ ')';
     }
 }
 
@@ -546,24 +531,6 @@ class Method {
         my $invocant = $sig.invocant; 
         my $pos = $sig.positional;
         my $str = '';
-
-        # $str = 'my $List__ = \\@_; ';   
-        #
-        # # TODO - follow recursively
-        # for @$pos -> $field { 
-        #    if ( $field.isa('Lit::Array') ) {
-        #        $str = $str ~ 'my (' ~ (($field.array1).>>emit).join(', ') ~ '); ';
-        #    }
-        #    else {
-        #        $str = $str ~ 'my ' ~ $field.emit ~ '; ';
-        #    };
-        # };
-        #
-        # my $bind = Bind.new( 
-        #    parameters => Lit::Array.new( array1 => $sig.positional ), 
-        #    arguments  => Var.new( sigil => '@', twigil => '', name => '_' )
-        # );
-        # $str = $str ~ $bind.emit ~ '; ';
 
         my $i = 1;
         for @$pos -> $field { 

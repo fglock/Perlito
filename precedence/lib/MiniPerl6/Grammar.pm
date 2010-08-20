@@ -129,7 +129,6 @@ token var_ident {
 }
 
 token val {
-    | <val_undef>  { make $$<val_undef> }  # undef
     | <val_num>    { make $$<val_num>   }  # 123.456
     | <val_int>    { make $$<val_int>   }  # 123
     | <val_bit>    { make $$<val_bit>   }  # True, False
@@ -142,11 +141,6 @@ token val_bit {
 }
 
 token digits {  \d+  }
-
-token val_undef {
-    undef <!before \w >
-    { make Val::Undef.new( ) }
-}
 
 token exponent {
     [ 'e' | 'E' ]  [ '+' | '-' | '' ]  \d+
