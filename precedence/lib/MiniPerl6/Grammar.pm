@@ -173,7 +173,7 @@ token single_quoted_unescape {
 
 token double_quoted_unescape {
     |  \\ n  <double_quoted_unescape>  
-        { make Main.newline ~ $<double_quoted_unescape> }
+        { make "\n" ~ $<double_quoted_unescape> }
     |  \\ <char_any>  <double_quoted_unescape>  
         { make $<char_any> ~ $<double_quoted_unescape> }
     |  <char_any_double_quote> <double_quoted_unescape>
@@ -277,9 +277,9 @@ token token {
     {
         #say 'Token was compiled into: ', ($$<MiniPerl6::Grammar::Regex.rule>).perl;
         my $source = 'method ' ~ $<opt_name> ~ ' ( $grammar: $str, $pos ) { ' ~
-            'my $MATCH; $MATCH = MiniPerl6::Match.new( \'str\' => $str, \'from\' => $pos, \'to\' => $pos, \'bool\' => 1 ); ' ~ 
+            'my $MATCH; $MATCH = MiniPerl6::Match.new( str => $str, from => $pos, to => $pos, bool => 1 ); ' ~ 
             '$MATCH.bool = ( ' ~
-                ($$<MiniPerl6::Grammar::Regex.rule>).emit ~
+                ($$<MiniPerl6::Grammar::Regex.rule>).emit() ~
             '); ' ~
             '$MATCH }';
         #say 'Intermediate code: ', $source;
