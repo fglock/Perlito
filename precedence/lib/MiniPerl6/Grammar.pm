@@ -75,8 +75,6 @@ token grammar {
     {
         make CompUnit.new(
             name        => $$<full_ident>,
-            attributes  => { },
-            methods     => { },
             body        => $$<exp_stmts>,
         )
     }

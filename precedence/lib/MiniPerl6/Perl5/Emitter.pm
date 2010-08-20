@@ -21,8 +21,6 @@ class Perl5 {
 
 class CompUnit {
     has $.name;
-    has %.attributes;
-    has %.methods;
     has @.body;
     method emit {
           "{\n"
