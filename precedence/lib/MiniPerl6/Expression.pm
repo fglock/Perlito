@@ -516,13 +516,13 @@ class MiniPerl6::Expression {
         if $res.elems > 1 {
             $block = $res.pop; # pop_term($res);
             $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
-            say "# list exp terminated with a block: ", $block.perl;
+            # say "# list exp terminated with a block: ", $block.perl;
         }
         my $result = pop_term($res);
         if $res.elems > 0 {
             $block = $res.pop; # pop_term($res);
             $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
-            say "# list exp terminated with a block (2): ", $block.perl;
+            # say "# list exp terminated with a block (2): ", $block.perl;
         }
         return MiniPerl6::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
@@ -625,13 +625,13 @@ class MiniPerl6::Expression {
         if $res.elems > 1 {
             $block = $res.pop; # pop_term($res);
             $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
-            say "# exp terminated with a block: ", $block.perl;
+            # say "# exp terminated with a block: ", $block.perl;
         }
         my $result = pop_term($res);
         if $res.elems > 0 {
             $block = $res.pop; # pop_term($res);
             $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
-            say "# exp terminated with a block (2): ", $block.perl;
+            # say "# exp terminated with a block (2): ", $block.perl;
         }
         # say "# exp_parse result: ", $result.perl;
         return MiniPerl6::Match.new( 

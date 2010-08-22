@@ -49,7 +49,7 @@ token if {
             make If.new( 
                 cond => ($$<exp>){'exp'}, 
                 body => $body, 
-                otherwise => [ $$<if> ],
+                otherwise => Lit::Block.new( stmts => [ $$<if> ] ),
             )
         }
     |
