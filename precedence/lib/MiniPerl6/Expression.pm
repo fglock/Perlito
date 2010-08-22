@@ -335,7 +335,7 @@ class MiniPerl6::Expression {
         }
         else {
             if ( $num_stack.elems < 2 ) {
-                die("missing value after operator " ~ $last_op[1]);
+                die("missing value after operator '" ~ $last_op[1] ~ "'");
             }
             my $v2 = pop_term($num_stack);
             push $num_stack,
@@ -671,7 +671,8 @@ class MiniPerl6::Expression {
             return $res;
         }
         if ($$res){'end_block'} {
-            die "Unexpected block after expression";
+            # warn "Block: ", (($$res){'end_block'}).perl;
+            die "Unexpected block after expression near ", $pos;
         }
         if ($$res){'terminated'} {
             # say "# statement expression terminated result: ", $res.perl;
@@ -692,7 +693,8 @@ class MiniPerl6::Expression {
             die "Expected expression after '", $modifier, "'";
         }
         if ($$modifier_exp){'end_block'} {
-            die "Unexpected block after expression";
+            # warn "Block: ", (($$modifier_exp){'end_block'}).perl;
+            die "Unexpected block after expression near ", $modifier.to;
         }
         # TODO - require a statement terminator 
         # say "# statement_parse modifier result: ", $modifier_exp.perl;

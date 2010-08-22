@@ -842,7 +842,7 @@ class Sub {
                 needs_return => 1 );
         my $label2 = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
         my @s;
-        push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ "):" 
+        push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ "):";
         for @($args) -> $field { 
             push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
         };

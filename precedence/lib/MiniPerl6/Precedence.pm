@@ -22,6 +22,12 @@ class MiniPerl6::Precedence {
         ($token[0] eq 'term') || ($token[0] eq 'postfix_or_term')
     }
 
+    sub is_ident_middle ($c) {
+           (($c ge 'a') && ($c le 'z'))
+        || (($c ge '0') && ($c le '9'))
+        ||  ($c eq '_')
+    }
+
     my $Op1;
     my $Op2;
     my $End_token;
@@ -33,7 +39,7 @@ class MiniPerl6::Precedence {
             if $s eq $tok {
                 my $c1 = substr($str, $pos+$l-1, 1);
                 my $c2 = substr($str, $pos+$l, 1);
-                if  ($c1 ge 'a') && ($c1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
+                if is_ident_middle($c1) && is_ident_middle($c2) {
                 }
                 else {
                     return MiniPerl6::Match.new( 'str' => $str, 'from' => $from, 'to' => $pos+2, 'bool' => 1,
@@ -59,7 +65,7 @@ class MiniPerl6::Precedence {
         if exists($Op2{$op2}) {
             my $c1 = substr($str, $pos+1, 1);
             my $c2 = substr($str, $pos+2, 1);
-            if  ($c1 ge 'a') && ($c1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
+            if is_ident_middle($c1) && is_ident_middle($c2) {
             }
             else {
                 $pos = $pos + 2;
@@ -80,7 +86,7 @@ class MiniPerl6::Precedence {
         my $op1 = substr($str, $pos, 1);
         if exists($Op1{$op1}) {
             my $c2 = substr($str, $pos+1, 1);
-            if  ($op1 ge 'a') && ($op1 le 'z') && ($c2 ge 'a') && ($c2 le 'z') {
+            if is_ident_middle($op1) && is_ident_middle($c2) {
             }
             else {
                 $pos = $pos + 1;
