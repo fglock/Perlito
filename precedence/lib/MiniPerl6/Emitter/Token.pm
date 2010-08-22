@@ -43,7 +43,7 @@ class Rul::Quantifier {
                 ~   'my $last_match_null = 0; '
                 ~   'my $last_pos = $MATCH.to; '
                 ~   'my $count = 0; '
-                ~   'while ' ~ $.term.emit ~ ' && ($last_match_null < 2) '
+                ~   'while ' ~ $.term.emit() ~ ' && ($last_match_null < 2) '
                 ~   '{ '
                 ~       'if $last_pos == $MATCH.to() { '
                 ~           '$last_match_null = $last_match_null + 1; '
@@ -64,7 +64,7 @@ class Rul::Quantifier {
                 '(do { ' 
                 ~   'my $last_match_null = 0; '
                 ~   'my $last_pos = $MATCH.to; '
-                ~   'while ' ~ $.term.emit ~ ' && ($last_match_null < 2) '
+                ~   'while ' ~ $.term.emit() ~ ' && ($last_match_null < 2) '
                 ~   '{ '
                 ~       'if $last_pos == $MATCH.to() { '
                 ~           '$last_match_null = $last_match_null + 1; '
@@ -83,7 +83,7 @@ class Rul::Quantifier {
             return 
                 '(do { ' 
                 ~   'my $last_pos = $MATCH.to; '
-                ~   'if !(do {' ~ $.term.emit ~ '}) '
+                ~   'if !(do {' ~ $.term.emit() ~ '}) '
                 ~   '{ '
                 ~       '$MATCH.to = $last_pos; '
                 ~   '}; ' 
@@ -243,7 +243,7 @@ class Rul::Block {
 class Rul::InterpolateVar {
     has $.var;
     method emit {
-        say '# TODO: interpolate var ' ~ $.var.emit ~ '';
+        say '# TODO: interpolate var ' ~ $.var.emit() ~ '';
         die();
     };
     method set_captures_to_array { }
@@ -253,7 +253,7 @@ class Rul::NamedCapture {
     has $.rule_exp;
     has $.capture_ident;
     method emit {
-        say '# TODO: named capture ' ~ $.capture_ident ~ ' = ' ~ $.rule_exp.emit ~ '';
+        say '# TODO: named capture ' ~ $.capture_ident ~ ' = ' ~ $.rule_exp.emit() ~ '';
         die();
     }
     method set_captures_to_array {
@@ -268,7 +268,7 @@ class Rul::Before {
             'my $tmp = $MATCH; ' ~
             '$MATCH = MiniPerl6::Match.new( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' ~
             '$MATCH.bool = ' ~
-                $.rule_exp.emit ~
+                $.rule_exp.emit() ~
             '; ' ~
             '$tmp.bool = ?$MATCH; ' ~
             '$MATCH = $tmp; ' ~
@@ -285,7 +285,7 @@ class Rul::NotBefore {
             'my $tmp = $MATCH; ' ~
             '$MATCH = MiniPerl6::Match.new( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' ~
             '$MATCH.bool = ' ~
-                $.rule_exp.emit ~
+                $.rule_exp.emit() ~
             '; ' ~
             '$tmp.bool = !$MATCH; ' ~
             '$MATCH = $tmp; ' ~

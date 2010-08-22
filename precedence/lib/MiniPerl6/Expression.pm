@@ -539,7 +539,7 @@ class MiniPerl6::Expression {
         my $get_token = sub {
             my $m = self.operator($str, $last_pos);
             if !$m {
-                die "Expected closing delimiter: ", @($delimiter);
+                die "Expected closing delimiter: ", @($delimiter), ' near ', $last_pos;;
             }
             my $v = $$m;
             if $v[0] ne 'end' {
