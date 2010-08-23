@@ -162,14 +162,6 @@ class Val::Buf {
     method emit_javascript { '"' ~ Main::javascript_escape_string($.buf) ~ '"' }
 }
 
-class Val::Object {
-    has $.class;
-    has %.fields;
-    method emit_javascript {
-        die 'Val::Object - not used yet';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit_javascript {
@@ -520,27 +512,6 @@ class Apply {
             return $str ~ $parameters.emit_javascript() ~ ' }';
         };
 
-        if $parameters.isa( 'Lit::Object' ) {
-
-            #  Obj.new(:$a, :$b) = $obj
-
-            my $class = $parameters.class;
-            my $a     = $parameters.fields;
-            my $b     = $arguments;
-            my $str   = 'do { ';
-            my $i     = 0;
-            my $arg;
-            for @$a -> $var {
-                my $bind = emit_bind( 
-                    $var[1], 
-                    Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
-                );
-                $str = $str ~ ' ' ~ $bind ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $parameters.emit_javascript() ~ ' }';
-        };
-    
         if $parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return '(' ~ ($parameters.invocant).emit_javascript() ~ '.v_' ~ $parameters.method() ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
