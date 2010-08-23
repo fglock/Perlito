@@ -370,7 +370,7 @@ class Bind {
                 $arg = Val::Undef.new();
                 for @$b -> $var2 {
                     #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
-                    if ($var2[0]).buf eq ($var[0]).buf {
+                    if ($var2[0]).buf eq ($var[0]).buf() {
                         $arg = $var2[1];
                     }
                 };

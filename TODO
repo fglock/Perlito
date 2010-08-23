@@ -36,6 +36,8 @@ MiniPerl6 in Go
 
 - the floating point implementation seemed to slow down the bootstrapped compiler
 
+- document which release of Go to use
+
 MiniPerl6 in Perl5
 
 (no issues at the moment)
@@ -75,7 +77,7 @@ Missing Features
 - 'use v5' is not supported
   (maybe not needed for Perlito)
 
-- no 'state', 'constant'
+- no 'state', 'constant', 'local'
 
 - debugger
 
@@ -102,11 +104,13 @@ Grammar
 
 - parse Namespaces as array of string (we are going to split them anyway)
 
-- operator precedence
+- operator precedence - FIXED
 
 - double quote variable and expression interpolation 
 
-- all statements need a semicolon - FIXED but hack
+- all statements need a semicolon - FIXED 
+
+- the grammar should be aware of function arity
 
 Semantics
 

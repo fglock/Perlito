@@ -1,5 +1,6 @@
 
 use v5;
+binmode(STDOUT, ":utf8");
 
 {
     package MiniPerl6::Match;
@@ -206,8 +207,8 @@ package Main;
         }
         my $can = UNIVERSAL::can($o => 'perl');
         return $can->($o) if $can;
-
         my $ref = ref($o);
+        return perl($$o) if $ref eq 'SCALAR';
         return $ref . ".new("
             . join( ", ", map { Main::perl($_) . ' => ' . Main::perl($o->{$_}) } sort {$a cmp $b} CORE::keys(%$o) )
             . ")";

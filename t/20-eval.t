@@ -33,6 +33,34 @@ class Main {
                 'infix:<==>' => sub ( $env, $args ) {
                                     ($args[0]).eval($env) == ($args[1]).eval($env)
                                 },
+                'circumfix:<( )>' => sub ( $env, $args ) {
+                                    ($args[0]).eval($env);
+                                },
+                'infix:<=>' =>  sub ( $env, $args ) {
+                                    my $parameters = $args[0];
+                                    my $arguments  = $args[1];
+                                    if $parameters.isa( 'Lit::Array' ) {
+                                        warn "Interpreter TODO: Bind";
+                                    }
+                                    if $parameters.isa( 'Lit::Hash' ) {
+                                        warn "Interpreter TODO: Bind";
+                                    }
+                                    if $parameters.isa( 'Lit::Object' ) {
+                                        warn "Interpreter TODO: Bind";
+                                    }
+                                    if $parameters.isa( 'Decl' ) {
+                                        $parameters.eval($env);
+                                    }
+                                    my $name  = $parameters.plain_name;
+                                    my $value = $arguments.eval($env);
+                                    for @($env) -> $e {
+                                        if exists( $e{ $name } ) {
+                                            $e{ $name } = $value;
+                                            return $value;
+                                        }
+                                    }
+                                    warn "Interpreter Bind: variable '" ~ $name ~ "' not found";
+                                },
             }
         ];
 

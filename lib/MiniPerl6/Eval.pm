@@ -2,8 +2,6 @@ use v6;
 
 class CompUnit {
     has $.name;
-    has %.attributes;
-    has %.methods;
     has @.body;
     method eval ($env) {
         my $env1 = [ {}, @$env ];
@@ -33,19 +31,6 @@ class Val::Buf {
     method eval ($env) { $.buf }
 }
 
-class Val::Undef {
-    method eval ($env) { undef }
-}
-
-class Val::Object {
-    has $.class;
-    has %.fields;
-    method eval ($env) {
-        warn "Interpreter TODO: Val::Object";
-        'bless(' ~ %.fields.perl ~ ', ' ~ $.class.perl ~ ')';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method eval ($env) {
@@ -62,23 +47,10 @@ class Lit::Hash {
     method eval ($env) {
         my %h;
         for @.hash1 -> $field { 
-            %h{ ($field[0]).eval($env) } = ($field[1]).eval($env);
+            my $pair = $field.arguments;
+            %h{ ($pair[0]).eval($env) } = ($pair[1]).eval($env);
         }; 
         return %h;
-    }
-}
-
-class Lit::Object {
-    has $.class;
-    has @.fields;
-    method eval ($env) {
-        warn "Interpreter TODO: Lit::Object";
-        my $fields = @.fields;
-        my $str = '';
-        for @$fields -> $field { 
-            $str = $str ~ ($field[0]).eval ~ ' => ' ~ ($field[1]).eval ~ ',';
-        }; 
-        $.class ~ '->new( ' ~ $str ~ ' )';
     }
 }
 
@@ -138,34 +110,6 @@ class Var {
     };
 }
 
-class Bind {
-    has $.parameters;
-    has $.arguments;
-    method eval ($env) {
-        if $.parameters.isa( 'Lit::Array' ) {
-            warn "Interpreter TODO: Bind";
-        }
-        if $.parameters.isa( 'Lit::Hash' ) {
-            warn "Interpreter TODO: Bind";
-        }
-        if $.parameters.isa( 'Lit::Object' ) {
-            warn "Interpreter TODO: Bind";
-        }
-        if $.parameters.isa( 'Decl' ) {
-            $.parameters.eval($env);
-        }
-        my $name = $.parameters.plain_name;
-        my $value = $.arguments.eval($env);
-        for @($env) -> $e {
-            if exists( $e{ $name } ) {
-                $e{ $name } = $value;
-                return $value;
-            }
-        }
-        warn "Interpreter Bind: variable '" ~ $name ~ "' not found";
-    }
-}
-
 class Proto {
     has $.name;
     method eval ($env) {
@@ -214,42 +158,21 @@ class Apply {
     }
 }
 
-class Return {
-    has $.result;
-    method eval ($env) {
-        warn "Interpreter TODO: Return";
-        return
-        'return(' ~ $.result.eval ~ ')';
-    }
-}
-
 class If {
     has $.cond;
-    has @.body;
-    has @.otherwise;
+    has $.body;
+    has $.otherwise;
     method eval ($env) {
         my $cond = $.cond;
-
-        if   $cond.isa( 'Apply' ) 
-          && $cond.code eq 'prefix:<!>' 
-        {
-            my $if = If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
-            return $if.eval($env);
-        }
-        # if   $cond.isa( 'Var' ) 
-        #  && $cond.sigil eq '@' 
-        # {
-        #    $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-        # }
         if $cond.eval($env) { 
             my $env1 = [ {}, @$env ];
-            for @.body -> $stmt {
+            for @(($.body).stmts) -> $stmt {
                 $stmt.eval($env1);
             }
         } 
         else { 
             my $env1 = [ {}, @$env ];
-            for @.otherwise -> $stmt {
+            for @(($.otherwise).stmts) -> $stmt {
                 $stmt.eval($env1);
             }
         }
@@ -259,20 +182,15 @@ class If {
 
 class For {
     has $.cond;
-    has @.body;
-    has @.topic;
+    has $.body;
+    has $.topic;
     method eval ($env) {
         my $cond = $.cond;
-        # if   $cond.isa( 'Var' ) 
-        #  && $cond.sigil eq '@' 
-        # {
-        #    $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-        # }
-        my $topic_name = $.topic.plain_name;
+        my $topic_name = (($.body).sig).plain_name;
         my $env1 = [ {}, @$env ];
         for @( $cond.eval($env) ) -> $topic {
             $env1[0] = { $topic_name => $topic };
-            for @.body -> $stmt {
+            for @(($.body).stmts) -> $stmt {
                 $stmt.eval($env1);
             }
         }
@@ -292,10 +210,6 @@ class While {
     has $.continue;
     has @.body;
     method eval ($env) { die "TODO - While" }
-}
-
-class Leave {
-    method eval ($env) { die "TODO - Leave" }
 }
 
 class Decl {

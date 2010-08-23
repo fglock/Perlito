@@ -333,7 +333,7 @@ class Bind {
             for @$a -> $var {
                 $arg = Val::Undef.new();
                 for @$b -> $var2 {
-                    if ($var2[0]).buf eq ($var[0]).buf {
+                    if ($var2[0]).buf eq ($var[0]).buf() {
                         $arg = $var2[1];
                     }
                 };

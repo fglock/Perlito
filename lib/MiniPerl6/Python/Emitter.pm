@@ -152,10 +152,10 @@ class MiniPerl6::Python::LexicalBlock {
                 my $otherwise_block = 
                     MiniPerl6::Python::LexicalBlock.new( block => ($last_statement.otherwise), needs_return => 1 );
 
-                if $body_block.has_my_decl {
+                if $body_block.has_my_decl() {
                     $body_block = Return.new( result => Do.new( block => ($last_statement.body) ) );
                 }
-                if $has_otherwise && $otherwise_block.has_my_decl {
+                if $has_otherwise && $otherwise_block.has_my_decl() {
                     $otherwise_block = Return.new( result => Do.new( block => ($last_statement.otherwise) ) );
                 }
 
@@ -661,10 +661,10 @@ class If {
         my $body_block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
         my $otherwise_block = MiniPerl6::Python::LexicalBlock.new( block => @.otherwise );
 
-        if $body_block.has_my_decl {
+        if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );
         }
-        if $has_otherwise && $otherwise_block.has_my_decl {
+        if $has_otherwise && $otherwise_block.has_my_decl() {
             $otherwise_block = Do.new( block => @.otherwise );
         }
 
@@ -687,7 +687,7 @@ class While {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $body_block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
-        if $body_block.has_my_decl {
+        if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );
         }
         if $.init && $.continue {
@@ -710,7 +710,7 @@ class For {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $body_block = MiniPerl6::Python::LexicalBlock.new( block => @.body );
-        if $body_block.has_my_decl {
+        if $body_block.has_my_decl() {
             # wrap the block into a call to anonymous subroutine 
             my $label = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
             # generate an anonymous sub in the current block
@@ -842,7 +842,7 @@ class Sub {
                 needs_return => 1 );
         my $label2 = "_anon_" ~ MiniPerl6::Python::LexicalBlock::get_ident_python;
         my @s;
-        push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ "):" 
+        push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ "):";
         for @($args) -> $field { 
             push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
         };

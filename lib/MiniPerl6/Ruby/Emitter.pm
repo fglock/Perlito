@@ -208,10 +208,10 @@ class MiniPerl6::Ruby::LexicalBlock {
                 my $otherwise_block = 
                     MiniPerl6::Ruby::LexicalBlock.new( block => ($last_statement.otherwise), needs_return => 1 );
 
-                if $body_block.has_my_decl {
+                if $body_block.has_my_decl() {
                     $body_block = Return.new( result => Do.new( block => ($last_statement.body) ) );
                 }
-                if $has_otherwise && $otherwise_block.has_my_decl {
+                if $has_otherwise && $otherwise_block.has_my_decl() {
                     $otherwise_block = Return.new( result => Do.new( block => ($last_statement.otherwise) ) );
                 }
 
@@ -664,10 +664,10 @@ class If {
         my $body_block = MiniPerl6::Ruby::LexicalBlock.new( block => @.body );
         my $otherwise_block = MiniPerl6::Ruby::LexicalBlock.new( block => @.otherwise );
 
-        if $body_block.has_my_decl {
+        if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );
         }
-        if $has_otherwise && $otherwise_block.has_my_decl {
+        if $has_otherwise && $otherwise_block.has_my_decl() {
             $otherwise_block = Do.new( block => @.otherwise );
         }
 
@@ -694,7 +694,7 @@ class While {
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $body_block = MiniPerl6::Ruby::LexicalBlock.new( block => @.body );
-        if $body_block.has_my_decl {
+        if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );
         }
         if $.init && $.continue {

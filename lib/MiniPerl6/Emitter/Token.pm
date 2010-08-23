@@ -39,56 +39,56 @@ class Rul::Quantifier {
         if ($.quant eq '+') && ($.greedy eq '') {
             $.term.set_captures_to_array;
             return 
-                'do { ' 
+                '(do { ' 
                 ~   'my $last_match_null = 0; '
                 ~   'my $last_pos = $MATCH.to; '
                 ~   'my $count = 0; '
-                ~   'while ' ~ $.term.emit ~ ' && ($last_match_null < 2) '
+                ~   'while ' ~ $.term.emit() ~ ' && ($last_match_null < 2) '
                 ~   '{ '
-                ~       'if $last_pos == $MATCH.to { '
+                ~       'if $last_pos == $MATCH.to() { '
                 ~           '$last_match_null = $last_match_null + 1; '
                 ~       '} '
                 ~       'else { '
                 ~           '$last_match_null = 0; '
-                ~       '} '
+                ~       '}; '
                 ~       '$last_pos = $MATCH.to; '
                 ~       '$count = $count + 1; '
                 ~   '}; ' 
                 ~   '$MATCH.to = $last_pos; '
                 ~   '$count > 0; '
-                ~ '}';
+                ~ '})';
         }
         if ($.quant eq '*') && ($.greedy eq '') {
             $.term.set_captures_to_array;
             return 
-                'do { ' 
+                '(do { ' 
                 ~   'my $last_match_null = 0; '
                 ~   'my $last_pos = $MATCH.to; '
-                ~   'while ' ~ $.term.emit ~ ' && ($last_match_null < 2) '
+                ~   'while ' ~ $.term.emit() ~ ' && ($last_match_null < 2) '
                 ~   '{ '
-                ~       'if $last_pos == $MATCH.to { '
+                ~       'if $last_pos == $MATCH.to() { '
                 ~           '$last_match_null = $last_match_null + 1; '
                 ~       '} '
                 ~       'else { '
                 ~           '$last_match_null = 0; '
-                ~       '} '
+                ~       '}; '
                 ~       '$last_pos = $MATCH.to; '
                 ~   '}; ' 
                 ~   '$MATCH.to = $last_pos; '
                 ~   '1 '
-                ~ '}';
+                ~ '})';
         }
         if ($.quant eq '?') && ($.greedy eq '') {
             $.term.set_captures_to_array;
             return 
-                'do { ' 
+                '(do { ' 
                 ~   'my $last_pos = $MATCH.to; '
-                ~   'if !(do {' ~ $.term.emit ~ '}) '
+                ~   'if !(do {' ~ $.term.emit() ~ '}) '
                 ~   '{ '
                 ~       '$MATCH.to = $last_pos; '
                 ~   '}; ' 
                 ~   '1 '
-                ~ '}';
+                ~ '})';
         }
 
         # TODO
@@ -103,10 +103,10 @@ class Rul::Quantifier {
 class Rul::Or {
     has @.or_list;
     method emit {
-        'do { ' ~
-            'my $pos1 = $MATCH.to; do{ ' ~ 
-            (@.or_list.>>emit).join('} || do { $MATCH.to = $pos1; ') ~
-        '} }';
+        '(do { ' ~
+            'my $pos1 = $MATCH.to; (do { ' ~ 
+            (@.or_list.>>emit).join('}) || (do { $MATCH.to = $pos1; ') ~
+        '}) })';
     }
     method set_captures_to_array {
         @.or_list.>>set_captures_to_array;
@@ -133,7 +133,7 @@ class Rul::Subrule {
 
         my $code;
         if $.captures == 1 {
-            $code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} = $m2; 1 } else { False } ' 
+            $code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} = $m2; 1 } else { False }; ' 
         }
         elsif $.captures > 1 {
             # TODO: capture level > 2
@@ -144,18 +144,18 @@ class Rul::Subrule {
                     ~   '} '
                     ~   'else { ' 
                     ~       '$MATCH{\'' ~ $.metasyntax ~ '\'} = [ $m2 ]; '
-                    ~   '} '
+                    ~   '}; '
                     ~   '1 '
-                    ~ '} else { False } ' 
+                    ~ '} else { False }; ' 
         }
         else {
-            $code = 'if $m2 { $MATCH.to = $m2.to; 1 } else { False } ' 
+            $code = 'if $m2 { $MATCH.to = $m2.to; 1 } else { False }; ' 
         }
 
-        'do { ' 
+        '(do { ' 
         ~   'my $m2 = ' ~ $meth ~ '($str, $MATCH.to); ' 
         ~   $code
-        ~ '}'
+        ~ '})'
     }
     method set_captures_to_array {
         if $.captures > 0 {
@@ -235,7 +235,7 @@ class Rul::SpecialChar {
 class Rul::Block {
     has $.closure;
     method emit {
-        '(do { ' ~ $.closure ~ ' } || 1)'
+        '((do { ' ~ $.closure ~ ' }) || 1)'
     }
     method set_captures_to_array { }
 }
@@ -243,7 +243,7 @@ class Rul::Block {
 class Rul::InterpolateVar {
     has $.var;
     method emit {
-        say '# TODO: interpolate var ' ~ $.var.emit ~ '';
+        say '# TODO: interpolate var ' ~ $.var.emit() ~ '';
         die();
     };
     method set_captures_to_array { }
@@ -253,7 +253,7 @@ class Rul::NamedCapture {
     has $.rule_exp;
     has $.capture_ident;
     method emit {
-        say '# TODO: named capture ' ~ $.capture_ident ~ ' = ' ~ $.rule_exp.emit ~ '';
+        say '# TODO: named capture ' ~ $.capture_ident ~ ' = ' ~ $.rule_exp.emit() ~ '';
         die();
     }
     method set_captures_to_array {
@@ -264,16 +264,16 @@ class Rul::NamedCapture {
 class Rul::Before {
     has $.rule_exp;
     method emit {
-        'do { ' ~
+        '(do { ' ~
             'my $tmp = $MATCH; ' ~
             '$MATCH = MiniPerl6::Match.new( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' ~
             '$MATCH.bool = ' ~
-                $.rule_exp.emit ~
+                $.rule_exp.emit() ~
             '; ' ~
             '$tmp.bool = ?$MATCH; ' ~
             '$MATCH = $tmp; ' ~
             '?$MATCH; ' ~
-        '}'
+        '})'
     }
     method set_captures_to_array { }
 }
@@ -281,16 +281,16 @@ class Rul::Before {
 class Rul::NotBefore {
     has $.rule_exp;
     method emit {
-        'do { ' ~
+        '(do { ' ~
             'my $tmp = $MATCH; ' ~
             '$MATCH = MiniPerl6::Match.new( \'str\' => $str, \'from\' => $tmp.to, \'to\' => $tmp.to, \'bool\' => 1  ); ' ~
             '$MATCH.bool = ' ~
-                $.rule_exp.emit ~
+                $.rule_exp.emit() ~
             '; ' ~
             '$tmp.bool = !$MATCH; ' ~
             '$MATCH = $tmp; ' ~
             '?$MATCH; ' ~
-        '}'
+        '})'
     }
     method set_captures_to_array { }
 }
