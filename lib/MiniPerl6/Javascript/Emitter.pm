@@ -25,20 +25,15 @@ class MiniPerl6::Javascript::LexicalBlock {
             $last_statement = pop @.block;
         }
         for @.block -> $decl { 
-            if (!( $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ))) {
+            if !( $decl.isa( 'Decl' ) && $decl.decl eq 'my' ) {
                 $str = $str ~ $decl.emit_javascript() ~ ';';
             }
-        }; 
+        }
         if $.needs_return && $last_statement {
             if $last_statement.isa( 'If' ) {
                 my $cond      = $last_statement.cond;
-                my $body      = $last_statement.body;
-                my $otherwise = $last_statement.otherwise;
-                if $cond.isa( 'Apply' ) && $cond.code eq 'prefix:<!>' {
-                    $cond      = ($cond.arguments)[0];
-                    $body      = $last_statement.otherwise;
-                    $otherwise = $last_statement.body;
-                }
+                my $body      = $last_statement.body.stmts;
+                my $otherwise = $last_statement.otherwise.stmts;
                 if $cond.isa( 'Var' ) && $cond.sigil eq '@' {
                     $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
                 };
@@ -102,10 +97,10 @@ class CompUnit {
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str = $str  
-              ~ '  // accessor ' ~ ($decl.var).name ~ "\n"
-              ~ '  ' ~ $class_name ~ '.v_' ~ ($decl.var).name ~ ' = null;' ~ "\n"
-              ~ '  ' ~ $class_name ~ '.f_' ~ ($decl.var).name 
-                    ~ ' = function () { return this.v_' ~ ($decl.var).name ~ ' }' ~ "\n";
+              ~ '  // accessor ' ~ $decl.var.name() ~ "\n"
+              ~ '  ' ~ $class_name ~ '.v_' ~ $decl.var.name() ~ ' = null;' ~ "\n"
+              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.var.name() 
+                    ~ ' = function () { return this.v_' ~ $decl.var.name() ~ ' }' ~ "\n";
             }
             if $decl.isa( 'Method' ) {
                 my $sig      = $decl.sig;
@@ -113,21 +108,21 @@ class CompUnit {
                 my $invocant = $sig.invocant;
                 my $block    = MiniPerl6::Javascript::LexicalBlock.new( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str = $str 
-              ~ '  // method ' ~ $decl.name ~ "\n"
-              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name
+              ~ '  // method ' ~ $decl.name() ~ "\n"
+              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name()
                     ~ ' = function (' ~ ($pos.>>emit_javascript).join(', ') ~ ') {' ~ "\n"
               ~ '    var ' ~ $invocant.emit_javascript() ~ ' = this;' ~ "\n"
               ~ '    ' ~ $block.emit_javascript() ~ "\n"
               ~ '  }' ~ "\n"
-              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name ~ ';  // v8 bug workaround' ~ "\n";
+              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name() ~ ';  // v8 bug workaround' ~ "\n";
             }
             if $decl.isa( 'Sub' ) {
                 my $sig      = $decl.sig;
                 my $pos      = $sig.positional;
                 my $block    = MiniPerl6::Javascript::LexicalBlock.new( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str = $str 
-              ~ '  // sub ' ~ $decl.name ~ "\n"
-              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name
+              ~ '  // sub ' ~ $decl.name() ~ "\n"
+              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name()
                     ~ ' = function (' ~ ($pos.>>emit_javascript).join(', ') ~ ') {' ~ "\n"
               ~ '    ' ~ $block.emit_javascript() ~ "\n"
               ~ '  }' ~ "\n";
@@ -281,11 +276,6 @@ class Var {
     has $.namespace;
     has $.name;
     method emit_javascript {
-        # Normalize the sigil here into $
-        # $x    => $x
-        # @x    => $List_x
-        # %x    => $Hash_x
-        # &x    => $Code_x
         my $table = {
             '$' => 'v_',
             '@' => 'List_',
@@ -381,9 +371,7 @@ class Call {
                 }
             }
         }
-
         my $meth = $.method;
-        
         if ($.hyper) {
             return
                     '(function (a_) { '
@@ -574,28 +562,25 @@ class Return {
 
 class If {
     has $.cond;
-    has @.body;
-    has @.otherwise;
+    has $.body;
+    has $.otherwise;
     method emit_javascript {
         my $cond = $.cond;
-
-        if   $cond.isa( 'Apply' ) 
-          && $cond.code eq 'prefix:<!>' 
-        {
-            my $if = If.new( cond => ($cond.arguments)[0], body => @.otherwise, otherwise => @.body );
-            return $if.emit_javascript;
-        }
         if   $cond.isa( 'Var' ) 
           && $cond.sigil eq '@' 
         {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-        };
-        my $body      = MiniPerl6::Javascript::LexicalBlock.new( block => @.body, needs_return => 0 );
-        my $otherwise = MiniPerl6::Javascript::LexicalBlock.new( block => @.otherwise, needs_return => 0 );
-        return
-            'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
-              ~ '(function () { ' ~ $body.emit_javascript()      ~ ' })() } else { ' 
+        }
+        my $body      = MiniPerl6::Javascript::LexicalBlock.new( block => $.body.stmts, needs_return => 0 );
+        my $s = 'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
+              ~ '(function () { ' ~ $body.emit_javascript()      ~ ' })() }';
+        if $.otherwise { 
+            my $otherwise = MiniPerl6::Javascript::LexicalBlock.new( block => $.otherwise.stmts, needs_return => 0 );
+            $s = $s 
+              ~ ' else { ' 
               ~ '(function () { ' ~ $otherwise.emit_javascript() ~ ' })() }';
+        }
+        return $s;
     }
 }
 
@@ -664,9 +649,6 @@ class Sig {
     has $.invocant;
     has $.positional;
     has $.named;
-    method emit_javascript {
-        ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
-    };
 }
 
 class Method {

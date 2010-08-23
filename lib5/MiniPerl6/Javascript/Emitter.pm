@@ -10,7 +10,7 @@ sub new { shift; bless { @_ }, "MiniPerl6::Javascript::LexicalBlock" }
 sub block { $_[0]->{block} };
 sub needs_return { $_[0]->{needs_return} };
 sub top_level { $_[0]->{top_level} };
-sub emit_javascript { my $self = $_[0]; if (Main::bool(($self->{block} ? 0 : 1))) { return('null') } ; (my  $str = ''); for my $decl ( @{$self->{block} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my')))) { ($str = $str . $decl->emit_javascript_init()) } ; if (Main::bool((Main::isa($decl, 'Apply') && ($decl->code() eq 'infix:<=>')))) { (my  $var = $decl->arguments()->[0]); if (Main::bool((Main::isa($var, 'Decl') && ($var->decl() eq 'my')))) { ($str = $str . 'var ' . $var->var()->emit_javascript() . ';') }  }  }; my  $last_statement; if (Main::bool($self->{needs_return})) { ($last_statement = pop( @{$self->{block}} )) } ; for my $decl ( @{$self->{block} || []} ) { if (Main::bool(((((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) ? 0 : 1)))) { ($str = $str . $decl->emit_javascript() . ';') }  }; if (Main::bool(($self->{needs_return} && $last_statement))) { if (Main::bool(Main::isa($last_statement, 'If'))) { (my  $cond = $last_statement->cond()); (my  $body = $last_statement->body()); (my  $otherwise = $last_statement->otherwise()); if (Main::bool((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>')))) { ($cond = ($cond->arguments())->[0]); ($body = $last_statement->otherwise()); ($otherwise = $last_statement->body()) } ; if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; ($body = MiniPerl6::Javascript::LexicalBlock->new(('block' => $body), ('needs_return' => 1))); ($otherwise = MiniPerl6::Javascript::LexicalBlock->new(('block' => $otherwise), ('needs_return' => 1))); ($str = $str . 'if ( f_bool(' . $cond->emit_javascript() . ') ) { ' . $body->emit_javascript() . ' } else { ' . $otherwise->emit_javascript() . ' }') } else { if (Main::bool((Main::isa($last_statement, 'Return') || Main::isa($last_statement, 'For')))) { ($str = $str . $last_statement->emit_javascript()) } else { ($str = $str . 'return(' . $last_statement->emit_javascript() . ')') } } } ; if (Main::bool($self->{top_level})) { ($str = 'try { ' . $str . ' } catch(err) { ' . 'if ( err instanceof Error ) { ' . 'throw(err) ' . '} ' . 'else { ' . 'return(err) ' . '} ' . '} ') } ; return($str) }
+sub emit_javascript { my $self = $_[0]; if (Main::bool(($self->{block} ? 0 : 1))) { return('null') } ; (my  $str = ''); for my $decl ( @{$self->{block} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my')))) { ($str = $str . $decl->emit_javascript_init()) } ; if (Main::bool((Main::isa($decl, 'Apply') && ($decl->code() eq 'infix:<=>')))) { (my  $var = $decl->arguments()->[0]); if (Main::bool((Main::isa($var, 'Decl') && ($var->decl() eq 'my')))) { ($str = $str . 'var ' . $var->var()->emit_javascript() . ';') }  }  }; my  $last_statement; if (Main::bool($self->{needs_return})) { ($last_statement = pop( @{$self->{block}} )) } ; for my $decl ( @{$self->{block} || []} ) { if (Main::bool((((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my'))) ? 0 : 1))) { ($str = $str . $decl->emit_javascript() . ';') }  }; if (Main::bool(($self->{needs_return} && $last_statement))) { if (Main::bool(Main::isa($last_statement, 'If'))) { (my  $cond = $last_statement->cond()); (my  $body = $last_statement->body()->stmts()); (my  $otherwise = $last_statement->otherwise()->stmts()); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; ($body = MiniPerl6::Javascript::LexicalBlock->new(('block' => $body), ('needs_return' => 1))); ($otherwise = MiniPerl6::Javascript::LexicalBlock->new(('block' => $otherwise), ('needs_return' => 1))); ($str = $str . 'if ( f_bool(' . $cond->emit_javascript() . ') ) { ' . $body->emit_javascript() . ' } else { ' . $otherwise->emit_javascript() . ' }') } else { if (Main::bool((Main::isa($last_statement, 'Return') || Main::isa($last_statement, 'For')))) { ($str = $str . $last_statement->emit_javascript()) } else { ($str = $str . 'return(' . $last_statement->emit_javascript() . ')') } } } ; if (Main::bool($self->{top_level})) { ($str = 'try { ' . $str . ' } catch(err) { ' . 'if ( err instanceof Error ) { ' . 'throw(err) ' . '} ' . 'else { ' . 'return(err) ' . '} ' . '} ') } ; return($str) }
 }
 
 {
@@ -30,20 +30,20 @@ sub emit_javascript { my $self = $_[0]; (my  $class_name = Main::to_javascript_n
 ' . '(function () {' . '
 ' . '  var v__NAMESPACE = ' . $class_name . ';' . '
 '); for my $decl ( @{$self->{body} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { ($str = $str . $decl->emit_javascript_init()) } ; if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) { ($str = $str . '  var ' . (($decl->parameters())->var())->emit_javascript() . ';' . '
-') }  }; for my $decl ( @{$self->{body} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) { ($str = $str . '  // accessor ' . ($decl->var())->name(("" . '
-') . '  ' . $class_name . '.v_' . ($decl->var())->name(("" . ' = null;') . '
-' . '  ' . $class_name . '.f_' . ($decl->var())->name(("" . ' = function () { return this.v_') . ($decl->var())->name(("" . ' }') . '
-'))))) } ; if (Main::bool(Main::isa($decl, 'Method'))) { (my  $sig = $decl->sig()); (my  $pos = $sig->positional()); (my  $invocant = $sig->invocant()); (my  $block = MiniPerl6::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1))); ($str = $str . '  // method ' . $decl->name(("" . '
-') . '  ' . $class_name . '.f_' . $decl->name(("" . ' = function (') . Main::join(([ map { $_->emit_javascript() } @{ $pos } ]), ', ') . ') {' . '
+') }  }; for my $decl ( @{$self->{body} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) { ($str = $str . '  // accessor ' . $decl->var()->name() . '
+' . '  ' . $class_name . '.v_' . $decl->var()->name() . ' = null;' . '
+' . '  ' . $class_name . '.f_' . $decl->var()->name() . ' = function () { return this.v_' . $decl->var()->name() . ' }' . '
+') } ; if (Main::bool(Main::isa($decl, 'Method'))) { (my  $sig = $decl->sig()); (my  $pos = $sig->positional()); (my  $invocant = $sig->invocant()); (my  $block = MiniPerl6::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1))); ($str = $str . '  // method ' . $decl->name() . '
+' . '  ' . $class_name . '.f_' . $decl->name() . ' = function (' . Main::join(([ map { $_->emit_javascript() } @{ $pos } ]), ', ') . ') {' . '
 ' . '    var ' . $invocant->emit_javascript() . ' = this;' . '
 ' . '    ' . $block->emit_javascript() . '
 ' . '  }' . '
-' . '  ' . $class_name . '.f_' . $decl->name(("" . ';  // v8 bug workaround') . '
-')))) } ; if (Main::bool(Main::isa($decl, 'Sub'))) { (my  $sig = $decl->sig()); (my  $pos = $sig->positional()); (my  $block = MiniPerl6::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1))); ($str = $str . '  // sub ' . $decl->name(("" . '
-') . '  ' . $class_name . '.f_' . $decl->name(("" . ' = function (') . Main::join(([ map { $_->emit_javascript() } @{ $pos } ]), ', ') . ') {' . '
+' . '  ' . $class_name . '.f_' . $decl->name() . ';  // v8 bug workaround' . '
+') } ; if (Main::bool(Main::isa($decl, 'Sub'))) { (my  $sig = $decl->sig()); (my  $pos = $sig->positional()); (my  $block = MiniPerl6::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1))); ($str = $str . '  // sub ' . $decl->name() . '
+' . '  ' . $class_name . '.f_' . $decl->name() . ' = function (' . Main::join(([ map { $_->emit_javascript() } @{ $pos } ]), ', ') . ') {' . '
 ' . '    ' . $block->emit_javascript() . '
 ' . '  }' . '
-'))) }  }; for my $decl ( @{$self->{body} || []} ) { if (Main::bool(((((((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))) ? 0 : 1)) && (((Main::isa($decl, 'Method')) ? 0 : 1))) && (((Main::isa($decl, 'Sub')) ? 0 : 1))))) { ($str = $str . ($decl)->emit_javascript() . ';') }  }; ($str = $str . '}' . ')();' . '
+') }  }; for my $decl ( @{$self->{body} || []} ) { if (Main::bool(((((((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))) ? 0 : 1)) && (((Main::isa($decl, 'Method')) ? 0 : 1))) && (((Main::isa($decl, 'Sub')) ? 0 : 1))))) { ($str = $str . ($decl)->emit_javascript() . ';') }  }; ($str = $str . '}' . ')();' . '
 ') }
 }
 
@@ -178,7 +178,7 @@ sub new { shift; bless { @_ }, "If" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
-sub emit_javascript { my $self = $_[0]; (my  $cond = $self->{cond}); if (Main::bool((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>')))) { (my  $if = If->new(('cond' => ($cond->arguments())->[0]), ('body' => $self->{otherwise}), ('otherwise' => $self->{body}))); return($if->emit_javascript()) } ; if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; (my  $body = MiniPerl6::Javascript::LexicalBlock->new(('block' => $self->{body}), ('needs_return' => 0))); (my  $otherwise = MiniPerl6::Javascript::LexicalBlock->new(('block' => $self->{otherwise}), ('needs_return' => 0))); return('if ( f_bool(' . $cond->emit_javascript() . ') ) { ' . '(function () { ' . $body->emit_javascript() . ' })() } else { ' . '(function () { ' . $otherwise->emit_javascript() . ' })() }') }
+sub emit_javascript { my $self = $_[0]; (my  $cond = $self->{cond}); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; (my  $body = MiniPerl6::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0))); (my  $s = 'if ( f_bool(' . $cond->emit_javascript() . ') ) { ' . '(function () { ' . $body->emit_javascript() . ' })() }'); if (Main::bool($self->{otherwise})) { (my  $otherwise = MiniPerl6::Javascript::LexicalBlock->new(('block' => $self->{otherwise}->stmts()), ('needs_return' => 0))); ($s = $s . ' else { ' . '(function () { ' . $otherwise->emit_javascript() . ' })() }') } ; return($s) }
 }
 
 {
@@ -218,8 +218,7 @@ package Sig;
 sub new { shift; bless { @_ }, "Sig" }
 sub invocant { $_[0]->{invocant} };
 sub positional { $_[0]->{positional} };
-sub named { $_[0]->{named} };
-sub emit_javascript { my $self = $_[0]; ' print \'Signature - TODO\'; die \'Signature - TODO\'; ' }
+sub named { $_[0]->{named} }
 }
 
 {
