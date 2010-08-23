@@ -32,17 +32,21 @@ class MiniPerl6::Javascript::LexicalBlock {
         if $.needs_return && $last_statement {
             if $last_statement.isa( 'If' ) {
                 my $cond      = $last_statement.cond;
-                my $body      = $last_statement.body.stmts;
-                my $otherwise = $last_statement.otherwise.stmts;
+                my $body      = $last_statement.body;
+                my $otherwise = $last_statement.otherwise;
                 if $cond.isa( 'Var' ) && $cond.sigil eq '@' {
                     $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
                 };
-                $body      = MiniPerl6::Javascript::LexicalBlock.new( block => $body, needs_return => 1 );
-                $otherwise = MiniPerl6::Javascript::LexicalBlock.new( block => $otherwise, needs_return => 1 );
-                $str = $str 
-                    ~ 'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
-                        ~ $body.emit_javascript() ~ ' } else { ' 
-                        ~ $otherwise.emit_javascript() ~ ' }';
+                $body      = MiniPerl6::Javascript::LexicalBlock.new( block => $body.stmts, needs_return => 1 );
+                $str = $str
+                      ~ 'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
+                      ~     'return (function () { ' ~ $body.emit_javascript()      ~ ' })() }';
+                if $otherwise { 
+                    $otherwise = MiniPerl6::Javascript::LexicalBlock.new( block => $otherwise.stmts, needs_return => 1 );
+                    $str = $str 
+                      ~ ' else { ' 
+                      ~     'return (function () { ' ~ $otherwise.emit_javascript() ~ ' })() }';
+                }
             }
             elsif  $last_statement.isa( 'Apply' ) && $last_statement.code eq 'return'
                 || $last_statement.isa( 'For' ) 
@@ -202,15 +206,20 @@ class Lit::Hash {
     has @.hash1;
     method emit_javascript {
         my $needs_interpolation = 0;
-        for @.hash1 -> $item {
-            if !( ($item[0]).isa( 'Val::Buf' ) ) {
+        for @.hash1 -> $field {
+            if !($field.isa('Apply') && $field.code eq 'infix:<=>>') {
                 $needs_interpolation = 1;
             }
         }
         if $needs_interpolation {
             my $s = '';
             for @.hash1 -> $field { 
-                $s = $s ~ 'a[' ~ ($field[0]).emit_javascript() ~ '] = ' ~ ($field[1]).emit_javascript() ~ '; '
+                if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
+                    $s = $s ~ 'a[' ~ $field.arguments[0].emit_javascript() ~ '] = ' ~ $field.arguments[1].emit_javascript() ~ '; '
+                }
+                else {
+                    die 'Error in hash composer: ', $field.perl;
+                }
             }
             return '(function () { var a = []; ' 
                     ~ $s 
@@ -219,7 +228,12 @@ class Lit::Hash {
         else {
             my $str = '';
             for @.hash1 -> $field { 
-                $str = $str ~ ($field[0]).emit_javascript() ~ ':' ~ ($field[1]).emit_javascript() ~ ',';
+                if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
+                    $str = $str ~ $field.arguments[0].emit_javascript() ~ ':' ~ $field.arguments[1].emit_javascript() ~ ',';
+                }
+                else {
+                    die 'Error in hash composer: ', $field.perl;
+                }
             } 
             return '{ ' ~ $str ~ ' }';
         }
@@ -453,7 +467,9 @@ class Apply {
             return emit_bind( @.arguments[0], @.arguments[1] );
         }
         if $code eq 'return' {
-            return 'throw(' ~ @.arguments[0].emit_javascript() ~ ')'
+            return 'throw(' 
+                ~   (@.arguments ?? @.arguments[0].emit_javascript() !! 'null')
+                ~ ')'
         }
 
         $code = 'f_' ~ $.code;

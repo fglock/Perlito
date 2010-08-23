@@ -32,6 +32,9 @@ token if {
             if !(defined($otherwise)) {
                 die "Missing code block in 'else'";
             }
+            if $otherwise.isa('Lit::Hash') {
+                $otherwise = Lit::Block.new( stmts => $otherwise.hash1 );
+            }
             make If.new( 
                 cond      => ($$<exp>){'exp'}, 
                 body      => $body, 
