@@ -3,8 +3,9 @@ use v6;
 class Main {
     use MiniPerl6::Grammar;
     use MiniPerl6::Grammar::Control;
-    use MiniPerl6::Grammar::Mapping;
     use MiniPerl6::Grammar::Regex;
+    use MiniPerl6::Expression;
+    use MiniPerl6::Precedence;
     use MiniPerl6::Emitter::Token;
 
     use MiniPerl6::Eval;

@@ -5,9 +5,9 @@ class MiniPerl6::Precedence {
     has $.reduce;
     has $.end_token;
 
-    my $Operator;
-    my $Precedence;    # integer 0..100
-    my $Assoc;         # right, left, list
+    my $Operator = {};
+    my $Precedence = {};    # integer 0..100
+    my $Assoc = {};         # right, left, list
     my $Allow_space_before;
     
     sub is_assoc_type ($assoc_type, $op_name) {

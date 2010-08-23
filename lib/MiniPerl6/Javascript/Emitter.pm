@@ -444,6 +444,8 @@ class Apply {
 
         if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' };
         if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' };
+        if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };
+        if $code eq 'infix:<le>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' };
  
         if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' };
         if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' };
