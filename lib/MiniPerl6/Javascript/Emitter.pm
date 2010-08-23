@@ -5,16 +5,19 @@ class MiniPerl6::Javascript::LexicalBlock {
     has $.needs_return;
     has $.top_level;
     method emit_javascript {
-        if !(@.block) {
+        if !@.block {
             return 'null';
         }
         my $str = '';
         for @.block -> $decl { 
-            if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
+            if $decl.isa( 'Decl' ) && $decl.decl eq 'my' {
                 $str = $str ~ $decl.emit_javascript_init; 
             }
-            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                $str = $str ~ 'var ' ~ (($decl.parameters).var).emit_javascript ~ ';'; 
+            if $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' {
+                my $var = $decl.arguments[0];
+                if $var.isa( 'Decl' ) && $var.decl eq 'my' {
+                    $str = $str ~ 'var ' ~ $var.var.emit_javascript() ~ ';'; 
+                }
             }
         }
         my $last_statement;
@@ -23,7 +26,7 @@ class MiniPerl6::Javascript::LexicalBlock {
         }
         for @.block -> $decl { 
             if (!( $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ))) {
-                $str = $str ~ ($decl).emit_javascript ~ ';';
+                $str = $str ~ $decl.emit_javascript() ~ ';';
             }
         }; 
         if $.needs_return && $last_statement {
@@ -42,9 +45,9 @@ class MiniPerl6::Javascript::LexicalBlock {
                 $body      = MiniPerl6::Javascript::LexicalBlock.new( block => $body, needs_return => 1 );
                 $otherwise = MiniPerl6::Javascript::LexicalBlock.new( block => $otherwise, needs_return => 1 );
                 $str = $str 
-                    ~ 'if ( f_bool(' ~ $cond.emit_javascript ~ ') ) { ' 
-                        ~ $body.emit_javascript ~ ' } else { ' 
-                        ~ $otherwise.emit_javascript ~ ' }';
+                    ~ 'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
+                        ~ $body.emit_javascript() ~ ' } else { ' 
+                        ~ $otherwise.emit_javascript() ~ ' }';
             }
             elsif $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
                 # Return, For - no changes for now 
@@ -52,7 +55,7 @@ class MiniPerl6::Javascript::LexicalBlock {
             }
             else {
                 # $last_statement = Return.new( result => $last_statement );
-                $str = $str ~ 'return(' ~ $last_statement.emit_javascript ~ ')'
+                $str = $str ~ 'return(' ~ $last_statement.emit_javascript() ~ ')'
             }
         }
         if $.top_level {
@@ -78,17 +81,14 @@ class CompUnit {
     method emit_javascript {
         my $class_name = Main::to_javascript_namespace($.name);
         my $str =
-              '// class ' ~ $.name ~ Main.newline
-            ~ 'if (typeof ' ~ $class_name ~ ' != \'object\') {' ~ Main.newline;
-        $str = $str  
-            ~ '  ' ~ $class_name ~ ' = function() {};' ~ Main.newline
-            ~ '  ' ~ $class_name ~ ' = new ' ~ $class_name ~ ';' ~ Main.newline;
-        $str = $str  
-            ~ '  ' ~ $class_name ~ '.f_isa = function (s) { return s == \'' ~ $.name ~ '\' };' ~ Main.newline
-            ~ '  ' ~ $class_name ~ '.f_perl = function () { return \'' ~ $.name ~ '.new(\' + Main._dump(this) + \')\' };' ~ Main.newline;
-        $str = $str  
-            ~ '}' ~ Main.newline
-            ~ '(function () {' ~ Main.newline
+              '// class ' ~ $.name ~ "\n"
+            ~ 'if (typeof ' ~ $class_name ~ ' != \'object\') {' ~ "\n"
+            ~ '  ' ~ $class_name ~ ' = function() {};' ~ "\n"
+            ~ '  ' ~ $class_name ~ ' = new ' ~ $class_name ~ ';' ~ "\n"
+            ~ '  ' ~ $class_name ~ '.f_isa = function (s) { return s == \'' ~ $.name ~ '\' };' ~ "\n"
+            ~ '  ' ~ $class_name ~ '.f_perl = function () { return \'' ~ $.name ~ '.new(\' + Main._dump(this) + \')\' };' ~ "\n"
+            ~ '}' ~ "\n"
+            ~ '(function () {' ~ "\n"
             ~ '  var v__NAMESPACE = ' ~ $class_name ~ ';' ~ "\n";
 
         for @.body -> $decl { 
@@ -96,21 +96,16 @@ class CompUnit {
                 $str = $str ~ $decl.emit_javascript_init; 
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                $str = $str ~ '  var ' ~ (($decl.parameters).var).emit_javascript ~ ';' ~ Main.newline; 
+                $str = $str ~ '  var ' ~ (($decl.parameters).var).emit_javascript() ~ ';' ~ "\n"; 
             }
         }
-
-        # $str = $str ~ 'function ' ~ Main::to_javascript_namespace($.name) ~ '() {' ~ Main.newline;
-
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str = $str  
-              ~ '  // accessor ' ~ ($decl.var).name ~ Main.newline;
-                $str = $str  
-              ~ '  ' ~ $class_name ~ '.v_' ~ ($decl.var).name ~ ' = null;' ~ Main.newline;
-                $str = $str  
+              ~ '  // accessor ' ~ ($decl.var).name ~ "\n"
+              ~ '  ' ~ $class_name ~ '.v_' ~ ($decl.var).name ~ ' = null;' ~ "\n"
               ~ '  ' ~ $class_name ~ '.f_' ~ ($decl.var).name 
-                    ~ ' = function () { return this.v_' ~ ($decl.var).name ~ ' }' ~ Main.newline;
+                    ~ ' = function () { return this.v_' ~ ($decl.var).name ~ ' }' ~ "\n";
             }
             if $decl.isa( 'Method' ) {
                 my $sig      = $decl.sig;
@@ -118,47 +113,37 @@ class CompUnit {
                 my $invocant = $sig.invocant;
                 my $block    = MiniPerl6::Javascript::LexicalBlock.new( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str = $str 
-              ~ '  // method ' ~ $decl.name ~ Main.newline
-              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name;
-                $str = $str  
-                    ~ ' = function (' ~ ((@$pos).>>emit_javascript).join(', ') ~ ') {' ~ Main.newline
-              ~ '    var ' ~ $invocant.emit_javascript ~ ' = this;' ~ Main.newline;
-                $str = $str  
-              ~ '    ' ~ $block.emit_javascript ~ Main.newline
-              ~ '  }' ~ Main.newline;
-                $str = $str  
-              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name ~ ';  // v8 bug workaround' ~ Main.newline;
+              ~ '  // method ' ~ $decl.name ~ "\n"
+              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name
+                    ~ ' = function (' ~ ($pos.>>emit_javascript).join(', ') ~ ') {' ~ "\n"
+              ~ '    var ' ~ $invocant.emit_javascript() ~ ' = this;' ~ "\n"
+              ~ '    ' ~ $block.emit_javascript() ~ "\n"
+              ~ '  }' ~ "\n"
+              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name ~ ';  // v8 bug workaround' ~ "\n";
             }
             if $decl.isa( 'Sub' ) {
                 my $sig      = $decl.sig;
                 my $pos      = $sig.positional;
                 my $block    = MiniPerl6::Javascript::LexicalBlock.new( block => $decl.block, needs_return => 1, top_level => 1 );
                 $str = $str 
-              ~ '  // sub ' ~ $decl.name ~ Main.newline
-              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name;
-                $str = $str  
-                    ~ ' = function (' ~ ((@$pos).>>emit_javascript).join(', ') ~ ') {' ~ Main.newline
-              ~ '    ' ~ $block.emit_javascript ~ Main.newline;
-                $str = $str  
-              ~ '  }' ~ Main.newline;
+              ~ '  // sub ' ~ $decl.name ~ "\n"
+              ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name
+                    ~ ' = function (' ~ ($pos.>>emit_javascript).join(', ') ~ ') {' ~ "\n"
+              ~ '    ' ~ $block.emit_javascript() ~ "\n"
+              ~ '  }' ~ "\n";
             }
-        }; 
-        # $str = $str ~ '}' ~ Main.newline;
-        # $str = $str ~ Main::to_javascript_namespace($.name) 
-        #              ~ ' = new ' ~ Main::to_javascript_namespace($.name) ~ ';' ~ Main.newline;
+        } 
         for @.body -> $decl { 
             if    (!( $decl.isa( 'Decl' ) && (( $decl.decl eq 'has' ) || ( $decl.decl eq 'my' )) ))
                && (!( $decl.isa( 'Method'))) 
                && (!( $decl.isa( 'Sub'))) 
             {
-                $str = $str ~ ($decl).emit_javascript ~ ';';
+                $str = $str ~ ($decl).emit_javascript() ~ ';';
             }
-        }; 
-
+        }
         $str = $str ~ '}' 
-            ~ ')();' ~ Main.newline;
+            ~ ')();' ~ "\n";
     }
-
 }
 
 class Val::Int {
@@ -213,10 +198,10 @@ class Lit::Array {
                     $s = $s 
                         ~ '(function(a_) { ' 
                             ~ 'for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }' 
-                        ~ '})(' ~ $item.emit_javascript ~ '); '
+                        ~ '})(' ~ $item.emit_javascript() ~ '); '
                 }
                 else {
-                    $s = $s ~ 'a.push(' ~ $item.emit_javascript ~ '); '
+                    $s = $s ~ 'a.push(' ~ $item.emit_javascript() ~ '); '
                 }
             }
             '(function () { var a = []; ' 
@@ -241,7 +226,7 @@ class Lit::Hash {
         if $needs_interpolation {
             my $s = '';
             for @.hash1 -> $field { 
-                $s = $s ~ 'a[' ~ ($field[0]).emit_javascript ~ '] = ' ~ ($field[1]).emit_javascript ~ '; '
+                $s = $s ~ 'a[' ~ ($field[0]).emit_javascript() ~ '] = ' ~ ($field[1]).emit_javascript() ~ '; '
             }
             return '(function () { var a = []; ' 
                     ~ $s 
@@ -250,15 +235,11 @@ class Lit::Hash {
         else {
             my $str = '';
             for @.hash1 -> $field { 
-                $str = $str ~ ($field[0]).emit_javascript ~ ':' ~ ($field[1]).emit_javascript ~ ',';
+                $str = $str ~ ($field[0]).emit_javascript() ~ ':' ~ ($field[1]).emit_javascript() ~ ',';
             } 
             return '{ ' ~ $str ~ ' }';
         }
     }
-}
-
-class Lit::Code {
-    # XXX
 }
 
 class Lit::Object {
@@ -268,7 +249,7 @@ class Lit::Object {
         my $fields = @.fields;
         my $str = '';
         for @$fields -> $field { 
-            $str = $str ~ 'v_' ~ ($field[0]).buf ~ ': ' ~ ($field[1]).emit_javascript ~ ',';
+            $str = $str ~ 'v_' ~ ($field[0]).buf ~ ': ' ~ ($field[1]).emit_javascript() ~ ',';
         }; 
           'function () { ' 
         ~   'var tmp = {' ~ $str ~ '}; '
@@ -282,7 +263,7 @@ class Index {
     has $.obj;
     has $.index_exp;
     method emit_javascript {
-        $.obj.emit_javascript ~ '[' ~ $.index_exp.emit_javascript ~ ']';
+        $.obj.emit_javascript() ~ '[' ~ $.index_exp.emit_javascript() ~ ']';
     }
 }
 
@@ -290,7 +271,7 @@ class Lookup {
     has $.obj;
     has $.index_exp;
     method emit_javascript {
-        $.obj.emit_javascript ~ '[' ~ $.index_exp.emit_javascript ~ ']';
+        $.obj.emit_javascript() ~ '[' ~ $.index_exp.emit_javascript() ~ ']';
     }
 }
 
@@ -328,88 +309,6 @@ class Var {
         }
         return $.name
     };
-}
-
-class Bind {
-    has $.parameters;
-    has $.arguments;
-    method emit_javascript {
-        if $.parameters.isa( 'Lit::Array' ) {
-            
-            #  [$a, [$b, $c]] = [1, [2, 3]]
-            
-            my $a = $.parameters.array1;
-            #my $b = $.arguments.array1;
-            my $str = 'do { ';
-            my $i = 0;
-            for @$a -> $var { 
-                my $bind = Bind.new( 
-                    parameters => $var, 
-                    # arguments => ($b[$i]) );
-                    arguments  => Index.new(
-                        obj    => $.arguments,
-                        index_exp  => Val::Int.new( int => $i )
-                    )
-                );
-                $str = $str ~ ' ' ~ $bind.emit_javascript ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_javascript ~ ' }';
-        };
-        if $.parameters.isa( 'Lit::Hash' ) {
-
-            #  {:$a, :$b} = { a => 1, b => [2, 3]}
-
-            my $a = $.parameters.hash1;
-            my $b = $.arguments.hash1;
-            my $str = 'do { ';
-            my $i = 0;
-            my $arg;
-            for @$a -> $var {
-
-                $arg = Val::Undef.new();
-                for @$b -> $var2 {
-                    #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
-                    if ($var2[0]).buf eq ($var[0]).buf() {
-                        $arg = $var2[1];
-                    }
-                };
-
-                my $bind = Bind.new( parameters => $var[1], arguments => $arg );
-                $str = $str ~ ' ' ~ $bind.emit_javascript ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_javascript ~ ' }';
-        };
-
-        if $.parameters.isa( 'Lit::Object' ) {
-
-            #  Obj.new(:$a, :$b) = $obj
-
-            my $class = $.parameters.class;
-            my $a     = $.parameters.fields;
-            my $b     = $.arguments;
-            my $str   = 'do { ';
-            my $i     = 0;
-            my $arg;
-            for @$a -> $var {
-                my $bind = Bind.new( 
-                    parameters => $var[1], 
-                    arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
-                );
-                $str = $str ~ ' ' ~ $bind.emit_javascript ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_javascript ~ ' }';
-        };
-    
-        if $.parameters.isa( 'Call' ) {
-            # $var.attr = 3;
-            return '(' ~ ($.parameters.invocant).emit_javascript ~ '.v_' ~ $.parameters.method ~ ' = ' ~ $.arguments.emit_javascript ~ ')';
-        }
-
-        '(' ~ $.parameters.emit_javascript ~ ' = ' ~ $.arguments.emit_javascript ~ ')';
-    }
 }
 
 class Proto {
@@ -510,7 +409,7 @@ class Apply {
 
         if $code.isa( 'Str' ) { }
         else {
-            return '(' ~ $.code.emit_javascript ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+            return '(' ~ $.code.emit_javascript() ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         }
 
         if $code eq 'self'       { return 'v_self' };
@@ -523,12 +422,12 @@ class Apply {
         # if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit_javascript).join(' ')    ~ '}' };
         if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ' != null)' };
         if $code eq 'substr' { 
-            return '(' ~ (@.arguments[0]).emit_javascript ~
-                 ' || "").substr(' ~ (@.arguments[1]).emit_javascript ~
-                 ', ' ~ (@.arguments[2]).emit_javascript ~ ')' 
+            return '(' ~ (@.arguments[0]).emit_javascript() ~
+                 ' || "").substr(' ~ (@.arguments[1]).emit_javascript() ~
+                 ', ' ~ (@.arguments[2]).emit_javascript() ~ ')' 
         };
-        if $code eq 'Int'        { return 'parseInt(' ~ (@.arguments[0]).emit_javascript ~ ')' };
-        if $code eq 'Num'        { return 'parseFloat(' ~ (@.arguments[0]).emit_javascript ~ ')' };
+        if $code eq 'Int'        { return 'parseInt(' ~ (@.arguments[0]).emit_javascript() ~ ')' };
+        if $code eq 'Num'        { return 'parseFloat(' ~ (@.arguments[0]).emit_javascript() ~ ')' };
 
         if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').f_string()' };
         if $code eq 'prefix:<!>' { return '( f_bool('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ') ? false : true)' };
@@ -537,8 +436,8 @@ class Apply {
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' };  # .f_array()' };
         if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').f_hash()' };
 
-        if $code eq 'infix:<~>'  { return '( f_string(' ~ (@.arguments[0]).emit_javascript ~ ')'
-                                       ~ ' + f_string(' ~ (@.arguments[1]).emit_javascript ~ ') )' };
+        if $code eq 'infix:<~>'  { return '( f_string(' ~ (@.arguments[0]).emit_javascript() ~ ')'
+                                       ~ ' + f_string(' ~ (@.arguments[1]).emit_javascript() ~ ') )' };
         if $code eq 'infix:<+>'  { return 'f_add('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' };
         if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_javascript).join(' - ')   ~ ')' };
         if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' * ')   ~ ')' };
@@ -548,10 +447,10 @@ class Apply {
         if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };
         if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' };
         
-        if $code eq 'infix:<&&>' { return '( f_bool(' ~ (@.arguments[0]).emit_javascript ~ ')'
-                                      ~ ' && f_bool(' ~ (@.arguments[1]).emit_javascript ~ ') )' };
-        if $code eq 'infix:<||>' { return '( f_bool(' ~ (@.arguments[0]).emit_javascript ~ ')'
-                                      ~ ' || f_bool(' ~ (@.arguments[1]).emit_javascript ~ ') )' };
+        if $code eq 'infix:<&&>' { return '( f_bool(' ~ (@.arguments[0]).emit_javascript() ~ ')'
+                                      ~ ' && f_bool(' ~ (@.arguments[1]).emit_javascript() ~ ') )' };
+        if $code eq 'infix:<||>' { return '( f_bool(' ~ (@.arguments[0]).emit_javascript() ~ ')'
+                                      ~ ' || f_bool(' ~ (@.arguments[1]).emit_javascript() ~ ') )' };
 
         if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' };
         if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' };
@@ -562,16 +461,23 @@ class Apply {
         if $code eq 'exists'     { 
             my $arg = @.arguments[0];
             if $arg.isa( 'Lookup' ) {
-                return '(' ~ ($arg.obj).emit_javascript ~ ').hasOwnProperty(' ~ ($arg.index_exp).emit_javascript ~ ')';
+                return '(' ~ ($arg.obj).emit_javascript() ~ ').hasOwnProperty(' ~ ($arg.index_exp).emit_javascript() ~ ')';
             }
         };
 
         if $code eq 'ternary:<?? !!>' { 
-            return '( f_bool(' ~ (@.arguments[0]).emit_javascript ~ ')' 
-                 ~ ' ? ' ~ (@.arguments[1]).emit_javascript 
-                 ~ ' : ' ~ (@.arguments[2]).emit_javascript 
+            return '( f_bool(' ~ (@.arguments[0]).emit_javascript() ~ ')' 
+                 ~ ' ? ' ~ (@.arguments[1]).emit_javascript() 
+                 ~ ' : ' ~ (@.arguments[2]).emit_javascript() 
                  ~ ')' };
         
+        if $code eq 'circumfix:<( )>' {
+            return '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+        }
+        if $code eq 'infix:<=>' {
+            return emit_bind( @.arguments[0], @.arguments[1] );
+        }
+
         $code = 'f_' ~ $.code;
         if $.namespace {
             $code = Main::to_javascript_namespace($.namespace) ~ '.' ~ $code;
@@ -586,13 +492,83 @@ class Apply {
         }
         $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
     }
+
+    sub emit_bind ($parameters, $arguments) {
+        if $parameters.isa( 'Lit::Array' ) {
+            
+            #  [$a, [$b, $c]] = [1, [2, 3]]
+            
+            my $a = $parameters.array1;
+            my $str = 'do { ';
+            my $i = 0;
+            for @$a -> $var { 
+                $str = $str ~ ' ' 
+                    ~ emit_bind($var, Index.new(
+                        obj    => $arguments,
+                        index_exp  => Val::Int.new( int => $i )
+                    )) 
+                    ~ '; ';
+                $i = $i + 1;
+            };
+            return $str ~ $parameters.emit_javascript() ~ ' }';
+        };
+        if $parameters.isa( 'Lit::Hash' ) {
+
+            #  {:$a, :$b} = { a => 1, b => [2, 3]}
+
+            my $a = $parameters.hash1;
+            my $b = $arguments.hash1;
+            my $str = 'do { ';
+            my $i = 0;
+            my $arg;
+            for @$a -> $var {
+                $arg = Val::Undef.new();
+                for @$b -> $var2 {
+                    if ($var2[0]).buf eq ($var[0]).buf() {
+                        $arg = $var2[1];
+                    }
+                };
+                $str = $str ~ ' ' ~ emit_bind($var[1], $arg) ~ '; ';
+                $i = $i + 1;
+            };
+            return $str ~ $parameters.emit_javascript() ~ ' }';
+        };
+
+        if $parameters.isa( 'Lit::Object' ) {
+
+            #  Obj.new(:$a, :$b) = $obj
+
+            my $class = $parameters.class;
+            my $a     = $parameters.fields;
+            my $b     = $arguments;
+            my $str   = 'do { ';
+            my $i     = 0;
+            my $arg;
+            for @$a -> $var {
+                my $bind = emit_bind( 
+                    $var[1], 
+                    Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
+                );
+                $str = $str ~ ' ' ~ $bind ~ '; ';
+                $i = $i + 1;
+            };
+            return $str ~ $parameters.emit_javascript() ~ ' }';
+        };
+    
+        if $parameters.isa( 'Call' ) {
+            # $var.attr = 3;
+            return '(' ~ ($parameters.invocant).emit_javascript() ~ '.v_' ~ $parameters.method ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
+        }
+
+        '(' ~ $parameters.emit_javascript() ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
+    }
 }
 
 class Return {
     has $.result;
     method emit_javascript {
         return
-        'throw(' ~ $.result.emit_javascript ~ ')';
+        'throw(' ~ $.result.emit_javascript() ~ ')';
     }
 }
 
@@ -617,9 +593,9 @@ class If {
         my $body      = MiniPerl6::Javascript::LexicalBlock.new( block => @.body, needs_return => 0 );
         my $otherwise = MiniPerl6::Javascript::LexicalBlock.new( block => @.otherwise, needs_return => 0 );
         return
-            'if ( f_bool(' ~ $cond.emit_javascript ~ ') ) { ' 
-              ~ '(function () { ' ~ $body.emit_javascript      ~ ' })() } else { ' 
-              ~ '(function () { ' ~ $otherwise.emit_javascript ~ ' })() }';
+            'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
+              ~ '(function () { ' ~ $body.emit_javascript()      ~ ' })() } else { ' 
+              ~ '(function () { ' ~ $otherwise.emit_javascript() ~ ' })() }';
     }
 }
 
@@ -633,11 +609,11 @@ class While {
         my $body      = MiniPerl6::Javascript::LexicalBlock.new( block => @.body, needs_return => 0 );
         return
            'for ( '
-        ~  ( $.init     ?? $.init.emit_javascript             ~ '; '  !! '; ' )
-        ~  ( $.cond     ?? 'f_bool(' ~ $.cond.emit_javascript ~ '); ' !! '; ' )
-        ~  ( $.continue ?? $.continue.emit_javascript         ~ ' '   !! ' '  )
+        ~  ( $.init     ?? $.init.emit_javascript()             ~ '; '  !! '; ' )
+        ~  ( $.cond     ?? 'f_bool(' ~ $.cond.emit_javascript() ~ '); ' !! '; ' )
+        ~  ( $.continue ?? $.continue.emit_javascript()         ~ ' '   !! ' '  )
         ~  ') { '
-            ~ '(function () { ' ~ $body.emit_javascript      ~ ' })()' 
+            ~ '(function () { ' ~ $body.emit_javascript()      ~ ' })()' 
         ~ ' }'
     }
 }
@@ -649,10 +625,10 @@ class For {
     method emit_javascript {
         my $body      = MiniPerl6::Javascript::LexicalBlock.new( block => @.body, needs_return => 0 );
         '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' 
-            ~ '(function (' ~ $.topic.emit_javascript ~ ') { '
-                ~ $body.emit_javascript 
+            ~ '(function (' ~ $.topic.emit_javascript() ~ ') { '
+                ~ $body.emit_javascript() 
             ~ ' })(a_[i_]) } })' 
-        ~ '(' ~ $.cond.emit_javascript ~ ')'
+        ~ '(' ~ $.cond.emit_javascript() ~ ')'
     }
 }
 
@@ -666,7 +642,7 @@ class Decl {
     method emit_javascript_init {
         if $.decl eq 'my' {
             my $str = "";
-            $str = $str ~ 'var ' ~ ($.var).emit_javascript ~ ' = ';
+            $str = $str ~ 'var ' ~ ($.var).emit_javascript() ~ ' = ';
             if ($.var).sigil eq '%' {
                 $str = $str ~ '{};' ~ "\n";
             }
@@ -703,7 +679,7 @@ class Method {
         my $pos = $sig.positional;
         my $str = ((@$pos).>>emit_javascript).join(', ');  
         'function ' ~ $.name ~ '(' ~ $str ~ ') { ' ~ 
-          (MiniPerl6::Javascript::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript ~ 
+          (MiniPerl6::Javascript::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript() ~ 
         ' }'
     }
 }
@@ -717,7 +693,7 @@ class Sub {
         my $pos = $sig.positional;
         my $str = ((@$pos).>>emit_javascript).join(', ');  
         'function ' ~ $.name ~ '(' ~ $str ~ ') { ' ~ 
-          (MiniPerl6::Javascript::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript ~ 
+          (MiniPerl6::Javascript::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript() ~ 
         ' }'
     }
 }
@@ -726,7 +702,7 @@ class Do {
     has @.block;
     method emit_javascript {
         '(function () { ' ~ 
-          (MiniPerl6::Javascript::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_javascript ~ 
+          (MiniPerl6::Javascript::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_javascript() ~ 
         ' })()'
     }
 }
@@ -734,7 +710,7 @@ class Do {
 class Use {
     has $.mod;
     method emit_javascript {
-        '// use ' ~ $.mod ~ Main.newline
+        '// use ' ~ $.mod ~ "\n"
     }
 }
 
@@ -746,7 +722,7 @@ MiniPerl6::Javascript::Emit - Code generator for MiniPerl6-in-Javascript
 
 =head1 SYNOPSIS
 
-    $program.emit_javascript  # generated Perl5 code
+    $program.emit_javascript()  # generated Perl5 code
 
 =head1 DESCRIPTION
 

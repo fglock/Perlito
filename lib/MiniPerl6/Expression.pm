@@ -602,6 +602,7 @@ class MiniPerl6::Expression {
                 || ( (($v[0]) eq 'term') && (($v[1]).isa('Sub')) )
                 || ( (($v[0]) eq 'term') && (($v[1]).isa('Method')) )
                 || ( (($v[0]) eq 'term') && (($v[1]).isa('Do')) )   
+                || ( (($v[0]) eq 'term') && (($v[1]).isa('CompUnit')) )   
             {
                 # a block followed by newline terminates the expression
                 if self.has_newline_after($str, $last_pos) {
