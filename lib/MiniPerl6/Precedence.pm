@@ -8,14 +8,14 @@ class MiniPerl6::Precedence {
     my $Operator = {};
     my $Precedence = {};    # integer 0..100
     my $Assoc = {};         # right, left, list
-    my $Allow_space_before;
+    my $Allow_space_before = {};
     
     sub is_assoc_type ($assoc_type, $op_name) {
-        return ($Assoc{$assoc_type}){$op_name} 
+        return $Assoc{$assoc_type}{$op_name} 
     }
 
     sub is_fixity_type ($fixity_type, $op_name) {
-        return ($Operator{$fixity_type}){$op_name}
+        return $Operator{$fixity_type}{$op_name}
     }
 
     sub is_term ($token) {
@@ -112,10 +112,10 @@ class MiniPerl6::Precedence {
             $param = {}
         }
         my $assoc = $param{'assoc'} || 'left';
-        ($Operator{$fixity}){$name} = 1;
-        $Precedence{$name}          = $precedence;
-        ($Assoc{$assoc}){$name}     = 1;
-        ($Allow_space_before{$fixity}){$name} = $param{'no_space_before'} ?? False !! True;
+        $Operator{$fixity}{$name} = 1;
+        $Precedence{$name}        = $precedence;
+        $Assoc{$assoc}{$name}     = 1;
+        $Allow_space_before{$fixity}{$name} = $param{'no_space_before'} ?? False !! True;
         if ($name.chars) == 1 {
             $Op1{$name} = 1;
         }
@@ -240,12 +240,12 @@ class MiniPerl6::Precedence {
                 # allow (,,,)
                 $num_stack.push( ['term', undef] );
             }
-            if ($Operator{'prefix'}){$token[1]} && ( ($last[1] eq '*start*') || !(is_term($last)) ) {
+            if $Operator{'prefix'}{$token[1]} && ( ($last[1] eq '*start*') || !(is_term($last)) ) {
                 $token[0] = 'prefix';
                 $op_stack.unshift($token);
             }
-            elsif ($Operator{'postfix'}){$token[1]} && is_term($last) 
-                && (  ($Allow_space_before{'postfix'}){$token[1]} 
+            elsif $Operator{'postfix'}{$token[1]} && is_term($last) 
+                && (  $Allow_space_before{'postfix'}{$token[1]} 
                    || !($last_has_space) 
                    )
             {
@@ -284,7 +284,7 @@ class MiniPerl6::Precedence {
             }
             elsif $Precedence{$token[1]} {   
                 my $pr = $Precedence{$token[1]};
-                if ($Assoc{'right'}){$token[1]} {
+                if $Assoc{'right'}{$token[1]} {
                     while $op_stack.elems && ( $pr < $Precedence{ ($op_stack[0])[1] } ) {
                         $reduce.($op_stack, $num_stack);
                     }
@@ -294,7 +294,7 @@ class MiniPerl6::Precedence {
                         $reduce.($op_stack, $num_stack);
                     }
                 }
-                if ($Operator{'ternary'}){$token[1]} {
+                if $Operator{'ternary'}{$token[1]} {
                     $token[0] = 'ternary';
                 }
                 else {

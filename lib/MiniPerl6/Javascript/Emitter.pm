@@ -252,7 +252,25 @@ class Lookup {
     has $.obj;
     has $.index_exp;
     method emit_javascript {
-        $.obj.emit_javascript() ~ '[' ~ $.index_exp.emit_javascript() ~ ']';
+        # my $var = $.obj.emit_javascript;
+        # return $var ~ '[' ~ $.index_exp.emit_javascript() ~ ']'
+
+        my $str = '';
+        my $var = $.obj;
+        my $var_js;
+        if $var.isa('Lookup') {
+            my $var1 = $var.obj;
+            my $var1_js = $var1.emit_javascript;
+            $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = {} }; ';
+            $var_js = $var1_js ~ '[' ~ $var.index_exp.emit_javascript() ~ ']'
+        }
+        else {
+            $var_js = $var.emit_javascript;
+        }
+        $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+        my $index_js = $.index_exp.emit_javascript;
+        $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ '); ';
+        return '(function () { ' ~ $str ~ '})()';
     }
 }
 
@@ -328,6 +346,7 @@ class Call {
             || ($.method eq 'scalar')
             || ($.method eq 'keys')
             || ($.method eq 'values')
+            || ($.method eq 'elems')
         { 
             if ($.hyper) {
                 return 
@@ -345,6 +364,7 @@ class Call {
         }
         if    ($.method eq 'join') 
            || ($.method eq 'shift') 
+           || ($.method eq 'unshift') 
            || ($.method eq 'push') 
            || ($.method eq 'pop') 
         {
@@ -507,7 +527,7 @@ class Apply {
                 $i = $i + 1;
             };
             return $str ~ $parameters.emit_javascript() ~ ' }';
-        };
+        }
         if $parameters.isa( 'Lit::Hash' ) {
 
             #  {:$a, :$b} = { a => 1, b => [2, 3]}
@@ -528,13 +548,29 @@ class Apply {
                 $i = $i + 1;
             };
             return $str ~ $parameters.emit_javascript() ~ ' }';
-        };
-
+        }
         if $parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return '(' ~ ($parameters.invocant).emit_javascript() ~ '.v_' ~ $parameters.method() ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
         }
-
+        if $parameters.isa( 'Lookup' ) {
+            my $str = '';
+            my $var = $parameters.obj;
+            my $var_js;
+            if $var.isa('Lookup') {
+                my $var1 = $var.obj;
+                my $var1_js = $var1.emit_javascript;
+                $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = {} }; ';
+                $var_js = $var1_js ~ '[' ~ $var.index_exp.emit_javascript() ~ ']'
+            }
+            else {
+                $var_js = $var.emit_javascript;
+            }
+            $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+            my $index_js = $parameters.index_exp.emit_javascript;
+            $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ ' = ' ~ $arguments.emit_javascript() ~ '); ';
+            return '(function () { ' ~ $str ~ '})()';
+        }
         '(' ~ $parameters.emit_javascript() ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
     }
 }
