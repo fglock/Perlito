@@ -144,6 +144,25 @@ if (typeof f_warn != 'function') {
     print("Warning: " + s + "\n")
   }
 }
+f_elems = function (o) {
+  if ( o == null ) { return 1 };
+  if ( typeof o.f_elems == 'function' ) { return o.f_elems() }
+  if ( typeof o == 'object' && (o instanceof Array) ) {
+    return o.length;
+  }
+  switch (typeof o){
+    case "string":   return 1;
+    case "function": return 1; 
+    case "number":   return 1;
+    case "boolean":  return 1;
+    case "undefined": return 1;
+  }
+  var l = 0;
+  for(var i in o) { 
+    l++ 
+  }
+  return l;
+} 
 f_values = function (o) {
   if ( o == null ) { return [] };
   if ( typeof o.f_values == 'function' ) { return o.f_values() }

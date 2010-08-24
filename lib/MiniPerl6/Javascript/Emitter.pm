@@ -95,8 +95,11 @@ class CompUnit {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $str = $str ~ $decl.emit_javascript_init; 
             }
-            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                $str = $str ~ '  var ' ~ (($decl.parameters).var).emit_javascript() ~ ';' ~ "\n"; 
+            if $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' {
+                my $var = $decl.arguments[0];
+                if $var.isa( 'Decl' ) && $var.decl eq 'my' {
+                    $str = $str ~ 'var ' ~ $var.var.emit_javascript() ~ ';'; 
+                }
             }
         }
         for @.body -> $decl { 
@@ -457,10 +460,8 @@ class Apply {
         if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };
         if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' };
         
-        if $code eq 'infix:<&&>' { return '( f_bool(' ~ (@.arguments[0]).emit_javascript() ~ ')'
-                                      ~ ' && f_bool(' ~ (@.arguments[1]).emit_javascript() ~ ') )' };
-        if $code eq 'infix:<||>' { return '( f_bool(' ~ (@.arguments[0]).emit_javascript() ~ ')'
-                                      ~ ' || f_bool(' ~ (@.arguments[1]).emit_javascript() ~ ') )' };
+        if $code eq 'infix:<&&>' { return 'f_and(' ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' };
+        if $code eq 'infix:<||>' { return 'f_or('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' };
 
         if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' };
         if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' };

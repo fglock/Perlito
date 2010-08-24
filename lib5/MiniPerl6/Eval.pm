@@ -95,7 +95,7 @@ sub invocant { $_[0]->{invocant} };
 sub hyper { $_[0]->{hyper} };
 sub method { $_[0]->{method} };
 sub arguments { $_[0]->{arguments} };
-sub eval { my $self = $_[0]; my $env = $_[1]; warn('Interpreter TODO: Call'); (my  $invocant = $self->{invocant}->eval($env)); if (Main::bool(($invocant eq 'self'))) { ($invocant = '$self') } ; if (Main::bool(($self->{hyper}))) {  } else { {  } }; warn('Interpreter runtime error: method \'', $self->{method}, '()\' not found') }
+sub eval { my $self = $_[0]; my $env = $_[1]; warn('Interpreter TODO: Call'); (my  $invocant = $self->{invocant}->eval($env)); if (Main::bool(($invocant eq 'self'))) { ($invocant = '$self') } ; if (Main::bool(($self->{hyper}))) {  } else {  }; warn('Interpreter runtime error: method \'', $self->{method}, '()\' not found') }
 }
 
 {
