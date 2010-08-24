@@ -99,7 +99,7 @@ sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub namespace { $_[0]->{namespace} };
 sub name { $_[0]->{name} };
-sub emit_perl5 { my $self = $_[0]; (my  $table = { ('$' => '$'),('@' => '$List_'),('%' => '$Hash_'),('&' => '$Code_'), }); (my  $ns = ''); if (Main::bool($self->{namespace})) { ($ns = $self->{namespace} . '::') } else { if (Main::bool((((($self->{sigil} eq '@')) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) { return('(\\@ARGV)') } ; if (Main::bool(($self->{twigil} eq '.'))) { return('$self->{' . $self->{name} . '}') } ; if (Main::bool(($self->{name} eq '/'))) { return($table->{$self->{sigil}}) . 'MATCH' }  }; return($table->{$self->{sigil}}) . $ns . $self->{name} };
+sub emit_perl5 { my $self = $_[0]; (my  $table = { ('$' => '$'),('@' => '$List_'),('%' => '$Hash_'),('&' => '$Code_'), }); (my  $ns = ''); if (Main::bool($self->{namespace})) { ($ns = $self->{namespace} . '::') } else { if (Main::bool((((($self->{sigil} eq '@')) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) { return('(\\@ARGV)') } ; if (Main::bool(($self->{twigil} eq '.'))) { return('$self->{' . $self->{name} . '}') } ; if (Main::bool(($self->{name} eq '/'))) { return($table->{$self->{sigil}} . 'MATCH') }  }; return($table->{$self->{sigil}} . $ns . $self->{name}) };
 sub plain_name { my $self = $_[0]; if (Main::bool($self->{namespace})) { return($self->{namespace} . '::' . $self->{name}) } ; return($self->{name}) }
 }
 

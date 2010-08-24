@@ -449,6 +449,7 @@ class MiniPerl6::Expression {
         my $is_first_token = True;
         my $lexer_stack = [];
         my $terminated = 0;
+        my $last_token_was_space = 1;
         my $get_token = sub {
             my $v;
             if $lexer_stack.elems() {
@@ -481,10 +482,11 @@ class MiniPerl6::Expression {
             }
             # say "# list_lexer got " ~ $v.perl;
 
-            $is_first_token = False;   
             # say "# list_lexer " ~ $v.perl;
 
-            if (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') {
+            if (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') 
+                && $last_token_was_space
+            {
                 if self.has_newline_after($str, $last_pos) {
                     # a block followed by newline terminates the expression
                     $terminated = 1;
@@ -496,6 +498,8 @@ class MiniPerl6::Expression {
                     $lexer_stack.push( [ 'end', '*end*' ] );
                 }
             } 
+            $last_token_was_space = ($v[0] eq 'space');
+            $is_first_token = False;   
 
             return $v;
         };
@@ -631,7 +635,9 @@ class MiniPerl6::Expression {
         my $result = pop_term($res);
         if $res.elems > 0 {
             $block = $res.pop; # pop_term($res);
-            $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
+            if !($block.isa('Lit::Block')) {
+                $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
+            }
             # say "# exp terminated with a block (2): ", $block.perl;
         }
         # say "# exp_parse result: ", $result.perl;

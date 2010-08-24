@@ -266,6 +266,14 @@ f_bool = function (o) {
   if ( typeof o.length == 'number' ) { return o.length }
   return o;
 }
+f_and = function (a, fb) {
+  if (f_bool(a)) { return fb() }
+  return a
+}
+f_or = function (a, fb) {
+  if (f_bool(a)) { return a }
+  return fb()
+}
 f_pop = function (o) {
   if (o.length == null ) { return null }
   return o.pop();
