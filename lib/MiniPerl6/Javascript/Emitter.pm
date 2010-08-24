@@ -216,38 +216,19 @@ class Lit::Array {
 class Lit::Hash {
     has @.hash1;
     method emit_javascript {
-        # my $needs_interpolation = 0;
-        # for @.hash1 -> $field {
-        #     if !($field.isa('Apply') && $field.code eq 'infix:<=>>') {
-        #         $needs_interpolation = 1;
-        #     }
-        # }
-        # if $needs_interpolation {
-            my $s = '';
-            for @.hash1 -> $field { 
-                if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
-                    $s = $s ~ 'a[' ~ $field.arguments[0].emit_javascript() ~ '] = ' ~ $field.arguments[1].emit_javascript() ~ '; '
-                }
-                else {
-                    die 'Error in hash composer: ', $field.perl;
-                }
+        my $s = '';
+        for @.hash1 -> $field { 
+            if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
+                $s = $s ~ 'a[' ~ $field.arguments[0].emit_javascript() ~ '] = ' 
+                    ~ $field.arguments[1].emit_javascript() ~ '; '
             }
-            return '(function () { var a = []; ' 
-                    ~ $s 
-                ~ ' return a })()';
-        # }
-        # else {
-        #     my $str = '';
-        #     for @.hash1 -> $field { 
-        #         if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
-        #             $str = $str ~ $field.arguments[0].emit_javascript() ~ ':' ~ $field.arguments[1].emit_javascript() ~ ',';
-        #         }
-        #         else {
-        #             die 'Error in hash composer: ', $field.perl;
-        #         }
-        #     } 
-        #     return '{ ' ~ $str ~ ' }';
-        # }
+            else {
+                die 'Error in hash composer: ', $field.perl;
+            }
+        }
+        return '(function () { var a = []; ' 
+                ~ $s 
+            ~ ' return a })()';
     }
 }
 
