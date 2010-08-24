@@ -31,6 +31,17 @@ class Val::Buf {
     method eval ($env) { $.buf }
 }
 
+class Lit::Block {
+    has $.sig;
+    has @.stmts;
+    method eval ($env) {
+        my $env1 = [ {}, @$env ];
+        for @.stmts -> $stmt {
+            $stmt.eval($env1);
+        }
+    }
+}
+
 class Lit::Array {
     has @.array1;
     method eval ($env) {

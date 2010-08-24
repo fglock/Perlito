@@ -169,6 +169,14 @@ class Val::Buf {
     method emit_javascript { '"' ~ Main::javascript_escape_string($.buf) ~ '"' }
 }
 
+class Lit::Block {
+    has $.sig;
+    has @.stmts;
+    method emit_javascript {
+        (@.stmts.>>emit_javascript).join('; ')
+    }
+}
+
 class Lit::Array {
     has @.array1;
     method emit_javascript {
@@ -208,13 +216,13 @@ class Lit::Array {
 class Lit::Hash {
     has @.hash1;
     method emit_javascript {
-        my $needs_interpolation = 0;
-        for @.hash1 -> $field {
-            if !($field.isa('Apply') && $field.code eq 'infix:<=>>') {
-                $needs_interpolation = 1;
-            }
-        }
-        if $needs_interpolation {
+        # my $needs_interpolation = 0;
+        # for @.hash1 -> $field {
+        #     if !($field.isa('Apply') && $field.code eq 'infix:<=>>') {
+        #         $needs_interpolation = 1;
+        #     }
+        # }
+        # if $needs_interpolation {
             my $s = '';
             for @.hash1 -> $field { 
                 if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
@@ -227,19 +235,19 @@ class Lit::Hash {
             return '(function () { var a = []; ' 
                     ~ $s 
                 ~ ' return a })()';
-        }
-        else {
-            my $str = '';
-            for @.hash1 -> $field { 
-                if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
-                    $str = $str ~ $field.arguments[0].emit_javascript() ~ ':' ~ $field.arguments[1].emit_javascript() ~ ',';
-                }
-                else {
-                    die 'Error in hash composer: ', $field.perl;
-                }
-            } 
-            return '{ ' ~ $str ~ ' }';
-        }
+        # }
+        # else {
+        #     my $str = '';
+        #     for @.hash1 -> $field { 
+        #         if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
+        #             $str = $str ~ $field.arguments[0].emit_javascript() ~ ':' ~ $field.arguments[1].emit_javascript() ~ ',';
+        #         }
+        #         else {
+        #             die 'Error in hash composer: ', $field.perl;
+        #         }
+        #     } 
+        #     return '{ ' ~ $str ~ ' }';
+        # }
     }
 }
 
@@ -460,9 +468,14 @@ class Apply {
         if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };
         if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' };
         
-        if $code eq 'infix:<&&>' { return 'f_and(' ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' };
-        if $code eq 'infix:<||>' { return 'f_or('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' };
-
+        if $code eq 'infix:<&&>' { return 'f_and('
+                ~ @.arguments[0].emit_javascript() ~ ', ' 
+                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 
+        }
+        if $code eq 'infix:<||>' { return 'f_or('  
+                ~ @.arguments[0].emit_javascript() ~ ', ' 
+                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 
+        }
         if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' };
         if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' };
         if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };

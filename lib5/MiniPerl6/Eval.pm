@@ -41,6 +41,14 @@ sub eval { my $self = $_[0]; my $env = $_[1]; $self->{buf} }
 }
 
 {
+package Lit::Block;
+sub new { shift; bless { @_ }, "Lit::Block" }
+sub sig { $_[0]->{sig} };
+sub stmts { $_[0]->{stmts} };
+sub eval { my $self = $_[0]; my $env = $_[1]; (my  $env1 = [{  }, @{$env || []}]); for my $stmt ( @{$self->{stmts} || []} ) { $stmt->eval($env1) } }
+}
+
+{
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
