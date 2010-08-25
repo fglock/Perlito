@@ -1,5 +1,7 @@
 dev version - 2010-08-23
 - Correct operator precedence
+- backends pending upgrade to the new AST: Go, Common Lisp, Python 2, and Ruby 1.9
+- backends not supported in this version: Parrot, Rakudo, Clojure
 
 6.0  2010-07-27
 - Ruby backend bootstrap.

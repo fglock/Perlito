@@ -677,6 +677,10 @@ class MiniPerl6::Expression {
             # say "# not a statement or expression";
             return $res;
         }
+        if ($$res){'exp'}.isa('Lit::Block') {
+            # standalone block
+            ($$res){'exp'} = Do.new(block => ($$res){'exp'});
+        }
         if ($$res){'end_block'} {
             # warn "Block: ", (($$res){'end_block'}).perl;
             die "Unexpected block after expression near ", $pos;

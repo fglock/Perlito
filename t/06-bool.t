@@ -27,7 +27,7 @@ class Main {
         say ( @a    ?? "" !! "not " ), "ok 15";
     }
 
-    do {
+    {
         my $b;
         say ( $b    ?? "not " !! "" ), "ok 16 - scalar";
         $b = [];
@@ -36,7 +36,7 @@ class Main {
         say ( $b    ?? "" !! "not " ), "ok 18";
     }
 
-    do {
+    {
         my $b;
         say ( (@($b)) ?? "not " !! "" ), "ok 19 - scalar";
         $b = [];
@@ -49,7 +49,7 @@ class Main {
 
     say ( undef ?? "not " !! "" ), "ok 23 - undef";
 
-    do {
+    {
         # TODO
         my @a = [];  # element #0 is an array
         say ( @a    ?? "# TODO " !! "# TODO not " ); 

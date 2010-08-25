@@ -692,9 +692,19 @@ class Sub {
 class Do {
     has @.block;
     method emit_javascript {
-        '(function () { ' ~ 
-          (MiniPerl6::Javascript::LexicalBlock.new( block => @.block.stmts, needs_return => 1 )).emit_javascript() ~ 
-        ' })()'
+        if @.block.isa('Do') {
+            return @.block.emit_javascript;
+        }
+        if @.block.isa('Lit::Block') {
+            return
+                '(function () { ' ~ 
+                  (MiniPerl6::Javascript::LexicalBlock.new( block => @.block.stmts, needs_return => 1 )).emit_javascript() ~ 
+                ' })()'
+        }
+        return
+            '(function () { ' ~ 
+              (MiniPerl6::Javascript::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_javascript() ~ 
+            ' })()'
     }
 }
 

@@ -220,7 +220,7 @@ sub emit_javascript { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $pos = $
 package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
-sub emit_javascript { my $self = $_[0]; '(function () { ' . (MiniPerl6::Javascript::LexicalBlock->new(('block' => $self->{block}->stmts()), ('needs_return' => 1)))->emit_javascript() . ' })()' }
+sub emit_javascript { my $self = $_[0]; if (Main::bool(Main::isa($self->{block}, 'Do'))) { return($self->{block}->emit_javascript()) } ; if (Main::bool(Main::isa($self->{block}, 'Lit::Block'))) { return('(function () { ' . (MiniPerl6::Javascript::LexicalBlock->new(('block' => $self->{block}->stmts()), ('needs_return' => 1)))->emit_javascript() . ' })()') } ; return('(function () { ' . (MiniPerl6::Javascript::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)))->emit_javascript() . ' })()') }
 }
 
 {
