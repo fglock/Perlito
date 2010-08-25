@@ -436,8 +436,12 @@ class For {
           && $cond.sigil eq '@' 
         {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-        };
-        return  'for my ' ~ (($.body).sig).emit_perl5() ~ ' ( ' ~ $cond.emit_perl5() ~ ' ) { ' 
+        }
+        my $sig;
+        if $.body.sig() {
+            $sig = 'my ' ~ $.body.sig.emit_perl5() ~ ' ';
+        }
+        return  "for $sig ( " ~ $cond.emit_perl5() ~ ' ) { ' 
              ~   $.body.emit_perl5() 
              ~ ' }';
     }

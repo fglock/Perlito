@@ -15,12 +15,12 @@ package CompUnit;
 sub new { shift; bless { @_ }, "CompUnit" }
 sub name { $_[0]->{name} };
 sub body { $_[0]->{body} };
-sub emit_perl5 { my $self = $_[0]; '{
+sub emit_perl5 { my $self = $_[0]; '{' . '
 ' . 'package ' . $self->{name} . ';' . '
 ' . 'sub new { shift; bless { @_ }, "' . $self->{name} . '" }' . '
 ' . Main::join(([ map { $_->emit_perl5() } @{ $self->{body} } ]), ';' . '
 ') . '
-' . '}
+' . '}' . '
 ' . '
 ' };
 sub emit_perl5_program { my $comp_units = $_[0]; (my  $str = ''); for my $comp_unit ( @{($comp_units) || []} ) { ($str = $str . $comp_unit->emit_perl5()) }; return($str) }
@@ -154,7 +154,7 @@ package For;
 sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
-sub emit_perl5 { my $self = $_[0]; (my  $cond = $self->{cond}); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; return('for my ' . (($self->{body})->sig())->emit_perl5() . ' ( ' . $cond->emit_perl5() . ' ) { ' . $self->{body}->emit_perl5() . ' }') }
+sub emit_perl5 { my $self = $_[0]; (my  $cond = $self->{cond}); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; my  $sig; if (Main::bool($self->{body}->sig())) { ($sig = 'my ' . $self->{body}->sig()->emit_perl5() . ' ') } ; return('for ' . $sig . ' ( ' . $cond->emit_perl5() . ' ) { ' . $self->{body}->emit_perl5() . ' }') }
 }
 
 {

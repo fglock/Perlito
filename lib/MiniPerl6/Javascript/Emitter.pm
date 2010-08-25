@@ -618,8 +618,12 @@ class For {
     has @.body;
     method emit_javascript {
         my $body      = MiniPerl6::Javascript::LexicalBlock.new( block => @.body.stmts, needs_return => 0 );
+        my $sig = 'v__';
+        if $.body.sig() {
+            $sig = $.body.sig.emit_javascript();
+        }
         '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' 
-            ~ '(function (' ~ $.body.sig.emit_javascript() ~ ') { '
+            ~ "(function ($sig) { "
                 ~ $body.emit_javascript() 
             ~ ' })(a_[i_]) } })' 
         ~ '(' ~ $.cond.emit_javascript() ~ ')'
