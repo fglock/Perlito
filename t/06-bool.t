@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..23';
+    say '1..30';
     
     say ( 0     ?? "not " !! "" ), "ok 1 - integer";
     say ( 1     ?? "" !! "not " ), "ok 2";
@@ -51,8 +51,16 @@ class Main {
 
     do {
         # TODO
-        my @a = [];
-        say ( @a    ?? "# " !! "# not " ), "ok 24";
+        my @a = [];  # element #0 is an array
+        say ( @a    ?? "# TODO " !! "# TODO not " ); 
+        say "ok 24";
     }
+
+    say (( 10 || 20 ) == 10 ?? "" !! "not "), "ok 25";
+    say (( 10 && 20 ) == 20 ?? "" !! "not "), "ok 26";
+    say ((  0 || 20 ) == 20 ?? "" !! "not "), "ok 27";
+    say ((  0 && 20 ) ==  0 ?? "" !! "not "), "ok 28";
+    say (( "" || "x" ) eq "x" ?? "" !! "not "), "ok 29";
+    say (( "" && "x" ) eq ""  ?? "" !! "not "), "ok 30";
 }
 
