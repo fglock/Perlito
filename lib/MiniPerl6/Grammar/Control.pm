@@ -12,7 +12,7 @@ token unless {
             }
             make If.new( 
                 cond => ($$<exp>){'exp'}, 
-                body => [ ], 
+                body => Lit::Block.new(stmts => [ ]), 
                 otherwise => $body,
              ) 
         }
