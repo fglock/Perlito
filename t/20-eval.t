@@ -31,6 +31,16 @@ class Main {
                 'infix:<+>' =>  sub ( $env, $args ) { 
                                     ($args[0]).eval($env) + ($args[1]).eval($env)
                                 },
+                'list:<~>' =>  sub ( $env, $args ) { 
+                                    my $s = '';
+                                    for @($args) -> $v {
+                                        if $v.isa('Val::Buf') {
+                                            $v = $v.buf;
+                                        }
+                                        $s = $s ~ $v;
+                                    }
+                                    return $s;
+                                },
                 'infix:<==>' => sub ( $env, $args ) {
                                     ($args[0]).eval($env) == ($args[1]).eval($env)
                                 },

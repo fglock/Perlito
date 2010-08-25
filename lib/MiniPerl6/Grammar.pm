@@ -154,11 +154,6 @@ token char_any_single_quote {
     [ <!before [ \' | \\ ] > . ]*
 }
 
-token char_any_double_quote {
-    <!before \" > .
-    [ <!before [ \" | \\ ] > . ]*
-}
-
 token single_quoted_unescape {
     |  \\ \\  <single_quoted_unescape>  
         { make "\\" ~ $<single_quoted_unescape> }
@@ -171,19 +166,60 @@ token single_quoted_unescape {
     |  ''    
 }
 
+token char_any_double_quote {
+    <!before   [ \" | \$ | \@ | \% ] > .
+    [ <!before [ \" | \$ | \@ | \% | \\ ] > . ]*
+}
+
 token double_quoted_unescape {
-    |  \\ n  <double_quoted_unescape>  
-        { make "\n" ~ $<double_quoted_unescape> }
-    |  \\ <char_any>  <double_quoted_unescape>  
-        { make $<char_any> ~ $<double_quoted_unescape> }
-    |  <char_any_double_quote> <double_quoted_unescape>
-        { make $<char_any_double_quote> ~ $<double_quoted_unescape> }
-    |  ''    
+    |  \\ n  
+        { make "\n" }
+    |  \\ <char_any>  
+        { make ~$<char_any> }
+    |  <char_any_double_quote> 
+        { make ~$<char_any_double_quote> }
+}
+
+token double_quoted_buf {
+    | <before \$ > 
+        [ <MiniPerl6::Expression.operator> 
+            { make ($$<MiniPerl6::Expression.operator>)[1] }
+        | <char_any>  
+            { make ~$<char_any> }
+        ]
+    | <before \@ > 
+        [ <MiniPerl6::Expression.operator> '[]'
+            { make ($$<MiniPerl6::Expression.operator>)[1] }
+        | <char_any>  
+            { make ~$<char_any> }
+        ]
+    | <before \% > 
+        [ <MiniPerl6::Expression.operator> '{}'
+            { make ($$<MiniPerl6::Expression.operator>)[1] }
+        | <char_any>  
+            { make ~$<char_any> }
+        ]
+    | <double_quoted_unescape> 
+        { make Val::Buf.new( buf => $$<double_quoted_unescape> ) }
 }
 
 token val_buf {
-    | \" <double_quoted_unescape>  \" { make Val::Buf.new( buf => $$<double_quoted_unescape> ) }
-    | \' <single_quoted_unescape>  \' { make Val::Buf.new( buf => $$<single_quoted_unescape> ) }
+    | \" <double_quoted_buf>*      \" 
+        { 
+            my $args = $<double_quoted_buf>;
+            if !$args {
+                make Val::Buf.new( buf => '' )
+            }
+            else {
+                make Apply.new( 
+                    namespace => '',
+                    code => 'list:<~>',
+                    arguments => ($<double_quoted_buf>).>>capture, 
+                )
+            }
+        }
+    | \' <single_quoted_unescape>  \' 
+        { make Val::Buf.new( buf => $$<single_quoted_unescape> ) }
 }
 
 token val_int {
