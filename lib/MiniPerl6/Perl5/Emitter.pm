@@ -288,6 +288,11 @@ class Apply {
         if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' || []}' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' };
 
+        if $code eq 'postfix:<++>' { return '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')++' };
+        if $code eq 'postfix:<-->' { return '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')--' };
+        if $code eq 'prefix:<++>'  { return '++(' ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')' };
+        if $code eq 'prefix:<-->'  { return '--(' ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')' };
+
         if $code eq 'list:<~>'   { return ''   ~ (@.arguments.>>emit_perl5).join(' . ')   ~ ''  };
         if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' + ')   ~ ')' };
         if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_perl5).join(' - ')   ~ ')' };

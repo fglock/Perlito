@@ -439,6 +439,12 @@ class Apply {
         if $code eq 'prefix:<$>' { return 'f_scalar(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' };
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' };  # .f_array()' };
         if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').f_hash()' };
+
+        if $code eq 'postfix:<++>' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')++' };
+        if $code eq 'postfix:<-->' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')--' };
+        if $code eq 'prefix:<++>'  { return '++(' ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')' };
+        if $code eq 'prefix:<-->'  { return '--(' ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')' };
+
         if $code eq 'list:<~>'   { return '(f_string(' ~ (@.arguments.>>emit_javascript()).join(  ') + f_string('  ) ~ '))' }
         if $code eq 'infix:<+>'  { return 'f_add('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' };
         if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_javascript).join(' - ')   ~ ')' };
