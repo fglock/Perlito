@@ -5,6 +5,9 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
+package Main;
+sub new { shift; bless { @_ }, "Main" }
+{
 package Test;
 sub new { shift; bless { @_ }, "Test" }
 my  $num_of_tests_run;
@@ -32,6 +35,9 @@ sub flunk { my $desc = $_[0]; my $todo = $_[1]; my $depends = $_[2]; Test::procl
 sub proclaim { my $cond = $_[0]; my $desc = $_[1]; my $todo = $_[2]; my $got = $_[3]; my $expected = $_[4]; my $depends = $_[5]; my $negate = $_[6]; ($testing_started = 1); ($num_of_tests_run = ($num_of_tests_run + 1)); if (Main::bool(($cond))) { Main::say('ok ', $num_of_tests_run) } else { Main::say('not ok ', $num_of_tests_run); Test::report_failure($todo, $got, $expected, $negate) }; return($cond) };
 sub report_failure { my $todo = $_[0]; my $got = $_[1]; my $expected = $_[2]; my $negate = $_[3]; Main::say('### Test::report_failure not implemented') };
 sub test_ends { if (Main::bool((($testing_started ? 0 : 1)))) { return() } ; if (Main::bool((($num_of_tests_planned ? 0 : 1)))) { Main::say('1..' . $num_of_tests_run) } ; if (Main::bool((($num_of_tests_planned != $num_of_tests_run)))) { Main::say('# Looks like you planned ' . $num_of_tests_planned . ' tests, but ran ' . $num_of_tests_run) } ; if (Main::bool(($num_of_tests_failed))) { Main::say('# Looks like you failed ' . $num_of_tests_failed . ' tests of ' . $num_of_tests_run) } ; ($num_of_tests_run = 0); ($num_of_tests_failed = 0); ($num_of_tests_planned = 0); ($testing_started = 0) }
+}
+
+
 }
 
 1;

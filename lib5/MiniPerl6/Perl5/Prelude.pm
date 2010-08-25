@@ -5,6 +5,12 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
+package Main;
+sub new { shift; bless { @_ }, "Main" }
+
+# use v6 
+;
+{
 package MiniPerl6::Match;
 sub new { shift; bless { @_ }, "MiniPerl6::Match" }
 sub from { $_[0]->{from} };
@@ -12,6 +18,9 @@ sub to { $_[0]->{to} };
 sub str { $_[0]->{str} };
 sub bool { $_[0]->{bool} };
 sub scalar { my $self = $_[0]; substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))) }
+}
+
+
 }
 
 1;

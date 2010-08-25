@@ -5,6 +5,12 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
+package Main;
+sub new { shift; bless { @_ }, "Main" }
+
+# use v6 
+;
+{
 package MiniPerl6::Perl5::Match;
 sub new { shift; bless { @_ }, "MiniPerl6::Perl5::Match" }
 sub str { $_[0]->{str} };
@@ -19,6 +25,9 @@ sub __get_bool { my $self = $_[0]; return($self->{bool}) };
 sub __get_int { my $self = $_[0]; return((0 + $self->scalar())) };
 sub __get_number { my $self = $_[0]; return((0 + $self->scalar())) };
 sub __get_string { my $self = $_[0]; return($self->scalar()) }
+}
+
+
 }
 
 1;

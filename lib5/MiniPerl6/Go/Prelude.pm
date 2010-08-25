@@ -5,6 +5,12 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
+package Main;
+sub new { shift; bless { @_ }, "Main" }
+
+# use v6 
+;
+{
 package MiniPerl6::Match;
 sub new { shift; bless { @_ }, "MiniPerl6::Match" }
 sub from { $_[0]->{from} };
@@ -21,22 +27,25 @@ sub scalar { my $self = $_[0]; die('TODO') };
 sub exists { my $self = $_[0]; die('TODO') }
 }
 
+;
 {
 package MiniPerl6::Grammar;
 sub new { shift; bless { @_ }, "MiniPerl6::Grammar" }
-sub is_newline { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; my  $MATCH; ($MATCH = MiniPerl6::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { (my  $pos1 = $MATCH->to()); (do { (((Main::bool((('' ne substr($str, $MATCH->to(), 1)))) ? ((1 + ((($MATCH)->{to} = (1 + $MATCH->to()))))) : 0))) }) }))); $MATCH };
-sub word { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; my  $MATCH; ($MATCH = MiniPerl6::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { (my  $pos1 = $MATCH->to()); (do { (((Main::bool((('' ne substr($str, $MATCH->to(), 1)))) ? ((1 + ((($MATCH)->{to} = (1 + $MATCH->to()))))) : 0))) }) }))); $MATCH };
-sub digit { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; my  $MATCH; ($MATCH = MiniPerl6::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { (my  $pos1 = $MATCH->to()); (do { (((Main::bool((('' ne substr($str, $MATCH->to(), 1)))) ? ((1 + ((($MATCH)->{to} = (1 + $MATCH->to()))))) : 0))) }) }))); $MATCH };
-sub not_newline { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; my  $MATCH; ($MATCH = MiniPerl6::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { (my  $pos1 = $MATCH->to()); (do { (((Main::bool((('' ne substr($str, $MATCH->to(), 1)))) ? ((1 + ((($MATCH)->{to} = (1 + $MATCH->to()))))) : 0))) }) }))); $MATCH };
-sub space { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; my  $MATCH; ($MATCH = MiniPerl6::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { (my  $pos1 = $MATCH->to()); (do { (((Main::bool((('' ne substr($str, $MATCH->to(), 1)))) ? ((1 + ((($MATCH)->{to} = (1 + $MATCH->to()))))) : 0))) }) }))); $MATCH }
+sub is_newline { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; my  $MATCH; ($MATCH = MiniPerl6::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { do { (my  $pos1 = $MATCH->to()); (do { do { (((Main::bool((('' ne substr($str, $MATCH->to(), 1)))) ? ((1 + ((($MATCH)->{to} = (1 + $MATCH->to()))))) : 0))) } }) } }))); $MATCH };
+sub word { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; my  $MATCH; ($MATCH = MiniPerl6::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { do { (my  $pos1 = $MATCH->to()); (do { do { (((Main::bool((('' ne substr($str, $MATCH->to(), 1)))) ? ((1 + ((($MATCH)->{to} = (1 + $MATCH->to()))))) : 0))) } }) } }))); $MATCH };
+sub digit { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; my  $MATCH; ($MATCH = MiniPerl6::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { do { (my  $pos1 = $MATCH->to()); (do { do { (((Main::bool((('' ne substr($str, $MATCH->to(), 1)))) ? ((1 + ((($MATCH)->{to} = (1 + $MATCH->to()))))) : 0))) } }) } }))); $MATCH };
+sub not_newline { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; my  $MATCH; ($MATCH = MiniPerl6::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { do { (my  $pos1 = $MATCH->to()); (do { do { (((Main::bool((('' ne substr($str, $MATCH->to(), 1)))) ? ((1 + ((($MATCH)->{to} = (1 + $MATCH->to()))))) : 0))) } }) } }))); $MATCH };
+sub space { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; my  $MATCH; ($MATCH = MiniPerl6::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { do { (my  $pos1 = $MATCH->to()); (do { do { (((Main::bool((('' ne substr($str, $MATCH->to(), 1)))) ? ((1 + ((($MATCH)->{to} = (1 + $MATCH->to()))))) : 0))) } }) } }))); $MATCH }
 }
 
+;
 {
 package IO;
 sub new { shift; bless { @_ }, "IO" }
 sub slurp { die('stub') }
 }
 
+;
 {
 package Main;
 sub new { shift; bless { @_ }, "Main" }
@@ -50,6 +59,9 @@ sub javascript_escape_string { die('TODO') };
 sub to_lisp_namespace { die('TODO') };
 sub lisp_escape_string { die('TODO') };
 sub perl_escape_string { die('TODO') }
+}
+
+
 }
 
 1;

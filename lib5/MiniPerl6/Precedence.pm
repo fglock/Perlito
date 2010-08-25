@@ -5,6 +5,9 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
+package Main;
+sub new { shift; bless { @_ }, "Main" }
+{
 package MiniPerl6::Precedence;
 sub new { shift; bless { @_ }, "MiniPerl6::Precedence" }
 sub get_token { $_[0]->{get_token} };
@@ -101,6 +104,9 @@ add_op('infix', 'or', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '*start*', $prec);
 sub precedence_parse { my $self = $_[0]; (my  $get_token = $self->get_token()); (my  $reduce = $self->reduce()); (my  $last_end_token = $End_token); ($End_token = $self->end_token()); (my  $op_stack = []); (my  $num_stack = []); (my  $last = ['op', '*start*']); (my  $last_has_space = 0); (my  $token = $get_token->()); if (Main::bool((($token->[0]) eq 'space'))) { ($token = $get_token->()) } ; for ( ; Main::bool(((defined($token)) && (($token->[0] ne 'end'))));  ) { if (Main::bool(((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ','))))))) { push( @{$num_stack}, ['term', undef()] ) } ; if (Main::bool(($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || ((is_term($last)) ? 0 : 1)))))) { ($token->[0] = 'prefix'); unshift( @{$op_stack}, $token ) } else { if (Main::bool((($Operator->{'postfix'}->{$token->[1]} && is_term($last)) && (($Allow_space_before->{'postfix'}->{$token->[1]} || (($last_has_space) ? 0 : 1)))))) { (my  $pr = $Precedence->{$token->[1]}); for ( ; Main::bool((scalar( @{$op_stack} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))));  ) { $reduce->($op_stack, $num_stack) }; if (Main::bool((($token->[0]) ne 'postfix_or_term'))) { ($token->[0] = 'postfix') } ; unshift( @{$op_stack}, $token ) } else { if (Main::bool((((($token->[1] eq 'block')) && is_term($last)) && $last_has_space))) { for ( ; Main::bool(scalar( @{$op_stack} ));  ) { $reduce->($op_stack, $num_stack) }; push( @{$num_stack}, $token ); ($End_token = $last_end_token); return($num_stack) } else { if (Main::bool(is_term($token))) { if (Main::bool(is_term($last))) { Main::say('#      last:  ', Main::perl($last, )); Main::say('#      token: ', Main::perl($token, )); Main::say('#      space: ', $last_has_space); die('Value tokens must be separated by an operator') } ; ($token->[0] = 'term'); push( @{$num_stack}, $token ) } else { if (Main::bool($Precedence->{$token->[1]})) { (my  $pr = $Precedence->{$token->[1]}); if (Main::bool($Assoc->{'right'}->{$token->[1]})) { for ( ; Main::bool((scalar( @{$op_stack} ) && (($pr < $Precedence->{($op_stack->[0])->[1]}))));  ) { $reduce->($op_stack, $num_stack) } } else { for ( ; Main::bool((scalar( @{$op_stack} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))));  ) { $reduce->($op_stack, $num_stack) } }; if (Main::bool($Operator->{'ternary'}->{$token->[1]})) { ($token->[0] = 'ternary') } else { ($token->[0] = 'infix') }; unshift( @{$op_stack}, $token ) } else { die('Unknown token: \'', $token->[1], '\'') } } } } }; ($last = $token); ($token = $get_token->()); if (Main::bool(($token->[0] eq 'space'))) { ($token = $get_token->()); ($last_has_space = 1) } else { ($last_has_space = 0) } }; if (Main::bool((defined($token) && (($token->[0] ne 'end'))))) { die('Unexpected end token: ', Main::perl($token, )) } ; for ( ; Main::bool(scalar( @{$op_stack} ));  ) { $reduce->($op_stack, $num_stack) }; ($End_token = $last_end_token); return($num_stack) }
+}
+
+
 }
 
 1;

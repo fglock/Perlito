@@ -5,11 +5,18 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
+package Main;
+sub new { shift; bless { @_ }, "Main" }
+
+# use v6 
+;
+{
 package Rul;
 sub new { shift; bless { @_ }, "Rul" }
 sub constant { my $str = $_[0]; (my  $len = Main::chars($str, )); if (Main::bool(($str eq '\\'))) { ($str = '\\\\') } ; if (Main::bool(($str eq '\''))) { ($str = '\\\'') } ; if (Main::bool(($len))) { '( ( \'' . $str . '\' eq substr( $str, $MATCH.to, ' . $len . ')) ' . '  ?? (1 + ( $MATCH.to = ' . $len . ' + $MATCH.to ))' . '  !! False ' . ')' } else { return('1') } }
 }
 
+;
 {
 package Rul::Quantifier;
 sub new { shift; bless { @_ }, "Rul::Quantifier" }
@@ -23,6 +30,7 @@ sub emit { my $self = $_[0]; if (Main::bool(((($self->{quant} eq '')) && (($self
 sub set_captures_to_array { my $self = $_[0]; $self->{term}->set_captures_to_array() }
 }
 
+;
 {
 package Rul::Or;
 sub new { shift; bless { @_ }, "Rul::Or" }
@@ -31,6 +39,7 @@ sub emit { my $self = $_[0]; '(do { ' . 'my $pos1 = $MATCH.to; (do { ' . Main::j
 sub set_captures_to_array { my $self = $_[0]; [ map { $_->set_captures_to_array() } @{ $self->{or_list} } ] }
 }
 
+;
 {
 package Rul::Concat;
 sub new { shift; bless { @_ }, "Rul::Concat" }
@@ -39,6 +48,7 @@ sub emit { my $self = $_[0]; '(' . Main::join(([ map { $_->emit() } @{ $self->{c
 sub set_captures_to_array { my $self = $_[0]; [ map { $_->set_captures_to_array() } @{ $self->{concat} } ] }
 }
 
+;
 {
 package Rul::Subrule;
 sub new { shift; bless { @_ }, "Rul::Subrule" }
@@ -48,6 +58,7 @@ sub emit { my $self = $_[0]; (my  $meth = (Main::bool(((1 + index($self->{metasy
 sub set_captures_to_array { my $self = $_[0]; if (Main::bool(($self->{captures} > 0))) { ($self->{captures} = ($self->{captures} + 1)) }  }
 }
 
+;
 {
 package Rul::Var;
 sub new { shift; bless { @_ }, "Rul::Var" }
@@ -57,6 +68,7 @@ sub name { $_[0]->{name} };
 sub emit { my $self = $_[0]; (my  $table = { ('$' => '$'),('@' => '$List_'),('%' => '$Hash_'),('&' => '$Code_'), }); $table->{$self->{sigil}} . $self->{name} }
 }
 
+;
 {
 package Rul::Constant;
 sub new { shift; bless { @_ }, "Rul::Constant" }
@@ -65,6 +77,7 @@ sub emit { my $self = $_[0]; (my  $str = $self->{constant}); Rul::constant($str)
 sub set_captures_to_array { my $self = $_[0];  }
 }
 
+;
 {
 package Rul::Dot;
 sub new { shift; bless { @_ }, "Rul::Dot" }
@@ -72,6 +85,7 @@ sub emit { my $self = $_[0]; '( (\'\' ne substr( $str, $MATCH.to, 1 )) ' . '  ??
 sub set_captures_to_array { my $self = $_[0];  }
 }
 
+;
 {
 package Rul::SpecialChar;
 sub new { shift; bless { @_ }, "Rul::SpecialChar" }
@@ -80,6 +94,7 @@ sub emit { my $self = $_[0]; (my  $char = $self->{char}); if (Main::bool(($char 
 sub set_captures_to_array { my $self = $_[0];  }
 }
 
+;
 {
 package Rul::Block;
 sub new { shift; bless { @_ }, "Rul::Block" }
@@ -88,6 +103,7 @@ sub emit { my $self = $_[0]; '((do { ' . $self->{closure} . ' }) || 1)' };
 sub set_captures_to_array { my $self = $_[0];  }
 }
 
+;
 {
 package Rul::InterpolateVar;
 sub new { shift; bless { @_ }, "Rul::InterpolateVar" }
@@ -96,6 +112,7 @@ sub emit { my $self = $_[0]; Main::say('# TODO: interpolate var ' . $self->{var}
 sub set_captures_to_array { my $self = $_[0];  }
 }
 
+;
 {
 package Rul::NamedCapture;
 sub new { shift; bless { @_ }, "Rul::NamedCapture" }
@@ -105,6 +122,7 @@ sub emit { my $self = $_[0]; Main::say('# TODO: named capture ' . $self->{captur
 sub set_captures_to_array { my $self = $_[0]; Main::say('# TODO: named capture ') }
 }
 
+;
 {
 package Rul::Before;
 sub new { shift; bless { @_ }, "Rul::Before" }
@@ -113,6 +131,7 @@ sub emit { my $self = $_[0]; '(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = MiniPer
 sub set_captures_to_array { my $self = $_[0];  }
 }
 
+;
 {
 package Rul::NotBefore;
 sub new { shift; bless { @_ }, "Rul::NotBefore" }
@@ -121,6 +140,7 @@ sub emit { my $self = $_[0]; '(do { ' . 'my $tmp = $MATCH; ' . '$MATCH = MiniPer
 sub set_captures_to_array { my $self = $_[0];  }
 }
 
+;
 {
 package Rul::NegateCharClass;
 sub new { shift; bless { @_ }, "Rul::NegateCharClass" }
@@ -128,6 +148,7 @@ sub chars { $_[0]->{chars} };
 sub emit { my $self = $_[0]; Main::say('TODO NegateCharClass'); die() }
 }
 
+;
 {
 package Rul::CharClass;
 sub new { shift; bless { @_ }, "Rul::CharClass" }
@@ -135,6 +156,7 @@ sub chars { $_[0]->{chars} };
 sub emit { my $self = $_[0]; Main::say('TODO CharClass'); die() }
 }
 
+;
 {
 package Rul::Capture;
 sub new { shift; bless { @_ }, "Rul::Capture" }
@@ -142,6 +164,7 @@ sub rule_exp { $_[0]->{rule_exp} };
 sub emit { my $self = $_[0]; Main::say('TODO RulCapture'); die() }
 }
 
+;
 {
 package Rul::CaptureResult;
 sub new { shift; bless { @_ }, "Rul::CaptureResult" }
@@ -149,11 +172,15 @@ sub rule_exp { $_[0]->{rule_exp} };
 sub emit { my $self = $_[0]; Main::say('TODO Rul::CaptureResult'); die() }
 }
 
+;
 {
 package Rul::After;
 sub new { shift; bless { @_ }, "Rul::After" }
 sub rule_exp { $_[0]->{rule_exp} };
 sub emit { my $self = $_[0]; Main::say('TODO Rul::After'); die() }
+}
+
+
 }
 
 1;

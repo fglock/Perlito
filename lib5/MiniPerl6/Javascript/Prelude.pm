@@ -5,6 +5,12 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
+package Main;
+sub new { shift; bless { @_ }, "Main" }
+
+# use v6 
+;
+{
 package MiniPerl6::Match;
 sub new { shift; bless { @_ }, "MiniPerl6::Match" }
 sub from { $_[0]->{from} };
@@ -16,6 +22,7 @@ sub scalar { my $self = $_[0]; if (Main::bool($self->{bool})) { if (Main::bool(d
 sub string { my $self = $_[0]; if (Main::bool($self->{bool})) { if (Main::bool(defined($self->{capture}))) { return($self->{capture}) } ; return(substr($self->{str}, $self->{from}, (($self->{to} - $self->{from})))) } else { return('') } }
 }
 
+;
 {
 package Pair;
 sub new { shift; bless { @_ }, "Pair" }
@@ -24,11 +31,15 @@ sub value { $_[0]->{value} };
 sub perl { my $self = $_[0]; return($self->{key} . ' => ' . Main::perl($self->{value}, )) }
 }
 
+;
 {
 package Main;
 sub new { shift; bless { @_ }, "Main" }
 sub to_lisp_identifier { my $ident = $_[0]; return('sv-' . $ident) };
 sub lisp_dump_object { my $class_name = $_[0]; my $data = $_[1]; return($class_name . '( ' . Main::join(([ map { Main::perl( $_, , ) } @{ $data } ]), ', ') . ' )') }
+}
+
+
 }
 
 1;
