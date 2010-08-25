@@ -90,30 +90,25 @@ class Main {
             );
     $m.eval( $env );
 
-    $m = MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.exp_stmts( 
         '
-            class Testing { 
                 say "# ok eval-string ", (3+4), "==7";
-            }
         ', 
         0
     );
-    ($$m).eval( $env );
+    ($$m).>>eval( $env );
 
-    $m = MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.exp_stmts( 
         '
-            class Testing { 
                 my $a = 3;
                 say "# ok eval-string ", $a;
-            }
         ', 
         0
     );
-    ($$m).eval( $env );
+    ($$m).>>eval( $env );
 
-    $m = MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.exp_stmts( 
         '
-            class Testing { 
                 my $a = 123;
                 if $a == (100 + 23) {
                     say "# looks good";
@@ -122,55 +117,48 @@ class Main {
                     print "not ";
                 }
                 say "ok 2 # eval-string ", $a;
-            }
         ', 
         0
     );
     # say ($$m).perl;
-    ($$m).eval( $env );
+    ($$m).>>eval( $env );
 
-    $m = MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.exp_stmts( 
         '
-            class Testing { 
                 my @a = [ 3, 4 ];
                 my $x = 5;
                 for @a -> $x {
                     say "ok ", $x, " # eval-string for";
                 }
                 say "ok ", $x, " # eval-string outer-lexical";
-            }
         ', 
         0
     );
     # say ($$m).perl;
-    ($$m).eval( $env );
+    ($$m).>>eval( $env );
 
-    $m = MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.exp_stmts( 
         '
-            class Testing { 
 
                 sub add2 ($v) { $v + 2 } 
 
                 say "ok ", add2(4), " # eval-string named sub";
-            }
         ', 
         0
     );
     # say ($$m).perl;
-    ($$m).eval( $env );
+    ($$m).>>eval( $env );
 
-    $m = MiniPerl6::Grammar.comp_unit( 
+    $m = MiniPerl6::Grammar.exp_stmts( 
         '
-            class Testing { 
                 my %v = { a => 5, b => 6, c => 7 }; 
                 my @x = [ 5, 6, 7, 8, 9, 10 ];
                 say "ok ", %v{"c"}, " # eval-string hash literal and lookup";
                 say "ok ", @x[3], " # eval-string array literal and lookup";
-            }
         ', 
         0
     );
     # say ($$m).perl;
-    ($$m).eval( $env );
+    ($$m).>>eval( $env );
 
 }

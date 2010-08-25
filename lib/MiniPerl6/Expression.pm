@@ -379,9 +379,12 @@ class MiniPerl6::Expression {
         | '{'  <.MiniPerl6::Grammar.ws>?
                <MiniPerl6::Grammar.exp_stmts> <.MiniPerl6::Grammar.ws>? '}'
                     { make [ 'postfix_or_term', 'block', $$<MiniPerl6::Grammar.exp_stmts> ] }
-        | <MiniPerl6::Grammar.method_def>               { make [ 'term', $$<MiniPerl6::Grammar.method_def>  ] }
-        | <MiniPerl6::Grammar.sub_def>                  { make [ 'term', $$<MiniPerl6::Grammar.sub_def>     ] }
-        | <MiniPerl6::Grammar.token>                    { make [ 'term', $$<MiniPerl6::Grammar.token>       ] }
+        | 'method' <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.method_def>               
+                    { make [ 'term', $$<MiniPerl6::Grammar.method_def>  ] }
+        | 'sub' <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.sub_def>                  
+                    { make [ 'term', $$<MiniPerl6::Grammar.sub_def>     ] }
+        | 'token' <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.token>                    
+                    { make [ 'term', $$<MiniPerl6::Grammar.token>       ] }
         | 'do' <.MiniPerl6::Grammar.ws> <statement_parse>
                     { make [ 'term', Do.new( block => $$<statement_parse> ) ] }
 
@@ -398,6 +401,7 @@ class MiniPerl6::Expression {
         | 'and' <!before [ <.MiniPerl6::Grammar.word> | '(' ] >   { make [ 'op',    'and'                   ] }
         | 'not' <!before [ <.MiniPerl6::Grammar.word> | '(' ] >   { make [ 'op',    'not'                   ] }
         | 'use' <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.full_ident>  [ - <MiniPerl6::Grammar.ident> ]?      
+            <list_parse>
             { make [ 'term', Use.new( mod => $$<MiniPerl6::Grammar.full_ident> ) ] }
         | [ 'class' | 'grammar' ] <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.grammar>       
             { make [ 'term', $$<MiniPerl6::Grammar.grammar> ] }

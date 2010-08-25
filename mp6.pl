@@ -198,12 +198,6 @@ if ( $source_filename =~ /\.p5ast$/ ) {
     @comp_unit = @{ eval $source };
 }
 else {
-    if ( !$source_filename ) {
-        # Kludge - make an implicit Main explicit.
-        warn "adding implicit 'Main'\n" if $verbose && $source !~ /class/;
-        $source = "class Main { $source }" if $source !~ /class/;
-    }
-
     if  (  $backend eq 'go' 
         || $backend eq 'js'
         || ( $backend eq 'lisp' && ( $execute || $compile_to_bin ) )
@@ -252,37 +246,39 @@ else {
             return 1;
         };
         my $pos = 0;
-        $load_module->( "MiniPerl6::${lib_spec}::Prelude" );
-        my $len = length($source);
-        while ( $pos < $len ) {
-            my $p = MiniPerl6::Grammar->comp_unit( $source, $pos );
-            if ( !$p && $pos < $len ) {
-                die "Syntax error at pos ", $p->to, "\n";
-            }
-            for my $use (  
-                map  { $_->{mod} } 
-                grep { $_->isa("Use") } @{$$p->{body}} )
-            {
-                $load_module->($use);
-            }
-            push @comp_unit, $$p;
-            $pos = $p->to;
+        my $module = "MiniPerl6::${lib_spec}::Prelude";
+        $load_module->($module);
+        my $p = MiniPerl6::Grammar->exp_stmts( $source, $pos );
+        if (!$p) {
+            die "Syntax error at pos ", $p->to, " in $module\n";
         }
+        warn "matched source code to ", $p->to, " in $module\n" if $verbose;
+        for my $use (  
+            map  { $_->{mod} } 
+            grep { $_->isa("Use") } 
+            map  { @{$_->{body}} } 
+            grep { $_->isa("CompUnit") } @{$$p} )
+        {
+            $load_module->($use);
+        }
+        push @comp_unit, 
+            CompUnit->new(
+                name => 'Main',
+                body => $$p,
+            );
     }
     else {
         my $pos = 0;
-        my $len = length($source);
-        while ( $pos < $len ) {
-            my $p = MiniPerl6::Grammar->comp_unit( $source, $pos );
-            if ( !$p && $pos < $len ) {
-                my $start = $p->to - 20;
-                $start = 0 if $start < 0;
-                warn substr($source, $start, 40), "\n";
-                die "Syntax error at pos ", $p->to, "\n";
-            }
-            push @comp_unit, $$p;
-            $pos = $p->to;
+        my $p = MiniPerl6::Grammar->exp_stmts( $source, $pos );
+        if (!$p) {
+            die "Syntax error at pos ", $p->to, "\n";
         }
+        warn "matched source code to ", $p->to, "\n" if $verbose;
+        push @comp_unit,
+            CompUnit->new(
+                name => 'Main',
+                body => $$p,
+            );
     }
 }
 

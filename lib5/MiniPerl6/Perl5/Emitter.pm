@@ -5,11 +5,16 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
+package Main;
+sub new { shift; bless { @_ }, "Main" }
+# use v6;
+{
 package Perl5;
 sub new { shift; bless { @_ }, "Perl5" }
 sub to_bool { my $cond = $_[0]; if (Main::bool((((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) || Main::isa($cond, 'Lit::Array')))) { return(Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; if (Main::bool((((Main::isa($cond, 'Val::Num') || Main::isa($cond, 'Val::Buf')) || Main::isa($cond, 'Val::Int')) || ((Main::isa($cond, 'Apply') && ((((($cond->code() eq 'bool')) || (($cond->code() eq 'True'))) || (($cond->code() eq 'False'))))))))) { return($cond) } ; return(Apply->new(('code' => 'bool'), ('arguments' => [$cond]))) }
 }
 
+;
 {
 package CompUnit;
 sub new { shift; bless { @_ }, "CompUnit" }
@@ -26,6 +31,7 @@ sub emit_perl5 { my $self = $_[0]; '{' . '
 sub emit_perl5_program { my $comp_units = $_[0]; (my  $str = ''); for my $comp_unit  ( @{($comp_units) || []} ) { ($str = $str . $comp_unit->emit_perl5()) }; return($str) }
 }
 
+;
 {
 package Val::Int;
 sub new { shift; bless { @_ }, "Val::Int" }
@@ -33,6 +39,7 @@ sub int { $_[0]->{int} };
 sub emit_perl5 { my $self = $_[0]; $self->{int} }
 }
 
+;
 {
 package Val::Bit;
 sub new { shift; bless { @_ }, "Val::Bit" }
@@ -40,6 +47,7 @@ sub bit { $_[0]->{bit} };
 sub emit_perl5 { my $self = $_[0]; $self->{bit} }
 }
 
+;
 {
 package Val::Num;
 sub new { shift; bless { @_ }, "Val::Num" }
@@ -47,6 +55,7 @@ sub num { $_[0]->{num} };
 sub emit_perl5 { my $self = $_[0]; $self->{num} }
 }
 
+;
 {
 package Val::Buf;
 sub new { shift; bless { @_ }, "Val::Buf" }
@@ -54,6 +63,7 @@ sub buf { $_[0]->{buf} };
 sub emit_perl5 { my $self = $_[0]; '\'' . Main::perl_escape_string($self->{buf}) . '\'' }
 }
 
+;
 {
 package Lit::Block;
 sub new { shift; bless { @_ }, "Lit::Block" }
@@ -62,6 +72,7 @@ sub stmts { $_[0]->{stmts} };
 sub emit_perl5 { my $self = $_[0]; Main::join(([ map { $_->emit_perl5() } @{ $self->{stmts} } ]), '; ') }
 }
 
+;
 {
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
@@ -69,6 +80,7 @@ sub array1 { $_[0]->{array1} };
 sub emit_perl5 { my $self = $_[0]; my  $List_s; for my $item  ( @{$self->{array1} || []} ) { if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq '@'))))) { push( @{$List_s}, '@{' . $item->emit_perl5() . '}' ) } else { push( @{$List_s}, $item->emit_perl5() ) } }; '[' . Main::join($List_s, ', ') . ']' }
 }
 
+;
 {
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
@@ -76,6 +88,7 @@ sub hash1 { $_[0]->{hash1} };
 sub emit_perl5 { my $self = $_[0]; (my  $fields = $self->{hash1}); (my  $str = ''); for my $field  ( @{$fields || []} ) { ($str = $str . $field->emit_perl5() . ',') }; '{ ' . $str . ' }' }
 }
 
+;
 {
 package Index;
 sub new { shift; bless { @_ }, "Index" }
@@ -84,6 +97,7 @@ sub index_exp { $_[0]->{index_exp} };
 sub emit_perl5 { my $self = $_[0]; $self->{obj}->emit_perl5() . '->[' . $self->{index_exp}->emit_perl5() . ']' }
 }
 
+;
 {
 package Lookup;
 sub new { shift; bless { @_ }, "Lookup" }
@@ -92,6 +106,7 @@ sub index_exp { $_[0]->{index_exp} };
 sub emit_perl5 { my $self = $_[0]; $self->{obj}->emit_perl5() . '->{' . $self->{index_exp}->emit_perl5() . '}' }
 }
 
+;
 {
 package Var;
 sub new { shift; bless { @_ }, "Var" }
@@ -103,6 +118,7 @@ sub emit_perl5 { my $self = $_[0]; (my  $table = { ('$' => '$'),('@' => '$List_'
 sub plain_name { my $self = $_[0]; if (Main::bool($self->{namespace})) { return($self->{namespace} . '::' . $self->{name}) } ; return($self->{name}) }
 }
 
+;
 {
 package Proto;
 sub new { shift; bless { @_ }, "Proto" }
@@ -110,6 +126,7 @@ sub name { $_[0]->{name} };
 sub emit_perl5 { my $self = $_[0]; ("" . $self->{name}) }
 }
 
+;
 {
 package Call;
 sub new { shift; bless { @_ }, "Call" }
@@ -120,6 +137,7 @@ sub arguments { $_[0]->{arguments} };
 sub emit_perl5 { my $self = $_[0]; (my  $invocant = $self->{invocant}->emit_perl5()); if (Main::bool(($invocant eq 'self'))) { ($invocant = '$self') } ; if (Main::bool((($self->{method} eq 'shift')))) { if (Main::bool(($self->{hyper}))) { die('not implemented') } else { return('shift( @{' . $invocant . '} )') } } ; if (Main::bool(((($self->{method} eq 'values')) || (($self->{method} eq 'keys'))))) { if (Main::bool(($self->{hyper}))) { die('not implemented') } else { return('[' . $self->{method} . '( %{' . $invocant . '} )' . ']') } } ; if (Main::bool(((((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'chars'))) || (($self->{method} eq 'isa'))))) { if (Main::bool(($self->{hyper}))) { return('[ map { Main::' . $self->{method} . '( $_, ' . ', ' . Main::join(([ map { $_->emit_perl5() } @{ $self->{arguments} } ]), ', ') . ')' . ' } @{ ' . $invocant . ' } ]') } else { return('Main::' . $self->{method} . '(' . $invocant . ', ' . Main::join(([ map { $_->emit_perl5() } @{ $self->{arguments} } ]), ', ') . ')') } } ; if (Main::bool(($self->{method} eq 'push'))) { return('push( @{' . $invocant . '}, ' . Main::join(([ map { $_->emit_perl5() } @{ $self->{arguments} } ]), ', ') . ' )') } ; if (Main::bool(($self->{method} eq 'unshift'))) { return('unshift( @{' . $invocant . '}, ' . Main::join(([ map { $_->emit_perl5() } @{ $self->{arguments} } ]), ', ') . ' )') } ; if (Main::bool(($self->{method} eq 'pop'))) { return('pop( @{' . $invocant . '} )') } ; if (Main::bool(($self->{method} eq 'shift'))) { return('shift( @{' . $invocant . '} )') } ; if (Main::bool(($self->{method} eq 'elems'))) { return('scalar( @{' . $invocant . '} )') } ; (my  $meth = $self->{method}); if (Main::bool(($meth eq 'postcircumfix:<( )>'))) { ($meth = '') } ; (my  $call = '->' . $meth . '(' . Main::join(([ map { $_->emit_perl5() } @{ $self->{arguments} } ]), ', ') . ')'); if (Main::bool(($self->{hyper}))) { if (Main::bool((((Main::isa($self->{invocant}, 'Apply') && ($self->{invocant}->code() eq 'prefix:<@>'))) ? 0 : 1))) { ($invocant = '@{ ' . $invocant . ' }') } ; return('[ map { $_' . $call . ' } ' . $invocant . ' ]') } else { $invocant . $call } }
 }
 
+;
 {
 package Apply;
 sub new { shift; bless { @_ }, "Apply" }
@@ -130,6 +148,7 @@ sub emit_perl5 { my $self = $_[0]; (my  $ns = ''); if (Main::bool($self->{namesp
 sub emit_bind { my $parameters = $_[0]; my $arguments = $_[1]; if (Main::bool(Main::isa($parameters, 'Call'))) { (my  $a = $parameters); return('((' . ($a->invocant())->emit_perl5() . ')->{' . $a->method() . '} = ' . $arguments->emit_perl5() . ')') } ; if (Main::bool(Main::isa($parameters, 'Lit::Array'))) { (my  $a = $parameters->array1()); (my  $str = 'do { '); (my  $i = 0); for my $var  ( @{$a || []} ) { ($str = $str . ' ' . emit_bind($var, Index->new(('obj' => $arguments), ('index_exp' => Val::Int->new(('int' => $i))))) . '; '); ($i = ($i + 1)) }; return($str . $parameters->emit_perl5() . ' }') } ; if (Main::bool(Main::isa($parameters, 'Lit::Hash'))) { (my  $a = $parameters->hash1()); (my  $b = $arguments->hash1()); (my  $str = 'do { '); (my  $i = 0); my  $arg; for my $var  ( @{$a || []} ) { ($arg = Apply->new(('code' => 'undef'), ('arguments' => []))); for my $var2  ( @{$b || []} ) { if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) { ($arg = $var2->[1]) }  }; ($str = $str . ' ' . emit_bind($var->[1], $arg) . '; '); ($i = ($i + 1)) }; return($str . $parameters->emit_perl5() . ' }') } ; '(' . $parameters->emit_perl5() . ' = ' . $arguments->emit_perl5() . ')' }
 }
 
+;
 {
 package If;
 sub new { shift; bless { @_ }, "If" }
@@ -139,6 +158,7 @@ sub otherwise { $_[0]->{otherwise} };
 sub emit_perl5 { my $self = $_[0]; return('if (' . Perl5::to_bool($self->{cond})->emit_perl5() . ') { ' . (($self->{body})->emit_perl5()) . ' } ' . ((Main::bool($self->{otherwise}) ? ('else { ' . (($self->{otherwise})->emit_perl5()) . ' }') : ''))) }
 }
 
+;
 {
 package While;
 sub new { shift; bless { @_ }, "While" }
@@ -149,6 +169,7 @@ sub body { $_[0]->{body} };
 sub emit_perl5 { my $self = $_[0]; (my  $cond = $self->{cond}); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; 'for ( ' . ((Main::bool($self->{init}) ? $self->{init}->emit_perl5() . '; ' : '; ')) . ((Main::bool($cond) ? Perl5::to_bool($cond)->emit_perl5() . '; ' : '; ')) . ((Main::bool($self->{continue}) ? $self->{continue}->emit_perl5() . ' ' : ' ')) . ') { ' . $self->{body}->emit_perl5() . ' }' }
 }
 
+;
 {
 package For;
 sub new { shift; bless { @_ }, "For" }
@@ -157,6 +178,7 @@ sub body { $_[0]->{body} };
 sub emit_perl5 { my $self = $_[0]; (my  $cond = $self->{cond}); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; my  $sig; if (Main::bool($self->{body}->sig())) { ($sig = 'my ' . $self->{body}->sig()->emit_perl5() . ' ') } ; return('for ' . $sig . ' ( ' . $cond->emit_perl5() . ' ) { ' . $self->{body}->emit_perl5() . ' }') }
 }
 
+;
 {
 package Decl;
 sub new { shift; bless { @_ }, "Decl" }
@@ -166,6 +188,7 @@ sub var { $_[0]->{var} };
 sub emit_perl5 { my $self = $_[0]; (my  $decl = $self->{decl}); (my  $name = $self->{var}->plain_name()); (Main::bool((($decl eq 'has'))) ? ('sub ' . $name . ' { $_[0]->{' . $name . '} }') : $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_perl5()) }
 }
 
+;
 {
 package Sig;
 sub new { shift; bless { @_ }, "Sig" }
@@ -175,6 +198,7 @@ sub named { $_[0]->{named} };
 sub emit_perl5 { my $self = $_[0]; ' print \'Signature - TODO\'; die \'Signature - TODO\'; ' }
 }
 
+;
 {
 package Method;
 sub new { shift; bless { @_ }, "Method" }
@@ -184,6 +208,7 @@ sub block { $_[0]->{block} };
 sub emit_perl5 { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = ''); (my  $i = 1); for my $field  ( @{$pos || []} ) { ($str = $str . 'my ' . $field->emit_perl5() . ' = $_[' . $i . ']; '); ($i = ($i + 1)) }; 'sub ' . $self->{name} . ' { ' . 'my ' . $invocant->emit_perl5() . ' = $_[0]; ' . $str . Main::join(([ map { $_->emit_perl5() } @{ $self->{block} } ]), '; ') . ' }' }
 }
 
+;
 {
 package Sub;
 sub new { shift; bless { @_ }, "Sub" }
@@ -193,6 +218,7 @@ sub block { $_[0]->{block} };
 sub emit_perl5 { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $str = ''); (my  $i = 0); for my $field  ( @{$pos || []} ) { ($str = $str . 'my ' . $field->emit_perl5() . ' = $_[' . $i . ']; '); ($i = ($i + 1)) }; 'sub ' . $self->{name} . ' { ' . $str . Main::join(([ map { $_->emit_perl5() } @{ $self->{block} } ]), '; ') . ' }' }
 }
 
+;
 {
 package Do;
 sub new { shift; bless { @_ }, "Do" }
@@ -200,11 +226,17 @@ sub block { $_[0]->{block} };
 sub emit_perl5 { my $self = $_[0]; 'do { ' . ($self->{block}->emit_perl5()) . ' }' }
 }
 
+;
 {
 package Use;
 sub new { shift; bless { @_ }, "Use" }
 sub mod { $_[0]->{mod} };
-sub emit_perl5 { my $self = $_[0]; 'use ' . $self->{mod} }
+sub emit_perl5 { my $self = $_[0]; if (Main::bool(($self->{mod} eq 'v6'))) { return('
+' . '# use ' . $self->{mod} . ' ' . '
+') } ; 'use ' . $self->{mod} }
+}
+
+
 }
 
 1;

@@ -394,7 +394,9 @@ class Call {
                         ~ 'var out = []; ' 
                         ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
                         ~ 'for(var i = 0; i < a_.length; i++) { '
-                            ~ 'out.push( a_[i].f_' ~ $meth ~ '() ) } return out;'
+                            ~ 'out.push( a_[i].f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ') ) '
+                        ~ '}; '
+                        ~ 'return out;'
                     ~ ' })(' ~ $invocant ~ ')'
         }
         if  $meth eq 'postcircumfix:<( )>'  {

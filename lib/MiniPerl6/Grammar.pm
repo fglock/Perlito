@@ -45,32 +45,13 @@ token opt_ws  {  <.ws>?  }
 token opt_ws2 {  <.ws>?  }
 token opt_ws3 {  <.ws>?  }
 
-token parse {
-    | <comp_unit>
-        [
-        |   <parse>
-            { make [ $$<comp_unit>, @( $$<parse> ) ] }
-        |   { make [ $$<comp_unit> ] }
-        ]
-    | { make [] }
-}
-
-token comp_unit {
-    <.ws>? [ \; <.ws>? ]?
-    [ 'use' <.ws> 'v6'  [ '-' <ident> ]?  <.ws>? \; <.ws>? ]?
-    [ 'class' | 'grammar' ]  <.ws> <grammar>
-        { make $$<grammar> }
-}
-
 token grammar {
-    # [ 'class' | 'grammar' ]  <.ws>
     <full_ident> <.ws>? 
     '{'
         <.ws>?
         <exp_stmts>
         <.ws>?
     '}'
-    <.ws>? [ \; <.ws>? ]?
     {
         make CompUnit.new(
             name        => $$<full_ident>,
@@ -101,12 +82,12 @@ token exp2 {
 
 token opt_ident {  
     | <ident>  { make $$<ident> }
-    | ''     { make 'postcircumfix:<( )>' }
+    | ''       { make 'postcircumfix:<( )>' }
 }
 
 token opt_type {
     |   '::'?  <full_ident>   { make $$<full_ident> }
-    |   ''                              { make '' }
+    |   ''                    { make '' }
 }
 
 token var_sigil     { \$ |\% |\@ |\& }
@@ -279,13 +260,10 @@ token method_sig {
 }
 
 token method_def {
-    method
-    <.ws>  <opt_name>  <.opt_ws> 
+    <opt_name>  <.opt_ws> 
     <method_sig>
     <.opt_ws> \{ <.opt_ws>  
-          # { say ' parsing statement list ' }
           <exp_stmts> 
-          # { say ' got statement list ', ($$<exp_stmts>).perl } 
         <.opt_ws> 
     [   \}     | { die 'Syntax Error in method \'.', $$<name>, '\' near pos=', $/.to; } ]
     {
@@ -295,8 +273,7 @@ token method_def {
 }
 
 token sub_def {
-    sub
-    <.ws>  <opt_name>  <.opt_ws> 
+    <opt_name>  <.opt_ws> 
     <method_sig>
     <.opt_ws> \{ <.opt_ws>  
           <exp_stmts> <.opt_ws> 
@@ -305,14 +282,12 @@ token sub_def {
 }
 
 token token {
-    # { say 'parsing Token' }
-    token
-    <.ws>  <opt_name>  <.opt_ws> \{
+    <opt_name>  <.opt_ws> \{
         <MiniPerl6::Grammar::Regex.rule>
     \}
     {
         #say 'Token was compiled into: ', ($$<MiniPerl6::Grammar::Regex.rule>).perl;
-        my $source = 'method ' ~ $<opt_name> ~ ' ( $grammar: $str, $pos ) { ' ~
+        my $source = $<opt_name> ~ ' ( $grammar: $str, $pos ) { ' ~
             'my $MATCH; $MATCH = MiniPerl6::Match.new( str => $str, from => $pos, to => $pos, bool => 1 ); ' ~ 
             '$MATCH.bool = ( ' ~
                 ($$<MiniPerl6::Grammar::Regex.rule>).emit() ~

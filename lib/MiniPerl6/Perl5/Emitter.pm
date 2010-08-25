@@ -528,6 +528,9 @@ class Do {
 class Use {
     has $.mod;
     method emit_perl5 {
+        if $.mod eq 'v6' {
+            return "\n# use $.mod \n"
+        } 
         'use ' ~ $.mod
     }
 }
