@@ -39,7 +39,7 @@ class MiniPerl6::Precedence {
             if $s eq $tok {
                 my $c1 = substr($str, $pos+$l-1, 1);
                 my $c2 = substr($str, $pos+$l, 1);
-                if is_ident_middle($c1) && is_ident_middle($c2) {
+                if is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ) {
                 }
                 else {
                     return MiniPerl6::Match.new( 'str' => $str, 'from' => $from, 'to' => $pos+2, 'bool' => 1,
@@ -65,7 +65,7 @@ class MiniPerl6::Precedence {
         if exists($Op2{$op2}) {
             my $c1 = substr($str, $pos+1, 1);
             my $c2 = substr($str, $pos+2, 1);
-            if is_ident_middle($c1) && is_ident_middle($c2) {
+            if is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ) {
             }
             else {
                 $pos = $pos + 2;
@@ -86,7 +86,7 @@ class MiniPerl6::Precedence {
         my $op1 = substr($str, $pos, 1);
         if exists($Op1{$op1}) {
             my $c2 = substr($str, $pos+1, 1);
-            if is_ident_middle($op1) && is_ident_middle($c2) {
+            if is_ident_middle($op1) && ( is_ident_middle($c2) || $c2 eq '(' ) {
             }
             else {
                 $pos = $pos + 1;

@@ -395,8 +395,8 @@ class MiniPerl6::Expression {
         | <MiniPerl6::Precedence.op_parse>              { make $$<MiniPerl6::Precedence.op_parse>             }
         | <MiniPerl6::Grammar.ident> <before <.MiniPerl6::Grammar.ws>? '=>' >   # autoquote
             { make [ 'term', Val::Buf.new( buf => ~$<MiniPerl6::Grammar.ident> ) ] }
-        | 'and' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'and'                       ] }
-        | 'not' <!before <.MiniPerl6::Grammar.word> >   { make [ 'op',          'not'                       ] }
+        | 'and' <!before [ <.MiniPerl6::Grammar.word> | '(' ] >   { make [ 'op',    'and'                   ] }
+        | 'not' <!before [ <.MiniPerl6::Grammar.word> | '(' ] >   { make [ 'op',    'not'                   ] }
         | 'use' <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.full_ident>  [ - <MiniPerl6::Grammar.ident> ]?      
             { make [ 'term', Use.new( mod => $$<MiniPerl6::Grammar.full_ident> ) ] }
         | [ 'class' | 'grammar' ] <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.grammar>       
