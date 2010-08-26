@@ -263,7 +263,7 @@ else {
         }
         push @comp_unit, 
             CompUnit->new(
-                name => 'Main',
+                name => 'GLOBAL',
                 body => $$p,
             );
     }
@@ -276,7 +276,7 @@ else {
         warn "matched source code to ", $p->to, "\n" if $verbose;
         push @comp_unit,
             CompUnit->new(
-                name => 'Main',
+                name => 'GLOBAL',
                 body => $$p,
             );
     }

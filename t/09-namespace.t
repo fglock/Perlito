@@ -20,10 +20,10 @@ if $x != 7 {
 };
 say 'ok 2 - ', $x;
 
-# we are in the default "Main" namespace
+# we are in the default "GLOBAL" namespace
 
 $x = 0;
-$x = Main::subr( 1, 2 );
+$x = GLOBAL::subr( 1, 2 );
 if $x != 3 {
     print 'not '
 };
