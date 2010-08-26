@@ -181,7 +181,18 @@ class Lit::Array {
     has @.array1;
     method emit_javascript {
         my $needs_interpolation = 0;
+        my @items;
         for @.array1 -> $item {
+            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
+                for @($item.arguments) -> $arg {
+                    @items.push($arg);
+                }
+            }
+            else {
+                @items.push($item);
+            }
+        }
+        for @items -> $item {
             if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
                 || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' ) 
             {
@@ -190,7 +201,7 @@ class Lit::Array {
         }
         if $needs_interpolation {
             my $s = '';
-            for @.array1 -> $item {
+            for @items -> $item {
                 if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
                     || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' ) 
                 {
@@ -208,7 +219,7 @@ class Lit::Array {
             ~ ' return a })()';
         }
         else {
-            '[' ~ (@.array1.>>emit_javascript).join(', ') ~ ']';
+            '[' ~ (@items.>>emit_javascript).join(', ') ~ ']';
         }
     }
 }
@@ -574,6 +585,11 @@ class Apply {
             $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ ' = ' ~ $arguments.emit_javascript() ~ '); ';
             return '(function () { ' ~ $str ~ '})()';
         }
+        if      $parameters.isa( 'Var' ) && $parameters.sigil eq '@'
+            ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '@'
+        {
+            $arguments = Lit::Array.new( array1 => [$arguments] );
+        }
         '(' ~ $parameters.emit_javascript() ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
     }
 }
@@ -625,6 +641,10 @@ class For {
     has $.cond;
     has @.body;
     method emit_javascript {
+        my $cond = $.cond;
+        if !( $cond.isa( 'Var' ) && $cond.sigil eq '@' ) {
+            $cond = Lit::Array.new( array1 => [$cond] )
+        }
         my $body      = MiniPerl6::Javascript::LexicalBlock.new( block => @.body.stmts, needs_return => 0 );
         my $sig = 'v__';
         if $.body.sig() {
@@ -634,7 +654,7 @@ class For {
             ~ "(function ($sig) { "
                 ~ $body.emit_javascript() 
             ~ ' })(a_[i_]) } })' 
-        ~ '(' ~ $.cond.emit_javascript() ~ ')'
+        ~ '(' ~ $cond.emit_javascript() ~ ')'
     }
 }
 

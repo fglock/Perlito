@@ -133,7 +133,7 @@ class MiniPerl6::Python::LexicalBlock {
         }
 
         for @($block) -> $stmt {
-            @anon_block = [];
+            @anon_block = ();
             my $s2 = $stmt.emit_python_indented($level);
             for @anon_block -> $stmt {
                 @s.push( $stmt.emit_python_indented( $level ) );
@@ -142,7 +142,7 @@ class MiniPerl6::Python::LexicalBlock {
         }
 
         if $.needs_return && $last_statement {
-            @anon_block = [];
+            @anon_block = ();
             my $s2;
             if $last_statement.isa( 'If' ) {
                 my $cond            = $last_statement.cond;

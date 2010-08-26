@@ -12,7 +12,7 @@ class Main {
         say "ok 1";
     }
 
-    my @x = [ 2, 3 ];
+    my @x = ( 2, 3 );
     while @x {
         say "ok ", (shift @x); 
     }

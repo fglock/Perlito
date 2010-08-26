@@ -71,9 +71,19 @@ class Lit::Array {
     has @.array1;
     method emit_perl5 {
         my @s;
+        my @items;
         for @.array1 -> $item {
-            if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
-            {
+            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
+                for @($item.arguments) -> $arg {
+                    @items.push($arg);
+                }
+            }
+            else {
+                @items.push($item);
+            }
+        }
+        for @items -> $item {
+            if $item.isa( 'Var' ) && $item.sigil eq '@' {
                 push @s, '@{' ~ $item.emit_perl5() ~ '}';
             }
             else {
@@ -387,7 +397,11 @@ class Apply {
             }
             return $str ~ $parameters.emit_perl5() ~ ' }';
         }
-
+        if      $parameters.isa( 'Var' ) && $parameters.sigil eq '@' 
+            ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '@' 
+        {
+            $arguments = Lit::Array.new( array1 => [$arguments] );
+        }
         '(' ~ $parameters.emit_perl5() ~ ' = ' ~ $arguments.emit_perl5() ~ ')';
     }
 }
@@ -437,16 +451,14 @@ class For {
     has $.body;
     method emit_perl5 {
         my $cond = $.cond;
-        if   $cond.isa( 'Var' ) 
-          && $cond.sigil eq '@' 
-        {
-            $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
+        if !( $cond.isa( 'Var' ) && $cond.sigil eq '@' ) {
+            $cond = Lit::Array.new( array1 => [$cond] )
         }
         my $sig;
         if $.body.sig() {
             $sig = 'my ' ~ $.body.sig.emit_perl5() ~ ' ';
         }
-        return  "for $sig ( " ~ $cond.emit_perl5() ~ ' ) { ' 
+        return  'for ' ~ $sig ~ '( @{' ~ $cond.emit_perl5() ~ '} ) { ' 
              ~   $.body.emit_perl5() 
              ~ ' }';
     }

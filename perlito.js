@@ -618,7 +618,8 @@ if (typeof Lit$Array != 'object') {
   // method emit_javascript
   Lit$Array.f_emit_javascript = function () {
     var v_self = this;
-    try { var v_needs_interpolation;(v_needs_interpolation = 0);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) { if ( f_bool(f_or((f_and(f_isa(v_item, "Var"), function () { return (v_item.f_sigil() == "@")})), function () { return (f_and(f_isa(v_item, "Apply"), function () { return (v_item.f_code() == "prefix:<@>")}))})) ) { (function () { (v_needs_interpolation = 1); })() }; })(a_[i_]) } })(v_self.v_array1);if ( f_bool(v_needs_interpolation) ) { return (function () { var v_s;(v_s = "");(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) { if ( f_bool(f_or((f_and(f_isa(v_item, "Var"), function () { return (v_item.f_sigil() == "@")})), function () { return (f_and(f_isa(v_item, "Apply"), function () { return (v_item.f_code() == "prefix:<@>")}))})) ) { (function () { (v_s = (f_string(v_s) + f_string("(function(a_) { ") + f_string("for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }") + f_string("})(") + f_string(v_item.f_emit_javascript()) + f_string("); "))); })() } else { (function () { (v_s = (f_string(v_s) + f_string("a.push(") + f_string(v_item.f_emit_javascript()) + f_string("); "))); })() }; })(a_[i_]) } })(v_self.v_array1);return((f_string("(function () { var a = []; ") + f_string(v_s) + f_string(" return a })()"))) })() } else { return (function () { return((f_string("[") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_array1)).join(", ")) + f_string("]"))) })() } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_needs_interpolation;var List_items = [];
+(v_needs_interpolation = 0);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) { if ( f_bool(f_and(f_isa(v_item, "Apply"), function () { return (f_or((v_item.f_code() == "circumfix:<( )>"), function () { return (v_item.f_code() == "list:<,>")}))})) ) { (function () { (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) { List_items.push(v_arg); })(a_[i_]) } })((function () { var a = []; (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})(((v_item.f_arguments())));  return a })()); })() } else { (function () { List_items.push(v_item); })() }; })(a_[i_]) } })(v_self.v_array1);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) { if ( f_bool(f_or((f_and(f_isa(v_item, "Var"), function () { return (v_item.f_sigil() == "@")})), function () { return (f_and(f_isa(v_item, "Apply"), function () { return (v_item.f_code() == "prefix:<@>")}))})) ) { (function () { (v_needs_interpolation = 1); })() }; })(a_[i_]) } })(List_items);if ( f_bool(v_needs_interpolation) ) { return (function () { var v_s;(v_s = "");(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) { if ( f_bool(f_or((f_and(f_isa(v_item, "Var"), function () { return (v_item.f_sigil() == "@")})), function () { return (f_and(f_isa(v_item, "Apply"), function () { return (v_item.f_code() == "prefix:<@>")}))})) ) { (function () { (v_s = (f_string(v_s) + f_string("(function(a_) { ") + f_string("for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }") + f_string("})(") + f_string(v_item.f_emit_javascript()) + f_string("); "))); })() } else { (function () { (v_s = (f_string(v_s) + f_string("a.push(") + f_string(v_item.f_emit_javascript()) + f_string("); "))); })() }; })(a_[i_]) } })(List_items);return((f_string("(function () { var a = []; ") + f_string(v_s) + f_string(" return a })()"))) })() } else { return (function () { return((f_string("[") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(List_items)).join(", ")) + f_string("]"))) })() } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Lit$Array.f_emit_javascript;  // v8 bug workaround
 })();
@@ -793,9 +794,9 @@ if (typeof Apply != 'object') {
   Apply.f_emit_javascript;  // v8 bug workaround
   // sub emit_bind
   Apply.f_emit_bind = function (v_parameters, v_arguments) {
-    try { if ( f_bool(f_isa(v_parameters, "Lit::Array")) ) { (function () { var v_a;var v_str;var v_i;(v_a = v_parameters.f_array1());(v_str = "do { ");(v_i = 0);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_var) { (v_str = (f_string(v_str) + f_string(" ") + f_string(v__NAMESPACE.f_emit_bind(v_var, function () { var tmp = {v_obj: v_arguments,v_index_exp: function () { var tmp = {v_int: v_i,}; tmp.__proto__ = Val$Int; return tmp }(),}; tmp.__proto__ = Index; return tmp }())) + f_string("; ")));(v_i = f_add(v_i, 1)); })(a_[i_]) } })((v_a));throw((f_string(v_str) + f_string(v_parameters.f_emit_javascript()) + f_string(" }"))); })() };if ( f_bool(f_isa(v_parameters, "Lit::Hash")) ) { (function () { var v_a;var v_b;var v_str;var v_i;var v_arg = null;
-(v_a = v_parameters.f_hash1());(v_b = v_arguments.f_hash1());(v_str = "do { ");(v_i = 0);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_var) { (v_arg = function () { var tmp = {v_code: "undef",}; tmp.__proto__ = Apply; return tmp }());(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_var2) { if ( f_bool(((v_var2[0]).f_buf() == (v_var[0]).f_buf())) ) { (function () { (v_arg = v_var2[1]); })() }; })(a_[i_]) } })((v_b));(v_str = (f_string(v_str) + f_string(" ") + f_string(v__NAMESPACE.f_emit_bind(v_var[1], v_arg)) + f_string("; ")));(v_i = f_add(v_i, 1)); })(a_[i_]) } })((v_a));throw((f_string(v_str) + f_string(v_parameters.f_emit_javascript()) + f_string(" }"))); })() };if ( f_bool(f_isa(v_parameters, "Call")) ) { (function () { throw((f_string("(") + f_string((v_parameters.f_invocant()).f_emit_javascript()) + f_string(".v_") + f_string(v_parameters.f_method()) + f_string(" = ") + f_string(v_arguments.f_emit_javascript()) + f_string(")"))); })() };if ( f_bool(f_isa(v_parameters, "Lookup")) ) { (function () { var v_str;var v_var;var v_var_js = null;
-var v_index_js;(v_str = "");(v_var = v_parameters.f_obj());if ( f_bool(f_isa(v_var, "Lookup")) ) { (function () { var v_var1;var v_var1_js;(v_var1 = v_var.f_obj());(v_var1_js = v_var1.f_emit_javascript());(v_str = (f_string(v_str) + f_string("if (") + f_string(v_var1_js) + f_string(" == null) { ") + f_string(v_var1_js) + f_string(" = {} }; ")));(v_var_js = (f_string(v_var1_js) + f_string("[") + f_string(v_var.f_index_exp().f_emit_javascript()) + f_string("]"))); })() } else { (function () { (v_var_js = v_var.f_emit_javascript()); })() };(v_str = (f_string(v_str) + f_string("if (") + f_string(v_var_js) + f_string(" == null) { ") + f_string(v_var_js) + f_string(" = {} }; ")));(v_index_js = v_parameters.f_index_exp().f_emit_javascript());(v_str = (f_string(v_str) + f_string("return (") + f_string(v_var_js) + f_string("[") + f_string(v_index_js) + f_string("] ") + f_string(" = ") + f_string(v_arguments.f_emit_javascript()) + f_string("); ")));throw((f_string("(function () { ") + f_string(v_str) + f_string("})()"))); })() };return((f_string("(") + f_string(v_parameters.f_emit_javascript()) + f_string(" = ") + f_string(v_arguments.f_emit_javascript()) + f_string(")"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { if ( f_bool(f_isa(v_parameters, "Lit::Array")) ) { (function () { var v_a;var v_str;var v_i;(v_a = v_parameters.f_array1());(v_str = "do { ");(v_i = 0);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_var) { (v_str = (f_string(v_str) + f_string(" ") + f_string(v__NAMESPACE.f_emit_bind(v_var, function () { var tmp = {v_obj: v_arguments,v_index_exp: function () { var tmp = {v_int: v_i,}; tmp.__proto__ = Val$Int; return tmp }(),}; tmp.__proto__ = Index; return tmp }())) + f_string("; ")));(v_i = f_add(v_i, 1)); })(a_[i_]) } })((function () { var a = []; (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})((v_a));  return a })());throw((f_string(v_str) + f_string(v_parameters.f_emit_javascript()) + f_string(" }"))); })() };if ( f_bool(f_isa(v_parameters, "Lit::Hash")) ) { (function () { var v_a;var v_b;var v_str;var v_i;var v_arg = null;
+(v_a = v_parameters.f_hash1());(v_b = v_arguments.f_hash1());(v_str = "do { ");(v_i = 0);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_var) { (v_arg = function () { var tmp = {v_code: "undef",}; tmp.__proto__ = Apply; return tmp }());(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_var2) { if ( f_bool(((v_var2[0]).f_buf() == (v_var[0]).f_buf())) ) { (function () { (v_arg = v_var2[1]); })() }; })(a_[i_]) } })((function () { var a = []; (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})((v_b));  return a })());(v_str = (f_string(v_str) + f_string(" ") + f_string(v__NAMESPACE.f_emit_bind(v_var[1], v_arg)) + f_string("; ")));(v_i = f_add(v_i, 1)); })(a_[i_]) } })((function () { var a = []; (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})((v_a));  return a })());throw((f_string(v_str) + f_string(v_parameters.f_emit_javascript()) + f_string(" }"))); })() };if ( f_bool(f_isa(v_parameters, "Call")) ) { (function () { throw((f_string("(") + f_string((v_parameters.f_invocant()).f_emit_javascript()) + f_string(".v_") + f_string(v_parameters.f_method()) + f_string(" = ") + f_string(v_arguments.f_emit_javascript()) + f_string(")"))); })() };if ( f_bool(f_isa(v_parameters, "Lookup")) ) { (function () { var v_str;var v_var;var v_var_js = null;
+var v_index_js;(v_str = "");(v_var = v_parameters.f_obj());if ( f_bool(f_isa(v_var, "Lookup")) ) { (function () { var v_var1;var v_var1_js;(v_var1 = v_var.f_obj());(v_var1_js = v_var1.f_emit_javascript());(v_str = (f_string(v_str) + f_string("if (") + f_string(v_var1_js) + f_string(" == null) { ") + f_string(v_var1_js) + f_string(" = {} }; ")));(v_var_js = (f_string(v_var1_js) + f_string("[") + f_string(v_var.f_index_exp().f_emit_javascript()) + f_string("]"))); })() } else { (function () { (v_var_js = v_var.f_emit_javascript()); })() };(v_str = (f_string(v_str) + f_string("if (") + f_string(v_var_js) + f_string(" == null) { ") + f_string(v_var_js) + f_string(" = {} }; ")));(v_index_js = v_parameters.f_index_exp().f_emit_javascript());(v_str = (f_string(v_str) + f_string("return (") + f_string(v_var_js) + f_string("[") + f_string(v_index_js) + f_string("] ") + f_string(" = ") + f_string(v_arguments.f_emit_javascript()) + f_string("); ")));throw((f_string("(function () { ") + f_string(v_str) + f_string("})()"))); })() };if ( f_bool(f_or(f_and(f_isa(v_parameters, "Var"), function () { return (v_parameters.f_sigil() == "@")}), function () { return f_and(f_isa(v_parameters, "Decl"), function () { return (v_parameters.f_var().f_sigil() == "@")})})) ) { (function () { (v_arguments = function () { var tmp = {v_array1: [v_arguments],}; tmp.__proto__ = Lit$Array; return tmp }()); })() };return((f_string("(") + f_string(v_parameters.f_emit_javascript()) + f_string(" = ") + f_string(v_arguments.f_emit_javascript()) + f_string(")"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
 })();
 ;// class If
@@ -869,7 +870,7 @@ if (typeof For != 'object') {
   // method emit_javascript
   For.f_emit_javascript = function () {
     var v_self = this;
-    try { var v_body;var v_sig;(v_body = function () { var tmp = {v_block: v_self.v_body.f_stmts(),v_needs_return: 0,}; tmp.__proto__ = MiniPerl6$Javascript$LexicalBlock; return tmp }());(v_sig = "v__");if ( f_bool(v_self.v_body.f_sig()) ) { (function () { (v_sig = v_self.v_body.f_sig().f_emit_javascript()); })() };return((f_string("(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ") + f_string((f_string("(function (") + f_string(v_sig) + f_string(") { "))) + f_string(v_body.f_emit_javascript()) + f_string(" })(a_[i_]) } })") + f_string("(") + f_string(v_self.v_cond.f_emit_javascript()) + f_string(")"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_cond;var v_body;var v_sig;(v_cond = v_self.v_cond);if ( f_bool(( f_bool((f_and(f_isa(v_cond, "Var"), function () { return (v_cond.f_sigil() == "@")}))) ? false : true)) ) { (function () { (v_cond = function () { var tmp = {v_array1: [v_cond],}; tmp.__proto__ = Lit$Array; return tmp }()); })() };(v_body = function () { var tmp = {v_block: v_self.v_body.f_stmts(),v_needs_return: 0,}; tmp.__proto__ = MiniPerl6$Javascript$LexicalBlock; return tmp }());(v_sig = "v__");if ( f_bool(v_self.v_body.f_sig()) ) { (function () { (v_sig = v_self.v_body.f_sig().f_emit_javascript()); })() };return((f_string("(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ") + f_string((f_string("(function (") + f_string(v_sig) + f_string(") { "))) + f_string(v_body.f_emit_javascript()) + f_string(" })(a_[i_]) } })") + f_string("(") + f_string(v_cond.f_emit_javascript()) + f_string(")"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   For.f_emit_javascript;  // v8 bug workaround
 })();
@@ -2031,95 +2032,6 @@ if (typeof Main != 'object') {
 }
 (function () {
   var v__NAMESPACE = Main;
-// use v6
-;// class MiniPerl6::Match
-if (typeof MiniPerl6$Match != 'object') {
-  MiniPerl6$Match = function() {};
-  MiniPerl6$Match = new MiniPerl6$Match;
-  MiniPerl6$Match.f_isa = function (s) { return s == 'MiniPerl6::Match' };
-  MiniPerl6$Match.f_perl = function () { return 'MiniPerl6::Match.new(' + Main._dump(this) + ')' };
-}
-(function () {
-  var v__NAMESPACE = MiniPerl6$Match;
-  // accessor from
-  MiniPerl6$Match.v_from = null;
-  MiniPerl6$Match.f_from = function () { return this.v_from }
-  // accessor to
-  MiniPerl6$Match.v_to = null;
-  MiniPerl6$Match.f_to = function () { return this.v_to }
-  // accessor str
-  MiniPerl6$Match.v_str = null;
-  MiniPerl6$Match.f_str = function () { return this.v_str }
-  // accessor bool
-  MiniPerl6$Match.v_bool = null;
-  MiniPerl6$Match.f_bool = function () { return this.v_bool }
-  // accessor capture
-  MiniPerl6$Match.v_capture = null;
-  MiniPerl6$Match.f_capture = function () { return this.v_capture }
-  // method scalar
-  MiniPerl6$Match.f_scalar = function () {
-    var v_self = this;
-    try { if ( f_bool(v_self.v_bool) ) { return (function () { if ( f_bool((v_self.v_capture != null)) ) { (function () { throw(v_self.v_capture); })() };throw((v_self.v_str || "").substr(v_self.v_from, ((v_self.v_to - v_self.v_from)))) })() } else { return (function () { throw("") })() } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
-  }
-  MiniPerl6$Match.f_scalar;  // v8 bug workaround
-  // method string
-  MiniPerl6$Match.f_string = function () {
-    var v_self = this;
-    try { if ( f_bool(v_self.v_bool) ) { return (function () { if ( f_bool((v_self.v_capture != null)) ) { (function () { throw(v_self.v_capture); })() };throw((v_self.v_str || "").substr(v_self.v_from, ((v_self.v_to - v_self.v_from)))) })() } else { return (function () { throw("") })() } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
-  }
-  MiniPerl6$Match.f_string;  // v8 bug workaround
-})();
-;// class Pair
-if (typeof Pair != 'object') {
-  Pair = function() {};
-  Pair = new Pair;
-  Pair.f_isa = function (s) { return s == 'Pair' };
-  Pair.f_perl = function () { return 'Pair.new(' + Main._dump(this) + ')' };
-}
-(function () {
-  var v__NAMESPACE = Pair;
-  // accessor key
-  Pair.v_key = null;
-  Pair.f_key = function () { return this.v_key }
-  // accessor value
-  Pair.v_value = null;
-  Pair.f_value = function () { return this.v_value }
-  // method perl
-  Pair.f_perl = function () {
-    var v_self = this;
-    try { throw((f_string(v_self.v_key) + f_string(" => ") + f_string(f_perl(v_self.v_value)))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
-  }
-  Pair.f_perl;  // v8 bug workaround
-})();
-;// class Main
-if (typeof Main != 'object') {
-  Main = function() {};
-  Main = new Main;
-  Main.f_isa = function (s) { return s == 'Main' };
-  Main.f_perl = function () { return 'Main.new(' + Main._dump(this) + ')' };
-}
-(function () {
-  var v__NAMESPACE = Main;
-  // sub to_lisp_identifier
-  Main.f_to_lisp_identifier = function (v_ident) {
-    try { throw((f_string("sv-") + f_string(v_ident))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
-  }
-  // sub lisp_dump_object
-  Main.f_lisp_dump_object = function (v_class_name, v_data) {
-    try { throw((f_string(v_class_name) + f_string("( ") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( f_perl(a_[i]) ) } return out; })(v_data)).join(", ")) + f_string(" )"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
-  }
-})();
-;})();
-
-// class Main
-if (typeof Main != 'object') {
-  Main = function() {};
-  Main = new Main;
-  Main.f_isa = function (s) { return s == 'Main' };
-  Main.f_perl = function () { return 'Main.new(' + Main._dump(this) + ')' };
-}
-(function () {
-  var v__NAMESPACE = Main;
 // class MiniPerl6::Precedence
 if (typeof MiniPerl6$Precedence != 'object') {
   MiniPerl6$Precedence = function() {};
@@ -2160,7 +2072,7 @@ var v_prec;  // accessor get_token
   // method op_parse
   MiniPerl6$Precedence.f_op_parse = function (v_str, v_pos) {
     var v_self = this;
-    try { var v_from;var v_c01;var v_c02;var v_hyper_left;var v_hyper_right;var v_op2;var v_op1;(v_from = v_pos);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_tok) { var v_l;var v_s;(v_l = Main.chars(v_tok));(v_s = (v_str || "").substr(v_pos, v_l));if ( f_bool((v_s == v_tok)) ) { (function () { var v_c1;var v_c2;(v_c1 = (v_str || "").substr((f_add(v_pos, v_l) - 1), 1));(v_c2 = (v_str || "").substr(f_add(v_pos, v_l), 1));if ( f_bool(f_and(v__NAMESPACE.f_is_ident_middle(v_c1), function () { return (f_or(v__NAMESPACE.f_is_ident_middle(v_c2), function () { return (v_c2 == "(")}))})) ) { (function () {  })() } else { (function () { throw(function () { var tmp = {v_str: v_str,v_from: v_from,v_to: f_add(v_pos, 2),v_bool: 1,v_capture: ["end", v_s],}; tmp.__proto__ = MiniPerl6$Match; return tmp }()); })() }; })() }; })(a_[i_]) } })(((v_End_token)));(v_c01 = (v_str || "").substr(v_pos, 1));(v_c02 = (v_str || "").substr(v_pos, 2));(v_hyper_left = 0);(v_hyper_right = 0);if ( f_bool(f_or(((v_c01 == "«")), function () { return ((v_c01 == "»"))})) ) { (function () { (v_hyper_left = v_c01);(v_pos = f_add(v_pos, 1));(v_c02 = (v_str || "").substr(v_pos, 2)); })() } else { (function () { if ( f_bool(f_or(((v_c02 == "<<")), function () { return ((v_c02 == ">>"))})) ) { (function () { (v_hyper_left = v_c02);(v_pos = f_add(v_pos, 2));(v_c02 = (v_str || "").substr(v_pos, 2)); })() }; })() };(v_op2 = v_c02);if ( f_bool((v_Op2).hasOwnProperty(v_op2)) ) { (function () { var v_c1;var v_c2;(v_c1 = (v_str || "").substr(f_add(v_pos, 1), 1));(v_c2 = (v_str || "").substr(f_add(v_pos, 2), 1));if ( f_bool(f_and(v__NAMESPACE.f_is_ident_middle(v_c1), function () { return (f_or(v__NAMESPACE.f_is_ident_middle(v_c2), function () { return (v_c2 == "(")}))})) ) { (function () {  })() } else { (function () { var v_c01;var v_c02;(v_pos = f_add(v_pos, 2));(v_c01 = (v_str || "").substr(v_pos, 1));(v_c02 = (v_str || "").substr(v_pos, 2));if ( f_bool(f_or(((v_c01 == "«")), function () { return ((v_c01 == "»"))})) ) { (function () { (v_hyper_right = v_c01);(v_pos = f_add(v_pos, 1)); })() } else { (function () { if ( f_bool(f_or(((v_c02 == "<<")), function () { return ((v_c02 == ">>"))})) ) { (function () { (v_hyper_right = v_c02);(v_pos = f_add(v_pos, 2)); })() }; })() };throw(function () { var tmp = {v_str: v_str,v_from: v_from,v_to: v_pos,v_bool: 1,v_capture: ["op", v_op2, (function () { var a = []; a["hyper_left"] = v_hyper_left; a["hyper_right"] = v_hyper_right;  return a })()],}; tmp.__proto__ = MiniPerl6$Match; return tmp }()); })() }; })() };(v_op1 = (v_str || "").substr(v_pos, 1));if ( f_bool((v_Op1).hasOwnProperty(v_op1)) ) { (function () { var v_c2;(v_c2 = (v_str || "").substr(f_add(v_pos, 1), 1));if ( f_bool(f_and(v__NAMESPACE.f_is_ident_middle(v_op1), function () { return (f_or(v__NAMESPACE.f_is_ident_middle(v_c2), function () { return (v_c2 == "(")}))})) ) { (function () {  })() } else { (function () { var v_c01;var v_c02;(v_pos = f_add(v_pos, 1));(v_c01 = (v_str || "").substr(v_pos, 1));(v_c02 = (v_str || "").substr(v_pos, 2));if ( f_bool(f_or(((v_c01 == "«")), function () { return ((v_c01 == "»"))})) ) { (function () { (v_hyper_right = v_c01);(v_pos = f_add(v_pos, 1)); })() } else { (function () { if ( f_bool(f_or(((v_c02 == "<<")), function () { return ((v_c02 == ">>"))})) ) { (function () { (v_hyper_right = v_c02);(v_pos = f_add(v_pos, 2)); })() }; })() };throw(function () { var tmp = {v_str: v_str,v_from: v_from,v_to: v_pos,v_bool: 1,v_capture: ["op", v_op1, (function () { var a = []; a["hyper_left"] = v_hyper_left; a["hyper_right"] = v_hyper_right;  return a })()],}; tmp.__proto__ = MiniPerl6$Match; return tmp }()); })() }; })() };throw(function () { var tmp = {v_bool: 0,}; tmp.__proto__ = MiniPerl6$Match; return tmp }()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_from;var v_c01;var v_c02;var v_hyper_left;var v_hyper_right;var v_op2;var v_op1;(v_from = v_pos);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_tok) { var v_l;var v_s;(v_l = Main.chars(v_tok));(v_s = (v_str || "").substr(v_pos, v_l));if ( f_bool((v_s == v_tok)) ) { (function () { var v_c1;var v_c2;(v_c1 = (v_str || "").substr((f_add(v_pos, v_l) - 1), 1));(v_c2 = (v_str || "").substr(f_add(v_pos, v_l), 1));if ( f_bool(f_and(v__NAMESPACE.f_is_ident_middle(v_c1), function () { return (f_or(v__NAMESPACE.f_is_ident_middle(v_c2), function () { return (v_c2 == "(")}))})) ) { (function () {  })() } else { (function () { throw(function () { var tmp = {v_str: v_str,v_from: v_from,v_to: f_add(v_pos, 2),v_bool: 1,v_capture: ["end", v_s],}; tmp.__proto__ = MiniPerl6$Match; return tmp }()); })() }; })() }; })(a_[i_]) } })((function () { var a = []; (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})(((v_End_token)));  return a })());(v_c01 = (v_str || "").substr(v_pos, 1));(v_c02 = (v_str || "").substr(v_pos, 2));(v_hyper_left = 0);(v_hyper_right = 0);if ( f_bool(f_or(((v_c01 == "«")), function () { return ((v_c01 == "»"))})) ) { (function () { (v_hyper_left = v_c01);(v_pos = f_add(v_pos, 1));(v_c02 = (v_str || "").substr(v_pos, 2)); })() } else { (function () { if ( f_bool(f_or(((v_c02 == "<<")), function () { return ((v_c02 == ">>"))})) ) { (function () { (v_hyper_left = v_c02);(v_pos = f_add(v_pos, 2));(v_c02 = (v_str || "").substr(v_pos, 2)); })() }; })() };(v_op2 = v_c02);if ( f_bool((v_Op2).hasOwnProperty(v_op2)) ) { (function () { var v_c1;var v_c2;(v_c1 = (v_str || "").substr(f_add(v_pos, 1), 1));(v_c2 = (v_str || "").substr(f_add(v_pos, 2), 1));if ( f_bool(f_and(v__NAMESPACE.f_is_ident_middle(v_c1), function () { return (f_or(v__NAMESPACE.f_is_ident_middle(v_c2), function () { return (v_c2 == "(")}))})) ) { (function () {  })() } else { (function () { var v_c01;var v_c02;(v_pos = f_add(v_pos, 2));(v_c01 = (v_str || "").substr(v_pos, 1));(v_c02 = (v_str || "").substr(v_pos, 2));if ( f_bool(f_or(((v_c01 == "«")), function () { return ((v_c01 == "»"))})) ) { (function () { (v_hyper_right = v_c01);(v_pos = f_add(v_pos, 1)); })() } else { (function () { if ( f_bool(f_or(((v_c02 == "<<")), function () { return ((v_c02 == ">>"))})) ) { (function () { (v_hyper_right = v_c02);(v_pos = f_add(v_pos, 2)); })() }; })() };throw(function () { var tmp = {v_str: v_str,v_from: v_from,v_to: v_pos,v_bool: 1,v_capture: ["op", v_op2, (function () { var a = []; a["hyper_left"] = v_hyper_left; a["hyper_right"] = v_hyper_right;  return a })()],}; tmp.__proto__ = MiniPerl6$Match; return tmp }()); })() }; })() };(v_op1 = (v_str || "").substr(v_pos, 1));if ( f_bool((v_Op1).hasOwnProperty(v_op1)) ) { (function () { var v_c2;(v_c2 = (v_str || "").substr(f_add(v_pos, 1), 1));if ( f_bool(f_and(v__NAMESPACE.f_is_ident_middle(v_op1), function () { return (f_or(v__NAMESPACE.f_is_ident_middle(v_c2), function () { return (v_c2 == "(")}))})) ) { (function () {  })() } else { (function () { var v_c01;var v_c02;(v_pos = f_add(v_pos, 1));(v_c01 = (v_str || "").substr(v_pos, 1));(v_c02 = (v_str || "").substr(v_pos, 2));if ( f_bool(f_or(((v_c01 == "«")), function () { return ((v_c01 == "»"))})) ) { (function () { (v_hyper_right = v_c01);(v_pos = f_add(v_pos, 1)); })() } else { (function () { if ( f_bool(f_or(((v_c02 == "<<")), function () { return ((v_c02 == ">>"))})) ) { (function () { (v_hyper_right = v_c02);(v_pos = f_add(v_pos, 2)); })() }; })() };throw(function () { var tmp = {v_str: v_str,v_from: v_from,v_to: v_pos,v_bool: 1,v_capture: ["op", v_op1, (function () { var a = []; a["hyper_left"] = v_hyper_left; a["hyper_right"] = v_hyper_right;  return a })()],}; tmp.__proto__ = MiniPerl6$Match; return tmp }()); })() }; })() };throw(function () { var tmp = {v_bool: 0,}; tmp.__proto__ = MiniPerl6$Match; return tmp }()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   MiniPerl6$Precedence.f_op_parse;  // v8 bug workaround
   // sub add_op
@@ -2197,7 +2109,7 @@ if (typeof MiniPerl6$Expression != 'object') {
   var v__NAMESPACE = MiniPerl6$Expression;
 var v_reduce_to_ast;  // sub expand_list
   MiniPerl6$Expression.f_expand_list = function (v_param_list) {
-    try { if ( f_bool(f_and((f_isa(v_param_list, "Apply")), function () { return (((v_param_list.f_code()) == "list:<,>"))})) ) { return (function () { var v_args;(v_args = []);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_v) { if ( f_bool((v_v != null)) ) { (function () { v_args.push(v_v); })() }; })(a_[i_]) } })(((v_param_list.f_arguments())));throw(v_args) })() } else { return (function () { if ( f_bool((v_param_list == "*undef*")) ) { return (function () { throw([]) })() } else { return (function () { throw([v_param_list]) })() } })() } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { if ( f_bool(f_and((f_isa(v_param_list, "Apply")), function () { return (((v_param_list.f_code()) == "list:<,>"))})) ) { return (function () { var v_args;(v_args = []);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_v) { if ( f_bool((v_v != null)) ) { (function () { v_args.push(v_v); })() }; })(a_[i_]) } })((function () { var a = []; (function(a_) { for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }})(((v_param_list.f_arguments())));  return a })());throw(v_args) })() } else { return (function () { if ( f_bool((v_param_list == "*undef*")) ) { return (function () { throw([]) })() } else { return (function () { throw([v_param_list]) })() } })() } } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   // sub block_or_hash
   MiniPerl6$Expression.f_block_or_hash = function (v_o) {
