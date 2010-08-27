@@ -90,7 +90,7 @@ token for {
         if !(defined($body)) {
             die "Missing code block in 'when'";
         }
-        make For.new( cond => ($$<exp>){'exp'}, topic => undef, body => $body ) 
+        make For.new( cond => ($$<exp>){'exp'}, topic => Mu(), body => $body ) 
     }
 }
 

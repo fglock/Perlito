@@ -198,7 +198,7 @@ class mp6_Hash:
         return str(self.l)
 
 
-class mp6_Undef:
+class mp6_Mu:
     def __str__(self):
         return ""
     def __int__(self):
@@ -214,9 +214,9 @@ class mp6_Undef:
     def __getitem__(self, k):
         return self 
     def f_perl(self):
-        return "undef"
+        return "Mu"
     def f_isa(self, name):
-        return name == 'Undef'
+        return name == 'Mu'
 
 
 class mp6_Return(Exception):

@@ -60,10 +60,6 @@ token grammar {
     }
 }
 
-token hyper_op {
-    '>>'?
-}
-
 token declarator {
      'my' | 'state' | 'has' 
 }
@@ -107,13 +103,6 @@ token var_ident {
         )
     }
 }
-
-token val_bit {
-    | 'True'       { make Val::Bit.new( bit => 1 ) }
-    | 'False'      { make Val::Bit.new( bit => 0 ) }
-}
-
-token digits {  \d+  }
 
 token exponent {
     [ 'e' | 'E' ]  [ '+' | '-' | '' ]  \d+

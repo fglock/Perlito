@@ -47,12 +47,11 @@ class Main {
 
     say ( Main.new()  ?? "" !! "not " ), "ok 22 - object";
 
-    say ( undef ?? "not " !! "" ), "ok 23 - undef";
+    say ( Mu ?? "not " !! "" ), "ok 23 - Mu";
 
     {
-        # TODO
         my @a = [];  # element #0 is an array
-        say ( @a    ?? "# TODO " !! "# TODO not " ); 
+        print ( @a    ?? "" !! "not " ); 
         say "ok 24";
     }
 

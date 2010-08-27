@@ -49,11 +49,14 @@ say "hello, World!"
                     // compilation unit
                     match = MiniPerl6$Grammar.f_exp_stmts(source, pos);
                     ast = match.f_scalar();
+
+                    var tmp = {v_name:"GLOBAL", v_body: ast}; 
+                    tmp.__proto__ = CompUnit; 
+                    ast = tmp;
+
 		    	    document.getElementById('ast-result').value += f_perl(ast) + "\n";
 		    	    document.getElementById('log-result').value += "Emitting javascript.\n";
-                    for (i = 0; i < ast.length; i++) {
-    		    	    document.getElementById('js-result').value += ast[i].f_emit_javascript() + ";\n";
-                    }
+    		    	document.getElementById('js-result').value += ast.f_emit_javascript() + ";\n";
                     pos = match.v_to;
 			        document.getElementById('log-result').value += 
                         "Finished compilation unit at pos " + pos + " of " + source.length + "\n";

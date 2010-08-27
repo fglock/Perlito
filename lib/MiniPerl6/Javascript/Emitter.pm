@@ -432,7 +432,7 @@ class Apply {
         if $code eq 'self'       { return 'v_self' };
         if $code eq 'False'      { return 'false' };
         if $code eq 'True'       { return 'true' };
-        if $code eq 'undef'      { return 'null' };
+        if $code eq 'Mu'         { return 'null' };
         if $code eq 'make'       { return '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
         if $code eq 'say'        { return 'f_say('    ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
         if $code eq 'print'      { return 'f_print('  ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
@@ -552,7 +552,7 @@ class Apply {
             my $i = 0;
             my $arg;
             for @$a -> $var {
-                $arg = Apply.new(code => 'undef');
+                $arg = Apply.new(code => 'Mu');
                 for @$b -> $var2 {
                     if ($var2[0]).buf eq ($var[0]).buf() {
                         $arg = $var2[1];

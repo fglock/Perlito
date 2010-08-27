@@ -73,13 +73,13 @@ class MiniPerl6::Expression {
             # say "# ** processing term ", $v.perl;
             if $v[1] eq 'methcall_no_params' {
                 # say "#   Call ", ($v[2]).perl;
-                $v = Call.new( invocant => undef, method => $v[2], arguments => undef, hyper => $v[3] );
+                $v = Call.new( invocant => Mu, method => $v[2], arguments => Mu, hyper => $v[3] );
                 # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'funcall_no_params' {
                 # say "#   Apply ", ($v[2]).perl;
-                $v = Apply.new( code => $v[3], arguments => undef, namespace => $v[2] );
+                $v = Apply.new( code => $v[3], arguments => Mu, namespace => $v[2] );
                 # say "#     ", $v.perl;
                 return $v;
             }
@@ -90,7 +90,7 @@ class MiniPerl6::Expression {
                     $num_stack.unshift( ($v[3]){'end_block'} );
                 }
                 my $param_list = expand_list( ($v[3]){'exp'} );
-                $v = Call.new( invocant => undef, method => $v[2], arguments => $param_list, hyper => $v[4] );
+                $v = Call.new( invocant => Mu, method => $v[2], arguments => $param_list, hyper => $v[4] );
                 # say "#     ", $v.perl;
                 return $v;
             }
@@ -129,18 +129,18 @@ class MiniPerl6::Expression {
             if $v[1] eq '.( )' {
                 # say "#   Params ", ($v[2]).perl;
                 # say "#     v:     ", $v.perl;
-                $v = Call.new( invocant => undef, method => 'postcircumfix:<( )>', arguments => $v[2], hyper => 0 );
+                $v = Call.new( invocant => Mu, method => 'postcircumfix:<( )>', arguments => $v[2], hyper => 0 );
                 return $v;
             }
             if $v[1] eq '.[ ]' {
                 # say "#   Index ", ($v[2]).perl;
-                $v = Index.new( obj => undef, index_exp => $v[2] );
+                $v = Index.new( obj => Mu, index_exp => $v[2] );
                 # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq '.{ }' {
                 # say "#   Lookup ", ($v[2]).perl;
-                $v = Lookup.new( obj => undef, index_exp => $v[2] );
+                $v = Lookup.new( obj => Mu, index_exp => $v[2] );
                 # say "#     ", $v.perl;
                 return $v;
             }
@@ -163,7 +163,7 @@ class MiniPerl6::Expression {
         # say "#      v:     ", $v.perl;
         if $v[1] eq 'methcall_no_params' {
             # say "#   Call ", ($v[2]).perl;
-            $v = Call.new( invocant => $value, method => $v[2], arguments => undef, hyper => $v[3] );
+            $v = Call.new( invocant => $value, method => $v[2], arguments => Mu, hyper => $v[3] );
             return $v;
         }
         if $v[1] eq 'funcall_no_params' {
@@ -255,7 +255,7 @@ class MiniPerl6::Expression {
             if $num_stack.elems < 2 {
                 my $v2 = pop_term($num_stack);
                 if ($v2.isa('Apply')) && ($v2.code eq ('list:<' ~ $last_op[1] ~ '>')) {
-                    ($v2.arguments).push( undef );
+                    ($v2.arguments).push( Mu );
                     $num_stack.push( $v2 );
                 }
                 else {
@@ -263,7 +263,7 @@ class MiniPerl6::Expression {
                         Apply.new(
                             namespace => '',
                             code      => 'list:<' ~ $last_op[1] ~ '>',
-                            arguments => [ $v2, undef ],
+                            arguments => [ $v2, Mu ],
                           );
                 }
                 return;
@@ -398,10 +398,11 @@ class MiniPerl6::Expression {
         | <MiniPerl6::Precedence.op_parse>              { make $$<MiniPerl6::Precedence.op_parse>             }
         | <MiniPerl6::Grammar.ident> <before <.MiniPerl6::Grammar.ws>? '=>' >   # autoquote
             { make [ 'term', Val::Buf.new( buf => ~$<MiniPerl6::Grammar.ident> ) ] }
-        | 'and' <!before [ <.MiniPerl6::Grammar.word> | '(' ] >   { make [ 'op',    'and'                   ] }
-        | 'not' <!before [ <.MiniPerl6::Grammar.word> | '(' ] >   { make [ 'op',    'not'                   ] }
-        | 'use' <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.full_ident>  [ - <MiniPerl6::Grammar.ident> ]?      
-            <list_parse>
+        | 'True'  <!before [ <.MiniPerl6::Grammar.word> | '(' ] > { make [ 'term', Val::Bit.new( bit => 1 ) ] }
+        | 'False' <!before [ <.MiniPerl6::Grammar.word> | '(' ] > { make [ 'term', Val::Bit.new( bit => 0 ) ] }
+        | 'and'   <!before [ <.MiniPerl6::Grammar.word> | '(' ] > { make [ 'op',    'and'                   ] }
+        | 'not'   <!before [ <.MiniPerl6::Grammar.word> | '(' ] > { make [ 'op',    'not'                   ] }
+        | 'use'   <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.full_ident>  [ - <MiniPerl6::Grammar.ident> ]? <list_parse>
             { make [ 'term', Use.new( mod => $$<MiniPerl6::Grammar.full_ident> ) ] }
         | [ 'package' | 'class' | 'grammar' ] <.MiniPerl6::Grammar.ws> <MiniPerl6::Grammar.grammar>       
             { make [ 'term', $$<MiniPerl6::Grammar.grammar> ] }
@@ -431,7 +432,6 @@ class MiniPerl6::Expression {
           ]
         | <MiniPerl6::Grammar.val_num>    { make [ 'term', $$<MiniPerl6::Grammar.val_num> ]  }  # 123.456
         | <MiniPerl6::Grammar.val_int>    { make [ 'term', $$<MiniPerl6::Grammar.val_int> ]  }  # 123
-        | <MiniPerl6::Grammar.val_bit>    { make [ 'term', $$<MiniPerl6::Grammar.val_bit> ]  }  # True, False
         | <MiniPerl6::Grammar.val_buf>    { make [ 'term', $$<MiniPerl6::Grammar.val_buf> ]  }  # 'moose'
 
         | <.MiniPerl6::Grammar.ws>                      { make [ 'space',   ' '                             ] }
@@ -516,8 +516,8 @@ class MiniPerl6::Expression {
                 'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, 
                 capture => {
                     exp        => '*undef*',
-                    end_block  => undef,
-                    terminated => undef } )
+                    end_block  => Mu,
+                    terminated => Mu } )
         }
         # if the expression terminates in a block, the block was pushed to num_stack
         my $block;

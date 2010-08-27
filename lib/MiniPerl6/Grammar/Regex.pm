@@ -74,8 +74,8 @@ token variables {
     |
         # TODO
         <MiniPerl6::Grammar.var_sigil> 
-        <MiniPerl6::Grammar.digits>
-        { make $<MiniPerl6::Grammar.var_sigil> ~ '/[' ~ $<MiniPerl6::Grammar.digits> ~ ']' }
+        <MiniPerl6::Grammar.val_int>
+        { make $<MiniPerl6::Grammar.var_sigil> ~ '/[' ~ $<MiniPerl6::Grammar.val_int> ~ ']' }
     |
         <MiniPerl6::Grammar.var_sigil> 
         <MiniPerl6::Grammar.var_twigil> 

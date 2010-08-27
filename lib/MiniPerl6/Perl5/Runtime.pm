@@ -186,7 +186,7 @@ package Main;
     }
 
     sub perl {
-        return 'undef' unless defined $_[0];
+        return 'Mu' unless defined $_[0];
         local $_;
         local %Main::_seen = %Main::_seen;
         my $o = shift;

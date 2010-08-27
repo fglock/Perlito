@@ -2,11 +2,6 @@ use v6;
 
 class Perl5 {
     sub to_bool ($cond) {
-        if ( $cond.isa( 'Var' ) && $cond.sigil eq '@' )
-          || $cond.isa( 'Lit::Array' )
-        {
-            return Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-        }
         if $cond.isa( 'Val::Num' ) || $cond.isa( 'Val::Buf' ) || $cond.isa( 'Val::Int' ) 
           || ( $cond.isa( 'Apply' ) &&
                 ( ($cond.code eq 'bool') || ($cond.code eq 'True') || ($cond.code eq 'False')
@@ -83,7 +78,9 @@ class Lit::Array {
             }
         }
         for @items -> $item {
-            if $item.isa( 'Var' ) && $item.sigil eq '@' {
+            if      $item.isa( 'Var' )   && $item.sigil eq '@' 
+                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<@>'
+            {
                 push @s, '@{' ~ $item.emit_perl5() ~ '}';
             }
             else {
@@ -274,6 +271,7 @@ class Apply {
         if $code eq 'self'       { return '$self' };
         if $code eq 'False'      { return '0' };
         if $code eq 'True'       { return '1' };
+        if $code eq 'Mu'         { return 'undef' };
 
         if $code eq 'make'       { return '($MATCH->{capture} = ('   ~ (@.arguments.>>emit_perl5).join(', ') ~ '))' };
 
@@ -295,7 +293,7 @@ class Apply {
         if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' ? 1 : 0)' };
 
         if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' };
-        if $code eq 'prefix:<@>' { return '@{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' || []}' };
+        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' || [])' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' };
 
         if $code eq 'postfix:<++>' { return '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')++' };
@@ -386,7 +384,7 @@ class Apply {
             my $i = 0;
             my $arg;
             for @$a -> $var {
-                $arg = Apply.new(code => 'undef', arguments => []);
+                $arg = Apply.new(code => 'Mu', arguments => []);
                 for @$b -> $var2 {
                     if ($var2[0]).buf eq ($var[0]).buf() {
                         $arg = $var2[1];

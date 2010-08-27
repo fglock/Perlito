@@ -5,8 +5,8 @@ use strict;
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
-package Main;
-sub new { shift; bless { @_ }, "Main" }
+package GLOBAL;
+sub new { shift; bless { @_ }, "GLOBAL" }
 
 # use v6 
 ;

@@ -187,7 +187,7 @@ class If {
                 $stmt.eval($env1);
             }
         }
-        return undef;
+        return Mu;
     }
 }
 
@@ -205,7 +205,7 @@ class For {
                 $stmt.eval($env1);
             }
         }
-        return undef;
+        return Mu;
     }
 }
 
@@ -234,9 +234,9 @@ class Decl {
             warn "Interpreter TODO: has";
         }
         if !( exists ($env[0]){ $name } ) {
-            ($env[0]){ $name } = undef;
+            ($env[0]){ $name } = Mu;
         }
-        return undef;
+        return Mu;
     }
     method plain_name {
         $.var.plain_name;
