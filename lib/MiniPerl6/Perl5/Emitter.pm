@@ -279,10 +279,11 @@ class Apply {
         if $code eq 'print'      { return 'Main::print(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' };
         if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' };
 
-        if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' };
-        if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>emit_perl5).join(' ')  ~ '} )' };
+        if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit_perl5).join(' ')           ~ '}'   };
+        if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>emit_perl5).join(' ')      ~ '} )' };
         if $code eq 'push'       { return 'push( @{' ~ (@.arguments[0]).emit_perl5() ~ '}, ' ~ (@.arguments[1]).emit_perl5() ~ ' )' };
         if $code eq 'shift'      { return 'shift( @{' ~ (@.arguments.>>emit_perl5).join(' ')    ~ '} )' };
+        if $code eq 'unshift'    { return 'unshift( @{' ~ (@.arguments.>>emit_perl5).join(' ')  ~ '} )' };
 
         if $code eq 'Int'        { return '(0+' ~ (@.arguments[0]).emit_perl5()             ~ ')' };
         if $code eq 'Num'        { return '(0+' ~ (@.arguments[0]).emit_perl5()             ~ ')' };
@@ -314,6 +315,7 @@ class Apply {
         
         if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit_perl5).join(' && ')  ~ ')' };
         if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit_perl5).join(' || ')  ~ ')' };
+        if $code eq 'infix:<//>' { return '('  ~ (@.arguments.>>emit_perl5).join(' // ')  ~ ')' };
         if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_perl5).join(' eq ')  ~ ')' };
         if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ne ')  ~ ')' };
         if $code eq 'infix:<le>' { return '('  ~ (@.arguments.>>emit_perl5).join(' le ')  ~ ')' };

@@ -476,6 +476,10 @@ class Apply {
                 ~ @.arguments[0].emit_javascript() ~ ', ' 
                 ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 
         }
+        if $code eq 'infix:<//>' { return 'f_defined_or('  
+                ~ @.arguments[0].emit_javascript() ~ ', ' 
+                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 
+        }
         if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' };
         if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' };
         if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };
