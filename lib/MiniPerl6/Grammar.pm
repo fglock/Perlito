@@ -152,22 +152,22 @@ token double_quoted_unescape {
 
 token double_quoted_buf {
     | <before \$ > 
-        [ <MiniPerl6::Expression.operator> 
+        [ <before \$ <.var_twigil> <.ident> > <MiniPerl6::Expression.operator> 
             { make ($$<MiniPerl6::Expression.operator>)[1] }
         | <char_any>  
-            { make ~$<char_any> }
+            { make Val::Buf.new( buf => ~$<char_any> ) }
         ]
     | <before \@ > 
-        [ <MiniPerl6::Expression.operator> '[]'
+        [ <before \@ <.var_twigil> <.ident> > <MiniPerl6::Expression.operator> '[]'
             { make ($$<MiniPerl6::Expression.operator>)[1] }
         | <char_any>  
-            { make ~$<char_any> }
+            { make Val::Buf.new( buf => ~$<char_any> ) }
         ]
-    | <before \% > 
-        [ <MiniPerl6::Expression.operator> '{}'
+    | <before \% >
+        [ <before \% <.var_twigil> <.ident> > <MiniPerl6::Expression.operator> '{}'
             { make ($$<MiniPerl6::Expression.operator>)[1] }
         | <char_any>  
-            { make ~$<char_any> }
+            { make Val::Buf.new( buf => ~$<char_any> ) }
         ]
     | <double_quoted_unescape> 
         { make Val::Buf.new( buf => $$<double_quoted_unescape> ) }

@@ -81,11 +81,21 @@ Missing Features
 
 - debugger
 
+- chain operators - supported by the grammar, but no AST representation
+
+- statement modifiers - supported by the grammar, but no AST representation
+
+- "loop(;;)"
+
+- "when"
+
 Missing Features of the Token sub-compiler
 
 - no quantifiers - FIXED
 
 - no variable interpolation
+
+- use the new precedence parser
 
 Nice to Have
 
@@ -106,7 +116,9 @@ Grammar
 
 - operator precedence - FIXED
 
-- double quote variable and expression interpolation 
+- double quote variable interpolation - FIXED (without method calls)
+
+- and expression interpolation 
 
 - all statements need a semicolon - FIXED 
 
@@ -117,6 +129,6 @@ Semantics
 - @a.values and %a.keys return Array
   These should return a List 
 
-- In Perlito, @a = [] initializes @a to empty Array.
+- In Perlito, @a = [] initializes @a to empty Array - FIXED
   This should create an array with an array inside.
 
