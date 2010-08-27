@@ -107,6 +107,8 @@ Nice to Have
 
 Grammar
 
+- item-assignment precedence is different from list-assignment
+
 - captures like: / <a> <a>* / - the first capture must share storage with the second capture
 
 - modify the grammar to return multi-line strings as multiple strings
