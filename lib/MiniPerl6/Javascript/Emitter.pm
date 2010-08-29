@@ -430,8 +430,6 @@ class Apply {
         }
 
         if $code eq 'self'       { return 'v_self' };
-        if $code eq 'False'      { return 'false' };
-        if $code eq 'True'       { return 'true' };
         if $code eq 'Mu'         { return 'null' };
         if $code eq 'make'       { return '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
         if $code eq 'say'        { return 'f_say('    ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
@@ -518,9 +516,10 @@ class Apply {
         }
         elsif  ($code ne 'f_index') 
             && ($code ne 'f_die') 
-            && ($code ne 'f_pop') 
             && ($code ne 'f_shift') 
+            && ($code ne 'f_unshift') 
             && ($code ne 'f_push') 
+            && ($code ne 'f_pop') 
         {
             $code = 'v__NAMESPACE.' ~ $code;
         }

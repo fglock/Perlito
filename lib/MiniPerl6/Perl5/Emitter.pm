@@ -269,8 +269,6 @@ class Apply {
         }
 
         if $code eq 'self'       { return '$self' };
-        if $code eq 'False'      { return '0' };
-        if $code eq 'True'       { return '1' };
         if $code eq 'Mu'         { return 'undef' };
 
         if $code eq 'make'       { return '($MATCH->{capture} = ('   ~ (@.arguments.>>emit_perl5).join(', ') ~ '))' };
