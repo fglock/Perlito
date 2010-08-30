@@ -270,7 +270,7 @@ else {
     else {
         my $pos = 0;
         my $p = MiniPerl6::Grammar->exp_stmts( $source, $pos );
-        if (!$p) {
+        if (!$p || $p->to < length($source)) {
             die "Syntax error at pos ", $p->to, "\n";
         }
         warn "matched source code to ", $p->to, "\n" if $verbose;
