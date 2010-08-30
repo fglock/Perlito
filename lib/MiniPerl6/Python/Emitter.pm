@@ -357,21 +357,6 @@ class Lit::Hash {
     }
 }
 
-class Lit::Object {
-    has $.class;
-    has @.fields;
-    method emit_python { $self.emit_python_indented(0) }
-    method emit_python_indented( $level ) {
-        my $fields = @.fields;
-        my @str;
-        for @$fields -> $field { 
-            push @str, "v_" ~ ($field[0]).buf() ~ '=' ~ ($field[1]).emit_python;
-        }
-        Python::tab($level) ~ 
-            Main::to_go_namespace($.class) ~ '(' ~ @str.join(', ') ~ ')';
-    }
-}
-
 class Index {
     has $.obj;
     has $.index_exp;
@@ -442,6 +427,21 @@ class Call {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $invocant = $.invocant.emit_python;
+
+        if $.method eq 'new' {
+            my @str;
+            for @.arguments -> $field {
+                if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
+                    @str.push( 'v_' ~ $field.arguments[0].buf() ~ '=' ~ $field.arguments[1].emit_python() );
+                }
+                else {
+                    die 'Error in constructor, field: ', $field.perl;
+                }
+            }
+            return
+                Main::to_go_namespace($.invocant.name) ~ '(' ~ @str.join(', ') ~ ')'
+        }
+
         if     ($.method eq 'perl')
             || ($.method eq 'yaml')
             || ($.method eq 'say' )
@@ -810,7 +810,7 @@ class Sub {
             $args.push( $arg );
             $default_args.push( $arg ~ '=mp6_Undef()' );
             $meth_args.push( $arg ~ '=mp6_Undef()' );
-        };
+        }
         my $block = MiniPerl6::Python::LexicalBlock.new( 
                 block => @.block,
                 needs_return => 1 );

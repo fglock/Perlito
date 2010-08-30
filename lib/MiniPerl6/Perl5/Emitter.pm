@@ -457,7 +457,7 @@ class For {
         if $.body.sig() {
             $sig = 'my ' ~ $.body.sig.emit_perl5() ~ ' ';
         }
-        return  'for ' ~ $sig ~ '( @{' ~ $cond.emit_perl5() ~ '} ) { ' 
+        return  'for ' ~ $sig ~ '( @{' ~ $cond.emit_perl5() ~ ' || []} ) { ' 
              ~   $.body.emit_perl5() 
              ~ ' }';
     }
