@@ -322,6 +322,7 @@ class Apply {
         if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_perl5).join(' == ')  ~ ')' };
         if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_perl5).join(' != ')  ~ ')' };
         if $code eq 'infix:<=>>' { return '('  ~ (@.arguments.>>emit_perl5).join(' => ')  ~ ')' };
+        if $code eq 'infix:<..>' { return '['  ~ (@.arguments.>>emit_perl5).join(' .. ')  ~ ']' };
 
         if $code eq 'ternary:<?? !!>' { 
             my $cond = @.arguments[0];

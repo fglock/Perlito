@@ -465,7 +465,19 @@ class Apply {
         if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' < ')   ~ ')' };
         if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };
         if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' };
-        
+
+        if $code eq 'infix:<..>' { 
+            return '(function (a) { '  
+                    ~ 'for (var i=' ~ @.arguments[0].emit_javascript() 
+                           ~ ', l=' ~ @.arguments[1].emit_javascript() ~ '; '
+                       ~ 'i<=l; ++i)'
+                    ~ '{ '
+                        ~ 'a.push(i) '
+                    ~ '}; '
+                    ~ 'return a '  
+                ~ '})([])' 
+        }
+    
         if $code eq 'infix:<&&>' { return 'f_and('
                 ~ @.arguments[0].emit_javascript() ~ ', ' 
                 ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 

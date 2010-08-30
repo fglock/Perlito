@@ -8,7 +8,7 @@ dev version - 2010-08-23
 - lists
 - 'Mu'
 - several fixes in Hash, Array, Block, Bool, Str
-- operators: numeric autoincrements, defined-or
+- operators: numeric autoincrements, defined-or, range
 
 6.0  2010-07-27
 - Ruby backend bootstrap.

@@ -181,6 +181,17 @@ class MiniPerl6::Precedence {
     add_op( 'infix',    '|',   $prec, { assoc => 'list' } );
     add_op( 'prefix',   '|',   $prec );
     $prec = $prec - 1;
+    add_op( 'infix',    '<=>',  $prec );
+    add_op( 'infix',    'leg',  $prec );
+    add_op( 'infix',    'cmp',  $prec );
+    add_op( 'infix',    'does', $prec );
+    add_op( 'infix',    'but',  $prec );
+    add_op( 'infix',    '..',   $prec );
+    add_op( 'infix',    '^..',  $prec );
+    add_op( 'infix',    '..^',  $prec );
+    add_op( 'infix',    '^..^', $prec );
+
+    $prec = $prec - 1;
     add_op( 'infix',    'ne',  $prec, { assoc => 'chain' } );
     add_op( 'infix',    'eq',  $prec, { assoc => 'chain' } );
     add_op( 'infix',    'lt',  $prec, { assoc => 'chain' } );
@@ -193,6 +204,7 @@ class MiniPerl6::Precedence {
     add_op( 'infix',    '!=',  $prec, { assoc => 'chain' } );
     add_op( 'infix',    '<',   $prec, { assoc => 'chain' } );
     add_op( 'infix',    '>',   $prec, { assoc => 'chain' } );
+    add_op( 'infix',    '~~',  $prec, { assoc => 'chain' } );
     $prec = $prec - 1;
     add_op( 'infix',    '&&',  $prec );
     $prec = $prec - 1;
