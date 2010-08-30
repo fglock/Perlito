@@ -76,7 +76,7 @@ class MiniPerl6::Python::LexicalBlock {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         if !(@.block) {
-            push @.block, Val::Undef.new();
+            push @.block, Apply.new( code => 'Mu' );
         }
 
         my @s;
@@ -120,10 +120,10 @@ class MiniPerl6::Python::LexicalBlock {
 
         for @($block) -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                push @s, Python::tab($level) ~ ($decl.var).emit_python_name ~ ' = [' ~ $decl.emit_python_init ~ ']';
+                push @s, Python::tab($level) ~ ($decl.var).emit_python_name() ~ ' = [' ~ $decl.emit_python_init() ~ ']';
             }
             if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                push @s, Python::tab($level) ~ (($decl.parameters).var).emit_python_name ~ ' = [' ~ ($decl.parameters).emit_python_init ~ ']';
+                push @s, Python::tab($level) ~ (($decl.parameters).var).emit_python_name() ~ ' = [' ~ ($decl.parameters).emit_python_init() ~ ']';
             }
         }
 
@@ -159,7 +159,7 @@ class MiniPerl6::Python::LexicalBlock {
                     $otherwise_block = Return.new( result => Do.new( block => ($last_statement.otherwise) ) );
                 }
 
-                $s2 = Python::tab($level) ~ 'if mp6_to_bool(' ~ $cond.emit_python ~ "):\n" 
+                $s2 = Python::tab($level) ~ 'if mp6_to_bool(' ~ $cond.emit_python() ~ "):\n" 
                     ~ $body_block.emit_python_indented( $level + 1 );
                 if ( $has_otherwise ) {
                     $s2 = $s2 ~ "\n"
@@ -204,7 +204,9 @@ class CompUnit {
 
         for @.body -> $decl {
             if $decl.isa('Use') {
-                push @s, Python::tab($level) ~ 'from ' ~ Main::to_go_namespace($decl.mod) ~ ' import *'
+                if $decl.mod ne 'v6' {
+                    push @s, Python::tab($level) ~ 'from ' ~ Main::to_go_namespace($decl.mod) ~ ' import *'
+                }
             }
         }
 
@@ -270,23 +272,6 @@ class Val::Buf {
     }
 }
 
-class Val::Undef {
-    method emit_python { $self.emit_python_indented(0) }
-    method emit_python_indented( $level ) {
-        Python::tab($level) ~ 'mp6_Undef()'
-    }
-}
-
-class Val::Object {
-    has $.class;
-    has %.fields;
-    method emit_python { $self.emit_python_indented(0) }
-    method emit_python_indented( $level ) {
-        Python::tab($level) ~ 
-            $.class.emit_python ~ '(' ~ %.fields.emit_python ~ ')';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit_python { $self.emit_python_indented(0) }
@@ -343,7 +328,7 @@ class Lit::Array {
                     MiniPerl6::Python::AnonSub.new( 
                         name  => $label, 
                         block => @block,
-                        sig   => Sig.new( invocant => undef, positional => [ $input_array ], named => {} ),
+                        sig   => Sig.new( invocant => Mu, positional => [ $input_array ], named => {} ),
                         handles_return_exception => 1,
                     )
                 );
@@ -365,16 +350,11 @@ class Lit::Hash {
         my $fields = @.hash1;
         my @dict;
         for @$fields -> $field { 
-            push @dict, (($field[0]).emit_python ~ ':' ~ ($field[1]).emit_python);
+            push @dict, (($field[0]).emit_python() ~ ':' ~ ($field[1]).emit_python);
         }; 
         Python::tab($level) ~ 
             'mp6_Hash({' ~ @dict.join(', ') ~ '})';
     }
-}
-
-class Lit::Code {
-    # XXX
-    1;
 }
 
 class Lit::Object {
@@ -385,7 +365,7 @@ class Lit::Object {
         my $fields = @.fields;
         my @str;
         for @$fields -> $field { 
-            push @str, "v_" ~ ($field[0]).buf ~ '=' ~ ($field[1]).emit_python;
+            push @str, "v_" ~ ($field[0]).buf() ~ '=' ~ ($field[1]).emit_python;
         }
         Python::tab($level) ~ 
             Main::to_go_namespace($.class) ~ '(' ~ @str.join(', ') ~ ')';
@@ -398,7 +378,7 @@ class Index {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            $.obj.emit_python ~ '.f_index(' ~ $.index_exp.emit_python ~ ')';
+            $.obj.emit_python() ~ '.f_index(' ~ $.index_exp.emit_python() ~ ')';
     }
 }
 
@@ -408,7 +388,7 @@ class Lookup {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
-            $.obj.emit_python ~ '.f_lookup(' ~ $.index_exp.emit_python ~ ')';
+            $.obj.emit_python() ~ '.f_lookup(' ~ $.index_exp.emit_python() ~ ')';
     }
 }
 
@@ -443,33 +423,6 @@ class Var {
                 )
             )
     };
-}
-
-class Bind {
-    has $.parameters;
-    has $.arguments;
-    method emit_python { $self.emit_python_indented(0) }
-    method emit_python_indented( $level ) {
-        if $.parameters.isa( 'Index' ) {
-            return Python::tab($level)  
-                ~ ($.parameters.obj).emit_python ~ '.f_set('
-                    ~ ($.parameters.index_exp).emit_python ~ ', '
-                    ~ $.arguments.emit_python ~ ')'
-        }
-        if $.parameters.isa( 'Lookup' ) {
-            return Python::tab($level)  
-                ~ ($.parameters.obj).emit_python ~ '.f_set('
-                    ~ ($.parameters.index_exp).emit_python ~ ', '
-                    ~ $.arguments.emit_python ~ ')'
-        }
-        if $.parameters.isa( 'Call' ) {
-            # $var.attr = 3;
-            return Python::tab($level)  
-                ~ ($.parameters.invocant).emit_python ~ ".__setattr__('v_" ~ $.parameters.method ~ "', " ~ $.arguments.emit_python ~ ")";
-        }
-        Python::tab($level)  
-            ~ $.parameters.emit_python ~ ' = ' ~ $.arguments.emit_python;
-    }
 }
 
 class Proto {
@@ -549,13 +502,14 @@ class Apply {
 
         if $code.isa( 'Str' ) { }
         else {
-            return '(' ~ $.code.emit_python ~ ').(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+            return '(' ~ $.code.emit_python() ~ ').(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         };
 
-        if $code eq 'self'       { return 'v_self[0]' };
-        if $code eq 'make'       { return "v_MATCH[0].__setattr__('v_capture', " ~ (@.arguments[0]).emit_python ~ ')' }
-        if $code eq 'False'      { return 'False' };
-        if $code eq 'True'       { return 'True' };
+        if $code eq 'self'       { return 'v_self[0]'   };
+        if $code eq 'Mu'         { return 'mp6_Undef()' };
+        if $code eq 'make'       { return "v_MATCH[0].__setattr__('v_capture', " ~ (@.arguments[0]).emit_python() ~ ')' }
+        if $code eq 'False'      { return 'False'       };
+        if $code eq 'True'       { return 'True'        };
 
         if $code eq 'say'        { return 'mp6_say('   ~ (@.arguments.>>emit_python).join(', ') ~ ')' } 
         if $code eq 'print'      { return 'mp6_print(' ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
@@ -581,12 +535,12 @@ class Apply {
         if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_python).join(' / ')  ~ ')' };
         
         if $code eq 'infix:<&&>' { 
-            return '(mp6_to_bool(' ~ (@.arguments[0]).emit_python ~ ') '
-                ~  'and mp6_to_bool(' ~ (@.arguments[1]).emit_python ~ '))' 
+            return '(mp6_to_bool(' ~ (@.arguments[0]).emit_python() ~ ') '
+                ~  'and mp6_to_bool(' ~ (@.arguments[1]).emit_python() ~ '))' 
         }
         if $code eq 'infix:<||>' { 
-            return '(mp6_to_bool(' ~ (@.arguments[0]).emit_python ~ ') '
-                ~  'or mp6_to_bool(' ~ (@.arguments[1]).emit_python ~ '))' 
+            return '(mp6_to_bool(' ~ (@.arguments[0]).emit_python() ~ ') '
+                ~  'or mp6_to_bool(' ~ (@.arguments[1]).emit_python() ~ '))' 
         }
         if $code eq 'infix:<eq>' { return '(str('  ~ (@.arguments.>>emit_python).join(') == str(')  ~ '))' };
         if $code eq 'infix:<ne>' { return '(str('  ~ (@.arguments.>>emit_python).join(') != str(')  ~ '))' };
@@ -599,7 +553,7 @@ class Apply {
         if $code eq 'exists'     {
             my $arg = @.arguments[0];
             if $arg.isa( 'Lookup' ) {
-                return '(' ~ ($arg.obj).emit_python ~ ').has_key(' ~ ($arg.index_exp).emit_python ~ ')';
+                return '(' ~ ($arg.obj).emit_python() ~ ').has_key(' ~ ($arg.index_exp).emit_python() ~ ')';
             }
         }
 
@@ -616,20 +570,29 @@ class Apply {
                 );
             return $ast.emit_python;
         }
+        if $code eq 'circumfix:<( )>' {
+            return '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        }
+        if $code eq 'infix:<=>' {
+            return emit_bind( @.arguments[0], @.arguments[1] );
+        }
+        if $code eq 'return' {
+            return 'raise mp6_Return(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        }
         
         if $code eq 'substr' { 
-            return (@.arguments[0]).emit_python ~ '[' 
-                    ~ (@.arguments[1]).emit_python ~ ':' 
-                    ~ (@.arguments[1]).emit_python ~ ' + ' ~ (@.arguments[2]).emit_python 
+            return (@.arguments[0]).emit_python() ~ '[' 
+                    ~ (@.arguments[1]).emit_python() ~ ':' 
+                    ~ (@.arguments[1]).emit_python() ~ ' + ' ~ (@.arguments[2]).emit_python 
                 ~ ']' 
         } 
         if $code eq 'index' { 
-            return 'mp6_index(' ~ (@.arguments[0]).emit_python ~ ', ' ~ (@.arguments[1]).emit_python ~ ')' 
+            return 'mp6_index(' ~ (@.arguments[0]).emit_python() ~ ', ' ~ (@.arguments[1]).emit_python() ~ ')' 
         } 
-        if $code eq 'shift'   { return (@.arguments[0]).emit_python ~ '.f_shift()' } 
-        if $code eq 'pop'     { return (@.arguments[0]).emit_python ~ '.f_pop()'   } 
-        if $code eq 'push'    { return (@.arguments[0]).emit_python ~ '.f_push('    ~ (@.arguments[1]).emit_python ~ ')' } 
-        if $code eq 'unshift' { return (@.arguments[0]).emit_python ~ '.f_unshift(' ~ (@.arguments[1]).emit_python ~ ')' } 
+        if $code eq 'shift'   { return (@.arguments[0]).emit_python() ~ '.f_shift()' } 
+        if $code eq 'pop'     { return (@.arguments[0]).emit_python() ~ '.f_pop()'   } 
+        if $code eq 'push'    { return (@.arguments[0]).emit_python() ~ '.f_push('    ~ (@.arguments[1]).emit_python() ~ ')' } 
+        if $code eq 'unshift' { return (@.arguments[0]).emit_python() ~ '.f_unshift(' ~ (@.arguments[1]).emit_python() ~ ')' } 
 
         if $.namespace {
             return Main::to_go_namespace($.namespace) ~ '_proto.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
@@ -639,14 +602,25 @@ class Apply {
     method emit_python_indented( $level ) {
         Python::tab($level) ~ $self.emit_python 
     }
-}
-
-class Return {
-    has $.result;
-    method emit_python { $self.emit_python_indented(0) }
-    method emit_python_indented( $level ) {
-        Python::tab($level) ~ 
-            'raise mp6_Return(' ~ $.result.emit_python ~ ')';
+    sub emit_bind ($parameters, $arguments) {
+        if $parameters.isa( 'Index' ) {
+            return   
+                ($parameters.obj).emit_python() ~ '.f_set('
+                    ~ ($parameters.index_exp).emit_python() ~ ', '
+                    ~ $arguments.emit_python() ~ ')'
+        }
+        if $parameters.isa( 'Lookup' ) {
+            return   
+                ($parameters.obj).emit_python() ~ '.f_set('
+                    ~ ($parameters.index_exp).emit_python() ~ ', '
+                    ~ $arguments.emit_python() ~ ')'
+        }
+        if $parameters.isa( 'Call' ) {
+            # $var.attr = 3;
+            return   
+                ($parameters.invocant).emit_python() ~ ".__setattr__('v_" ~ $parameters.method ~ "', " ~ $arguments.emit_python() ~ ")";
+        }
+        return $parameters.emit_python() ~ ' = ' ~ $arguments.emit_python;
     }
 }
 
@@ -668,7 +642,7 @@ class If {
             $otherwise_block = Do.new( block => @.otherwise );
         }
 
-        my $s = Python::tab($level) ~   'if mp6_to_bool(' ~ $.cond.emit_python ~ "):\n" 
+        my $s = Python::tab($level) ~   'if mp6_to_bool(' ~ $.cond.emit_python() ~ "):\n" 
             ~ $body_block.emit_python_indented( $level + 1 );
         if ( $has_otherwise ) {
             $s = $s ~ "\n"
@@ -698,7 +672,7 @@ class While {
             # ~  ( $.continue ?? $.continue.emit_         ~ ' '   !! ' '  )
         }
         Python::tab($level)
-            ~ 'while ' ~ $.cond.emit_python ~ ":\n"
+            ~ 'while ' ~ $.cond.emit_python() ~ ":\n"
                 ~ $body_block.emit_python_indented( $level + 1 );
     }
 }
@@ -718,15 +692,15 @@ class For {
                     MiniPerl6::Python::AnonSub.new( 
                         name  => $label, 
                         block => @.body,
-                        sig   => Sig.new( invocant => undef, positional => [ $.topic ], named => {} ),
+                        sig   => Sig.new( invocant => Mu, positional => [ $.topic ], named => {} ),
                         handles_return_exception => 0,
                     )
                 );
-            return Python::tab($level) ~    'for ' ~ $.topic.emit_python_name ~ " in " ~ $.cond.emit_python ~ ":\n"
-                ~  Python::tab($level+1) ~      "f_" ~ $label ~ "(" ~ $.topic.emit_python_name ~ ")";
+            return Python::tab($level) ~    'for ' ~ $.topic.emit_python_name() ~ " in " ~ $.cond.emit_python() ~ ":\n"
+                ~  Python::tab($level+1) ~      "f_" ~ $label ~ "(" ~ $.topic.emit_python_name() ~ ")";
         }
-        Python::tab($level) ~   'for ' ~ $.topic.emit_python_name ~ " in " ~ $.cond.emit_python ~ ":\n"
-        ~ Python::tab($level+1) ~     $.topic.emit_python_name ~ " = [" ~ $.topic.emit_python_name ~ "]\n"
+        Python::tab($level) ~   'for ' ~ $.topic.emit_python_name() ~ " in " ~ $.cond.emit_python() ~ ":\n"
+        ~ Python::tab($level+1) ~     $.topic.emit_python_name() ~ " = [" ~ $.topic.emit_python_name() ~ "]\n"
                 ~ $body_block.emit_python_indented( $level + 1 );
     }
 }
@@ -792,7 +766,7 @@ class Method {
                 needs_return => 1 );
         my @s;
         push @s, Python::tab($level) ~ 'def f_' ~ $label ~ "(" ~ $meth_args.join(", ") ~ "):";
-        push @s, Python::tab($level+1) ~    $invocant.emit_python_name ~ " = [" ~ $invocant.emit_python_name ~ "]";
+        push @s, Python::tab($level+1) ~    $invocant.emit_python_name() ~ " = [" ~ $invocant.emit_python_name() ~ "]";
         for @($args) -> $field { 
             push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
         };
@@ -871,7 +845,7 @@ class Do {
                 MiniPerl6::Python::AnonSub.new( 
                     name  => $label, 
                     block => @.block,
-                    sig   => Sig.new( invocant => undef, positional => [], named => {} ),
+                    sig   => Sig.new( invocant => Mu, positional => [], named => {} ),
                     handles_return_exception => 0,
                 )
             );

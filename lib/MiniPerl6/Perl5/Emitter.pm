@@ -81,7 +81,7 @@ class Lit::Array {
             if      $item.isa( 'Var' )   && $item.sigil eq '@' 
                 ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<@>'
             {
-                push @s, '@{' ~ $item.emit_perl5() ~ '}';
+                push @s, '@{' ~ $item.emit_perl5() ~ ' || []}';
             }
             else {
                 push @s, $item.emit_perl5;
