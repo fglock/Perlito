@@ -226,6 +226,7 @@ package Main;
     }
       
     sub join {
+        return '' unless defined $_[0];
         my $can = UNIVERSAL::can($_[0] => 'join');
         if ($can) {
             $can->(@_);
@@ -244,12 +245,14 @@ package Main;
     # Lisp emitter
     sub to_lisp_identifier {
         my $s = $_[0];
-        my ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
+        my $sigil;
+        ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
         return 'sv-' . $s;
     }
     sub to_lisp_namespace {
         my $s = $_[0];
-        my ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
+        my $sigil;
+        ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
         $s =~ s/::/-/g;
         return 'mp-' . $s;
     }
@@ -269,7 +272,8 @@ package Main;
     # Javascript emitter
     sub to_javascript_namespace {
         my $s = $_[0];
-        my ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
+        my $sigil;
+        ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
         $s =~ s/::/\$/g;
         return $s;
     }
@@ -283,7 +287,8 @@ package Main;
     # Go emitter
     sub to_go_namespace {
         my $s = $_[0];
-        my ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
+        my $sigil;
+        ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
         $s =~ s/::/__/g;
         return $s;
     }
