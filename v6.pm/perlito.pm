@@ -31,7 +31,7 @@ sub compile {
     $result .=  "use utf8;\n";
     $result .=  "use strict;\n";
     $result .=  "use warnings;\n";
-    $result .=  "no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc');\n";
+    $result .=  "no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');\n";
     $result .=  "use MiniPerl6::Perl5::Runtime;\n";
     $result .=  "our \$MATCH = MiniPerl6::Match->new();\n";
     $result .= CompUnit::emit_perl5_program( \@comp_unit );

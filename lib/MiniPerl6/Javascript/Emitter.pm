@@ -193,8 +193,8 @@ class Lit::Array {
             }
         }
         for @items -> $item {
-            if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
-                || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' ) 
+            if      $item.isa( 'Var' )   && $item.sigil eq '@' 
+                ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
             {
                 $needs_interpolation = 1;
             }
@@ -202,8 +202,8 @@ class Lit::Array {
         if $needs_interpolation {
             my $s = '';
             for @items -> $item {
-                if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
-                    || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' ) 
+                if      $item.isa( 'Var' )   && $item.sigil eq '@' 
+                    ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
                 {
                     $s = $s 
                         ~ '(function(a_) { ' 
@@ -350,6 +350,8 @@ class Call {
             || ($.method eq 'keys')
             || ($.method eq 'values')
             || ($.method eq 'elems')
+            || ($.method eq 'say' )
+            || ($.method eq 'chars')
         { 
             if ($.hyper) {
                 return 
@@ -374,30 +376,6 @@ class Call {
             return $invocant ~ '.' ~ $.method ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
         }
 
-        if     ($.method eq 'yaml')
-            || ($.method eq 'say' )
-            || ($.method eq 'chars')
-        { 
-            if ($.hyper) {
-                return 
-                    '(function (a_) { '
-                        ~ 'var out = []; ' 
-                        ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
-                        ~ 'for(var i = 0; i < a_.length; i++) { '
-                            ~ 'out.push( Main.' ~ $.method ~ '(a_[i]) ) } return out;'
-                    ~ ' })(' ~ $invocant ~ ')'
-            }
-            else {
-                if @.arguments {
-                    return
-                        'Main.' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
-                }
-                else {
-                    return
-                        'Main.' ~ $.method ~ '(' ~ $invocant ~ ')';
-                }
-            }
-        }
         my $meth = $.method;
         if ($.hyper) {
             return

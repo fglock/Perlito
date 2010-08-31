@@ -3,7 +3,7 @@ use v5;
 use utf8;
 use strict;
 use warnings;
-no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc');
+no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
@@ -81,7 +81,7 @@ sub emit_perl5 { my $self = $_[0]; Main::join(([ map { $_->emit_perl5() } @{ $se
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
-sub emit_perl5 { my $self = $_[0]; my  $List_s; my  $List_items; for my $item ( @{$self->{array1} || []} ) { if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) { for my $arg ( @{[@{(($item->arguments()) || []) || []}] || []} ) { push( @{$List_items}, $arg ) } } else { push( @{$List_items}, $item ) } }; for my $item ( @{$List_items || []} ) { if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<@>'))))) { push( @{$List_s}, '@{' . $item->emit_perl5() . ' || []}' ) } else { push( @{$List_s}, $item->emit_perl5() ) } }; '[' . Main::join($List_s, ', ') . ']' }
+sub emit_perl5 { my $self = $_[0]; my  $List_s; my  $List_items; for my $item ( @{$self->{array1} || []} ) { if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) { for my $arg ( @{[@{(($item->arguments()) || []) || []}] || []} ) { push( @{$List_items}, $arg ) } } else { push( @{$List_items}, $item ) } }; for my $item ( @{$List_items || []} ) { if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<@>') || ($item->code() eq 'infix:<..>'))))))) { push( @{$List_s}, '@{' . $item->emit_perl5() . ' || []}' ) } else { push( @{$List_s}, $item->emit_perl5() ) } }; '[' . Main::join($List_s, ', ') . ']' }
 }
 
 ;

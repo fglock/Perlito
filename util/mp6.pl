@@ -201,7 +201,7 @@ mp6 [switches] [programfile]
             say "use utf8;";
             say "use strict;";
             say "use warnings;";
-            say "no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc');";
+            say "no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');";
             say "use MiniPerl6::Perl5::Runtime;";
             say 'our $MATCH = MiniPerl6::Match->new();';
             print CompUnit::emit_perl5_program( $comp_units );
