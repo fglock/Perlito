@@ -4,12 +4,10 @@ rm -rf t
 touch META.yml
 
 cp -r ../t .
-perl -pi -e 's/use v6;/use v6-perlito; no warnings;/' t/*.t
+perl -pi -e 's/use v6;/use v6-perlito;/' t/*.t
 
 rm -rf t/bugs
 cp -r ../lib5 lib
-perl -pi -e 's/use strict;/use strict; no warnings;/' \
-  lib/MiniPerl6/*.pm lib/MiniPerl6/Grammar/*.pm lib/MiniPerl6/Perl5/*.pm lib/MiniPerl6/Emitter/*.pm
 rm lib/Test.pm
 rm t/21-test.t
 

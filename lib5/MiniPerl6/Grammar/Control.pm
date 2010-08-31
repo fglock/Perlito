@@ -2,6 +2,8 @@
 use v5;
 use utf8;
 use strict;
+use warnings;
+no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc');
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {

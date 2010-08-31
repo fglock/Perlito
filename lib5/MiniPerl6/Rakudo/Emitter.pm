@@ -2,6 +2,8 @@
 use v5;
 use utf8;
 use strict;
+use warnings;
+no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc');
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
@@ -81,7 +83,7 @@ sub emit { my $self = $_[0]; '[' . Main::join(([ map { $_->emit() } @{ $self->{a
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
-sub emit { my $self = $_[0]; (my  $fields = $self->{hash1}); (my  $str = ''); for my $field ( @{[@{($fields || [])}]} ) { ($str = $str . ($field->[0])->emit(("" . ' => ') . ($field->[1])->emit(("" . ',')))) }; '{ ' . $str . ' }' }
+sub emit { my $self = $_[0]; (my  $fields = $self->{hash1}); (my  $str = ''); for my $field ( @{[@{($fields || []) || []}] || []} ) { ($str = $str . ($field->[0])->emit(("" . ' => ') . ($field->[1])->emit(("" . ',')))) }; '{ ' . $str . ' }' }
 }
 
 ;
@@ -97,7 +99,7 @@ package Lit::Object;
 sub new { shift; bless { @_ }, "Lit::Object" }
 sub class { $_[0]->{class} };
 sub fields { $_[0]->{fields} };
-sub emit { my $self = $_[0]; (my  $fields = $self->{fields}); (my  $str = ''); for my $field ( @{[@{($fields || [])}]} ) { ($str = $str . ($field->[0])->emit(("" . ' => ') . ($field->[1])->emit(("" . ',')))) }; $self->{class} . '.new( ' . $str . ' )' }
+sub emit { my $self = $_[0]; (my  $fields = $self->{fields}); (my  $str = ''); for my $field ( @{[@{($fields || []) || []}] || []} ) { ($str = $str . ($field->[0])->emit(("" . ' => ') . ($field->[1])->emit(("" . ',')))) }; $self->{class} . '.new( ' . $str . ' )' }
 }
 
 ;
@@ -134,7 +136,7 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
-sub emit { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Array'))) { (my  $a = $self->{parameters}->array()); (my  $str = 'do { '); (my  $i = 0); for my $var ( @{[@{($a || [])}]} ) { (my  $bind = Bind->new(('parameters' => $var), ('arguments' => Index->new(('obj' => $self->{arguments}), ('index_exp' => Val::Int->new(('int' => $i))))))); ($str = $str . ' ' . $bind->emit(("" . '; '))); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit(("" . ' }'))) } ; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Hash'))) { (my  $a = $self->{parameters}->hash()); (my  $b = $self->{arguments}->hash()); (my  $str = 'do { '); (my  $i = 0); my  $arg; for my $var ( @{[@{($a || [])}]} ) { ($arg = Val::Undef->new()); for my $var2 ( @{[@{($b || [])}]} ) { if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) { ($arg = $var2->[1]) }  }; (my  $bind = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg))); ($str = $str . ' ' . $bind->emit(("" . '; '))); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit(("" . ' }'))) } ; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { (my  $class = $self->{parameters}->class()); (my  $a = $self->{parameters}->fields()); (my  $b = $self->{arguments}); (my  $str = 'do { '); (my  $i = 0); my  $arg; for my $var ( @{[@{($a || [])}]} ) { (my  $bind = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => []), ('hyper' => 0))))); ($str = $str . ' ' . $bind->emit(("" . '; '))); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit(("" . ' }'))) } ; $self->{parameters}->emit(("" . ' = ') . $self->{arguments}->emit()) }
+sub emit { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Array'))) { (my  $a = $self->{parameters}->array()); (my  $str = 'do { '); (my  $i = 0); for my $var ( @{[@{($a || []) || []}] || []} ) { (my  $bind = Bind->new(('parameters' => $var), ('arguments' => Index->new(('obj' => $self->{arguments}), ('index_exp' => Val::Int->new(('int' => $i))))))); ($str = $str . ' ' . $bind->emit(("" . '; '))); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit(("" . ' }'))) } ; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Hash'))) { (my  $a = $self->{parameters}->hash()); (my  $b = $self->{arguments}->hash()); (my  $str = 'do { '); (my  $i = 0); my  $arg; for my $var ( @{[@{($a || []) || []}] || []} ) { ($arg = Val::Undef->new()); for my $var2 ( @{[@{($b || []) || []}] || []} ) { if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) { ($arg = $var2->[1]) }  }; (my  $bind = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg))); ($str = $str . ' ' . $bind->emit(("" . '; '))); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit(("" . ' }'))) } ; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { (my  $class = $self->{parameters}->class()); (my  $a = $self->{parameters}->fields()); (my  $b = $self->{arguments}); (my  $str = 'do { '); (my  $i = 0); my  $arg; for my $var ( @{[@{($a || []) || []}] || []} ) { (my  $bind = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => []), ('hyper' => 0))))); ($str = $str . ' ' . $bind->emit(("" . '; '))); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit(("" . ' }'))) } ; $self->{parameters}->emit(("" . ' = ') . $self->{arguments}->emit()) }
 }
 
 ;
@@ -220,7 +222,7 @@ sub new { shift; bless { @_ }, "Method" }
 sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
-sub emit { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = ''); (my  $pos = $sig->positional()); for my $field ( @{[@{($pos || [])}]} ) { ($str = $str . '' . $field->emit(("" . '?, '))) }; 'method ' . $self->{name} . '(' . $invocant->emit(("" . ': ') . $str . ') { ' . Main::join(([ map { $_->emit() } @{ $self->{block} } ]), '; ') . ' }') }
+sub emit { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = ''); (my  $pos = $sig->positional()); for my $field ( @{[@{($pos || []) || []}] || []} ) { ($str = $str . '' . $field->emit(("" . '?, '))) }; 'method ' . $self->{name} . '(' . $invocant->emit(("" . ': ') . $str . ') { ' . Main::join(([ map { $_->emit() } @{ $self->{block} } ]), '; ') . ' }') }
 }
 
 ;
@@ -230,7 +232,7 @@ sub new { shift; bless { @_ }, "Sub" }
 sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
-sub emit { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); my  $str; (my  $pos = $sig->positional()); for my $field ( @{[@{($pos || [])}]} ) { ($str = $str . '' . $field->emit(("" . '?, '))) }; if (Main::bool(($self->{name} eq ''))) { return('(sub (' . $str . ') ' . ' { ' . Main::join(([ map { $_->emit() } @{ $self->{block} } ]), '; ') . ' })') } ; 'sub ' . $self->{name} . '(' . $str . ') ' . ' { ' . Main::join(([ map { $_->emit() } @{ $self->{block} } ]), '; ') . ' }' }
+sub emit { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); my  $str; (my  $pos = $sig->positional()); for my $field ( @{[@{($pos || []) || []}] || []} ) { ($str = $str . '' . $field->emit(("" . '?, '))) }; if (Main::bool(($self->{name} eq ''))) { return('(sub (' . $str . ') ' . ' { ' . Main::join(([ map { $_->emit() } @{ $self->{block} } ]), '; ') . ' })') } ; 'sub ' . $self->{name} . '(' . $str . ') ' . ' { ' . Main::join(([ map { $_->emit() } @{ $self->{block} } ]), '; ') . ' }' }
 }
 
 ;

@@ -34,7 +34,7 @@ The C<v6> module is a front-end to the "Perlito" compiler.
 
 Alternate backend modules can be installed. For example, the "Mildew" compiler can be used as:
 
-  use v6::mildew;
+  use v6-mildew;
 
 =head1 REQUIREMENTS
 

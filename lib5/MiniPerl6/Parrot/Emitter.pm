@@ -2,6 +2,8 @@
 use v5;
 use utf8;
 use strict;
+use warnings;
+no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc');
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
@@ -22,9 +24,9 @@ sub emit_parrot { my $self = $_[0]; (my  $a = $self->{body}); my  $item; (my  $s
 ' . '.end' . '
 ' . '
 ' . '.sub ' . '"' . '_class_vars_' . '"' . ' :anon' . '
-'); for my $item ( @{[@{($a || [])}]} ) { if (Main::bool(((Main::isa($item, 'Decl')) && (($item->decl() ne 'has'))))) { ($s = $s . $item->emit_parrot()) }  }; ($s = $s . '.end' . '
+'); for my $item ( @{[@{($a || []) || []}] || []} ) { if (Main::bool(((Main::isa($item, 'Decl')) && (($item->decl() ne 'has'))))) { ($s = $s . $item->emit_parrot()) }  }; ($s = $s . '.end' . '
 ' . '
-'); for my $item ( @{[@{($a || [])}]} ) { if (Main::bool((Main::isa($item, 'Sub') || Main::isa($item, 'Method')))) { ($s = $s . $item->emit_parrot()) }  }; for my $item ( @{[@{($a || [])}]} ) { if (Main::bool(((Main::isa($item, 'Decl')) && (($item->decl() eq 'has'))))) { (my  $name = ($item->var())->name()); ($s = $s . '.sub ' . '"' . $name . '"' . ' :method' . '
+'); for my $item ( @{[@{($a || []) || []}] || []} ) { if (Main::bool((Main::isa($item, 'Sub') || Main::isa($item, 'Method')))) { ($s = $s . $item->emit_parrot()) }  }; for my $item ( @{[@{($a || []) || []}] || []} ) { if (Main::bool(((Main::isa($item, 'Decl')) && (($item->decl() eq 'has'))))) { (my  $name = ($item->var())->name()); ($s = $s . '.sub ' . '"' . $name . '"' . ' :method' . '
 ' . '  .param pmc val      :optional' . '
 ' . '  .param int has_val  :opt_flag' . '
 ' . '  unless has_val goto ifelse' . '
@@ -39,7 +41,7 @@ sub emit_parrot { my $self = $_[0]; (my  $a = $self->{body}); my  $item; (my  $s
 ') }  }; ($s = $s . '.sub _ :anon :load :init :outer(' . '"' . '_class_vars_' . '"' . ')' . '
 ' . '  .local pmc self' . '
 ' . '  newclass self, ' . '"' . $self->{name} . '"' . '
-'); for my $item ( @{[@{($a || [])}]} ) { if (Main::bool(((Main::isa($item, 'Decl')) && (($item->decl() eq 'has'))))) { ($s = $s . $item->emit_parrot()) } ; if (Main::bool(((Main::isa($item, 'Decl') || Main::isa($item, 'Sub')) || Main::isa($item, 'Method')))) {  } else { ($s = $s . $item->emit_parrot()) } }; ($s = $s . '.end' . '
+'); for my $item ( @{[@{($a || []) || []}] || []} ) { if (Main::bool(((Main::isa($item, 'Decl')) && (($item->decl() eq 'has'))))) { ($s = $s . $item->emit_parrot()) } ; if (Main::bool(((Main::isa($item, 'Decl') || Main::isa($item, 'Sub')) || Main::isa($item, 'Method')))) {  } else { ($s = $s . $item->emit_parrot()) } }; ($s = $s . '.end' . '
 ' . '
 '); return($s) }
 }
@@ -108,7 +110,7 @@ sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
 sub emit_parrot { my $self = $_[0]; (my  $a = $self->{array1}); my  $item; (my  $s = '  save $P1' . '
 ' . '  $P1 = new .ResizablePMCArray' . '
-'); for my $item ( @{[@{($a || [])}]} ) { ($s = $s . $item->emit_parrot()); ($s = $s . '  push $P1, $P0' . Main->newline()) }; (my  $s = $s . '  $P0 = $P1' . '
+'); for my $item ( @{[@{($a || []) || []}] || []} ) { ($s = $s . $item->emit_parrot()); ($s = $s . '  push $P1, $P0' . Main->newline()) }; (my  $s = $s . '  $P0 = $P1' . '
 ' . '  restore $P1' . '
 '); return($s) }
 }
@@ -121,7 +123,7 @@ sub hash1 { $_[0]->{hash1} };
 sub emit_parrot { my $self = $_[0]; (my  $a = $self->{hash1}); my  $item; (my  $s = '  save $P1' . '
 ' . '  save $P2' . '
 ' . '  $P1 = new .Hash' . '
-'); for my $item ( @{[@{($a || [])}]} ) { ($s = $s . ($item->[0])->emit_parrot()); ($s = $s . '  $P2 = $P0' . Main->newline()); ($s = $s . ($item->[1])->emit_parrot()); ($s = $s . '  set $P1[$P2], $P0' . Main->newline()) }; (my  $s = $s . '  $P0 = $P1' . '
+'); for my $item ( @{[@{($a || []) || []}] || []} ) { ($s = $s . ($item->[0])->emit_parrot()); ($s = $s . '  $P2 = $P0' . Main->newline()); ($s = $s . ($item->[1])->emit_parrot()); ($s = $s . '  set $P1[$P2], $P0' . Main->newline()) }; (my  $s = $s . '  $P0 = $P1' . '
 ' . '  restore $P2' . '
 ' . '  restore $P1' . '
 '); return($s) }
@@ -143,7 +145,7 @@ sub fields { $_[0]->{fields} };
 sub emit_parrot { my $self = $_[0]; (my  $fields = $self->{fields}); (my  $str = ''); ($str = '  save $P1' . '
 ' . '  save $S2' . '
 ' . '  $P1 = new ' . '"' . $self->{class} . '"' . '
-'); for my $field ( @{[@{($fields || [])}]} ) { ($str = $str . ($field->[0])->emit_parrot(("" . '  $S2 = $P0') . '
+'); for my $field ( @{[@{($fields || []) || []}] || []} ) { ($str = $str . ($field->[0])->emit_parrot(("" . '  $S2 = $P0') . '
 ' . ($field->[1])->emit_parrot(("" . '  setattribute $P1, $S2, $P0') . '
 '))) }; ($str = $str . '  $P0 = $P1' . '
 ' . '  restore $S2' . '
@@ -192,7 +194,7 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
-sub emit_parrot { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Array'))) { (my  $a = $self->{parameters}->array1()); (my  $b = $self->{arguments}->array1()); (my  $str = ''); (my  $i = 0); for my $var ( @{[@{($a || [])}]} ) { (my  $bind = Bind->new(('parameters' => $var), ('arguments' => ($b->[$i])))); ($str = $str . $bind->emit_parrot()); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_parrot()) } ; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Hash'))) { (my  $a = $self->{parameters}->hash()); (my  $b = $self->{arguments}->hash()); (my  $str = ''); (my  $i = 0); my  $arg; for my $var ( @{[@{($a || [])}]} ) { ($arg = Val::Undef->new()); for my $var2 ( @{[@{($b || [])}]} ) { if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) { ($arg = $var2->[1]) }  }; (my  $bind = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg))); ($str = $str . $bind->emit_parrot()); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_parrot()) } ; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { (my  $class = $self->{parameters}->class()); (my  $a = $self->{parameters}->fields()); (my  $b = $self->{arguments}); (my  $str = ''); for my $var ( @{[@{($a || [])}]} ) { (my  $bind = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => []), ('hyper' => 0))))); ($str = $str . $bind->emit_parrot()) }; return($str . $self->{parameters}->emit_parrot()) } ; if (Main::bool(Main::isa($self->{parameters}, 'Var'))) { return($self->{arguments}->emit_parrot(("" . '  ') . $self->{parameters}->full_name(("" . ' = $P0') . '
+sub emit_parrot { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Array'))) { (my  $a = $self->{parameters}->array1()); (my  $b = $self->{arguments}->array1()); (my  $str = ''); (my  $i = 0); for my $var ( @{[@{($a || []) || []}] || []} ) { (my  $bind = Bind->new(('parameters' => $var), ('arguments' => ($b->[$i])))); ($str = $str . $bind->emit_parrot()); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_parrot()) } ; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Hash'))) { (my  $a = $self->{parameters}->hash()); (my  $b = $self->{arguments}->hash()); (my  $str = ''); (my  $i = 0); my  $arg; for my $var ( @{[@{($a || []) || []}] || []} ) { ($arg = Val::Undef->new()); for my $var2 ( @{[@{($b || []) || []}] || []} ) { if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) { ($arg = $var2->[1]) }  }; (my  $bind = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg))); ($str = $str . $bind->emit_parrot()); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_parrot()) } ; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { (my  $class = $self->{parameters}->class()); (my  $a = $self->{parameters}->fields()); (my  $b = $self->{arguments}); (my  $str = ''); for my $var ( @{[@{($a || []) || []}] || []} ) { (my  $bind = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => []), ('hyper' => 0))))); ($str = $str . $bind->emit_parrot()) }; return($str . $self->{parameters}->emit_parrot()) } ; if (Main::bool(Main::isa($self->{parameters}, 'Var'))) { return($self->{arguments}->emit_parrot(("" . '  ') . $self->{parameters}->full_name(("" . ' = $P0') . '
 '))) } ; if (Main::bool(Main::isa($self->{parameters}, 'Decl'))) { return($self->{arguments}->emit_parrot(("" . '  .local pmc ') . (($self->{parameters})->var())->full_name(("" . '
 ') . '  ' . (($self->{parameters})->var())->full_name(("" . ' = $P0') . '
 ' . '  .lex \'' . (($self->{parameters})->var())->full_name(("" . '\', $P0') . '
@@ -231,10 +233,10 @@ sub invocant { $_[0]->{invocant} };
 sub hyper { $_[0]->{hyper} };
 sub method { $_[0]->{method} };
 sub arguments { $_[0]->{arguments} };
-sub emit_parrot { my $self = $_[0]; if (Main::bool(((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))))) { if (Main::bool(($self->{hyper}))) { return('[ map { Main::' . $self->{method} . '( $_, ' . ', ' . Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '') . ')' . ' } @{ ' . $self->{invocant}->emit_parrot(("" . ' } ]'))) } else { return('Main::' . $self->{method} . '(' . $self->{invocant}->emit_parrot(("" . ', ') . Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '') . ')')) } } ; (my  $meth = $self->{method}); if (Main::bool(($meth eq 'postcircumfix:<( )>'))) { ($meth = '') } ; (my  $call = '->' . $meth . '(' . Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '') . ')'); if (Main::bool(($self->{hyper}))) { return('[ map { $_' . $call . ' } @{ ' . $self->{invocant}->emit_parrot(("" . ' } ]'))) } ; (my  $List_args = [@{$self->{arguments}}]); (my  $str = ''); (my  $ii = 10); for my $arg ( @{$List_args} ) { ($str = $str . '  save $P' . $ii . '
-'); ($ii = ($ii + 1)) }; (my  $i = 10); for my $arg ( @{$List_args} ) { ($str = $str . $arg->emit_parrot(("" . '  $P') . $i . ' = $P0' . '
-')); ($i = ($i + 1)) }; ($str = $str . $self->{invocant}->emit_parrot(("" . '  $P0 = $P0.') . $meth . '(')); ($i = 0); my  $List_p; for my $arg ( @{$List_args} ) { ($List_p->[$i] = '$P' . (($i + 10))); ($i = ($i + 1)) }; ($str = $str . Main::join($List_p, ', ') . ')' . '
-'); for my $arg ( @{$List_args} ) { ($ii = ($ii - 1)); ($str = $str . '  restore $P' . $ii . '
+sub emit_parrot { my $self = $_[0]; if (Main::bool(((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))))) { if (Main::bool(($self->{hyper}))) { return('[ map { Main::' . $self->{method} . '( $_, ' . ', ' . Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '') . ')' . ' } @{ ' . $self->{invocant}->emit_parrot(("" . ' } ]'))) } else { return('Main::' . $self->{method} . '(' . $self->{invocant}->emit_parrot(("" . ', ') . Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '') . ')')) } } ; (my  $meth = $self->{method}); if (Main::bool(($meth eq 'postcircumfix:<( )>'))) { ($meth = '') } ; (my  $call = '->' . $meth . '(' . Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '') . ')'); if (Main::bool(($self->{hyper}))) { return('[ map { $_' . $call . ' } @{ ' . $self->{invocant}->emit_parrot(("" . ' } ]'))) } ; (my  $List_args = [@{$self->{arguments} || []}]); (my  $str = ''); (my  $ii = 10); for my $arg ( @{$List_args || []} ) { ($str = $str . '  save $P' . $ii . '
+'); ($ii = ($ii + 1)) }; (my  $i = 10); for my $arg ( @{$List_args || []} ) { ($str = $str . $arg->emit_parrot(("" . '  $P') . $i . ' = $P0' . '
+')); ($i = ($i + 1)) }; ($str = $str . $self->{invocant}->emit_parrot(("" . '  $P0 = $P0.') . $meth . '(')); ($i = 0); my  $List_p; for my $arg ( @{$List_args || []} ) { ($List_p->[$i] = '$P' . (($i + 10))); ($i = ($i + 1)) }; ($str = $str . Main::join($List_p, ', ') . ')' . '
+'); for my $arg ( @{$List_args || []} ) { ($ii = ($ii - 1)); ($str = $str . '  restore $P' . $ii . '
 ') }; return($str) }
 }
 
@@ -322,10 +324,10 @@ sub emit_parrot { my $self = $_[0]; (my  $code = $self->{code}); if (Main::bool(
 ' . '  restore $S0' . '
 ' . '  $S0 = substr $S0, $I0, $I1' . '
 ' . '  $P0 = $S0' . '
-')))) } ; (my  $List_args = [@{$self->{arguments}}]); (my  $str = ''); (my  $ii = 10); my  $arg; for my $arg ( @{$List_args} ) { ($str = $str . '  save $P' . $ii . '
-'); ($ii = ($ii + 1)) }; (my  $i = 10); for my $arg ( @{$List_args} ) { ($str = $str . $arg->emit_parrot(("" . '  $P') . $i . ' = $P0' . '
-')); ($i = ($i + 1)) }; ($str = $str . '  $P0 = ' . $self->{code} . '('); ($i = 0); my  $List_p; for my $arg ( @{$List_args} ) { ($List_p->[$i] = '$P' . (($i + 10))); ($i = ($i + 1)) }; ($str = $str . Main::join($List_p, ', ') . ')' . '
-'); for my $arg ( @{$List_args} ) { ($ii = ($ii - 1)); ($str = $str . '  restore $P' . $ii . '
+')))) } ; (my  $List_args = [@{$self->{arguments} || []}]); (my  $str = ''); (my  $ii = 10); my  $arg; for my $arg ( @{$List_args || []} ) { ($str = $str . '  save $P' . $ii . '
+'); ($ii = ($ii + 1)) }; (my  $i = 10); for my $arg ( @{$List_args || []} ) { ($str = $str . $arg->emit_parrot(("" . '  $P') . $i . ' = $P0' . '
+')); ($i = ($i + 1)) }; ($str = $str . '  $P0 = ' . $self->{code} . '('); ($i = 0); my  $List_p; for my $arg ( @{$List_args || []} ) { ($List_p->[$i] = '$P' . (($i + 10))); ($i = ($i + 1)) }; ($str = $str . Main::join($List_p, ', ') . ')' . '
+'); for my $arg ( @{$List_args || []} ) { ($ii = ($ii - 1)); ($str = $str . '  restore $P' . $ii . '
 ') }; return($str) }
 }
 
@@ -405,7 +407,7 @@ sub new { shift; bless { @_ }, "Method" }
 sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
-sub emit_parrot { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = ''); (my  $i = 0); my  $field; for my $field ( @{[@{($pos || [])}]} ) { ($str = $str . '  $P0 = params[' . $i . ']' . '
+sub emit_parrot { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = ''); (my  $i = 0); my  $field; for my $field ( @{[@{($pos || []) || []}] || []} ) { ($str = $str . '  $P0 = params[' . $i . ']' . '
 ' . '  .lex \'' . $field->full_name(("" . '\', $P0') . '
 ')); ($i = ($i + 1)) }; return('.sub ' . '"' . $self->{name} . '"' . ' :method :outer(' . '"' . '_class_vars_' . '"' . ')' . '
 ' . '  .param pmc params  :slurpy' . '
@@ -422,7 +424,7 @@ sub new { shift; bless { @_ }, "Sub" }
 sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
-sub emit_parrot { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = ''); (my  $i = 0); my  $field; for my $field ( @{[@{($pos || [])}]} ) { ($str = $str . '  $P0 = params[' . $i . ']' . '
+sub emit_parrot { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str = ''); (my  $i = 0); my  $field; for my $field ( @{[@{($pos || []) || []}] || []} ) { ($str = $str . '  $P0 = params[' . $i . ']' . '
 ' . '  .lex \'' . $field->full_name(("" . '\', $P0') . '
 ')); ($i = ($i + 1)) }; return('.sub ' . '"' . $self->{name} . '"' . ' :outer(' . '"' . '_class_vars_' . '"' . ')' . '
 ' . '  .param pmc params  :slurpy' . '

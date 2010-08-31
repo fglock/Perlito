@@ -2,6 +2,8 @@
 use v5;
 use utf8;
 use strict;
+use warnings;
+no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc');
 use MiniPerl6::Perl5::Runtime;
 our $MATCH = MiniPerl6::Match->new();
 {
@@ -14,7 +16,7 @@ sub new { shift; bless { @_ }, "GLOBAL" }
 package MiniPerl6::Clojure::LexicalBlock;
 sub new { shift; bless { @_ }, "MiniPerl6::Clojure::LexicalBlock" }
 sub block { $_[0]->{block} };
-sub emit_clojure { my $self = $_[0]; if (Main::bool((($self->{block}) ? 0 : 1))) { return('nil') } ; (my  $str = ''); (my  $has_my_decl = 0); (my  $my_decl = ''); for my $decl ( @{$self->{block}} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . ($decl->var())->emit_clojure() . ' (sv-undef))') } ; if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . (($decl->parameters())->var())->emit_clojure() . ' (sv-undef))') }  }; if (Main::bool($has_my_decl)) { ($str = $str . '(let (' . $my_decl . ') ') } else { ($str = $str . '(do ') }; for my $decl ( @{$self->{block}} ) { if (Main::bool(((((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) ? 0 : 1)))) { ($str = $str . ($decl)->emit_clojure()) }  }; return($str . ')') }
+sub emit_clojure { my $self = $_[0]; if (Main::bool((($self->{block}) ? 0 : 1))) { return('nil') } ; (my  $str = ''); (my  $has_my_decl = 0); (my  $my_decl = ''); for my $decl ( @{$self->{block} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . ($decl->var())->emit_clojure() . ' (sv-undef))') } ; if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . (($decl->parameters())->var())->emit_clojure() . ' (sv-undef))') }  }; if (Main::bool($has_my_decl)) { ($str = $str . '(let (' . $my_decl . ') ') } else { ($str = $str . '(do ') }; for my $decl ( @{$self->{block} || []} ) { if (Main::bool(((((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) ? 0 : 1)))) { ($str = $str . ($decl)->emit_clojure()) }  }; return($str . ')') }
 }
 
 ;
@@ -25,13 +27,13 @@ sub name { $_[0]->{name} };
 sub attributes { $_[0]->{attributes} };
 sub methods { $_[0]->{methods} };
 sub body { $_[0]->{body} };
-sub emit_clojure { my $self = $_[0]; (my  $class_name = Main::to_lisp_namespace($self->{name})); (my  $str = ';; class ' . $self->{name} . Main->newline()); ($str = $str . '(defpackage ' . $class_name . Main->newline(("" . '  (:use common-lisp mp-Main))') . Main->newline(("" . ';; (in-package ') . $class_name . ')' . Main->newline()))); (my  $has_my_decl = 0); (my  $my_decl = ''); for my $decl ( @{$self->{body}} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . ($decl->var())->emit_clojure() . ' (sv-undef))') } ; if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . (($decl->parameters())->var())->emit_clojure() . ' (sv-undef))') }  }; if (Main::bool($has_my_decl)) { ($str = $str . '(let (' . $my_decl . ')' . Main->newline()) } ; ($str = $str . '(if (not (ignore-errors (find-class \'' . $class_name . ')))
+sub emit_clojure { my $self = $_[0]; (my  $class_name = Main::to_lisp_namespace($self->{name})); (my  $str = ';; class ' . $self->{name} . Main->newline()); ($str = $str . '(defpackage ' . $class_name . Main->newline(("" . '  (:use common-lisp mp-Main))') . Main->newline(("" . ';; (in-package ') . $class_name . ')' . Main->newline()))); (my  $has_my_decl = 0); (my  $my_decl = ''); for my $decl ( @{$self->{body} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . ($decl->var())->emit_clojure() . ' (sv-undef))') } ; if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . (($decl->parameters())->var())->emit_clojure() . ' (sv-undef))') }  }; if (Main::bool($has_my_decl)) { ($str = $str . '(let (' . $my_decl . ')' . Main->newline()) } ; ($str = $str . '(if (not (ignore-errors (find-class \'' . $class_name . ')))
   (defclass ' . $class_name . ' () ()))
 
 (let (x) 
   (setq x (make-instance \'' . $class_name . '))
   (defun proto-' . $class_name . ' () x))
-'); (my  $dumper = ''); for my $decl ( @{$self->{body}} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) { (my  $accessor_name = ($decl->var())->name()); ($dumper = $dumper . '(let ((m (make-instance \'mp-Pair))) ' . '(setf (sv-key m) "' . Main::lisp_escape_string($accessor_name) . '") ' . '(setf (sv-value m) (' . Main::to_lisp_identifier($accessor_name) . ' self)) m) '); ($str = $str . ';; has $.' . $accessor_name . '
+'); (my  $dumper = ''); for my $decl ( @{$self->{body} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) { (my  $accessor_name = ($decl->var())->name()); ($dumper = $dumper . '(let ((m (make-instance \'mp-Pair))) ' . '(setf (sv-key m) "' . Main::lisp_escape_string($accessor_name) . '") ' . '(setf (sv-value m) (' . Main::to_lisp_identifier($accessor_name) . ' self)) m) '); ($str = $str . ';; has $.' . $accessor_name . '
 (let ((new-slots (list (list :name \'' . Main::to_lisp_identifier($accessor_name) . '
   :readers \'(' . Main::to_lisp_identifier($accessor_name) . ')
   :writers \'((setf ' . Main::to_lisp_identifier($accessor_name) . '))
@@ -46,14 +48,14 @@ sub emit_clojure { my $self = $_[0]; (my  $class_name = Main::to_lisp_namespace(
 new-slots))
 (sb-mop:ensure-class \'' . $class_name . ' :direct-slots new-slots))
 
-') } ; if (Main::bool(Main::isa($decl, 'Method'))) { (my  $sig = $decl->sig()); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str_specific = '(' . $invocant->emit_clojure() . ' ' . $class_name . ')'); (my  $str_optionals = ''); for my $field ( @{[@{($pos || [])}]} ) { ($str_optionals = $str_optionals . ' ' . $field->emit_clojure()) }; if (Main::bool(($str_optionals))) { ($str_specific = $str_specific . ' &optional' . $str_optionals) } ; (my  $block = MiniPerl6::Clojure::LexicalBlock->new(('block' => $decl->block()))); ($str = $str . ';; method ' . $decl->name() . '
+') } ; if (Main::bool(Main::isa($decl, 'Method'))) { (my  $sig = $decl->sig()); (my  $invocant = $sig->invocant()); (my  $pos = $sig->positional()); (my  $str_specific = '(' . $invocant->emit_clojure() . ' ' . $class_name . ')'); (my  $str_optionals = ''); for my $field ( @{[@{($pos || []) || []}] || []} ) { ($str_optionals = $str_optionals . ' ' . $field->emit_clojure()) }; if (Main::bool(($str_optionals))) { ($str_specific = $str_specific . ' &optional' . $str_optionals) } ; (my  $block = MiniPerl6::Clojure::LexicalBlock->new(('block' => $decl->block()))); ($str = $str . ';; method ' . $decl->name() . '
 (if (not (ignore-errors (find-method \'' . Main::to_lisp_identifier($decl->name()) . ' () ())))
   (defmulti ' . Main::to_lisp_identifier($decl->name()) . ' class)
 (defmethod ' . Main::to_lisp_identifier($decl->name()) . ' [' . $str_specific . ']
   (block mp6-function
     ' . $block->emit_clojure() . '))
 
-') } ; if (Main::bool(Main::isa($decl, 'Sub'))) { ($str = $str . '(in-package ' . $class_name . ')' . Main->newline(("" . '  ') . ($decl)->emit_clojure() . Main->newline(("" . '(in-package mp-Main)') . Main->newline()))) }  }; if (Main::bool(($self->{name} ne 'Pair'))) { ($str = $str . '(defmethod sv-perl ((self ' . $class_name . '))' . Main->newline(("" . '  (mp-Main::sv-lisp_dump_object "::') . Main::lisp_escape_string($self->{name}) . '"' . ' (list ' . $dumper . ')))' . Main->newline() . Main->newline())) } ; for my $decl ( @{$self->{body}} ) { if (Main::bool(((((((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))) ? 0 : 1)) && (((Main::isa($decl, 'Method')) ? 0 : 1))) && (((Main::isa($decl, 'Sub')) ? 0 : 1))))) { ($str = $str . ($decl)->emit_clojure() . Main->newline()) }  }; if (Main::bool($has_my_decl)) { ($str = $str . ')') } ; ($str = $str . Main->newline() . Main->newline()) }
+') } ; if (Main::bool(Main::isa($decl, 'Sub'))) { ($str = $str . '(in-package ' . $class_name . ')' . Main->newline(("" . '  ') . ($decl)->emit_clojure() . Main->newline(("" . '(in-package mp-Main)') . Main->newline()))) }  }; if (Main::bool(($self->{name} ne 'Pair'))) { ($str = $str . '(defmethod sv-perl ((self ' . $class_name . '))' . Main->newline(("" . '  (mp-Main::sv-lisp_dump_object "::') . Main::lisp_escape_string($self->{name}) . '"' . ' (list ' . $dumper . ')))' . Main->newline() . Main->newline())) } ; for my $decl ( @{$self->{body} || []} ) { if (Main::bool(((((((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))) ? 0 : 1)) && (((Main::isa($decl, 'Method')) ? 0 : 1))) && (((Main::isa($decl, 'Sub')) ? 0 : 1))))) { ($str = $str . ($decl)->emit_clojure() . Main->newline()) }  }; if (Main::bool($has_my_decl)) { ($str = $str . ')') } ; ($str = $str . Main->newline() . Main->newline()) }
 }
 
 ;
@@ -109,7 +111,7 @@ sub emit_clojure { my $self = $_[0]; 'bless(' . Main::perl($self->{fields}, ) . 
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
-sub emit_clojure { my $self = $_[0]; if (Main::bool($self->{array1})) { (my  $str = ''); for my $elem ( @{$self->{array1}} ) { if (Main::bool((Main::isa($elem, 'Apply') && ($elem->code() eq 'prefix:<@>')))) { ($str = $str . ' ' . $elem->emit_clojure()) } else { ($str = $str . ' (list ' . $elem->emit_clojure() . ')') } }; return('(concatenate \'list ' . $str . ')') } else { return('nil') } }
+sub emit_clojure { my $self = $_[0]; if (Main::bool($self->{array1})) { (my  $str = ''); for my $elem ( @{$self->{array1} || []} ) { if (Main::bool((Main::isa($elem, 'Apply') && ($elem->code() eq 'prefix:<@>')))) { ($str = $str . ' ' . $elem->emit_clojure()) } else { ($str = $str . ' (list ' . $elem->emit_clojure() . ')') } }; return('(concatenate \'list ' . $str . ')') } else { return('nil') } }
 }
 
 ;
@@ -117,7 +119,7 @@ sub emit_clojure { my $self = $_[0]; if (Main::bool($self->{array1})) { (my  $st
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
-sub emit_clojure { my $self = $_[0]; if (Main::bool($self->{hash1})) { (my  $fields = $self->{hash1}); (my  $str = ''); for my $field ( @{[@{($fields || [])}]} ) { ($str = $str . '(setf (gethash ' . ($field->[0])->emit_clojure() . ' h) ' . ($field->[1])->emit() . ')') }; return('(let ((h (make-hash-table :test \'equal))) ' . $str . ' h)') } else { return('(make-hash-table :test \'equal)') } }
+sub emit_clojure { my $self = $_[0]; if (Main::bool($self->{hash1})) { (my  $fields = $self->{hash1}); (my  $str = ''); for my $field ( @{[@{($fields || []) || []}] || []} ) { ($str = $str . '(setf (gethash ' . ($field->[0])->emit_clojure() . ' h) ' . ($field->[1])->emit() . ')') }; return('(let ((h (make-hash-table :test \'equal))) ' . $str . ' h)') } else { return('(make-hash-table :test \'equal)') } }
 }
 
 ;
@@ -133,7 +135,7 @@ package Lit::Object;
 sub new { shift; bless { @_ }, "Lit::Object" }
 sub class { $_[0]->{class} };
 sub fields { $_[0]->{fields} };
-sub emit_clojure { my $self = $_[0]; if (Main::bool($self->{fields})) { (my  $fields = $self->{fields}); (my  $str = ''); for my $field ( @{[@{($fields || [])}]} ) { ($str = $str . '(setf (' . Main::to_lisp_identifier(($field->[0])->buf()) . ' m) ' . ($field->[1])->emit_clojure() . ')') }; '(let ((m (make-instance \'' . Main::to_lisp_namespace($self->{class}) . '))) ' . $str . ' m)' } else { return('(make-instance \'' . Main::to_lisp_namespace($self->{class}) . ')') } }
+sub emit_clojure { my $self = $_[0]; if (Main::bool($self->{fields})) { (my  $fields = $self->{fields}); (my  $str = ''); for my $field ( @{[@{($fields || []) || []}] || []} ) { ($str = $str . '(setf (' . Main::to_lisp_identifier(($field->[0])->buf()) . ' m) ' . ($field->[1])->emit_clojure() . ')') }; '(let ((m (make-instance \'' . Main::to_lisp_namespace($self->{class}) . '))) ' . $str . ' m)' } else { return('(make-instance \'' . Main::to_lisp_namespace($self->{class}) . ')') } }
 }
 
 ;
@@ -171,7 +173,7 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
-sub emit_clojure { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { (my  $class = $self->{parameters}->class()); (my  $a = $self->{parameters}->fields()); (my  $b = $self->{arguments}); (my  $str = 'do { '); (my  $i = 0); my  $arg; for my $var ( @{[@{($a || [])}]} ) { (my  $bind = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => []), ('hyper' => 0))))); ($str = $str . ' ' . $bind->emit_clojure() . ' '); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_clojure() . ' }') } ; if (Main::bool((Main::isa($self->{parameters}, 'Decl') && (($self->{parameters}->decl() eq 'my'))))) { return('(setf ' . ($self->{parameters}->var())->emit_clojure() . ' ' . $self->{arguments}->emit_clojure() . ')') } ; '(setf ' . $self->{parameters}->emit_clojure() . ' ' . $self->{arguments}->emit_clojure() . ')' }
+sub emit_clojure { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { (my  $class = $self->{parameters}->class()); (my  $a = $self->{parameters}->fields()); (my  $b = $self->{arguments}); (my  $str = 'do { '); (my  $i = 0); my  $arg; for my $var ( @{[@{($a || []) || []}] || []} ) { (my  $bind = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => []), ('hyper' => 0))))); ($str = $str . ' ' . $bind->emit_clojure() . ' '); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_clojure() . ' }') } ; if (Main::bool((Main::isa($self->{parameters}, 'Decl') && (($self->{parameters}->decl() eq 'my'))))) { return('(setf ' . ($self->{parameters}->var())->emit_clojure() . ' ' . $self->{arguments}->emit_clojure() . ')') } ; '(setf ' . $self->{parameters}->emit_clojure() . ' ' . $self->{arguments}->emit_clojure() . ')' }
 }
 
 ;
@@ -268,7 +270,7 @@ sub new { shift; bless { @_ }, "Sub" }
 sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
-sub emit_clojure { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $block = MiniPerl6::Clojure::LexicalBlock->new(('block' => $self->{block}))); my  $str; if (Main::bool(($pos || []))) { for my $field ( @{[@{($pos || [])}]} ) { ($str = $str . $field->emit_clojure() . ' ') } } ; if (Main::bool($str)) { ($str = '&optional ' . $str) } ; if (Main::bool($self->{name})) { '(defun ' . Main::to_lisp_identifier($self->{name}) . ' (' . $str . ')' . Main->newline() . '  (block mp6-function ' . $block->emit_clojure() . '))' . Main->newline() } else { '(fn ' . $self->{name} . ' [' . $str . ']' . Main->newline() . '  (block mp6-function ' . $block->emit_clojure() . '))' . Main->newline() } }
+sub emit_clojure { my $self = $_[0]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $block = MiniPerl6::Clojure::LexicalBlock->new(('block' => $self->{block}))); my  $str; if (Main::bool(($pos || []))) { for my $field ( @{[@{($pos || []) || []}] || []} ) { ($str = $str . $field->emit_clojure() . ' ') } } ; if (Main::bool($str)) { ($str = '&optional ' . $str) } ; if (Main::bool($self->{name})) { '(defun ' . Main::to_lisp_identifier($self->{name}) . ' (' . $str . ')' . Main->newline() . '  (block mp6-function ' . $block->emit_clojure() . '))' . Main->newline() } else { '(fn ' . $self->{name} . ' [' . $str . ']' . Main->newline() . '  (block mp6-function ' . $block->emit_clojure() . '))' . Main->newline() } }
 }
 
 ;

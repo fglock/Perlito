@@ -249,7 +249,7 @@ else {
         my $module = "MiniPerl6::${lib_spec}::Prelude";
         $load_module->($module);
         my $p = MiniPerl6::Grammar->exp_stmts( $source, $pos );
-        if (!$p) {
+        if (!$p || $p->to < length($source)) {
             die "Syntax error at pos ", $p->to, " in $module\n";
         }
         warn "matched source code to ", $p->to, " in $module\n" if $verbose;
@@ -447,6 +447,8 @@ elsif ( $backend eq 'perl5' ) {
     $result .=  "use v5;\n";
     $result .=  "use utf8;\n";
     $result .=  "use strict;\n";
+    $result .=  "use warnings;\n";
+    $result .=  "no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc');\n";
     $result .=  "use MiniPerl6::Perl5::Runtime;\n";
     $result .=  "our \$MATCH = MiniPerl6::Match->new();\n";
     $result .= CompUnit::emit_perl5_program( \@comp_unit );

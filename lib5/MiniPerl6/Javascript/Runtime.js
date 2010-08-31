@@ -274,6 +274,10 @@ f_or = function (a, fb) {
   if (f_bool(a)) { return a }
   return fb()
 }
+f_defined_or = function (a, fb) {
+  if ( a == null ) { return fb() }
+  return a
+}
 f_pop = function (o) {
   if (o.length == null ) { return null }
   return o.pop();
@@ -284,6 +288,9 @@ f_shift = function (o) {
 }
 f_push = function (o, v) {
   return o.push(v);
+}
+f_unshift = function (o, v) {
+  return o.unshift(v);
 }
 f_index = function (o, s) {
   return o.indexOf(s);

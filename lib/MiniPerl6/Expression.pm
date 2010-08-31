@@ -671,6 +671,10 @@ class MiniPerl6::Expression {
         my $expr;
         my $last_pos = $pos;
         my $lexer_stack = [];
+        my $spaces = MiniPerl6::Grammar.ws($str, $pos);
+        if $spaces {
+            $pos = $spaces.to;
+        }
         my $res = self.exp_stmt($str, $pos);
         if $res {
             # say "# statement result: ", $res.perl;

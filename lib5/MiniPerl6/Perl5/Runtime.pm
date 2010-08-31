@@ -91,22 +91,17 @@ package MiniPerl6::Grammar;
         $MATCH;
     }
 
-BEGIN {
-    if ( $::_V6_COMPILER_NAME ne 'v6.pm' ) {
-        # MP6-in-P5   
-        *word = sub { 
-            my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
-            my $MATCH; $MATCH = MiniPerl6::Match->new( 
-                str => $str,from => $pos,to => $pos, ); 
-            $MATCH->{bool} = (
-                substr($str, $MATCH->to()) =~ m/^([[:word:]])/
-                ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->to() )))
-                : 0
-            );
-            $MATCH;
-        };
+    sub word { 
+        my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
+        my $MATCH; $MATCH = MiniPerl6::Match->new( 
+            str => $str,from => $pos,to => $pos, ); 
+        $MATCH->{bool} = (
+            substr($str, $MATCH->to()) =~ m/^([[:word:]])/
+            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->to() )))
+            : 0
+        );
+        $MATCH;
     }
-}
 
     sub is_newline { 
         my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
