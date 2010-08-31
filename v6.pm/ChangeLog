@@ -1,3 +1,7 @@
+0.034  2010-08-31
+- documentation fix
+- clean up perl5 warnings
+
 0.033  2010-08-30
 - new v6.pm module loader. 
   Written by Pawel Murias (pmurias++)
