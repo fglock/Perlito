@@ -644,7 +644,7 @@ class For {
             $sig = $.body.sig.emit_javascript();
         }
         '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' 
-            ~ "(function ($sig) { "
+            ~ "(function ($sig) \{ "
                 ~ $body.emit_javascript() 
             ~ ' })(a_[i_]) } })' 
         ~ '(' ~ $cond.emit_javascript() ~ ')'

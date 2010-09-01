@@ -199,7 +199,7 @@ package For;
 sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
-sub emit_javascript { my $self = $_[0]; (my  $cond = $self->{cond}); if (Main::bool((((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) ? 0 : 1))) { ($cond = Lit::Array->new(('array1' => [$cond]))) } ; (my  $body = Perlito::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0))); (my  $sig = 'v__'); if (Main::bool($self->{body}->sig())) { ($sig = $self->{body}->sig()->emit_javascript()) } ; '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' . '(function (' . $sig . ') { ' . $body->emit_javascript() . ' })(a_[i_]) } })' . '(' . $cond->emit_javascript() . ')' }
+sub emit_javascript { my $self = $_[0]; (my  $cond = $self->{cond}); if (Main::bool((((Main::isa($cond, 'Var') && ($cond->sigil() eq '@'))) ? 0 : 1))) { ($cond = Lit::Array->new(('array1' => [$cond]))) } ; (my  $body = Perlito::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0))); (my  $sig = 'v__'); if (Main::bool($self->{body}->sig())) { ($sig = $self->{body}->sig()->emit_javascript()) } ; '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' . '(function (' . $sig . ') ' . '{' . ' ' . $body->emit_javascript() . ' })(a_[i_]) } })' . '(' . $cond->emit_javascript() . ')' }
 }
 
 ;

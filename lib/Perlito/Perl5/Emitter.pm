@@ -18,7 +18,7 @@ class CompUnit {
     has $.name;
     has @.body;
     method emit_perl5 {
-          "{\n"
+          "\{\n"
         ~ 'package ' ~ $.name ~ ";" ~ "\n" 
         ~ 'sub new { shift; bless { @_ }, "' ~ $.name ~ '" }'  ~ "\n" 
         ~ (@.body.>>emit_perl5).join( ";" ~ "\n" ) ~ "\n"

@@ -137,8 +137,8 @@ token single_quoted_unescape {
 }
 
 token char_any_double_quote {
-    <!before   [ \" | \$ | \@ | \% ] > .
-    [ <!before [ \" | \$ | \@ | \% | \\ ] > . ]*
+    <!before   [ \" | \$ | \@ | \% | \{ ] > .
+    [ <!before [ \" | \$ | \@ | \% | \{ | \\ ] > . ]*
 }
 
 token double_quoted_unescape {
@@ -169,6 +169,8 @@ token double_quoted_buf {
         | <char_any>  
             { make Val::Buf.new( buf => ~$<char_any> ) }
         ]
+    | \{ <exp_stmts> \}
+            { make Do.new( block => Lit::Block.new( stmts => $$<exp_stmts> ) ) }
     | <double_quoted_unescape> 
         { make Val::Buf.new( buf => $$<double_quoted_unescape> ) }
 }
