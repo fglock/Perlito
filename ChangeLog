@@ -2,6 +2,7 @@ dev version - 2010-09-01
 - backends pending upgrade to the new AST: Go, Common Lisp, Python 2, and Ruby 1.9
 - backends not supported in this version: Parrot, Rakudo, Clojure
 
+- added "perlito" command-line compiler and shell
 - new distribution "v6.pm" (Perlito in Perl 5)
   This replaces Pugs::Compiler::Perl5 as the v6.pm compiler in CPAN.
 - correct operator precedence

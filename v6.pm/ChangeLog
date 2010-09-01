@@ -1,4 +1,5 @@
-- added "perlito" command-line compiler
+0.037  2010-09-01
+- added "perlito" command-line compiler and shell
 
 0.035  2010-09-01
 - moved compiler modules to "Perlito" namespace
