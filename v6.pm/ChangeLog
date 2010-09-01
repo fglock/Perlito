@@ -1,4 +1,6 @@
+0.035  2010-09-01
 - moved compiler modules to "Perlito" namespace
+- fixed range operator
 
 0.034  2010-08-31
 - documentation fix
