@@ -6,13 +6,13 @@ Eval.pm module
 
 - complete ast nodes implementation
 
-Command line compiler (mp6.pl)
+Command line compiler (perlito.pl)
 
 (no issues at the moment)
 
-Command line compiler (util/mp6.pl)
+Command line compiler (util/perlito.pl)
 
-- migrate all bootstrap scripts to use util/mp6.pl - FIXED
+- migrate all bootstrap scripts to use util/perlito.pl - FIXED
 
 - build Ast cache using JSON (we currently use Perl5 Data::Dumper) or XML (Go has XML and JSON input)
 
@@ -24,35 +24,35 @@ Command line compiler (util/mp6.pl)
 
 - add '-B' option (execute)
 
-MiniPerl6 in Rakudo
+Perlito in Rakudo
 
-- Rakudo should be able to execute MiniPerl6 directly. What do we need to fix in both sides?
+- Rakudo should be able to execute Perlito directly. What do we need to fix in both sides?
 
-MiniPerl6 in Lisp
+Perlito in Lisp
 
 - test other Lisp implementations
 
-MiniPerl6 in Go
+Perlito in Go
 
 - the floating point implementation seemed to slow down the bootstrapped compiler
 
 - document which release of Go to use
 
-MiniPerl6 in Perl5
+Perlito in Perl5
 
 (no issues at the moment)
 
-MiniPerl6 in Parrot
+Perlito in Parrot
 
 - finish OO, class variables
 
 - fix die() parameter handling
 
-MiniPerl6 in Python
+Perlito in Python
 
 - module loading uses mangled filenames (with underlines); it should use dot-separated names instead.
 
-MiniPerl6 in Ruby
+Perlito in Ruby
 
 - module loading uses mangled filenames (with underlines); it should use dot-separated names instead.
 
@@ -99,7 +99,7 @@ Missing Features of the Token sub-compiler
 
 Nice to Have
 
-- 'mp6-format' script (see gofmt and perltidy)
+- 'perlito-format' script (see gofmt and perltidy)
 
 - run some tests from the standard test suite
 

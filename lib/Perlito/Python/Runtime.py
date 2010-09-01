@@ -1,5 +1,5 @@
 """
-miniperl6.python.runtime
+perlito.python.runtime
 
 DESCRIPTION
 

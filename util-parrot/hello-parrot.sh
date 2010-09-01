@@ -1,1 +1,1 @@
-echo 'class Main { say "hello, World" }' | perl mp6.pl -Cparrot | parrot -
+echo 'class Main { say "hello, World" }' | perl perlito.pl -Cparrot | parrot -

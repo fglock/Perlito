@@ -65,7 +65,7 @@ sub test {
     warn "\n";
     warn "automatic testing is not implemented yet. Please use one of:\n";
     for ( qw( perl5 lisp js go python ruby1.9 ) ) {
-        warn "  prove -e \"perl mp6.pl -B$_\"\n"
+        warn "  prove -e \"perl perlito.pl -B$_\"\n"
     }
     return 0;
 }
@@ -73,8 +73,8 @@ sub backup {
 }
 sub compile {
     my ($in,$out) = @_;
-    print("perl mp6.pl $target_switch $in > $out\n");
-    system("perl mp6.pl $target_switch $in > $out");
+    print("perl perlito.pl $target_switch $in > $out\n");
+    system("perl perlito.pl $target_switch $in > $out");
 }
 sub make {
     my ($source,$old,$new) = @_;

@@ -32,7 +32,15 @@ sub emit_perl5 { my $self = $_[0]; '{' . '
 ' . '}' . '
 ' . '
 ' };
-sub emit_perl5_program { my $comp_units = $_[0]; (my  $str = ''); for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { ($str = $str . $comp_unit->emit_perl5()) }; return($str) }
+sub emit_perl5_program { my $comp_units = $_[0]; (my  $str = '' . 'use v5;' . '
+' . 'use utf8;' . '
+' . 'use strict;' . '
+' . 'use warnings;' . '
+' . 'no warnings (\'redefine\', \'once\', \'void\', \'uninitialized\', \'misc\', \'recursion\');' . '
+' . 'use Perlito::Perl5::Runtime;' . '
+' . 'our ' . '$' . 'MATCH = Perlito::Match->new();' . '
+'); for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { ($str = $str . $comp_unit->emit_perl5()) }; ($str = $str . '1;' . '
+'); return($str) }
 }
 
 ;

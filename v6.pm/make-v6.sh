@@ -15,3 +15,6 @@ mkdir lib/v6
 cp v6.pm lib/
 cp perlito.pm lib/v6/
 
+mkdir scripts
+cp ../perlito.pl scripts/perlito
+

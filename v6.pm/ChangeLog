@@ -1,3 +1,5 @@
+- added "perlito" command-line compiler
+
 0.035  2010-09-01
 - moved compiler modules to "Perlito" namespace
 - fixed range operator

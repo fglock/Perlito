@@ -26,10 +26,18 @@ class CompUnit {
         ~ "\n"
     }
     sub emit_perl5_program( $comp_units ) {
-        my $str = '';
+        my $str = ''
+            ~ "use v5;\n"
+            ~ "use utf8;\n"
+            ~ "use strict;\n"
+            ~ "use warnings;\n"
+            ~ "no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');\n"
+            ~ "use Perlito::Perl5::Runtime;\n"
+            ~ "our \$MATCH = Perlito::Match->new();\n";
         for @($comp_units) -> $comp_unit {
             $str = $str ~ $comp_unit.emit_perl5
         }
+        $str = $str ~ "1;\n";
         return $str;
     }
 }

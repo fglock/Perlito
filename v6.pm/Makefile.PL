@@ -11,6 +11,7 @@ WriteMakefile(
       ? ('LICENSE'=> 'perl')
       : ()),
     PL_FILES            => {},
+    EXE_FILES           => [qw(scripts/perlito)],
     PREREQ_PM => {
         'Filter::Util::Call' => 0,
     },

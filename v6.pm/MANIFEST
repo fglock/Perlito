@@ -38,6 +38,7 @@ Makefile.PL
 MANIFEST			This list of files
 META.yml
 README
+scripts/perlito
 t/01-sanity.t
 t/02-int.t
 t/03-num.t

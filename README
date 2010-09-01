@@ -1,4 +1,4 @@
-MiniPerl6 "Perlito" compiler
+"Perlito" Perl 6 compiler
 
     This is Perlito, a compiler that implements a subset of Perl 6.
 
@@ -26,32 +26,32 @@ USING PERLITO
 
 Using the Go backend
 
-    perl mp6.pl -Bgo t/04-op.t
+    perl perlito.pl -Bgo t/04-op.t
 
     Creating a bootstrapped compiler:
 
-    # create a "6.out" binary, using mp6.pl
-    perl mp6.pl -Bgo util/mp6.pl    
+    # create a "6.out" binary, using perlito.pl
+    perl perlito.pl -Bgo util/perlito.pl    
     # test the binary
     ./6.out -Cgo t/04-op.t          
     # recompile the compiler using itself
-    ./6.out -Cgo util/mp6.pl > mp6-go.go   
-    6g mp6-go.go
-    6l mp6-go.6
-    ./6.out -Cgo util/mp6.pl > mp6-go-new.go
-    # "mp6-go.go" and "mp6-go-new.go" should be identical
+    ./6.out -Cgo util/perlito.pl > perlito-go.go   
+    6g perlito-go.go
+    6l perlito-go.6
+    ./6.out -Cgo util/perlito.pl > perlito-go-new.go
+    # "perlito-go.go" and "perlito-go-new.go" should be identical
 
     See also: Go homepage at http://golang.org
 
 Using the Java class backend
 
-    perl mp6.pl -Bjava-class -e 'class Main { say "hello, World!" }'
+    perl perlito.pl -Bjava-class -e 'class Main { say "hello, World!" }'
     java tmp
 
     Creating a bootstrapped compiler:
 
-    # create a Java class, using mp6.pl:
-    perl mp6.pl -v -Bjava-class util/mp6.pl
+    # create a Java class, using perlito.pl:
+    perl perlito.pl -v -Bjava-class util/perlito.pl
     # test "tmp.class"
     java tmp -Cjs t/04-op.t
 
@@ -69,16 +69,16 @@ Using the Javascript backend in the command line
 
     Executing from the command line requires Perl 5 and a javascript compiler (V8 or Rhino):
 
-    perl mp6.pl -Bv8 -e 'class Main { say "hello, World!" }'
+    perl perlito.pl -Bv8 -e 'class Main { say "hello, World!" }'
 
-    perl mp6.pl -Brhino -e 'class Main { say "hello, World!" }'
+    perl perlito.pl -Brhino -e 'class Main { say "hello, World!" }'
 
     Creating a bootstrapped compiler:
 
-    # compile util/mp6.pl to Javascript, using mp6.pl:
-    perl mp6.pl -Bperl5 util/mp6.pl -Cjs util/mp6.pl > util-js/mp6.js
+    # compile util/perlito.pl to Javascript, using perlito.pl:
+    perl perlito.pl -Bperl5 util/perlito.pl -Cjs util/perlito.pl > util-js/perlito.js
     # testing the bootstrap with Rhino
-    java org.mozilla.javascript.tools.shell.Main util-js/mp6.js -Cjs util/mp6.pl > mp6-new.js
+    java org.mozilla.javascript.tools.shell.Main util-js/perlito.js -Cjs util/perlito.pl > perlito-new.js
 
     See also: 
 
@@ -88,13 +88,13 @@ Using the Javascript backend in the command line
 
 Using the Lisp backend
 
-    perl mp6.pl -Blisp -e 'class Main { say "hello, World!" }'
+    perl perlito.pl -Blisp -e 'class Main { say "hello, World!" }'
 
     Creating an executable image:
 
-    perl mp6.pl -Clisp-bin util/mp6.pl 
-    mv tmp.out mp6-lisp
-    ./mp6-lisp -Clisp t/04-op.t
+    perl perlito.pl -Clisp-bin util/perlito.pl 
+    mv tmp.out perlito-lisp
+    ./perlito-lisp -Clisp t/04-op.t
 
     See also: SBCL homepage at http://www.sbcl.org
 
@@ -104,59 +104,59 @@ Using the Parrot backend
 
     The perl 5 backend can be used to compile MiniPerl6 to parrot:
 
-    perl mp6.pl -Bparrot -e 'class Main { say "hello, World!" }'
+    perl perlito.pl -Bparrot -e 'class Main { say "hello, World!" }'
 
     See also: Parrot homepage at http://www.parrot.org
 
 Using the Perl 5 backend
 
-    perl mp6.pl -e 'class Main { say "hello, World!" }'
+    perl perlito.pl -e 'class Main { say "hello, World!" }'
 
     See also: Perl 5 homepage at http://www.perl.org
 
     Creating a bootstrapped compiler:
 
-    # compile util/mp6.pl using mp6.pl:
-    perl mp6.pl -Cperl5 util/mp6.pl > mp6-perl5.pl 
+    # compile util/perlito.pl using perlito.pl:
+    perl perlito.pl -Cperl5 util/perlito.pl > perlito-perl5.pl 
     # testing the bootstrap 
-    perl -Ilib5 mp6-perl5.pl -Cperl5 util/mp6.pl > mp6-new.pl
+    perl -Ilib5 perlito-perl5.pl -Cperl5 util/perlito.pl > perlito-new.pl
 
 Using the Python backend
 
-    # initialize "./libpy" and compile "mp6.py"
+    # initialize "./libpy" and compile "perlito.py"
     . util-python/build-python.sh
 
-    # using the mp6.py compiler
-    PYTHONPATH=libpy python mp6.py -Cpython -e 'class Main { say "hello, World!" }' | PYTHONPATH=libpy python 
+    # using the perlito.py compiler
+    PYTHONPATH=libpy python perlito.py -Cpython -e 'class Main { say "hello, World!" }' | PYTHONPATH=libpy python 
 
-    # using the mp6.pl compiler
-    perl mp6.pl -Bpython -e 'class Main { say "hello, World!" }'
+    # using the perlito.pl compiler
+    perl perlito.pl -Bpython -e 'class Main { say "hello, World!" }'
 
 Using the Ruby backend
 
-    # initialize "./librb" and compile "mp6.rb"
+    # initialize "./librb" and compile "perlito.rb"
     . util-ruby/build-ruby.sh
 
-    # using the mp6.rb compiler
-    RUBYLIB=librb ruby1.9 mp6.rb -Cruby -e 'class Main { say "hello, World!" }' | RUBYLIB=librb ruby1.9 
+    # using the perlito.rb compiler
+    RUBYLIB=librb ruby1.9 perlito.rb -Cruby -e 'class Main { say "hello, World!" }' | RUBYLIB=librb ruby1.9 
 
-    # using the mp6.pl compiler
-    perl mp6.pl -Bruby1.9 -e 'class Main { say "hello, World!" }'
+    # using the perlito.pl compiler
+    perl perlito.pl -Bruby1.9 -e 'class Main { say "hello, World!" }'
 
 Producing AST output
 
-    perl mp6.pl -Cast-json -e 'class Main { say "hello, World!" }'
+    perl perlito.pl -Cast-json -e 'class Main { say "hello, World!" }'
 
 RUNNING TESTS
 
 Testing a backend using the Perl5 based compiler
 
-    prove -e "perl mp6.pl -Bjs"
-    prove -e "perl mp6.pl -Bperl5"
-    prove -e "perl mp6.pl -Blisp"
-    prove -e "perl mp6.pl -Bgo"
-    prove -e "perl mp6.pl -Bpython"
-    prove -e "perl mp6.pl -Bruby1.9"
+    prove -e "perl perlito.pl -Bjs"
+    prove -e "perl perlito.pl -Bperl5"
+    prove -e "perl perlito.pl -Blisp"
+    prove -e "perl perlito.pl -Bgo"
+    prove -e "perl perlito.pl -Bpython"
+    prove -e "perl perlito.pl -Bruby1.9"
 
 AUTHORS
 
