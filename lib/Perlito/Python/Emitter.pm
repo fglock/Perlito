@@ -106,13 +106,13 @@ class Perlito::Python::LexicalBlock {
                     my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
                     push @s, Python::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
                     push @s, Python::tab($level+1) ~ 'return v_self.v_' ~ ($decl.var).name;
-                    push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ ($decl.var).name ~ "':f_" ~ $label ~ "})";
+                    push @s, Python::tab($level) ~ "self.__dict__.update(\{'f_" ~ ($decl.var).name ~ "':f_" ~ $label ~ "})";
                 }
                 if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
                     my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
                     push @s, Python::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
                     push @s, Python::tab($level+1) ~ 'return v_self.v_' ~ (($decl.parameters).var).name;
-                    push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ (($decl.parameters).var).name ~ "':f_" ~ $label ~ "})";
+                    push @s, Python::tab($level) ~ "self.__dict__.update(\{'f_" ~ (($decl.parameters).var).name ~ "':f_" ~ $label ~ "})";
                 }
             }
 
@@ -774,7 +774,7 @@ class Method {
         push @s,    $block.emit_python_indented($level + 2);
         push @s, Python::tab($level+1) ~    "except mp6_Return, r:";
         push @s, Python::tab($level+2) ~        "return r.value";
-        push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
+        push @s, Python::tab($level) ~ "self.__dict__.update(\{'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
         return @s.join("\n");
     }
 }
@@ -830,7 +830,7 @@ class Sub {
         push @s, Python::tab($level) ~ $label2 ~ " = f_" ~ $.name;
         push @s, Python::tab($level) ~ "def f_" ~ $label ~ "(" ~ $meth_args.join(", ") ~ "):";
         push @s, Python::tab($level+1) ~    "return " ~ $label2 ~ "(" ~ $args.join(", ") ~ ")";
-        push @s, Python::tab($level) ~ "self.__dict__.update({'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
+        push @s, Python::tab($level) ~ "self.__dict__.update(\{'f_" ~ $.name ~ "':f_" ~ $label ~ "})";
         return @s.join("\n");
     }
 }

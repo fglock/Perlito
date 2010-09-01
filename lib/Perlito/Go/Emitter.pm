@@ -316,7 +316,7 @@ class CompUnit {
             $str = $str ~ $comp_unit.emit_go;
         }
         if !(%unit_seen{"Perlito::Grammar"}) {
-            $str = $str ~ "type Perlito__Grammar struct{}\n";
+            $str = $str ~ "type Perlito__Grammar struct\{}\n";
         }
         $str = $str ~ "// interfaces for all methods\n";
         my %meth_seen = {
@@ -349,7 +349,7 @@ class CompUnit {
                     my $meth = $stmt.name;
                     $str = $str ~ "type "
                           ~ $meth
-                          ~ "_er interface { f_"
+                          ~ "_er interface \{ f_"
                           ~ $meth
                           ~ " (Capture) *Any }\n";
                     %meth_seen{$meth} = 1;
@@ -358,7 +358,7 @@ class CompUnit {
                     my $meth = ($stmt.var).name;
                     $str = $str ~ "type "
                           ~ $meth
-                          ~ "_er interface { f_"
+                          ~ "_er interface \{ f_"
                           ~ $meth
                           ~ " (Capture) *Any }\n";
                     %meth_seen{$meth} = 1;
@@ -367,7 +367,7 @@ class CompUnit {
         }
 
         $str = $str ~ "\n"
-            ~ "func main () {\n"
+            ~ "func main () \{\n"
             ~ "  Init_Perlito__Match();\n";
         for @($comp_units) -> $comp_unit {
             $str = $str ~ "  Init_" ~ Main::to_go_namespace( $comp_unit.name ) ~ "();\n"
@@ -986,10 +986,6 @@ class While {
     }
 }
 
-class Leave {
-    method emit_go { die "TODO - Leave" }
-}
-
 class Decl {
     has $.decl;
     has $.type;
@@ -1032,7 +1028,7 @@ class Sig {
         for @($.positional) -> $decl { 
             $str = $str  
                 ~ "  var " ~ $decl.emit_go ~ " *Any;\n"
-                ~ "  if len(v.p) > " ~ $i ~ " {\n"
+                ~ "  if len(v.p) > " ~ $i ~ " \{\n"
                 ~ "    " ~ $decl.emit_go ~ " = v.p[" ~ $i ~ "];\n"
                 ~ "  }\n";
             # avoid "x declared and not used"

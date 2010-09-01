@@ -180,7 +180,7 @@ class Perlito::Ruby::LexicalBlock {
             }
         }
         if $has_my_decl {
-            push @s, Ruby::tab($level) ~ "Proc.new{ |" ~ @my_decl.join(", ") ~ "|";
+            push @s, Ruby::tab($level) ~ "Proc.new\{ |" ~ @my_decl.join(", ") ~ "|";
         }
 
         my $last_statement;
@@ -367,7 +367,7 @@ class Lit::Array {
             }
             push @block, $temp_array;
             my $body_block = Perlito::Ruby::LexicalBlock.new( block => @block );
-            return Ruby::tab($level) ~ "Proc.new { |list_a| " ~ "\n"
+            return Ruby::tab($level) ~ "Proc.new \{ |list_a| " ~ "\n"
                 ~   $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
                 ~  Ruby::tab($level) ~ "}.call([])";
         }
@@ -407,7 +407,7 @@ class Lit::Object {
         for @$fields -> $field { 
             push @str, "o.v_" ~ ($field[0]).buf ~ '=' ~ ($field[1]).emit_ruby ~ "; ";
         }
-        Ruby::tab($level) ~ "Proc.new { |o| "
+        Ruby::tab($level) ~ "Proc.new \{ |o| "
             ~ @str.join(' ')
             ~ "o }.call(C_" ~ Main::to_go_namespace($.class) ~ ".new)";
     }
@@ -519,7 +519,7 @@ class Call {
             || ($.method eq 'isa')
         { 
             if ($.hyper) {
-            	return $invocant ~ ".map {|x| x." ~ $.method ~ "(" ~ (@.arguments.>>emit_ruby).join(', ') ~ ")}";
+            	return $invocant ~ ".map \{|x| x." ~ $.method ~ "(" ~ (@.arguments.>>emit_ruby).join(', ') ~ ")}";
             }
             else {
                 return "mp6_" ~ $.method ~ '(' ~ ([ $.invocant, @.arguments].>>emit_ruby).join(', ') ~ ')';
@@ -546,7 +546,7 @@ class Call {
         
         my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
         if ($.hyper) {
-            Ruby::tab($level) ~ $invocant ~ ".map {|x| x." ~ $call ~ "}";
+            Ruby::tab($level) ~ $invocant ~ ".map \{|x| x." ~ $call ~ "}";
         }
         else {
             Ruby::tab($level) ~ $invocant ~ '.' ~ $call;
@@ -781,7 +781,7 @@ class Method {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level)   ~  'send( :define_method, "f_' ~ $.name ~ '".to_sym, lambda{ |' ~ $default_args.join(", ") ~ '|';
+        push @s, Ruby::tab($level)   ~  'send( :define_method, "f_' ~ $.name ~ '".to_sym, lambda\{ |' ~ $default_args.join(", ") ~ '|';
         push @s, Ruby::tab($level+1) ~      $invocant.emit_ruby_name ~ " = self";
         push @s,    $block.emit_ruby_indented($level + 1);
         push @s, Ruby::tab($level)   ~  "} )";
@@ -838,7 +838,7 @@ class Do {
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my @s;
-        push @s, Ruby::tab($level)   ~ "Proc.new{ || ";
+        push @s, Ruby::tab($level)   ~ "Proc.new\{ || ";
         push @s,    (Perlito::Ruby::LexicalBlock.new( block => @.block, needs_return => 0 )).emit_ruby_indented($level+1);
         push @s, Ruby::tab($level)   ~ "}.call()";
         return @s.join("\n");

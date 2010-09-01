@@ -5,7 +5,7 @@ dev version - 2010-09-01
 - new distribution "v6.pm" (Perlito in Perl 5)
   This replaces Pugs::Compiler::Perl5 as the v6.pm compiler in CPAN.
 - correct operator precedence
-- interpolation of variables in strings
+- interpolation of variables and code in strings
 - 'unless'
 - lists
 - 'Mu'

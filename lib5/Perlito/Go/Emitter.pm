@@ -92,12 +92,12 @@ sub emit_go { my $self = $_[0]; (my  $class_name = Main::to_go_namespace($self->
 ')) }  }; ($str = $str . '  }' . '
 '); ($str = $str . '}' . '
 '); return($str) };
-sub emit_go_program { my $comp_units = $_[0]; (my  $str = ''); my  $Hash_unit_seen; my  $List_tmp_comp_unit; for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { (my  $name = $comp_unit->name()); if (Main::bool($Hash_unit_seen->{$name})) { for my $stmt ( @{[@{(($comp_unit->body()) || []) || []}] || []} ) { push( @{($Hash_unit_seen->{$name})->body()}, $stmt ) } } else { ($Hash_unit_seen->{$name} = $comp_unit); push( @{$List_tmp_comp_unit}, $comp_unit ) } }; ($comp_units = $List_tmp_comp_unit); for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { for my $stmt ( @{[@{(($comp_unit->body()) || []) || []}] || []} ) { if (Main::bool(Main::isa($stmt, 'Method'))) { (($comp_unit->methods())->{$stmt->name()} = $stmt) } ; if (Main::bool((Main::isa($stmt, 'Decl') && (($stmt->decl() eq 'has'))))) { (($comp_unit->attributes())->{($stmt->var())->name()} = $stmt) }  } }; for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { ($str = $str . $comp_unit->emit_go()) }; if (Main::bool((($Hash_unit_seen->{'Perlito::Grammar'}) ? 0 : 1))) { ($str = $str . 'type Perlito__Grammar struct{}' . '
+sub emit_go_program { my $comp_units = $_[0]; (my  $str = ''); my  $Hash_unit_seen; my  $List_tmp_comp_unit; for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { (my  $name = $comp_unit->name()); if (Main::bool($Hash_unit_seen->{$name})) { for my $stmt ( @{[@{(($comp_unit->body()) || []) || []}] || []} ) { push( @{($Hash_unit_seen->{$name})->body()}, $stmt ) } } else { ($Hash_unit_seen->{$name} = $comp_unit); push( @{$List_tmp_comp_unit}, $comp_unit ) } }; ($comp_units = $List_tmp_comp_unit); for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { for my $stmt ( @{[@{(($comp_unit->body()) || []) || []}] || []} ) { if (Main::bool(Main::isa($stmt, 'Method'))) { (($comp_unit->methods())->{$stmt->name()} = $stmt) } ; if (Main::bool((Main::isa($stmt, 'Decl') && (($stmt->decl() eq 'has'))))) { (($comp_unit->attributes())->{($stmt->var())->name()} = $stmt) }  } }; for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { ($str = $str . $comp_unit->emit_go()) }; if (Main::bool((($Hash_unit_seen->{'Perlito::Grammar'}) ? 0 : 1))) { ($str = $str . 'type Perlito__Grammar struct' . '{' . '}' . '
 ') } ; ($str = $str . '// interfaces for all methods' . '
-'); (my  $Hash_meth_seen = { ('join' => 1),('perl' => 1),('scalar' => 1),('isa' => 1),('values' => 1),('keys' => 1),('exists' => 1),('bind' => 1),('int' => 1),('num' => 1),('str' => 1),('Str' => 1),('bool' => 1),('Bool' => 1),('array' => 1),('hash' => 1),('push' => 1),('pop' => 1),('shift' => 1),('lookup' => 1),('index' => 1),('function' => 1), }); for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { for my $stmt ( @{[@{(($comp_unit->body()) || []) || []}] || []} ) { if (Main::bool((Main::isa($stmt, 'Method') && (($Hash_meth_seen->{$stmt->name()}) ? 0 : 1)))) { (my  $meth = $stmt->name()); ($str = $str . 'type ' . $meth . '_er interface { f_' . $meth . ' (Capture) *Any }' . '
-'); ($Hash_meth_seen->{$meth} = 1) } ; if (Main::bool(((Main::isa($stmt, 'Decl') && (($stmt->decl() eq 'has'))) && (($Hash_meth_seen->{($stmt->var())->name()}) ? 0 : 1)))) { (my  $meth = ($stmt->var())->name()); ($str = $str . 'type ' . $meth . '_er interface { f_' . $meth . ' (Capture) *Any }' . '
+'); (my  $Hash_meth_seen = { ('join' => 1),('perl' => 1),('scalar' => 1),('isa' => 1),('values' => 1),('keys' => 1),('exists' => 1),('bind' => 1),('int' => 1),('num' => 1),('str' => 1),('Str' => 1),('bool' => 1),('Bool' => 1),('array' => 1),('hash' => 1),('push' => 1),('pop' => 1),('shift' => 1),('lookup' => 1),('index' => 1),('function' => 1), }); for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { for my $stmt ( @{[@{(($comp_unit->body()) || []) || []}] || []} ) { if (Main::bool((Main::isa($stmt, 'Method') && (($Hash_meth_seen->{$stmt->name()}) ? 0 : 1)))) { (my  $meth = $stmt->name()); ($str = $str . 'type ' . $meth . '_er interface ' . '{' . ' f_' . $meth . ' (Capture) *Any }' . '
+'); ($Hash_meth_seen->{$meth} = 1) } ; if (Main::bool(((Main::isa($stmt, 'Decl') && (($stmt->decl() eq 'has'))) && (($Hash_meth_seen->{($stmt->var())->name()}) ? 0 : 1)))) { (my  $meth = ($stmt->var())->name()); ($str = $str . 'type ' . $meth . '_er interface ' . '{' . ' f_' . $meth . ' (Capture) *Any }' . '
 '); ($Hash_meth_seen->{$meth} = 1) }  } }; ($str = $str . '
-' . 'func main () {' . '
+' . 'func main () ' . '{' . '
 ' . '  Init_Perlito__Match();' . '
 '); for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { ($str = $str . '  Init_' . Main::to_go_namespace($comp_unit->name()) . '();' . '
 ') }; ($str = $str . '  Init_Prelude();' . '
@@ -332,13 +332,6 @@ sub emit_go { my $self = $_[0]; (my  $cond = $self->{cond}); if (Main::bool((Mai
 
 ;
 {
-package Leave;
-sub new { shift; bless { @_ }, "Leave" }
-sub emit_go { my $self = $_[0]; die('TODO - Leave') }
-}
-
-;
-{
 package Decl;
 sub new { shift; bless { @_ }, "Decl" }
 sub decl { $_[0]->{decl} };
@@ -362,7 +355,7 @@ sub positional { $_[0]->{positional} };
 sub named { $_[0]->{named} };
 sub emit_go { my $self = $_[0]; ' print \'Signature - TODO\'; die \'Signature - TODO\'; ' };
 sub emit_go_bind { my $self = $_[0]; (my  $str = ''); (my  $i = 0); for my $decl ( @{[@{(($self->{positional}) || []) || []}] || []} ) { ($str = $str . '  var ' . $decl->emit_go(("" . ' *Any;' . '
-') . '  if len(v.p) > ' . $i . ' {' . '
+') . '  if len(v.p) > ' . $i . ' ' . '{' . '
 ' . '    ' . $decl->emit_go(("" . ' = v.p[') . $i . '];' . '
 ' . '  }' . '
 '))); ($str = $str . $decl->emit_go(("" . ' = ') . $decl->emit_go(("" . '; ')))); ($i = ($i + 1)) }; return($str) }
