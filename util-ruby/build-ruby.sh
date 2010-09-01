@@ -2,27 +2,27 @@
 rm -rf librb/
 
 mkdir librb
-mkdir librb/MiniPerl6
-mkdir librb/MiniPerl6/Ruby
+mkdir librb/Perlito
+mkdir librb/Perlito/Ruby
 
-cp lib/MiniPerl6/Ruby/Runtime.rb librb/MiniPerl6/Ruby/Runtime.rb
+cp lib/Perlito/Ruby/Runtime.rb librb/Perlito/Ruby/Runtime.rb
 
 perl mp6.pl -Cruby lib/Test.pm                      > librb/Test.rb
 
-perl mp6.pl -Cruby lib/MiniPerl6/Grammar.pm         > librb/MiniPerl6__Grammar.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Grammar/Control.pm > librb/MiniPerl6__Grammar__Control.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Grammar/Mapping.pm > librb/MiniPerl6__Grammar__Mapping.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Grammar/Regex.pm   > librb/MiniPerl6__Grammar__Regex.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Emitter/Token.pm   > librb/MiniPerl6__Emitter__Token.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Eval.pm            > librb/MiniPerl6__Eval.rb
+perl mp6.pl -Cruby lib/Perlito/Grammar.pm         > librb/Perlito__Grammar.rb
+perl mp6.pl -Cruby lib/Perlito/Grammar/Control.pm > librb/Perlito__Grammar__Control.rb
+perl mp6.pl -Cruby lib/Perlito/Grammar/Mapping.pm > librb/Perlito__Grammar__Mapping.rb
+perl mp6.pl -Cruby lib/Perlito/Grammar/Regex.pm   > librb/Perlito__Grammar__Regex.rb
+perl mp6.pl -Cruby lib/Perlito/Emitter/Token.pm   > librb/Perlito__Emitter__Token.rb
+perl mp6.pl -Cruby lib/Perlito/Eval.pm            > librb/Perlito__Eval.rb
 
-perl mp6.pl -Cruby lib/MiniPerl6/Javascript/Emitter.pm > librb/MiniPerl6__Javascript__Emitter.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Lisp/Emitter.pm    > librb/MiniPerl6__Lisp__Emitter.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Perl5/Emitter.pm   > librb/MiniPerl6__Perl5__Emitter.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Go/Emitter.pm      > librb/MiniPerl6__Go__Emitter.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Parrot/Emitter.pm  > librb/MiniPerl6__Parrot__Emitter.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Python/Emitter.pm  > librb/MiniPerl6__Python__Emitter.rb
-perl mp6.pl -Cruby lib/MiniPerl6/Ruby/Emitter.pm    > librb/MiniPerl6__Ruby__Emitter.rb
+perl mp6.pl -Cruby lib/Perlito/Javascript/Emitter.pm > librb/Perlito__Javascript__Emitter.rb
+perl mp6.pl -Cruby lib/Perlito/Lisp/Emitter.pm    > librb/Perlito__Lisp__Emitter.rb
+perl mp6.pl -Cruby lib/Perlito/Perl5/Emitter.pm   > librb/Perlito__Perl5__Emitter.rb
+perl mp6.pl -Cruby lib/Perlito/Go/Emitter.pm      > librb/Perlito__Go__Emitter.rb
+perl mp6.pl -Cruby lib/Perlito/Parrot/Emitter.pm  > librb/Perlito__Parrot__Emitter.rb
+perl mp6.pl -Cruby lib/Perlito/Python/Emitter.pm  > librb/Perlito__Python__Emitter.rb
+perl mp6.pl -Cruby lib/Perlito/Ruby/Emitter.pm    > librb/Perlito__Ruby__Emitter.rb
 
 perl mp6.pl -Cruby util/mp6.pl                      > ./mp6.rb
 

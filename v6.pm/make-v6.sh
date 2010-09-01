@@ -8,8 +8,6 @@ perl -pi -e 's/use v6;/use v6-perlito;/' t/*.t
 
 rm -rf t/bugs
 cp -r ../lib5 lib
-rm lib/Test.pm
-rm t/21-test.t
 
 perldoc -otext v6.pm > README
 

@@ -2,9 +2,9 @@ use v6;
 
 grammar MiniPerl5::Grammar {
 
-use MiniPerl6::Grammar::Regex;
-use MiniPerl6::Grammar::Mapping;
-use MiniPerl6::Grammar::Control;
+use Perlito::Grammar::Regex;
+use Perlito::Grammar::Mapping;
+use Perlito::Grammar::Control;
 
 my $Class_name;  # for diagnostic messages
 sub get_class_name { $Class_name } 
@@ -514,18 +514,18 @@ token token {
     # { say 'parsing Token' }
     token
     <.ws>  <opt_name>  <.opt_ws> \{
-        <MiniPerl6::Grammar::Regex.rule>
+        <Perlito::Grammar::Regex.rule>
     \}
     {
-        #say 'Token was compiled into: ', ($$<MiniPerl6::Grammar::Regex.rule>).perl;
+        #say 'Token was compiled into: ', ($$<Perlito::Grammar::Regex.rule>).perl;
         my $source := 'method ' ~ $<opt_name> ~ ' ( $grammar: $str, $pos ) { ' ~
-            'my $MATCH; $MATCH := MiniPerl6::Match.new( \'str\' => $str, \'from\' => $pos, \'to\' => $pos, \'bool\' => 1 ); ' ~ 
+            'my $MATCH; $MATCH := Perlito::Match.new( \'str\' => $str, \'from\' => $pos, \'to\' => $pos, \'bool\' => 1 ); ' ~ 
             '$MATCH.bool := ( ' ~
-                ($$<MiniPerl6::Grammar::Regex.rule>).emit ~
+                ($$<Perlito::Grammar::Regex.rule>).emit ~
             '); ' ~
             '$MATCH }';
         #say 'Intermediate code: ', $source;
-        my $ast := MiniPerl6::Grammar.exp_term( $source, 0 );
+        my $ast := Perlito::Grammar.exp_term( $source, 0 );
         # say 'Intermediate ast: ', $$ast.emit;
         make $$ast;
     }
@@ -542,11 +542,11 @@ MiniPerl5::Grammar - Grammar for MiniPerl5
 =head1 SYNOPSIS
 
     my $match := $source.parse;
-    ($$match).perl;    # generated MiniPerl6 AST
+    ($$match).perl;    # generated Perlito AST
 
 =head1 DESCRIPTION
 
-This module generates a syntax tree for the "MiniPerl5" language inside the MiniPerl6 compiler.
+This module generates a syntax tree for the "MiniPerl5" language inside the Perlito compiler.
 
 =head1 AUTHORS
 

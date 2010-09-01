@@ -1,14 +1,14 @@
 use v6;
 
 class Main {
-    use MiniPerl6::Grammar;
-    use MiniPerl6::Grammar::Control;
-    use MiniPerl6::Grammar::Regex;
-    use MiniPerl6::Expression;
-    use MiniPerl6::Precedence;
-    use MiniPerl6::Emitter::Token;
+    use Perlito::Grammar;
+    use Perlito::Grammar::Control;
+    use Perlito::Grammar::Regex;
+    use Perlito::Expression;
+    use Perlito::Precedence;
+    use Perlito::Emitter::Token;
 
-    use MiniPerl6::Eval;
+    use Perlito::Eval;
 
     say '1..8';
 
@@ -90,7 +90,7 @@ class Main {
             );
     $m.eval( $env );
 
-    $m = MiniPerl6::Grammar.exp_stmts( 
+    $m = Perlito::Grammar.exp_stmts( 
         '
                 say "# ok eval-string ", (3+4), "==7";
         ', 
@@ -98,7 +98,7 @@ class Main {
     );
     ($$m).>>eval( $env );
 
-    $m = MiniPerl6::Grammar.exp_stmts( 
+    $m = Perlito::Grammar.exp_stmts( 
         '
                 my $a = 3;
                 say "# ok eval-string ", $a;
@@ -107,7 +107,7 @@ class Main {
     );
     ($$m).>>eval( $env );
 
-    $m = MiniPerl6::Grammar.exp_stmts( 
+    $m = Perlito::Grammar.exp_stmts( 
         '
                 my $a = 123;
                 if $a == (100 + 23) {
@@ -123,7 +123,7 @@ class Main {
     # say ($$m).perl;
     ($$m).>>eval( $env );
 
-    $m = MiniPerl6::Grammar.exp_stmts( 
+    $m = Perlito::Grammar.exp_stmts( 
         '
                 my @a = [ 3, 4 ];
                 my $x = 5;
@@ -137,7 +137,7 @@ class Main {
     # say ($$m).perl;
     ($$m).>>eval( $env );
 
-    $m = MiniPerl6::Grammar.exp_stmts( 
+    $m = Perlito::Grammar.exp_stmts( 
         '
 
                 sub add2 ($v) { $v + 2 } 
@@ -149,7 +149,7 @@ class Main {
     # say ($$m).perl;
     ($$m).>>eval( $env );
 
-    $m = MiniPerl6::Grammar.exp_stmts( 
+    $m = Perlito::Grammar.exp_stmts( 
         '
                 my %v = { a => 5, b => 6, c => 7 }; 
                 my @x = [ 5, 6, 7, 8, 9, 10 ];

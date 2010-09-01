@@ -1,3 +1,5 @@
+- moved compiler modules to "Perlito" namespace
+
 0.034  2010-08-31
 - documentation fix
 - clean up perl5 warnings

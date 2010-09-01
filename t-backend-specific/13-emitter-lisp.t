@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    use MiniPerl6::Lisp::Emitter;
+    use Perlito::Lisp::Emitter;
 
     say '1..7';
     my $m := ::Val::Num( num => 123 );
@@ -23,7 +23,7 @@ class Main {
         say 'not ok 2';
     }
 
-    $m := MiniPerl6::Grammar.word( 'abcdef', 2 );
+    $m := Perlito::Grammar.word( 'abcdef', 2 );
     # say 'match scalar: ', $$m;
     if ($$m) eq 'c' {
         say 'ok 3';
@@ -62,11 +62,11 @@ class Main {
 
 # named subcapture
 
-    token num3 { 5 <MiniPerl6::Grammar.word> 2 }
+    token num3 { 5 <Perlito::Grammar.word> 2 }
     $m := Main.num3( '5x2', 0 );
     say '# match scalar: ', $$m;
     # say '# match capture: ', $m.capture;
-    my $cap := scalar( ($m.hash){'MiniPerl6::Grammar.word'} );
+    my $cap := scalar( ($m.hash){'Perlito::Grammar.word'} );
     say '# match named capture: ', $cap;
     say '# bool value (true): ', ?$m;
     # say '# match object:      ', $m.perl;

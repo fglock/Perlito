@@ -2,10 +2,10 @@ use v6;
 
 class Main {
 
-    use MiniPerl6::Lisp::Emitter;
+    use Perlito::Lisp::Emitter;
 
     say '1..4';
-    my $m := MiniPerl6::Grammar.var_ident( '$abc', 0);
+    my $m := Perlito::Grammar.var_ident( '$abc', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', ($$m).perl;
     say '# emit_lisp is:  ', ($$m).emit_lisp;
@@ -16,7 +16,7 @@ class Main {
         say 'not ok 1';
     }
 
-    $m := MiniPerl6::Grammar.val_buf( '"abc"', 0);
+    $m := Perlito::Grammar.val_buf( '"abc"', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', ($$m).perl;
     if (($$m).emit_lisp) eq '"abc"' {
@@ -26,7 +26,7 @@ class Main {
         say 'not ok 2';
     }
 
-    $m := MiniPerl6::Grammar.exp_stmts( '123; 456 }', 0);
+    $m := Perlito::Grammar.exp_stmts( '123; 456 }', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', ($$m).perl;
     if $$m {
@@ -36,7 +36,7 @@ class Main {
         say 'not ok 3';
     }
 
-    $m := MiniPerl6::Grammar.comp_unit( 'class Main { 123 }', 0);
+    $m := Perlito::Grammar.comp_unit( 'class Main { 123 }', 0);
     say '# Ast is:        ', $m.perl;
     # say '# code is:  ', ($$m).emit_lisp;
     if ($$m).emit_lisp {

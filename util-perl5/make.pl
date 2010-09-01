@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# recompiles MiniPerl6 using itself saving result in lib*-new
+# recompiles Perlito using itself saving result in lib*-new
 use strict;
 use warnings;
 
@@ -91,8 +91,8 @@ sub make {
         chomp($file);
         $file =~ s/^\Q$source\/\E//;
 
-        next if $file eq "MiniPerl6/Perl5/Match.pm";     # skip - this is a perl5 file 
-        next if $file eq "MiniPerl6/Perl5/Runtime.pm";   # skip - this is a perl5 file 
+        next if $file eq "Perlito/Perl5/Match.pm";     # skip - this is a perl5 file 
+        next if $file eq "Perlito/Perl5/Runtime.pm";   # skip - this is a perl5 file 
 
         my $new_file = $file;
         $new_file =~ s/\.pm$/$target_suffix/;

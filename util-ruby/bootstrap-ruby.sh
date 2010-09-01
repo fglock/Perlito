@@ -4,27 +4,27 @@ export RUBYLIB=librb
 rm -rf librb-new/
 
 mkdir librb-new
-mkdir librb-new/MiniPerl6
-mkdir librb-new/MiniPerl6/Ruby
+mkdir librb-new/Perlito
+mkdir librb-new/Perlito/Ruby
 
-cp lib/MiniPerl6/Ruby/Runtime.rb librb-new/MiniPerl6/Ruby/Runtime.rb
+cp lib/Perlito/Ruby/Runtime.rb librb-new/Perlito/Ruby/Runtime.rb
 
 ruby1.9 mp6.rb -Cruby lib/Test.pm                      > librb-new/Test.rb
 
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Grammar.pm         > librb-new/MiniPerl6__Grammar.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Grammar/Control.pm > librb-new/MiniPerl6__Grammar__Control.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Grammar/Mapping.pm > librb-new/MiniPerl6__Grammar__Mapping.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Grammar/Regex.pm   > librb-new/MiniPerl6__Grammar__Regex.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Emitter/Token.pm   > librb-new/MiniPerl6__Emitter__Token.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Eval.pm            > librb-new/MiniPerl6__Eval.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Grammar.pm         > librb-new/Perlito__Grammar.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Grammar/Control.pm > librb-new/Perlito__Grammar__Control.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Grammar/Mapping.pm > librb-new/Perlito__Grammar__Mapping.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Grammar/Regex.pm   > librb-new/Perlito__Grammar__Regex.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Emitter/Token.pm   > librb-new/Perlito__Emitter__Token.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Eval.pm            > librb-new/Perlito__Eval.rb
 
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Javascript/Emitter.pm > librb-new/MiniPerl6__Javascript__Emitter.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Lisp/Emitter.pm    > librb-new/MiniPerl6__Lisp__Emitter.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Perl5/Emitter.pm   > librb-new/MiniPerl6__Perl5__Emitter.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Go/Emitter.pm      > librb-new/MiniPerl6__Go__Emitter.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Parrot/Emitter.pm  > librb-new/MiniPerl6__Parrot__Emitter.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Python/Emitter.pm  > librb-new/MiniPerl6__Python__Emitter.rb
-ruby1.9 mp6.rb -Cruby lib/MiniPerl6/Ruby/Emitter.pm    > librb-new/MiniPerl6__Ruby__Emitter.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Javascript/Emitter.pm > librb-new/Perlito__Javascript__Emitter.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Lisp/Emitter.pm    > librb-new/Perlito__Lisp__Emitter.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Perl5/Emitter.pm   > librb-new/Perlito__Perl5__Emitter.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Go/Emitter.pm      > librb-new/Perlito__Go__Emitter.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Parrot/Emitter.pm  > librb-new/Perlito__Parrot__Emitter.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Python/Emitter.pm  > librb-new/Perlito__Python__Emitter.rb
+ruby1.9 mp6.rb -Cruby lib/Perlito/Ruby/Emitter.pm    > librb-new/Perlito__Ruby__Emitter.rb
 
 ruby1.9 mp6.rb -Cruby util/mp6.pl                      > ./mp6-new.rb
 

@@ -5,15 +5,15 @@ use strict;
 sub compile {
     my $source = $_[0];
     return $source if $source =~ /^\s*$/;
-    $::_V6_COMPILER_NAME    = 'MiniPerl6';
+    $::_V6_COMPILER_NAME    = 'Perlito';
     $::_V6_COMPILER_VERSION = '6.0';
-    require MiniPerl6::Perl5::Emitter;
-    require MiniPerl6::Grammar;
-    require MiniPerl6::Grammar::Regex;
-    require MiniPerl6::Emitter::Token;
+    require Perlito::Perl5::Emitter;
+    require Perlito::Grammar;
+    require Perlito::Grammar::Regex;
+    require Perlito::Emitter::Token;
     my @comp_unit;
     my $pos = 0;
-    my $p = MiniPerl6::Grammar->exp_stmts( $source, $pos );
+    my $p = Perlito::Grammar->exp_stmts( $source, $pos );
     if (!$p || length($source) > $p->to) {
         warn "<$source>\n";
         die "Syntax error at pos ", $p->to, "\n";
@@ -32,8 +32,8 @@ sub compile {
     $result .=  "use strict;\n";
     $result .=  "use warnings;\n";
     $result .=  "no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');\n";
-    $result .=  "use MiniPerl6::Perl5::Runtime;\n";
-    $result .=  "our \$MATCH = MiniPerl6::Match->new();\n";
+    $result .=  "use Perlito::Perl5::Runtime;\n";
+    $result .=  "our \$MATCH = Perlito::Match->new();\n";
     $result .= CompUnit::emit_perl5_program( \@comp_unit );
     $result .=  "1;\n";
     return $result;

@@ -1,8 +1,8 @@
 use v6;
 
 class Main {
-    use Test;
+    use Perlito::Test;
 
-    Test::plan 1;
-    Test::ok( 1==1, "Test.pm works");
+    Perlito::Test::plan 1;
+    Perlito::Test::ok( 1==1, "Perlito::Test works");
 }

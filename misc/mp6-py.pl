@@ -8,17 +8,17 @@ use FindBin '$Bin';
 use lib ("$Bin/lib5");
 
 BEGIN {
-    $::_V6_COMPILER_NAME    = 'MiniPerl6';
+    $::_V6_COMPILER_NAME    = 'Perlito';
     $::_V6_COMPILER_VERSION = '0.003';
 }
 
-use MiniPerl6::Python::Match;
+use Perlito::Python::Match;
 
 package Main;
-use MiniPerl6::Grammar;
-use MiniPerl6::Python::Emitter;
-use MiniPerl6::Grammar::Regex;
-use MiniPerl6::Emitter::Token;
+use Perlito::Grammar;
+use Perlito::Python::Emitter;
+use Perlito::Grammar::Regex;
+use Perlito::Emitter::Token;
 
 my $source = join('', <> );
 my $pos = 0;
@@ -41,7 +41,7 @@ sub perl {
 }
 
 while ( $pos < length( $source ) ) {
-    my $p = MiniPerl6::Grammar->comp_unit($source, $pos);
+    my $p = Perlito::Grammar->comp_unit($source, $pos);
     $perl5code .= perl( $$p ); # join( ";\n", (map { $_->emit() } ($$p) ));
     $perl5code .= ";";
     $pos = $p->to;

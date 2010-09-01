@@ -79,16 +79,16 @@ token ctrl_return {
 
 =head1 NAME 
 
-MiniPerl5::Grammar - Grammar for MiniPerl5 in MiniPerl6
+MiniPerl5::Grammar - Grammar for MiniPerl5 in Perlito
 
 =head1 SYNOPSIS
 
     my $match := $source.parse;
-    ($$match).perl;    # generated MiniPerl6 AST
+    ($$match).perl;    # generated Perlito AST
 
 =head1 DESCRIPTION
 
-This module generates a syntax tree for MiniPerl5 in the MiniPerl6 compiler.
+This module generates a syntax tree for MiniPerl5 in the Perlito compiler.
 
 =head1 AUTHORS
 
