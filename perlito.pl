@@ -186,6 +186,36 @@ elsif ($source_filename) {
     close FILE;
     warn "read " . length($source) . " chars from $source_filename\n" if $verbose;
 }
+elsif ( -t STDIN && -t STDOUT ) {
+    package GLOBAL;
+    warn "interactive input from STDIN\n" if $verbose;
+    local @ARGV = @args;
+    my ($p, $pos, $cmd);
+    $_[0] = '';
+    my $env1 = ' eval " $_[0]; sub { $_[1]; $env1 }  " ';
+    my $env2 = eval "sub { $env1 }"; 
+    print ref($env1),"\n";
+    while (1) {
+        print "> ";
+        $source = <STDIN>;
+        next unless defined $source && $source !~ /^\s+$/; 
+        $pos = 0;
+        $p = Perlito::Grammar->ws($source, 0);
+        $pos = $p->to if $p;
+        next if $pos > length $source; 
+        eval { $p = Perlito::Grammar->exp_stmts($source, $pos) };
+        warn $@ and next if $@;
+        if (!$p || $p->to < length $source) {
+            warn "Syntax error at pos ", $p->to, "\n";
+            next;
+        }
+        my $p5 = join("; ", map { $_->emit_perl5 } @{$$p} );
+        my $vars = join(',', $p5 =~ /[\$\@\%][\w_]+/g );
+        my ($env3) = $env2->($p5, $vars);
+        warn $@ if $@;
+        $env2 = $env3 if $env3;
+    }
+}
 else {
     warn "reading input from STDIN\n" if $verbose;
     local $/ = undef;
