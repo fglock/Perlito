@@ -14,6 +14,9 @@ WriteMakefile(
     EXE_FILES           => [qw(scripts/perlito)],
     PREREQ_PM => {
         'Filter::Util::Call' => 0,
+        'Term::ReadLine'    => 0,
+        'FindBin'           => 0,
+        'Encode'            => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'v6-*' },

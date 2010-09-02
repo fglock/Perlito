@@ -510,6 +510,7 @@ class Apply {
             && ($code ne 'f_unshift') 
             && ($code ne 'f_push') 
             && ($code ne 'f_pop') 
+            && ($code ne 'f_chr') 
         {
             $code = 'v__NAMESPACE.' ~ $code;
         }
