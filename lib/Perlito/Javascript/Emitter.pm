@@ -327,21 +327,21 @@ class Call {
         }
 
         if $.method eq 'new' {
-            my $str = '';
+            my $str = [];
             for @.arguments -> $field { 
                 if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
-                    $str = $str ~ 'v_' ~ $field.arguments[0].buf() ~ ': ' ~ $field.arguments[1].emit_javascript() ~ ',';
+                    $str.push( 'v_' ~ $field.arguments[0].buf() ~ ': ' ~ $field.arguments[1].emit_javascript() );
                 }
                 else {
                     die 'Error in constructor, field: ', $field.perl;
                 }
             }
             return
-                  'function () { ' 
-                ~   'var tmp = {' ~ $str ~ '}; '
+                  '(function () { ' 
+                ~   'var tmp = {' ~ $str.join(',') ~ '}; '
                 ~   'tmp.__proto__ = ' ~ Main::to_javascript_namespace($invocant) ~ '; '
                 ~   'return tmp '
-                ~ '}()'
+                ~ '})()'
         }
 
         if     ($.method eq 'perl')
