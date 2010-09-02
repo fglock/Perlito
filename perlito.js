@@ -145,6 +145,9 @@ if (typeof f_warn != 'function') {
     print("Warning: " + s + "\n")
   }
 }
+f_chr = function (o) {
+  return String.fromCharCode(o)
+}
 f_elems = function (o) {
   if ( o == null ) { return 1 };
   if ( typeof o.f_elems == 'function' ) { return o.f_elems() }
@@ -798,7 +801,7 @@ if (typeof Apply != 'object') {
   // method emit_javascript
   Apply.f_emit_javascript = function () {
     var v_self = this;
-    try { var v_code;(v_code = v_self.v_code);if ( f_bool(f_isa(v_code, "Str")) ) { (function () {  })() } else { (function () { throw((f_string("(") + f_string(v_self.v_code.f_emit_javascript()) + f_string(")->(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "self")) ) { (function () { throw("v_self"); })() };if ( f_bool((v_code == "Mu")) ) { (function () { throw("null"); })() };if ( f_bool((v_code == "make")) ) { (function () { throw((f_string("(v_MATCH.v_capture = ") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "say")) ) { (function () { throw((f_string("f_say(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "print")) ) { (function () { throw((f_string("f_print(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "warn")) ) { (function () { throw((f_string("f_warn(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" + ")) + f_string(")"))); })() };if ( f_bool((v_code == "defined")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(" != null)"))); })() };if ( f_bool((v_code == "substr")) ) { (function () { throw((f_string("(") + f_string((v_self.v_arguments[0]).f_emit_javascript()) + f_string(" || \"\").substr(") + f_string((v_self.v_arguments[1]).f_emit_javascript()) + f_string(", ") + f_string((v_self.v_arguments[2]).f_emit_javascript()) + f_string(")"))); })() };if ( f_bool((v_code == "Int")) ) { (function () { throw((f_string("parseInt(") + f_string((v_self.v_arguments[0]).f_emit_javascript()) + f_string(")"))); })() };if ( f_bool((v_code == "Num")) ) { (function () { throw((f_string("parseFloat(") + f_string((v_self.v_arguments[0]).f_emit_javascript()) + f_string(")"))); })() };if ( f_bool((v_code == "prefix:<~>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(").f_string()"))); })() };if ( f_bool((v_code == "prefix:<!>")) ) { (function () { throw((f_string("( f_bool(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(") ? false : true)"))); })() };if ( f_bool((v_code == "prefix:<?>")) ) { (function () { throw((f_string("( f_bool(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(") ? true : false)"))); })() };if ( f_bool((v_code == "prefix:<$>")) ) { (function () { throw((f_string("f_scalar(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")"))); })() };if ( f_bool((v_code == "prefix:<@>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")"))); })() };if ( f_bool((v_code == "prefix:<%>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(").f_hash()"))); })() };if ( f_bool((v_code == "postfix:<++>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")++"))); })() };if ( f_bool((v_code == "postfix:<-->")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")--"))); })() };if ( f_bool((v_code == "prefix:<++>")) ) { (function () { throw((f_string("++(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")"))); })() };if ( f_bool((v_code == "prefix:<-->")) ) { (function () { throw((f_string("--(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")"))); })() };if ( f_bool((v_code == "list:<~>")) ) { (function () { throw((f_string("(f_string(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(") + f_string(")) + f_string("))"))); })() };if ( f_bool((v_code == "infix:<+>")) ) { (function () { throw((f_string("f_add(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<->")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" - ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<*>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" * ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:</>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" / ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<>>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" > ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<<>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" < ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<>=>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" >= ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<<=>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" <= ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<..>")) ) { (function () { throw((f_string("(function (a) { ") + f_string("for (var i=") + f_string(v_self.v_arguments[0].f_emit_javascript()) + f_string(", l=") + f_string(v_self.v_arguments[1].f_emit_javascript()) + f_string("; ") + f_string("i<=l; ++i)") + f_string("{ ") + f_string("a.push(i) ") + f_string("}; ") + f_string("return a ") + f_string("})([])"))); })() };if ( f_bool((v_code == "infix:<&&>")) ) { (function () { throw((f_string("f_and(") + f_string(v_self.v_arguments[0].f_emit_javascript()) + f_string(", ") + f_string("function () { return ") + f_string(v_self.v_arguments[1].f_emit_javascript()) + f_string("})"))); })() };if ( f_bool((v_code == "infix:<||>")) ) { (function () { throw((f_string("f_or(") + f_string(v_self.v_arguments[0].f_emit_javascript()) + f_string(", ") + f_string("function () { return ") + f_string(v_self.v_arguments[1].f_emit_javascript()) + f_string("})"))); })() };if ( f_bool((v_code == "infix:<//>")) ) { (function () { throw((f_string("f_defined_or(") + f_string(v_self.v_arguments[0].f_emit_javascript()) + f_string(", ") + f_string("function () { return ") + f_string(v_self.v_arguments[1].f_emit_javascript()) + f_string("})"))); })() };if ( f_bool((v_code == "infix:<eq>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" == ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<ne>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" != ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<ge>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" >= ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<le>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" <= ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<==>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" == ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<!=>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" != ")) + f_string(")"))); })() };if ( f_bool((v_code == "exists")) ) { (function () { var v_arg;(v_arg = v_self.v_arguments[0]);if ( f_bool(f_isa(v_arg, "Lookup")) ) { (function () { throw((f_string("(") + f_string((v_arg.f_obj()).f_emit_javascript()) + f_string(").hasOwnProperty(") + f_string((v_arg.f_index_exp()).f_emit_javascript()) + f_string(")"))); })() }; })() };if ( f_bool((v_code == "ternary:<?? !!>")) ) { (function () { throw((f_string("( f_bool(") + f_string((v_self.v_arguments[0]).f_emit_javascript()) + f_string(")") + f_string(" ? ") + f_string((v_self.v_arguments[1]).f_emit_javascript()) + f_string(" : ") + f_string((v_self.v_arguments[2]).f_emit_javascript()) + f_string(")"))); })() };if ( f_bool((v_code == "circumfix:<( )>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<=>")) ) { (function () { throw(v__NAMESPACE.f_emit_bind(v_self.v_arguments[0], v_self.v_arguments[1])); })() };if ( f_bool((v_code == "return")) ) { (function () { throw((f_string("throw(") + f_string((( f_bool(v_self.v_arguments) ? v_self.v_arguments[0].f_emit_javascript() : "null"))) + f_string(")"))); })() };(v_code = (f_string("f_") + f_string(v_self.v_code)));if ( f_bool(v_self.v_namespace) ) { (function () { (v_code = (f_string(Main.f_to_javascript_namespace(v_self.v_namespace)) + f_string(".") + f_string(v_code))); })() } else { (function () { if ( f_bool(f_and(f_and(f_and(f_and(f_and(((v_code != "f_index")), function () { return ((v_code != "f_die"))}), function () { return ((v_code != "f_shift"))}), function () { return ((v_code != "f_unshift"))}), function () { return ((v_code != "f_push"))}), function () { return ((v_code != "f_pop"))})) ) { (function () { (v_code = (f_string("v__NAMESPACE.") + f_string(v_code))); })() }; })() };return((f_string(v_code) + f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_code;(v_code = v_self.v_code);if ( f_bool(f_isa(v_code, "Str")) ) { (function () {  })() } else { (function () { throw((f_string("(") + f_string(v_self.v_code.f_emit_javascript()) + f_string(")->(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "self")) ) { (function () { throw("v_self"); })() };if ( f_bool((v_code == "Mu")) ) { (function () { throw("null"); })() };if ( f_bool((v_code == "make")) ) { (function () { throw((f_string("(v_MATCH.v_capture = ") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "say")) ) { (function () { throw((f_string("f_say(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "print")) ) { (function () { throw((f_string("f_print(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "warn")) ) { (function () { throw((f_string("f_warn(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" + ")) + f_string(")"))); })() };if ( f_bool((v_code == "defined")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(" != null)"))); })() };if ( f_bool((v_code == "substr")) ) { (function () { throw((f_string("(") + f_string((v_self.v_arguments[0]).f_emit_javascript()) + f_string(" || \"\").substr(") + f_string((v_self.v_arguments[1]).f_emit_javascript()) + f_string(", ") + f_string((v_self.v_arguments[2]).f_emit_javascript()) + f_string(")"))); })() };if ( f_bool((v_code == "Int")) ) { (function () { throw((f_string("parseInt(") + f_string((v_self.v_arguments[0]).f_emit_javascript()) + f_string(")"))); })() };if ( f_bool((v_code == "Num")) ) { (function () { throw((f_string("parseFloat(") + f_string((v_self.v_arguments[0]).f_emit_javascript()) + f_string(")"))); })() };if ( f_bool((v_code == "prefix:<~>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(").f_string()"))); })() };if ( f_bool((v_code == "prefix:<!>")) ) { (function () { throw((f_string("( f_bool(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(") ? false : true)"))); })() };if ( f_bool((v_code == "prefix:<?>")) ) { (function () { throw((f_string("( f_bool(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(") ? true : false)"))); })() };if ( f_bool((v_code == "prefix:<$>")) ) { (function () { throw((f_string("f_scalar(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")"))); })() };if ( f_bool((v_code == "prefix:<@>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")"))); })() };if ( f_bool((v_code == "prefix:<%>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(").f_hash()"))); })() };if ( f_bool((v_code == "postfix:<++>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")++"))); })() };if ( f_bool((v_code == "postfix:<-->")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")--"))); })() };if ( f_bool((v_code == "prefix:<++>")) ) { (function () { throw((f_string("++(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")"))); })() };if ( f_bool((v_code == "prefix:<-->")) ) { (function () { throw((f_string("--(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" ")) + f_string(")"))); })() };if ( f_bool((v_code == "list:<~>")) ) { (function () { throw((f_string("(f_string(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(") + f_string(")) + f_string("))"))); })() };if ( f_bool((v_code == "infix:<+>")) ) { (function () { throw((f_string("f_add(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<->")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" - ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<*>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" * ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:</>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" / ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<>>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" > ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<<>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" < ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<>=>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" >= ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<<=>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" <= ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<..>")) ) { (function () { throw((f_string("(function (a) { ") + f_string("for (var i=") + f_string(v_self.v_arguments[0].f_emit_javascript()) + f_string(", l=") + f_string(v_self.v_arguments[1].f_emit_javascript()) + f_string("; ") + f_string("i<=l; ++i)") + f_string("{ ") + f_string("a.push(i) ") + f_string("}; ") + f_string("return a ") + f_string("})([])"))); })() };if ( f_bool((v_code == "infix:<&&>")) ) { (function () { throw((f_string("f_and(") + f_string(v_self.v_arguments[0].f_emit_javascript()) + f_string(", ") + f_string("function () { return ") + f_string(v_self.v_arguments[1].f_emit_javascript()) + f_string("})"))); })() };if ( f_bool((v_code == "infix:<||>")) ) { (function () { throw((f_string("f_or(") + f_string(v_self.v_arguments[0].f_emit_javascript()) + f_string(", ") + f_string("function () { return ") + f_string(v_self.v_arguments[1].f_emit_javascript()) + f_string("})"))); })() };if ( f_bool((v_code == "infix:<//>")) ) { (function () { throw((f_string("f_defined_or(") + f_string(v_self.v_arguments[0].f_emit_javascript()) + f_string(", ") + f_string("function () { return ") + f_string(v_self.v_arguments[1].f_emit_javascript()) + f_string("})"))); })() };if ( f_bool((v_code == "infix:<eq>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" == ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<ne>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" != ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<ge>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" >= ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<le>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" <= ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<==>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" == ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<!=>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(" != ")) + f_string(")"))); })() };if ( f_bool((v_code == "exists")) ) { (function () { var v_arg;(v_arg = v_self.v_arguments[0]);if ( f_bool(f_isa(v_arg, "Lookup")) ) { (function () { throw((f_string("(") + f_string((v_arg.f_obj()).f_emit_javascript()) + f_string(").hasOwnProperty(") + f_string((v_arg.f_index_exp()).f_emit_javascript()) + f_string(")"))); })() }; })() };if ( f_bool((v_code == "ternary:<?? !!>")) ) { (function () { throw((f_string("( f_bool(") + f_string((v_self.v_arguments[0]).f_emit_javascript()) + f_string(")") + f_string(" ? ") + f_string((v_self.v_arguments[1]).f_emit_javascript()) + f_string(" : ") + f_string((v_self.v_arguments[2]).f_emit_javascript()) + f_string(")"))); })() };if ( f_bool((v_code == "circumfix:<( )>")) ) { (function () { throw((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))); })() };if ( f_bool((v_code == "infix:<=>")) ) { (function () { throw(v__NAMESPACE.f_emit_bind(v_self.v_arguments[0], v_self.v_arguments[1])); })() };if ( f_bool((v_code == "return")) ) { (function () { throw((f_string("throw(") + f_string((( f_bool(v_self.v_arguments) ? v_self.v_arguments[0].f_emit_javascript() : "null"))) + f_string(")"))); })() };(v_code = (f_string("f_") + f_string(v_self.v_code)));if ( f_bool(v_self.v_namespace) ) { (function () { (v_code = (f_string(Main.f_to_javascript_namespace(v_self.v_namespace)) + f_string(".") + f_string(v_code))); })() } else { (function () { if ( f_bool(f_and(f_and(f_and(f_and(f_and(f_and(((v_code != "f_index")), function () { return ((v_code != "f_die"))}), function () { return ((v_code != "f_shift"))}), function () { return ((v_code != "f_unshift"))}), function () { return ((v_code != "f_push"))}), function () { return ((v_code != "f_pop"))}), function () { return ((v_code != "f_chr"))})) ) { (function () { (v_code = (f_string("v__NAMESPACE.") + f_string(v_code))); })() }; })() };return((f_string(v_code) + f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_javascript() ) }; return out; })(v_self.v_arguments)).join(", ")) + f_string(")"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Apply.f_emit_javascript;  // v8 bug workaround
   // sub emit_bind
@@ -1228,7 +1231,7 @@ if (typeof Perlito$Grammar != 'object') {
   Perlito$Grammar.f_double_quoted_unescape = function (v_str, v_pos) {
     var v_grammar = this;
     try { var v_MATCH = null;
-(v_MATCH = function () { var tmp = {v_str: v_str,v_from: v_pos,v_to: v_pos,v_bool: 1,}; tmp.__proto__ = Perlito$Match; return tmp }());(v_MATCH.v_bool = (((function () { var v_pos1;(v_pos1 = v_MATCH.f_to());return(f_or(f_or(((function () { return((f_and(f_and((( f_bool((("\\" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false)), function () { return (( f_bool((("n" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false))}), function () { return (f_or(((function () { return((v_MATCH.v_capture = (f_string("\n")))) })()), function () { return 1}))}))) })()), function () { return ((function () { (v_MATCH.v_to = v_pos1);return((f_and(f_and((( f_bool((("\\" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false)), function () { return ((function () { var v_m2;(v_m2 = v_grammar.f_char_any(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { return (function () { (v_MATCH.v_to = v_m2.f_to());(function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["char_any"]  = v_m2); })();return(1) })() } else { return (function () { return(false) })() } })())}), function () { return (f_or(((function () { return((v_MATCH.v_capture = ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["char_any"] ); })()).f_string())) })()), function () { return 1}))}))) })())}), function () { return ((function () { (v_MATCH.v_to = v_pos1);return((f_and(((function () { var v_m2;(v_m2 = v_grammar.f_char_any_double_quote(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { return (function () { (v_MATCH.v_to = v_m2.f_to());(function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["char_any_double_quote"]  = v_m2); })();return(1) })() } else { return (function () { return(false) })() } })()), function () { return (f_or(((function () { return((v_MATCH.v_capture = ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["char_any_double_quote"] ); })()).f_string())) })()), function () { return 1}))}))) })())})) })())));return(v_MATCH) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+(v_MATCH = function () { var tmp = {v_str: v_str,v_from: v_pos,v_to: v_pos,v_bool: 1,}; tmp.__proto__ = Perlito$Match; return tmp }());(v_MATCH.v_bool = (((function () { var v_pos1;(v_pos1 = v_MATCH.f_to());return(f_or(f_or(f_or(((function () { return((f_and(f_and((( f_bool((("\\" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false)), function () { return (( f_bool((("n" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false))}), function () { return (f_or(((function () { return((v_MATCH.v_capture = (f_string("\n")))) })()), function () { return 1}))}))) })()), function () { return ((function () { (v_MATCH.v_to = v_pos1);return((f_and(f_and((( f_bool((("\\" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false)), function () { return (( f_bool((("t" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false))}), function () { return (f_or(((function () { return((v_MATCH.v_capture = f_chr(9))) })()), function () { return 1}))}))) })())}), function () { return ((function () { (v_MATCH.v_to = v_pos1);return((f_and(f_and((( f_bool((("\\" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false)), function () { return ((function () { var v_m2;(v_m2 = v_grammar.f_char_any(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { return (function () { (v_MATCH.v_to = v_m2.f_to());(function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["char_any"]  = v_m2); })();return(1) })() } else { return (function () { return(false) })() } })())}), function () { return (f_or(((function () { return((v_MATCH.v_capture = ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["char_any"] ); })()).f_string())) })()), function () { return 1}))}))) })())}), function () { return ((function () { (v_MATCH.v_to = v_pos1);return((f_and(((function () { var v_m2;(v_m2 = v_grammar.f_char_any_double_quote(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { return (function () { (v_MATCH.v_to = v_m2.f_to());(function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["char_any_double_quote"]  = v_m2); })();return(1) })() } else { return (function () { return(false) })() } })()), function () { return (f_or(((function () { return((v_MATCH.v_capture = ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["char_any_double_quote"] ); })()).f_string())) })()), function () { return 1}))}))) })())})) })())));return(v_MATCH) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Perlito$Grammar.f_double_quoted_unescape;  // v8 bug workaround
   // method double_quoted_buf
@@ -1305,7 +1308,7 @@ if (typeof Perlito$Grammar != 'object') {
   Perlito$Grammar.f_token = function (v_str, v_pos) {
     var v_grammar = this;
     try { var v_MATCH = null;
-(v_MATCH = function () { var tmp = {v_str: v_str,v_from: v_pos,v_to: v_pos,v_bool: 1,}; tmp.__proto__ = Perlito$Match; return tmp }());(v_MATCH.v_bool = (((function () { var v_pos1;(v_pos1 = v_MATCH.f_to());return(((function () { return((f_and(f_and(f_and(f_and(f_and(((function () { var v_m2;(v_m2 = v_grammar.f_opt_name(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { return (function () { (v_MATCH.v_to = v_m2.f_to());(function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["opt_name"]  = v_m2); })();return(1) })() } else { return (function () { return(false) })() } })()), function () { return ((function () { var v_m2;(v_m2 = v_grammar.f_opt_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { return (function () { (v_MATCH.v_to = v_m2.f_to());return(1) })() } else { return (function () { return(false) })() } })())}), function () { return (( f_bool((("{" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false))}), function () { return ((function () { var v_m2;(v_m2 = Perlito$Grammar$Regex.f_rule(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { return (function () { (v_MATCH.v_to = v_m2.f_to());(function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["Perlito::Grammar::Regex.rule"]  = v_m2); })();return(1) })() } else { return (function () { return(false) })() } })())}), function () { return (( f_bool((("}" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false))}), function () { return (f_or(((function () { var v_source;var v_ast;(v_source = (f_string((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["opt_name"] ); })()) + f_string(" ( $grammar: $str, $pos ) { ") + f_string("my $MATCH; $MATCH = Perlito::Match.new( str => $str, from => $pos, to => $pos, bool => 1 ); ") + f_string("$MATCH.bool = ( ") + f_string((f_scalar((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["Perlito::Grammar::Regex.rule"] ); })())).f_emit()) + f_string("); ") + f_string("$MATCH }")));(v_ast = Perlito$Grammar.f_method_def(v_source, 0));return((v_MATCH.v_capture = f_scalar(v_ast))) })()), function () { return 1}))}))) })())) })())));return(v_MATCH) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+(v_MATCH = function () { var tmp = {v_str: v_str,v_from: v_pos,v_to: v_pos,v_bool: 1,}; tmp.__proto__ = Perlito$Match; return tmp }());(v_MATCH.v_bool = (((function () { var v_pos1;(v_pos1 = v_MATCH.f_to());return(((function () { return((f_and(f_and(f_and(f_and(f_and(((function () { var v_m2;(v_m2 = v_grammar.f_opt_name(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { return (function () { (v_MATCH.v_to = v_m2.f_to());(function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["opt_name"]  = v_m2); })();return(1) })() } else { return (function () { return(false) })() } })()), function () { return ((function () { var v_m2;(v_m2 = v_grammar.f_opt_ws(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { return (function () { (v_MATCH.v_to = v_m2.f_to());return(1) })() } else { return (function () { return(false) })() } })())}), function () { return (( f_bool((("{" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false))}), function () { return ((function () { var v_m2;(v_m2 = Perlito$Grammar$Regex.f_rule(v_str, v_MATCH.f_to()));if ( f_bool(v_m2) ) { return (function () { (v_MATCH.v_to = v_m2.f_to());(function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["Perlito::Grammar::Regex.rule"]  = v_m2); })();return(1) })() } else { return (function () { return(false) })() } })())}), function () { return (( f_bool((("}" == (v_str || "").substr(v_MATCH.f_to(), 1)))) ? (f_add(1, ((v_MATCH.v_to = f_add(1, v_MATCH.f_to()))))) : false))}), function () { return (f_or(((function () { var v_source;var v_ast;(v_source = (f_string((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["opt_name"] ); })()) + f_string(" ( $grammar: $str, $pos ) { ") + f_string("my $MATCH; $MATCH = Perlito::Match.new( str => $str, from => $pos, to => $pos, bool => 1 ); ") + f_string("$MATCH.bool = ( ") + f_string((f_scalar((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH["Perlito::Grammar::Regex.rule"] ); })())).f_emit_perl6()) + f_string("); ") + f_string("$MATCH }")));(v_ast = Perlito$Grammar.f_method_def(v_source, 0));return((v_MATCH.v_capture = f_scalar(v_ast))) })()), function () { return 1}))}))) })())) })())));return(v_MATCH) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
   Perlito$Grammar.f_token;  // v8 bug workaround
 // use Perlito::Expression
@@ -1592,12 +1595,12 @@ if (typeof Rul$Quantifier != 'object') {
   // accessor ws3
   Rul$Quantifier.v_ws3 = null;
   Rul$Quantifier.f_ws3 = function () { return this.v_ws3 }
-  // method emit
-  Rul$Quantifier.f_emit = function () {
+  // method emit_perl6
+  Rul$Quantifier.f_emit_perl6 = function () {
     var v_self = this;
-    try { if ( f_bool(f_and(((v_self.v_quant == "")), function () { return ((v_self.v_greedy == ""))})) ) { (function () { throw(v_self.v_term.f_emit()); })() };if ( f_bool(f_and(((v_self.v_quant == "+")), function () { return ((v_self.v_greedy == ""))})) ) { (function () { v_self.v_term.f_set_captures_to_array();throw((f_string("(do { ") + f_string("my $last_match_null = 0; ") + f_string("my $last_pos = $MATCH.to; ") + f_string("my $count = 0; ") + f_string("while ") + f_string(v_self.v_term.f_emit()) + f_string(" && ($last_match_null < 2) ") + f_string("{ ") + f_string("if $last_pos == $MATCH.to() { ") + f_string("$last_match_null = $last_match_null + 1; ") + f_string("} ") + f_string("else { ") + f_string("$last_match_null = 0; ") + f_string("}; ") + f_string("$last_pos = $MATCH.to; ") + f_string("$count = $count + 1; ") + f_string("}; ") + f_string("$MATCH.to = $last_pos; ") + f_string("$count > 0; ") + f_string("})"))); })() };if ( f_bool(f_and(((v_self.v_quant == "*")), function () { return ((v_self.v_greedy == ""))})) ) { (function () { v_self.v_term.f_set_captures_to_array();throw((f_string("(do { ") + f_string("my $last_match_null = 0; ") + f_string("my $last_pos = $MATCH.to; ") + f_string("while ") + f_string(v_self.v_term.f_emit()) + f_string(" && ($last_match_null < 2) ") + f_string("{ ") + f_string("if $last_pos == $MATCH.to() { ") + f_string("$last_match_null = $last_match_null + 1; ") + f_string("} ") + f_string("else { ") + f_string("$last_match_null = 0; ") + f_string("}; ") + f_string("$last_pos = $MATCH.to; ") + f_string("}; ") + f_string("$MATCH.to = $last_pos; ") + f_string("1 ") + f_string("})"))); })() };if ( f_bool(f_and(((v_self.v_quant == "?")), function () { return ((v_self.v_greedy == ""))})) ) { (function () { v_self.v_term.f_set_captures_to_array();throw((f_string("(do { ") + f_string("my $last_pos = $MATCH.to; ") + f_string("if !(do {") + f_string(v_self.v_term.f_emit()) + f_string("}) ") + f_string("{ ") + f_string("$MATCH.to = $last_pos; ") + f_string("}; ") + f_string("1 ") + f_string("})"))); })() };f_warn((f_string("Rul::Quantifier: ") + f_string(f_perl(v_self, ((f_string(" not implemented"))).f_string()))));return(v_self.v_term.f_emit()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { if ( f_bool(f_and(((v_self.v_quant == "")), function () { return ((v_self.v_greedy == ""))})) ) { (function () { throw(v_self.v_term.f_emit_perl6()); })() };if ( f_bool(f_and(((v_self.v_quant == "+")), function () { return ((v_self.v_greedy == ""))})) ) { (function () { v_self.v_term.f_set_captures_to_array();throw((f_string("(do { ") + f_string("my $last_match_null = 0; ") + f_string("my $last_pos = $MATCH.to; ") + f_string("my $count = 0; ") + f_string("while ") + f_string(v_self.v_term.f_emit_perl6()) + f_string(" && ($last_match_null < 2) ") + f_string("{ ") + f_string("if $last_pos == $MATCH.to() { ") + f_string("$last_match_null = $last_match_null + 1; ") + f_string("} ") + f_string("else { ") + f_string("$last_match_null = 0; ") + f_string("}; ") + f_string("$last_pos = $MATCH.to; ") + f_string("$count = $count + 1; ") + f_string("}; ") + f_string("$MATCH.to = $last_pos; ") + f_string("$count > 0; ") + f_string("})"))); })() };if ( f_bool(f_and(((v_self.v_quant == "*")), function () { return ((v_self.v_greedy == ""))})) ) { (function () { v_self.v_term.f_set_captures_to_array();throw((f_string("(do { ") + f_string("my $last_match_null = 0; ") + f_string("my $last_pos = $MATCH.to; ") + f_string("while ") + f_string(v_self.v_term.f_emit_perl6()) + f_string(" && ($last_match_null < 2) ") + f_string("{ ") + f_string("if $last_pos == $MATCH.to() { ") + f_string("$last_match_null = $last_match_null + 1; ") + f_string("} ") + f_string("else { ") + f_string("$last_match_null = 0; ") + f_string("}; ") + f_string("$last_pos = $MATCH.to; ") + f_string("}; ") + f_string("$MATCH.to = $last_pos; ") + f_string("1 ") + f_string("})"))); })() };if ( f_bool(f_and(((v_self.v_quant == "?")), function () { return ((v_self.v_greedy == ""))})) ) { (function () { v_self.v_term.f_set_captures_to_array();throw((f_string("(do { ") + f_string("my $last_pos = $MATCH.to; ") + f_string("if !(do {") + f_string(v_self.v_term.f_emit_perl6()) + f_string("}) ") + f_string("{ ") + f_string("$MATCH.to = $last_pos; ") + f_string("}; ") + f_string("1 ") + f_string("})"))); })() };f_warn((f_string("Rul::Quantifier: ") + f_string(f_perl(v_self, ((f_string(" not implemented"))).f_string()))));return(v_self.v_term.f_emit_perl6()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$Quantifier.f_emit;  // v8 bug workaround
+  Rul$Quantifier.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$Quantifier.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1617,12 +1620,12 @@ if (typeof Rul$Or != 'object') {
   // accessor or_list
   Rul$Or.v_or_list = null;
   Rul$Or.f_or_list = function () { return this.v_or_list }
-  // method emit
-  Rul$Or.f_emit = function () {
+  // method emit_perl6
+  Rul$Or.f_emit_perl6 = function () {
     var v_self = this;
-    try { return((f_string("(do { ") + f_string("my $pos1 = $MATCH.to; (do { ") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) }; return out; })(v_self.v_or_list)).join("}) || (do { $MATCH.to = $pos1; ")) + f_string("}) })"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return((f_string("(do { ") + f_string("my $pos1 = $MATCH.to; (do { ") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_perl6() ) }; return out; })(v_self.v_or_list)).join("}) || (do { $MATCH.to = $pos1; ")) + f_string("}) })"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$Or.f_emit;  // v8 bug workaround
+  Rul$Or.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$Or.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1642,12 +1645,12 @@ if (typeof Rul$Concat != 'object') {
   // accessor concat
   Rul$Concat.v_concat = null;
   Rul$Concat.f_concat = function () { return this.v_concat }
-  // method emit
-  Rul$Concat.f_emit = function () {
+  // method emit_perl6
+  Rul$Concat.f_emit_perl6 = function () {
     var v_self = this;
-    try { return((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit() ) }; return out; })(v_self.v_concat)).join(" && ")) + f_string(")"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return((f_string("(") + f_string(((function (a_) { var out = []; if ( typeof a_ == 'undefined' ) { return out }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].f_emit_perl6() ) }; return out; })(v_self.v_concat)).join(" && ")) + f_string(")"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$Concat.f_emit;  // v8 bug workaround
+  Rul$Concat.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$Concat.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1670,13 +1673,13 @@ if (typeof Rul$Subrule != 'object') {
   // accessor captures
   Rul$Subrule.v_captures = null;
   Rul$Subrule.f_captures = function () { return this.v_captures }
-  // method emit
-  Rul$Subrule.f_emit = function () {
+  // method emit_perl6
+  Rul$Subrule.f_emit_perl6 = function () {
     var v_self = this;
     try { var v_meth;var v_code = null;
 (v_meth = ( f_bool((f_add(1, f_index(v_self.v_metasyntax, ".")))) ? v_self.v_metasyntax : ((f_string("$grammar.") + f_string(v_self.v_metasyntax)))));if ( f_bool((v_self.v_captures == 1)) ) { (function () { (v_code = (f_string("if $m2 { $MATCH.to = $m2.to; $MATCH{'") + f_string(v_self.v_metasyntax) + f_string("'} = $m2; 1 } else { False }; "))); })() } else { (function () { if ( f_bool((v_self.v_captures > 1)) ) { (function () { (v_code = (f_string("if $m2 { ") + f_string("$MATCH.to = $m2.to; ") + f_string("if exists $MATCH{'") + f_string(v_self.v_metasyntax) + f_string("'} { ") + f_string("($MATCH{'") + f_string(v_self.v_metasyntax) + f_string("'}).push( $m2 ); ") + f_string("} ") + f_string("else { ") + f_string("$MATCH{'") + f_string(v_self.v_metasyntax) + f_string("'} = [ $m2 ]; ") + f_string("}; ") + f_string("1 ") + f_string("} else { False }; "))); })() } else { (function () { (v_code = "if $m2 { $MATCH.to = $m2.to; 1 } else { False }; "); })() }; })() };return((f_string("(do { ") + f_string("my $m2 = ") + f_string(v_meth) + f_string("($str, $MATCH.to); ") + f_string(v_code) + f_string("})"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$Subrule.f_emit;  // v8 bug workaround
+  Rul$Subrule.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$Subrule.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1702,12 +1705,12 @@ if (typeof Rul$Var != 'object') {
   // accessor name
   Rul$Var.v_name = null;
   Rul$Var.f_name = function () { return this.v_name }
-  // method emit
-  Rul$Var.f_emit = function () {
+  // method emit_perl6
+  Rul$Var.f_emit_perl6 = function () {
     var v_self = this;
     try { var v_table;(v_table = (function () { var a = []; a["$"] = "$"; a["@"] = "$List_"; a["%"] = "$Hash_"; a["&"] = "$Code_";  return a })());return((f_string((function () { if (v_table == null) { v_table = {} }; return (v_table[v_self.v_sigil] ); })()) + f_string(v_self.v_name))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$Var.f_emit;  // v8 bug workaround
+  Rul$Var.f_emit_perl6;  // v8 bug workaround
 })();
 ;// class Rul::Constant
 if (typeof Rul$Constant != 'object') {
@@ -1721,12 +1724,12 @@ if (typeof Rul$Constant != 'object') {
   // accessor constant
   Rul$Constant.v_constant = null;
   Rul$Constant.f_constant = function () { return this.v_constant }
-  // method emit
-  Rul$Constant.f_emit = function () {
+  // method emit_perl6
+  Rul$Constant.f_emit_perl6 = function () {
     var v_self = this;
     try { var v_str;(v_str = v_self.v_constant);return(Rul.f_constant(v_str)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$Constant.f_emit;  // v8 bug workaround
+  Rul$Constant.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$Constant.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1743,12 +1746,12 @@ if (typeof Rul$Dot != 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Dot;
-  // method emit
-  Rul$Dot.f_emit = function () {
+  // method emit_perl6
+  Rul$Dot.f_emit_perl6 = function () {
     var v_self = this;
     try { return((f_string("( ('' ne substr( $str, $MATCH.to, 1 )) ") + f_string("  ?? (1 + ($MATCH.to = 1 + $MATCH.to ))") + f_string("  !! False ") + f_string(")"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$Dot.f_emit;  // v8 bug workaround
+  Rul$Dot.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$Dot.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1768,12 +1771,12 @@ if (typeof Rul$SpecialChar != 'object') {
   // accessor char
   Rul$SpecialChar.v_char = null;
   Rul$SpecialChar.f_char = function () { return this.v_char }
-  // method emit
-  Rul$SpecialChar.f_emit = function () {
+  // method emit_perl6
+  Rul$SpecialChar.f_emit_perl6 = function () {
     var v_self = this;
-    try { var v_char;(v_char = v_self.v_char);if ( f_bool((v_char == "n")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "is_newline",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() };if ( f_bool((v_char == "N")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "not_newline",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() };if ( f_bool((v_char == "d")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "digit",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() };if ( f_bool((v_char == "s")) ) { (function () { var v_rul;(v_rul = function () { var tmp = {v_metasyntax: "space",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }());(v_rul = v_rul.f_emit());throw(v_rul); })() };throw(Rul.f_constant(v_char)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { var v_char;(v_char = v_self.v_char);if ( f_bool((v_char == "n")) ) { (function () { throw(function () { var tmp = {v_metasyntax: "is_newline",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }().f_emit_perl6()); })() };if ( f_bool((v_char == "N")) ) { (function () { throw(function () { var tmp = {v_metasyntax: "not_newline",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }().f_emit_perl6()); })() };if ( f_bool((v_char == "d")) ) { (function () { throw(function () { var tmp = {v_metasyntax: "digit",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }().f_emit_perl6()); })() };if ( f_bool((v_char == "s")) ) { (function () { throw(function () { var tmp = {v_metasyntax: "space",v_captures: 0,}; tmp.__proto__ = Rul$Subrule; return tmp }().f_emit_perl6()); })() };if ( f_bool((v_char == "t")) ) { (function () { throw(Rul.f_constant(f_chr(9))); })() };throw(Rul.f_constant(v_char)) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$SpecialChar.f_emit;  // v8 bug workaround
+  Rul$SpecialChar.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$SpecialChar.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1793,12 +1796,12 @@ if (typeof Rul$Block != 'object') {
   // accessor closure
   Rul$Block.v_closure = null;
   Rul$Block.f_closure = function () { return this.v_closure }
-  // method emit
-  Rul$Block.f_emit = function () {
+  // method emit_perl6
+  Rul$Block.f_emit_perl6 = function () {
     var v_self = this;
     try { return((f_string("((do { ") + f_string(v_self.v_closure) + f_string(" }) || 1)"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$Block.f_emit;  // v8 bug workaround
+  Rul$Block.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$Block.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1818,12 +1821,12 @@ if (typeof Rul$InterpolateVar != 'object') {
   // accessor var
   Rul$InterpolateVar.v_var = null;
   Rul$InterpolateVar.f_var = function () { return this.v_var }
-  // method emit
-  Rul$InterpolateVar.f_emit = function () {
+  // method emit_perl6
+  Rul$InterpolateVar.f_emit_perl6 = function () {
     var v_self = this;
-    try { f_say((f_string("# TODO: interpolate var ") + f_string(v_self.v_var.f_emit()) + f_string("")));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { f_say((f_string("# TODO: interpolate var ") + f_string(v_self.v_var.f_emit_perl6()) + f_string("")));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$InterpolateVar.f_emit;  // v8 bug workaround
+  Rul$InterpolateVar.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$InterpolateVar.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1846,12 +1849,12 @@ if (typeof Rul$NamedCapture != 'object') {
   // accessor capture_ident
   Rul$NamedCapture.v_capture_ident = null;
   Rul$NamedCapture.f_capture_ident = function () { return this.v_capture_ident }
-  // method emit
-  Rul$NamedCapture.f_emit = function () {
+  // method emit_perl6
+  Rul$NamedCapture.f_emit_perl6 = function () {
     var v_self = this;
-    try { f_say((f_string("# TODO: named capture ") + f_string(v_self.v_capture_ident) + f_string(" = ") + f_string(v_self.v_rule_exp.f_emit()) + f_string("")));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { f_say((f_string("# TODO: named capture ") + f_string(v_self.v_capture_ident) + f_string(" = ") + f_string(v_self.v_rule_exp.f_emit_perl6()) + f_string("")));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$NamedCapture.f_emit;  // v8 bug workaround
+  Rul$NamedCapture.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$NamedCapture.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1871,12 +1874,12 @@ if (typeof Rul$Before != 'object') {
   // accessor rule_exp
   Rul$Before.v_rule_exp = null;
   Rul$Before.f_rule_exp = function () { return this.v_rule_exp }
-  // method emit
-  Rul$Before.f_emit = function () {
+  // method emit_perl6
+  Rul$Before.f_emit_perl6 = function () {
     var v_self = this;
-    try { return((f_string("(do { ") + f_string("my $tmp = $MATCH; ") + f_string("$MATCH = Perlito::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string("$MATCH.bool = ") + f_string(v_self.v_rule_exp.f_emit()) + f_string("; ") + f_string("$tmp.bool = ?$MATCH; ") + f_string("$MATCH = $tmp; ") + f_string("?$MATCH; ") + f_string("})"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return((f_string("(do { ") + f_string("my $tmp = $MATCH; ") + f_string("$MATCH = Perlito::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string("$MATCH.bool = ") + f_string(v_self.v_rule_exp.f_emit_perl6()) + f_string("; ") + f_string("$tmp.bool = ?$MATCH; ") + f_string("$MATCH = $tmp; ") + f_string("?$MATCH; ") + f_string("})"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$Before.f_emit;  // v8 bug workaround
+  Rul$Before.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$Before.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1896,12 +1899,12 @@ if (typeof Rul$NotBefore != 'object') {
   // accessor rule_exp
   Rul$NotBefore.v_rule_exp = null;
   Rul$NotBefore.f_rule_exp = function () { return this.v_rule_exp }
-  // method emit
-  Rul$NotBefore.f_emit = function () {
+  // method emit_perl6
+  Rul$NotBefore.f_emit_perl6 = function () {
     var v_self = this;
-    try { return((f_string("(do { ") + f_string("my $tmp = $MATCH; ") + f_string("$MATCH = Perlito::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string("$MATCH.bool = ") + f_string(v_self.v_rule_exp.f_emit()) + f_string("; ") + f_string("$tmp.bool = !$MATCH; ") + f_string("$MATCH = $tmp; ") + f_string("?$MATCH; ") + f_string("})"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+    try { return((f_string("(do { ") + f_string("my $tmp = $MATCH; ") + f_string("$MATCH = Perlito::Match.new( 'str' => $str, 'from' => $tmp.to, 'to' => $tmp.to, 'bool' => 1  ); ") + f_string("$MATCH.bool = ") + f_string(v_self.v_rule_exp.f_emit_perl6()) + f_string("; ") + f_string("$tmp.bool = !$MATCH; ") + f_string("$MATCH = $tmp; ") + f_string("?$MATCH; ") + f_string("})"))) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$NotBefore.f_emit;  // v8 bug workaround
+  Rul$NotBefore.f_emit_perl6;  // v8 bug workaround
   // method set_captures_to_array
   Rul$NotBefore.f_set_captures_to_array = function () {
     var v_self = this;
@@ -1921,12 +1924,12 @@ if (typeof Rul$NegateCharClass != 'object') {
   // accessor chars
   Rul$NegateCharClass.v_chars = null;
   Rul$NegateCharClass.f_chars = function () { return this.v_chars }
-  // method emit
-  Rul$NegateCharClass.f_emit = function () {
+  // method emit_perl6
+  Rul$NegateCharClass.f_emit_perl6 = function () {
     var v_self = this;
     try { f_say((f_string("TODO NegateCharClass")));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$NegateCharClass.f_emit;  // v8 bug workaround
+  Rul$NegateCharClass.f_emit_perl6;  // v8 bug workaround
 })();
 ;// class Rul::CharClass
 if (typeof Rul$CharClass != 'object') {
@@ -1940,12 +1943,12 @@ if (typeof Rul$CharClass != 'object') {
   // accessor chars
   Rul$CharClass.v_chars = null;
   Rul$CharClass.f_chars = function () { return this.v_chars }
-  // method emit
-  Rul$CharClass.f_emit = function () {
+  // method emit_perl6
+  Rul$CharClass.f_emit_perl6 = function () {
     var v_self = this;
     try { f_say((f_string("TODO CharClass")));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$CharClass.f_emit;  // v8 bug workaround
+  Rul$CharClass.f_emit_perl6;  // v8 bug workaround
 })();
 ;// class Rul::Capture
 if (typeof Rul$Capture != 'object') {
@@ -1959,12 +1962,12 @@ if (typeof Rul$Capture != 'object') {
   // accessor rule_exp
   Rul$Capture.v_rule_exp = null;
   Rul$Capture.f_rule_exp = function () { return this.v_rule_exp }
-  // method emit
-  Rul$Capture.f_emit = function () {
+  // method emit_perl6
+  Rul$Capture.f_emit_perl6 = function () {
     var v_self = this;
     try { f_say((f_string("TODO RulCapture")));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$Capture.f_emit;  // v8 bug workaround
+  Rul$Capture.f_emit_perl6;  // v8 bug workaround
 })();
 ;// class Rul::CaptureResult
 if (typeof Rul$CaptureResult != 'object') {
@@ -1978,12 +1981,12 @@ if (typeof Rul$CaptureResult != 'object') {
   // accessor rule_exp
   Rul$CaptureResult.v_rule_exp = null;
   Rul$CaptureResult.f_rule_exp = function () { return this.v_rule_exp }
-  // method emit
-  Rul$CaptureResult.f_emit = function () {
+  // method emit_perl6
+  Rul$CaptureResult.f_emit_perl6 = function () {
     var v_self = this;
     try { f_say((f_string("TODO Rul::CaptureResult")));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$CaptureResult.f_emit;  // v8 bug workaround
+  Rul$CaptureResult.f_emit_perl6;  // v8 bug workaround
 })();
 ;// class Rul::After
 if (typeof Rul$After != 'object') {
@@ -1997,12 +2000,12 @@ if (typeof Rul$After != 'object') {
   // accessor rule_exp
   Rul$After.v_rule_exp = null;
   Rul$After.f_rule_exp = function () { return this.v_rule_exp }
-  // method emit
-  Rul$After.f_emit = function () {
+  // method emit_perl6
+  Rul$After.f_emit_perl6 = function () {
     var v_self = this;
     try { f_say((f_string("TODO Rul::After")));return(f_die()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
   }
-  Rul$After.f_emit;  // v8 bug workaround
+  Rul$After.f_emit_perl6;  // v8 bug workaround
 })();
 ;})();
 

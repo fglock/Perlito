@@ -144,6 +144,8 @@ token char_any_double_quote {
 token double_quoted_unescape {
     |  \\ n  
         { make "\n" }
+    |  \\ t  
+        { make chr(9) }
     |  \\ <char_any>  
         { make ~$<char_any> }
     |  <char_any_double_quote> 
@@ -281,12 +283,12 @@ token token {
         my $source = $<opt_name> ~ ' ( $grammar: $str, $pos ) { ' ~
             'my $MATCH; $MATCH = Perlito::Match.new( str => $str, from => $pos, to => $pos, bool => 1 ); ' ~ 
             '$MATCH.bool = ( ' ~
-                ($$<Perlito::Grammar::Regex.rule>).emit() ~
+                ($$<Perlito::Grammar::Regex.rule>).emit_perl6() ~
             '); ' ~
             '$MATCH }';
         #say 'Intermediate code: ', $source;
         my $ast = Perlito::Grammar.method_def( $source, 0 );
-        # say 'Intermediate ast: ', $$ast.emit;
+        # say 'Intermediate ast: ', $$ast.perl;
         make $$ast;
     }
 }
