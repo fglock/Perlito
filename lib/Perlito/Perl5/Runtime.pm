@@ -146,6 +146,7 @@ package Main;
         local $_;
         if ( ref($_[0]) ) {
             return join( " ", map { Str($_) } @{$_[0]} ) if ref($_[0]) eq 'ARRAY';
+            return join( "\n", map { $_ . "\t" . Str($_[0]{$_}) } keys %{$_[0]} ) if ref($_[0]) eq 'HASH';
         }
         return $_[0];
     }
