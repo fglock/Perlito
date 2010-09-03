@@ -187,7 +187,7 @@ package Main;
         my $o = shift;
         if ( ref($o) ) {
             my $key = "$o";
-            return "'!!! Recursive structure !!!' at $key" if $Main::_seen{$key} > 3;
+            return "'!!! Recursive structure !!!' at $key" if ($Main::_seen{$key} || 0) > 3;
             $Main::_seen{$key}++;
             return '[' . join( ", ", map { perl($_) } @$o ) . ']' 
                 if ref($o) eq 'ARRAY';
@@ -197,7 +197,7 @@ package Main;
                 if ref($o) eq 'CODE';
         }
         else {
-            return $o if (0+$o) eq $o;
+            return $o if $o =~ /^[0-9]/ && (0+$o) eq $o;
             return "'" . perl_escape_string($o) . "'";
         }
         my $can = UNIVERSAL::can($o => 'perl');

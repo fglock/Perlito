@@ -91,6 +91,11 @@ class Lit::Array {
             {
                 push @s, '@{' ~ $item.emit_perl5() ~ ' || []}';
             }
+            elsif   $item.isa( 'Var' )   && $item.sigil eq '%' 
+                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<%>' 
+            {
+                push @s, '%{' ~ $item.emit_perl5() ~ ' || {}}';
+            }
             else {
                 push @s, $item.emit_perl5;
             }
@@ -102,12 +107,29 @@ class Lit::Array {
 class Lit::Hash {
     has @.hash1;
     method emit_perl5 {
-        my $fields = @.hash1;
-        my $str = '';
-        for @$fields -> $field { 
-            $str = $str ~ $field.emit_perl5() ~ ',';
-        }; 
-        '{ ' ~ $str ~ ' }';
+        my @s;
+        my @items;
+        for @.hash1 -> $item {
+            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
+                for @($item.arguments) -> $arg {
+                    @items.push($arg);
+                }
+            }
+            else {
+                @items.push($item);
+            }
+        }
+        for @items -> $item { 
+            if   $item.isa( 'Var' )   && $item.sigil eq '%' 
+                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<%>' 
+            {
+                push @s, '%{' ~ $item.emit_perl5() ~ ' || {}}';
+            }
+            else {
+                push @s, $item.emit_perl5() ~ ',';
+            }
+        } 
+        '{ ' ~ @s.join(', ') ~ ' }';
     }
 }
 
@@ -408,6 +430,11 @@ class Apply {
             ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '@' 
         {
             $arguments = Lit::Array.new( array1 => [$arguments] );
+        }
+        elsif   $parameters.isa( 'Var' ) && $parameters.sigil eq '%' 
+            ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '%' 
+        {
+            $arguments = Lit::Hash.new( hash1 => [$arguments] );
         }
         '(' ~ $parameters.emit_perl5() ~ ' = ' ~ $arguments.emit_perl5() ~ ')';
     }

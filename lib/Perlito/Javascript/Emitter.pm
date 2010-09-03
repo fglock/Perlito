@@ -16,7 +16,7 @@ class Perlito::Javascript::LexicalBlock {
             if $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' {
                 my $var = $decl.arguments[0];
                 if $var.isa( 'Decl' ) && $var.decl eq 'my' {
-                    $str = $str ~ 'var ' ~ $var.var.emit_javascript() ~ ';'; 
+                    $str = $str ~ $var.emit_javascript_init; 
                 }
             }
         }
@@ -98,7 +98,7 @@ class CompUnit {
             if $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' {
                 my $var = $decl.arguments[0];
                 if $var.isa( 'Decl' ) && $var.decl eq 'my' {
-                    $str = $str ~ 'var ' ~ $var.var.emit_javascript() ~ ';'; 
+                    $str = $str ~ $var.emit_javascript_init; 
                 }
             }
         }
@@ -227,19 +227,42 @@ class Lit::Array {
 class Lit::Hash {
     has @.hash1;
     method emit_javascript {
-        my $s = '';
-        for @.hash1 -> $field { 
-            if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
-                $s = $s ~ 'a[' ~ $field.arguments[0].emit_javascript() ~ '] = ' 
-                    ~ $field.arguments[1].emit_javascript() ~ '; '
+        my @s;
+        my @items;
+        for @.hash1 -> $item {
+            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
+                for @($item.arguments) -> $arg {
+                    @items.push($arg);
+                }
             }
             else {
-                die 'Error in hash composer: ', $field.perl;
+                @items.push($item);
             }
         }
-        return '(function () { var a = []; ' 
-                ~ $s 
-            ~ ' return a })()';
+        for @items -> $item { 
+            if $item.isa('Apply') && $item.code eq 'infix:<=>>' {
+                push @s, 'a[' ~ $item.arguments[0].emit_javascript() ~ '] = ' 
+                    ~ $item.arguments[1].emit_javascript() 
+            }
+            elsif   $item.isa( 'Var' )   && $item.sigil eq '%'
+                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<%>'
+            {
+                push @s, 
+                      '(function (o) { '
+                    ~   'for(var i in o) { ' 
+                    ~       'a[i] = o[i] '
+                    ~   '} '
+                    ~ '})(' ~ $item.emit_javascript() ~ ');'
+            }
+            else {
+                die 'Error in hash composer: ', $item.perl;
+            }
+        }
+        return 
+              '(function () { var a = {}; ' 
+            ~   @s.join('; ') ~ '; '
+            ~   'return a '
+            ~ '})()';
     }
 }
 
@@ -439,6 +462,7 @@ class Apply {
         if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' < ')   ~ ')' };
         if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };
         if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' };
+        if $code eq 'infix:<=>>' { return '('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' };
 
         if $code eq 'infix:<..>' { 
             return '(function (a) { '  
@@ -582,6 +606,11 @@ class Apply {
             ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '@'
         {
             $arguments = Lit::Array.new( array1 => [$arguments] );
+        }
+        elsif      $parameters.isa( 'Var' ) && $parameters.sigil eq '%'
+            ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '%'
+        {
+            $arguments = Lit::Hash.new( hash1 => [$arguments] );
         }
         '(' ~ $parameters.emit_javascript() ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
     }

@@ -52,17 +52,15 @@ class Perlito::Expression {
             # say "#  not a list -- not hash";
             return $o
         }
-        # the argument is a list -- check that the first item looks like a pair
-        my $item = ($stmt.arguments)[0];
-        # say "#  item: ", $item.perl;
-        if !($item.isa('Apply')) {
-            return $o
-        }
-        if ($item.code) eq 'infix:<=>>' {
-            # the first argument is a pair
-            # say "#  block: ", $o.perl;
-            # say "#  hash with args: ", ( expand_list($stmt.arguments) ).perl;
-            return Lit::Hash.new(hash1 => expand_list($stmt))
+        # the argument is a list -- check that it contains a pair
+        for @($stmt.arguments) -> $item {
+            # say "#  item: ", $item.perl;
+            if $item.isa('Apply') && ($item.code) eq 'infix:<=>>' {
+                # argument is a pair
+                # say "#  block: ", $o.perl;
+                # say "#  hash with args: ", ( expand_list($stmt.arguments) ).perl;
+                return Lit::Hash.new(hash1 => expand_list($stmt))
+            }
         }
         return $o;
     }

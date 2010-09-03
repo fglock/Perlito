@@ -1,3 +1,6 @@
+0.039  2010-09-03
+- fix hash composer, assignment
+
 0.038  2010-09-02
 - perlito shell uses Term::ReadLine
 

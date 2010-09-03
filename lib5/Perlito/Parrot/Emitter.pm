@@ -185,7 +185,7 @@ sub name { $_[0]->{name} };
 sub emit_parrot { my $self = $_[0]; (Main::bool((($self->{twigil} eq '.'))) ? ('  $P0 = getattribute self, \'' . $self->{name} . '\'' . '
 ') : ('  $P0 = ' . $self->full_name(("" . ' ') . '
 '))) };
-sub full_name { my $self = $_[0]; (my  $table = { ('$' => 'scalar_'),('@' => 'list_'),('%' => 'hash_'),('&' => 'code_'), }); (Main::bool((($self->{twigil} eq '.'))) ? ($self->{name}) : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name})))) }
+sub full_name { my $self = $_[0]; (my  $table = { ('$' => 'scalar_'),, ('@' => 'list_'),, ('%' => 'hash_'),, ('&' => 'code_'), }); (Main::bool((($self->{twigil} eq '.'))) ? ($self->{name}) : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name})))) }
 }
 
 ;

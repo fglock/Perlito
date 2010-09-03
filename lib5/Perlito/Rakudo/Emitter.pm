@@ -127,7 +127,7 @@ sub new { shift; bless { @_ }, "Var" }
 sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub name { $_[0]->{name} };
-sub emit { my $self = $_[0]; (my  $table = { ('$' => '$'),('@' => '$List_'),('%' => '$Hash_'),('&' => '$Code_'), }); (Main::bool((($self->{twigil} eq '.'))) ? ('$self.{' . $self->{name} . '}') : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name})))) }
+sub emit { my $self = $_[0]; (my  $table = { ('$' => '$'),, ('@' => '$List_'),, ('%' => '$Hash_'),, ('&' => '$Code_'), }); (Main::bool((($self->{twigil} eq '.'))) ? ('$self.{' . $self->{name} . '}') : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name})))) }
 }
 
 ;

@@ -176,7 +176,7 @@ if ( $verbose ) {
 }
 
 if (@switch_e) {
-    $source = join('; ', @switch_e);
+    $source = CORE::join('; ', @switch_e);
 }
 elsif ($source_filename) {
     open FILE, $source_filename
@@ -491,6 +491,7 @@ elsif ( $backend eq 'ast-perl6' ) {
     $result .=  Main::perl( \@comp_unit ) . "\n";
 }
 elsif ( $backend eq 'ast-perl5' ) {
+    no warnings 'once';
     require Data::Dumper;
     local $Data::Dumper::Terse    = 1;
     local $Data::Dumper::Sortkeys = 1;
@@ -498,6 +499,7 @@ elsif ( $backend eq 'ast-perl5' ) {
     $result .=  Data::Dumper::Dumper( \@comp_unit );
 }
 elsif ( $backend eq 'ast-json' ) {
+    no warnings 'once';
     require JSON;
     *UNIVERSAL::TO_JSON = sub {
         return { 'bless' => ref($_[0]), %{ $_[0] } };

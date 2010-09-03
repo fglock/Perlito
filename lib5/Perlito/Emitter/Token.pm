@@ -67,7 +67,7 @@ sub new { shift; bless { @_ }, "Rul::Var" }
 sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub name { $_[0]->{name} };
-sub emit_perl6 { my $self = $_[0]; (my  $table = { ('$' => '$'),('@' => '$List_'),('%' => '$Hash_'),('&' => '$Code_'), }); $table->{$self->{sigil}} . $self->{name} }
+sub emit_perl6 { my $self = $_[0]; (my  $table = { ('$' => '$'),, ('@' => '$List_'),, ('%' => '$Hash_'),, ('&' => '$Code_'), }); $table->{$self->{sigil}} . $self->{name} }
 }
 
 ;
