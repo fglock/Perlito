@@ -11,7 +11,6 @@ perl perlito.pl -Cruby lib/Perlito/Test.pm            > librb/Perlito/Test.rb
 
 perl perlito.pl -Cruby lib/Perlito/Grammar.pm         > librb/Perlito__Grammar.rb
 perl perlito.pl -Cruby lib/Perlito/Grammar/Control.pm > librb/Perlito__Grammar__Control.rb
-perl perlito.pl -Cruby lib/Perlito/Grammar/Mapping.pm > librb/Perlito__Grammar__Mapping.rb
 perl perlito.pl -Cruby lib/Perlito/Grammar/Regex.pm   > librb/Perlito__Grammar__Regex.rb
 perl perlito.pl -Cruby lib/Perlito/Emitter/Token.pm   > librb/Perlito__Emitter__Token.rb
 perl perlito.pl -Cruby lib/Perlito/Eval.pm            > librb/Perlito__Eval.rb

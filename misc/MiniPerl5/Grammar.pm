@@ -3,7 +3,6 @@ use v6;
 grammar MiniPerl5::Grammar {
 
 use Perlito::Grammar::Regex;
-use Perlito::Grammar::Mapping;
 use Perlito::Grammar::Control;
 
 my $Class_name;  # for diagnostic messages

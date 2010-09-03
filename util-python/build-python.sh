@@ -16,7 +16,6 @@ perl perlito.pl -Cpython lib/Perlito/Python/Prelude.pm  > libpy/Perlito__Python_
 perl perlito.pl -Cpython lib/Perlito/Test.pm            > libpy/Perlito_Test.py
 perl perlito.pl -Cpython lib/Perlito/Grammar.pm         > libpy/Perlito__Grammar.py
 perl perlito.pl -Cpython lib/Perlito/Grammar/Control.pm > libpy/Perlito__Grammar__Control.py
-perl perlito.pl -Cpython lib/Perlito/Grammar/Mapping.pm > libpy/Perlito__Grammar__Mapping.py
 perl perlito.pl -Cpython lib/Perlito/Grammar/Regex.pm   > libpy/Perlito__Grammar__Regex.py
 perl perlito.pl -Cpython lib/Perlito/Emitter/Token.pm   > libpy/Perlito__Emitter__Token.py
 perl perlito.pl -Cpython lib/Perlito/Eval.pm            > libpy/Perlito__Eval.py

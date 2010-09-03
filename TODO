@@ -1,5 +1,9 @@
 TODO list for Perlito
 
+CPAN distribution
+
+- cross compilation doesn't work (can't create the temporary "AST" files)
+
 Eval.pm module
 
 - add exceptions
@@ -34,8 +38,6 @@ Perlito in Lisp
 
 Perlito in Go
 
-- the floating point implementation seemed to slow down the bootstrapped compiler
-
 - document which release of Go to use
 
 Perlito in Perl5
@@ -66,7 +68,7 @@ Missing Backends
 
 - Clojure
 
-- v6.pm
+- v6.pm - FIXED
 
 Missing Features
 
@@ -133,4 +135,6 @@ Semantics
 
 - In Perlito, @a = [] initializes @a to empty Array - FIXED
   This should create an array with an array inside.
+
+- Not implemented: %a = (list) 
 

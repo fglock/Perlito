@@ -11,7 +11,6 @@ lib/Perlito/Go/Prelude.pm
 lib/Perlito/Go/Runtime.go
 lib/Perlito/Grammar.pm
 lib/Perlito/Grammar/Control.pm
-lib/Perlito/Grammar/Mapping.pm
 lib/Perlito/Grammar/Regex.pm
 lib/Perlito/Javascript/Emitter.pm
 lib/Perlito/Javascript/Prelude.pm

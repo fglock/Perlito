@@ -8,7 +8,6 @@ class Main {
     use Perlito::Ruby::Emitter;
     use Perlito::Grammar;
     use Perlito::Grammar::Control;
-    use Perlito::Grammar::Mapping;
     use Perlito::Grammar::Regex;
     use Perlito::Emitter::Token;
 

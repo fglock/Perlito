@@ -1,3 +1,5 @@
+[ -d v6.pm ] && cd v6.pm
+
 rm -rf lib
 rm -rf t
 
@@ -18,4 +20,6 @@ cp perlito.pm lib/v6/
 rm -rf scripts
 mkdir scripts
 cp ../perlito.pl scripts/perlito
+
+perl Makefile.PL
 

@@ -13,7 +13,6 @@ ruby1.9 perlito.rb -Cruby lib/Perlito/Test.pm            > librb-new/Perlito__Te
 
 ruby1.9 perlito.rb -Cruby lib/Perlito/Grammar.pm         > librb-new/Perlito__Grammar.rb
 ruby1.9 perlito.rb -Cruby lib/Perlito/Grammar/Control.pm > librb-new/Perlito__Grammar__Control.rb
-ruby1.9 perlito.rb -Cruby lib/Perlito/Grammar/Mapping.pm > librb-new/Perlito__Grammar__Mapping.rb
 ruby1.9 perlito.rb -Cruby lib/Perlito/Grammar/Regex.pm   > librb-new/Perlito__Grammar__Regex.rb
 ruby1.9 perlito.rb -Cruby lib/Perlito/Emitter/Token.pm   > librb-new/Perlito__Emitter__Token.rb
 ruby1.9 perlito.rb -Cruby lib/Perlito/Eval.pm            > librb-new/Perlito__Eval.rb
