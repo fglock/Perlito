@@ -97,7 +97,7 @@ sub emit_perl5 { my $self = $_[0]; my  $List_s; my  $List_items; for my $item ( 
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
-sub emit_perl5 { my $self = $_[0]; my  $List_s; my  $List_items; for my $item ( @{$self->{hash1} || []} ) { if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) { for my $arg ( @{[@{(($item->arguments()) || []) || []}] || []} ) { push( @{$List_items}, $arg ) } } else { push( @{$List_items}, $item ) } }; for my $item ( @{$List_items || []} ) { if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq '%')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<%>'))))) { push( @{$List_s}, '%{' . $item->emit_perl5() . ' || {}}' ) } else { push( @{$List_s}, $item->emit_perl5() . ',' ) } }; '{ ' . Main::join($List_s, ', ') . ' }' }
+sub emit_perl5 { my $self = $_[0]; my  $List_s; my  $List_items; for my $item ( @{$self->{hash1} || []} ) { if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) { for my $arg ( @{[@{(($item->arguments()) || []) || []}] || []} ) { push( @{$List_items}, $arg ) } } else { push( @{$List_items}, $item ) } }; for my $item ( @{$List_items || []} ) { if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq '%')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<%>'))))) { push( @{$List_s}, '%{' . $item->emit_perl5() . ' || {}}' ) } else { push( @{$List_s}, $item->emit_perl5() ) } }; '{ ' . Main::join($List_s, ', ') . ' }' }
 }
 
 ;

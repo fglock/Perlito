@@ -126,7 +126,7 @@ class Lit::Hash {
                 push @s, '%{' ~ $item.emit_perl5() ~ ' || {}}';
             }
             else {
-                push @s, $item.emit_perl5() ~ ',';
+                push @s, $item.emit_perl5();
             }
         } 
         '{ ' ~ @s.join(', ') ~ ' }';
