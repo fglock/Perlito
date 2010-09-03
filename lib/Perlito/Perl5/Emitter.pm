@@ -165,7 +165,7 @@ class Var {
             '@' => '$List_',
             '%' => '$Hash_',
             '&' => '$Code_',
-        };
+        }
         my $ns = '';
         if $.namespace {
             $ns = $.namespace ~ '::';
@@ -182,13 +182,13 @@ class Var {
             }
         }
         return $table{$.sigil} ~ $ns ~ $.name 
-    };
+    }
     method plain_name {
         if $.namespace {
             return $.namespace ~ '::' ~ $.name
         }
         return $.name
-    };
+    }
 }
 
 class Proto {
@@ -245,7 +245,7 @@ class Call {
                 return
                     'Main::' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
             }
-        };
+        }
         if $.method eq 'push' { 
             return 'push( @{' ~ $invocant ~ '}, '~ (@.arguments.>>emit_perl5).join(', ') ~ ' )' 
         }
@@ -298,61 +298,61 @@ class Apply {
             return '(' ~ $.code.emit_perl5() ~ ')->(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
         }
 
-        if $code eq 'self'       { return '$self' };
-        if $code eq 'Mu'         { return 'undef' };
+        if $code eq 'self'       { return '$self' }
+        if $code eq 'Mu'         { return 'undef' }
 
-        if $code eq 'make'       { return '($MATCH->{capture} = ('   ~ (@.arguments.>>emit_perl5).join(', ') ~ '))' };
+        if $code eq 'make'       { return '($MATCH->{capture} = ('   ~ (@.arguments.>>emit_perl5).join(', ') ~ '))' }
 
-        if $code eq 'say'        { return 'Main::say('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' };
-        if $code eq 'print'      { return 'Main::print(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' };
-        if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' };
+        if $code eq 'say'        { return 'Main::say('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
+        if $code eq 'print'      { return 'Main::print(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
+        if $code eq 'warn'       { return 'warn('        ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
 
-        if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit_perl5).join(' ')           ~ '}'   };
-        if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>emit_perl5).join(' ')      ~ '} )' };
-        if $code eq 'push'       { return 'push( @{' ~ (@.arguments[0]).emit_perl5() ~ '}, ' ~ (@.arguments[1]).emit_perl5() ~ ' )' };
-        if $code eq 'shift'      { return 'shift( @{' ~ (@.arguments.>>emit_perl5).join(' ')    ~ '} )' };
-        if $code eq 'unshift'    { return 'unshift( @{' ~ (@.arguments.>>emit_perl5).join(' ')  ~ '} )' };
+        if $code eq 'array'      { return '@{' ~ (@.arguments.>>emit_perl5).join(' ')           ~ '}'   }
+        if $code eq 'pop'        { return 'pop( @{' ~ (@.arguments.>>emit_perl5).join(' ')      ~ '} )' }
+        if $code eq 'push'       { return 'push( @{' ~ (@.arguments[0]).emit_perl5() ~ '}, ' ~ (@.arguments[1]).emit_perl5() ~ ' )' }
+        if $code eq 'shift'      { return 'shift( @{' ~ (@.arguments.>>emit_perl5).join(' ')    ~ '} )' }
+        if $code eq 'unshift'    { return 'unshift( @{' ~ (@.arguments.>>emit_perl5).join(' ')  ~ '} )' }
 
-        if $code eq 'Int'        { return '(0+' ~ (@.arguments[0]).emit_perl5()             ~ ')' };
-        if $code eq 'Num'        { return '(0+' ~ (@.arguments[0]).emit_perl5()             ~ ')' };
-        if $code eq 'bool'       { return 'Main::bool('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' };
+        if $code eq 'Int'        { return '(0+' ~ (@.arguments[0]).emit_perl5()             ~ ')' }
+        if $code eq 'Num'        { return '(0+' ~ (@.arguments[0]).emit_perl5()             ~ ')' }
+        if $code eq 'bool'       { return 'Main::bool('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
 
-        if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' };
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' ? 0 : 1)' };
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' ? 1 : 0)' };
+        if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
+        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' ? 0 : 1)' }
+        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' ? 1 : 0)' }
 
-        if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' };
-        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' || [])' };
-        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' };
+        if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' }
+        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' || [])' }
+        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' }
 
-        if $code eq 'postfix:<++>' { return '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')++' };
-        if $code eq 'postfix:<-->' { return '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')--' };
-        if $code eq 'prefix:<++>'  { return '++(' ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')' };
-        if $code eq 'prefix:<-->'  { return '--(' ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')' };
+        if $code eq 'postfix:<++>' { return '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')++' }
+        if $code eq 'postfix:<-->' { return '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')--' }
+        if $code eq 'prefix:<++>'  { return '++(' ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')' }
+        if $code eq 'prefix:<-->'  { return '--(' ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')' }
 
-        if $code eq 'list:<~>'   { return ''   ~ (@.arguments.>>emit_perl5).join(' . ')   ~ ''  };
-        if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' + ')   ~ ')' };
-        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_perl5).join(' - ')   ~ ')' };
-        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' * ')   ~ ')' };
-        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' / ')   ~ ')' };
-        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' > ')   ~ ')' };
-        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' < ')   ~ ')' };
-        if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_perl5).join(' >= ')  ~ ')' };
-        if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_perl5).join(' <= ')  ~ ')' };
-        if $code eq 'infix:<x>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' x ')   ~ ')' };
+        if $code eq 'list:<~>'   { return ''   ~ (@.arguments.>>emit_perl5).join(' . ')   ~ ''  }
+        if $code eq 'infix:<+>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' + ')   ~ ')' }
+        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_perl5).join(' - ')   ~ ')' }
+        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' * ')   ~ ')' }
+        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' / ')   ~ ')' }
+        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' > ')   ~ ')' }
+        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' < ')   ~ ')' }
+        if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_perl5).join(' >= ')  ~ ')' }
+        if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_perl5).join(' <= ')  ~ ')' }
+        if $code eq 'infix:<x>'  { return '('  ~ (@.arguments.>>emit_perl5).join(' x ')   ~ ')' }
         
-        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit_perl5).join(' && ')  ~ ')' };
-        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit_perl5).join(' || ')  ~ ')' };
-        if $code eq 'infix:<//>' { return '('  ~ (@.arguments.>>emit_perl5).join(' // ')  ~ ')' };
-        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_perl5).join(' eq ')  ~ ')' };
-        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ne ')  ~ ')' };
-        if $code eq 'infix:<le>' { return '('  ~ (@.arguments.>>emit_perl5).join(' le ')  ~ ')' };
-        if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ge ')  ~ ')' };
+        if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit_perl5).join(' && ')  ~ ')' }
+        if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit_perl5).join(' || ')  ~ ')' }
+        if $code eq 'infix:<//>' { return '('  ~ (@.arguments.>>emit_perl5).join(' // ')  ~ ')' }
+        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_perl5).join(' eq ')  ~ ')' }
+        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ne ')  ~ ')' }
+        if $code eq 'infix:<le>' { return '('  ~ (@.arguments.>>emit_perl5).join(' le ')  ~ ')' }
+        if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ge ')  ~ ')' }
  
-        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_perl5).join(' == ')  ~ ')' };
-        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_perl5).join(' != ')  ~ ')' };
-        if $code eq 'infix:<=>>' { return '('  ~ (@.arguments.>>emit_perl5).join(' => ')  ~ ')' };
-        if $code eq 'infix:<..>' { return '['  ~ (@.arguments.>>emit_perl5).join(' .. ')  ~ ']' };
+        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_perl5).join(' == ')  ~ ')' }
+        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_perl5).join(' != ')  ~ ')' }
+        if $code eq 'infix:<=>>' { return '('  ~ (@.arguments.>>emit_perl5).join(' => ')  ~ ')' }
+        if $code eq 'infix:<..>' { return '['  ~ (@.arguments.>>emit_perl5).join(' .. ')  ~ ']' }
 
         if $code eq 'ternary:<?? !!>' { 
             my $cond = @.arguments[0];
@@ -364,7 +364,8 @@ class Apply {
             return '(' ~ Perl5::to_bool($cond).emit_perl5() ~
                  ' ? ' ~ (@.arguments[1]).emit_perl5() ~
                  ' : ' ~ (@.arguments[2]).emit_perl5() ~
-                  ')' };
+                  ')' 
+        }
         
         if $code eq 'circumfix:<( )>' {
             return '(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
@@ -402,7 +403,7 @@ class Apply {
                         ) 
                     ~ '; ';
                 $i = $i + 1;
-            };
+            }
             return $str ~ $parameters.emit_perl5() ~ ' }';
         }
         if $parameters.isa( 'Lit::Hash' ) {
@@ -469,7 +470,7 @@ class While {
           && $cond.sigil eq '@' 
         {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-        };
+        }
            'for ( '
         ~  ( $.init     ?? $.init.emit_perl5()           ~ '; ' !! '; ' )
         ~  ( $cond      ?? Perl5::to_bool($cond).emit_perl5() ~ '; ' !! '; ' )
@@ -517,7 +518,7 @@ class Sig {
     has $.named;
     method emit_perl5 {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
-    };
+    }
 }
 
 class Method {

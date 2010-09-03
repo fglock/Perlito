@@ -138,7 +138,7 @@ sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub namespace { $_[0]->{namespace} };
 sub name { $_[0]->{name} };
-sub emit_javascript { my $self = $_[0]; (my  $table = { ('$' => 'v_'),, ('@' => 'List_'),, ('%' => 'Hash_'),, ('&' => 'Code_'), }); (my  $ns = ''); if (Main::bool($self->{namespace})) { ($ns = Main::to_javascript_namespace($self->{namespace}) . '.') } ; (Main::bool((($self->{twigil} eq '.'))) ? ('v_self.v_' . $self->{name} . '') : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $ns . $self->{name})))) };
+sub emit_javascript { my $self = $_[0]; (my  $table = { ('$' => 'v_'), ('@' => 'List_'), ('%' => 'Hash_'), ('&' => 'Code_') }); (my  $ns = ''); if (Main::bool($self->{namespace})) { ($ns = Main::to_javascript_namespace($self->{namespace}) . '.') } ; (Main::bool((($self->{twigil} eq '.'))) ? ('v_self.v_' . $self->{name} . '') : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $ns . $self->{name})))) };
 sub plain_name { my $self = $_[0]; if (Main::bool($self->{namespace})) { return($self->{namespace} . '.' . $self->{name}) } ; return($self->{name}) }
 }
 

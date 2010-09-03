@@ -319,7 +319,7 @@ class CompUnit {
             $str = $str ~ "type Perlito__Grammar struct\{}\n";
         }
         $str = $str ~ "// interfaces for all methods\n";
-        my %meth_seen = {
+        my %meth_seen = (
             join => 1,
             perl => 1,
             scalar => 1,
@@ -342,7 +342,7 @@ class CompUnit {
             lookup => 1,
             index => 1,
             function => 1,
-        };
+        );
         for @($comp_units) -> $comp_unit {
             for @( $comp_unit.body ) -> $stmt {
                 if $stmt.isa('Method') && !(%meth_seen{ $stmt.name }) {

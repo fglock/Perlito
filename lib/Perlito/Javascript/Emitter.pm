@@ -36,7 +36,7 @@ class Perlito::Javascript::LexicalBlock {
                 my $otherwise = $last_statement.otherwise;
                 if $cond.isa( 'Var' ) && $cond.sigil eq '@' {
                     $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-                };
+                }
                 $body      = Perlito::Javascript::LexicalBlock.new( block => $body.stmts, needs_return => 1 );
                 $str = $str
                       ~ 'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
@@ -311,7 +311,7 @@ class Var {
             '@' => 'List_',
             '%' => 'Hash_',
             '&' => 'Code_',
-        };
+        }
         my $ns = '';
         if $.namespace {
             $ns = Main::to_javascript_namespace($.namespace) ~ '.';
@@ -322,13 +322,13 @@ class Var {
             ??   ( $table{$.sigil} ~ 'MATCH' )
             !!   ( $table{$.sigil} ~ $ns ~ $.name )
             )
-    };
+    }
     method plain_name {
         if $.namespace {
             return $.namespace ~ '.' ~ $.name
         }
         return $.name
-    };
+    }
 }
 
 class Proto {
@@ -430,39 +430,39 @@ class Apply {
             return '(' ~ $.code.emit_javascript() ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
         }
 
-        if $code eq 'self'       { return 'v_self' };
-        if $code eq 'Mu'         { return 'null' };
-        if $code eq 'make'       { return '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' };
-        if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ' != null)' };
+        if $code eq 'self'       { return 'v_self' }
+        if $code eq 'Mu'         { return 'null' }
+        if $code eq 'make'       { return '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' }
+        if $code eq 'defined'    { return '('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ' != null)' }
         if $code eq 'substr' { 
             return '(' ~ (@.arguments[0]).emit_javascript() ~
                  ' || "").substr(' ~ (@.arguments[1]).emit_javascript() ~
                  ', ' ~ (@.arguments[2]).emit_javascript() ~ ')' 
-        };
-        if $code eq 'Int'        { return 'parseInt(' ~ (@.arguments[0]).emit_javascript() ~ ')' };
-        if $code eq 'Num'        { return 'parseFloat(' ~ (@.arguments[0]).emit_javascript() ~ ')' };
-        if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').f_string()' };
-        if $code eq 'prefix:<!>' { return '( f_bool(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ') ? false : true)' };
-        if $code eq 'prefix:<?>' { return '( f_bool(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ') ? true : false)' };
-        if $code eq 'prefix:<$>' { return 'f_scalar(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' };
-        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' };  # .f_array()' };
-        if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').f_hash()' };
+        }
+        if $code eq 'Int'        { return 'parseInt(' ~ (@.arguments[0]).emit_javascript() ~ ')' }
+        if $code eq 'Num'        { return 'parseFloat(' ~ (@.arguments[0]).emit_javascript() ~ ')' }
+        if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').f_string()' }
+        if $code eq 'prefix:<!>' { return '( f_bool(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ') ? false : true)' }
+        if $code eq 'prefix:<?>' { return '( f_bool(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ') ? true : false)' }
+        if $code eq 'prefix:<$>' { return 'f_scalar(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' }
+        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' };  # .f_array()' }
+        if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').f_hash()' }
 
-        if $code eq 'postfix:<++>' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')++' };
-        if $code eq 'postfix:<-->' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')--' };
-        if $code eq 'prefix:<++>'  { return '++(' ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')' };
-        if $code eq 'prefix:<-->'  { return '--(' ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')' };
+        if $code eq 'postfix:<++>' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')++' }
+        if $code eq 'postfix:<-->' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')--' }
+        if $code eq 'prefix:<++>'  { return '++(' ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')' }
+        if $code eq 'prefix:<-->'  { return '--(' ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')' }
 
         if $code eq 'list:<~>'   { return '(f_string(' ~ (@.arguments.>>emit_javascript()).join(  ') + f_string('  ) ~ '))' }
-        if $code eq 'infix:<+>'  { return 'f_add('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' };
-        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_javascript).join(' - ')   ~ ')' };
-        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' * ')   ~ ')' };
-        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' / ')   ~ ')' };
-        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' > ')   ~ ')' };
-        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' < ')   ~ ')' };
-        if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };
-        if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' };
-        if $code eq 'infix:<=>>' { return '('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' };
+        if $code eq 'infix:<+>'  { return 'f_add('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' }
+        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_javascript).join(' - ')   ~ ')' }
+        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' * ')   ~ ')' }
+        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' / ')   ~ ')' }
+        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' > ')   ~ ')' }
+        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' < ')   ~ ')' }
+        if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' }
+        if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' }
+        if $code eq 'infix:<=>>' { return '('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' }
 
         if $code eq 'infix:<..>' { 
             return '(function (a) { '  
@@ -488,13 +488,13 @@ class Apply {
                 ~ @.arguments[0].emit_javascript() ~ ', ' 
                 ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 
         }
-        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' };
-        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' };
-        if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' };
-        if $code eq 'infix:<le>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' };
+        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' }
+        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' }
+        if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' }
+        if $code eq 'infix:<le>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' }
  
-        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' };
-        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' };
+        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' }
+        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' }
 
         if $code eq 'exists'     { 
             my $arg = @.arguments[0];
@@ -556,7 +556,7 @@ class Apply {
                     )) 
                     ~ '; ';
                 $i = $i + 1;
-            };
+            }
             return $str ~ $parameters.emit_javascript() ~ ' }';
         }
         if $parameters.isa( 'Lit::Hash' ) {
@@ -574,10 +574,10 @@ class Apply {
                     if ($var2[0]).buf eq ($var[0]).buf() {
                         $arg = $var2[1];
                     }
-                };
+                }
                 $str = $str ~ ' ' ~ emit_bind($var[1], $arg) ~ '; ';
                 $i = $i + 1;
-            };
+            }
             return $str ~ $parameters.emit_javascript() ~ ' }';
         }
         if $parameters.isa( 'Call' ) {
