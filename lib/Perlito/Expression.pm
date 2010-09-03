@@ -404,7 +404,7 @@ class Perlito::Expression {
         | 'not'   <!before [ <.Perlito::Grammar.word> | '(' ] > { make [ 'op',    'not'                   ] }
         | 'use'   <.Perlito::Grammar.ws> <Perlito::Grammar.full_ident>  [ - <Perlito::Grammar.ident> ]? <list_parse>
             { make [ 'term', Use.new( mod => $$<Perlito::Grammar.full_ident> ) ] }
-        | [ 'package' | 'class' | 'grammar' ] <.Perlito::Grammar.ws> <Perlito::Grammar.grammar>       
+        | [ 'package' | 'class' | 'grammar' | 'role' ] <.Perlito::Grammar.ws> <Perlito::Grammar.grammar>       
             { make [ 'term', $$<Perlito::Grammar.grammar> ] }
         | <Perlito::Grammar.declarator> <.Perlito::Grammar.ws> <Perlito::Grammar.opt_type> <.Perlito::Grammar.opt_ws> <Perlito::Grammar.var_ident>   # my Int $variable
             { make [ 'term', Decl.new( decl => $$<Perlito::Grammar.declarator>, type => $$<Perlito::Grammar.opt_type>, var => $$<Perlito::Grammar.var_ident> ) ] }

@@ -91,7 +91,6 @@ sub make {
         chomp($file);
         $file =~ s/^\Q$source\/\E//;
 
-        next if $file eq "Perlito/Perl5/Match.pm";     # skip - this is a perl5 file 
         next if $file eq "Perlito/Perl5/Runtime.pm";   # skip - this is a perl5 file 
 
         my $new_file = $file;
