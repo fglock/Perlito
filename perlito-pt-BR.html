@@ -6,7 +6,7 @@
 	</head>
 <body>
 <h1>Perlito Perl 6</h1>
-    <script type="text/javascript" src="http://perlcabal.org/~fglock/perlito.js"></script>
+    <script type="text/javascript" src="perlito.js"></script>
 	<script>
         function print(s) {
 			document.getElementById(vout).value += s + "\n";
@@ -15,10 +15,8 @@
             vout=o;
 		    document.getElementById(vout).value = "";
             try {
-                var ast = Perlito$Grammar.f_exp_stmts(document.getElementById(vin).value, 0).f_scalar();
-                var tmp = {v_name:"GLOBAL", v_body: ast}; 
-                tmp.__proto__ = CompUnit; 
-    		    eval(tmp.f_emit_javascript());
+    		    var js = Perlito.f_compile_p6_to_js( document.getElementById(vin).value );
+    		    eval(js);
             }
             catch(err) {
                 print("Erro:\n");

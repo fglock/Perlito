@@ -2873,15 +2873,20 @@ if (typeof GLOBAL != 'object') {
 }
 (function () {
   var v__NAMESPACE = GLOBAL;
-// class Main
-if (typeof Main != 'object') {
-  Main = function() {};
-  Main = new Main;
-  Main.f_isa = function (s) { return s == 'Main' };
-  Main.f_perl = function () { return 'Main.new(' + Main._dump(this) + ')' };
+// class Perlito
+if (typeof Perlito != 'object') {
+  Perlito = function() {};
+  Perlito = new Perlito;
+  Perlito.f_isa = function (s) { return s == 'Perlito' };
+  Perlito.f_perl = function () { return 'Perlito.new(' + Main._dump(this) + ')' };
 }
 (function () {
-  var v__NAMESPACE = Main;
+  var v__NAMESPACE = Perlito;
+  // sub compile_p6_to_js
+  Perlito.f_compile_p6_to_js = function (v_s) {
+    try { var v_ast = null;
+(v_ast = Perlito$Grammar.f_exp_stmts(v_s, 0));return((function () { var tmp = {v_name: "GLOBAL",v_body: f_scalar(v_ast)}; tmp.__proto__ = CompUnit; return tmp })().f_emit_javascript()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+  }
 // use Perlito::Javascript::Emitter
 ;// use Perlito::Grammar
 ;// use Perlito::Grammar::Control
