@@ -380,7 +380,7 @@ class Call {
                 return 
                     '(function (a_) { '
                         ~ 'var out = []; ' 
-                        ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
+                        ~ 'if ( a_ == null ) { return out }; ' 
                         ~ 'for(var i = 0; i < a_.length; i++) { '
                             ~ 'out.push( f_' ~ $.method ~ '(a_[i]) ) } return out;'
                     ~ ' })(' ~ $invocant ~ ')'
@@ -404,7 +404,7 @@ class Call {
             return
                     '(function (a_) { '
                         ~ 'var out = []; ' 
-                        ~ 'if ( typeof a_ == \'undefined\' ) { return out }; ' 
+                        ~ 'if ( a_ == null ) { return out }; ' 
                         ~ 'for(var i = 0; i < a_.length; i++) { '
                             ~ 'out.push( a_[i].f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ') ) '
                         ~ '}; '

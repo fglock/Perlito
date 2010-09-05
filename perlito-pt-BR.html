@@ -82,11 +82,34 @@ for @$datas -> $data {
 </pre>
 
 
+<h2>Perlito shell</h2>
+
+<p>A distribuição "v6" inclui o script "perlito", que permite a execução interativa:</p>
+
+<pre>    perlito
+    >
+    > my @v
+    > @v = 1..4
+    > say @v.perl
+    [1, 2, 3, 4]
+    > for @v { say "hello, $_" }
+    hello, 1
+    hello, 2
+    hello, 3
+    hello, 4
+</pre>
+
+
 <h2>Desenvolvimento do Perlito</h2>
 
 <p>A versão completa do compilador está disponível no github: http://github.com/fglock/Perlito</p>
 
 <p>A versão estável mais recente é a 6.0, disponível em http://github.com/fglock/Perlito/downloads</p>
+
+
+<h2>Autor</h2>
+
+<p>Flávio S. Glock aprendeu a programar em um <a href="http://ibm1130.org">IBM1130</a></p>
 
 </body>
 </html>
