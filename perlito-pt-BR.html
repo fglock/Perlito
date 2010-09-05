@@ -23,9 +23,21 @@
                 print(f_perl(err) + "\n");
             }
 		}
+        function show_js(vin,o) {
+            vout=o;
+		    document.getElementById(vout).value = "";
+            try {
+    		    var js = Perlito.f_compile_p6_to_js( document.getElementById(vin).value );
+    		    print(js);
+            }
+            catch(err) {
+                print("Erro:\n");
+                print(f_perl(err) + "\n");
+            }
+		}
 	</script>
 
-<p>Perlito é uma implementação da linguagem de programação Perl 6.<p>
+<p>Perlito é uma implementação da linguagem de programação <a href="http://perl6.org">Perl 6</a>.<p>
 
 <p>O que o Perlito tem de especial?<p>
 
@@ -35,7 +47,7 @@
 
 <li>- Perlito não implementa todos os detalhes do Perl 6. Para rodar o Perl 6 completo, utilize uma versão "full" da linguagem. Perlito é um compilador pequeno, que implementa um "subconjunto útil" do Perl 6.</li> 
 
-<h2>Perlito no browser</h2>
+<h2>Perl6 em Javascript - Perlito no browser</h2>
 
 <p>Esta página carregou a versão para Javascript do Perlito. Para utilizá-la, clique no botão "Execute" abaixo de cada exemplo.</p>
 
@@ -47,7 +59,8 @@ my $name = "São Paulo PM";
 say "hello, $name!"
 </textarea><br/>
 <textarea id="r1" readonly="true" cols="50" rows="5"></textarea><br/>
-<input type="button" value="Execute" onClick='execute("s1","r1")' /><br/>
+<input type="button" value="Execute" onClick='execute("s1","r1")' />
+<input type="button" value="Mostra javascript" onClick='show_js("s1","r1")' /><br/>
 
 <p>Exemplo: comando "for", estruturas de dados</p>
 <textarea id="s2" cols="50" rows="10">
@@ -63,17 +76,37 @@ for @$datas -> $data {
 }
 </textarea><br/>
 <textarea id="r2" readonly="true" cols="50" rows="5"></textarea><br/>
-<input type="button" value="Execute" onClick='execute("s2","r2")' /><br/>
+<input type="button" value="Execute" onClick='execute("s2","r2")' />
+<input type="button" value="Mostra javascript" onClick='show_js("s2","r2")' /><br/>
+
+<p>Exemplo: gramática e objeto "Match"</p>
+<textarea id="s3" cols="50" rows="15">
+grammar Perlito::Grammar {
+    token primeiro_nome { <.word>+ }
+    token segundo_nome  { <.word>+ }
+    token nome { 
+        <primeiro_nome> \s+ <segundo_nome> 
+    }
+}
+
+my $name = "Flavio Glock";
+my $match = Perlito::Grammar.nome($name, 0);
+say "Você é $name?";
+say "Benvindo ", $match{"primeiro_nome"}, "!";
+</textarea><br/>
+<textarea id="r3" readonly="true" cols="50" rows="5"></textarea><br/>
+<input type="button" value="Execute" onClick='execute("s3","r3")' />
+<input type="button" value="Mostra javascript" onClick='show_js("s3","r3")' /><br/>
 
 
-<h2>Perlito no CPAN</h2>
+<h2>Perl6 em Perl5 - Perlito no CPAN</h2>
 
 <p>A distribuição do Perlito no CPAN se chama "v6". Para instalar:</p>
 
 <pre>    cpan install v6
 </pre>
 
-<p>Com v6.pm instalado, é possível executar scripts diretamente com o perl 5 que você tem no seu computador:</p>
+<p>Com v6.pm instalado, é possível executar scripts com o perl 5 que você tem no seu computador:</p>
 
 <pre>    #!/usr/local/bin/perl
     use v6-perlito;
@@ -102,9 +135,18 @@ for @$datas -> $data {
 
 <h2>Desenvolvimento do Perlito</h2>
 
-<p>A versão completa do compilador está disponível no github: http://github.com/fglock/Perlito</p>
+<p>O compilador Perlito é a ferramenta que traduz o seu script para um formato em que possa ser executado: Javascript, Perl5, Python, Ruby, Lisp, ou  binário ".exe", "elf" ou ".class".</p>
 
-<p>A versão estável mais recente é a 6.0, disponível em http://github.com/fglock/Perlito/downloads</p>
+<p>A versão completa do compilador está disponível no site github: <a href="http://github.com/fglock/Perlito">http://github.com/fglock/Perlito</a></p>
+
+<p>As versões estáveis estão disponíveis em <a href="http://github.com/fglock/Perlito/downloads">http://github.com/fglock/Perlito/downloads</a></p>
+
+
+<h2>Distribuições</h2>
+
+<p>v6.pm "Perl6 em Perl5" disponível no CPAN: <a href="http://search.cpan.org/dist/v6">http://search.cpan.org/dist/v6</a></p>
+
+<p>Perlito em Javascript: disponível em <a href="http://perlcabal.org/~fglock/perlito.js">http://perlcabal.org/~fglock/perlito.js</a>. Esta é a versão utilizada nos exemplos deste artigo.</p>
 
 
 <h2>Autor</h2>
