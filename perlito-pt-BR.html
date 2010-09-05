@@ -35,6 +35,18 @@
                 print(f_perl(err) + "\n");
             }
 		}
+        function show_ast(vin,o) {
+            vout=o;
+		    document.getElementById(vout).value = "";
+            try {
+                var ast = Perlito$Grammar.f_exp_stmts(document.getElementById(vin).value, 0);
+    		    print(f_perl(f_scalar(ast)));
+            }
+            catch(err) {
+                print("Erro:\n");
+                print(f_perl(err) + "\n");
+            }
+		}
 	</script>
 
 <p>Perlito é uma implementação da linguagem de programação <a href="http://perl6.org">Perl 6</a>.<p>
@@ -131,6 +143,32 @@ say "Benvindo ", $match{"primeiro_nome"}, "!";
     hello, 3
     hello, 4
 </pre>
+
+
+
+<h2>Funcionamento do compilador</h2>
+
+<p>O compilador consiste de uma gramática, como a que vimos no exemplo acima, que descreve as diversas estruturas da linguagem Perl 6. O resultado da gramática é um objeto que contém a "árvore de sintaxe abstrata" (AST) do script. A árvore de sintaxe é então percorrida por um gerador de código, que escreve o programa executável.</p>
+
+<p>Exemplo: clique no botão para ver a árvore de sintaxe</p>
+<textarea id="s4" cols="50" rows="2">
+123;
+</textarea><br/>
+<textarea id="r4" readonly="true" cols="50" rows="2"></textarea><br/>
+<input type="button" value="Mostra árvore de sintaxe" onClick='show_ast("s4","r4")' /><br/>
+
+<p>Exemplo: clique no botão para gerar a árvore de sintaxe deste script</p>
+<textarea id="s5" cols="50" rows="5">
+my $name = "Perlito";
+say $name
+</textarea><br/>
+<textarea id="r5" readonly="true" cols="50" rows="12"></textarea><br/>
+<input type="button" value="Mostra árvore de sintaxe" onClick='show_ast("s5","r5")' /><br/>
+
+
+<p>A arquitetura do compilador Perlito é derivada do compilador "MiniPerl6", desenvolvido em 2006. O desenho abaixo mostra a relação entre os diversos componentes do MiniPerl6. O Perlito acrescenta a esta estrutura um parser de precedência.</p>
+
+<img alt="Mp6bootstrap" src="http://pugs.blogs.com/photos/visiolization/mp6bootstrap.png" width="500" height="542" />
 
 
 <h2>Desenvolvimento do Perlito</h2>
