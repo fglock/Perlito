@@ -15,7 +15,7 @@ sub new { shift; bless { @_ }, "GLOBAL" }
 {
 package Rul;
 sub new { shift; bless { @_ }, "Rul" }
-sub constant { my $str = $_[0]; (my  $len = Main::chars($str, )); if (Main::bool(($str eq '\\'))) { ($str = '\\\\') } ; if (Main::bool(($str eq '\''))) { ($str = '\\\'') } ; if (Main::bool(($len))) { '( ( \'' . $str . '\' eq substr( $str, $MATCH.to, ' . $len . ')) ' . '  ?? (1 + ( $MATCH.to = ' . $len . ' + $MATCH.to ))' . '  !! False ' . ')' } else { return('1') } }
+sub constant { my $str = $_[0]; (my  $len = Main::chars($str, )); if (Main::bool(($str eq '\\'))) { ($str = '\\\\') } ; if (Main::bool(($str eq '\''))) { ($str = '\\\'') } ; if (Main::bool(($len))) { '( \'' . $str . '\' eq substr( $str, $MATCH.to, ' . $len . ') ' . '&& ( $MATCH.to = ' . $len . ' + $MATCH.to )' . ')' } else { return('1') } }
 }
 
 ;
@@ -83,7 +83,7 @@ sub set_captures_to_array { my $self = $_[0];  }
 {
 package Rul::Dot;
 sub new { shift; bless { @_ }, "Rul::Dot" }
-sub emit_perl6 { my $self = $_[0]; '( (\'\' ne substr( $str, $MATCH.to, 1 )) ' . '  ?? (1 + ($MATCH.to = 1 + $MATCH.to ))' . '  !! False ' . ')' };
+sub emit_perl6 { my $self = $_[0]; '( \'\' ne substr( $str, $MATCH.to, 1 ) ' . '&& ($MATCH.to = 1 + $MATCH.to)' . ')' };
 sub set_captures_to_array { my $self = $_[0];  }
 }
 

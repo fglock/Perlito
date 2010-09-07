@@ -9,14 +9,13 @@ class Rul {
             my $len = $str.chars;
             if $str eq '\\' {
                 $str = '\\\\';
-            };
+            }
             if $str eq '\'' {
                 $str = '\\\'';
-            };
+            }
             if ( $len ) {
-                '( ( \'' ~ $str ~ '\' eq substr( $str, $MATCH.to, ' ~ $len ~ ')) ' ~
-                '  ?? (1 + ( $MATCH.to = ' ~ $len ~ ' + $MATCH.to ))' ~
-                '  !! False ' ~
+                '( \'' ~ $str ~ '\' eq substr( $str, $MATCH.to, ' ~ $len ~ ') ' ~
+                '&& ( $MATCH.to = ' ~ $len ~ ' + $MATCH.to )' ~
                 ')';
             }
             else {
@@ -195,9 +194,8 @@ class Rul::Constant {
 
 class Rul::Dot {
     method emit_perl6 {
-        '( (\'\' ne substr( $str, $MATCH.to, 1 )) ' ~
-        '  ?? (1 + ($MATCH.to = 1 + $MATCH.to ))' ~
-        '  !! False ' ~
+        '( \'\' ne substr( $str, $MATCH.to, 1 ) ' ~
+        '&& ($MATCH.to = 1 + $MATCH.to)' ~
         ')';
     }
     method set_captures_to_array { }
