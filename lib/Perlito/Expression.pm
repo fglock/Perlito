@@ -664,16 +664,21 @@ class Perlito::Expression {
         'if' | 'unless' | 'when' | 'for' | 'while' | 'loop'
     }
 
+    token delimited_statement {
+        <.Perlito::Grammar.ws>?
+        [ ';' <.Perlito::Grammar.ws>?
+        | <statement_parse> ';'? <.Perlito::Grammar.ws>? 
+            { make $$<statement_parse> }
+        ]
+    }
+
     method statement_parse ($str, $pos) {
         # say "# statement_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
         my $lexer_stack = [];
-        my $spaces = Perlito::Grammar.ws($str, $pos);
-        if $spaces {
-            $pos = $spaces.to;
-        }
-        my $res = self.exp_stmt($str, $pos);
+        my $res;
+        $res = self.exp_stmt($str, $pos);
         if $res {
             # say "# statement result: ", $res.perl;
             return $res;

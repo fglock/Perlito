@@ -24,10 +24,10 @@ package CompUnit;
 sub new { shift; bless { @_ }, "CompUnit" }
 sub name { $_[0]->{name} };
 sub body { $_[0]->{body} };
-sub emit_perl5 { my $self = $_[0]; '{' . '
+sub emit_perl5 { my $self = $_[0]; my  $List_body; for ( @{$self->{body} || []} ) { if (Main::bool(defined($_))) { push( @{$List_body}, $_ ) }  }; '{' . '
 ' . 'package ' . $self->{name} . ';' . '
 ' . 'sub new { shift; bless { @_ }, "' . $self->{name} . '" }' . '
-' . Main::join(([ map { $_->emit_perl5() } @{ $self->{body} } ]), ';' . '
+' . Main::join(([ map { $_->emit_perl5() } @{ $List_body } ]), ';' . '
 ') . '
 ' . '}' . '
 ' . '
@@ -81,7 +81,7 @@ package Lit::Block;
 sub new { shift; bless { @_ }, "Lit::Block" }
 sub sig { $_[0]->{sig} };
 sub stmts { $_[0]->{stmts} };
-sub emit_perl5 { my $self = $_[0]; Main::join(([ map { $_->emit_perl5() } @{ $self->{stmts} } ]), '; ') }
+sub emit_perl5 { my $self = $_[0]; my  $List_body; for ( @{$self->{stmts} || []} ) { if (Main::bool(defined($_))) { push( @{$List_body}, $_ ) }  }; Main::join(([ map { $_->emit_perl5() } @{ $List_body } ]), '; ') }
 }
 
 ;

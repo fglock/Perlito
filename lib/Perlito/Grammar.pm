@@ -202,15 +202,8 @@ token val_int {
 }
 
 token exp_stmts {
-    | <Perlito::Expression.statement_parse>
-        [
-        |   <.opt_ws> [ \; | '' ] <.opt_ws> <exp_stmts>
-            <.opt_ws> [ \; <.opt_ws> | '' ]
-            { make [ $$<Perlito::Expression.statement_parse>, @( $$<exp_stmts> ) ] }
-        |   <.opt_ws> [ \; <.opt_ws> | '' ]
-            { make [ $$<Perlito::Expression.statement_parse> ] }
-        ]
-    | { make [] }
+    <Perlito::Expression.delimited_statement>*
+    { make $<Perlito::Expression.delimited_statement>.>>capture }
 }
 
 token opt_name {  <ident>?  }

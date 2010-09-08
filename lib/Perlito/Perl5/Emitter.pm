@@ -18,10 +18,16 @@ class CompUnit {
     has $.name;
     has @.body;
     method emit_perl5 {
+        my @body;
+        for @.body {
+            if defined($_) {
+                push @body, $_ 
+            }
+        }
           "\{\n"
         ~ 'package ' ~ $.name ~ ";" ~ "\n" 
         ~ 'sub new { shift; bless { @_ }, "' ~ $.name ~ '" }'  ~ "\n" 
-        ~ (@.body.>>emit_perl5).join( ";" ~ "\n" ) ~ "\n"
+        ~ (@body.>>emit_perl5).join( ";" ~ "\n" ) ~ "\n"
         ~ "}\n"
         ~ "\n"
     }
@@ -66,7 +72,13 @@ class Lit::Block {
     has $.sig;
     has @.stmts;
     method emit_perl5 {
-        (@.stmts.>>emit_perl5).join('; ') 
+        my @body;
+        for @.stmts {
+            if defined($_) {
+                push @body, $_ 
+            }
+        }
+        (@body.>>emit_perl5).join('; ') 
     }
 }
 
