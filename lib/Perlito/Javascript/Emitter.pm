@@ -5,11 +5,17 @@ class Perlito::Javascript::LexicalBlock {
     has $.needs_return;
     has $.top_level;
     method emit_javascript {
-        if !@.block {
+        my @block;
+        for @.block {
+            if defined($_) {
+                push @block, $_
+            }
+        }
+        if !@block {
             return 'null';
         }
         my $str = '';
-        for @.block -> $decl { 
+        for @block -> $decl { 
             if $decl.isa( 'Decl' ) && $decl.decl eq 'my' {
                 $str = $str ~ $decl.emit_javascript_init; 
             }
@@ -22,9 +28,9 @@ class Perlito::Javascript::LexicalBlock {
         }
         my $last_statement;
         if $.needs_return {
-            $last_statement = pop @.block;
+            $last_statement = pop @block;
         }
-        for @.block -> $decl { 
+        for @block -> $decl { 
             if !( $decl.isa( 'Decl' ) && $decl.decl eq 'my' ) {
                 $str = $str ~ $decl.emit_javascript() ~ ';';
             }
