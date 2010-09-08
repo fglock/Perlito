@@ -4,16 +4,10 @@ rm -rf libpy/
 mkdir libpy
 touch libpy/__init__.py
 
-mkdir libpy/perlito
-touch libpy/perlito/__init__.py
-
-mkdir libpy/perlito/python
-touch libpy/perlito/python/__init__.py
-
-cp lib/Perlito/Python/Runtime.py libpy/perlito/python/runtime.py
+cp lib/Perlito/Python/Runtime.py libpy/Perlito__Python__Runtime.py
 
 perl perlito.pl -Cpython lib/Perlito/Python/Prelude.pm  > libpy/Perlito__Python__Prelude.py
-perl perlito.pl -Cpython lib/Perlito/Test.pm            > libpy/Perlito_Test.py
+perl perlito.pl -Cpython lib/Perlito/Test.pm            > libpy/Perlito__Test.py
 perl perlito.pl -Cpython lib/Perlito/Grammar.pm         > libpy/Perlito__Grammar.py
 perl perlito.pl -Cpython lib/Perlito/Grammar/Control.pm > libpy/Perlito__Grammar__Control.py
 perl perlito.pl -Cpython lib/Perlito/Grammar/Regex.pm   > libpy/Perlito__Grammar__Regex.py
