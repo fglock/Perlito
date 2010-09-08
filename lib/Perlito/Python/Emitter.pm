@@ -233,7 +233,7 @@ class CompUnit {
 
         push @s, Python::tab($level+2)  ~           "def __getattr__(self, attr):";
         push @s, Python::tab($level+3)  ~               "if attr[0:2] == 'v_':";
-        push @s, Python::tab($level+4)  ~                   "return mp6_Undef()";
+        push @s, Python::tab($level+4)  ~                   "return mp6_Mu()";
         push @s, Python::tab($level+3)  ~               "raise AttributeError(attr)";
 
         push @s, Python::tab($level+1)  ~       $name ~ "_proto = " ~ $name ~ "()"; 
@@ -555,7 +555,7 @@ class Apply {
         };
 
         if $code eq 'self'       { return 'v_self[0]'   };
-        if $code eq 'Mu'         { return 'mp6_Undef()' };
+        if $code eq 'Mu'         { return 'mp6_Mu()' };
         if $code eq 'make'       { return "v_MATCH[0].__setattr__('v_capture', " ~ (@.arguments[0]).emit_python() ~ ')' }
         if $code eq 'False'      { return 'False'       };
         if $code eq 'True'       { return 'True'        };
@@ -577,7 +577,7 @@ class Apply {
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
 
-        if $code eq 'infix:<~>'  { return '(str('  ~ (@.arguments.>>emit_python).join(') + str(')  ~ '))' };
+        if $code eq 'list:<~>'   { return '(str('  ~ (@.arguments.>>emit_python).join(') + str(')  ~ '))' };
         if $code eq 'infix:<+>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') + mp6_to_num(')  ~ '))' };
         if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_python).join(' - ')  ~ ')' };
         if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_python).join(' * ')  ~ ')' };
@@ -775,7 +775,7 @@ class Decl {
             return 'mp6_Array([])';
         }
         else {
-            return 'mp6_Undef()';
+            return 'mp6_Mu()';
         }
         return '';
     }
@@ -806,8 +806,8 @@ class Method {
         for @$pos -> $field { 
             my $arg = $field.emit_python_name;
             $args.push( $arg );
-            $default_args.push( $arg ~ '=mp6_Undef()' );
-            $meth_args.push( $arg ~ '=mp6_Undef()' );
+            $default_args.push( $arg ~ '=mp6_Mu()' );
+            $meth_args.push( $arg ~ '=mp6_Mu()' );
         };
         my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
         my $block = Perlito::Python::LexicalBlock.new( 
@@ -857,8 +857,8 @@ class Sub {
         for @$pos -> $field { 
             my $arg = $field.emit_python_name;
             $args.push( $arg );
-            $default_args.push( $arg ~ '=mp6_Undef()' );
-            $meth_args.push( $arg ~ '=mp6_Undef()' );
+            $default_args.push( $arg ~ '=mp6_Mu()' );
+            $meth_args.push( $arg ~ '=mp6_Mu()' );
         }
         my $block = Perlito::Python::LexicalBlock.new( 
                 block => @.block,
