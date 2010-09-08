@@ -187,6 +187,9 @@ class mp6_Hash:
     def f_set(self, i, s):
         self.l[i] = s
         return s
+    def f_update(self, h):
+        self.l.update(h)
+        return self
     def f_lookup(self, i):
         try:
             return self.l[i]

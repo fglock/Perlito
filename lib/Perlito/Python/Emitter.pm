@@ -75,8 +75,15 @@ class Perlito::Python::LexicalBlock {
 
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        if !(@.block) {
-            push @.block, Apply.new( code => 'Mu' );
+        my @block;
+        for @.block {
+            if defined($_) {
+                push @block, $_
+            }
+        }
+
+        if !(@block) {
+            push @block, Apply.new( code => 'Mu' );
         }
 
         my @s;
@@ -87,7 +94,7 @@ class Perlito::Python::LexicalBlock {
 
         my $has_decl = [];
         my $block = [];
-        for @.block -> $decl {
+        for @block -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 push $has_decl, $decl;
             }
@@ -347,13 +354,55 @@ class Lit::Hash {
     has @.hash1;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        my $fields = @.hash1;
-        my @dict;
-        for @$fields -> $field { 
-            push @dict, (($field[0]).emit_python() ~ ':' ~ ($field[1]).emit_python);
-        }; 
-        Python::tab($level) ~ 
-            'mp6_Hash({' ~ @dict.join(', ') ~ '})';
+        my @s;
+        my @items;
+        for @.hash1 -> $item {
+            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
+                for @($item.arguments) -> $arg {
+                    @items.push($arg);
+                }
+            }
+            else {
+                @items.push($item);
+            }
+        }
+        push @s, Decl.new( decl => 'my', type => Mu, var => Var.new( sigil => '%', twigil => '', name => 'a' ) );
+        for @items -> $item {
+            if $item.isa('Apply') && $item.code eq 'infix:<=>>' {
+                push @s, 
+                    Apply.new(
+                        'arguments' => [
+                            Lookup.new(
+                                'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''),
+                                'index_exp' => $item.arguments[0], 
+                            ), 
+                            $item.arguments[1]
+                        ], 
+                        'code' => 'infix:<=>',  
+                        'namespace' => ''
+                    )
+            }
+            elsif   $item.isa( 'Var' )   && $item.sigil eq '%'
+                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<%>'
+            {
+                # push @s, 'a.update(' ~ $item.emit_python() ~ ')';
+                push @s,
+                    Call.new(
+                        'arguments' => [ $item ], 
+                        'hyper' => '', 
+                        'invocant' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''), 
+                        'method' => 'update'
+                    )
+            }
+            else {
+                die 'Error in hash composer: ', $item.perl;
+            }
+        }
+        push @s, Var.new( sigil => '%', twigil => '', name => 'a' );
+        # 'mp6_Hash({' ~ @dict.join(', ') ~ '})';
+
+        my $code = Do.new( block => @s );
+        $code.emit_python_indented($level);
     }
 }
 
