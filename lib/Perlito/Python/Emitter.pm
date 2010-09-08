@@ -681,19 +681,17 @@ class If {
     method emit_python_indented( $level ) {
         my $has_body = @.body ?? 1 !! 0;
         my $has_otherwise = @.otherwise ?? 1 !! 0;
-        my $body_block = Perlito::Python::LexicalBlock.new( block => @.body );
-        my $otherwise_block = Perlito::Python::LexicalBlock.new( block => @.otherwise );
-
+        my $body_block = Perlito::Python::LexicalBlock.new( block => @.body.stmts );
         if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );
         }
-        if $has_otherwise && $otherwise_block.has_my_decl() {
-            $otherwise_block = Do.new( block => @.otherwise );
-        }
-
         my $s = Python::tab($level) ~   'if mp6_to_bool(' ~ $.cond.emit_python() ~ "):\n" 
             ~ $body_block.emit_python_indented( $level + 1 );
         if ( $has_otherwise ) {
+            my $otherwise_block = Perlito::Python::LexicalBlock.new( block => @.otherwise.stmts );
+            if $otherwise_block.has_my_decl() {
+                $otherwise_block = Do.new( block => @.otherwise );
+            }
             $s = $s ~ "\n"
                 ~ Python::tab($level) ~ "else:\n" 
                     ~ $otherwise_block.emit_python_indented($level+1);
@@ -709,7 +707,7 @@ class While {
     has @.body;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        my $body_block = Perlito::Python::LexicalBlock.new( block => @.body );
+        my $body_block = Perlito::Python::LexicalBlock.new( block => @.body.stmts );
         if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );
         }
@@ -729,10 +727,13 @@ class While {
 class For {
     has $.cond;
     has @.body;
-    has @.topic;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        my $body_block = Perlito::Python::LexicalBlock.new( block => @.body );
+        my $body_block = Perlito::Python::LexicalBlock.new( block => @.body.stmts );
+        my $sig = 'v__';
+        if $.body.sig() {
+            $sig = $.body.sig.emit_python();
+        }
         if $body_block.has_my_decl() {
             # wrap the block into a call to anonymous subroutine 
             my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
@@ -740,16 +741,16 @@ class For {
             Perlito::Python::LexicalBlock::push_stmt_python( 
                     Perlito::Python::AnonSub.new( 
                         name  => $label, 
-                        block => @.body,
-                        sig   => Sig.new( invocant => Mu, positional => [ $.topic ], named => {} ),
+                        block => @.body.stmts(),
+                        sig   => $.body.sig(),
                         handles_return_exception => 0,
                     )
                 );
-            return Python::tab($level) ~    'for ' ~ $.topic.emit_python_name() ~ " in " ~ $.cond.emit_python() ~ ":\n"
-                ~  Python::tab($level+1) ~      "f_" ~ $label ~ "(" ~ $.topic.emit_python_name() ~ ")";
+            return Python::tab($level) ~    'for ' ~ $sig ~ " in " ~ $.cond.emit_python() ~ ":\n"
+                ~  Python::tab($level+1) ~      "f_" ~ $label ~ "(" ~ $sig ~ ")";
         }
-        Python::tab($level) ~   'for ' ~ $.topic.emit_python_name() ~ " in " ~ $.cond.emit_python() ~ ":\n"
-        ~ Python::tab($level+1) ~     $.topic.emit_python_name() ~ " = [" ~ $.topic.emit_python_name() ~ "]\n"
+        Python::tab($level) ~   'for ' ~ $sig ~ " in " ~ $.cond.emit_python() ~ ":\n"
+        ~ Python::tab($level+1) ~ $sig ~ " = [" ~ $sig ~ "]\n"
                 ~ $body_block.emit_python_indented( $level + 1 );
     }
 }
@@ -885,15 +886,22 @@ class Sub {
 }
 
 class Do {
-    has @.block;
+    has $.block;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
         # generate an anonymous sub in the current block
+        my $block;
+        if $.block.isa('Lit::Block') {
+            $block = $.block.stmts;
+        }
+        else {
+            $block = [ $.block ]
+        }
         Perlito::Python::LexicalBlock::push_stmt_python( 
                 Perlito::Python::AnonSub.new( 
                     name  => $label, 
-                    block => @.block,
+                    block => $block,
                     sig   => Sig.new( invocant => Mu, positional => [], named => {} ),
                     handles_return_exception => 0,
                 )

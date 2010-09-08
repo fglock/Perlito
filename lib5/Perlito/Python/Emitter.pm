@@ -194,8 +194,8 @@ sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $has_body = (Main::bool(($self->{body} || [])) ? 1 : 0)); (my  $has_otherwise = (Main::bool(($self->{otherwise} || [])) ? 1 : 0)); (my  $body_block = Perlito::Python::LexicalBlock->new(('block' => $self->{body}))); (my  $otherwise_block = Perlito::Python::LexicalBlock->new(('block' => $self->{otherwise}))); if (Main::bool($body_block->has_my_decl())) { ($body_block = Do->new(('block' => $self->{body}))) } ; if (Main::bool(($has_otherwise && $otherwise_block->has_my_decl()))) { ($otherwise_block = Do->new(('block' => $self->{otherwise}))) } ; (my  $s = Python::tab($level) . 'if mp6_to_bool(' . $self->{cond}->emit_python() . '):' . '
-' . $body_block->emit_python_indented(($level + 1))); if (Main::bool(($has_otherwise))) { ($s = $s . '
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $has_body = (Main::bool(($self->{body} || [])) ? 1 : 0)); (my  $has_otherwise = (Main::bool(($self->{otherwise} || [])) ? 1 : 0)); (my  $body_block = Perlito::Python::LexicalBlock->new(('block' => $self->{body}->stmts()))); if (Main::bool($body_block->has_my_decl())) { ($body_block = Do->new(('block' => $self->{body}))) } ; (my  $s = Python::tab($level) . 'if mp6_to_bool(' . $self->{cond}->emit_python() . '):' . '
+' . $body_block->emit_python_indented(($level + 1))); if (Main::bool(($has_otherwise))) { (my  $otherwise_block = Perlito::Python::LexicalBlock->new(('block' => $self->{otherwise}->stmts()))); if (Main::bool($otherwise_block->has_my_decl())) { ($otherwise_block = Do->new(('block' => $self->{otherwise}))) } ; ($s = $s . '
 ' . Python::tab($level) . 'else:' . '
 ' . $otherwise_block->emit_python_indented(($level + 1))) } ; return($s) }
 }
@@ -209,7 +209,7 @@ sub cond { $_[0]->{cond} };
 sub continue { $_[0]->{continue} };
 sub body { $_[0]->{body} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = Perlito::Python::LexicalBlock->new(('block' => $self->{body}))); if (Main::bool($body_block->has_my_decl())) { ($body_block = Do->new(('block' => $self->{body}))) } ; if (Main::bool(($self->{init} && $self->{continue}))) { die('not implemented (While)') } ; Python::tab($level) . 'while ' . $self->{cond}->emit_python() . ':' . '
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = Perlito::Python::LexicalBlock->new(('block' => $self->{body}->stmts()))); if (Main::bool($body_block->has_my_decl())) { ($body_block = Do->new(('block' => $self->{body}))) } ; if (Main::bool(($self->{init} && $self->{continue}))) { die('not implemented (While)') } ; Python::tab($level) . 'while ' . $self->{cond}->emit_python() . ':' . '
 ' . $body_block->emit_python_indented(($level + 1)) }
 }
 
@@ -219,11 +219,10 @@ package For;
 sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
-sub topic { $_[0]->{topic} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = Perlito::Python::LexicalBlock->new(('block' => $self->{body}))); if (Main::bool($body_block->has_my_decl())) { (my  $label = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python()); Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $self->{body}), ('sig' => Sig->new(('invocant' => undef), ('positional' => [$self->{topic}]), ('named' => {  }))), ('handles_return_exception' => 0))); return(Python::tab($level) . 'for ' . $self->{topic}->emit_python_name() . ' in ' . $self->{cond}->emit_python() . ':' . '
-' . Python::tab(($level + 1)) . 'f_' . $label . '(' . $self->{topic}->emit_python_name() . ')') } ; Python::tab($level) . 'for ' . $self->{topic}->emit_python_name() . ' in ' . $self->{cond}->emit_python() . ':' . '
-' . Python::tab(($level + 1)) . $self->{topic}->emit_python_name() . ' = [' . $self->{topic}->emit_python_name() . ']' . '
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $body_block = Perlito::Python::LexicalBlock->new(('block' => $self->{body}->stmts()))); (my  $sig = 'v__'); if (Main::bool($self->{body}->sig())) { ($sig = $self->{body}->sig()->emit_python()) } ; if (Main::bool($body_block->has_my_decl())) { (my  $label = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python()); Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $self->{body}->stmts()), ('sig' => $self->{body}->sig()), ('handles_return_exception' => 0))); return(Python::tab($level) . 'for ' . $sig . ' in ' . $self->{cond}->emit_python() . ':' . '
+' . Python::tab(($level + 1)) . 'f_' . $label . '(' . $sig . ')') } ; Python::tab($level) . 'for ' . $sig . ' in ' . $self->{cond}->emit_python() . ':' . '
+' . Python::tab(($level + 1)) . $sig . ' = [' . $sig . ']' . '
 ' . $body_block->emit_python_indented(($level + 1)) }
 }
 
@@ -279,7 +278,7 @@ package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python()); Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $self->{block}), ('sig' => Sig->new(('invocant' => undef), ('positional' => []), ('named' => {  }))), ('handles_return_exception' => 0))); return(Python::tab($level) . 'f_' . $label . '()') }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; (my  $label = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python()); my  $block; if (Main::bool(Main::isa($self->{block}, 'Lit::Block'))) { ($block = $self->{block}->stmts()) } else { ($block = [$self->{block}]) }; Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $block), ('sig' => Sig->new(('invocant' => undef), ('positional' => []), ('named' => {  }))), ('handles_return_exception' => 0))); return(Python::tab($level) . 'f_' . $label . '()') }
 }
 
 ;
