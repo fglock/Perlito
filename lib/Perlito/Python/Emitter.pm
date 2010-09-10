@@ -674,6 +674,7 @@ class Apply {
         if $code eq 'index' { 
             return 'mp6_index(' ~ (@.arguments[0]).emit_python() ~ ', ' ~ (@.arguments[1]).emit_python() ~ ')' 
         } 
+        if $code eq 'defined' { return 'mp6_isa(' ~ (@.arguments[0]).emit_python() ~ ",'Mu')" } 
         if $code eq 'shift'   { return (@.arguments[0]).emit_python() ~ '.f_shift()' } 
         if $code eq 'pop'     { return (@.arguments[0]).emit_python() ~ '.f_pop()'   } 
         if $code eq 'push'    { return (@.arguments[0]).emit_python() ~ '.f_push('    ~ (@.arguments[1]).emit_python() ~ ')' } 
