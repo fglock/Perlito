@@ -65,6 +65,7 @@ mp6 [switches] [programfile]
     -Btarget        run in target backend: go, js, lisp, parrot, perl5
         options:
         -Bgo           run in Go (this also creates a binary executable)
+        -Bipy          run in .Net using Iron Python
         -Bjs           run in Javascript using the \"js\" command (Spidermonkey or V8)
         -Blisp         run in SBCL (Lisp)
         -Bparrot       run in Parrot
@@ -74,8 +75,8 @@ mp6 [switches] [programfile]
         -Bruby         run in Ruby 
         -Bruby1.9      run in Ruby 1.9
         -Brhino        run in JVM using Rhino
-        -Bv8           run in V8 (Javascript) using the \"v8\" command 
         -Bspidermonkey run in SpiderMonkey (Javascript) using the \"spidermonkey\" command
+        -Bv8           run in V8 (Javascript) using the \"v8\" command 
 ";
         exit;
     }
@@ -147,6 +148,11 @@ if ( $backend eq 'python' ) {
 }
 if ( $backend eq 'python3' ) {
     @cmd = ('python3');
+    $backend = 'python';
+    $lib_spec = 'Python';
+}
+if ( $backend eq 'ipy' ) {
+    @cmd = ('ipy');
     $backend = 'python';
     $lib_spec = 'Python';
 }
@@ -355,6 +361,7 @@ elsif ( $backend eq 'python' ) {
         print OUT $result, "\n";
         close(OUT);
         local $ENV{PYTHONPATH} = 'libpy';
+        local $ENV{IRONPYTHONPATH} = 'libpy';
         exec( @cmd, "$tmp_filename.py", @args )
             or die "can't execute";
     }
