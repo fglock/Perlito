@@ -77,7 +77,7 @@ class Perlito::Ruby::AnonSub {
         my @s;
         push @s, Ruby::tab($level)   
             ~ ( $.name ?? ("f_" ~ $.name ~ " = ") !! "" )
-            ~ "lambda{ |" ~ $args.join(", ") ~ "| ";
+            ~ "lambda\{ |" ~ $args.join(", ") ~ "| ";
 
         push @s,    $block.emit_ruby_indented($level + 1); 
         push @s, Ruby::tab($level)   ~ "}";

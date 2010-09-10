@@ -189,7 +189,7 @@ class Perlito::Python::LexicalBlock {
             elsif $last_statement.isa( 'Apply' ) && $last_statement.code eq 'infix:<=>' {
                 $s2 = $last_statement.emit_python_indented( $level );
                 $s2 = $s2 ~ "\n"
-                        ~ Python::tab($level) ~ "return " ~ ($last_statement.parameters).emit_python;
+                        ~ Python::tab($level) ~ "return " ~ $last_statement.arguments[0].emit_python;
             }
             elsif  $last_statement.isa( 'Apply' ) && $last_statement.code eq 'return'
                 || $last_statement.isa( 'For' ) 
@@ -226,7 +226,7 @@ class CompUnit {
         for @.body -> $decl {
             if $decl.isa('Use') {
                 if $decl.mod ne 'v6' {
-                    push @s, Python::tab($level) ~ 'from ' ~ Main::to_go_namespace($decl.mod) ~ ' import *'
+                    push @s, Python::tab($level) ~ 'import ' ~ Main::to_go_namespace($decl.mod)
                 }
             }
         }
@@ -390,7 +390,11 @@ class Lit::Hash {
             }
         }
         push @s, Decl.new( decl => 'my', type => Mu, var => Var.new( sigil => '%', twigil => '', name => 'a' ) );
-        for @items -> $item {
+        for @items -> $item1 {
+            my $item = $item1;
+            if $item.isa('Do') && $item.block.isa('Apply') {
+                $item = $item.block;
+            }
             if $item.isa('Apply') && $item.code eq 'infix:<=>>' {
                 push @s, 
                     Apply.new(
