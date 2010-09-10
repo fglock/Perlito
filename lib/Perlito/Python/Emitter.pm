@@ -410,7 +410,6 @@ class Lit::Hash {
             elsif   $item.isa( 'Var' )   && $item.sigil eq '%'
                 ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<%>'
             {
-                # push @s, 'a.update(' ~ $item.emit_python() ~ ')';
                 push @s,
                     Call.new(
                         'arguments' => [ $item ], 
@@ -426,7 +425,7 @@ class Lit::Hash {
         push @s, Var.new( sigil => '%', twigil => '', name => 'a' );
         # 'mp6_Hash({' ~ @dict.join(', ') ~ '})';
 
-        my $code = Do.new( block => @s );
+        my $code = Do.new( block => Lit::Block.new( stmts => @s ) );
         $code.emit_python_indented($level);
     }
 }
@@ -609,12 +608,13 @@ class Apply {
         if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_python).join(' / ')  ~ ')' };
         
         if $code eq 'infix:<&&>' { 
-            return '(mp6_to_bool(' ~ (@.arguments[0]).emit_python() ~ ') '
-                ~  'and mp6_to_bool(' ~ (@.arguments[1]).emit_python() ~ '))' 
+            return 'mp6_and(' ~ (@.arguments[0]).emit_python() ~ ', lambda: ' ~ (@.arguments[1]).emit_python() ~ ')' 
         }
         if $code eq 'infix:<||>' { 
-            return '(mp6_to_bool(' ~ (@.arguments[0]).emit_python() ~ ') '
-                ~  'or mp6_to_bool(' ~ (@.arguments[1]).emit_python() ~ '))' 
+            return 'mp6_or('  ~ (@.arguments[0]).emit_python() ~ ', lambda: ' ~ (@.arguments[1]).emit_python() ~ ')' 
+        }
+        if $code eq 'infix:<//>' { 
+            return 'mp6_defined_or('  ~ (@.arguments[0]).emit_python() ~ ', lambda: ' ~ (@.arguments[1]).emit_python() ~ ')' 
         }
         if $code eq 'infix:<eq>' { return '(str('  ~ (@.arguments.>>emit_python).join(') == str(')  ~ '))' };
         if $code eq 'infix:<ne>' { return '(str('  ~ (@.arguments.>>emit_python).join(') != str(')  ~ '))' };
@@ -634,13 +634,12 @@ class Apply {
         if $code eq 'ternary:<?? !!>' { 
             my $ast = 
                 Do.new( 
-                    block => [
+                    block => 
                         If.new(
                             cond      => (@.arguments[0]),
                             body      => [ @.arguments[1] ],
                             otherwise => [ @.arguments[2] ],
                         ),
-                    ]
                 );
             return $ast.emit_python;
         }
@@ -657,7 +656,7 @@ class Apply {
         if $code eq 'substr' { 
             return (@.arguments[0]).emit_python() ~ '[' 
                     ~ (@.arguments[1]).emit_python() ~ ':' 
-                    ~ (@.arguments[1]).emit_python() ~ ' + ' ~ (@.arguments[2]).emit_python 
+                    ~ (@.arguments[1]).emit_python() ~ ' + ' ~ (@.arguments[2]).emit_python() 
                 ~ ']' 
         } 
         if $code eq 'index' { 
@@ -769,17 +768,20 @@ class For {
         my $body_block = Perlito::Python::LexicalBlock.new( block => @.body.stmts );
         my $sig = 'v__';
         if $.body.sig() {
-            $sig = $.body.sig.emit_python();
+            $sig = $.body.sig.emit_python_name();
         }
         if $body_block.has_my_decl() {
             # wrap the block into a call to anonymous subroutine 
             my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
             # generate an anonymous sub in the current block
+            my $anon_var = $.body.sig() 
+                || Var.new( 'name' => '_', 'namespace' => '', 'sigil' => '$', 'twigil' => '' );
+            my $anon_sig = Sig.new( invocant => Mu, positional => [ $anon_var ], named => {} );
             Perlito::Python::LexicalBlock::push_stmt_python( 
                     Perlito::Python::AnonSub.new( 
                         name  => $label, 
                         block => @.body.stmts(),
-                        sig   => $.body.sig(),
+                        sig   => $anon_sig,
                         handles_return_exception => 0,
                     )
                 );

@@ -26,6 +26,7 @@ import __builtin__
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'mp6_isa',
+           'mp6_and', 'mp6_or', 'mp6_defined_or',
            'mp6_join', 'mp6_index', 'mp6_perl',
            'mp6_Mu', 'mp6_Array', 'mp6_Hash',
            'mp6_Return',
@@ -70,6 +71,21 @@ def mp6_to_bool(o):
     if type(o) == type(None):
         return False
     return o.__nonzero__()
+
+def mp6_and(x, y):
+    if mp6_to_bool(x):
+        return y()
+    return x
+
+def mp6_or(x, y):
+    if mp6_to_bool(x):
+        return x
+    return y()
+
+def mp6_defined_or(x, y):
+    if mp6_isa(x, 'Mu'):
+        return y()
+    return x
 
 def mp6_isa(v, name):
     try:
