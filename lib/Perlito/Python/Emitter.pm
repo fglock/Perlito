@@ -160,10 +160,16 @@ class Perlito::Python::LexicalBlock {
                     Perlito::Python::LexicalBlock.new( block => ($last_statement.otherwise), needs_return => 1 );
 
                 if $body_block.has_my_decl() {
-                    $body_block = Return.new( result => Do.new( block => ($last_statement.body) ) );
+                    $body_block = Apply.new(
+                        code => 'return',
+                        arguments => [ Do.new( block => ($last_statement.body) ) ],
+                    )
                 }
                 if $has_otherwise && $otherwise_block.has_my_decl() {
-                    $otherwise_block = Return.new( result => Do.new( block => ($last_statement.otherwise) ) );
+                    $otherwise_block = Apply.new( 
+                        code => 'return',
+                        arguments => [ Do.new( block => ($last_statement.otherwise) ) ],
+                    )
                 }
 
                 $s2 = Python::tab($level) ~ 'if mp6_to_bool(' ~ $cond.emit_python() ~ "):\n" 
@@ -179,7 +185,9 @@ class Perlito::Python::LexicalBlock {
                 $s2 = $s2 ~ "\n"
                         ~ Python::tab($level) ~ "return " ~ ($last_statement.parameters).emit_python;
             }
-            elsif $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
+            elsif  $last_statement.isa( 'Apply' ) && $last_statement.code eq 'return'
+                || $last_statement.isa( 'For' ) 
+            {
                 $s2 = $last_statement.emit_python_indented( $level );
             }
             else {
@@ -284,28 +292,37 @@ class Lit::Array {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $needs_interpolation = 0;
+        my @items;
         for @.array1 -> $item {
-            if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
-                || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' )
+            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
+                for @($item.arguments) -> $arg {
+                    @items.push($arg);
+                }
+            }
+            else {
+                @items.push($item);
+            }
+        }
+        for @items -> $item {
+            if      $item.isa( 'Var' )   && $item.sigil eq '@'
+                ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
             {
                 $needs_interpolation = 1;
             }
         }
         if $needs_interpolation {
             my @block;
-            my $temp_array = Var.new( 
-                                'name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
-            my $input_array = Var.new( 
-                                'name' => 'b', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
+            my $temp_array  = Var.new( 'name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
+            my $input_array = Var.new( 'name' => 'b', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
             push @block, Decl.new( 
                             'decl' => 'my',
                             'type' => '',
                             'var'  => $temp_array
                         );
             my $index = 0;
-            for @.array1 -> $item {
-                if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
-                    || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' )
+            for @items -> $item {
+                if      $item.isa( 'Var' )   && $item.sigil eq '@'
+                    ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
                 {
                     push @block, Call.new(
                                     'method' => 'extend',
@@ -341,11 +358,11 @@ class Lit::Array {
                 );
             # call the anonymous sub
             return Python::tab($level) 
-                ~ "f_" ~ $label ~ "(mp6_Array([" ~ (@.array1.>>emit_python).join(', ') ~ "]))";
+                ~ "f_" ~ $label ~ "(mp6_Array([" ~ (@items.>>emit_python).join(', ') ~ "]))";
         }
         else {
             Python::tab($level)  
-                ~ 'mp6_Array([' ~ (@.array1.>>emit_python).join(', ') ~ '])';
+                ~ 'mp6_Array([' ~ (@items.>>emit_python).join(', ') ~ '])';
         }
     }
 }
@@ -543,7 +560,7 @@ class Apply {
         if (@.arguments[1]).isa('Apply') {
             my $args2 = (@.arguments[1]).arguments;
             if ($args2[1]).isa('Apply') {
-                $args2[1] = Do.new( block => [ $args2[1] ] );
+                $args2[1] = Do.new( block => $args2[1] );
             }
         }
 
@@ -669,6 +686,18 @@ class Apply {
             return   
                 ($parameters.invocant).emit_python() ~ ".__setattr__('v_" ~ $parameters.method ~ "', " ~ $arguments.emit_python() ~ ")";
         }
+
+        if      $parameters.isa( 'Var' ) && $parameters.sigil eq '@'
+            ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '@'
+        {
+            $arguments = Lit::Array.new( array1 => [$arguments] );
+        }
+        elsif   $parameters.isa( 'Var' ) && $parameters.sigil eq '%'
+            ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '%'
+        {
+            $arguments = Lit::Hash.new( hash1 => [$arguments] );
+        }
+
         return $parameters.emit_python() ~ ' = ' ~ $arguments.emit_python;
     }
 }

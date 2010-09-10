@@ -613,7 +613,7 @@ class Apply {
         {
             $arguments = Lit::Array.new( array1 => [$arguments] );
         }
-        elsif      $parameters.isa( 'Var' ) && $parameters.sigil eq '%'
+        elsif   $parameters.isa( 'Var' ) && $parameters.sigil eq '%'
             ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '%'
         {
             $arguments = Lit::Hash.new( hash1 => [$arguments] );
