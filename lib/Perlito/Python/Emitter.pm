@@ -163,26 +163,24 @@ class Perlito::Python::LexicalBlock {
                 my $cond            = $last_statement.cond;
                 my $has_otherwise   = $last_statement.otherwise ?? 1 !! 0;
                 my $body_block      = 
-                    Perlito::Python::LexicalBlock.new( block => ($last_statement.body), needs_return => 1 );
-                my $otherwise_block = 
-                    Perlito::Python::LexicalBlock.new( block => ($last_statement.otherwise), needs_return => 1 );
-
+                    Perlito::Python::LexicalBlock.new( block => ($last_statement.body.stmts), needs_return => 1 );
                 if $body_block.has_my_decl() {
                     $body_block = Apply.new(
                         code => 'return',
                         arguments => [ Do.new( block => ($last_statement.body) ) ],
                     )
                 }
-                if $has_otherwise && $otherwise_block.has_my_decl() {
-                    $otherwise_block = Apply.new( 
-                        code => 'return',
-                        arguments => [ Do.new( block => ($last_statement.otherwise) ) ],
-                    )
-                }
-
                 $s2 = Python::tab($level) ~ 'if mp6_to_bool(' ~ $cond.emit_python() ~ "):\n" 
                     ~ $body_block.emit_python_indented( $level + 1 );
                 if ( $has_otherwise ) {
+                    my $otherwise_block = 
+                        Perlito::Python::LexicalBlock.new( block => ($last_statement.otherwise.stmts), needs_return => 1 );
+                    if $otherwise_block.has_my_decl() {
+                        $otherwise_block = Apply.new( 
+                            code => 'return',
+                            arguments => [ Do.new( block => ($last_statement.otherwise) ) ],
+                        )
+                    }
                     $s2 = $s2 ~ "\n"
                         ~ Python::tab($level) ~ "else:\n" 
                             ~ $otherwise_block.emit_python_indented($level+1);
@@ -637,8 +635,8 @@ class Apply {
                     block => 
                         If.new(
                             cond      => (@.arguments[0]),
-                            body      => [ @.arguments[1] ],
-                            otherwise => [ @.arguments[2] ],
+                            body      => Lit::Block.new( stmts => [ @.arguments[1] ] ),
+                            otherwise => Lit::Block.new( stmts => [ @.arguments[2] ] ),
                         ),
                 );
             return $ast.emit_python;
