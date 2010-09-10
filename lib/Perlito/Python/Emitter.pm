@@ -566,8 +566,14 @@ class Apply {
     method emit_python {
         
         # check that expressions don't overflow the Python parser stack
+        if (@.arguments[0]).isa('Apply') {
+            my $args2 = @.arguments[0].arguments;
+            if ($args2[1]).isa('Apply') {
+                $args2[1] = Do.new( block => $args2[1] );
+            }
+        }
         if (@.arguments[1]).isa('Apply') {
-            my $args2 = (@.arguments[1]).arguments;
+            my $args2 = @.arguments[1].arguments;
             if ($args2[1]).isa('Apply') {
                 $args2[1] = Do.new( block => $args2[1] );
             }
@@ -620,11 +626,15 @@ class Apply {
         }
         if $code eq 'infix:<eq>' { return '(str('  ~ (@.arguments.>>emit_python).join(') == str(')  ~ '))' };
         if $code eq 'infix:<ne>' { return '(str('  ~ (@.arguments.>>emit_python).join(') != str(')  ~ '))' };
- 
+        if $code eq 'infix:<ge>' { return '(str('  ~ (@.arguments.>>emit_python).join(') >= str(')  ~ '))' };
+        if $code eq 'infix:<le>' { return '(str('  ~ (@.arguments.>>emit_python).join(') <= str(')  ~ '))' };
+
         if $code eq 'infix:<==>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') == mp6_to_num(') ~ '))' };
         if $code eq 'infix:<!=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') != mp6_to_num(') ~ '))' };
         if $code eq 'infix:<<>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') < mp6_to_num(')  ~ '))' };
         if $code eq 'infix:<>>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') > mp6_to_num(')  ~ '))' };
+        if $code eq 'infix:<<=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') <= mp6_to_num(') ~ '))' };
+        if $code eq 'infix:<>=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') >= mp6_to_num(') ~ '))' };
 
         if $code eq 'exists'     {
             my $arg = @.arguments[0];
