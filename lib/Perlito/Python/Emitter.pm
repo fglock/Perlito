@@ -66,7 +66,9 @@ class Perlito::Python::LexicalBlock {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 return 1;
             }
-            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
+            if     $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' 
+                && $decl.arguments[0].isa( 'Decl' ) && $decl.arguments[0].decl eq 'my' 
+            {
                 return 1;
             }
         }
@@ -98,7 +100,9 @@ class Perlito::Python::LexicalBlock {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 push $has_decl, $decl;
             }
-            elsif $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
+            elsif  $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' 
+                && $decl.arguments[0].isa( 'Decl' ) && $decl.arguments[0].decl eq 'has' 
+            {
                 push $has_decl, $decl;
             }
             else {
@@ -113,13 +117,15 @@ class Perlito::Python::LexicalBlock {
                     my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
                     push @s, Python::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
                     push @s, Python::tab($level+1) ~ 'return v_self.v_' ~ ($decl.var).name;
-                    push @s, Python::tab($level) ~ "self.__dict__.update(\{'f_" ~ ($decl.var).name ~ "':f_" ~ $label ~ "})";
+                    push @s, Python::tab($level) ~ "self.__dict__.update(\{'f_" ~ $decl.var.name() ~ "':f_" ~ $label ~ "})";
                 }
-                if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
+                if     $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' 
+                    && $decl.arguments[0].isa( 'Decl' ) && $decl.arguments[0].decl eq 'has' 
+                {
                     my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
                     push @s, Python::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
-                    push @s, Python::tab($level+1) ~ 'return v_self.v_' ~ (($decl.parameters).var).name;
-                    push @s, Python::tab($level) ~ "self.__dict__.update(\{'f_" ~ (($decl.parameters).var).name ~ "':f_" ~ $label ~ "})";
+                    push @s, Python::tab($level+1) ~ 'return v_self.v_' ~ $decl.arguments[0].var.name;
+                    push @s, Python::tab($level) ~ "self.__dict__.update(\{'f_" ~ $decl.arguments[0].var.name() ~ "':f_" ~ $label ~ "})";
                 }
             }
 
@@ -129,8 +135,10 @@ class Perlito::Python::LexicalBlock {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 push @s, Python::tab($level) ~ ($decl.var).emit_python_name() ~ ' = [' ~ $decl.emit_python_init() ~ ']';
             }
-            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                push @s, Python::tab($level) ~ (($decl.parameters).var).emit_python_name() ~ ' = [' ~ ($decl.parameters).emit_python_init() ~ ']';
+            elsif  $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' 
+                && $decl.arguments[0].isa( 'Decl' ) && $decl.arguments[0].decl eq 'my' 
+            {
+                push @s, Python::tab($level) ~ $decl.arguments[0].var.emit_python_name() ~ ' = [' ~ $decl.arguments[0].emit_python_init() ~ ']';
             }
         }
 
@@ -180,7 +188,7 @@ class Perlito::Python::LexicalBlock {
                             ~ $otherwise_block.emit_python_indented($level+1);
                 }
             }
-            elsif $last_statement.isa( 'Bind' ) {
+            elsif $last_statement.isa( 'Apply' ) && $last_statement.code eq 'infix:<=>' {
                 $s2 = $last_statement.emit_python_indented( $level );
                 $s2 = $s2 ~ "\n"
                         ~ Python::tab($level) ~ "return " ~ ($last_statement.parameters).emit_python;
