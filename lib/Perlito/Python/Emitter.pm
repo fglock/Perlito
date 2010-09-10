@@ -691,7 +691,7 @@ class Apply {
         if $parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return   
-                ($parameters.invocant).emit_python() ~ ".__setattr__('v_" ~ $parameters.method ~ "', " ~ $arguments.emit_python() ~ ")";
+                ($parameters.invocant).emit_python() ~ ".__setattr__('v_" ~ $parameters.method() ~ "', " ~ $arguments.emit_python() ~ ")";
         }
 
         if      $parameters.isa( 'Var' ) && $parameters.sigil eq '@'
