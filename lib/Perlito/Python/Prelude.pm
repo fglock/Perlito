@@ -33,7 +33,7 @@ The Pugs homepage at L<http://pugscode.org/>.
 
 =head1 COPYRIGHT
 
-Copyright 2010 by Flavio Soibelmann Glock.
+Copyright 2010, 2011 by Flavio Soibelmann Glock.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

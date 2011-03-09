@@ -11,7 +11,7 @@ The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
 
 COPYRIGHT
 
-Copyright 2010 by Flavio Soibelmann Glock and others.
+Copyright 2010, 2011 by Flavio Soibelmann Glock and others.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
