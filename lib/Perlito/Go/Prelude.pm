@@ -48,8 +48,6 @@ class IO {
 
 class Main {
 
-    method newline      { "\n" }
-
     sub to_lisp_identifier ( $ident ) {
         return 'sv-' ~ $ident;
     }

@@ -30,10 +30,7 @@ sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
 sub handles_return_exception { $_[0]->{handles_return_exception} };
 sub emit_ruby { my $self = $_[0]; $self->emit_ruby_indented(0) };
-sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $args = []); for my $field ( @{[@{($pos || []) || []}] || []} ) { push( @{$args}, $field->emit_ruby_name() ) }; (my  $block = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1))); my  $List_s; push( @{$List_s}, Ruby::tab($level) . ((Main::bool($self->{name}) ? ('f_' . $self->{name} . ' = ') : '')) . 'lambda' . do { list:<,>(prefix:<|>(' ~ ' . $args . '.join('), list:<|>(') ~ ', ';
-
-        push ' . '@' . 's,    ' . $block . '.emit_ruby_indented(' . $level . ' + 1); 
-        push ' . '@' . 's, Ruby::tab(' . $level . ')   ~ ')) } ); return(Main::join($List_s, '
+sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; (my  $sig = $self->{sig}); (my  $pos = $sig->positional()); (my  $args = []); for my $field ( @{[@{($pos || []) || []}] || []} ) { push( @{$args}, $field->emit_ruby_name() ) }; (my  $block = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1))); my  $List_s; push( @{$List_s}, Ruby::tab($level) . ((Main::bool($self->{name}) ? ('f_' . $self->{name} . ' = ') : '')) . 'lambda' . '{' . ' |' . Main::join($args, ', ') . '| ' ); push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) ); push( @{$List_s}, Ruby::tab($level) . '}' ); return(Main::join($List_s, '
 ')) }
 }
 

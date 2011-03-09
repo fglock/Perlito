@@ -19,7 +19,9 @@ sub name { $_[0]->{name} };
 sub attributes { $_[0]->{attributes} };
 sub methods { $_[0]->{methods} };
 sub body { $_[0]->{body} };
-sub emit { my $self = $_[0]; '# class ' . $self->{name} . '; ' . Main::newline(("" . Main::join(([ map { $_->emit() } @{ $self->{body} } ]), '; ')) . Main::newline()) }
+sub emit { my $self = $_[0]; '# class ' . $self->{name} . '; ' . '
+' . Main::join(([ map { $_->emit() } @{ $self->{body} } ]), '; ') . '
+' }
 }
 
 ;

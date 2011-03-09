@@ -156,7 +156,7 @@ class Lit::Array {
         for @$a -> $item {
             $s = $s ~ $item.emit_parrot;
             $s = $s ~ 
-            '  push $P1, $P0' ~ Main.newline;
+            '  push $P1, $P0' ~ "\n";
         };
         my $s = $s ~ 
             '  $P0 = $P1' ~ "\n" ~
@@ -177,10 +177,10 @@ class Lit::Hash {
         for @$a -> $item {
             $s = $s ~ ($item[0]).emit_parrot;
             $s = $s ~ 
-            '  $P2 = $P0' ~ Main.newline;
+            '  $P2 = $P0' ~ "\n";
             $s = $s ~ ($item[1]).emit_parrot;
             $s = $s ~ 
-            '  set $P1[$P2], $P0' ~ Main.newline;
+            '  set $P1[$P2], $P0' ~ "\n";
         };
         my $s = $s ~ 
             '  $P0 = $P1'   ~ "\n" ~
@@ -230,10 +230,10 @@ class Index {
             '  save $P1'  ~ "\n";
         $s = $s ~ $.obj.emit_parrot;
         $s = $s ~ 
-            '  $P1 = $P0' ~ Main.newline();
+            '  $P1 = $P0' ~ "\n";
         $s = $s ~ $.index_exp.emit_parrot;
         $s = $s ~ 
-            '  $P0 = $P1[$P0]' ~ Main.newline();
+            '  $P0 = $P1[$P0]' ~ "\n";
         my $s = $s ~ 
             '  restore $P1' ~ "\n";
         return $s;
@@ -248,10 +248,10 @@ class Lookup {
             '  save $P1'  ~ "\n";
         $s = $s ~ $.obj.emit_parrot;
         $s = $s ~ 
-            '  $P1 = $P0' ~ Main.newline;
+            '  $P1 = $P0' ~ "\n";
         $s = $s ~ $.index_exp.emit_parrot;
         $s = $s ~ 
-            '  $P0 = $P1[$P0]' ~ Main.newline;
+            '  $P0 = $P1[$P0]' ~ "\n";
         my $s = $s ~ 
             '  restore $P1' ~ "\n";
         return $s;
@@ -458,7 +458,7 @@ class Call {
 
         # TODO - arguments
         #$.invocant.emit_parrot ~
-        #'  $P0.' ~ $meth ~ '()' ~ Main.newline;
+        #'  $P0.' ~ $meth ~ '()' ~ "\n";
 
         my @args = @.arguments;
         my $str = '';

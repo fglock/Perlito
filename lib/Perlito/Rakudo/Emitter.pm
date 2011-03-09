@@ -6,8 +6,8 @@ class CompUnit {
     has %.methods;
     has @.body;
     method emit {
-        '# class ' ~ $.name ~ "; " ~ Main::newline ~
-        (@.body.>>emit).join( "; " ) ~ Main::newline;
+        '# class ' ~ $.name ~ "; " ~ "\n" ~
+        (@.body.>>emit).join( "; " ) ~ "\n";
     }
 }
 

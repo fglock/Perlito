@@ -110,7 +110,8 @@ sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
 sub emit_parrot { my $self = $_[0]; (my  $a = $self->{array1}); my  $item; (my  $s = '  save $P1' . '
 ' . '  $P1 = new .ResizablePMCArray' . '
-'); for my $item ( @{[@{($a || []) || []}] || []} ) { ($s = $s . $item->emit_parrot()); ($s = $s . '  push $P1, $P0' . Main->newline()) }; (my  $s = $s . '  $P0 = $P1' . '
+'); for my $item ( @{[@{($a || []) || []}] || []} ) { ($s = $s . $item->emit_parrot()); ($s = $s . '  push $P1, $P0' . '
+') }; (my  $s = $s . '  $P0 = $P1' . '
 ' . '  restore $P1' . '
 '); return($s) }
 }
@@ -123,7 +124,9 @@ sub hash1 { $_[0]->{hash1} };
 sub emit_parrot { my $self = $_[0]; (my  $a = $self->{hash1}); my  $item; (my  $s = '  save $P1' . '
 ' . '  save $P2' . '
 ' . '  $P1 = new .Hash' . '
-'); for my $item ( @{[@{($a || []) || []}] || []} ) { ($s = $s . ($item->[0])->emit_parrot()); ($s = $s . '  $P2 = $P0' . Main->newline()); ($s = $s . ($item->[1])->emit_parrot()); ($s = $s . '  set $P1[$P2], $P0' . Main->newline()) }; (my  $s = $s . '  $P0 = $P1' . '
+'); for my $item ( @{[@{($a || []) || []}] || []} ) { ($s = $s . ($item->[0])->emit_parrot()); ($s = $s . '  $P2 = $P0' . '
+'); ($s = $s . ($item->[1])->emit_parrot()); ($s = $s . '  set $P1[$P2], $P0' . '
+') }; (my  $s = $s . '  $P0 = $P1' . '
 ' . '  restore $P2' . '
 ' . '  restore $P1' . '
 '); return($s) }
@@ -160,7 +163,9 @@ sub new { shift; bless { @_ }, "Index" }
 sub obj { $_[0]->{obj} };
 sub index_exp { $_[0]->{index_exp} };
 sub emit_parrot { my $self = $_[0]; (my  $s = '  save $P1' . '
-'); ($s = $s . $self->{obj}->emit_parrot()); ($s = $s . '  $P1 = $P0' . Main->newline()); ($s = $s . $self->{index_exp}->emit_parrot()); ($s = $s . '  $P0 = $P1[$P0]' . Main->newline()); (my  $s = $s . '  restore $P1' . '
+'); ($s = $s . $self->{obj}->emit_parrot()); ($s = $s . '  $P1 = $P0' . '
+'); ($s = $s . $self->{index_exp}->emit_parrot()); ($s = $s . '  $P0 = $P1[$P0]' . '
+'); (my  $s = $s . '  restore $P1' . '
 '); return($s) }
 }
 
@@ -171,7 +176,9 @@ sub new { shift; bless { @_ }, "Lookup" }
 sub obj { $_[0]->{obj} };
 sub index_exp { $_[0]->{index_exp} };
 sub emit_parrot { my $self = $_[0]; (my  $s = '  save $P1' . '
-'); ($s = $s . $self->{obj}->emit_parrot()); ($s = $s . '  $P1 = $P0' . Main->newline()); ($s = $s . $self->{index_exp}->emit_parrot()); ($s = $s . '  $P0 = $P1[$P0]' . Main->newline()); (my  $s = $s . '  restore $P1' . '
+'); ($s = $s . $self->{obj}->emit_parrot()); ($s = $s . '  $P1 = $P0' . '
+'); ($s = $s . $self->{index_exp}->emit_parrot()); ($s = $s . '  $P0 = $P1[$P0]' . '
+'); (my  $s = $s . '  restore $P1' . '
 '); return($s) }
 }
 

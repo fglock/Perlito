@@ -50,11 +50,11 @@ class CompUnit {
     method emit_clojure {
 
         my $class_name = Main::to_lisp_namespace($.name);
-        my $str = ';; class ' ~ $.name ~ Main.newline;
+        my $str = ';; class ' ~ $.name ~ "\n";
 
-        $str = $str ~ '(defpackage ' ~ $class_name ~ Main.newline
-                ~ '  (:use common-lisp mp-Main))' ~ Main.newline
-                ~ ';; (in-package ' ~ $class_name ~ ')' ~ Main.newline;
+        $str = $str ~ '(defpackage ' ~ $class_name ~ "\n"
+                ~ '  (:use common-lisp mp-Main))' ~ "\n"
+                ~ ';; (in-package ' ~ $class_name ~ ')' ~ "\n";
         # my $silence_unused_warning = '';
 
         my $has_my_decl = 0;
@@ -72,7 +72,7 @@ class CompUnit {
             }
         }
         if $has_my_decl {
-            $str = $str ~ '(let (' ~ $my_decl ~ ')' ~ Main.newline;
+            $str = $str ~ '(let (' ~ $my_decl ~ ')' ~ "\n";
 
             # silence warning "The variable X is defined but never used." in SBCL
             # $str = $str ~ '(list ' ~ $silence_unused_warning ~ ') ';
@@ -144,17 +144,17 @@ new-slots))
             }
             if $decl.isa( 'Sub' ) {
                 $str = $str 
-                    ~ '(in-package ' ~ $class_name ~ ')' ~ Main.newline
-                    ~ '  ' ~ ($decl).emit_clojure() ~ Main.newline
-                    ~ '(in-package mp-Main)' ~ Main.newline;
+                    ~ '(in-package ' ~ $class_name ~ ')' ~ "\n"
+                    ~ '  ' ~ ($decl).emit_clojure() ~ "\n"
+                    ~ '(in-package mp-Main)' ~ "\n";
             }
         }; 
 
         if $.name ne 'Pair' {
             # .perl()
-            $str = $str ~ '(defmethod sv-perl ((self ' ~ $class_name ~ '))' ~ Main.newline
+            $str = $str ~ '(defmethod sv-perl ((self ' ~ $class_name ~ '))' ~ "\n"
                 ~ '  (mp-Main::sv-lisp_dump_object "::' ~ Main::lisp_escape_string($.name) ~ '"' 
-                ~ ' (list ' ~ $dumper ~ ')))' ~ Main.newline() ~ Main.newline();
+                ~ ' (list ' ~ $dumper ~ ')))' ~ "\n" ~ "\n";
         }
 
         for @.body -> $decl { 
@@ -162,7 +162,7 @@ new-slots))
                && (!( $decl.isa( 'Method'))) 
                && (!( $decl.isa( 'Sub'))) 
             {
-                $str = $str ~ ($decl).emit_clojure() ~ Main.newline;
+                $str = $str ~ ($decl).emit_clojure() ~ "\n";
             }
         }; 
         
@@ -170,7 +170,7 @@ new-slots))
             # close paren for '(let '
             $str = $str ~ ')';
         }
-        $str = $str ~ Main.newline() ~ Main.newline();
+        $str = $str ~ "\n" ~ "\n";
     }
 }
 
@@ -567,14 +567,14 @@ class Sub {
         }
 
         if $.name {
-            '(defun ' ~ Main::to_lisp_identifier($.name) ~ ' (' ~ $str ~ ')' ~ Main.newline()
+            '(defun ' ~ Main::to_lisp_identifier($.name) ~ ' (' ~ $str ~ ')' ~ "\n"
                 ~ '  (block mp6-function ' ~ $block.emit_clojure() 
-            ~ '))' ~ Main.newline();
+            ~ '))' ~ "\n";
         }
         else {
-            '(fn ' ~ $.name ~ ' [' ~ $str ~ ']' ~ Main.newline() 
+            '(fn ' ~ $.name ~ ' [' ~ $str ~ ']' ~ "\n" 
                 ~ '  (block mp6-function ' ~ $block.emit_clojure() 
-            ~ '))' ~ Main.newline;
+            ~ '))' ~ "\n";
 
         }
 
@@ -592,8 +592,8 @@ class Do {
 class Use {
     has $.mod;
     method emit_clojure {
-        Main.newline()
-        ~ ';; use ' ~ Main::to_lisp_namespace($.mod) ~ Main.newline
+        "\n"
+        ~ ';; use ' ~ Main::to_lisp_namespace($.mod) ~ "\n"
     }
 }
 

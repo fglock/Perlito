@@ -162,7 +162,6 @@ package Main;
     }
     sub say   { Main::print( @_, "\n" ) }
     sub chars { length( $_[0] ) }
-    sub newline { "\n" }
     sub quote   { '"' }
     sub isa { 
         my $ref = ref($_[0]);

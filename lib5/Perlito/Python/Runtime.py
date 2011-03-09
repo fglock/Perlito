@@ -1,5 +1,5 @@
 """
-perlito.python.runtime
+Perlito__Python__Runtime
 
 DESCRIPTION
 
@@ -26,8 +26,9 @@ import __builtin__
 
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'mp6_isa',
+           'mp6_and', 'mp6_or', 'mp6_defined_or',
            'mp6_join', 'mp6_index', 'mp6_perl',
-           'mp6_Undef', 'mp6_Array', 'mp6_Hash',
+           'mp6_Mu', 'mp6_Array', 'mp6_Hash',
            'mp6_Return',
            'Perlito__Match',
            'Perlito__Grammar', 'Perlito__Grammar_proto', 
@@ -70,6 +71,21 @@ def mp6_to_bool(o):
     if type(o) == type(None):
         return False
     return o.__nonzero__()
+
+def mp6_and(x, y):
+    if mp6_to_bool(x):
+        return y()
+    return x
+
+def mp6_or(x, y):
+    if mp6_to_bool(x):
+        return x
+    return y()
+
+def mp6_defined_or(x, y):
+    if mp6_isa(x, 'Mu'):
+        return y()
+    return x
 
 def mp6_isa(v, name):
     try:
@@ -139,24 +155,24 @@ class mp6_Array:
         try:
             return self.l.pop()
         except IndexError:
-            return mp6_Undef()
+            return mp6_Mu()
     def f_set(self, i, s):
         while True:
             try:
                 self.l[i] = s
                 return s
             except IndexError:
-                self.l.append( mp6_Undef() )
+                self.l.append( mp6_Mu() )
     def f_shift(self):
         try:
             return self.l.pop(0)
         except IndexError:
-            return mp6_Undef()
+            return mp6_Mu()
     def f_index(self, i):
         try:
             return self.l[i]
         except IndexError:
-            return mp6_Undef()
+            return mp6_Mu()
     def f_isa(self, name):
         return name == 'Array'
     def str(self):
@@ -187,11 +203,14 @@ class mp6_Hash:
     def f_set(self, i, s):
         self.l[i] = s
         return s
+    def f_update(self, h):
+        self.l.update(h)
+        return self
     def f_lookup(self, i):
         try:
             return self.l[i]
         except KeyError:
-            return mp6_Undef()
+            return mp6_Mu()
     def f_isa(self, name):
         return name == 'Hash'
     def str(self):
@@ -251,7 +270,7 @@ class Perlito__Match:
         try:
             return self.v_m[k]
         except KeyError:
-            return mp6_Undef()
+            return mp6_Mu()
     def __getitem__(self, k):
         return self.v_m[k] 
     def f_scalar(self):
@@ -260,7 +279,7 @@ class Perlito__Match:
                 return self.v_capture
             except AttributeError:
                 return self.v_str[self.v_from:self.v_to]
-        return mp6_Undef()
+        return mp6_Mu()
     def has_key(self, k):
         return self.v_m.has_key(k)
     def f_from(self):
@@ -316,8 +335,6 @@ class Main:
         return 1
     def f_isa(v_self, name):
         return name == 'Main'
-    def f_newline(self):
-        return "\n"
     def f_lisp_escape_string(self, s):
         o = s.replace( "\\", "\\\\");
         o = o.replace( '"', "\\\"");

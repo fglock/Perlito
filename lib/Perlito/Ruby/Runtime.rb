@@ -229,9 +229,6 @@ class IO
 end
 
 class C_Main
-    def f_newline()
-        return "\n"
-    end
     def f_lisp_escape_string(s)
         o = s.gsub( "\\", "\\\\\\");
         o = o.gsub( '"',  "\\\\\"");

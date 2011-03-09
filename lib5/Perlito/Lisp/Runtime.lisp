@@ -358,12 +358,6 @@
 
 ;; compiler utils
 
-(if (not (ignore-errors (find-method 'sv-newline () ())))
-  (defgeneric sv-newline (class)
-      (:documentation "the newline string")))
-(defmethod sv-newline (class)
-  (format nil "~%"))
-
 ;; function replace-substring pasted from: 
 ;;   http://web.mit.edu/maxima_v5.13.0/src/maxima-5.13.0/configure.lisp
 (defun replace-substring (in-string old new) 

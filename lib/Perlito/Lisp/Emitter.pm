@@ -57,7 +57,7 @@ class CompUnit {
     method emit_lisp {
 
         my $class_name = Main::to_lisp_namespace($.name);
-        my $str = ';; class ' ~ $.name ~ Main.newline;
+        my $str = ';; class ' ~ $.name ~ "\n";
 
         my $has_my_decl = 0;
         my $my_decl = '';
@@ -148,9 +148,9 @@ class CompUnit {
 
         if $.name ne 'Pair' {
             # .perl()
-            $str = $str ~ '(defmethod sv-perl ((self ' ~ $class_name ~ '))' ~ Main.newline
+            $str = $str ~ '(defmethod sv-perl ((self ' ~ $class_name ~ '))' ~ "\n"
                 ~ '  (mp-Main-sv-lisp_dump_object "' ~ Main::lisp_escape_string($.name) ~ '"' 
-                ~ ' (list ' ~ $dumper ~ ')))' ~ Main.newline ~ Main.newline;
+                ~ ' (list ' ~ $dumper ~ ')))' ~ "\n" ~ "\n";
         }
 
         $str = $str
@@ -160,7 +160,7 @@ class CompUnit {
                && (!( $decl.isa( 'Method'))) 
                && (!( $decl.isa( 'Sub'))) 
             {
-                $str = $str ~ ($decl).emit_lisp ~ Main.newline;
+                $str = $str ~ ($decl).emit_lisp ~ "\n";
             }
         }; 
         # close paren for '(defun '
@@ -171,7 +171,7 @@ class CompUnit {
             # close paren for '(let '
             $str = $str ~ ')';
         }
-        $str = $str ~ Main.newline ~ Main.newline;
+        $str = $str ~ "\n" ~ "\n";
     }
 
     sub emit_lisp_program( $comp_units ) {
@@ -733,14 +733,14 @@ class Sub {
         }
 
         if $.name {
-            '(defun ' ~ Main::to_lisp_identifier($.name) ~ ' (' ~ $str ~ ')' ~ Main.newline 
+            '(defun ' ~ Main::to_lisp_identifier($.name) ~ ' (' ~ $str ~ ')' ~ "\n" 
                 ~ '  (block mp6-function ' ~ $block.emit_lisp 
-            ~ '))' ~ Main.newline;
+            ~ '))' ~ "\n";
         }
         else {
-            '(lambda ' ~ $.name ~ ' (' ~ $str ~ ')' ~ Main.newline 
+            '(lambda ' ~ $.name ~ ' (' ~ $str ~ ')' ~ "\n" 
                 ~ '  (block mp6-function ' ~ $block.emit_lisp 
-            ~ '))' ~ Main.newline;
+            ~ '))' ~ "\n";
 
         }
 
@@ -758,8 +758,8 @@ class Do {
 class Use {
     has $.mod;
     method emit_lisp {
-        Main.newline
-        ~ ';; use ' ~ Main::to_lisp_namespace($.mod) ~ Main.newline
+        "\n"
+        ~ ';; use ' ~ Main::to_lisp_namespace($.mod) ~ "\n"
     }
 }
 

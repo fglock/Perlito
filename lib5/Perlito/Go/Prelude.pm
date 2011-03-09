@@ -51,8 +51,6 @@ sub slurp { die('stub') }
 {
 package Main;
 sub new { shift; bless { @_ }, "Main" }
-sub newline { my $self = $_[0]; '
-' };
 sub to_lisp_identifier { my $ident = $_[0]; return('sv-' . $ident) };
 sub lisp_dump_object { my $class_name = $_[0]; my $data = $_[1]; return($class_name . '( ' . Main::join(([ map { Main::perl( $_, , ) } @{ $data } ]), ', ') . ' )') };
 sub to_go_namespace { die('TODO') };
