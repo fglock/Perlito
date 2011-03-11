@@ -14,7 +14,7 @@
 //
 // COPYRIGHT
 //
-// Copyright 2009, 2010 by Flavio Soibelmann Glock and others.
+// Copyright 2009, 2010, 2011 by Flavio Soibelmann Glock and others.
 // 
 // This program is free software; you can redistribute it and/or modify it
 // under the same terms as Perl itself.
@@ -35,6 +35,10 @@ IO.f_slurp = function (filename) {
     if (typeof readFile == 'function' ) {
         return readFile(filename);
     }
+    if (typeof read == 'function' ) {
+        // v8
+        return read(filename);
+    }
     f_die("IO.slurp() not implemented");    
 }
 
@@ -44,7 +48,6 @@ if (typeof Main != 'object') {
   Main = new Main;
 }
 (function () {
-  // method newline
   Main.f_lisp_escape_string = function (s) {
     var o = s;
     o = o.replace( /\\/g, "\\\\");
