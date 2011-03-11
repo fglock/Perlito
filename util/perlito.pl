@@ -10,6 +10,8 @@ class Main {
     use Perlito::Grammar::Control;
     use Perlito::Grammar::Regex;
     use Perlito::Emitter::Token;
+    use Perlito::Expression;
+    use Perlito::Precedence;
 
     my $_V6_COMPILER_NAME    = 'Perlito';
     my $_V6_COMPILER_VERSION = '6.0';
@@ -106,7 +108,7 @@ sub add_comp_unit (@parse) {
     elsif (@*ARGS[0] eq '-h') || (@*ARGS[0] eq '--help') || ($backend eq '') {
         $backend = '';
         say $_V6_COMPILER_NAME, " ", $_V6_COMPILER_VERSION, "
-mp6 [switches] [programfile]
+perlito [switches] [programfile]
   switches:
     -h --help
     -v --verbose
