@@ -518,7 +518,7 @@ class Apply {
             return '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
         }
         if $code eq 'infix:<=>' {
-            return emit_bind( @.arguments[0], @.arguments[1] );
+            return emit_javascript_bind( @.arguments[0], @.arguments[1] );
         }
         if $code eq 'return' {
             return 'throw(' 
@@ -546,7 +546,7 @@ class Apply {
         $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
     }
 
-    sub emit_bind ($parameters, $arguments) {
+    sub emit_javascript_bind ($parameters, $arguments) {
         if $parameters.isa( 'Lit::Array' ) {
             
             #  [$a, [$b, $c]] = [1, [2, 3]]
@@ -556,7 +556,7 @@ class Apply {
             my $i = 0;
             for @$a -> $var { 
                 $str = $str ~ ' ' 
-                    ~ emit_bind($var, Index.new(
+                    ~ emit_javascript_bind($var, Index.new(
                         obj    => $arguments,
                         index_exp  => Val::Int.new( int => $i )
                     )) 
@@ -581,7 +581,7 @@ class Apply {
                         $arg = $var2[1];
                     }
                 }
-                $str = $str ~ ' ' ~ emit_bind($var[1], $arg) ~ '; ';
+                $str = $str ~ ' ' ~ emit_javascript_bind($var[1], $arg) ~ '; ';
                 $i = $i + 1;
             }
             return $str ~ $parameters.emit_javascript() ~ ' }';

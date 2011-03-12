@@ -1,4 +1,4 @@
-// lib/Perlito/Javascript/Runtime.go
+// lib/Perlito/Go/Runtime.go
 //
 // Runtime for "Perlito" Perlito-in-Go
 //
@@ -13,7 +13,7 @@
 //
 // COPYRIGHT
 //
-// Copyright 2009 by Flavio Soibelmann Glock and others.
+// Copyright 2009, 2011 by Flavio Soibelmann Glock and others.
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the same terms as Perl itself.

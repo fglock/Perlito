@@ -383,13 +383,13 @@ class Apply {
             return '(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
         }
         if $code eq 'infix:<=>' { 
-            return emit_bind( @.arguments[0], @.arguments[1] );
+            return emit_perl5_bind( @.arguments[0], @.arguments[1] );
         }
 
         $code ~ '(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
     }
 
-    sub emit_bind ($parameters, $arguments) {
+    sub emit_perl5_bind ($parameters, $arguments) {
         if $parameters.isa( 'Call' ) {
 
             # $obj.a = 3
@@ -407,7 +407,7 @@ class Apply {
             my $i = 0;
             for @$a -> $var { 
                 $str = $str ~ ' ' 
-                    ~ emit_bind( $var, 
+                    ~ emit_perl5_bind( $var, 
                             Index.new(
                                 obj    => $arguments,
                                 index_exp  => Val::Int.new( int => $i )
@@ -434,7 +434,7 @@ class Apply {
                         $arg = $var2[1];
                     }
                 }
-                $str = $str ~ ' ' ~ emit_bind( $var[1], $arg ) ~ '; ';
+                $str = $str ~ ' ' ~ emit_perl5_bind( $var[1], $arg ) ~ '; ';
                 $i = $i + 1;
             }
             return $str ~ $parameters.emit_perl5() ~ ' }';

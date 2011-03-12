@@ -1,4 +1,4 @@
-// lib/Perlito/Javascript/Runtime.go
+// lib/Perlito/Go/Runtime.go
 //
 // Runtime for "Perlito" Perlito-in-Go
 //

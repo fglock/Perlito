@@ -659,7 +659,7 @@ class Apply {
             return '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         }
         if $code eq 'infix:<=>' {
-            return emit_bind( @.arguments[0], @.arguments[1] );
+            return emit_python_bind( @.arguments[0], @.arguments[1] );
         }
         if $code eq 'return' {
             return 'raise mp6_Return(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
@@ -688,7 +688,7 @@ class Apply {
     method emit_python_indented( $level ) {
         Python::tab($level) ~ $self.emit_python 
     }
-    sub emit_bind ($parameters, $arguments) {
+    sub emit_python_bind ($parameters, $arguments) {
         if $parameters.isa( 'Index' ) {
             return   
                 ($parameters.obj).emit_python() ~ '.f_set('
