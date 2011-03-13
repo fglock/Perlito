@@ -52,7 +52,8 @@ sub emit_javascript { my $self = $_[0]; (my  $class_name = Main::to_javascript_n
 ' . '    ' . $block->emit_javascript() . '
 ' . '  }' . '
 ') }  }; for my $decl ( @{$self->{body} || []} ) { if (Main::bool(((((((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))) ? 0 : 1)) && (((Main::isa($decl, 'Method')) ? 0 : 1))) && (((Main::isa($decl, 'Sub')) ? 0 : 1))))) { ($str = $str . ($decl)->emit_javascript() . ';') }  }; ($str = $str . '}' . ')();' . '
-') }
+') };
+sub emit_javascript_program { my $comp_units = $_[0]; (my  $str = ''); for my $comp_unit ( @{[@{(($comp_units) || []) || []}] || []} ) { ($str = $str . $comp_unit->emit_javascript()) }; return($str) }
 }
 
 ;

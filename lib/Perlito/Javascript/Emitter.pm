@@ -153,6 +153,13 @@ class CompUnit {
         $str = $str ~ '}' 
             ~ ')();' ~ "\n";
     }
+    sub emit_javascript_program( $comp_units ) {
+        my $str = '';
+        for @($comp_units) -> $comp_unit {
+            $str = $str ~ $comp_unit.emit_javascript()
+        }
+        return $str;
+    }
 }
 
 class Val::Int {
