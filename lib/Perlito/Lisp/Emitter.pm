@@ -49,7 +49,7 @@ class Perlito::Lisp::LexicalBlock {
             if (!( $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ))) {
                 $str = $str ~ ($decl).emit_lisp;
             }
-        }; 
+        } 
         return $str ~ ')';
     }
 }
@@ -108,23 +108,23 @@ class CompUnit {
                 my $sig      = $decl.sig;
                 my $invocant = $sig.invocant; 
                 my $pos      = $sig.positional;
-                my $str_specific = '(' ~ $invocant.emit_lisp ~ ' ' ~ $class_name ~ ')';
+                my $str_specific = '(' ~ $invocant.emit_lisp() ~ ' ' ~ $class_name ~ ')';
                 my $str_optionals = '';
                 my $ignorable = '';
                 for @$pos -> $field { 
                     $str_optionals = $str_optionals ~ ' ' ~ $field.emit_lisp;
-                    $ignorable = $ignorable ~ "\n" ~ '  (declare (ignorable ' ~ $field.emit_lisp ~ "))";
+                    $ignorable = $ignorable ~ "\n" ~ '  (declare (ignorable ' ~ $field.emit_lisp() ~ "))";
                 };
                 if ( $str_optionals ) {
                     $str_specific = $str_specific ~ ' &optional' ~ $str_optionals;
                 }
                 my $block    = Perlito::Lisp::LexicalBlock.new( block => $decl.block );
                 $str = $str 
-                    ~ ';; method ' ~ $decl.name ~ "\n"
+                    ~ ';; method ' ~ $decl.name() ~ "\n"
                     ~ '(defmethod ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $str_specific ~ ')'
                     ~    $ignorable ~ "\n"
                     ~ '  (block mp6-function' ~ "\n"
-                    ~ '    ' ~ $block.emit_lisp ~ "))\n";
+                    ~ '    ' ~ $block.emit_lisp() ~ "))\n";
             }
             if $decl.isa( 'Sub' ) {
                 my $pos = ($decl.sig).positional;
@@ -132,8 +132,8 @@ class CompUnit {
                 my $ignorable = '';
                 if @$pos {
                     for @$pos -> $field {
-                        $param = $param ~ $field.emit_lisp ~ ' ';
-                        $ignorable = $ignorable ~ "\n" ~ '  (declare (ignorable ' ~ $field.emit_lisp ~ "))";
+                        $param = $param ~ $field.emit_lisp() ~ ' ';
+                        $ignorable = $ignorable ~ "\n" ~ '  (declare (ignorable ' ~ $field.emit_lisp() ~ "))";
                     }
                 }
                 my $sig = '';
@@ -144,7 +144,7 @@ class CompUnit {
                 $str = $str 
                     ~ '(defmethod ' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' 
                     ~    $ignorable ~ "\n"
-                    ~ '  (block mp6-function ' ~ $block.emit_lisp ~ '))' ~ "\n"
+                    ~ '  (block mp6-function ' ~ $block.emit_lisp() ~ '))' ~ "\n"
                     ~ '(in-package ' ~ $class_name ~ ')' ~ "\n"
                     ~ '  (defun ' ~ Main::to_lisp_identifier($decl.name) ~ ' (' ~ $sig ~ ')' ~ "\n"
                     ~ '    (mp-Main::' ~ $class_name ~ '-' ~ Main::to_lisp_identifier($decl.name) ~ ' ' ~ $param ~ '))' ~ "\n"
@@ -166,7 +166,7 @@ class CompUnit {
                && (!( $decl.isa( 'Method'))) 
                && (!( $decl.isa( 'Sub'))) 
             {
-                $str = $str ~ ($decl).emit_lisp ~ "\n";
+                $str = $str ~ ($decl).emit_lisp() ~ "\n";
             }
         }; 
         # close paren for '(defun '
@@ -270,7 +270,7 @@ new-slots))
                     my $param;
                     if @$pos {
                         for @$pos -> $field {
-                            $param = $param ~ $field.emit_lisp ~ ' ';
+                            $param = $param ~ $field.emit_lisp() ~ ' ';
                         }
                     }
                     my $sig = '';
@@ -286,7 +286,7 @@ new-slots))
             }
         }
         for @($comp_units) -> $comp_unit {
-            $str = $str ~ $comp_unit.emit_lisp ~ "\n"
+            $str = $str ~ $comp_unit.emit_lisp() ~ "\n"
         }
 
         $str = $str 
@@ -347,10 +347,10 @@ class Lit::Array {
                 if     ( $elem.isa( 'Var' )   && $elem.sigil eq '@' )
                     || ( $elem.isa( 'Apply' ) && $elem.code  eq 'prefix:<@>' )
                 {
-                    $str = $str ~ ' (coerce ' ~ $elem.emit_lisp ~ ' \'list)';
+                    $str = $str ~ ' (coerce ' ~ $elem.emit_lisp() ~ ' \'list)';
                 }
                 else {
-                    $str = $str ~ ' (list ' ~ $elem.emit_lisp ~ ')';
+                    $str = $str ~ ' (list ' ~ $elem.emit_lisp() ~ ')';
                 }
             }
             return '(let ((_tmp_ (concatenate \'list ' ~ $str ~ '))) ' 
@@ -370,7 +370,7 @@ class Lit::Hash {
             my $str = '';
             for @$fields -> $field { 
                 $str = $str ~ '(setf (mp-Main::sv-hash-lookup ' 
-                    ~ ($field[0]).emit_lisp ~ ' h) ' ~ ($field[1]).emit_lisp ~ ')';
+                    ~ ($field[0]).emit_lisp() ~ ' h) ' ~ ($field[1]).emit_lisp() ~ ')';
             }; 
             return '(let ((h (make-hash-table :test \'equal))) ' ~ $str ~ ' h)';
         }
@@ -391,7 +391,7 @@ class Lit::Object {
             my $fields = @.fields;
             my $str = '';
             for @$fields -> $field { 
-                $str = $str ~ '(setf (' ~ Main::to_lisp_identifier(($field[0]).buf) ~ ' m) ' ~ ($field[1]).emit_lisp ~ ')';
+                $str = $str ~ '(setf (' ~ Main::to_lisp_identifier(($field[0]).buf) ~ ' m) ' ~ ($field[1]).emit_lisp() ~ ')';
             }; 
             '(let ((m (make-instance \'' ~ Main::to_lisp_namespace($.class) ~ '))) ' ~ $str ~ ' m)'
         }
@@ -405,7 +405,7 @@ class Index {
     has $.obj;
     has $.index_exp;
     method emit_lisp {
-        return '(mp-Main::sv-array-index ' ~ $.obj.emit_lisp ~ ' ' ~ $.index_exp.emit_lisp ~ ')';
+        return '(mp-Main::sv-array-index ' ~ $.obj.emit_lisp() ~ ' ' ~ $.index_exp.emit_lisp() ~ ')';
     }
 }
 
@@ -413,7 +413,7 @@ class Lookup {
     has $.obj;
     has $.index_exp;
     method emit_lisp {
-        return '(mp-Main::sv-hash-lookup ' ~ $.index_exp.emit_lisp ~ ' ' ~ $.obj.emit_lisp ~ ')';
+        return '(mp-Main::sv-hash-lookup ' ~ $.index_exp.emit_lisp() ~ ' ' ~ $.obj.emit_lisp() ~ ')';
     }
 }
 
@@ -464,16 +464,16 @@ class Bind {
                     parameters => $var[1], 
                     arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
                 );
-                $str = $str ~ ' ' ~ $bind.emit_lisp ~ ' ';
+                $str = $str ~ ' ' ~ $bind.emit_lisp() ~ ' ';
                 $i = $i + 1;
             };
-            return $str ~ $.parameters.emit_lisp ~ ' }';
+            return $str ~ $.parameters.emit_lisp() ~ ' }';
         };
     
         if $.parameters.isa( 'Decl' ) && ( $.parameters.decl eq 'my' ) {
-            return '(setf ' ~ ($.parameters.var).emit_lisp ~ ' ' ~ $.arguments.emit_lisp ~ ')';
+            return '(setf ' ~ ($.parameters.var).emit_lisp() ~ ' ' ~ $.arguments.emit_lisp() ~ ')';
         }
-        '(setf ' ~ $.parameters.emit_lisp ~ ' ' ~ $.arguments.emit_lisp ~ ')';
+        '(setf ' ~ $.parameters.emit_lisp() ~ ' ' ~ $.arguments.emit_lisp() ~ ')';
     }
 }
 
@@ -555,9 +555,9 @@ class Apply {
         my $code = $ns ~ $.code;
 
         if $code eq 'infix:<~>'  { 
-            return '(concatenate \'string (sv-string ' ~ (@.arguments[0]).emit_lisp ~ ') (sv-string ' ~ (@.arguments[1]).emit_lisp ~ '))'; }
+            return '(concatenate \'string (sv-string ' ~ (@.arguments[0]).emit_lisp() ~ ') (sv-string ' ~ (@.arguments[1]).emit_lisp() ~ '))'; }
         if $code eq 'ternary:<?? !!>' { 
-            return '(if (sv-bool ' ~ (@.arguments[0]).emit_lisp ~ ') ' ~ (@.arguments[1]).emit_lisp ~ ' ' ~ (@.arguments[2]).emit_lisp ~ ')';
+            return '(if (sv-bool ' ~ (@.arguments[0]).emit_lisp() ~ ') ' ~ (@.arguments[1]).emit_lisp() ~ ' ' ~ (@.arguments[2]).emit_lisp() ~ ')';
         } 
 
         my $args = '';
@@ -582,7 +582,7 @@ class Apply {
         if $code eq 'exists'     {
                                       my $arg = @.arguments[0];
                                       if $arg.isa( 'Lookup' ) {
-                                        return '(nth-value 1 ' ~ $arg.emit_lisp ~ ')'
+                                        return '(nth-value 1 ' ~ $arg.emit_lisp() ~ ')'
                                       }
                                  }
 
@@ -617,7 +617,7 @@ class Apply {
 class Return {
     has $.result;
     method emit_lisp {
-        return '(return-from mp6-function ' ~ $.result.emit_lisp ~ ')';
+        return '(return-from mp6-function ' ~ $.result.emit_lisp() ~ ')';
     }
 }
 
@@ -629,10 +629,10 @@ class If {
         my $block1 = Perlito::Lisp::LexicalBlock.new( block => $.body.stmts );
         if $.otherwise {
             my $block2 = Perlito::Lisp::LexicalBlock.new( block => $.otherwise.stmts );
-            return '(if (sv-bool ' ~ $.cond.emit_lisp ~ ') ' ~ $block1.emit_lisp ~ ' ' ~ $block2.emit_lisp ~ ')';
+            return '(if (sv-bool ' ~ $.cond.emit_lisp() ~ ') ' ~ $block1.emit_lisp() ~ ' ' ~ $block2.emit_lisp() ~ ')';
         }
         else {
-            return '(if (sv-bool ' ~ $.cond.emit_lisp ~ ') ' ~ $block1.emit_lisp ~ ')';
+            return '(if (sv-bool ' ~ $.cond.emit_lisp() ~ ') ' ~ $block1.emit_lisp() ~ ')';
         }
     }
 }
@@ -649,11 +649,11 @@ class For {
         {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         };
-        # '(dolist (' ~ $.topic.emit_lisp ~ ' ' ~ $cond.emit_lisp ~ ') ' ~ $block.emit_lisp ~ ')';
+        # '(dolist (' ~ $.topic.emit_lisp() ~ ' ' ~ $cond.emit_lisp() ~ ') ' ~ $block.emit_lisp() ~ ')';
         '(loop for ' 
             ~ $.topic.emit_lisp 
-            ~ ' across ' ~ $cond.emit_lisp ~ 
-            ' do ' ~ $block.emit_lisp ~ ')';
+            ~ ' across ' ~ $cond.emit_lisp() ~ 
+            ' do ' ~ $block.emit_lisp() ~ ')';
 
         # (loop for x being the elements of '(1 2 3) 
         #        do (print x))
@@ -672,9 +672,9 @@ class While {
             @body.push( $.continue );
         }
           '(progn '
-        ~    ( $.init ?? $.init.emit_lisp ~ ' ' !! '' )
-        ~    '(loop while (sv-bool ' ~ $.cond.emit_lisp ~ ') do ' 
-        ~       (Perlito::Lisp::LexicalBlock.new( block => @body )).emit_lisp
+        ~    ( $.init ?? $.init.emit_lisp() ~ ' ' !! '' )
+        ~    '(loop while (sv-bool ' ~ $.cond.emit_lisp() ~ ') do ' 
+        ~       (Perlito::Lisp::LexicalBlock.new( block => @body )).emit_lisp()
         ~    '))';
     }
 }
@@ -696,13 +696,13 @@ class Decl {
     }
     sub emit_lisp_initializer ($decl) {
         if $decl.sigil eq '%' {
-            return '(' ~ $decl.emit_lisp ~ ' (make-hash-table :test \'equal))'; 
+            return '(' ~ $decl.emit_lisp() ~ ' (make-hash-table :test \'equal))'; 
         }
         elsif $decl.sigil eq '@' {
-            return '(' ~ $decl.emit_lisp ~ ' (make-array 0 :fill-pointer t :adjustable t))'; 
+            return '(' ~ $decl.emit_lisp() ~ ' (make-array 0 :fill-pointer t :adjustable t))'; 
         }
         else {
-            return '(' ~ $decl.emit_lisp ~ ' (sv-undef))'; 
+            return '(' ~ $decl.emit_lisp() ~ ' (sv-undef))'; 
         }
     }
 }
@@ -736,7 +736,7 @@ class Sub {
         my $str;
         if @$pos {
             for @$pos -> $field { 
-                $str = $str ~ $field.emit_lisp ~ ' ';
+                $str = $str ~ $field.emit_lisp() ~ ' ';
             }
         }
         if $str {
@@ -745,12 +745,12 @@ class Sub {
 
         if $.name {
             '(defun ' ~ Main::to_lisp_identifier($.name) ~ ' (' ~ $str ~ ')' ~ "\n" 
-                ~ '  (block mp6-function ' ~ $block.emit_lisp 
+                ~ '  (block mp6-function ' ~ $block.emit_lisp()
             ~ '))' ~ "\n";
         }
         else {
             '(lambda ' ~ $.name ~ ' (' ~ $str ~ ')' ~ "\n" 
-                ~ '  (block mp6-function ' ~ $block.emit_lisp 
+                ~ '  (block mp6-function ' ~ $block.emit_lisp() 
             ~ '))' ~ "\n";
 
         }
