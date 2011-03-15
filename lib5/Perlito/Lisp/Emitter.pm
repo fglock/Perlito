@@ -16,7 +16,7 @@ sub new { shift; bless { @_ }, "GLOBAL" }
 package Perlito::Lisp::LexicalBlock;
 sub new { shift; bless { @_ }, "Perlito::Lisp::LexicalBlock" }
 sub block { $_[0]->{block} };
-sub emit_lisp { my $self = $_[0]; if (Main::bool((($self->{block}) ? 0 : 1))) { return('nil') } ; (my  $str = ''); (my  $has_my_decl = 0); (my  $my_decl = ''); (my  $my_ignore = ''); my  $Hash_decl_seen; for my $decl ( @{$self->{block} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { (my  $var_name = ($decl->var())->emit_lisp()); if (Main::bool((($Hash_decl_seen->{$var_name}) ? 0 : 1))) { ($has_my_decl = 1); ($my_decl = $my_decl . Decl::emit_lisp_initializer($decl->var())); ($my_ignore = $my_ignore . '(declare (ignorable ' . $var_name . '))' . '
+sub emit_lisp { my $self = $_[0]; my  $List_block; for ( @{$self->{block} || []} ) { if (Main::bool(defined($_))) { push( @{$List_block}, $_ ) }  }; if (Main::bool((($self->{block}) ? 0 : 1))) { return('nil') } ; (my  $str = ''); (my  $has_my_decl = 0); (my  $my_decl = ''); (my  $my_ignore = ''); my  $Hash_decl_seen; for my $decl ( @{$self->{block} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { (my  $var_name = ($decl->var())->emit_lisp()); if (Main::bool((($Hash_decl_seen->{$var_name}) ? 0 : 1))) { ($has_my_decl = 1); ($my_decl = $my_decl . Decl::emit_lisp_initializer($decl->var())); ($my_ignore = $my_ignore . '(declare (ignorable ' . $var_name . '))' . '
 '); ($Hash_decl_seen->{$var_name} = 1) }  } ; if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) { (my  $var_name = (($decl->parameters())->var())->emit_lisp()); if (Main::bool((($Hash_decl_seen->{$var_name}) ? 0 : 1))) { ($has_my_decl = 1); ($my_decl = $my_decl . Decl::emit_lisp_initializer(($decl->parameters())->var())); ($my_ignore = $my_ignore . '(declare (ignorable ' . $var_name . '))' . '
 '); ($Hash_decl_seen->{$var_name} = 1) }  }  }; if (Main::bool($has_my_decl)) { ($str = $str . '(let (' . $my_decl . ')' . '
 ' . $my_ignore) } else { ($str = $str . '(progn ') }; for my $decl ( @{$self->{block} || []} ) { if (Main::bool(((((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) ? 0 : 1)))) { ($str = $str . ($decl)->emit_lisp()) }  }; return($str . ')') }
@@ -255,7 +255,7 @@ sub new { shift; bless { @_ }, "If" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
-sub emit_lisp { my $self = $_[0]; (my  $block1 = Perlito::Lisp::LexicalBlock->new(('block' => $self->{body}))); (my  $block2 = Perlito::Lisp::LexicalBlock->new(('block' => $self->{otherwise}))); '(if (sv-bool ' . $self->{cond}->emit_lisp(("" . ') ') . $block1->emit_lisp(("" . ' ') . $block2->emit_lisp(("" . ')')))) }
+sub emit_lisp { my $self = $_[0]; (my  $block1 = Perlito::Lisp::LexicalBlock->new(('block' => $self->{body}->stmts()))); if (Main::bool($self->{otherwise})) { (my  $block2 = Perlito::Lisp::LexicalBlock->new(('block' => $self->{otherwise}->stmts()))); return('(if (sv-bool ' . $self->{cond}->emit_lisp(("" . ') ') . $block1->emit_lisp(("" . ' ') . $block2->emit_lisp(("" . ')'))))) } else { return('(if (sv-bool ' . $self->{cond}->emit_lisp(("" . ') ') . $block1->emit_lisp(("" . ')')))) } }
 }
 
 ;

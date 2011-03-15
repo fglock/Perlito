@@ -3,6 +3,12 @@ use v6;
 class Perlito::Lisp::LexicalBlock {
     has @.block;
     method emit_lisp {
+        my @block;
+        for @.block {
+            if defined($_) {
+                push @block, $_
+            }
+        }
         if !(@.block) {
             return 'nil';
         }
@@ -617,12 +623,17 @@ class Return {
 
 class If {
     has $.cond;
-    has @.body;
-    has @.otherwise;
+    has $.body;
+    has $.otherwise;
     method emit_lisp {
-        my $block1 = Perlito::Lisp::LexicalBlock.new( block => @.body );
-        my $block2 = Perlito::Lisp::LexicalBlock.new( block => @.otherwise );
-        '(if (sv-bool ' ~ $.cond.emit_lisp ~ ') ' ~ $block1.emit_lisp ~ ' ' ~ $block2.emit_lisp ~ ')';
+        my $block1 = Perlito::Lisp::LexicalBlock.new( block => $.body.stmts );
+        if $.otherwise {
+            my $block2 = Perlito::Lisp::LexicalBlock.new( block => $.otherwise.stmts );
+            return '(if (sv-bool ' ~ $.cond.emit_lisp ~ ') ' ~ $block1.emit_lisp ~ ' ' ~ $block2.emit_lisp ~ ')';
+        }
+        else {
+            return '(if (sv-bool ' ~ $.cond.emit_lisp ~ ') ' ~ $block1.emit_lisp ~ ')';
+        }
     }
 }
 
