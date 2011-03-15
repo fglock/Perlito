@@ -67,7 +67,7 @@ Using the Javascript backend in the browser
 
 Using the Javascript backend in the command line
 
-    Executing from the command line requires Perl 5 and a javascript compiler (V8 or Rhino):
+    Executing from the command line requires Perl 5 and a javascript compiler (V8, SpiderMonkey, or Rhino):
 
     perl perlito.pl -Bv8 -e 'class Main { say "hello, World!" }'
 
@@ -77,6 +77,10 @@ Using the Javascript backend in the command line
 
     # compile util/perlito.pl to Javascript, using perlito.pl:
     perl perlito.pl -Bperl5 util/perlito.pl -Cjs util/perlito.pl > util-js/perlito.js
+
+    # testing the bootstrap with the v8 developer shell
+    d8 util-js/perlito.js -- -Cjs util/perlito.pl > perlito-new.js
+
     # testing the bootstrap with Rhino
     java org.mozilla.javascript.tools.shell.Main util-js/perlito.js -Cjs util/perlito.pl > perlito-new.js
 
