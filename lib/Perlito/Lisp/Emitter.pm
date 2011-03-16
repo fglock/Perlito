@@ -341,9 +341,20 @@ class Val::Object {
 class Lit::Array {
     has @.array1;
     method emit_lisp {
-        if @.array1 {
+        my @items;
+        for @.array1 -> $item {
+            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
+                for @($item.arguments) -> $arg {
+                    @items.push($arg);
+                }
+            }
+            else {
+                @items.push($item);
+            }
+        }
+        if @items {
             my $str = '';
-            for @.array1 -> $elem {
+            for @items -> $elem {
                 if     ( $elem.isa( 'Var' )   && $elem.sigil eq '@' )
                     || ( $elem.isa( 'Apply' ) && $elem.code  eq 'prefix:<@>' )
                 {
@@ -586,7 +597,7 @@ class Apply {
                                       }
                                  }
 
-        if $code eq 'prefix:<~>' { return '(sv-string '     ~ $args ~ ')'  };
+        if $code eq 'list:<~>'   { return '(sv-string '     ~ $args ~ ')'  };
         if $code eq 'prefix:<!>' { return '(not (sv-bool '  ~ $args ~ '))' };
         if $code eq 'prefix:<?>' { return '(sv-bool '       ~ $args ~ ')'  };
 
@@ -609,6 +620,8 @@ class Apply {
         if $code eq 'infix:<||>' { return '(sv-or '         ~ $args ~  ')' };
         if $code eq 'infix:<eq>' { return '(sv-eq '         ~ $args ~  ')' };
         if $code eq 'infix:<ne>' { return '(not (sv-eq '    ~ $args ~ '))' };
+
+        if $code eq 'circumfix:<( )>' { return $args };
 
         return '(' ~ $ns ~ Main::to_lisp_identifier($.code) ~ ' ' ~ $args ~ ')';
     }
