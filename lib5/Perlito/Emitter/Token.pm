@@ -15,7 +15,7 @@ sub new { shift; bless { @_ }, "GLOBAL" }
 {
 package Rul;
 sub new { shift; bless { @_ }, "Rul" }
-sub constant { my $str = $_[0]; (my  $len = Main::chars($str, )); if (Main::bool(($str eq '\\'))) { ($str = '\\\\') } ; if (Main::bool(($str eq '\''))) { ($str = '\\\'') } ; if (Main::bool(($len))) { '( \'' . $str . '\' eq substr( $str, $MATCH.to, ' . $len . ') ' . '&& ( $MATCH.to = ' . $len . ' + $MATCH.to )' . ')' } else { return('1') } }
+sub constant { my $str = $_[0]; ((my  $len = undef) = Main::chars($str, )); if (Main::bool(($str eq '\\'))) { ($str = '\\\\') } ; if (Main::bool(($str eq '\''))) { ($str = '\\\'') } ; if (Main::bool(($len))) { '( \'' . $str . '\' eq substr( $str, $MATCH.to, ' . $len . ') ' . '&& ( $MATCH.to = ' . $len . ' + $MATCH.to )' . ')' } else { return('1') } }
 }
 
 ;
@@ -56,7 +56,7 @@ package Rul::Subrule;
 sub new { shift; bless { @_ }, "Rul::Subrule" }
 sub metasyntax { $_[0]->{metasyntax} };
 sub captures { $_[0]->{captures} };
-sub emit_perl6 { my $self = $_[0]; (my  $meth = (Main::bool(((1 + index($self->{metasyntax}, '.')))) ? $self->{metasyntax} : ('$grammar.' . $self->{metasyntax}))); my  $code; if (Main::bool(($self->{captures} == 1))) { ($code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' . $self->{metasyntax} . '\'} = $m2; 1 } else { False }; ') } else { if (Main::bool(($self->{captures} > 1))) { ($code = 'if $m2 { ' . '$MATCH.to = $m2.to; ' . 'if exists $MATCH{\'' . $self->{metasyntax} . '\'} { ' . '($MATCH{\'' . $self->{metasyntax} . '\'}).push( $m2 ); ' . '} ' . 'else { ' . '$MATCH{\'' . $self->{metasyntax} . '\'} = [ $m2 ]; ' . '}; ' . '1 ' . '} else { False }; ') } else { ($code = 'if $m2 { $MATCH.to = $m2.to; 1 } else { False }; ') } }; '(do { ' . 'my $m2 = ' . $meth . '($str, $MATCH.to); ' . $code . '})' };
+sub emit_perl6 { my $self = $_[0]; ((my  $meth = undef) = (Main::bool(((1 + index($self->{metasyntax}, '.')))) ? $self->{metasyntax} : ('$grammar.' . $self->{metasyntax}))); (my  $code = undef); if (Main::bool(($self->{captures} == 1))) { ($code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' . $self->{metasyntax} . '\'} = $m2; 1 } else { False }; ') } else { if (Main::bool(($self->{captures} > 1))) { ($code = 'if $m2 { ' . '$MATCH.to = $m2.to; ' . 'if exists $MATCH{\'' . $self->{metasyntax} . '\'} { ' . '($MATCH{\'' . $self->{metasyntax} . '\'}).push( $m2 ); ' . '} ' . 'else { ' . '$MATCH{\'' . $self->{metasyntax} . '\'} = [ $m2 ]; ' . '}; ' . '1 ' . '} else { False }; ') } else { ($code = 'if $m2 { $MATCH.to = $m2.to; 1 } else { False }; ') } }; '(do { ' . 'my $m2 = ' . $meth . '($str, $MATCH.to); ' . $code . '})' };
 sub set_captures_to_array { my $self = $_[0]; if (Main::bool(($self->{captures} > 0))) { ($self->{captures} = ($self->{captures} + 1)) }  }
 }
 
@@ -67,7 +67,7 @@ sub new { shift; bless { @_ }, "Rul::Var" }
 sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub name { $_[0]->{name} };
-sub emit_perl6 { my $self = $_[0]; (my  $table = { ('$' => '$'), ('@' => '$List_'), ('%' => '$Hash_'), ('&' => '$Code_') }); $table->{$self->{sigil}} . $self->{name} }
+sub emit_perl6 { my $self = $_[0]; ((my  $table = undef) = { ('$' => '$'), ('@' => '$List_'), ('%' => '$Hash_'), ('&' => '$Code_') }); $table->{$self->{sigil}} . $self->{name} }
 }
 
 ;
@@ -75,7 +75,7 @@ sub emit_perl6 { my $self = $_[0]; (my  $table = { ('$' => '$'), ('@' => '$List_
 package Rul::Constant;
 sub new { shift; bless { @_ }, "Rul::Constant" }
 sub constant { $_[0]->{constant} };
-sub emit_perl6 { my $self = $_[0]; (my  $str = $self->{constant}); Rul::constant($str) };
+sub emit_perl6 { my $self = $_[0]; ((my  $str = undef) = $self->{constant}); Rul::constant($str) };
 sub set_captures_to_array { my $self = $_[0];  }
 }
 
@@ -92,7 +92,7 @@ sub set_captures_to_array { my $self = $_[0];  }
 package Rul::SpecialChar;
 sub new { shift; bless { @_ }, "Rul::SpecialChar" }
 sub char { $_[0]->{char} };
-sub emit_perl6 { my $self = $_[0]; (my  $char = $self->{char}); if (Main::bool(($char eq 'n'))) { return(Rul::Subrule->new(('metasyntax' => 'is_newline'), ('captures' => 0))->emit_perl6()) } ; if (Main::bool(($char eq 'N'))) { return(Rul::Subrule->new(('metasyntax' => 'not_newline'), ('captures' => 0))->emit_perl6()) } ; if (Main::bool(($char eq 'd'))) { return(Rul::Subrule->new(('metasyntax' => 'digit'), ('captures' => 0))->emit_perl6()) } ; if (Main::bool(($char eq 's'))) { return(Rul::Subrule->new(('metasyntax' => 'space'), ('captures' => 0))->emit_perl6()) } ; if (Main::bool(($char eq 't'))) { return(Rul::constant(chr(9))) } ; return(Rul::constant($char)) };
+sub emit_perl6 { my $self = $_[0]; ((my  $char = undef) = $self->{char}); if (Main::bool(($char eq 'n'))) { return(Rul::Subrule->new(('metasyntax' => 'is_newline'), ('captures' => 0))->emit_perl6()) } ; if (Main::bool(($char eq 'N'))) { return(Rul::Subrule->new(('metasyntax' => 'not_newline'), ('captures' => 0))->emit_perl6()) } ; if (Main::bool(($char eq 'd'))) { return(Rul::Subrule->new(('metasyntax' => 'digit'), ('captures' => 0))->emit_perl6()) } ; if (Main::bool(($char eq 's'))) { return(Rul::Subrule->new(('metasyntax' => 'space'), ('captures' => 0))->emit_perl6()) } ; if (Main::bool(($char eq 't'))) { return(Rul::constant(chr(9))) } ; return(Rul::constant($char)) };
 sub set_captures_to_array { my $self = $_[0];  }
 }
 

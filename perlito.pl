@@ -18,6 +18,7 @@ use Perlito::Perl5::Emitter;
 use Perlito::Grammar;
 use Perlito::Grammar::Regex;
 use Perlito::Emitter::Token;
+use Perlito::Macro;
 
 my ( @switch_e, $source, $source_filename, $result );
 my @comp_unit;

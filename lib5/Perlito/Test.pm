@@ -12,16 +12,16 @@ sub new { shift; bless { @_ }, "GLOBAL" }
 {
 package Perlito::Test;
 sub new { shift; bless { @_ }, "Perlito::Test" }
-my  $num_of_tests_run;
-my  $num_of_tests_failed;
-my  $num_of_tests_badpass;
-my  $num_of_tests_planned;
-my  $testing_started;
+(my  $num_of_tests_run = undef);
+(my  $num_of_tests_failed = undef);
+(my  $num_of_tests_badpass = undef);
+(my  $num_of_tests_planned = undef);
+(my  $testing_started = undef);
 sub plan { my $number_of_tests = $_[0]; ($testing_started = 1); ($num_of_tests_planned = $number_of_tests); Main::say('1..' . $number_of_tests) };
 sub ok { my $cond = $_[0]; my $desc = $_[1]; my $todo = $_[2]; my $depends = $_[3]; Perlito::Test::proclaim($cond, 'ok! ' . $desc, $todo, $depends) };
-sub is { my $got = $_[0]; my $expected = $_[1]; my $desc = $_[2]; my $todo = $_[3]; my $depends = $_[4]; (my  $test = ($got eq $expected)); Perlito::Test::proclaim($test, 'is! ' . $desc, $todo, $got, $expected, $depends) };
-sub is_deeply { my $got = $_[0]; my $expected = $_[1]; my $desc = $_[2]; my $todo = $_[3]; my $depends = $_[4]; (my  $got_perl = Main::perl($got, )); (my  $expected_perl = Main::perl($expected, )); (my  $test = (($got_perl eq $expected_perl))); Perlito::Test::proclaim($test, 'is deeply! ' . $desc, $todo, $got_perl, $expected_perl, $depends) };
-sub isnt { my $got = $_[0]; my $expected = $_[1]; my $desc = $_[2]; my $todo = $_[3]; my $depends = $_[4]; (my  $test = ((($got eq $expected)) ? 0 : 1)); Perlito::Test::proclaim($test, 'isnt! ' . $desc, $todo, $got, $expected, $depends, { ('negate' => 1) }) };
+sub is { my $got = $_[0]; my $expected = $_[1]; my $desc = $_[2]; my $todo = $_[3]; my $depends = $_[4]; ((my  $test = undef) = ($got eq $expected)); Perlito::Test::proclaim($test, 'is! ' . $desc, $todo, $got, $expected, $depends) };
+sub is_deeply { my $got = $_[0]; my $expected = $_[1]; my $desc = $_[2]; my $todo = $_[3]; my $depends = $_[4]; ((my  $got_perl = undef) = Main::perl($got, )); ((my  $expected_perl = undef) = Main::perl($expected, )); ((my  $test = undef) = (($got_perl eq $expected_perl))); Perlito::Test::proclaim($test, 'is deeply! ' . $desc, $todo, $got_perl, $expected_perl, $depends) };
+sub isnt { my $got = $_[0]; my $expected = $_[1]; my $desc = $_[2]; my $todo = $_[3]; my $depends = $_[4]; ((my  $test = undef) = ((($got eq $expected)) ? 0 : 1)); Perlito::Test::proclaim($test, 'isnt! ' . $desc, $todo, $got, $expected, $depends, { ('negate' => 1) }) };
 sub cmp_ok { my $got = $_[0]; my $Code_compare_func = $_[1]; my $expected = $_[2]; my $desc = $_[3]; my $todo = $_[4]; my $depends = $_[5]; Main::say('### Perlito::Test::cmp_ok not implemented') };
 sub like { Main::say('### Perlito::Test::like not implemented') };
 sub unlike { Main::say('### Perlito::Test::unlike not implemented') };

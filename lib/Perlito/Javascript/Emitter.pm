@@ -193,47 +193,11 @@ class Lit::Block {
 class Lit::Array {
     has @.array1;
     method emit_javascript {
-        my $needs_interpolation = 0;
-        my @items;
-        for @.array1 -> $item {
-            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
-                for @($item.arguments) -> $arg {
-                    @items.push($arg);
-                }
-            }
-            else {
-                @items.push($item);
-            }
+        my $ast = self.expand_interpolation;
+        if $ast.isa('Lit::Array') {
+            return '[' ~ ($ast.array1.>>emit_javascript).join(', ') ~ ']';
         }
-        for @items -> $item {
-            if      $item.isa( 'Var' )   && $item.sigil eq '@' 
-                ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
-            {
-                $needs_interpolation = 1;
-            }
-        }
-        if $needs_interpolation {
-            my $s = '';
-            for @items -> $item {
-                if      $item.isa( 'Var' )   && $item.sigil eq '@' 
-                    ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
-                {
-                    $s = $s 
-                        ~ '(function(a_) { ' 
-                            ~ 'for (var i_ = 0; i_ < a_.length ; i_++) { a.push(a_[i_]) }' 
-                        ~ '})(' ~ $item.emit_javascript() ~ '); '
-                }
-                else {
-                    $s = $s ~ 'a.push(' ~ $item.emit_javascript() ~ '); '
-                }
-            }
-            '(function () { var a = []; ' 
-                ~ $s 
-            ~ ' return a })()';
-        }
-        else {
-            '[' ~ (@items.>>emit_javascript).join(', ') ~ ']';
-        }
+        return $ast.emit_javascript;
     }
 }
 

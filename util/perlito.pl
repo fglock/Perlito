@@ -14,6 +14,7 @@ class Main {
     use Perlito::Emitter::Token;
     use Perlito::Expression;
     use Perlito::Precedence;
+    use Perlito::Macro;
 
     my $_V6_COMPILER_NAME    = 'Perlito';
     my $_V6_COMPILER_VERSION = '6.0';

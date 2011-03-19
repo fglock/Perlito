@@ -85,34 +85,11 @@ class Lit::Block {
 class Lit::Array {
     has @.array1;
     method emit_perl5 {
-        my @s;
-        my @items;
-        for @.array1 -> $item {
-            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
-                for @($item.arguments) -> $arg {
-                    @items.push($arg);
-                }
-            }
-            else {
-                @items.push($item);
-            }
+        my $ast = self.expand_interpolation;
+        if $ast.isa('Lit::Array') {
+            return '[' ~ ($ast.array1.>>emit_perl5).join(', ') ~ ']';
         }
-        for @items -> $item {
-            if      $item.isa( 'Var' )   && $item.sigil eq '@' 
-                ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
-            {
-                push @s, '@{' ~ $item.emit_perl5() ~ ' || []}';
-            }
-            elsif   $item.isa( 'Var' )   && $item.sigil eq '%' 
-                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<%>' 
-            {
-                push @s, '%{' ~ $item.emit_perl5() ~ ' || {}}';
-            }
-            else {
-                push @s, $item.emit_perl5;
-            }
-        }
-        '[' ~ @s.join(', ') ~ ']';
+        return $ast.emit_perl5;
     }
 }
 
@@ -518,9 +495,21 @@ class Decl {
     method emit_perl5 {
         my $decl = $.decl;
         my $name = $.var.plain_name;
-           ( $decl eq 'has' )
-        ?? ( 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} }' )
-        !! $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_perl5;
+        if $decl eq 'has' {
+            return 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} }';
+        }
+        my $str = 
+            '(' ~ $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_perl5() ~ ' = ';
+        if ($.var).sigil eq '%' {
+            $str = $str ~ '{})';
+        }
+        elsif ($.var).sigil eq '@' {
+            $str = $str ~ '[])';
+        }
+        else {
+            $str = $str ~ 'undef)';
+        }
+        return $str;
     }
 }
 
