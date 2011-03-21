@@ -39,6 +39,7 @@ class CompUnit {
             ~ "use warnings;\n"
             ~ "no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');\n"
             ~ "use Perlito::Perl5::Runtime;\n"
+            ~ "use Perlito::Perl5::Prelude;\n"
             ~ "our \$MATCH = Perlito::Match->new();\n";
         for @($comp_units) -> $comp_unit {
             $str = $str ~ $comp_unit.emit_perl5
@@ -225,6 +226,7 @@ class Call {
             || ($.method eq 'join')
             || ($.method eq 'chars')
             || ($.method eq 'isa')
+            || ($.method eq 'pairs')
         { 
             if ($.hyper) {
                 return 

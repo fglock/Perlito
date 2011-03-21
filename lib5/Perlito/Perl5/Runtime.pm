@@ -44,6 +44,10 @@ binmode(STDOUT, ":utf8");
     sub values { 
         CORE::values %{$_[0]};
     }
+    sub pairs {
+        map Pair->new( key => $_, value => $_[0]{$_} ),
+            CORE::keys %{$_[0]}
+    }
     
     sub flat {
         my $obj = $_[0];
@@ -179,6 +183,13 @@ package Main;
            )
     }
 
+    sub pairs {
+        [
+            map Pair->new( key => $_, value => $_[0]{$_} ),
+                CORE::keys %{$_[0]}
+        ]
+    }
+ 
     sub perl {
         return 'Mu' unless defined $_[0];
         local $_;

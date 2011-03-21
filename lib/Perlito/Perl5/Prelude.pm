@@ -11,17 +11,27 @@ class Perlito::Match {
     }
 }
 
+class Pair {
+    has $.key;
+    has $.value;
+
+    method perl {
+        return $.key ~ ' => ' ~ $.value.perl;
+    }
+
+}
+
 =begin
 
 =head1 NAME 
 
-Perlito::Lisp::Prelude - Runtime for Perlito-in-Lisp
+Perlito::Perl5::Prelude - Runtime for Perlito-in-Perl5
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-This module contains Perlito code for the Perlito-in-Lisp runtime.
+This module contains Perlito code for the Perlito-in-Perl5 runtime.
 
 =head1 AUTHORS
 
