@@ -5,6 +5,7 @@ use strict;
 use warnings;
 no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');
 use Perlito::Perl5::Runtime;
+use Perlito::Perl5::Prelude;
 our $MATCH = Perlito::Match->new();
 {
 package GLOBAL;
@@ -98,7 +99,7 @@ sub emit_perl5 { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpola
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
-sub emit_perl5 { my $self = $_[0]; (my  $List_s = []); (my  $List_items = []); for my $item ( @{$self->{hash1} || []} ) { if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) { for my $arg ( @{(($item->arguments()) || []) || []} ) { push( @{$List_items}, $arg ) } } else { push( @{$List_items}, $item ) } }; for my $item ( @{$List_items || []} ) { if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq '%')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<%>'))))) { push( @{$List_s}, '%{' . $item->emit_perl5() . ' || {}}' ) } else { push( @{$List_s}, $item->emit_perl5() ) } }; '{ ' . Main::join($List_s, ', ') . ' }' }
+sub emit_perl5 { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); return($ast->emit_perl5()) }
 }
 
 ;
@@ -127,7 +128,7 @@ sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub namespace { $_[0]->{namespace} };
 sub name { $_[0]->{name} };
-sub emit_perl5 { my $self = $_[0]; ((my  $table = undef) = { ('$' => '$'), ('@' => '$List_'), ('%' => '$Hash_'), ('&' => '$Code_') }); ((my  $ns = undef) = ''); if (Main::bool($self->{namespace})) { ($ns = $self->{namespace} . '::') } else { if (Main::bool((((($self->{sigil} eq '@')) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) { return('(\\@ARGV)') } ; if (Main::bool(($self->{twigil} eq '.'))) { return('$self->{' . $self->{name} . '}') } ; if (Main::bool(($self->{name} eq '/'))) { return($table->{$self->{sigil}} . 'MATCH') }  }; return($table->{$self->{sigil}} . $ns . $self->{name}) };
+sub emit_perl5 { my $self = $_[0]; ((my  $table = undef) = do { (my  $Hash_a = {}); ($Hash_a->{'$'} = '$'); ($Hash_a->{'@'} = '$List_'); ($Hash_a->{'%'} = '$Hash_'); ($Hash_a->{'&'} = '$Code_'); $Hash_a }); ((my  $ns = undef) = ''); if (Main::bool($self->{namespace})) { ($ns = $self->{namespace} . '::') } else { if (Main::bool((((($self->{sigil} eq '@')) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) { return('(\\@ARGV)') } ; if (Main::bool(($self->{twigil} eq '.'))) { return('$self->{' . $self->{name} . '}') } ; if (Main::bool(($self->{name} eq '/'))) { return($table->{$self->{sigil}} . 'MATCH') }  }; return($table->{$self->{sigil}} . $ns . $self->{name}) };
 sub plain_name { my $self = $_[0]; if (Main::bool($self->{namespace})) { return($self->{namespace} . '::' . $self->{name}) } ; return($self->{name}) }
 }
 
