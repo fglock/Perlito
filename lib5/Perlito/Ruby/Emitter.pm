@@ -5,6 +5,7 @@ use strict;
 use warnings;
 no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');
 use Perlito::Perl5::Runtime;
+use Perlito::Perl5::Prelude;
 our $MATCH = Perlito::Match->new();
 {
 package GLOBAL;
@@ -188,7 +189,7 @@ sub new { shift; bless { @_ }, "Var" }
 sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub name { $_[0]->{name} };
-((my  $table = undef) = { ('$' => 'v_'), ('@' => 'list_'), ('%' => 'hash_'), ('&' => 'code_') });
+((my  $table = undef) = do { (my  $Hash_a = {}); ($Hash_a->{'$'} = 'v_'); ($Hash_a->{'@'} = 'list_'); ($Hash_a->{'%'} = 'hash_'); ($Hash_a->{'&'} = 'code_'); $Hash_a });
 sub emit_ruby { my $self = $_[0]; $self->emit_ruby_indented(0) };
 sub emit_ruby_indented { my $self = $_[0]; my $level = $_[1]; if (Main::bool((((($self->{sigil} eq '@')) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) { return(Ruby::tab($level) . 'ARGV') } ; return(Ruby::tab($level) . ((Main::bool((($self->{twigil} eq '.'))) ? ('self.v_' . $self->{name} . '') : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name} . '')))))) };
 sub emit_ruby_name { my $self = $_[0]; return(((Main::bool((($self->{twigil} eq '.'))) ? ('self.v_' . $self->{name}) : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name})))))) }

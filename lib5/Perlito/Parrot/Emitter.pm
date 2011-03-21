@@ -5,6 +5,7 @@ use strict;
 use warnings;
 no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');
 use Perlito::Perl5::Runtime;
+use Perlito::Perl5::Prelude;
 our $MATCH = Perlito::Match->new();
 {
 package GLOBAL;
@@ -192,7 +193,7 @@ sub name { $_[0]->{name} };
 sub emit_parrot { my $self = $_[0]; (Main::bool((($self->{twigil} eq '.'))) ? ('  $P0 = getattribute self, \'' . $self->{name} . '\'' . '
 ') : ('  $P0 = ' . $self->full_name(("" . ' ') . '
 '))) };
-sub full_name { my $self = $_[0]; ((my  $table = undef) = { ('$' => 'scalar_'), ('@' => 'list_'), ('%' => 'hash_'), ('&' => 'code_') }); (Main::bool((($self->{twigil} eq '.'))) ? ($self->{name}) : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name})))) }
+sub full_name { my $self = $_[0]; ((my  $table = undef) = do { (my  $Hash_a = {}); ($Hash_a->{'$'} = 'scalar_'); ($Hash_a->{'@'} = 'list_'); ($Hash_a->{'%'} = 'hash_'); ($Hash_a->{'&'} = 'code_'); $Hash_a }); (Main::bool((($self->{twigil} eq '.'))) ? ($self->{name}) : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name})))) }
 }
 
 ;

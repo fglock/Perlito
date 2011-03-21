@@ -5,6 +5,7 @@ use strict;
 use warnings;
 no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');
 use Perlito::Perl5::Runtime;
+use Perlito::Perl5::Prelude;
 our $MATCH = Perlito::Match->new();
 {
 package GLOBAL;
@@ -139,7 +140,7 @@ sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub namespace { $_[0]->{namespace} };
 sub name { $_[0]->{name} };
-sub emit_javascript { my $self = $_[0]; ((my  $table = undef) = { ('$' => 'v_'), ('@' => 'List_'), ('%' => 'Hash_'), ('&' => 'Code_') }); ((my  $ns = undef) = ''); if (Main::bool($self->{namespace})) { ($ns = Main::to_javascript_namespace($self->{namespace}) . '.') } ; (Main::bool((($self->{twigil} eq '.'))) ? ('v_self.v_' . $self->{name} . '') : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $ns . $self->{name})))) };
+sub emit_javascript { my $self = $_[0]; ((my  $table = undef) = do { (my  $Hash_a = {}); ($Hash_a->{'$'} = 'v_'); ($Hash_a->{'@'} = 'List_'); ($Hash_a->{'%'} = 'Hash_'); ($Hash_a->{'&'} = 'Code_'); $Hash_a }); ((my  $ns = undef) = ''); if (Main::bool($self->{namespace})) { ($ns = Main::to_javascript_namespace($self->{namespace}) . '.') } ; (Main::bool((($self->{twigil} eq '.'))) ? ('v_self.v_' . $self->{name} . '') : ((Main::bool((($self->{name} eq '/'))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $ns . $self->{name})))) };
 sub plain_name { my $self = $_[0]; if (Main::bool($self->{namespace})) { return($self->{namespace} . '.' . $self->{name}) } ; return($self->{name}) }
 }
 

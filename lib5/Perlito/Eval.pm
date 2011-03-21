@@ -5,6 +5,7 @@ use strict;
 use warnings;
 no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');
 use Perlito::Perl5::Runtime;
+use Perlito::Perl5::Prelude;
 our $MATCH = Perlito::Match->new();
 {
 package GLOBAL;
@@ -17,7 +18,7 @@ package CompUnit;
 sub new { shift; bless { @_ }, "CompUnit" }
 sub name { $_[0]->{name} };
 sub body { $_[0]->{body} };
-sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, {  } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $stmt ( @{$self->{body} || []} ) { $stmt->eval($env1) } }
+sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, do { (my  $Hash_a = {}); $Hash_a } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $stmt ( @{$self->{body} || []} ) { $stmt->eval($env1) } }
 }
 
 ;
@@ -58,7 +59,7 @@ package Lit::Block;
 sub new { shift; bless { @_ }, "Lit::Block" }
 sub sig { $_[0]->{sig} };
 sub stmts { $_[0]->{stmts} };
-sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, {  } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $stmt ( @{$self->{stmts} || []} ) { $stmt->eval($env1) } }
+sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, do { (my  $Hash_a = {}); $Hash_a } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $stmt ( @{$self->{stmts} || []} ) { $stmt->eval($env1) } }
 }
 
 ;
@@ -143,7 +144,7 @@ sub new { shift; bless { @_ }, "If" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
-sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $cond = undef) = $self->{cond}); if (Main::bool($cond->eval($env))) { ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, {  } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $stmt ( @{((($self->{body})->stmts()) || []) || []} ) { $stmt->eval($env1) } } else { ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, {  } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $stmt ( @{((($self->{otherwise})->stmts()) || []) || []} ) { $stmt->eval($env1) } }; return(undef) }
+sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $cond = undef) = $self->{cond}); if (Main::bool($cond->eval($env))) { ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, do { (my  $Hash_a = {}); $Hash_a } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $stmt ( @{((($self->{body})->stmts()) || []) || []} ) { $stmt->eval($env1) } } else { ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, do { (my  $Hash_a = {}); $Hash_a } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $stmt ( @{((($self->{otherwise})->stmts()) || []) || []} ) { $stmt->eval($env1) } }; return(undef) }
 }
 
 ;
@@ -153,7 +154,7 @@ sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub topic { $_[0]->{topic} };
-sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $cond = undef) = $self->{cond}); ((my  $topic_name = undef) = (($self->{body})->sig())->plain_name()); ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, {  } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $topic ( @{(($cond->eval($env)) || []) || []} ) { ($env1->[0] = { ($topic_name => $topic) }); for my $stmt ( @{((($self->{body})->stmts()) || []) || []} ) { $stmt->eval($env1) } }; return(undef) }
+sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $cond = undef) = $self->{cond}); ((my  $topic_name = undef) = (($self->{body})->sig())->plain_name()); ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, do { (my  $Hash_a = {}); $Hash_a } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $topic ( @{(($cond->eval($env)) || []) || []} ) { ($env1->[0] = do { (my  $Hash_a = {}); ($Hash_a->{$topic_name} = $topic); $Hash_a }); for my $stmt ( @{((($self->{body})->stmts()) || []) || []} ) { $stmt->eval($env1) } }; return(undef) }
 }
 
 ;
@@ -222,7 +223,7 @@ sub eval { my $self = $_[0]; my $env = $_[1]; (my  $List_param_name = []); for m
 package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
-sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, {  } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $stmt ( @{$self->{block} || []} ) { $stmt->eval($env1) } }
+sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $env1 = undef) = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, do { (my  $Hash_a = {}); $Hash_a } ); ($List_v = ($env || [])); for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) { push( @{$List_a}, $List_v->[$x] ) }; $List_a }); for my $stmt ( @{$self->{block} || []} ) { $stmt->eval($env1) } }
 }
 
 ;
