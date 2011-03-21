@@ -341,28 +341,16 @@ class Val::Object {
 class Lit::Array {
     has @.array1;
     method emit_lisp {
-        my @items;
-        for @.array1 -> $item {
-            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
-                for @($item.arguments) -> $arg {
-                    @items.push($arg);
-                }
-            }
-            else {
-                @items.push($item);
-            }
+        my $ast = self.expand_interpolation;
+        if ! $ast.isa('Lit::Array') {
+            return $ast.emit_lisp;
         }
+
+        my @items = @($ast.array1);
         if @items {
             my $str = '';
             for @items -> $elem {
-                if     ( $elem.isa( 'Var' )   && $elem.sigil eq '@' )
-                    || ( $elem.isa( 'Apply' ) && $elem.code  eq 'prefix:<@>' )
-                {
-                    $str = $str ~ ' (coerce ' ~ $elem.emit_lisp() ~ ' \'list)';
-                }
-                else {
-                    $str = $str ~ ' (list ' ~ $elem.emit_lisp() ~ ')';
-                }
+                $str = $str ~ ' (list ' ~ $elem.emit_lisp() ~ ')';
             }
             return '(let ((_tmp_ (concatenate \'list ' ~ $str ~ '))) ' 
                 ~    '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))'

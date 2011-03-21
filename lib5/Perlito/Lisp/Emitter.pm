@@ -146,7 +146,7 @@ sub emit_lisp { my $self = $_[0]; 'bless(' . Main::perl($self->{fields}, ("" . '
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
-sub emit_lisp { my $self = $_[0]; (my  $List_items = []); for my $item ( @{$self->{array1} || []} ) { if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) { for my $arg ( @{(($item->arguments()) || []) || []} ) { push( @{$List_items}, $arg ) } } else { push( @{$List_items}, $item ) } }; if (Main::bool($List_items)) { ((my  $str = undef) = ''); for my $elem ( @{$List_items || []} ) { if (Main::bool((((Main::isa($elem, 'Var') && ($elem->sigil() eq '@'))) || ((Main::isa($elem, 'Apply') && ($elem->code() eq 'prefix:<@>')))))) { ($str = $str . ' (coerce ' . $elem->emit_lisp() . ' \'list)') } else { ($str = $str . ' (list ' . $elem->emit_lisp() . ')') } }; return('(let ((_tmp_ (concatenate \'list ' . $str . '))) ' . '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))') } else { return('(make-array 0 :adjustable 1 :fill-pointer t)') } }
+sub emit_lisp { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); if (Main::bool((Main::isa($ast, 'Lit::Array') ? 0 : 1))) { return($ast->emit_lisp()) } ; ((my  $List_items = []) = (($ast->array1()) || [])); if (Main::bool($List_items)) { ((my  $str = undef) = ''); for my $elem ( @{$List_items || []} ) { ($str = $str . ' (list ' . $elem->emit_lisp() . ')') }; return('(let ((_tmp_ (concatenate \'list ' . $str . '))) ' . '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))') } else { return('(make-array 0 :adjustable 1 :fill-pointer t)') } }
 }
 
 ;

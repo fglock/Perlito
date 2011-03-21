@@ -204,42 +204,8 @@ class Lit::Array {
 class Lit::Hash {
     has @.hash1;
     method emit_javascript {
-        my @s;
-        my @items;
-        for @.hash1 -> $item {
-            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
-                for @($item.arguments) -> $arg {
-                    @items.push($arg);
-                }
-            }
-            else {
-                @items.push($item);
-            }
-        }
-        for @items -> $item { 
-            if $item.isa('Apply') && $item.code eq 'infix:<=>>' {
-                push @s, 'a[' ~ $item.arguments[0].emit_javascript() ~ '] = ' 
-                    ~ $item.arguments[1].emit_javascript() 
-            }
-            elsif   $item.isa( 'Var' )   && $item.sigil eq '%'
-                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<%>'
-            {
-                push @s, 
-                      '(function (o) { '
-                    ~   'for(var i in o) { ' 
-                    ~       'a[i] = o[i] '
-                    ~   '} '
-                    ~ '})(' ~ $item.emit_javascript() ~ ');'
-            }
-            else {
-                die 'Error in hash composer: ', $item.perl;
-            }
-        }
-        return 
-              '(function () { var a = {}; ' 
-            ~   @s.join('; ') ~ '; '
-            ~   'return a '
-            ~ '})()';
+        my $ast = self.expand_interpolation;
+        return $ast.emit_javascript;
     }
 }
 
@@ -349,6 +315,7 @@ class Call {
             || ($.method eq 'scalar')
             || ($.method eq 'keys')
             || ($.method eq 'values')
+            || ($.method eq 'pairs')
             || ($.method eq 'elems')
             || ($.method eq 'say' )
             || ($.method eq 'chars')
