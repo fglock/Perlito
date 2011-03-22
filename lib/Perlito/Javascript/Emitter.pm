@@ -194,9 +194,6 @@ class Lit::Array {
     has @.array1;
     method emit_javascript {
         my $ast = self.expand_interpolation;
-        if $ast.isa('Lit::Array') {
-            return '[' ~ ($ast.array1.>>emit_javascript).join(', ') ~ ']';
-        }
         return $ast.emit_javascript;
     }
 }

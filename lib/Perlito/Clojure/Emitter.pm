@@ -209,38 +209,16 @@ class Val::Object {
 class Lit::Array {
     has @.array1;
     method emit_clojure {
-        if @.array1 {
-            my $str = '';
-            for @.array1 -> $elem {
-                if $elem.isa( 'Apply' ) && $elem.code eq 'prefix:<@>' {
-                    $str = $str ~ ' ' ~ $elem.emit_clojure;
-                }
-                else {
-                    $str = $str ~ ' (list ' ~ $elem.emit_clojure() ~ ')';
-                }
-            }
-            return '(concatenate \'list ' ~ $str ~ ')';
-        }
-        else {
-            return 'nil'
-        }
+        my $ast = self.expand_interpolation;
+        return $ast.emit_clojure;
     }
 }
 
 class Lit::Hash {
     has @.hash1;
     method emit_clojure {
-        if @.hash1 {
-            my $fields = @.hash1;
-            my $str = '';
-            for @$fields -> $field { 
-                $str = $str ~ '(setf (gethash ' ~ ($field[0]).emit_clojure() ~ ' h) ' ~ ($field[1]).emit() ~ ')';
-            }; 
-            return '(let ((h (make-hash-table :test \'equal))) ' ~ $str ~ ' h)';
-        }
-        else {
-            return '(make-hash-table :test \'equal)';
-        }
+        my $ast = self.expand_interpolation;
+        return $ast.emit_clojure;
     }
 }
 

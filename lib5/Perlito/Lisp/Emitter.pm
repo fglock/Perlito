@@ -147,7 +147,7 @@ sub emit_lisp { my $self = $_[0]; 'bless(' . Main::perl($self->{fields}, ("" . '
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
-sub emit_lisp { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); if (Main::bool((Main::isa($ast, 'Lit::Array') ? 0 : 1))) { return($ast->emit_lisp()) } ; ((my  $List_items = []) = (($ast->array1()) || [])); if (Main::bool($List_items)) { ((my  $str = undef) = ''); for my $elem ( @{$List_items || []} ) { ($str = $str . ' (list ' . $elem->emit_lisp() . ')') }; return('(let ((_tmp_ (concatenate \'list ' . $str . '))) ' . '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))') } else { return('(make-array 0 :adjustable 1 :fill-pointer t)') } }
+sub emit_lisp { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); return($ast->emit_lisp()) }
 }
 
 ;
@@ -155,7 +155,7 @@ sub emit_lisp { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolat
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
-sub emit_lisp { my $self = $_[0]; if (Main::bool($self->{hash1})) { ((my  $fields = undef) = $self->{hash1}); ((my  $str = undef) = ''); for my $field ( @{($fields || []) || []} ) { ($str = $str . '(setf (mp-Main::sv-hash-lookup ' . ($field->[0])->emit_lisp() . ' h) ' . ($field->[1])->emit_lisp() . ')') }; return('(let ((h (make-hash-table :test \'equal))) ' . $str . ' h)') } else { return('(make-hash-table :test \'equal)') } }
+sub emit_lisp { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); return($ast->emit_lisp()) }
 }
 
 ;
@@ -209,7 +209,7 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
-sub emit_lisp { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { ((my  $class = undef) = $self->{parameters}->class()); ((my  $a = undef) = $self->{parameters}->fields()); ((my  $b = undef) = $self->{arguments}); ((my  $str = undef) = 'do { '); ((my  $i = undef) = 0); (my  $arg = undef); for my $var ( @{($a || []) || []} ) { ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => []), ('hyper' => 0))))); ($str = $str . ' ' . $bind->emit_lisp() . ' '); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_lisp() . ' }') } ; if (Main::bool((Main::isa($self->{parameters}, 'Decl') && (($self->{parameters}->decl() eq 'my'))))) { return('(setf ' . ($self->{parameters}->var())->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . ')') } ; '(setf ' . $self->{parameters}->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . ')' }
+sub emit_lisp { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { ((my  $class = undef) = $self->{parameters}->class()); ((my  $a = undef) = $self->{parameters}->fields()); ((my  $b = undef) = $self->{arguments}); ((my  $str = undef) = 'do { '); ((my  $i = undef) = 0); (my  $arg = undef); for my $var ( @{($a || []) || []} ) { ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do { (my  $List_a = []); (my  $List_v = []); $List_a }), ('hyper' => 0))))); ($str = $str . ' ' . $bind->emit_lisp() . ' '); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_lisp() . ' }') } ; if (Main::bool((Main::isa($self->{parameters}, 'Decl') && (($self->{parameters}->decl() eq 'my'))))) { return('(setf ' . ($self->{parameters}->var())->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . ')') } ; '(setf ' . $self->{parameters}->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . ')' }
 }
 
 ;
@@ -266,7 +266,7 @@ sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub topic { $_[0]->{topic} };
-sub emit_lisp { my $self = $_[0]; ((my  $cond = undef) = $self->{cond}); ((my  $block = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{body}))); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; '(loop for ' . $self->{topic}->emit_lisp(("" . ' across ') . $cond->emit_lisp() . ' do ' . $block->emit_lisp() . ')') }
+sub emit_lisp { my $self = $_[0]; ((my  $cond = undef) = $self->{cond}); ((my  $block = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{body}))); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, $cond ); $List_a }))) } ; '(loop for ' . $self->{topic}->emit_lisp(("" . ' across ') . $cond->emit_lisp() . ' do ' . $block->emit_lisp() . ')') }
 }
 
 ;

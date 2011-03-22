@@ -297,79 +297,8 @@ class Lit::Array {
     has @.array1;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        my $needs_interpolation = 0;
-        my @items;
-        for @.array1 -> $item {
-            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
-                for @($item.arguments) -> $arg {
-                    @items.push($arg);
-                }
-            }
-            else {
-                @items.push($item);
-            }
-        }
-        for @items -> $item {
-            if      $item.isa( 'Var' )   && $item.sigil eq '@'
-                ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
-            {
-                $needs_interpolation = 1;
-            }
-        }
-        if $needs_interpolation {
-            my @block;
-            my $temp_array  = Var.new( 'name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
-            my $input_array = Var.new( 'name' => 'b', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
-            push @block, Decl.new( 
-                            'decl' => 'my',
-                            'type' => '',
-                            'var'  => $temp_array
-                        );
-            my $index = 0;
-            for @items -> $item {
-                if      $item.isa( 'Var' )   && $item.sigil eq '@'
-                    ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
-                {
-                    push @block, Call.new(
-                                    'method' => 'extend',
-                                    'arguments' => [ 
-                                        Index.new( obj => $input_array, index_exp => Val::Int.new( int => $index ) )
-                                    ],
-                                    'hyper' => '',
-                                    'invocant' => $temp_array
-                                );
-                }
-                else {
-                    push @block, Call.new(
-                                    'method' => 'push',
-                                    'arguments' => [ 
-                                        Index.new( obj => $input_array, index_exp => Val::Int.new( int => $index ) ) 
-                                    ],
-                                    'hyper' => '',
-                                    'invocant' => $temp_array
-                                );
-                }
-                $index = $index + 1;
-            }
-            push @block, $temp_array;
-            my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
-            # generate an anonymous sub in the current block
-            Perlito::Python::LexicalBlock::push_stmt_python( 
-                    Perlito::Python::AnonSub.new( 
-                        name  => $label, 
-                        block => @block,
-                        sig   => Sig.new( invocant => Mu, positional => [ $input_array ], named => {} ),
-                        handles_return_exception => 1,
-                    )
-                );
-            # call the anonymous sub
-            return Python::tab($level) 
-                ~ "f_" ~ $label ~ "(mp6_Array([" ~ (@items.>>emit_python).join(', ') ~ "]))";
-        }
-        else {
-            Python::tab($level)  
-                ~ 'mp6_Array([' ~ (@items.>>emit_python).join(', ') ~ '])';
-        }
+        my $ast = self.expand_interpolation;
+        return $ast.emit_python_indented($level);
     }
 }
 
@@ -377,58 +306,8 @@ class Lit::Hash {
     has @.hash1;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        my @s;
-        my @items;
-        for @.hash1 -> $item {
-            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
-                for @($item.arguments) -> $arg {
-                    @items.push($arg);
-                }
-            }
-            else {
-                @items.push($item);
-            }
-        }
-        push @s, Decl.new( decl => 'my', type => Mu, var => Var.new( sigil => '%', twigil => '', name => 'a' ) );
-        for @items -> $item1 {
-            my $item = $item1;
-            if $item.isa('Do') && $item.block.isa('Apply') {
-                $item = $item.block;
-            }
-            if $item.isa('Apply') && $item.code eq 'infix:<=>>' {
-                push @s, 
-                    Apply.new(
-                        'arguments' => [
-                            Lookup.new(
-                                'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''),
-                                'index_exp' => $item.arguments[0], 
-                            ), 
-                            $item.arguments[1]
-                        ], 
-                        'code' => 'infix:<=>',  
-                        'namespace' => ''
-                    )
-            }
-            elsif   $item.isa( 'Var' )   && $item.sigil eq '%'
-                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<%>'
-            {
-                push @s,
-                    Call.new(
-                        'arguments' => [ $item ], 
-                        'hyper' => '', 
-                        'invocant' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''), 
-                        'method' => 'update'
-                    )
-            }
-            else {
-                die 'Error in hash composer: ', $item.perl;
-            }
-        }
-        push @s, Var.new( sigil => '%', twigil => '', name => 'a' );
-        # 'mp6_Hash({' ~ @dict.join(', ') ~ '})';
-
-        my $code = Do.new( block => Lit::Block.new( stmts => @s ) );
-        $code.emit_python_indented($level);
+        my $ast = self.expand_interpolation;
+        return $ast.emit_python_indented($level);
     }
 }
 

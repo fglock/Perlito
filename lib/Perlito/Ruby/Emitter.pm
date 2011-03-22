@@ -334,47 +334,8 @@ class Lit::Array {
     has @.array1;
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        my $needs_interpolation = 0;
-        for @.array1 -> $item {
-            if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
-                || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' )
-            {
-                $needs_interpolation = 1;
-            }
-        }
-        if $needs_interpolation {
-            my @block;
-            my $temp_array = Var.new( 'name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' );
-            for @.array1 -> $item {
-                if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
-                    || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' )
-                {
-                    push @block, Call.new(
-                                    'method' => 'concat',
-                                    'arguments' => [ $item ],
-                                    'hyper' => '',
-                                    'invocant' => $temp_array
-                                );
-                }
-                else {
-                    push @block, Call.new(
-                                    'method' => 'push',
-                                    'arguments' => [ $item ],
-                                    'hyper' => '',
-                                    'invocant' => $temp_array
-                                );
-                }
-            }
-            push @block, $temp_array;
-            my $body_block = Perlito::Ruby::LexicalBlock.new( block => @block );
-            return Ruby::tab($level) ~ "Proc.new \{ |list_a| " ~ "\n"
-                ~   $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
-                ~  Ruby::tab($level) ~ "}.call([])";
-        }
-        else {
-            Ruby::tab($level)  
-                ~ '[' ~ (@.array1.>>emit_ruby).join(', ') ~ ']';
-        }
+        my $ast = self.expand_interpolation;
+        return $ast.emit_ruby_indented($level);
     }
 }
 
@@ -382,13 +343,8 @@ class Lit::Hash {
     has @.hash1;
     method emit_ruby { $self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        my $fields = @.hash1;
-        my @dict;
-        for @$fields -> $field { 
-            push @dict, (($field[0]).emit_ruby ~ ' => ' ~ ($field[1]).emit_ruby);
-        }; 
-        Ruby::tab($level) ~ 
-            '{' ~ @dict.join(', ') ~ '}';
+        my $ast = self.expand_interpolation;
+        return $ast.emit_ruby_indented($level);
     }
 }
 

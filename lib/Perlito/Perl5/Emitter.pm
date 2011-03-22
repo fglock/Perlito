@@ -87,9 +87,6 @@ class Lit::Array {
     has @.array1;
     method emit_perl5 {
         my $ast = self.expand_interpolation;
-        if $ast.isa('Lit::Array') {
-            return '[' ~ ($ast.array1.>>emit_perl5).join(', ') ~ ']';
-        }
         return $ast.emit_perl5;
     }
 }

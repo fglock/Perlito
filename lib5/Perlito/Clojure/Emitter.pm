@@ -126,7 +126,7 @@ sub emit_clojure { my $self = $_[0]; 'bless(' . Main::perl($self->{fields}, ) . 
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
-sub emit_clojure { my $self = $_[0]; if (Main::bool($self->{array1})) { ((my  $str = undef) = ''); for my $elem ( @{$self->{array1} || []} ) { if (Main::bool((Main::isa($elem, 'Apply') && ($elem->code() eq 'prefix:<@>')))) { ($str = $str . ' ' . $elem->emit_clojure()) } else { ($str = $str . ' (list ' . $elem->emit_clojure() . ')') } }; return('(concatenate \'list ' . $str . ')') } else { return('nil') } }
+sub emit_clojure { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); return($ast->emit_clojure()) }
 }
 
 ;
@@ -134,7 +134,7 @@ sub emit_clojure { my $self = $_[0]; if (Main::bool($self->{array1})) { ((my  $s
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
-sub emit_clojure { my $self = $_[0]; if (Main::bool($self->{hash1})) { ((my  $fields = undef) = $self->{hash1}); ((my  $str = undef) = ''); for my $field ( @{($fields || []) || []} ) { ($str = $str . '(setf (gethash ' . ($field->[0])->emit_clojure() . ' h) ' . ($field->[1])->emit() . ')') }; return('(let ((h (make-hash-table :test \'equal))) ' . $str . ' h)') } else { return('(make-hash-table :test \'equal)') } }
+sub emit_clojure { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); return($ast->emit_clojure()) }
 }
 
 ;
@@ -188,7 +188,7 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
-sub emit_clojure { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { ((my  $class = undef) = $self->{parameters}->class()); ((my  $a = undef) = $self->{parameters}->fields()); ((my  $b = undef) = $self->{arguments}); ((my  $str = undef) = 'do { '); ((my  $i = undef) = 0); (my  $arg = undef); for my $var ( @{($a || []) || []} ) { ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => []), ('hyper' => 0))))); ($str = $str . ' ' . $bind->emit_clojure() . ' '); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_clojure() . ' }') } ; if (Main::bool((Main::isa($self->{parameters}, 'Decl') && (($self->{parameters}->decl() eq 'my'))))) { return('(setf ' . ($self->{parameters}->var())->emit_clojure() . ' ' . $self->{arguments}->emit_clojure() . ')') } ; '(setf ' . $self->{parameters}->emit_clojure() . ' ' . $self->{arguments}->emit_clojure() . ')' }
+sub emit_clojure { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { ((my  $class = undef) = $self->{parameters}->class()); ((my  $a = undef) = $self->{parameters}->fields()); ((my  $b = undef) = $self->{arguments}); ((my  $str = undef) = 'do { '); ((my  $i = undef) = 0); (my  $arg = undef); for my $var ( @{($a || []) || []} ) { ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do { (my  $List_a = []); (my  $List_v = []); $List_a }), ('hyper' => 0))))); ($str = $str . ' ' . $bind->emit_clojure() . ' '); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_clojure() . ' }') } ; if (Main::bool((Main::isa($self->{parameters}, 'Decl') && (($self->{parameters}->decl() eq 'my'))))) { return('(setf ' . ($self->{parameters}->var())->emit_clojure() . ' ' . $self->{arguments}->emit_clojure() . ')') } ; '(setf ' . $self->{parameters}->emit_clojure() . ' ' . $self->{arguments}->emit_clojure() . ')' }
 }
 
 ;
@@ -245,7 +245,7 @@ sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub topic { $_[0]->{topic} };
-sub emit_clojure { my $self = $_[0]; ((my  $cond = undef) = $self->{cond}); ((my  $block = undef) = Perlito::Clojure::LexicalBlock->new(('block' => $self->{body}))); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond]))) } ; '(dolist (' . $self->{topic}->emit_clojure() . ' ' . $cond->emit_clojure() . ') ' . $block->emit_clojure() . ')' }
+sub emit_clojure { my $self = $_[0]; ((my  $cond = undef) = $self->{cond}); ((my  $block = undef) = Perlito::Clojure::LexicalBlock->new(('block' => $self->{body}))); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, $cond ); $List_a }))) } ; '(dolist (' . $self->{topic}->emit_clojure() . ' ' . $cond->emit_clojure() . ') ' . $block->emit_clojure() . ')' }
 }
 
 ;

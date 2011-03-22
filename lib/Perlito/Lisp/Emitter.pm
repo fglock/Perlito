@@ -342,40 +342,15 @@ class Lit::Array {
     has @.array1;
     method emit_lisp {
         my $ast = self.expand_interpolation;
-        if ! $ast.isa('Lit::Array') {
-            return $ast.emit_lisp;
-        }
-
-        my @items = @($ast.array1);
-        if @items {
-            my $str = '';
-            for @items -> $elem {
-                $str = $str ~ ' (list ' ~ $elem.emit_lisp() ~ ')';
-            }
-            return '(let ((_tmp_ (concatenate \'list ' ~ $str ~ '))) ' 
-                ~    '(make-array (length _tmp_) :adjustable 1 :fill-pointer t :initial-contents _tmp_))'
-        }
-        else {
-            return '(make-array 0 :adjustable 1 :fill-pointer t)'
-        }
+        return $ast.emit_lisp;
     }
 }
 
 class Lit::Hash {
     has @.hash1;
     method emit_lisp {
-        if @.hash1 {
-            my $fields = @.hash1;
-            my $str = '';
-            for @$fields -> $field { 
-                $str = $str ~ '(setf (mp-Main::sv-hash-lookup ' 
-                    ~ ($field[0]).emit_lisp() ~ ' h) ' ~ ($field[1]).emit_lisp() ~ ')';
-            }; 
-            return '(let ((h (make-hash-table :test \'equal))) ' ~ $str ~ ' h)';
-        }
-        else {
-            return '(make-hash-table :test \'equal)';
-        }
+        my $ast = self.expand_interpolation;
+        return $ast.emit_lisp;
     }
 }
 

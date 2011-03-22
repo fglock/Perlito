@@ -418,42 +418,16 @@ class Val::Object {
 class Lit::Array {
     has @.array1;
     method emit_go {
-        my $str = '';
-        for @.array1 -> $item {
-            if     ( $item.isa( 'Var' )   && $item.sigil eq '@' )
-                || ( $item.isa( 'Apply' ) && $item.code  eq 'prefix:<@>' ) 
-            {
-                $str = $str 
-                    ~ 'func(a_ *Array) { ' 
-                        ~ 'for i_ := 0; i_ <= a_.n; i_++ { (*a).(push_er).f_push( Capture{ p: []*Any{ a_.v[i_] } } ) } ' 
-                    ~ '}( (*' ~ Call::emit_go_call( $item, 'array' ) ~ ').(*Array) ); '
-            }
-            else {
-                $str = $str ~ '(*a).(push_er).f_push( Capture{ p: []*Any{ ' ~ $item.emit_go ~ ' } } ); '
-            }
-        }
-        'func () *Any { ' 
-                ~ 'a := a_array(); '
-                ~ $str 
-                ~ 'return a; '
-        ~ '}()'
+        my $ast = self.expand_interpolation;
+        return $ast.emit_go;
     }
 }
 
 class Lit::Hash {
     has @.hash1;
     method emit_go {
-        my $fields = @.hash1;
-        my $str = ''; 
-        for @$fields -> $field { 
-            $str = $str 
-                ~ '*(*m).(lookup_er).f_lookup( Capture{ p : []*Any{ ' ~ ($field[0]).emit_go ~ ' }} ) = *(' ~ ($field[1]).emit_go ~ '); ';
-        }; 
-        'func() *Any { ' 
-            ~ 'm := h_hash(); '
-            ~ $str 
-            ~ 'return m; '
-        ~ '}()';
+        my $ast = self.expand_interpolation;
+        return $ast.emit_go;
     }
 }
 
