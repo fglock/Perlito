@@ -198,6 +198,11 @@ class mp6_Hash:
         return self.l.values()
     def keys(self):
         return self.l.keys()
+    def f_pairs(self):
+        out = [];
+        for i in self.keys():
+            out.append( Pair(v_key=i, v_value=self.__getitem__(i)) )
+        return out
     def has_key(self, k):
         return self.l.has_key(k)
     def f_set(self, i, s):

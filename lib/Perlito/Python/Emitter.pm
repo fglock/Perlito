@@ -234,7 +234,7 @@ class CompUnit {
         push @s, Python::tab($level)    ~   'try:';
         push @s, Python::tab($level+1)  ~       'type(' ~ $name ~ ")";
         push @s, Python::tab($level)    ~   'except NameError:';
-        push @s, Python::tab($level+1)  ~       "__all__.extend(['" ~ $name ~ "', '" ~ $name ~ "_proto'])";
+        # push @s, Python::tab($level+1)  ~       "__all__.extend(['" ~ $name ~ "', '" ~ $name ~ "_proto'])";
         push @s, Python::tab($level+1)  ~       'class ' ~ $name ~ ":";
         push @s, Python::tab($level+2)  ~           "def __init__(v_self, **arg):";
         push @s, Python::tab($level+3)  ~               "v_self.__dict__.update(arg)";
