@@ -517,6 +517,9 @@ class Apply {
         if $code eq 'infix:<>>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') > mp6_to_num(')  ~ '))' };
         if $code eq 'infix:<<=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') <= mp6_to_num(') ~ '))' };
         if $code eq 'infix:<>=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') >= mp6_to_num(') ~ '))' };
+        if $code eq 'infix:<..>' { 
+            return 'range('  ~ (@.arguments[0]).emit_python() ~ ', 1 + ' ~ (@.arguments[1]).emit_python() ~ ')' 
+        }
 
         if $code eq 'exists'     {
             my $arg = @.arguments[0];
