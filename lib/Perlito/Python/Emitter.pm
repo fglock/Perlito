@@ -443,22 +443,25 @@ class Apply {
             $self.emit_python
     }
     method emit_python {
+        my $code = $.code;
         
         # check that expressions don't overflow the Python parser stack
         if (@.arguments[0]).isa('Apply') {
             my $args2 = @.arguments[0].arguments;
-            if ($args2[1]).isa('Apply') {
+            if ($args2[1]).isa('Apply') 
+               && $args2[1].code ne 'infix:<=>>'
+            {
                 $args2[1] = Do.new( block => $args2[1] );
             }
         }
         if (@.arguments[1]).isa('Apply') {
             my $args2 = @.arguments[1].arguments;
-            if ($args2[1]).isa('Apply') {
+            if ($args2[1]).isa('Apply') 
+               && $args2[1].code ne 'infix:<=>>'
+            {
                 $args2[1] = Do.new( block => $args2[1] );
             }
         }
-
-        my $code = $.code;
 
         if $code.isa( 'Str' ) { }
         else {
