@@ -17,7 +17,7 @@ sub new { shift; bless { @_ }, "GLOBAL" }
 package Perlito::Clojure::LexicalBlock;
 sub new { shift; bless { @_ }, "Perlito::Clojure::LexicalBlock" }
 sub block { $_[0]->{block} };
-sub emit_clojure { my $self = $_[0]; if (Main::bool((($self->{block}) ? 0 : 1))) { return('nil') } ; ((my  $str = undef) = ''); ((my  $has_my_decl = undef) = 0); ((my  $my_decl = undef) = ''); for my $decl ( @{$self->{block} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . ($decl->var())->emit_clojure() . ' (sv-undef))') } ; if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . (($decl->parameters())->var())->emit_clojure() . ' (sv-undef))') }  }; if (Main::bool($has_my_decl)) { ($str = $str . '(let (' . $my_decl . ') ') } else { ($str = $str . '(do ') }; for my $decl ( @{$self->{block} || []} ) { if (Main::bool(((((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) ? 0 : 1)))) { ($str = $str . ($decl)->emit_clojure()) }  }; return($str . ')') }
+sub emit_clojure { my $self = $_[0]; if (Main::bool(!Main::bool(($self->{block})))) { return('nil') } ; ((my  $str = undef) = ''); ((my  $has_my_decl = undef) = 0); ((my  $my_decl = undef) = ''); for my $decl ( @{$self->{block} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . ($decl->var())->emit_clojure() . ' (sv-undef))') } ; if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) { ($has_my_decl = 1); ($my_decl = $my_decl . '(' . (($decl->parameters())->var())->emit_clojure() . ' (sv-undef))') }  }; if (Main::bool($has_my_decl)) { ($str = $str . '(let (' . $my_decl . ') ') } else { ($str = $str . '(do ') }; for my $decl ( @{$self->{block} || []} ) { if (Main::bool((!Main::bool(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))))))) { ($str = $str . ($decl)->emit_clojure()) }  }; return($str . ')') }
 }
 
 ;
@@ -67,7 +67,7 @@ new-slots))
 ') }  }; if (Main::bool(($self->{name} ne 'Pair'))) { ($str = $str . '(defmethod sv-perl ((self ' . $class_name . '))' . '
 ' . '  (mp-Main::sv-lisp_dump_object "::' . Main::lisp_escape_string($self->{name}) . '"' . ' (list ' . $dumper . ')))' . '
 ' . '
-') } ; for my $decl ( @{$self->{body} || []} ) { if (Main::bool(((((((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))) ? 0 : 1)) && (((Main::isa($decl, 'Method')) ? 0 : 1))) && (((Main::isa($decl, 'Sub')) ? 0 : 1))))) { ($str = $str . ($decl)->emit_clojure() . '
+') } ; for my $decl ( @{$self->{body} || []} ) { if (Main::bool((((!Main::bool(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))))) && (!Main::bool((Main::isa($decl, 'Method'))))) && (!Main::bool((Main::isa($decl, 'Sub'))))))) { ($str = $str . ($decl)->emit_clojure() . '
 ') }  }; if (Main::bool($has_my_decl)) { ($str = $str . ')') } ; ($str = $str . '
 ' . '
 ') }

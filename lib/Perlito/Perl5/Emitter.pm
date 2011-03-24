@@ -285,8 +285,8 @@ class Apply {
         if $code eq 'bool'       { return 'Main::bool('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
 
         if $code eq 'prefix:<~>' { return '("" . ' ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
-        if $code eq 'prefix:<!>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' ? 0 : 1)' }
-        if $code eq 'prefix:<?>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' ? 1 : 0)' }
+        if $code eq 'prefix:<!>' { return '!Main::bool(' ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
+        if $code eq 'prefix:<?>' { return 'Main::bool('  ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
 
         if $code eq 'prefix:<$>' { return '${' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' }
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' || [])' }

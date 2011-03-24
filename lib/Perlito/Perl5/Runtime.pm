@@ -244,7 +244,7 @@ package Main;
     sub bool { 
         my $ref = ref($_[0]);
         return scalar(@{$_[0]}) if $ref eq 'ARRAY';
-        return $_[0];
+        return $_[0] ? 1 : 0;
     }
 
     # Lisp emitter

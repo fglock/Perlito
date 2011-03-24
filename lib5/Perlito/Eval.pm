@@ -184,7 +184,7 @@ sub new { shift; bless { @_ }, "Decl" }
 sub decl { $_[0]->{decl} };
 sub type { $_[0]->{type} };
 sub var { $_[0]->{var} };
-sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $decl = undef) = $self->{decl}); ((my  $name = undef) = $self->{var}->plain_name()); if (Main::bool(($decl eq 'has'))) { warn('Interpreter TODO: has') } ; if (Main::bool(((exists(($env->[0])->{$name})) ? 0 : 1))) { (($env->[0])->{$name} = undef) } ; return(undef) };
+sub eval { my $self = $_[0]; my $env = $_[1]; ((my  $decl = undef) = $self->{decl}); ((my  $name = undef) = $self->{var}->plain_name()); if (Main::bool(($decl eq 'has'))) { warn('Interpreter TODO: has') } ; if (Main::bool(!Main::bool((exists(($env->[0])->{$name}))))) { (($env->[0])->{$name} = undef) } ; return(undef) };
 sub plain_name { my $self = $_[0]; $self->{var}->plain_name() }
 }
 
