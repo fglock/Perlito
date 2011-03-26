@@ -144,6 +144,8 @@ class mp6_Array:
         return self.l.__iter__()
     def f_perl(self):
         return mp6_perl(self.l)
+    def f_elems(self):
+        return len(self.l)
     def f_extend(self, l):
         try:
             self.l.extend(l.l)

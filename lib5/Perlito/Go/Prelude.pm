@@ -23,7 +23,7 @@ sub bool { $_[0]->{bool} };
 sub capture { $_[0]->{capture} };
 sub hash { $_[0]->{hash} };
 sub array { $_[0]->{array} };
-sub perl { my $self = $_[0]; return('Match.new(' . 'from => ' . Main::perl($self->{from}, ("" . ', to => ') . Main::perl($self->{to}, ("" . ', bool => ') . Main::perl(($self->{bool}->bool()), ("" . ', capture => ') . Main::perl($self->{capture}, ("" . ', hash => ') . Main::perl($self->{hash}, ("" . ', array => ') . Main::perl($self->{array}, ("" . ')')))))))) };
+sub perl { my $self = $_[0]; return scalar ('Match.new(' . 'from => ' . Main::perl($self->{from}, ("" . ', to => ') . Main::perl($self->{to}, ("" . ', bool => ') . Main::perl(($self->{bool}->bool()), ("" . ', capture => ') . Main::perl($self->{capture}, ("" . ', hash => ') . Main::perl($self->{hash}, ("" . ', array => ') . Main::perl($self->{array}, ("" . ')')))))))) };
 sub Bool { my $self = $_[0]; $self->{bool}->Bool() };
 sub Str { my $self = $_[0]; die('TODO') };
 sub scalar { my $self = $_[0]; die('TODO') };
@@ -52,8 +52,8 @@ sub slurp { die('stub') }
 {
 package Main;
 sub new { shift; bless { @_ }, "Main" }
-sub to_lisp_identifier { my $ident = $_[0]; return('sv-' . $ident) };
-sub lisp_dump_object { my $class_name = $_[0]; my $data = $_[1]; return($class_name . '( ' . Main::join(([ map { Main::perl( $_, , ) } @{ $data } ]), ', ') . ' )') };
+sub to_lisp_identifier { my $ident = $_[0]; return scalar ('sv-' . $ident) };
+sub lisp_dump_object { my $class_name = $_[0]; my $data = $_[1]; return scalar ($class_name . '( ' . Main::join(([ map { Main::perl( $_, , ) } @{ $data } ]), ', ') . ' )') };
 sub to_go_namespace { die('TODO') };
 sub to_javascript_namespace { die('TODO') };
 sub javascript_escape_string { die('TODO') };

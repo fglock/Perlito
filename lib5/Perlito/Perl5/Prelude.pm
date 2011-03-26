@@ -29,7 +29,7 @@ package Pair;
 sub new { shift; bless { @_ }, "Pair" }
 sub key { $_[0]->{key} };
 sub value { $_[0]->{value} };
-sub perl { my $self = $_[0]; return($self->{key} . ' => ' . Main::perl($self->{value}, )) }
+sub perl { my $self = $_[0]; return scalar ($self->{key} . ' => ' . Main::perl($self->{value}, )) }
 }
 
 

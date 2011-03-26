@@ -17,10 +17,10 @@ sub new { shift; bless { @_ }, "GLOBAL" }
 package Perlito::Lisp::LexicalBlock;
 sub new { shift; bless { @_ }, "Perlito::Lisp::LexicalBlock" }
 sub block { $_[0]->{block} };
-sub emit_lisp { my $self = $_[0]; (my  $List_block = []); for ( @{$self->{block} || []} ) { if (Main::bool(defined($_))) { push( @{$List_block}, $_ ) }  }; if (Main::bool(!Main::bool(($self->{block})))) { return('nil') } ; ((my  $str = undef) = ''); ((my  $has_my_decl = undef) = 0); ((my  $my_decl = undef) = ''); ((my  $my_ignore = undef) = ''); (my  $Hash_decl_seen = {}); for my $decl ( @{$self->{block} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { ((my  $var_name = undef) = ($decl->var())->emit_lisp()); if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) { ($has_my_decl = 1); ($my_decl = $my_decl . Decl::emit_lisp_initializer($decl->var())); ($my_ignore = $my_ignore . '(declare (ignorable ' . $var_name . '))' . '
+sub emit_lisp { my $self = $_[0]; (my  $List_block = []); for ( @{$self->{block} || []} ) { if (Main::bool(defined($_))) { push( @{$List_block}, $_ ) }  }; if (Main::bool(!Main::bool(($self->{block})))) { return scalar ('nil') } ; ((my  $str = undef) = ''); ((my  $has_my_decl = undef) = 0); ((my  $my_decl = undef) = ''); ((my  $my_ignore = undef) = ''); (my  $Hash_decl_seen = {}); for my $decl ( @{$self->{block} || []} ) { if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) { ((my  $var_name = undef) = ($decl->var())->emit_lisp()); if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) { ($has_my_decl = 1); ($my_decl = $my_decl . Decl::emit_lisp_initializer($decl->var())); ($my_ignore = $my_ignore . '(declare (ignorable ' . $var_name . '))' . '
 '); ($Hash_decl_seen->{$var_name} = 1) }  } ; if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) { ((my  $var_name = undef) = (($decl->parameters())->var())->emit_lisp()); if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) { ($has_my_decl = 1); ($my_decl = $my_decl . Decl::emit_lisp_initializer(($decl->parameters())->var())); ($my_ignore = $my_ignore . '(declare (ignorable ' . $var_name . '))' . '
 '); ($Hash_decl_seen->{$var_name} = 1) }  }  }; if (Main::bool($has_my_decl)) { ($str = $str . '(let (' . $my_decl . ')' . '
-' . $my_ignore) } else { ($str = $str . '(progn ') }; for my $decl ( @{$self->{block} || []} ) { if (Main::bool((!Main::bool(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))))))) { ($str = $str . ($decl)->emit_lisp()) }  }; return($str . ')') }
+' . $my_ignore) } else { ($str = $str . '(progn ') }; for my $decl ( @{$self->{block} || []} ) { if (Main::bool((!Main::bool(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))))))) { ($str = $str . ($decl)->emit_lisp()) }  }; return scalar ($str . ')') }
 }
 
 ;
@@ -91,7 +91,7 @@ new-slots))
 ' . '  (progn' . '
 ' . '    (init-argv)'); for my $comp_unit ( @{(($comp_units) || []) || []} ) { ($str = $str . '
 ' . '    (run-' . Main::to_lisp_namespace($comp_unit->name()) . ')') }; ($str = $str . '))' . '
-'); return($str) }
+'); return scalar ($str) }
 }
 
 ;
@@ -147,7 +147,7 @@ sub emit_lisp { my $self = $_[0]; 'bless(' . Main::perl($self->{fields}, ("" . '
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
-sub emit_lisp { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); return($ast->emit_lisp()) }
+sub emit_lisp { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); return scalar ($ast->emit_lisp()) }
 }
 
 ;
@@ -155,7 +155,7 @@ sub emit_lisp { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolat
 package Lit::Hash;
 sub new { shift; bless { @_ }, "Lit::Hash" }
 sub hash1 { $_[0]->{hash1} };
-sub emit_lisp { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); return($ast->emit_lisp()) }
+sub emit_lisp { my $self = $_[0]; ((my  $ast = undef) = $self->expand_interpolation()); return scalar ($ast->emit_lisp()) }
 }
 
 ;
@@ -171,7 +171,7 @@ package Lit::Object;
 sub new { shift; bless { @_ }, "Lit::Object" }
 sub class { $_[0]->{class} };
 sub fields { $_[0]->{fields} };
-sub emit_lisp { my $self = $_[0]; if (Main::bool($self->{fields})) { ((my  $fields = undef) = $self->{fields}); ((my  $str = undef) = ''); for my $field ( @{($fields || []) || []} ) { ($str = $str . '(setf (' . Main::to_lisp_identifier(($field->[0])->buf()) . ' m) ' . ($field->[1])->emit_lisp() . ')') }; '(let ((m (make-instance \'' . Main::to_lisp_namespace($self->{class}) . '))) ' . $str . ' m)' } else { return('(make-instance \'' . Main::to_lisp_namespace($self->{class}) . ')') } }
+sub emit_lisp { my $self = $_[0]; if (Main::bool($self->{fields})) { ((my  $fields = undef) = $self->{fields}); ((my  $str = undef) = ''); for my $field ( @{($fields || []) || []} ) { ($str = $str . '(setf (' . Main::to_lisp_identifier(($field->[0])->buf()) . ' m) ' . ($field->[1])->emit_lisp() . ')') }; '(let ((m (make-instance \'' . Main::to_lisp_namespace($self->{class}) . '))) ' . $str . ' m)' } else { return scalar ('(make-instance \'' . Main::to_lisp_namespace($self->{class}) . ')') } }
 }
 
 ;
@@ -180,7 +180,7 @@ package Index;
 sub new { shift; bless { @_ }, "Index" }
 sub obj { $_[0]->{obj} };
 sub index_exp { $_[0]->{index_exp} };
-sub emit_lisp { my $self = $_[0]; return('(mp-Main::sv-array-index ' . $self->{obj}->emit_lisp() . ' ' . $self->{index_exp}->emit_lisp() . ')') }
+sub emit_lisp { my $self = $_[0]; return scalar ('(mp-Main::sv-array-index ' . $self->{obj}->emit_lisp() . ' ' . $self->{index_exp}->emit_lisp() . ')') }
 }
 
 ;
@@ -189,7 +189,7 @@ package Lookup;
 sub new { shift; bless { @_ }, "Lookup" }
 sub obj { $_[0]->{obj} };
 sub index_exp { $_[0]->{index_exp} };
-sub emit_lisp { my $self = $_[0]; return('(mp-Main::sv-hash-lookup ' . $self->{index_exp}->emit_lisp() . ' ' . $self->{obj}->emit_lisp() . ')') }
+sub emit_lisp { my $self = $_[0]; return scalar ('(mp-Main::sv-hash-lookup ' . $self->{index_exp}->emit_lisp() . ' ' . $self->{obj}->emit_lisp() . ')') }
 }
 
 ;
@@ -200,7 +200,7 @@ sub sigil { $_[0]->{sigil} };
 sub twigil { $_[0]->{twigil} };
 sub namespace { $_[0]->{namespace} };
 sub name { $_[0]->{name} };
-sub emit_lisp { my $self = $_[0]; ((my  $ns = undef) = ''); if (Main::bool($self->{namespace})) { ($ns = Main::to_lisp_namespace($self->{namespace}) . '-') } else { if (Main::bool((((($self->{sigil} eq '@')) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) { return('*mp6-args*') }  }; (Main::bool((($self->{twigil} eq '.'))) ? ('(' . Main::to_lisp_identifier($self->{name}) . ' sv-self)') : ((Main::bool((($self->{name} eq '/'))) ? (Main::to_lisp_identifier('MATCH')) : ($ns . Main::to_lisp_identifier($self->{name}))))) }
+sub emit_lisp { my $self = $_[0]; ((my  $ns = undef) = ''); if (Main::bool($self->{namespace})) { ($ns = Main::to_lisp_namespace($self->{namespace}) . '-') } else { if (Main::bool((((($self->{sigil} eq '@')) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) { return scalar ('*mp6-args*') }  }; (Main::bool((($self->{twigil} eq '.'))) ? ('(' . Main::to_lisp_identifier($self->{name}) . ' sv-self)') : ((Main::bool((($self->{name} eq '/'))) ? (Main::to_lisp_identifier('MATCH')) : ($ns . Main::to_lisp_identifier($self->{name}))))) }
 }
 
 ;
@@ -209,7 +209,7 @@ package Bind;
 sub new { shift; bless { @_ }, "Bind" }
 sub parameters { $_[0]->{parameters} };
 sub arguments { $_[0]->{arguments} };
-sub emit_lisp { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { ((my  $class = undef) = $self->{parameters}->class()); ((my  $a = undef) = $self->{parameters}->fields()); ((my  $b = undef) = $self->{arguments}); ((my  $str = undef) = 'do { '); ((my  $i = undef) = 0); (my  $arg = undef); for my $var ( @{($a || []) || []} ) { ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do { (my  $List_a = []); (my  $List_v = []); $List_a }), ('hyper' => 0))))); ($str = $str . ' ' . $bind->emit_lisp() . ' '); ($i = ($i + 1)) }; return($str . $self->{parameters}->emit_lisp() . ' }') } ; if (Main::bool((Main::isa($self->{parameters}, 'Decl') && (($self->{parameters}->decl() eq 'my'))))) { return('(setf ' . ($self->{parameters}->var())->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . ')') } ; '(setf ' . $self->{parameters}->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . ')' }
+sub emit_lisp { my $self = $_[0]; if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) { ((my  $class = undef) = $self->{parameters}->class()); ((my  $a = undef) = $self->{parameters}->fields()); ((my  $b = undef) = $self->{arguments}); ((my  $str = undef) = 'do { '); ((my  $i = undef) = 0); (my  $arg = undef); for my $var ( @{($a || []) || []} ) { ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do { (my  $List_a = []); (my  $List_v = []); $List_a }), ('hyper' => 0))))); ($str = $str . ' ' . $bind->emit_lisp() . ' '); ($i = ($i + 1)) }; return scalar ($str . $self->{parameters}->emit_lisp() . ' }') } ; if (Main::bool((Main::isa($self->{parameters}, 'Decl') && (($self->{parameters}->decl() eq 'my'))))) { return scalar ('(setf ' . ($self->{parameters}->var())->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . ')') } ; '(setf ' . $self->{parameters}->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . ')' }
 }
 
 ;
@@ -228,7 +228,7 @@ sub invocant { $_[0]->{invocant} };
 sub hyper { $_[0]->{hyper} };
 sub method { $_[0]->{method} };
 sub arguments { $_[0]->{arguments} };
-sub emit_lisp { my $self = $_[0]; ((my  $arguments = undef) = Main::join(([ map { $_->emit_lisp() } @{ $self->{arguments} } ]), ' ')); ((my  $invocant = undef) = $self->{invocant}->emit_lisp()); if (Main::bool(($invocant eq '(proto-mp-self)'))) { ($invocant = 'sv-self') } ; if (Main::bool(($self->{method} eq 'isa'))) { if (Main::bool(((($self->{arguments}->[0])->buf()) eq 'Str'))) { return('(typep ' . $invocant . ' \'string)') } ; return('(typep ' . $invocant . ' \'' . Main::to_lisp_namespace(($self->{arguments}->[0])->buf()) . ')') } ; if (Main::bool(($self->{method} eq 'chars'))) { if (Main::bool(($self->{hyper}))) { die('not implemented') } else { return('(length ' . $invocant . ')') } } ; if (Main::bool(((($self->{method} eq 'yaml')) || (($self->{method} eq 'say'))))) { if (Main::bool(($self->{hyper}))) { return('[ map { ' . $self->{method} . '( $_, ' . ', ' . $arguments . ')' . ' } @{ ' . $invocant . ' } ]') } else { return('(' . $self->{method} . ' ' . $invocant . ' ' . $arguments . ')') } } ; ((my  $meth = undef) = Main::to_lisp_identifier($self->{method}) . ' '); if (Main::bool(($self->{method} eq 'postcircumfix:<( )>'))) { return('(funcall ' . $invocant . ' ' . $arguments . ')') } ; if (Main::bool(($self->{hyper}))) { return('(map \'vector #\'(lambda (c) (' . $meth . ' c)) ' . $invocant . ')') } else { return('(' . $meth . $invocant . ' ' . $arguments . ')') } }
+sub emit_lisp { my $self = $_[0]; ((my  $arguments = undef) = Main::join(([ map { $_->emit_lisp() } @{ $self->{arguments} } ]), ' ')); ((my  $invocant = undef) = $self->{invocant}->emit_lisp()); if (Main::bool(($invocant eq '(proto-mp-self)'))) { ($invocant = 'sv-self') } ; if (Main::bool(($self->{method} eq 'isa'))) { if (Main::bool(((($self->{arguments}->[0])->buf()) eq 'Str'))) { return scalar ('(typep ' . $invocant . ' \'string)') } ; return scalar ('(typep ' . $invocant . ' \'' . Main::to_lisp_namespace(($self->{arguments}->[0])->buf()) . ')') } ; if (Main::bool(($self->{method} eq 'chars'))) { if (Main::bool(($self->{hyper}))) { die('not implemented') } else { return scalar ('(length ' . $invocant . ')') } } ; if (Main::bool(((($self->{method} eq 'yaml')) || (($self->{method} eq 'say'))))) { if (Main::bool(($self->{hyper}))) { return scalar ('[ map { ' . $self->{method} . '( $_, ' . ', ' . $arguments . ')' . ' } @{ ' . $invocant . ' } ]') } else { return scalar ('(' . $self->{method} . ' ' . $invocant . ' ' . $arguments . ')') } } ; ((my  $meth = undef) = Main::to_lisp_identifier($self->{method}) . ' '); if (Main::bool(($self->{method} eq 'postcircumfix:<( )>'))) { return scalar ('(funcall ' . $invocant . ' ' . $arguments . ')') } ; if (Main::bool(($self->{hyper}))) { return scalar ('(map \'vector #\'(lambda (c) (' . $meth . ' c)) ' . $invocant . ')') } else { return scalar ('(' . $meth . $invocant . ' ' . $arguments . ')') } }
 }
 
 ;
@@ -238,7 +238,7 @@ sub new { shift; bless { @_ }, "Apply" }
 sub code { $_[0]->{code} };
 sub arguments { $_[0]->{arguments} };
 sub namespace { $_[0]->{namespace} };
-sub emit_lisp { my $self = $_[0]; ((my  $ns = undef) = ''); if (Main::bool($self->{namespace})) { ($ns = Main::to_lisp_namespace($self->{namespace}) . '-') } ; ((my  $code = undef) = $ns . $self->{code}); if (Main::bool(($code eq 'infix:<~>'))) { return('(concatenate \'string (sv-string ' . ($self->{arguments}->[0])->emit_lisp() . ') (sv-string ' . ($self->{arguments}->[1])->emit_lisp() . '))') } ; if (Main::bool(($code eq 'ternary:<?? !!>'))) { return('(if (sv-bool ' . ($self->{arguments}->[0])->emit_lisp() . ') ' . ($self->{arguments}->[1])->emit_lisp() . ' ' . ($self->{arguments}->[2])->emit_lisp() . ')') } ; ((my  $args = undef) = ''); if (Main::bool($self->{arguments})) { ($args = Main::join(([ map { $_->emit_lisp() } @{ $self->{arguments} } ]), ' ')) } ; if (Main::bool(($code eq 'self'))) { return('sv-self') } ; if (Main::bool(($code eq 'False'))) { return('nil') } ; if (Main::bool(($code eq 'True'))) { return('T') } ; if (Main::bool(($code eq 'make'))) { return('(setf (sv-capture sv-MATCH) ' . $args . ')') } ; if (Main::bool(($code eq 'substr'))) { return('(sv-substr ' . $args . ')') } ; if (Main::bool(($code eq 'say'))) { return('(mp-Main::sv-say (list ' . $args . '))') } ; if (Main::bool(($code eq 'print'))) { return('(mp-Main::sv-print (list ' . $args . '))') } ; if (Main::bool(($code eq 'warn'))) { return('(write-line (format nil "~{~a~}" (list ' . $args . ')) *error-output*)') } ; if (Main::bool(($code eq 'die'))) { return('(progn (write-line (format nil "~{~a~}" (list ' . $args . ')) *error-output*) (sb-ext:quit))') } ; if (Main::bool(($code eq 'array'))) { return($args) } ; if (Main::bool(($code eq 'exists'))) { ((my  $arg = undef) = $self->{arguments}->[0]); if (Main::bool(Main::isa($arg, 'Lookup'))) { return('(nth-value 1 ' . $arg->emit_lisp() . ')') }  } ; if (Main::bool(($code eq 'list:<~>'))) { return('(sv-string ' . $args . ')') } ; if (Main::bool(($code eq 'prefix:<!>'))) { return('(not (sv-bool ' . $args . '))') } ; if (Main::bool(($code eq 'prefix:<?>'))) { return('(sv-bool ' . $args . ')') } ; if (Main::bool(($code eq 'prefix:<$>'))) { return('(sv-scalar ' . $args . ')') } ; if (Main::bool(($code eq 'prefix:<@>'))) { return($args) } ; if (Main::bool(($code eq 'prefix:<%>'))) { return($args) } ; if (Main::bool(($code eq 'infix:<+>'))) { return('(sv-add ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<->'))) { return('(sv-sub ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<*>'))) { return('(sv-mul ' . $args . ')') } ; if (Main::bool(($code eq 'infix:</>'))) { return('(sv-div ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<>>'))) { return('(sv-numeric-bigger ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<<>'))) { return('(sv-numeric-smaller ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<>=>'))) { return('(sv-numeric-bigger-equal ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<<=>'))) { return('(sv-numeric-smaller-equal ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<==>'))) { return('(sv-numeric-equal ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<!=>'))) { return('(not (sv-numeric-equal ' . $args . '))') } ; if (Main::bool(($code eq 'infix:<&&>'))) { return('(sv-and ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<||>'))) { return('(sv-or ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<eq>'))) { return('(sv-eq ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<ne>'))) { return('(not (sv-eq ' . $args . '))') } ; if (Main::bool(($code eq 'circumfix:<( )>'))) { return($args) } ; return('(' . $ns . Main::to_lisp_identifier($self->{code}) . ' ' . $args . ')') }
+sub emit_lisp { my $self = $_[0]; ((my  $ns = undef) = ''); if (Main::bool($self->{namespace})) { ($ns = Main::to_lisp_namespace($self->{namespace}) . '-') } ; ((my  $code = undef) = $ns . $self->{code}); if (Main::bool(($code eq 'infix:<~>'))) { return scalar ('(concatenate \'string (sv-string ' . ($self->{arguments}->[0])->emit_lisp() . ') (sv-string ' . ($self->{arguments}->[1])->emit_lisp() . '))') } ; if (Main::bool(($code eq 'ternary:<?? !!>'))) { return scalar ('(if (sv-bool ' . ($self->{arguments}->[0])->emit_lisp() . ') ' . ($self->{arguments}->[1])->emit_lisp() . ' ' . ($self->{arguments}->[2])->emit_lisp() . ')') } ; ((my  $args = undef) = ''); if (Main::bool($self->{arguments})) { ($args = Main::join(([ map { $_->emit_lisp() } @{ $self->{arguments} } ]), ' ')) } ; if (Main::bool(($code eq 'self'))) { return scalar ('sv-self') } ; if (Main::bool(($code eq 'False'))) { return scalar ('nil') } ; if (Main::bool(($code eq 'True'))) { return scalar ('T') } ; if (Main::bool(($code eq 'make'))) { return scalar ('(setf (sv-capture sv-MATCH) ' . $args . ')') } ; if (Main::bool(($code eq 'substr'))) { return scalar ('(sv-substr ' . $args . ')') } ; if (Main::bool(($code eq 'say'))) { return scalar ('(mp-Main::sv-say (list ' . $args . '))') } ; if (Main::bool(($code eq 'print'))) { return scalar ('(mp-Main::sv-print (list ' . $args . '))') } ; if (Main::bool(($code eq 'warn'))) { return scalar ('(write-line (format nil "~{~a~}" (list ' . $args . ')) *error-output*)') } ; if (Main::bool(($code eq 'die'))) { return scalar ('(progn (write-line (format nil "~{~a~}" (list ' . $args . ')) *error-output*) (sb-ext:quit))') } ; if (Main::bool(($code eq 'array'))) { return scalar ($args) } ; if (Main::bool(($code eq 'exists'))) { ((my  $arg = undef) = $self->{arguments}->[0]); if (Main::bool(Main::isa($arg, 'Lookup'))) { return scalar ('(nth-value 1 ' . $arg->emit_lisp() . ')') }  } ; if (Main::bool(($code eq 'list:<~>'))) { return scalar ('(sv-string ' . $args . ')') } ; if (Main::bool(($code eq 'prefix:<!>'))) { return scalar ('(not (sv-bool ' . $args . '))') } ; if (Main::bool(($code eq 'prefix:<?>'))) { return scalar ('(sv-bool ' . $args . ')') } ; if (Main::bool(($code eq 'prefix:<$>'))) { return scalar ('(sv-scalar ' . $args . ')') } ; if (Main::bool(($code eq 'prefix:<@>'))) { return scalar ($args) } ; if (Main::bool(($code eq 'prefix:<%>'))) { return scalar ($args) } ; if (Main::bool(($code eq 'infix:<+>'))) { return scalar ('(sv-add ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<->'))) { return scalar ('(sv-sub ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<*>'))) { return scalar ('(sv-mul ' . $args . ')') } ; if (Main::bool(($code eq 'infix:</>'))) { return scalar ('(sv-div ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<>>'))) { return scalar ('(sv-numeric-bigger ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<<>'))) { return scalar ('(sv-numeric-smaller ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<>=>'))) { return scalar ('(sv-numeric-bigger-equal ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<<=>'))) { return scalar ('(sv-numeric-smaller-equal ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<==>'))) { return scalar ('(sv-numeric-equal ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<!=>'))) { return scalar ('(not (sv-numeric-equal ' . $args . '))') } ; if (Main::bool(($code eq 'infix:<&&>'))) { return scalar ('(sv-and ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<||>'))) { return scalar ('(sv-or ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<eq>'))) { return scalar ('(sv-eq ' . $args . ')') } ; if (Main::bool(($code eq 'infix:<ne>'))) { return scalar ('(not (sv-eq ' . $args . '))') } ; if (Main::bool(($code eq 'circumfix:<( )>'))) { return scalar ($args) } ; return scalar ('(' . $ns . Main::to_lisp_identifier($self->{code}) . ' ' . $args . ')') }
 }
 
 ;
@@ -246,7 +246,7 @@ sub emit_lisp { my $self = $_[0]; ((my  $ns = undef) = ''); if (Main::bool($self
 package Return;
 sub new { shift; bless { @_ }, "Return" }
 sub result { $_[0]->{result} };
-sub emit_lisp { my $self = $_[0]; return('(return-from mp6-function ' . $self->{result}->emit_lisp() . ')') }
+sub emit_lisp { my $self = $_[0]; return scalar ('(return-from mp6-function ' . $self->{result}->emit_lisp() . ')') }
 }
 
 ;
@@ -256,7 +256,7 @@ sub new { shift; bless { @_ }, "If" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
-sub emit_lisp { my $self = $_[0]; ((my  $block1 = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{body}->stmts()))); if (Main::bool($self->{otherwise})) { ((my  $block2 = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{otherwise}->stmts()))); return('(if (sv-bool ' . $self->{cond}->emit_lisp() . ') ' . $block1->emit_lisp() . ' ' . $block2->emit_lisp() . ')') } else { return('(if (sv-bool ' . $self->{cond}->emit_lisp() . ') ' . $block1->emit_lisp() . ')') } }
+sub emit_lisp { my $self = $_[0]; ((my  $block1 = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{body}->stmts()))); if (Main::bool($self->{otherwise})) { ((my  $block2 = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{otherwise}->stmts()))); return scalar ('(if (sv-bool ' . $self->{cond}->emit_lisp() . ') ' . $block1->emit_lisp() . ' ' . $block2->emit_lisp() . ')') } else { return scalar ('(if (sv-bool ' . $self->{cond}->emit_lisp() . ') ' . $block1->emit_lisp() . ')') } }
 }
 
 ;
@@ -288,7 +288,7 @@ sub decl { $_[0]->{decl} };
 sub type { $_[0]->{type} };
 sub var { $_[0]->{var} };
 sub emit_lisp { my $self = $_[0]; ((my  $decl = undef) = $self->{decl}); ((my  $name = undef) = $self->{var}->name()); (Main::bool((($decl eq 'has'))) ? ('sub ' . $name . ' { ' . '@_ == 1 ' . '? ( $_[0]->{' . $name . '} ) ' . ': ( $_[0]->{' . $name . '} = $_[1] ) ' . '}') : $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_lisp()) };
-sub emit_lisp_initializer { my $decl = $_[0]; if (Main::bool(($decl->sigil() eq '%'))) { return('(' . $decl->emit_lisp() . ' (make-hash-table :test \'equal))') } else { if (Main::bool(($decl->sigil() eq '@'))) { return('(' . $decl->emit_lisp() . ' (make-array 0 :fill-pointer t :adjustable t))') } else { return('(' . $decl->emit_lisp() . ' (sv-undef))') } } }
+sub emit_lisp_initializer { my $decl = $_[0]; if (Main::bool(($decl->sigil() eq '%'))) { return scalar ('(' . $decl->emit_lisp() . ' (make-hash-table :test \'equal))') } else { if (Main::bool(($decl->sigil() eq '@'))) { return scalar ('(' . $decl->emit_lisp() . ' (make-array 0 :fill-pointer t :adjustable t))') } else { return scalar ('(' . $decl->emit_lisp() . ' (sv-undef))') } } }
 }
 
 ;
@@ -330,7 +330,7 @@ sub emit_lisp { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((my  $po
 package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
-sub emit_lisp { my $self = $_[0]; ((my  $block = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{block}))); return($block->emit_lisp()) }
+sub emit_lisp { my $self = $_[0]; ((my  $block = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{block}))); return scalar ($block->emit_lisp()) }
 }
 
 ;

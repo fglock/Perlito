@@ -340,6 +340,15 @@ class Apply {
         if $code eq 'infix:<=>' { 
             return emit_perl5_bind( @.arguments[0], @.arguments[1] );
         }
+        if $code eq 'return' {
+            if   @.arguments 
+              && @.arguments.elems == 1
+            {
+                # bug in "return do", see http://www.perlmonks.org/?node_id=648681
+                return 'return scalar (' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
+            }
+            return 'return (' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
+        }
 
         $code ~ '(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
     }
