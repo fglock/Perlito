@@ -28,7 +28,8 @@ __all__ = ['mp6_print', 'mp6_say', 'mp6_warn',
            'mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'mp6_isa',
            'mp6_and', 'mp6_or', 'mp6_defined_or',
            'mp6_join', 'mp6_index', 'mp6_perl',
-           'mp6_Mu', 'mp6_Array', 'mp6_Hash',
+           'mp6_Mu', 
+           'mp6_Array', 'mp6_Hash', 'mp6_Scalar',
            'mp6_Return',
            'Perlito__Match',
            'Perlito__Grammar', 'Perlito__Grammar_proto', 
@@ -56,21 +57,18 @@ def mp6_to_scalar(v):
         return v
 
 def mp6_to_bool(o):
-    if type(o) == type(False):
-        return o
-    if type(o) == type(1):
-        return o != 0
-    if type(o) == type(1.1):
-        return o != 0
-    if type(o) == type("aa"):
-        return o != "" and o != "0"
-    if type(o) == type([]):
-        return len(o) != 0
-    if type(o) == type({}):
-        return len(o.keys) != 0
-    if type(o) == type(None):
+    try: 
+        return o.f_bool()
+    except AttributeError:
+        if type(o) == type(False):
+            return o
+        if type(o) == type(1):
+            return o != 0
+        if type(o) == type(1.1):
+            return o != 0
+        if type(o) == type("aa"):
+            return o != "" and o != "0"
         return False
-    return o.__nonzero__()
 
 def mp6_and(x, y):
     if mp6_to_bool(x):
@@ -138,7 +136,7 @@ class mp6_Array:
         return str(self.l)
     def __int__(self):
         return len(self.l)
-    def __nonzero__(self):
+    def f_bool(self):
         return len(self.l) > 0
     def __iter__(self):
         return self.l.__iter__()
@@ -158,7 +156,20 @@ class mp6_Array:
             return self.l.pop()
         except IndexError:
             return mp6_Mu()
-    def f_set(self, i, s):
+    def f_set(self, v):
+        self.l = []
+        v = v.l
+        for x in range(0, len(v)):
+            try:
+                self.l.append(v[x].f_get())
+            except AttributeError:
+                self.l.append(v[x])
+        return self
+    def f_index_set(self, i, s):
+        try:
+            s = s.f_get()
+        except AttributeError:
+            1
         while True:
             try:
                 self.l[i] = s
@@ -172,9 +183,9 @@ class mp6_Array:
             return mp6_Mu()
     def f_index(self, i):
         try:
-            return self.l[i]
+            return mp6_Mu_get_proxy(self, i, self.l[i])
         except IndexError:
-            return mp6_Mu()
+            return mp6_Mu_get_proxy(self, i, mp6_Mu())
     def f_isa(self, name):
         return name == 'Array'
     def str(self):
@@ -188,7 +199,7 @@ class mp6_Hash:
         return str(self.l)
     def __int__(self):
         return len(self.l)
-    def __nonzero__(self):
+    def f_bool(self):
         return len(self.l) > 0
     def __iter__(self):
         return self.l.__iter__()
@@ -207,22 +218,33 @@ class mp6_Hash:
         return out
     def has_key(self, k):
         return self.l.has_key(k)
-    def f_set(self, i, s):
-        self.l[i] = s
+    def f_set(self, v):
+        self.l = {}
+        v = v.l
+        for x in v.keys():
+            try:
+                self.l[x] = v[x].f_get()
+            except AttributeError:
+                self.l[x] = v[x]
+        return self
+    def f_index_set(self, i, s):
+        try:
+            self.l[i] = s.f_get()
+        except AttributeError:
+            self.l[i] = s
         return s
     def f_update(self, h):
         self.l.update(h)
         return self
     def f_lookup(self, i):
         try:
-            return self.l[i]
+            return mp6_Mu_get_proxy(self, i, self.l[i])
         except KeyError:
-            return mp6_Mu()
+            return mp6_Mu_get_proxy(self, i, mp6_Mu())
     def f_isa(self, name):
         return name == 'Hash'
     def str(self):
         return str(self.l)
-
 
 class mp6_Mu:
     def __str__(self):
@@ -231,7 +253,7 @@ class mp6_Mu:
         return 0
     def __float__(self):
         return 0.0
-    def __nonzero__(self):
+    def f_bool(self):
         return False
     def __add__(self, x):
         return x
@@ -244,6 +266,89 @@ class mp6_Mu:
     def f_isa(self, name):
         return name == 'Mu'
 
+class mp6_Scalar:
+    def __init__(self, v=mp6_Mu()):
+        self.v = v
+    def __getattr__(self,name):
+        return getattr(self.v, name)
+    def __str__(self):
+        return str(self.v)
+    def f_bool(self):
+        return mp6_to_bool(self.v)
+    def f_set(self, v):
+        try:
+            self.v = v.f_get()
+        except AttributeError:
+            self.v = v
+    def f_get(self):
+        return self.v
+    def f_lookup(self, i):
+        try:
+            return self.v.f_lookup(i)
+        except AttributeError:
+            if self.v.f_isa('Mu'):
+                return mp6_Mu_lookup_proxy(self, i)
+            return self.v.f_lookup(i)
+    def f_index(self, i):
+        try:
+            return self.v.f_index(i)
+        except AttributeError:
+            if self.v.f_isa('Mu'):
+                return mp6_Mu_index_proxy(self, i)
+            return self.v.f_index(i)
+
+class mp6_Mu_get_proxy(mp6_Mu):
+    def __init__(self, parent, i, v):
+        self.parent = parent
+        self.i = i
+        self.v = v
+    def __getattr__(self,name):
+        return getattr(self.v, name)
+    def __str__(self):
+        return str(self.v)
+    def f_bool(self):
+        return mp6_to_bool(self.v)
+    def f_get(self):
+        return self.v
+    def f_set(self, v):
+        self.v = v
+        self.parent.f_index_set(self.i, v)
+    def f_lookup(self, i):
+        try:
+            return self.v.f_lookup(i)
+        except AttributeError:
+            return mp6_Mu_lookup_proxy(self, i)
+    def f_index(self, i):
+        try:
+            return self.v.f_index(i)
+        except AttributeError:
+            return mp6_Mu_index_proxy(self, i)
+
+class mp6_Mu_index_proxy(mp6_Mu):
+    def __init__(self, parent, i):
+        self.parent = parent
+        self.i = i
+    def f_set(self, v):
+        Array_a = mp6_Array([])
+        Array_a.f_index_set(self.i, v)
+        self.parent.f_set(Array_a)
+    def f_lookup(self, i):
+        return mp6_Mu_lookup_proxy(self, i)
+    def f_index(self, i):
+        return mp6_Mu_index_proxy(self, i)
+
+class mp6_Mu_lookup_proxy(mp6_Mu):
+    def __init__(self, parent, i):
+        self.parent = parent
+        self.i = i
+    def f_set(self, v):
+        Hash_a = mp6_Hash({})
+        Hash_a.f_index_set(self.i, v)
+        self.parent.f_set(Hash_a)
+    def f_lookup(self, i):
+        return mp6_Mu_lookup_proxy(self, i)
+    def f_index(self, i):
+        return mp6_Mu_index_proxy(self, i)
 
 class mp6_Return(Exception):
     def __init__(self, value):
@@ -253,7 +358,7 @@ class mp6_Return(Exception):
 
 class Perlito__Match:
     def __init__(self, **arg):
-        self.v_m = {}
+        self.v_m = mp6_Hash({})
         self.v_to = 0
         self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
@@ -266,20 +371,19 @@ class Perlito__Match:
             except AttributeError:
                 return self.v_str[self.v_from:self.v_to]
         return ''
-    def __nonzero__(self):
+    def f_bool(self):
         return mp6_to_bool(self.v_bool)
-    def __setitem__(self, k, v):
-        self.v_m[k] = v
-    def f_set(self, k, v):
-        self.v_m[k] = v
-        return v
+    def f_set(self, m):
+        self.v_m  = m.v_m
+        self.v_to = m.v_to
+        self.v_str = m.v_str
+        self.v_from = m.v_from
+        self.v_bool = m.v_bool
+        self.v_capture = m.v_capture
+    def f_index_set(self, k, v):
+        return self.v_m.f_index_set(k, v)
     def f_lookup(self, k):
-        try:
-            return self.v_m[k]
-        except KeyError:
-            return mp6_Mu()
-    def __getitem__(self, k):
-        return self.v_m[k] 
+        return self.v_m.f_lookup(k)
     def f_scalar(self):
         if mp6_to_bool(self.v_bool):
             try:
@@ -295,6 +399,9 @@ class Perlito__Match:
         return self.v_to
     def f_isa(self, name):
         return name == 'Match'
+Perlito__Match_proto = Perlito__Match()
+__builtin__.Perlito__Match = Perlito__Match
+__builtin__.Perlito__Match_proto = Perlito__Match_proto
 
 
 try:        
@@ -331,6 +438,8 @@ except NameError:
         def f_isa(self, name):
             return name == 'Grammar'
 Perlito__Grammar_proto = Perlito__Grammar()
+__builtin__.Perlito__Grammar = Perlito__Grammar
+__builtin__.Perlito__Grammar_proto = Perlito__Grammar_proto
 
 
 class Main:
@@ -338,7 +447,7 @@ class Main:
         self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
-    def __nonzero__(self):
+    def f_bool(self):
         return 1
     def f_isa(v_self, name):
         return name == 'Main'
@@ -374,7 +483,7 @@ class IO:
         v_self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
-    def __nonzero__(self):
+    def f_bool(self):
         return 1
     def f_isa(v_self, name):
         return name == 'IO'
@@ -413,6 +522,6 @@ def mp6_perl(o):
             return "{" + ", ".join(out) + "}";
         return _dump(o)
 
-__builtin__.List_ARGS = [mp6_Array([])]
-List_ARGS[0].l.extend(sys.argv[1:])
+__builtin__.List_ARGS = mp6_Array([])
+List_ARGS.l.extend(sys.argv[1:])
 

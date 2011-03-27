@@ -30,9 +30,9 @@ class Perlito::Python::AnonSub {
                 needs_return => 1 );
         my @s;
         push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ "):";
-        for @($args) -> $field { 
-            push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
-        }
+        # for @($args) -> $field { 
+        #    push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
+        # }
         if $.handles_return_exception {
             push @s, Python::tab($level+1) ~    "try:";
             push @s,    $block.emit_python_indented($level + 2);
@@ -133,12 +133,12 @@ class Perlito::Python::LexicalBlock {
 
         for @($block) -> $decl {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                push @s, Python::tab($level) ~ ($decl.var).emit_python_name() ~ ' = [' ~ $decl.emit_python_init() ~ ']';
+                push @s, Python::tab($level) ~ ($decl.var).emit_python_name() ~ ' = ' ~ $decl.emit_python_init() ~ '';
             }
             elsif  $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' 
                 && $decl.arguments[0].isa( 'Decl' ) && $decl.arguments[0].decl eq 'my' 
             {
-                push @s, Python::tab($level) ~ $decl.arguments[0].var.emit_python_name() ~ ' = [' ~ $decl.arguments[0].emit_python_init() ~ ']';
+                push @s, Python::tab($level) ~ $decl.arguments[0].var.emit_python_name() ~ ' = ' ~ $decl.arguments[0].emit_python_init() ~ '';
             }
         }
 
@@ -242,7 +242,7 @@ class CompUnit {
         push @s, Python::tab($level+3)  ~               "v_self.__dict__[k] = v";
         push @s, Python::tab($level+2)  ~           "def f_isa(v_self, name):";
         push @s, Python::tab($level+3)  ~               "return name == '" ~ $.name ~ "'";
-        push @s, Python::tab($level+2)  ~           "def __nonzero__(self):";
+        push @s, Python::tab($level+2)  ~           "def f_bool(self):";
         push @s, Python::tab($level+3)  ~               "return 1";
 
         push @s, Python::tab($level+2)  ~           "def __getattr__(self, attr):";
@@ -253,10 +253,17 @@ class CompUnit {
         push @s, Python::tab($level+1)  ~       $name ~ "_proto = " ~ $name ~ "()"; 
         push @s, Python::tab($level+1)  ~       "__builtin__." ~ $name ~ " = " ~ $name ~ ""; 
         push @s, Python::tab($level+1)  ~       "__builtin__." ~ $name ~ "_proto = " ~ $name ~ "_proto"; 
-        push @s, Python::tab($level)    ~   'def ' ~ $label ~ "():";
-        push @s, Python::tab($level+1)  ~       'self = ' ~ $name;
-        push @s,    $block.emit_python_indented($level + 1);
-        push @s, Python::tab($level)    ~   $label ~ "()";
+
+        if $name eq 'GLOBAL' {
+            push @s, Python::tab($level)    ~   'self = ' ~ $name;
+            push @s, $block.emit_python_indented($level);
+        }
+        else {
+            push @s, Python::tab($level)    ~   'def ' ~ $label ~ "():";
+            push @s, Python::tab($level+1)  ~       'self = ' ~ $name;
+            push @s,    $block.emit_python_indented($level + 1);
+            push @s, Python::tab($level)    ~   $label ~ "()";
+        }
         return @s.join( "\n" );
     }
 }
@@ -345,17 +352,17 @@ class Var {
     method emit_python_indented( $level ) {
         return Python::tab($level) ~ (
                ( $.twigil eq '.' )
-            ?? ( 'v_self[0].v_' ~ $.name ~ '' )
+            ?? ( 'v_self.v_' ~ $.name ~ '' )
             !!  (    ( $.name eq '/' )
-                ??   ( $table{$.sigil} ~ 'MATCH[0]' )
-                !!   ( $table{$.sigil} ~ $.name ~ '[0]' )
+                ??   ( $table{$.sigil} ~ 'MATCH' )
+                !!   ( $table{$.sigil} ~ $.name ~ '' )
                 )
             )
     };
     method emit_python_name {
         return (
                ( $.twigil eq '.' )
-            ?? ( 'v_self[0].v_' ~ $.name )
+            ?? ( 'v_self.v_' ~ $.name )
             !!  (    ( $.name eq '/' )
                 ??   ( $table{$.sigil} ~ 'MATCH' )
                 !!   ( $table{$.sigil} ~ $.name )
@@ -368,6 +375,9 @@ class Proto {
     has $.name;
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
+        if $.name eq 'self' {
+            return Python::tab($level) ~ 'v_self'
+        }
         Python::tab($level) ~ 
             Main::to_go_namespace($.name) ~ '_proto'
     }
@@ -393,7 +403,7 @@ class Call {
                 }
             }
             return
-                Main::to_go_namespace($.invocant.name) ~ '(' ~ @str.join(', ') ~ ')'
+                Python::tab($level) ~ '__builtin__.' ~ Main::to_go_namespace($.invocant.name) ~ '(' ~ @str.join(', ') ~ ')'
         }
 
         if     ($.method eq 'perl')
@@ -574,18 +584,6 @@ class Apply {
         Python::tab($level) ~ $self.emit_python 
     }
     sub emit_python_bind ($parameters, $arguments) {
-        if $parameters.isa( 'Index' ) {
-            return   
-                ($parameters.obj).emit_python() ~ '.f_set('
-                    ~ ($parameters.index_exp).emit_python() ~ ', '
-                    ~ $arguments.emit_python() ~ ')'
-        }
-        if $parameters.isa( 'Lookup' ) {
-            return   
-                ($parameters.obj).emit_python() ~ '.f_set('
-                    ~ ($parameters.index_exp).emit_python() ~ ', '
-                    ~ $arguments.emit_python() ~ ')'
-        }
         if $parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return   
@@ -603,7 +601,7 @@ class Apply {
             $arguments = Lit::Hash.new( hash1 => [$arguments] );
         }
 
-        return $parameters.emit_python() ~ ' = ' ~ $arguments.emit_python;
+        return $parameters.emit_python() ~ '.f_set(' ~ $arguments.emit_python() ~ ')';
     }
 }
 
@@ -653,7 +651,7 @@ class While {
             # ~  ( $.continue ?? $.continue.emit_         ~ ' '   !! ' '  )
         }
         Python::tab($level)
-            ~ 'while ' ~ $.cond.emit_python() ~ ":\n"
+            ~ 'while mp6_to_bool(' ~ $.cond.emit_python() ~ "):\n"
                 ~ $body_block.emit_python_indented( $level + 1 );
     }
 }
@@ -687,7 +685,7 @@ class For {
                 ~  Python::tab($level+1) ~      "f_" ~ $label ~ "(" ~ $sig ~ ")";
         }
         Python::tab($level) ~   'for ' ~ $sig ~ " in " ~ $.cond.emit_python() ~ ":\n"
-        ~ Python::tab($level+1) ~ $sig ~ " = [" ~ $sig ~ "]\n"
+                # ~ Python::tab($level+1) ~ $sig ~ " = [" ~ $sig ~ "]\n"
                 ~ $body_block.emit_python_indented( $level + 1 );
     }
 }
@@ -713,7 +711,7 @@ class Decl {
             return 'mp6_Array([])';
         }
         else {
-            return 'mp6_Mu()';
+            return 'mp6_Scalar()';
         }
         return '';
     }
@@ -744,8 +742,8 @@ class Method {
         for @$pos -> $field { 
             my $arg = $field.emit_python_name;
             $args.push( $arg );
-            $default_args.push( $arg ~ '=mp6_Mu()' );
-            $meth_args.push( $arg ~ '=mp6_Mu()' );
+            $default_args.push( $arg ~ '=mp6_Scalar()' );
+            $meth_args.push( $arg ~ '=mp6_Scalar()' );
         };
         my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
         my $block = Perlito::Python::LexicalBlock.new( 
@@ -753,10 +751,10 @@ class Method {
                 needs_return => 1 );
         my @s;
         push @s, Python::tab($level) ~ 'def f_' ~ $label ~ "(" ~ $meth_args.join(", ") ~ "):";
-        push @s, Python::tab($level+1) ~    $invocant.emit_python_name() ~ " = [" ~ $invocant.emit_python_name() ~ "]";
-        for @($args) -> $field { 
-            push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
-        };
+        # push @s, Python::tab($level+1) ~    $invocant.emit_python_name() ~ " = [" ~ $invocant.emit_python_name() ~ "]";
+        # for @($args) -> $field { 
+        #    push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
+        # };
         push @s, Python::tab($level+1) ~    "try:";
         push @s,    $block.emit_python_indented($level + 2);
         push @s, Python::tab($level+1) ~    "except mp6_Return, r:";
@@ -795,8 +793,8 @@ class Sub {
         for @$pos -> $field { 
             my $arg = $field.emit_python_name;
             $args.push( $arg );
-            $default_args.push( $arg ~ '=mp6_Mu()' );
-            $meth_args.push( $arg ~ '=mp6_Mu()' );
+            $default_args.push( $arg ~ '=mp6_Scalar()' );
+            $meth_args.push( $arg ~ '=mp6_Scalar()' );
         }
         my $block = Perlito::Python::LexicalBlock.new( 
                 block => @.block,
@@ -804,9 +802,9 @@ class Sub {
         my $label2 = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
         my @s;
         push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ "):";
-        for @($args) -> $field { 
-            push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
-        };
+        # for @($args) -> $field { 
+        #    push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
+        # };
         push @s, Python::tab($level+1) ~    "try:";
         push @s,    $block.emit_python_indented($level + 2);
         push @s, Python::tab($level+1) ~    "except mp6_Return, r:";
