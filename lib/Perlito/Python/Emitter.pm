@@ -478,9 +478,9 @@ class Apply {
             return '(' ~ $.code.emit_python() ~ ').(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         };
 
-        if $code eq 'self'       { return 'v_self[0]'   };
+        if $code eq 'self'       { return 'v_self'   };
         if $code eq 'Mu'         { return 'mp6_Mu()' };
-        if $code eq 'make'       { return "v_MATCH[0].__setattr__('v_capture', " ~ (@.arguments[0]).emit_python() ~ ')' }
+        if $code eq 'make'       { return "v_MATCH.__setattr__('v_capture', " ~ (@.arguments[0]).emit_python() ~ ')' }
         if $code eq 'False'      { return 'False'       };
         if $code eq 'True'       { return 'True'        };
 
