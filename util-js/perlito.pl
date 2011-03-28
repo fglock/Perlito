@@ -8,6 +8,7 @@ class Perlito {
     use Perlito::Emitter::Token;   
     use Perlito::Precedence;   
     use Perlito::Expression;   
+    use Perlito::Macro;   
 
     sub compile_p6_to_js ($s) {
         my $ast = Perlito::Grammar.exp_stmts($s, 0);

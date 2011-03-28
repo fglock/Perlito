@@ -3125,6 +3125,93 @@ if (typeof GLOBAL != 'object') {
 }
 (function () {
   var v__NAMESPACE = GLOBAL;
+// use v6
+;// class Lit::Array
+if (typeof Lit$Array != 'object') {
+  Lit$Array = function() {};
+  Lit$Array = new Lit$Array;
+  Lit$Array.f_isa = function (s) { return s == 'Lit::Array' };
+  Lit$Array.f_perl = function () { return 'Lit::Array.new(' + Main._dump(this) + ')' };
+}
+(function () {
+  var v__NAMESPACE = Lit$Array;
+  // accessor array1
+  Lit$Array.v_array1 = null;
+  Lit$Array.f_array1 = function () { return this.v_array1 }
+  // method expand_interpolation
+  Lit$Array.f_expand_interpolation = function () {
+    var v_self = this;
+    try { var v_needs_interpolation = null;
+var List_items = [];
+var List_s = [];
+(v_needs_interpolation = 0);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) { if ( f_bool(f_and(f_isa(v_item, "Apply"), function () { return (f_or((v_item.f_code() == "circumfix:<( )>"), function () { return (v_item.f_code() == "list:<,>")}))})) ) { (function () { (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) { List_items.push(v_arg); })(a_[i_]) } })(((v_item.f_arguments()))); })() } else { (function () { List_items.push(v_item); })() }; })(a_[i_]) } })(v_self.v_array1);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) { if ( f_bool(f_or(f_and(f_isa(v_item, "Var"), function () { return (v_item.f_sigil() == "@")}), function () { return f_and(f_isa(v_item, "Apply"), function () { return (f_or((v_item.f_code() == "prefix:<@>"), function () { return (v_item.f_code() == "infix:<..>")}))})})) ) { (function () { (v_needs_interpolation = 1); })() }; })(a_[i_]) } })(List_items);if ( f_bool(f_and(v_needs_interpolation, function () { return (f_elems(List_items) == 1)})) ) { (function () { throw(List_items[0]); })() };(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) { if ( f_bool(f_or(f_and(f_isa(v_item, "Var"), function () { return (v_item.f_sigil() == "@")}), function () { return f_and(f_isa(v_item, "Apply"), function () { return (f_or((v_item.f_code() == "prefix:<@>"), function () { return (v_item.f_code() == "infix:<..>")}))})})) ) { (function () { f_push(List_s, (function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_name: "v",v_namespace: "",v_sigil: "@",v_twigil: ""}; tmp.__proto__ = Var; return tmp })());List_a.push(v_item);return(List_a) })(),v_code: "infix:<=>",v_namespace: ""}; tmp.__proto__ = Apply; return tmp })());f_push(List_s, (function () { var tmp = {v_body: (function () { var tmp = {v_sig: (function () { var tmp = {v_name: "x",v_namespace: "",v_sigil: "$",v_twigil: ""}; tmp.__proto__ = Var; return tmp })(),v_stmts: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_index_exp: (function () { var tmp = {v_name: "x",v_namespace: "",v_sigil: "$",v_twigil: ""}; tmp.__proto__ = Var; return tmp })(),v_obj: (function () { var tmp = {v_name: "v",v_namespace: "",v_sigil: "@",v_twigil: ""}; tmp.__proto__ = Var; return tmp })()}; tmp.__proto__ = Index; return tmp })());return(List_a) })(),v_hyper: "",v_invocant: (function () { var tmp = {v_name: "a",v_namespace: "",v_sigil: "@",v_twigil: ""}; tmp.__proto__ = Var; return tmp })(),v_method: "push"}; tmp.__proto__ = Call; return tmp })());return(List_a) })()}; tmp.__proto__ = Lit$Block; return tmp })(),v_cond: (function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_int: 0}; tmp.__proto__ = Val$Int; return tmp })());List_a.push((function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+return(List_a) })(),v_hyper: "",v_invocant: (function () { var tmp = {v_name: "v",v_namespace: "",v_sigil: "@",v_twigil: ""}; tmp.__proto__ = Var; return tmp })(),v_method: "elems"}; tmp.__proto__ = Call; return tmp })());List_a.push((function () { var tmp = {v_int: 1}; tmp.__proto__ = Val$Int; return tmp })());return(List_a) })(),v_code: "infix:<->",v_namespace: ""}; tmp.__proto__ = Apply; return tmp })());return(List_a) })(),v_code: "circumfix:<( )>",v_namespace: ""}; tmp.__proto__ = Apply; return tmp })());return(List_a) })(),v_code: "infix:<..>",v_namespace: ""}; tmp.__proto__ = Apply; return tmp })(),v_topic: null}; tmp.__proto__ = For; return tmp })()); })() } else { (function () { f_push(List_s, (function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+List_a.push(v_item);return(List_a) })(),v_hyper: "",v_invocant: (function () { var tmp = {v_name: "a",v_namespace: "",v_sigil: "@",v_twigil: ""}; tmp.__proto__ = Var; return tmp })(),v_method: "push"}; tmp.__proto__ = Call; return tmp })()); })() }; })(a_[i_]) } })(List_items);throw((function () { var tmp = {v_block: (function () { var tmp = {v_sig: null,v_stmts: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_decl: "my",v_type: "",v_var: (function () { var tmp = {v_name: "a",v_namespace: "",v_sigil: "@",v_twigil: ""}; tmp.__proto__ = Var; return tmp })()}; tmp.__proto__ = Decl; return tmp })());List_a.push((function () { var tmp = {v_decl: "my",v_type: "",v_var: (function () { var tmp = {v_name: "v",v_namespace: "",v_sigil: "@",v_twigil: ""}; tmp.__proto__ = Var; return tmp })()}; tmp.__proto__ = Decl; return tmp })());(List_v = List_s);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_x) { List_a.push(List_v[v_x]); })(a_[i_]) } })((function (a) { for (var i=0, l=((f_elems(List_v) - 1)); i<=l; ++i){ a.push(i) }; return a })([]));List_a.push((function () { var tmp = {v_name: "a",v_namespace: "",v_sigil: "@",v_twigil: ""}; tmp.__proto__ = Var; return tmp })());return(List_a) })()}; tmp.__proto__ = Lit$Block; return tmp })()}; tmp.__proto__ = Do; return tmp })()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+  }
+  Lit$Array.f_expand_interpolation;  // v8 bug workaround
+})();
+;// class Lit::Hash
+if (typeof Lit$Hash != 'object') {
+  Lit$Hash = function() {};
+  Lit$Hash = new Lit$Hash;
+  Lit$Hash.f_isa = function (s) { return s == 'Lit::Hash' };
+  Lit$Hash.f_perl = function () { return 'Lit::Hash.new(' + Main._dump(this) + ')' };
+}
+(function () {
+  var v__NAMESPACE = Lit$Hash;
+  // accessor hash1
+  Lit$Hash.v_hash1 = null;
+  Lit$Hash.f_hash1 = function () { return this.v_hash1 }
+  // method expand_interpolation
+  Lit$Hash.f_expand_interpolation = function () {
+    var v_self = this;
+    try { var List_items = [];
+var List_s = [];
+(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) { if ( f_bool(f_and(f_isa(v_item, "Apply"), function () { return (f_or((v_item.f_code() == "circumfix:<( )>"), function () { return (v_item.f_code() == "list:<,>")}))})) ) { (function () { (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) { List_items.push(v_arg); })(a_[i_]) } })(((v_item.f_arguments()))); })() } else { (function () { List_items.push(v_item); })() }; })(a_[i_]) } })(v_self.v_hash1);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) { if ( f_bool(f_and(f_isa(v_item, "Apply"), function () { return (v_item.f_code() == "infix:<=>>")})) ) { (function () { f_push(List_s, (function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_index_exp: v_item.f_arguments()[0],v_obj: (function () { var tmp = {v_name: "a",v_namespace: "",v_sigil: "%",v_twigil: ""}; tmp.__proto__ = Var; return tmp })()}; tmp.__proto__ = Lookup; return tmp })());List_a.push(v_item.f_arguments()[1]);return(List_a) })(),v_code: "infix:<=>",v_namespace: ""}; tmp.__proto__ = Apply; return tmp })()); })() } else { (function () { if ( f_bool(f_or(f_and(f_isa(v_item, "Var"), function () { return (v_item.f_sigil() == "%")}), function () { return f_and(f_isa(v_item, "Apply"), function () { return (v_item.f_code() == "prefix:<%>")})})) ) { (function () { f_push(List_s, (function () { var tmp = {v_body: (function () { var tmp = {v_sig: (function () { var tmp = {v_name: "p",v_namespace: "",v_sigil: "$",v_twigil: ""}; tmp.__proto__ = Var; return tmp })(),v_stmts: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_index_exp: (function () { var tmp = {v_arguments: null,v_hyper: "",v_invocant: (function () { var tmp = {v_name: "p",v_namespace: "",v_sigil: "$",v_twigil: ""}; tmp.__proto__ = Var; return tmp })(),v_method: "key"}; tmp.__proto__ = Call; return tmp })(),v_obj: (function () { var tmp = {v_name: "a",v_namespace: "",v_sigil: "%",v_twigil: ""}; tmp.__proto__ = Var; return tmp })()}; tmp.__proto__ = Lookup; return tmp })());List_a.push((function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+return(List_a) })(),v_hyper: "",v_invocant: (function () { var tmp = {v_name: "p",v_namespace: "",v_sigil: "$",v_twigil: ""}; tmp.__proto__ = Var; return tmp })(),v_method: "value"}; tmp.__proto__ = Call; return tmp })());return(List_a) })(),v_code: "infix:<=>",v_namespace: ""}; tmp.__proto__ = Apply; return tmp })());return(List_a) })()}; tmp.__proto__ = Lit$Block; return tmp })(),v_cond: (function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_arguments: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_arguments: null,v_hyper: "",v_invocant: v_item,v_method: "pairs"}; tmp.__proto__ = Call; return tmp })());return(List_a) })(),v_code: "circumfix:<( )>",v_namespace: ""}; tmp.__proto__ = Apply; return tmp })());return(List_a) })(),v_code: "prefix:<@>",v_namespace: ""}; tmp.__proto__ = Apply; return tmp })(),v_topic: null}; tmp.__proto__ = For; return tmp })()); })() } else { (function () { f_die("Error in hash composer: ", f_perl(v_item)); })() }; })() }; })(a_[i_]) } })(List_items);throw((function () { var tmp = {v_block: (function () { var tmp = {v_sig: null,v_stmts: (function () { var List_a = [];
+var List_v = [];
+List_a.push((function () { var tmp = {v_decl: "my",v_type: "",v_var: (function () { var tmp = {v_name: "a",v_namespace: "",v_sigil: "%",v_twigil: ""}; tmp.__proto__ = Var; return tmp })()}; tmp.__proto__ = Decl; return tmp })());(List_v = List_s);(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_x) { List_a.push(List_v[v_x]); })(a_[i_]) } })((function (a) { for (var i=0, l=((f_elems(List_v) - 1)); i<=l; ++i){ a.push(i) }; return a })([]));List_a.push((function () { var tmp = {v_name: "a",v_namespace: "",v_sigil: "%",v_twigil: ""}; tmp.__proto__ = Var; return tmp })());return(List_a) })()}; tmp.__proto__ = Lit$Block; return tmp })()}; tmp.__proto__ = Do; return tmp })()) } catch(err) { if ( err instanceof Error ) { throw(err) } else { return(err) } } 
+  }
+  Lit$Hash.f_expand_interpolation;  // v8 bug workaround
+})();
+;})();
+
+// class GLOBAL
+if (typeof GLOBAL != 'object') {
+  GLOBAL = function() {};
+  GLOBAL = new GLOBAL;
+  GLOBAL.f_isa = function (s) { return s == 'GLOBAL' };
+  GLOBAL.f_perl = function () { return 'GLOBAL.new(' + Main._dump(this) + ')' };
+}
+(function () {
+  var v__NAMESPACE = GLOBAL;
 // class Perlito
 if (typeof Perlito != 'object') {
   Perlito = function() {};
@@ -3146,6 +3233,7 @@ if (typeof Perlito != 'object') {
 ;// use Perlito::Emitter::Token
 ;// use Perlito::Precedence
 ;// use Perlito::Expression
+;// use Perlito::Macro
 ;})();
 ;})();
 
