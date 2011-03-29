@@ -1,6 +1,7 @@
 
 use v5;
 binmode(STDOUT, ":utf8");
+use Scalar::Util;
 
 {
     package Perlito::Match;
@@ -190,6 +191,11 @@ package Main;
         ]
     }
  
+    sub id {
+           Scalar::Util::refaddr($_[0]) 
+        || "_id_" . $_[0]
+    }
+
     sub perl {
         return 'Mu' unless defined $_[0];
         local $_;
