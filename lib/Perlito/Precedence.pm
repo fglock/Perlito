@@ -30,6 +30,7 @@ class Perlito::Precedence {
 
     my $Op1;
     my $Op2;
+    my $Op3;
     my $End_token;
     method op_parse ($str, $pos) {
         my $from = $pos;
@@ -61,6 +62,30 @@ class Perlito::Precedence {
             $pos = $pos + 2;
             $c02 = substr($str, $pos, 2);
         }
+
+        my $op3 = substr($str, $pos, 3);
+        if exists($Op3{$op3}) {
+            my $c1 = substr($str, $pos+2, 1);
+            my $c2 = substr($str, $pos+3, 1);
+            if is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ) {
+            }
+            else {
+                $pos = $pos + 3;
+                my $c01 = substr($str, $pos, 2);
+                my $c02 = substr($str, $pos, 3);
+                if ($c01 eq '«') || ($c01 eq '»') {
+                    $hyper_right = $c01;
+                    $pos = $pos + 1;
+                }
+                elsif ($c02 eq '<<') || ($c02 eq '>>') {
+                    $hyper_right = $c02;
+                    $pos = $pos + 2;
+                }
+                return Perlito::Match.new( 'str' => $str, 'from' => $from, 'to' => $pos, 'bool' => 1,
+                    capture => [ 'op', $op3, { 'hyper_left' => $hyper_left, 'hyper_right' => $hyper_right } ] );
+            }
+        }
+ 
         my $op2 = $c02;
         if exists($Op2{$op2}) {
             my $c1 = substr($str, $pos+1, 1);
@@ -121,6 +146,9 @@ class Perlito::Precedence {
         }
         elsif ($name.chars) == 2 {
             $Op2{$name} = 1;
+        }
+        elsif ($name.chars) == 3 {
+            $Op3{$name} = 1;
         }
     }
     
@@ -192,6 +220,7 @@ class Perlito::Precedence {
     add_op( 'infix',    '^..^', $prec );
 
     $prec = $prec - 1;
+    add_op( 'infix',    '===', $prec, { assoc => 'chain' } );
     add_op( 'infix',    'ne',  $prec, { assoc => 'chain' } );
     add_op( 'infix',    'eq',  $prec, { assoc => 'chain' } );
     add_op( 'infix',    'lt',  $prec, { assoc => 'chain' } );

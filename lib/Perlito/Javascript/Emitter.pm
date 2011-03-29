@@ -437,6 +437,9 @@ class Apply {
  
         if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' }
         if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' }
+        if $code eq 'infix:<===>' {
+            return '(f_id(' ~ (@.arguments[0]).emit_javascript() ~ ') == f_id(' ~ (@.arguments[1]).emit_javascript() ~ '))'
+        }
 
         if $code eq 'exists'     { 
             my $arg = @.arguments[0];
