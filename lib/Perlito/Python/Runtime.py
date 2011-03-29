@@ -512,7 +512,13 @@ def mp6_id(o):
     except AttributeError:
         return id(o)
 
-def mp6_perl(o):
+def mp6_perl(o, seen={}):
+    try:
+        if seen[id(o)]:
+            return '*recursive*'
+    except KeyError:
+        None
+    seen[id(o)] = True
     try:
         return o.f_perl()
     except AttributeError:
