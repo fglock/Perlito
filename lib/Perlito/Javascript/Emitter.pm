@@ -481,6 +481,25 @@ class Apply {
         $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
     }
 
+    # TODO - this would be called from emit_javascript_bind()
+    # sub emit_javascript_autovivify ($var) {
+    #     if $var.isa('Lookup') {
+    #         my $var1 = $var.obj;
+    #         my $var1_js = $var1.emit_javascript;
+    #         $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = {} }; ';
+    #         $var_js = $var1_js ~ '[' ~ $var.index_exp.emit_javascript() ~ ']'
+    #     }
+    #     elsif $var.isa('Index') {
+    #         my $var1 = $var.obj;
+    #         my $var1_js = $var1.emit_javascript;
+    #         $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = [] }; ';
+    #         $var_js = $var1_js ~ '[' ~ $var.index_exp.emit_javascript() ~ ']'
+    #     }
+    #     else {
+    #         $var_js = $var.emit_javascript;
+    #     }
+    # }
+
     sub emit_javascript_bind ($parameters, $arguments) {
         if $parameters.isa( 'Lit::Array' ) {
             
@@ -539,6 +558,24 @@ class Apply {
                 $var_js = $var.emit_javascript;
             }
             $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+            my $index_js = $parameters.index_exp.emit_javascript;
+            $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ ' = ' ~ $arguments.emit_javascript() ~ '); ';
+            return '(function () { ' ~ $str ~ '})()';
+        }
+        if $parameters.isa( 'Index' ) {
+            my $str = '';
+            my $var = $parameters.obj;
+            my $var_js;
+            if $var.isa('Index') {
+                my $var1 = $var.obj;
+                my $var1_js = $var1.emit_javascript;
+                $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = [] }; ';
+                $var_js = $var1_js ~ '[' ~ $var.index_exp.emit_javascript() ~ ']'
+            }
+            else {
+                $var_js = $var.emit_javascript;
+            }
+            $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = [] }; ';
             my $index_js = $parameters.index_exp.emit_javascript;
             $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ ' = ' ~ $arguments.emit_javascript() ~ '); ';
             return '(function () { ' ~ $str ~ '})()';
