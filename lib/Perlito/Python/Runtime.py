@@ -95,7 +95,7 @@ def mp6_isa(v, name):
             return True
         if name == 'Str' and type(v) == type("aa"):
             return True
-        print "Warning: Can't calculate .isa() on", v
+        mp6_warn("Warning: Can't calculate .isa() on", mp6_perl(v))
         return False
 
 def mp6_join(l, s):
@@ -273,6 +273,8 @@ class mp6_Scalar:
         return getattr(self.v, name)
     def __str__(self):
         return str(self.v)
+    def f_perl(self):
+        return mp6_perl(self.v)
     def f_id(self):
         return mp6_id(self.v)
     def f_bool(self):
@@ -499,7 +501,13 @@ __builtin__.IO = IO
 __builtin__.IO_proto = IO_proto
 
 
-def _dump(o):
+def _dump(o, seen):
+    try:
+        if seen[id(o)]:
+            return '*recursive*'
+    except KeyError:
+        None
+    seen[id(o)] = True
     out = [];
     for i in o.__dict__.keys():
         out.append(i[2:] + " => " + mp6_perl(o.__dict__[i]))
@@ -514,12 +522,6 @@ def mp6_id(o):
 
 def mp6_perl(o, seen={}):
     try:
-        if seen[id(o)]:
-            return '*recursive*'
-    except KeyError:
-        None
-    seen[id(o)] = True
-    try:
         return o.f_perl()
     except AttributeError:
         if type(o) == type(False):
@@ -531,13 +533,25 @@ def mp6_perl(o, seen={}):
         if type(o) == type("aa"):
             return '"' + Main_proto.f_javascript_escape_string(o) + '"'
         if type(o) == type([]):
+            try:
+                if seen[id(o)]:
+                    return '*recursive*'
+            except KeyError:
+                None
+            seen[id(o)] = True
             return "[" + ", ".join(map(lambda x: mp6_perl(x), o)) + "]"
         if type(o) == type({}):
+            try:
+                if seen[id(o)]:
+                    return '*recursive*'
+            except KeyError:
+                None
+            seen[id(o)] = True
             out = [];
             for i in o.keys():
                 out.append(i + " => " + mp6_perl(o[i]))
             return "{" + ", ".join(out) + "}";
-        return _dump(o)
+        return _dump(o, seen)
 
 __builtin__.List_ARGS = mp6_Array([])
 List_ARGS.l.extend(sys.argv[1:])
