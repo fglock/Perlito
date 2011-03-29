@@ -571,8 +571,10 @@ class Apply {
         
         if $code eq 'substr' { 
             return (@.arguments[0]).emit_python() ~ '[' 
-                    ~ (@.arguments[1]).emit_python() ~ ':' 
-                    ~ (@.arguments[1]).emit_python() ~ ' + ' ~ (@.arguments[2]).emit_python() 
+                    ~ 'mp6_to_num(' ~ (@.arguments[1]).emit_python() ~ ')' 
+                ~ ':' 
+                      ~ 'mp6_to_num(' ~ (@.arguments[1]).emit_python() ~ ') ' 
+                    ~ '+ mp6_to_num(' ~ (@.arguments[2]).emit_python() ~ ')'
                 ~ ']' 
         } 
         if $code eq 'index' { 
