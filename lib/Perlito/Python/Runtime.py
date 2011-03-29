@@ -27,7 +27,7 @@ import __builtin__
 __all__ = ['mp6_print', 'mp6_say', 'mp6_warn', 
            'mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'mp6_isa',
            'mp6_and', 'mp6_or', 'mp6_defined_or',
-           'mp6_join', 'mp6_index', 'mp6_perl',
+           'mp6_join', 'mp6_index', 'mp6_perl', 'mp6_id',
            'mp6_Mu', 
            'mp6_Array', 'mp6_Hash', 'mp6_Scalar',
            'mp6_Return',
@@ -273,6 +273,8 @@ class mp6_Scalar:
         return getattr(self.v, name)
     def __str__(self):
         return str(self.v)
+    def f_id(self):
+        return mp6_id(self.v)
     def f_bool(self):
         return mp6_to_bool(self.v)
     def f_set(self, v):
@@ -306,6 +308,8 @@ class mp6_Mu_get_proxy(mp6_Mu):
         return getattr(self.v, name)
     def __str__(self):
         return str(self.v)
+    def f_id(self):
+        return mp6_id(self.v)
     def f_bool(self):
         return mp6_to_bool(self.v)
     def f_get(self):
@@ -367,10 +371,9 @@ class Perlito__Match:
         return v
     def __str__(self):
         if mp6_to_bool(self.v_bool):
-            try:
+            if not(mp6_isa(self.v_capture,'Mu')): 
                 return str(self.v_capture)
-            except AttributeError:
-                return self.v_str[self.v_from:self.v_to]
+            return self.v_str[self.v_from:self.v_to]
         return ''
     def f_bool(self):
         return mp6_to_bool(self.v_bool)
@@ -389,10 +392,9 @@ class Perlito__Match:
         return self.v_m.f_lookup(k)
     def f_scalar(self):
         if mp6_to_bool(self.v_bool):
-            try:
+            if not(mp6_isa(self.v_capture,'Mu')): 
                 return self.v_capture
-            except AttributeError:
-                return self.v_str[self.v_from:self.v_to]
+            return self.v_str[self.v_from:self.v_to]
         return self.v_capture
     def has_key(self, k):
         return self.v_m.has_key(k)
@@ -503,6 +505,12 @@ def _dump(o):
         out.append(i[2:] + " => " + mp6_perl(o.__dict__[i]))
     name = o.__class__.__name__.replace( "__", "::");
     return name + ".new(" + ", ".join(out) + ")";
+
+def mp6_id(o):
+    try:
+        return o.f_id()
+    except AttributeError:
+        return id(o)
 
 def mp6_perl(o):
     try:

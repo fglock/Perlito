@@ -407,6 +407,7 @@ class Call {
         }
 
         if     ($.method eq 'perl')
+            || ($.method eq 'id')
             || ($.method eq 'yaml')
             || ($.method eq 'say' )
             || ($.method eq 'join')
