@@ -360,6 +360,7 @@ class Perlito__Match:
     def __init__(self, **arg):
         self.v_m = mp6_Hash({})
         self.v_to = 0
+        self.v_capture = mp6_Scalar()
         self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
@@ -380,6 +381,8 @@ class Perlito__Match:
         self.v_from = m.v_from
         self.v_bool = m.v_bool
         self.v_capture = m.v_capture
+    def f_capture(self):
+        return self.v_capture
     def f_index_set(self, k, v):
         return self.v_m.f_index_set(k, v)
     def f_lookup(self, k):
@@ -390,7 +393,7 @@ class Perlito__Match:
                 return self.v_capture
             except AttributeError:
                 return self.v_str[self.v_from:self.v_to]
-        return mp6_Mu()
+        return self.v_capture
     def has_key(self, k):
         return self.v_m.has_key(k)
     def f_from(self):
