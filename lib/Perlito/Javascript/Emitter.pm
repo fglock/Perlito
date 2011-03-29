@@ -309,6 +309,7 @@ class Call {
 
         if     ($.method eq 'perl')
             || ($.method eq 'isa')
+            || ($.method eq 'id')
             || ($.method eq 'scalar')
             || ($.method eq 'keys')
             || ($.method eq 'values')
