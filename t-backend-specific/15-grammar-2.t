@@ -5,7 +5,7 @@ class Main {
     use Perlito::Lisp::Emitter;
 
     say '1..4';
-    my $m := Perlito::Grammar.exp_stmts( 'abc.meth()', 0);
+    my $m = Perlito::Grammar.exp_stmts( 'abc.meth()', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', ($$m).perl;
     say '# emit is:  ', (($$m)[0]).emit_lisp;
@@ -16,7 +16,7 @@ class Main {
         say 'not ok 1';
     }
 
-    $m := Perlito::Grammar.exp_stmts( 'abc.meth', 0);
+    $m = Perlito::Grammar.exp_stmts( 'abc.meth', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', ($$m).perl;
     say '# emit is:  ', (($$m)[0]).emit_lisp;
@@ -27,7 +27,7 @@ class Main {
         say 'not ok 2';
     }
 
-    $m := Perlito::Grammar.exp_stmts( 'abc.meth 123', 0);
+    $m = Perlito::Grammar.exp_stmts( 'abc.meth 123', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', ($$m).perl;
     if $$m {
@@ -37,10 +37,10 @@ class Main {
         say 'not ok 3';
     }
 
-    $m := Perlito::Grammar.exp_stmts( 'abc.meth(123)', 0);
+    $m = Perlito::Grammar.exp_stmts( 'abc.meth(123)', 0);
     say '# Ast is:        ', $m.perl;
     say '# code is:  ', (($$m)[0]).emit_lisp;
-    if (($$m)[0]).emit_lisp {
+    if (($$m)[0]).emit_lisp() {
         say 'ok 4';
     }
     else {
