@@ -720,11 +720,47 @@ class Perlito::Expression {
         }
         # TODO - require a statement terminator 
         # say "# statement_parse modifier result: ", $modifier_exp.perl;
+
+        $modifier = ~$modifier;
+
+        if $modifier eq 'if' {
+            return Perlito::Match.new( 
+                'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
+                capture => If.new(
+                    cond      => ($$modifier_exp){'exp'},
+                    body      => ($$res){'exp'},
+                    otherwise => Lit::Block.new(stmts => [ ]) ) );
+        }
+        if $modifier eq 'unless' {
+            return Perlito::Match.new( 
+                'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
+                capture => If.new(
+                    cond      => ($$modifier_exp){'exp'},
+                    body      => Lit::Block.new(stmts => [ ]),
+                    otherwise => ($$res){'exp'} ) );
+        }
+        # if $modifier eq 'while' {
+        #     return Perlito::Match.new( 
+        #         'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
+        #         capture => While.new(
+        #             # TODO
+        #             cond    => ($$modifier_exp){'exp'},
+        #             body    => ($$res){'exp'} ) );
+        # }
+        # if $modifier eq 'for' {
+        #     return Perlito::Match.new( 
+        #         'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
+        #         capture => For.new(
+        #             # TODO
+        #             cond    => ($$modifier_exp){'exp'},
+        #             body    => ($$res){'exp'} ) );
+        # }
+
         return Perlito::Match.new( 
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
             capture => {
                 exp          => ($$res){'exp'},
-                modifier     => ~$modifier,
+                modifier     => $modifier,
                 modifier_exp => ($$modifier_exp){'exp'} } )
     } 
 
