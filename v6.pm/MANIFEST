@@ -1,11 +1,9 @@
 ChangeLog
 hello_world.pl
-lib/Perlito/AST.pm
 lib/Perlito/Clojure/Emitter.pm
 lib/Perlito/Emitter/Token.pm
 lib/Perlito/Eval.pm
 lib/Perlito/Expression.pm
-lib/Perlito/Go/Channel.pm
 lib/Perlito/Go/Emitter.pm
 lib/Perlito/Go/Prelude.pm
 lib/Perlito/Go/Runtime.go
@@ -18,6 +16,7 @@ lib/Perlito/Javascript/Runtime.js
 lib/Perlito/Lisp/Emitter.pm
 lib/Perlito/Lisp/Prelude.pm
 lib/Perlito/Lisp/Runtime.lisp
+lib/Perlito/Macro.pm
 lib/Perlito/Parrot/Emitter.pm
 lib/Perlito/Parrot/Match.pm
 lib/Perlito/Perl5/Emitter.pm
@@ -63,10 +62,10 @@ t/11-class.t
 t/11-hyper.t
 t/12-match-more.t
 t/12-match.t
-t/14-grammar-make.t
 t/14-grammar-subrule.t
 t/14-grammar.t
 t/16-var-redeclare.t
-t/20-eval.t
+t/17-hash-autovivify.t
+t/18-array-autovivify.t
 t/21-test.t
 

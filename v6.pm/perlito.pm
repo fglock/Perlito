@@ -11,6 +11,7 @@ sub compile {
     require Perlito::Grammar;
     require Perlito::Grammar::Regex;
     require Perlito::Emitter::Token;
+    require Perlito::Macro;
     my @comp_unit;
     my $pos = 0;
     my $p = Perlito::Grammar->exp_stmts( $source, $pos );
