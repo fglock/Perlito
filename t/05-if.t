@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..7';
+    say '1..9';
 
     if 0 {
         print 'not '
@@ -44,5 +44,15 @@ class Main {
         print 'not '
     }
     say 'ok 7';
+
+    say 'not ok 8'
+        unless 1;
+    say 'ok 8'
+        unless 0;
+
+    say 'not ok 9'
+        if 0;
+    say 'ok 9'
+        if 1;
 
 }

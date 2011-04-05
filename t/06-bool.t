@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..30';
+    say '1..31';
     
     say ( 0     ?? "not " !! "" ), "ok 1 - integer";
     say ( 1     ?? "" !! "not " ), "ok 2";
@@ -61,5 +61,7 @@ class Main {
     say ((  0 && 20 ) ==  0 ?? "" !! "not "), "ok 28";
     say (( "" || "x" ) eq "x" ?? "" !! "not "), "ok 29";
     say (( "" && "x" ) eq ""  ?? "" !! "not "), "ok 30";
+
+    say "ok 31" or die "not ok 31";
 }
 

@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..3';
+    say '1..5';
     my $a = 4;
     my $b = 0;
     while $a {
@@ -16,4 +16,8 @@ class Main {
     while @x {
         say "ok ", (shift @x); 
     }
+
+    @x = ( 4, 5 );
+    say "ok ", (shift @x)
+        while @x;
 }

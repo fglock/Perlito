@@ -39,11 +39,13 @@ __all__ = ['mp6_print', 'mp6_say', 'mp6_warn',
 def mp6_print(*msg):
     for m in msg:
         sys.stdout.write(str(m))
+    return 1;
 
 def mp6_say(*msg):
     for m in msg:
         sys.stdout.write(str(m))
     sys.stdout.write("\n")
+    return 1;
 
 def mp6_warn(*msg):
     for m in msg:

@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..11';
+    say '1..13';
     my @a = ( 1, 2 );
     for @a -> $v {
         say 'ok ' ~ $v ~ ' - loop';
@@ -35,4 +35,9 @@ class Main {
     for @a {
         say "ok $_ - default variable";
     }
+
+    @a[0] = 12;
+    @a[1] = 13;
+    say "ok $_ - default variable in statement modifier"
+        for @a;
 }
