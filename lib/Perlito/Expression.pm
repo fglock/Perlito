@@ -746,21 +746,14 @@ class Perlito::Expression {
                     cond    => ($$modifier_exp){'exp'},
                     body    => ($$res){'exp'} ) );
         }
-        # if $modifier eq 'for' {
-        #     return Perlito::Match.new( 
-        #         'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
-        #         capture => For.new(
-        #             # TODO
-        #             cond    => ($$modifier_exp){'exp'},
-        #             body    => ($$res){'exp'} ) );
-        # }
-
-        return Perlito::Match.new( 
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
-            capture => {
-                exp          => ($$res){'exp'},
-                modifier     => $modifier,
-                modifier_exp => ($$modifier_exp){'exp'} } )
+        if $modifier eq 'for' {
+            return Perlito::Match.new( 
+                'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
+                capture => For.new(
+                    cond    => ($$modifier_exp){'exp'},
+                    body    => Lit::Block.new(stmts => [ ($$res){'exp'} ] ) ) );
+        }
+        die "Unexpected statement modifier '$modifier'";
     } 
 
 }
