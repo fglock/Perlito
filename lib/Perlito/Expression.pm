@@ -739,14 +739,13 @@ class Perlito::Expression {
                     body      => Lit::Block.new(stmts => [ ]),
                     otherwise => ($$res){'exp'} ) );
         }
-        # if $modifier eq 'while' {
-        #     return Perlito::Match.new( 
-        #         'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
-        #         capture => While.new(
-        #             # TODO
-        #             cond    => ($$modifier_exp){'exp'},
-        #             body    => ($$res){'exp'} ) );
-        # }
+        if $modifier eq 'while' {
+            return Perlito::Match.new( 
+                'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
+                capture => While.new(
+                    cond    => ($$modifier_exp){'exp'},
+                    body    => ($$res){'exp'} ) );
+        }
         # if $modifier eq 'for' {
         #     return Perlito::Match.new( 
         #         'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 

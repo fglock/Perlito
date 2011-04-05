@@ -164,6 +164,7 @@ package Main;
             }
             CORE::print $_
         } 
+        return 1;
     }
     sub say   { Main::print( @_, "\n" ) }
     sub chars { length( $_[0] ) }
