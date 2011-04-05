@@ -728,7 +728,7 @@ class Perlito::Expression {
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
                 capture => If.new(
                     cond      => ($$modifier_exp){'exp'},
-                    body      => ($$res){'exp'},
+                    body      => Lit::Block.new(stmts => [ ($$res){'exp'} ]),
                     otherwise => Lit::Block.new(stmts => [ ]) ) );
         }
         if $modifier eq 'unless' {
@@ -737,14 +737,14 @@ class Perlito::Expression {
                 capture => If.new(
                     cond      => ($$modifier_exp){'exp'},
                     body      => Lit::Block.new(stmts => [ ]),
-                    otherwise => ($$res){'exp'} ) );
+                    otherwise => Lit::Block.new(stmts => [ ($$res){'exp'} ]) ) );
         }
         if $modifier eq 'while' {
             return Perlito::Match.new( 
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
                 capture => While.new(
                     cond    => ($$modifier_exp){'exp'},
-                    body    => ($$res){'exp'} ) );
+                    body    => Lit::Block.new(stmts => [ ($$res){'exp'} ] ) ) );
         }
         if $modifier eq 'for' {
             return Perlito::Match.new( 

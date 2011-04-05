@@ -311,6 +311,8 @@ class Apply {
         
         if $code eq 'infix:<&&>' { return '('  ~ (@.arguments.>>emit_perl5).join(' && ')  ~ ')' }
         if $code eq 'infix:<||>' { return '('  ~ (@.arguments.>>emit_perl5).join(' || ')  ~ ')' }
+        if $code eq 'infix:<and>' { return '('  ~ (@.arguments.>>emit_perl5).join(' and ')  ~ ')' }
+        if $code eq 'infix:<or>' { return '('  ~ (@.arguments.>>emit_perl5).join(' or ')  ~ ')' }
         if $code eq 'infix:<//>' { return '('  ~ (@.arguments.>>emit_perl5).join(' // ')  ~ ')' }
         if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_perl5).join(' eq ')  ~ ')' }
         if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_perl5).join(' ne ')  ~ ')' }

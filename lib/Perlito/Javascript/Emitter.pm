@@ -418,11 +418,17 @@ class Apply {
                 ~ '})([])' 
         }
     
-        if $code eq 'infix:<&&>' { return 'f_and('
+        if   $code eq 'infix:<&&>' 
+          || $code eq 'infix:<and>'
+        { 
+            return 'f_and('
                 ~ @.arguments[0].emit_javascript() ~ ', ' 
                 ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 
         }
-        if $code eq 'infix:<||>' { return 'f_or('  
+        if   $code eq 'infix:<||>'    
+          || $code eq 'infix:<or>'
+        { 
+            return 'f_or('  
                 ~ @.arguments[0].emit_javascript() ~ ', ' 
                 ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 
         }

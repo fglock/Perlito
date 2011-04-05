@@ -517,10 +517,14 @@ class Apply {
         if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_python).join(' * ')  ~ ')' };
         if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_python).join(' / ')  ~ ')' };
         
-        if $code eq 'infix:<&&>' { 
+        if   $code eq 'infix:<&&>' 
+          || $code eq 'infix:<and>'
+        { 
             return 'mp6_and(' ~ (@.arguments[0]).emit_python() ~ ', lambda: ' ~ (@.arguments[1]).emit_python() ~ ')' 
         }
-        if $code eq 'infix:<||>' { 
+        if   $code eq 'infix:<||>' 
+          || $code eq 'infix:<or>'
+        { 
             return 'mp6_or('  ~ (@.arguments[0]).emit_python() ~ ', lambda: ' ~ (@.arguments[1]).emit_python() ~ ')' 
         }
         if $code eq 'infix:<//>' { 
