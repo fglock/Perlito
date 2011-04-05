@@ -576,6 +576,9 @@ class Apply {
         if $code eq 'return' {
             return 'raise mp6_Return(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         }
+        # if $code eq 'die' {
+        #     return 'raise mp6_Die(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+        # }
         
         if $code eq 'substr' { 
             return (@.arguments[0]).emit_python() ~ '[' 

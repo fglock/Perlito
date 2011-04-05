@@ -30,7 +30,7 @@ __all__ = ['mp6_print', 'mp6_say', 'mp6_warn',
            'mp6_join', 'mp6_index', 'mp6_perl', 'mp6_id',
            'mp6_Mu', 
            'mp6_Array', 'mp6_Hash', 'mp6_Scalar',
-           'mp6_Return',
+           'mp6_Return', 'mp6_Die',
            'Perlito__Match',
            'Perlito__Grammar', 'Perlito__Grammar_proto', 
            'Main', 'Main_proto',
@@ -51,6 +51,14 @@ def mp6_warn(*msg):
     for m in msg:
         sys.stderr.write(str(m))
     sys.stderr.write("\n")
+
+def f_die(*msg):
+    sys.stderr.write("Died: ")
+    for m in msg:
+        sys.stderr.write(str(m))
+    sys.stderr.write("\n")
+    raise mp6_Die()
+__builtin__.f_die = f_die
 
 def mp6_to_scalar(v):
     try:
@@ -357,6 +365,12 @@ class mp6_Mu_lookup_proxy(mp6_Mu):
         return mp6_Mu_lookup_proxy(self, i)
     def f_index(self, i):
         return mp6_Mu_index_proxy(self, i)
+
+class mp6_Die(Exception):
+    def __init__(self):
+        1
+    def f_isa(self, name):
+        return name == 'Exception::Die'
 
 class mp6_Return(Exception):
     def __init__(self, value):
