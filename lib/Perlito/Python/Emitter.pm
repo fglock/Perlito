@@ -504,8 +504,12 @@ class Apply {
         if $code eq 'Num'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_python     ~ ')' };
 
         if $code eq 'prefix:<~>' { return 'str('   ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
-        if $code eq 'prefix:<!>' { return 'not ('  ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
-        if $code eq 'prefix:<?>' { return 'not (not ('  ~ (@.arguments.>>emit_python).join(' ')    ~ '))' };
+        if $code eq 'prefix:<!>' { 
+            return 'not mp6_to_bool('  ~ (@.arguments.>>emit_python).join(' ') ~ ')' 
+        }
+        if $code eq 'prefix:<?>' { 
+            return 'not (not mp6_to_bool('  ~ (@.arguments.>>emit_python).join(' ')    ~ '))' 
+        }
 
         if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
