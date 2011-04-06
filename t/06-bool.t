@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..31';
+    say '1..35';
     
     say ( 0     ?? "not " !! "" ), "ok 1 - integer";
     say ( 1     ?? "" !! "not " ), "ok 2";
@@ -63,5 +63,15 @@ class Main {
     say (( "" && "x" ) eq ""  ?? "" !! "not "), "ok 30";
 
     say "ok 31" or die "not ok 31";
+
+    my $h = {}; 
+    say ( $h ?? "not " !! "" ), "ok 32 - hash in scalar";
+    $h{'x'} = 0;
+    say ( $h ?? "" !! "not " ), "ok 33";
+
+    my %h; 
+    say ( %h ?? "not " !! "" ), "ok 34 - hash";
+    %h{'x'} = 0;
+    say ( %h ?? "" !! "not " ), "ok 35";
 }
 
