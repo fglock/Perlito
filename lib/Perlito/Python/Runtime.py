@@ -527,8 +527,8 @@ def _dump(o, seen):
     out = [];
     for i in o.__dict__.keys():
         out.append(i[2:] + " => " + mp6_perl(o.__dict__[i]))
-    name = o.__class__.__name__.replace( "__", "::");
-    return name + ".new(" + ", ".join(out) + ")";
+    name = o.__class__.__name__.replace( "__", "::")
+    return name + ".new(" + ", ".join(out) + ")"
 
 def mp6_id(o):
     try:
@@ -536,7 +536,8 @@ def mp6_id(o):
     except AttributeError:
         return id(o)
 
-def mp6_perl(o, seen={}):
+def mp6_perl(o, last_seen={}):
+    seen = last_seen.copy()
     try:
         return o.f_perl()
     except AttributeError:
