@@ -105,7 +105,7 @@ def mp6_isa(v, name):
             return True
         if name == 'Str' and type(v) == type("aa"):
             return True
-        mp6_warn("Warning: Can't calculate .isa() on", mp6_perl(v))
+        mp6_warn("Warning: Can't calculate .isa() on ", mp6_perl(v))
         return False
 
 def mp6_join(l, s):
@@ -218,14 +218,14 @@ class mp6_Hash:
     def f_perl(self):
         return mp6_perl(self.l)
     def values(self):
-        return self.l.values()
+        return mp6_Array(self.l.values())
     def keys(self):
-        return self.l.keys()
+        return mp6_Array(self.l.keys())
     def f_pairs(self):
         out = [];
-        for i in self.keys():
+        for i in self.l.keys():
             out.append( Pair(v_key=i, v_value=self.__getitem__(i)) )
-        return out
+        return mp6_Array(out)
     def has_key(self, k):
         return self.l.has_key(k)
     def f_set(self, v):
