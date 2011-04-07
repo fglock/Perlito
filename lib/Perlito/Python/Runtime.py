@@ -271,6 +271,8 @@ class mp6_Mu:
         return 0
     def __getitem__(self, k):
         return self 
+    def __iter__(self):
+        return [].__iter__()
     def f_perl(self):
         return "Mu"
     def f_isa(self, name):
