@@ -273,7 +273,7 @@ class mp6_Mu:
         return self 
     def __iter__(self):
         return [].__iter__()
-    def f_perl(self):
+    def f_perl(self, seen={}):
         return "Mu"
     def f_isa(self, name):
         return name == 'Mu'
