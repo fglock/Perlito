@@ -409,10 +409,8 @@ class Call {
                 Python::tab($level) ~ '__builtin__.' ~ Main::to_go_namespace($.invocant.name) ~ '(' ~ @str.join(', ') ~ ')'
         }
 
-        if     ($.method eq 'perl')
-            || ($.method eq 'id')
+        if     ($.method eq 'id')
             || ($.method eq 'yaml')
-            || ($.method eq 'say' )
             || ($.method eq 'join')
             || ($.method eq 'isa')
         { 
@@ -496,10 +494,6 @@ class Apply {
         if $code eq 'make'       { return "v_MATCH.__setattr__('v_capture', " ~ (@.arguments[0]).emit_python() ~ ')' }
         if $code eq 'False'      { return 'False'       };
         if $code eq 'True'       { return 'True'        };
-
-        if $code eq 'say'        { return 'mp6_say('   ~ (@.arguments.>>emit_python).join(', ') ~ ')' } 
-        if $code eq 'print'      { return 'mp6_print(' ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
-        if $code eq 'warn'       { return 'mp6_warn('  ~ (@.arguments.>>emit_python).join(', ') ~ ')' }
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_python).join(' ')      ~ ']' };
 
