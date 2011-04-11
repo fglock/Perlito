@@ -324,6 +324,8 @@ class mp6_Mu_get_proxy(mp6_Mu):
         return getattr(self.v, name)
     def __str__(self):
         return str(self.v)
+    def f_perl(self, seen={}):
+        return f_perl(self.v, seen)
     def f_id(self):
         return mp6_id(self.v)
     def f_bool(self):
