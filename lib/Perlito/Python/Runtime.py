@@ -383,11 +383,18 @@ class mp6_Return(Exception):
 class Perlito__Match:
     def __init__(self, **arg):
         self.v_m = mp6_Hash({})
-        self.v_to = 0
+        self.v_to = mp6_Scalar()
         self.v_capture = mp6_Scalar()
-        self.__dict__.update(arg)
-    def __setattr__(v_self, k, v):
-        v_self.__dict__[k] = v
+        self.v_to.f_set(0)
+        for k in arg:
+            self.__dict__[k] = mp6_Scalar()
+            self.__dict__[k].f_set(arg[k])
+    def __setattr__(self, k, v):
+        try:
+            self.__dict__[k].f_set(v)
+        except KeyError:
+            self.__dict__[k] = mp6_Scalar()
+            self.__dict__[k].f_set(v)
         return v
     def __str__(self):
         if mp6_to_bool(self.v_bool):
@@ -398,12 +405,12 @@ class Perlito__Match:
     def f_bool(self):
         return mp6_to_bool(self.v_bool)
     def f_set(self, m):
-        self.v_m  = m.v_m
-        self.v_to = m.v_to
-        self.v_str = m.v_str
-        self.v_from = m.v_from
-        self.v_bool = m.v_bool
-        self.v_capture = m.v_capture
+        self.v_m.f_set(m.v_m)
+        self.v_to.f_set(m.v_to)
+        self.v_str.f_set(m.v_str)
+        self.v_from.f_set(m.v_from)
+        self.v_bool.f_set(m.v_bool)
+        self.v_capture.f_set(m.v_capture)
     def f_capture(self):
         return self.v_capture
     def f_index_set(self, k, v):

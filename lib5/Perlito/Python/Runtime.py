@@ -105,7 +105,7 @@ def mp6_isa(v, name):
             return True
         if name == 'Str' and type(v) == type("aa"):
             return True
-        mp6_warn("Warning: Can't calculate .isa() on", mp6_perl(v))
+        mp6_warn("Warning: Can't calculate .isa() on ", mp6_perl(v))
         return False
 
 def mp6_join(l, s):
@@ -150,8 +150,8 @@ class mp6_Array:
         return len(self.l) > 0
     def __iter__(self):
         return self.l.__iter__()
-    def f_perl(self):
-        return mp6_perl(self.l)
+    def f_perl(self, seen={}):
+        return mp6_perl(self.l, seen)
     def f_elems(self):
         return len(self.l)
     def f_extend(self, l):
@@ -215,17 +215,17 @@ class mp6_Hash:
         return self.l.__iter__()
     def __getitem__(self, k):
         return self.l.__getitem__(k) 
-    def f_perl(self):
-        return mp6_perl(self.l)
+    def f_perl(self, seen={}):
+        return mp6_perl(self.l, seen)
     def values(self):
-        return self.l.values()
+        return mp6_Array(self.l.values())
     def keys(self):
-        return self.l.keys()
+        return mp6_Array(self.l.keys())
     def f_pairs(self):
         out = [];
-        for i in self.keys():
+        for i in self.l.keys():
             out.append( Pair(v_key=i, v_value=self.__getitem__(i)) )
-        return out
+        return mp6_Array(out)
     def has_key(self, k):
         return self.l.has_key(k)
     def f_set(self, v):
@@ -271,7 +271,9 @@ class mp6_Mu:
         return 0
     def __getitem__(self, k):
         return self 
-    def f_perl(self):
+    def __iter__(self):
+        return [].__iter__()
+    def f_perl(self, seen={}):
         return "Mu"
     def f_isa(self, name):
         return name == 'Mu'
@@ -283,8 +285,8 @@ class mp6_Scalar:
         return getattr(self.v, name)
     def __str__(self):
         return str(self.v)
-    def f_perl(self):
-        return mp6_perl(self.v)
+    def f_perl(self, seen={}):
+        return mp6_perl(self.v, seen)
     def f_id(self):
         return mp6_id(self.v)
     def f_bool(self):
@@ -526,9 +528,9 @@ def _dump(o, seen):
     seen[id(o)] = True
     out = [];
     for i in o.__dict__.keys():
-        out.append(i[2:] + " => " + mp6_perl(o.__dict__[i]))
-    name = o.__class__.__name__.replace( "__", "::");
-    return name + ".new(" + ", ".join(out) + ")";
+        out.append(i[2:] + " => " + mp6_perl(o.__dict__[i], seen))
+    name = o.__class__.__name__.replace( "__", "::")
+    return name + ".new(" + ", ".join(out) + ")"
 
 def mp6_id(o):
     try:
@@ -536,9 +538,10 @@ def mp6_id(o):
     except AttributeError:
         return id(o)
 
-def mp6_perl(o, seen={}):
+def mp6_perl(o, last_seen={}):
+    seen = last_seen.copy()
     try:
-        return o.f_perl()
+        return o.f_perl(seen)
     except AttributeError:
         if type(o) == type(False):
             return str(o)
@@ -555,7 +558,7 @@ def mp6_perl(o, seen={}):
             except KeyError:
                 None
             seen[id(o)] = True
-            return "[" + ", ".join(map(lambda x: mp6_perl(x), o)) + "]"
+            return "[" + ", ".join(map(lambda x: mp6_perl(x, seen), o)) + "]"
         if type(o) == type({}):
             try:
                 if seen[id(o)]:
@@ -565,7 +568,7 @@ def mp6_perl(o, seen={}):
             seen[id(o)] = True
             out = [];
             for i in o.keys():
-                out.append(i + " => " + mp6_perl(o[i]))
+                out.append(i + " => " + mp6_perl(o[i], seen))
             return "{" + ", ".join(out) + "}";
         return _dump(o, seen)
 

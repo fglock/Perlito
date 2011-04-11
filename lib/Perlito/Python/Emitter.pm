@@ -237,9 +237,12 @@ class CompUnit {
         # push @s, Python::tab($level+1)  ~       "__all__.extend(['" ~ $name ~ "', '" ~ $name ~ "_proto'])";
         push @s, Python::tab($level+1)  ~       'class ' ~ $name ~ ":";
         push @s, Python::tab($level+2)  ~           "def __init__(v_self, **arg):";
-        push @s, Python::tab($level+3)  ~               "v_self.__dict__.update(arg)";
+        push @s, Python::tab($level+3)  ~               "for k in arg:";
+        push @s, Python::tab($level+4)  ~                   "v_self.__dict__[k] = mp6_Scalar()";
+        push @s, Python::tab($level+4)  ~                   "v_self.__dict__[k].f_set(arg[k])";
+
         push @s, Python::tab($level+2)  ~           "def __setattr__(v_self, k, v):";
-        push @s, Python::tab($level+3)  ~               "v_self.__dict__[k] = v";
+        push @s, Python::tab($level+3)  ~               "v_self.__dict__[k].f_set(v)";
         push @s, Python::tab($level+2)  ~           "def f_isa(v_self, name):";
         push @s, Python::tab($level+3)  ~               "return name == '" ~ $.name ~ "'";
         push @s, Python::tab($level+2)  ~           "def f_bool(self):";
