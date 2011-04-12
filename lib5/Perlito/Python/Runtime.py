@@ -340,6 +340,8 @@ class mp6_Mu_get_proxy(mp6_Mu):
             return self.v.f_index(i)
         except AttributeError:
             return mp6_Mu_index_proxy(self, i)
+    def f_isa(self, name):
+        return self.v.f_isa(name)
 
 class mp6_Mu_index_proxy(mp6_Mu):
     def __init__(self, parent, i):
