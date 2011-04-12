@@ -156,13 +156,11 @@ class mp6_Array:
         return f_perl(self.l, seen)
     def f_elems(self):
         return len(self.l)
-    def f_extend(self, l):
-        try:
-            self.l.extend(l.l)
-        except AttributeError:
-            self.l.extend(l)
     def f_push(self, s):
-        self.l.append(s)
+        try:
+            self.l.append(s.f_get())
+        except AttributeError:
+            self.l.append(s)
     def f_pop(self):
         try:
             return self.l.pop()
@@ -245,9 +243,6 @@ class mp6_Hash:
         except AttributeError:
             self.l[i] = s
         return s
-    def f_update(self, h):
-        self.l.update(h)
-        return self
     def f_lookup(self, i):
         try:
             return mp6_Mu_get_proxy(self, i, self.l[i])
