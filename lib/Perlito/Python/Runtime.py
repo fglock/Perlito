@@ -216,8 +216,16 @@ class mp6_Array:
         return name == 'Array'
     def str(self):
         return str(self.l)
-
-
+    def f_map(self, f):
+        result = []
+        v = map(f, self.l)
+        for x in range(0, len(v)):
+            try:
+                result.append(v[x].f_get())
+            except AttributeError:
+                result.append(v[x])
+        return mp6_Array(result)
+ 
 class mp6_Hash:
     def __init__(self, l):
         self.l = l
