@@ -505,7 +505,7 @@ __builtin__.Perlito__Grammar_proto = Perlito__Grammar_proto
 class Main:
     def __init__(self, **arg):
         self.__dict__.update(arg)
-    def __setattr__(v_self, k, v):
+    def f__setattr__(v_self, k, v):
         v_self.__dict__[k] = v
         return v_self.__dict__[k]
     def f_bool(self):
@@ -542,7 +542,7 @@ __builtin__.Main_proto = Main_proto
 class IO:
     def __init__(v_self, **arg):
         v_self.__dict__.update(arg)
-    def __setattr__(v_self, k, v):
+    def f__setattr__(v_self, k, v):
         v_self.__dict__[k] = v
         return v_self.__dict__[k]
     def f_bool(self):
