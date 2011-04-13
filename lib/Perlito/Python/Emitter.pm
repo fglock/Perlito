@@ -415,7 +415,7 @@ class Call {
             || ($.method eq 'isa')
         { 
             if ($.hyper) {
-            	return "map(lambda: Main." ~ $.method ~ "( v_self[0], " ~ (@.arguments.>>emit_python).join(', ') ~ ') , ' ~ $invocant ~ ")\n";
+            	return "mp6_Array(map(lambda: Main." ~ $.method ~ "( v_self[0], " ~ (@.arguments.>>emit_python).join(', ') ~ ') , ' ~ $invocant ~ "))";
             }
             else {
                 return "mp6_" ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
@@ -438,7 +438,7 @@ class Call {
         
         my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         if ($.hyper) {
-            Python::tab($level) ~ 'map(lambda x: x.' ~ $call ~ ', ' ~ $invocant ~ ')';
+            Python::tab($level) ~ 'mp6_Array(map(lambda x: x.' ~ $call ~ ', ' ~ $invocant ~ '))';
         }
         else {
             Python::tab($level) ~ $invocant ~ '.' ~ $call;
