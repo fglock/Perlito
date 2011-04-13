@@ -99,15 +99,19 @@ def mp6_defined_or(x, y):
 
 def mp6_isa(v, name):
     try:
+        v = v.f_get()
+    except AttributeError:
+        None
+    try:
         return v.f_isa(name)
     except AttributeError:
-        if name == 'Int' and type(v) == type(1):
-            return True
-        if name == 'Num' and type(v) == type(1.1):
-            return True
-        if name == 'Str' and type(v) == type("aa"):
-            return True
-        f_warn("Warning: Can't calculate .isa() on ", f_perl(v))
+        if type(v) == type(1):
+            return (name == 'Int') or (name == 'Num')
+        if type(v) == type(1.1):
+            return name == 'Num'
+        if type(v) == type("aa"):
+            return name == 'Str'
+        f_warn("Warning: Can't calculate .isa() on ", v.__class__.__name__, " ", f_perl(v))
         return False
 
 def mp6_join(l, s):
@@ -179,7 +183,7 @@ class mp6_Array:
         try:
             s = s.f_get()
         except AttributeError:
-            1
+            None
         while True:
             try:
                 self.l[i] = s
@@ -371,7 +375,7 @@ class mp6_Mu_lookup_proxy(mp6_Mu):
 
 class mp6_Die(Exception):
     def __init__(self):
-        1
+        None
     def f_isa(self, name):
         return name == 'Exception::Die'
 

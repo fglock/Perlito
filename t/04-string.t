@@ -2,7 +2,7 @@ use v6;
 
 class Main {
 
-    say '1..3';
+    say '1..4';
 
     my $x = "abcd";
     if substr($x,1,1) ne "b" {
@@ -19,4 +19,7 @@ class Main {
         print 'not '
     };
     say 'ok 3 - substr ', substr($x,3,1);
+
+    print 'not ' if !defined "abc";
+    say 'ok 4 - defined str';
 }

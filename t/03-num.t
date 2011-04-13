@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..5';
+    say '1..8';
     my $v = 1 + 0.3;
     if ( $v < 1.29 ) || ( $v > 1.31 ) {
         print 'not '
@@ -27,4 +27,16 @@ class Main {
         print 'not '
     }
     say 'ok 5 # ', ($v * 2);
+
+    print 'not ' if !defined 3.14;
+    say 'ok 6 - defined num';
+
+    my $v = 3.14;
+    print 'not ' if !defined $v;
+    say 'ok 7 - defined var';
+
+    my $y;
+    print 'not ' if defined $y;
+    say 'ok 8 - undefined var';
+
 }

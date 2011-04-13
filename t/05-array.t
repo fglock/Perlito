@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..7';
+    say '1..10';
     my @a;
     say 'ok 1 - create array';
     @a[1] = 3;
@@ -38,4 +38,16 @@ class Main {
         }
         say 'ok 7 - array in a scalar var # ', $v[2];
     }
+
+    print 'not ' if defined $x[4];
+    say "ok 8 - undefined item";
+
+    print 'not ' if !defined $x[1];
+    say "ok 9 - defined item";
+
+    $x[4] = 5;
+    print 'not ' if !defined $x[4];
+    say "ok 10 - defined item";
+
+
 }

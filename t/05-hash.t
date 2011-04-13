@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..6';
+    say '1..9';
     my %a;
     say 'ok 1 - create hash';
     %a{'abc'} = 3;
@@ -32,6 +32,16 @@ class Main {
         print 'not '
     }
     say "ok 6 - interpolate hash in hash composer # {$c1.perl}";
+
+    print 'not ' if defined $c1{'c'};
+    say "ok 7 - undefined item";
+
+    print 'not ' if !defined $c1{'b'};
+    say "ok 8 - defined item";
+
+    $c1{'c'} = 4;
+    print 'not ' if !defined $c1{'c'};
+    say "ok 9 - defined item";
 
     # TODO
     # my $d1 = [ $c1.kv, 3 ];
