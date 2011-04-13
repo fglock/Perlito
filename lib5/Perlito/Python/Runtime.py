@@ -156,8 +156,16 @@ class mp6_Array:
         return len(self.l) > 0
     def __iter__(self):
         return self.l.__iter__()
-    def f_perl(self, seen={}):
-        return f_perl(self.l, seen)
+    def f_perl(self, last_seen={}):
+        seen = last_seen.copy()
+        o = self.l
+        try:
+            if seen[id(o)]:
+                return '*recursive*'
+        except KeyError:
+            None
+        seen[id(o)] = True
+        return "[" + ", ".join(map(lambda x: f_perl(x, seen), o)) + "]"
     def f_elems(self):
         return len(self.l)
     def f_push(self, s):
@@ -219,8 +227,19 @@ class mp6_Hash:
         return self.l.__iter__()
     def __getitem__(self, k):
         return self.l.__getitem__(k) 
-    def f_perl(self, seen={}):
-        return f_perl(self.l, seen)
+    def f_perl(self, last_seen={}):
+        seen = last_seen.copy()
+        o = self.l
+        try:
+            if seen[id(o)]:
+                return '*recursive*'
+        except KeyError:
+            None
+        seen[id(o)] = True
+        out = [];
+        for i in o.keys():
+            out.append(i + " => " + f_perl(o[i], seen))
+        return "{" + ", ".join(out) + "}";
     def values(self):
         return mp6_Array(self.l.values())
     def keys(self):
@@ -570,7 +589,7 @@ def f_perl(o, last_seen={}):
             except KeyError:
                 None
             seen[id(o)] = True
-            return "[" + ", ".join(map(lambda x: f_perl(x, seen), o)) + "]"
+            return "PythonArray([" + ", ".join(map(lambda x: f_perl(x, seen), o)) + "])"
         if type(o) == type({}):
             try:
                 if seen[id(o)]:
@@ -581,7 +600,7 @@ def f_perl(o, last_seen={}):
             out = [];
             for i in o.keys():
                 out.append(i + " => " + f_perl(o[i], seen))
-            return "{" + ", ".join(out) + "}";
+            return "PythonHash({" + ", ".join(out) + "})";
         return _dump(o, seen)
 __builtin__.f_perl = f_perl
 
