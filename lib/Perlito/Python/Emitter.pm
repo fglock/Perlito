@@ -241,8 +241,8 @@ class CompUnit {
         push @s, Python::tab($level+4)  ~                   "v_self.__dict__[k] = mp6_Scalar()";
         push @s, Python::tab($level+4)  ~                   "v_self.__dict__[k].f_set(arg[k])";
 
-        push @s, Python::tab($level+2)  ~           "def __setattr__(v_self, k, v):";
-        push @s, Python::tab($level+3)  ~               "v_self.__dict__[k].f_set(v)";
+        push @s, Python::tab($level+2)  ~           "def f__setattr__(v_self, k, v):";
+        push @s, Python::tab($level+3)  ~               "return v_self.__dict__[k].f_set(v)";
         push @s, Python::tab($level+2)  ~           "def f_isa(v_self, name):";
         push @s, Python::tab($level+3)  ~               "return name == '" ~ $.name ~ "'";
         push @s, Python::tab($level+2)  ~           "def f_bool(self):";
@@ -491,7 +491,7 @@ class Apply {
 
         if $code eq 'self'       { return 'v_self'   };
         if $code eq 'Mu'         { return 'mp6_Mu()' };
-        if $code eq 'make'       { return "v_MATCH.__setattr__('v_capture', " ~ (@.arguments[0]).emit_python() ~ ')' }
+        if $code eq 'make'       { return "v_MATCH.f__setattr__('v_capture', " ~ (@.arguments[0]).emit_python() ~ ')' }
         if $code eq 'False'      { return 'False'       };
         if $code eq 'True'       { return 'True'        };
 
@@ -610,7 +610,7 @@ class Apply {
         if $parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return   
-                ($parameters.invocant).emit_python() ~ ".__setattr__('v_" ~ $parameters.method() ~ "', " ~ $arguments.emit_python() ~ ")";
+                ($parameters.invocant).emit_python() ~ ".f__setattr__('v_" ~ $parameters.method() ~ "', " ~ $arguments.emit_python() ~ ")";
         }
 
         if      $parameters.isa( 'Var' ) && $parameters.sigil eq '@'

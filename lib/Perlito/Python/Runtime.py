@@ -144,7 +144,6 @@ def mp6_to_num(s):
             except TypeError:
                 return 0
 
-
 class mp6_Array:
     def __init__(self, l):
         self.l = l
@@ -418,13 +417,13 @@ class Perlito__Match:
         for k in arg:
             self.__dict__[k] = mp6_Scalar()
             self.__dict__[k].f_set(arg[k])
-    def __setattr__(self, k, v):
+    def f__setattr__(self, k, v):
         try:
             self.__dict__[k].f_set(v)
         except KeyError:
             self.__dict__[k] = mp6_Scalar()
             self.__dict__[k].f_set(v)
-        return v
+        return self.__dict__[k]
     def __str__(self):
         if mp6_to_bool(self.v_bool):
             if not(mp6_isa(self.v_capture,'Mu')): 
@@ -508,6 +507,7 @@ class Main:
         self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
+        return v_self.__dict__[k]
     def f_bool(self):
         return 1
     def f_isa(v_self, name):
@@ -544,6 +544,7 @@ class IO:
         v_self.__dict__.update(arg)
     def __setattr__(v_self, k, v):
         v_self.__dict__[k] = v
+        return v_self.__dict__[k]
     def f_bool(self):
         return 1
     def f_isa(v_self, name):
