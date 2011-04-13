@@ -173,6 +173,11 @@ class mp6_Array:
             self.l.append(s.f_get())
         except AttributeError:
             self.l.append(s)
+    def f_unshift(self, s):
+        try:
+            self.l.insert(0, s.f_get())
+        except AttributeError:
+            self.l.insert(0, s)
     def f_pop(self):
         try:
             return self.l.pop()

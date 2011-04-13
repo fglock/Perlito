@@ -1,7 +1,7 @@
 use v6;
 
 class Main {
-    say '1..10';
+    say '1..12';
     my @a;
     say 'ok 1 - create array';
     @a[1] = 3;
@@ -49,5 +49,10 @@ class Main {
     print 'not ' if !defined $x[4];
     say "ok 10 - defined item";
 
+    $x.unshift(6);
+    print 'not ' if $x[0] != 6;
+    say "ok 11 - unshift";
+    print 'not ' if $x[5] != 5;
+    say "ok 12 - unshift";
 
 }
