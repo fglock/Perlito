@@ -136,10 +136,6 @@ Using the Python backend
     # using the perlito.pl compiler
     perl perlito.pl -Bpython -e 'class Main { say "hello, World!" }'
 
-    # running all tests
-    export PYTHONPATH=libpy
-    find t/*.t | xargs -n1 -J % python perlito.py -Cpython % | python
-
 Using the Ruby backend
 
     # initialize "./librb" and compile "perlito.rb"

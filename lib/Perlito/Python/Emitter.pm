@@ -236,21 +236,22 @@ class CompUnit {
         push @s, Python::tab($level)    ~   'except NameError:';
         # push @s, Python::tab($level+1)  ~       "__all__.extend(['" ~ $name ~ "', '" ~ $name ~ "_proto'])";
         push @s, Python::tab($level+1)  ~       'class ' ~ $name ~ ":";
-        push @s, Python::tab($level+2)  ~           "def __init__(v_self, **arg):";
+        push @s, Python::tab($level+2)  ~           "def __init__(self, **arg):";
         push @s, Python::tab($level+3)  ~               "for k in arg:";
-        push @s, Python::tab($level+4)  ~                   "v_self.__dict__[k] = mp6_Scalar()";
-        push @s, Python::tab($level+4)  ~                   "v_self.__dict__[k].f_set(arg[k])";
+        push @s, Python::tab($level+4)  ~                   "self.__dict__[k] = mp6_Scalar()";
+        push @s, Python::tab($level+4)  ~                   "self.__dict__[k].f_set(arg[k])";
 
-        push @s, Python::tab($level+2)  ~           "def f__setattr__(v_self, k, v):";
-        push @s, Python::tab($level+3)  ~               "return v_self.__dict__[k].f_set(v)";
-        push @s, Python::tab($level+2)  ~           "def f_isa(v_self, name):";
+        push @s, Python::tab($level+2)  ~           "def f__setattr__(self, k, v):";
+        push @s, Python::tab($level+3)  ~               "return self.__dict__[k].f_set(v)";
+        push @s, Python::tab($level+2)  ~           "def f_isa(self, name):";
         push @s, Python::tab($level+3)  ~               "return name == '" ~ $.name ~ "'";
         push @s, Python::tab($level+2)  ~           "def f_bool(self):";
         push @s, Python::tab($level+3)  ~               "return 1";
 
         push @s, Python::tab($level+2)  ~           "def __getattr__(self, attr):";
         push @s, Python::tab($level+3)  ~               "if attr[0:2] == 'v_':";
-        push @s, Python::tab($level+4)  ~                   "return mp6_Mu()";
+        push @s, Python::tab($level+4)  ~                   "self.__dict__[attr] = mp6_Scalar()";
+        push @s, Python::tab($level+4)  ~                   "return self.__dict__[attr]";
         push @s, Python::tab($level+3)  ~               "raise AttributeError(attr)";
 
         push @s, Python::tab($level+1)  ~       $name ~ "_proto = " ~ $name ~ "()"; 
