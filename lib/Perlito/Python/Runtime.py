@@ -62,6 +62,13 @@ def f_die(*msg):
     raise mp6_Die()
 __builtin__.f_die = f_die
 
+def f_map(v, f):
+    try:
+        return v.f_map(f)
+    except AttributeError:
+        return mp6_Array([]) 
+__builtin__.f_map = f_map
+
 def mp6_to_scalar(v):
     try:
         return v.f_scalar()
