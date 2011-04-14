@@ -274,11 +274,19 @@ class mp6_Hash:
         return self
     def f_index_set(self, i, s):
         try:
+            i = i.f_get()
+        except AttributeError:
+            None
+        try:
             self.l[i] = s.f_get()
         except AttributeError:
             self.l[i] = s
         return s
     def f_lookup(self, i):
+        try:
+            i = i.f_get()
+        except AttributeError:
+            None
         try:
             return mp6_Mu_get_proxy(self, i, self.l[i])
         except KeyError:
