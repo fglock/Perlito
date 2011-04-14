@@ -71,13 +71,13 @@ class Perlito::Expression {
             # say "# ** processing term ", $v.perl;
             if $v[1] eq 'methcall_no_params' {
                 # say "#   Call ", ($v[2]).perl;
-                $v = Call.new( invocant => Mu, method => $v[2], arguments => Mu, hyper => $v[3] );
+                $v = Call.new( invocant => Mu, method => $v[2], hyper => $v[3] );
                 # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'funcall_no_params' {
                 # say "#   Apply ", ($v[2]).perl;
-                $v = Apply.new( code => $v[3], arguments => Mu, namespace => $v[2] );
+                $v = Apply.new( code => $v[3], namespace => $v[2] );
                 # say "#     ", $v.perl;
                 return $v;
             }
@@ -161,7 +161,7 @@ class Perlito::Expression {
         # say "#      v:     ", $v.perl;
         if $v[1] eq 'methcall_no_params' {
             # say "#   Call ", ($v[2]).perl;
-            $v = Call.new( invocant => $value, method => $v[2], arguments => Mu, hyper => $v[3] );
+            $v = Call.new( invocant => $value, method => $v[2], hyper => $v[3] );
             return $v;
         }
         if $v[1] eq 'funcall_no_params' {

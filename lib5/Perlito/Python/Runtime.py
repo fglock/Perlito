@@ -419,7 +419,7 @@ class mp6_Die(Exception):
         return name == 'Exception::Die'
 
 class mp6_Return(Exception):
-    def __init__(self, value):
+    def __init__(self, value=mp6_Mu()):
         self.value = value
     def f_isa(self, name):
         return name == 'Exception::Return'
