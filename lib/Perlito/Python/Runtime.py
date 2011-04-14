@@ -250,7 +250,7 @@ class mp6_Hash:
         seen[id(o)] = True
         out = [];
         for i in o.keys():
-            out.append(i + " => " + f_perl(o[i], seen))
+            out.append(f_perl(i, seen) + " => " + f_perl(o[i], seen))
         return "{" + ", ".join(out) + "}";
     def values(self):
         return mp6_Array(self.l.values())
