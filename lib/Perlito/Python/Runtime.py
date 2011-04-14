@@ -115,7 +115,13 @@ def mp6_isa(v, name):
         return False
 
 def mp6_join(l, s):
-    return s.join(l)
+    try:
+        l = l.f_get()
+    except AttributeError:
+        None
+    if not mp6_isa(l, 'Array'):
+        return str(l)
+    return s.join(l.f_map( lambda x: str(x) ).l)
 
 def mp6_index(s, s2):
     try:
