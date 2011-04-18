@@ -62,6 +62,13 @@ def f_die(*msg):
     raise mp6_Die()
 __builtin__.f_die = f_die
 
+def f_map(v, f):
+    try:
+        return v.f_map(f)
+    except AttributeError:
+        return mp6_Array([]) 
+__builtin__.f_map = f_map
+
 def mp6_to_scalar(v):
     try:
         return v.f_scalar()
@@ -115,7 +122,13 @@ def mp6_isa(v, name):
         return False
 
 def mp6_join(l, s):
-    return s.join(l)
+    try:
+        l = l.f_get()
+    except AttributeError:
+        None
+    if not mp6_isa(l, 'Array'):
+        return str(l)
+    return s.join(l.f_map( lambda x: str(x) ).l)
 
 def mp6_index(s, s2):
     try:
@@ -566,7 +579,7 @@ class IO:
     def f_isa(v_self, name):
         return name == 'IO'
     def f_slurp(self, name):
-        return file(name).read()
+        return file(str(name)).read()
 IO_proto = IO()
 __builtin__.IO = IO
 __builtin__.IO_proto = IO_proto
