@@ -30,9 +30,6 @@ class Perlito::Python::AnonSub {
                 needs_return => 1 );
         my @s;
         push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $args.join(", ") ~ "):";
-        # for @($args) -> $field { 
-        #    push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
-        # }
         if $.handles_return_exception {
             push @s, Python::tab($level+1) ~    "try:";
             push @s,    $block.emit_python_indented($level + 2);
@@ -234,7 +231,6 @@ class CompUnit {
         push @s, Python::tab($level)    ~   'try:';
         push @s, Python::tab($level+1)  ~       'type(' ~ $name ~ ")";
         push @s, Python::tab($level)    ~   'except NameError:';
-        # push @s, Python::tab($level+1)  ~       "__all__.extend(['" ~ $name ~ "', '" ~ $name ~ "_proto'])";
         push @s, Python::tab($level+1)  ~       'class ' ~ $name ~ ":";
         push @s, Python::tab($level+2)  ~           "def __init__(self, **arg):";
         push @s, Python::tab($level+3)  ~               "for k in arg:";
@@ -578,9 +574,6 @@ class Apply {
         if $code eq 'return' {
             return 'raise mp6_Return(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
         }
-        # if $code eq 'die' {
-        #     return 'raise mp6_Die(' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
-        # }
         
         if $code eq 'substr' { 
             return (@.arguments[0]).emit_python() ~ '[' 
@@ -709,7 +702,6 @@ class For {
                 ~  Python::tab($level+1) ~      "f_" ~ $label ~ "(" ~ $sig ~ ")";
         }
         Python::tab($level) ~   'for ' ~ $sig ~ " in " ~ $.cond.emit_python() ~ ":\n"
-                # ~ Python::tab($level+1) ~ $sig ~ " = [" ~ $sig ~ "]\n"
                 ~ $body_block.emit_python_indented( $level + 1 );
     }
 }
@@ -775,10 +767,6 @@ class Method {
                 needs_return => 1 );
         my @s;
         push @s, Python::tab($level) ~ 'def f_' ~ $label ~ "(" ~ $meth_args.join(", ") ~ "):";
-        # push @s, Python::tab($level+1) ~    $invocant.emit_python_name() ~ " = [" ~ $invocant.emit_python_name() ~ "]";
-        # for @($args) -> $field { 
-        #    push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
-        # };
         push @s, Python::tab($level+1) ~    "try:";
         push @s,    $block.emit_python_indented($level + 2);
         push @s, Python::tab($level+1) ~    "except mp6_Return, r:";
@@ -826,9 +814,6 @@ class Sub {
         my $label2 = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
         my @s;
         push @s, Python::tab($level) ~ "def f_" ~ $.name ~ "(" ~ $default_args.join(", ") ~ "):";
-        # for @($args) -> $field { 
-        #    push @s, Python::tab($level+1) ~    $field ~ " = [" ~ $field ~ "]";
-        # };
         push @s, Python::tab($level+1) ~    "try:";
         push @s,    $block.emit_python_indented($level + 2);
         push @s, Python::tab($level+1) ~    "except mp6_Return, r:";
