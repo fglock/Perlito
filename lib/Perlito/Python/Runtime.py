@@ -161,7 +161,7 @@ class mp6_Array:
     def __init__(self, l):
         self.l = l
     def __str__(self):
-        return str(self.l)
+        return " ".join(map(lambda x: str(x), self.l))
     def __int__(self):
         return len(self.l)
     def f_bool(self):
