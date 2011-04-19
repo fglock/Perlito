@@ -159,28 +159,33 @@ class Perlito::Python::LexicalBlock {
             if $last_statement.isa( 'If' ) {
                 my $cond            = $last_statement.cond;
                 my $has_otherwise   = $last_statement.otherwise ?? 1 !! 0;
-                my $body_block      = 
+
+                $s2 = Python::tab($level) ~ 'if mp6_to_bool(' ~ $cond.emit_python() ~ "):\n";
+
+                my $body_block = 
                     Perlito::Python::LexicalBlock.new( block => ($last_statement.body.stmts), needs_return => 1 );
                 if $body_block.has_my_decl() {
-                    $body_block = Apply.new(
-                        code => 'return',
-                        arguments => [ Do.new( block => ($last_statement.body) ) ],
-                    )
+                    $body_block = Do.new( block => ($last_statement.body) );
+                    $s2 = $s2 ~ Python::tab( $level + 1 ) ~ 'return ' ~ $body_block.emit_python();
                 }
-                $s2 = Python::tab($level) ~ 'if mp6_to_bool(' ~ $cond.emit_python() ~ "):\n" 
-                    ~ $body_block.emit_python_indented( $level + 1 );
+                else {
+                    $s2 = $s2 ~ $body_block.emit_python_indented( $level + 1 );
+                }
+
                 if ( $has_otherwise ) {
+
+                    $s2 = $s2 ~ "\n"
+                        ~ Python::tab($level) ~ "else:\n";
+
                     my $otherwise_block = 
                         Perlito::Python::LexicalBlock.new( block => ($last_statement.otherwise.stmts), needs_return => 1 );
                     if $otherwise_block.has_my_decl() {
-                        $otherwise_block = Apply.new( 
-                            code => 'return',
-                            arguments => [ Do.new( block => ($last_statement.otherwise) ) ],
-                        )
+                        $otherwise_block = Do.new( block => ($last_statement.otherwise) );
+                        $s2 = $s2 ~ Python::tab( $level + 1 ) ~ 'return ' ~ $otherwise_block.emit_python();
                     }
-                    $s2 = $s2 ~ "\n"
-                        ~ Python::tab($level) ~ "else:\n" 
-                            ~ $otherwise_block.emit_python_indented($level+1);
+                    else {
+                        $s2 = $s2 ~ $otherwise_block.emit_python_indented($level+1);
+                    }
                 }
             }
             elsif $last_statement.isa( 'Apply' ) && $last_statement.code eq 'infix:<=>' {
