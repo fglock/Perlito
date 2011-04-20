@@ -6,7 +6,7 @@ sub compile {
     my $source = $_[0];
     return $source if $source =~ /^\s*$/;
     $::_V6_COMPILER_NAME    = 'Perlito';
-    $::_V6_COMPILER_VERSION = '6.0';
+    $::_V6_COMPILER_VERSION = '7.0';
     require Perlito::Perl5::Emitter;
     require Perlito::Grammar;
     require Perlito::Grammar::Regex;
