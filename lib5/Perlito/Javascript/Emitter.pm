@@ -252,7 +252,7 @@ sub emit_javascript { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((m
 package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
-sub emit_javascript { my $self = $_[0]; if (Main::bool(Main::isa($self->{block}, 'Do'))) { return scalar ($self->{block}->emit_javascript()) } ; if (Main::bool(Main::isa($self->{block}, 'Lit::Block'))) { return scalar ('(function () { ' . (Perlito::Javascript::LexicalBlock->new(('block' => $self->{block}->stmts()), ('needs_return' => 1)))->emit_javascript() . ' })()') } ; return scalar ('(function () { ' . (Perlito::Javascript::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)))->emit_javascript() . ' })()') }
+sub emit_javascript { my $self = $_[0]; ((my  $block = undef) = $self->simplify()->block()); return scalar ('(function () { ' . (Perlito::Javascript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript() . ' })()') }
 }
 
 ;

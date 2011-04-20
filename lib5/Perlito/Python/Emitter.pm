@@ -277,7 +277,7 @@ package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
 sub emit_python { my $self = $_[0]; $self->emit_python_indented(0) };
-sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; ((my  $label = undef) = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python()); (my  $block = undef); if (Main::bool(Main::isa($self->{block}, 'Lit::Block'))) { ($block = $self->{block}->stmts()) } else { ($block = do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, $self->{block} ); $List_a }) }; Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $block), ('sig' => Sig->new(('invocant' => undef), ('positional' => do { (my  $List_a = []); (my  $List_v = []); $List_a }), ('named' => do { (my  $Hash_a = {}); $Hash_a }))), ('handles_return_exception' => 0))); return scalar (Python::tab($level) . 'f_' . $label . '()') }
+sub emit_python_indented { my $self = $_[0]; my $level = $_[1]; ((my  $label = undef) = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python()); ((my  $block = undef) = $self->simplify()->block()); Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $block), ('sig' => Sig->new(('invocant' => undef), ('positional' => do { (my  $List_a = []); (my  $List_v = []); $List_a }), ('named' => do { (my  $Hash_a = {}); $Hash_a }))), ('handles_return_exception' => 0))); return scalar (Python::tab($level) . 'f_' . $label . '()') }
 }
 
 ;

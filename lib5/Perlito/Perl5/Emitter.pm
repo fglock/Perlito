@@ -237,7 +237,7 @@ sub emit_perl5 { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((my  $p
 package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
-sub emit_perl5 { my $self = $_[0]; 'do { ' . ($self->{block}->emit_perl5()) . ' }' }
+sub emit_perl5 { my $self = $_[0]; ((my  $block = undef) = $self->simplify()->block()); 'do { ' . Main::join(([ map { $_->emit_perl5() } @{ $block } ]), '; ') . ' }' }
 }
 
 ;

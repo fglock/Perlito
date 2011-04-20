@@ -562,7 +562,8 @@ class Sub {
 class Do {
     has $.block;
     method emit_perl5 {
-        'do { ' ~ ($.block.emit_perl5) ~ ' }'
+        my $block = self.simplify.block;
+        'do { ' ~ ($block.>>emit_perl5).join('; ') ~ ' }'
     }
 }
 

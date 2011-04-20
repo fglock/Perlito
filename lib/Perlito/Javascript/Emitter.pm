@@ -734,18 +734,10 @@ class Sub {
 class Do {
     has @.block;
     method emit_javascript {
-        if @.block.isa('Do') {
-            return @.block.emit_javascript;
-        }
-        if @.block.isa('Lit::Block') {
-            return
-                '(function () { ' ~ 
-                  (Perlito::Javascript::LexicalBlock.new( block => @.block.stmts, needs_return => 1 )).emit_javascript() ~ 
-                ' })()'
-        }
+        my $block = self.simplify.block;
         return
             '(function () { ' ~ 
-              (Perlito::Javascript::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_javascript() ~ 
+              (Perlito::Javascript::LexicalBlock.new( block => $block, needs_return => 1 )).emit_javascript() ~ 
             ' })()'
     }
 }
