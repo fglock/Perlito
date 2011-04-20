@@ -7,7 +7,11 @@ Backends
     Perlito can compile Perl 6 programs into one of the 'backend' 
     languages:
 
-        Go, Common Lisp, Perl 5, Javascript, Python 2.6, and Ruby 1.9
+        Perl 5, Javascript, Python 2.6
+
+    Previous versions of Perlito also compiled to:
+
+        Go, Common Lisp, and Ruby 1.9
 
 Web
 
