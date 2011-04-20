@@ -24,6 +24,10 @@ import sys
 import re
 import __builtin__
 
+recursion = sys.getrecursionlimit()
+if recursion < 2000:
+    sys.setrecursionlimit(2000)
+
 __all__ = ['mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'mp6_isa',
            'mp6_and', 'mp6_or', 'mp6_defined_or',
            'mp6_join', 'mp6_index', 'mp6_id',
