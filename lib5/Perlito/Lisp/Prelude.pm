@@ -39,7 +39,7 @@ sub perl { my $self = $_[0]; return scalar ($self->{key} . ' => ' . Main::perl($
 package Main;
 sub new { shift; bless { @_ }, "Main" }
 sub to_lisp_identifier { my $ident = $_[0]; return scalar ('sv-' . $ident) };
-sub lisp_dump_object { my $class_name = $_[0]; my $data = $_[1]; return scalar ($class_name . '( ' . Main::join(([ map { Main::perl( $_, , ) } @{ $data } ]), ', ') . ' )') }
+sub lisp_dump_object { my $class_name = $_[0]; my $data = $_[1]; return scalar ($class_name . '( ' . Main::join(([ map { Main::perl( $_, , ) } @{( $data )} ]), ', ') . ' )') }
 }
 
 

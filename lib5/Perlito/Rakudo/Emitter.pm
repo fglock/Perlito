@@ -21,7 +21,7 @@ sub attributes { $_[0]->{attributes} };
 sub methods { $_[0]->{methods} };
 sub body { $_[0]->{body} };
 sub emit { my $self = $_[0]; '# class ' . $self->{name} . '; ' . '
-' . Main::join(([ map { $_->emit() } @{ $self->{body} } ]), '; ') . '
+' . Main::join(([ map { $_->emit() } @{( $self->{body} )} ]), '; ') . '
 ' }
 }
 
@@ -78,7 +78,7 @@ sub emit { my $self = $_[0]; 'bless(' . Main::perl($self->{fields}, ("" . ', ') 
 package Lit::Array;
 sub new { shift; bless { @_ }, "Lit::Array" }
 sub array1 { $_[0]->{array1} };
-sub emit { my $self = $_[0]; '[' . Main::join(([ map { $_->emit() } @{ $self->{array1} } ]), ', ') . ']' }
+sub emit { my $self = $_[0]; '[' . Main::join(([ map { $_->emit() } @{( $self->{array1} )} ]), ', ') . ']' }
 }
 
 ;
@@ -158,7 +158,7 @@ sub invocant { $_[0]->{invocant} };
 sub hyper { $_[0]->{hyper} };
 sub method { $_[0]->{method} };
 sub arguments { $_[0]->{arguments} };
-sub emit { my $self = $_[0]; ((my  $invocant = undef) = $self->{invocant}->emit()); if (Main::bool(($invocant eq 'self'))) { ($invocant = '$self') } ; if (Main::bool(((((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'chars'))) || (($self->{method} eq 'isa'))))) { if (Main::bool(($self->{hyper}))) { return scalar ('[ map { &Main::' . $self->{method} . '( $_, ' . ', ' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ', ') . ')' . ' } @( ' . $invocant . ' ) ]') } else { return scalar ('&Main::' . $self->{method} . '(' . $invocant . ', ' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ', ') . ')') } } ; ((my  $meth = undef) = $self->{method}); if (Main::bool(($meth eq 'postcircumfix:<( )>'))) { ($meth = '') } ; ((my  $call = undef) = '.' . $meth . '(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ', ') . ')'); if (Main::bool(($self->{hyper}))) { '[ map { $_' . $call . ' } @( ' . $invocant . ' ) ]' } else { $invocant . $call } }
+sub emit { my $self = $_[0]; ((my  $invocant = undef) = $self->{invocant}->emit()); if (Main::bool(($invocant eq 'self'))) { ($invocant = '$self') } ; if (Main::bool(((((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'chars'))) || (($self->{method} eq 'isa'))))) { if (Main::bool(($self->{hyper}))) { return scalar ('[ map { &Main::' . $self->{method} . '( $_, ' . ', ' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')' . ' } @( ' . $invocant . ' ) ]') } else { return scalar ('&Main::' . $self->{method} . '(' . $invocant . ', ' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')') } } ; ((my  $meth = undef) = $self->{method}); if (Main::bool(($meth eq 'postcircumfix:<( )>'))) { ($meth = '') } ; ((my  $call = undef) = '.' . $meth . '(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')'); if (Main::bool(($self->{hyper}))) { '[ map { $_' . $call . ' } @( ' . $invocant . ' ) ]' } else { $invocant . $call } }
 }
 
 ;
@@ -167,7 +167,7 @@ package Apply;
 sub new { shift; bless { @_ }, "Apply" }
 sub code { $_[0]->{code} };
 sub arguments { $_[0]->{arguments} };
-sub emit { my $self = $_[0]; ((my  $code = undef) = $self->{code}); if (Main::bool(Main::isa($code, 'Str'))) {  } else { return scalar ('(' . $self->{code}->emit(("" . ').(') . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ', ') . ')')) }; if (Main::bool(($code eq 'self'))) { return scalar ('$self') } ; if (Main::bool(($code eq 'say'))) { return scalar ('say(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ', ') . ')') } ; if (Main::bool(($code eq 'print'))) { return scalar ('print(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ', ') . ')') } ; if (Main::bool(($code eq 'array'))) { return scalar ('@(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' ') . ')') } ; if (Main::bool(($code eq 'prefix:<~>'))) { return scalar ('("" . ' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' ') . ')') } ; if (Main::bool(($code eq 'prefix:<!>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' ') . ' ?? 0 !! 1)') } ; if (Main::bool(($code eq 'prefix:<?>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' ') . ' ?? 1 !! 0)') } ; if (Main::bool(($code eq 'prefix:<$>'))) { return scalar ('$(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' ') . ')') } ; if (Main::bool(($code eq 'prefix:<@>'))) { return scalar ('@(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' ') . ')') } ; if (Main::bool(($code eq 'prefix:<%>'))) { return scalar ('%(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' ') . ')') } ; if (Main::bool(($code eq 'infix:<~>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' ~ ') . ')') } ; if (Main::bool(($code eq 'infix:<+>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' + ') . ')') } ; if (Main::bool(($code eq 'infix:<->'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' - ') . ')') } ; if (Main::bool(($code eq 'infix:<&&>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' && ') . ')') } ; if (Main::bool(($code eq 'infix:<||>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' || ') . ')') } ; if (Main::bool(($code eq 'infix:<eq>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' eq ') . ')') } ; if (Main::bool(($code eq 'infix:<ne>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' ne ') . ')') } ; if (Main::bool(($code eq 'infix:<==>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' == ') . ')') } ; if (Main::bool(($code eq 'infix:<!=>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ' != ') . ')') } ; if (Main::bool(($code eq 'ternary:<?? !!>'))) { return scalar ('(' . ($self->{arguments}->[0])->emit(("" . ' ?? ') . ($self->{arguments}->[1])->emit(("" . ' !! ') . ($self->{arguments}->[2])->emit(("" . ')'))))) } ; '' . $self->{code} . '(' . Main::join(([ map { $_->emit() } @{ $self->{arguments} } ]), ', ') . ')' }
+sub emit { my $self = $_[0]; ((my  $code = undef) = $self->{code}); if (Main::bool(Main::isa($code, 'Str'))) {  } else { return scalar ('(' . $self->{code}->emit(("" . ').(') . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')')) }; if (Main::bool(($code eq 'self'))) { return scalar ('$self') } ; if (Main::bool(($code eq 'say'))) { return scalar ('say(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')') } ; if (Main::bool(($code eq 'print'))) { return scalar ('print(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')') } ; if (Main::bool(($code eq 'array'))) { return scalar ('@(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . ')') } ; if (Main::bool(($code eq 'prefix:<~>'))) { return scalar ('("" . ' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . ')') } ; if (Main::bool(($code eq 'prefix:<!>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . ' ?? 0 !! 1)') } ; if (Main::bool(($code eq 'prefix:<?>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . ' ?? 1 !! 0)') } ; if (Main::bool(($code eq 'prefix:<$>'))) { return scalar ('$(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . ')') } ; if (Main::bool(($code eq 'prefix:<@>'))) { return scalar ('@(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . ')') } ; if (Main::bool(($code eq 'prefix:<%>'))) { return scalar ('%(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . ')') } ; if (Main::bool(($code eq 'infix:<~>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ~ ') . ')') } ; if (Main::bool(($code eq 'infix:<+>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' + ') . ')') } ; if (Main::bool(($code eq 'infix:<->'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' - ') . ')') } ; if (Main::bool(($code eq 'infix:<&&>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' && ') . ')') } ; if (Main::bool(($code eq 'infix:<||>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' || ') . ')') } ; if (Main::bool(($code eq 'infix:<eq>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' eq ') . ')') } ; if (Main::bool(($code eq 'infix:<ne>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ne ') . ')') } ; if (Main::bool(($code eq 'infix:<==>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' == ') . ')') } ; if (Main::bool(($code eq 'infix:<!=>'))) { return scalar ('(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' != ') . ')') } ; if (Main::bool(($code eq 'ternary:<?? !!>'))) { return scalar ('(' . ($self->{arguments}->[0])->emit(("" . ' ?? ') . ($self->{arguments}->[1])->emit(("" . ' !! ') . ($self->{arguments}->[2])->emit(("" . ')'))))) } ; '' . $self->{code} . '(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')' }
 }
 
 ;
@@ -185,7 +185,7 @@ sub new { shift; bless { @_ }, "If" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
-sub emit { my $self = $_[0]; 'do { if (' . $self->{cond}->emit(("" . ') { ') . Main::join(([ map { $_->emit() } @{ $self->{body} } ]), ';') . ' } else { ' . Main::join(([ map { $_->emit() } @{ $self->{otherwise} } ]), ';') . ' } }') }
+sub emit { my $self = $_[0]; 'do { if (' . $self->{cond}->emit(("" . ') { ') . Main::join(([ map { $_->emit() } @{( $self->{body} )} ]), ';') . ' } else { ' . Main::join(([ map { $_->emit() } @{( $self->{otherwise} )} ]), ';') . ' } }') }
 }
 
 ;
@@ -195,7 +195,7 @@ sub new { shift; bless { @_ }, "For" }
 sub cond { $_[0]->{cond} };
 sub body { $_[0]->{body} };
 sub topic { $_[0]->{topic} };
-sub emit { my $self = $_[0]; ((my  $cond = undef) = $self->{cond}); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, $cond ); $List_a }))) } ; 'do { for my ' . $self->{topic}->emit(("" . ' ( ') . $cond->emit(("" . ' ) { ') . Main::join(([ map { $_->emit() } @{ $self->{body} } ]), ';') . ' } }')) }
+sub emit { my $self = $_[0]; ((my  $cond = undef) = $self->{cond}); if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) { ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => do { (my  $List_a = []); (my  $List_v = []); push( @{$List_a}, $cond ); $List_a }))) } ; 'do { for my ' . $self->{topic}->emit(("" . ' ( ') . $cond->emit(("" . ' ) { ') . Main::join(([ map { $_->emit() } @{( $self->{body} )} ]), ';') . ' } }')) }
 }
 
 ;
@@ -225,7 +225,7 @@ sub new { shift; bless { @_ }, "Method" }
 sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
-sub emit { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((my  $invocant = undef) = $sig->invocant()); ((my  $pos = undef) = $sig->positional()); ((my  $str = undef) = ''); ((my  $pos = undef) = $sig->positional()); for my $field ( @{($pos || []) || []} ) { ($str = $str . '' . $field->emit(("" . '?, '))) }; 'method ' . $self->{name} . '(' . $invocant->emit(("" . ': ') . $str . ') { ' . Main::join(([ map { $_->emit() } @{ $self->{block} } ]), '; ') . ' }') }
+sub emit { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((my  $invocant = undef) = $sig->invocant()); ((my  $pos = undef) = $sig->positional()); ((my  $str = undef) = ''); ((my  $pos = undef) = $sig->positional()); for my $field ( @{($pos || []) || []} ) { ($str = $str . '' . $field->emit(("" . '?, '))) }; 'method ' . $self->{name} . '(' . $invocant->emit(("" . ': ') . $str . ') { ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), '; ') . ' }') }
 }
 
 ;
@@ -235,7 +235,7 @@ sub new { shift; bless { @_ }, "Sub" }
 sub name { $_[0]->{name} };
 sub sig { $_[0]->{sig} };
 sub block { $_[0]->{block} };
-sub emit { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((my  $pos = undef) = $sig->positional()); (my  $str = undef); ((my  $pos = undef) = $sig->positional()); for my $field ( @{($pos || []) || []} ) { ($str = $str . '' . $field->emit(("" . '?, '))) }; if (Main::bool(($self->{name} eq ''))) { return scalar ('(sub (' . $str . ') ' . ' { ' . Main::join(([ map { $_->emit() } @{ $self->{block} } ]), '; ') . ' })') } ; 'sub ' . $self->{name} . '(' . $str . ') ' . ' { ' . Main::join(([ map { $_->emit() } @{ $self->{block} } ]), '; ') . ' }' }
+sub emit { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((my  $pos = undef) = $sig->positional()); (my  $str = undef); ((my  $pos = undef) = $sig->positional()); for my $field ( @{($pos || []) || []} ) { ($str = $str . '' . $field->emit(("" . '?, '))) }; if (Main::bool(($self->{name} eq ''))) { return scalar ('(sub (' . $str . ') ' . ' { ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), '; ') . ' })') } ; 'sub ' . $self->{name} . '(' . $str . ') ' . ' { ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), '; ') . ' }' }
 }
 
 ;
@@ -243,7 +243,7 @@ sub emit { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((my  $pos = u
 package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
-sub emit { my $self = $_[0]; 'do { ' . Main::join(([ map { $_->emit() } @{ $self->{block} } ]), '; ') . ' }' }
+sub emit { my $self = $_[0]; 'do { ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), '; ') . ' }' }
 }
 
 ;

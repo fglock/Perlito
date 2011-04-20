@@ -175,16 +175,6 @@ class Call {
             $invocant = '$self';
         }
 
-        if     ($.method eq 'shift')
-        { 
-            if ($.hyper) {
-                die "not implemented";
-            }
-            else {
-                return 'shift( @{' ~ $invocant ~ '} )';
-            }
-        }
-
         if     ($.method eq 'values')
             || ($.method eq 'keys')
         { 
@@ -207,7 +197,7 @@ class Call {
         { 
             if ($.hyper) {
                 return 
-                    '[ map { Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' ~ ' } @{ ' ~ $invocant ~ ' } ]';
+                    '[ map { Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' ~ ' } @{( ' ~ $invocant ~ ' )} ]';
             }
             else {
                 return
@@ -240,7 +230,7 @@ class Call {
             if !(  $.invocant.isa( 'Apply' )
                 && $.invocant.code eq 'prefix:<@>' )
             {
-                $invocant = '@{ ' ~ $invocant ~ ' }';
+                $invocant = '@{( ' ~ $invocant ~ ' )}';
             }
             return '[ map { $_' ~ $call ~ ' } ' ~ $invocant ~ ' ]';
         }

@@ -241,7 +241,7 @@ sub invocant { $_[0]->{invocant} };
 sub hyper { $_[0]->{hyper} };
 sub method { $_[0]->{method} };
 sub arguments { $_[0]->{arguments} };
-sub emit_parrot { my $self = $_[0]; if (Main::bool(((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))))) { if (Main::bool(($self->{hyper}))) { return scalar ('[ map { Main::' . $self->{method} . '( $_, ' . ', ' . Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '') . ')' . ' } @{ ' . $self->{invocant}->emit_parrot(("" . ' } ]'))) } else { return scalar ('Main::' . $self->{method} . '(' . $self->{invocant}->emit_parrot(("" . ', ') . Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '') . ')')) } } ; ((my  $meth = undef) = $self->{method}); if (Main::bool(($meth eq 'postcircumfix:<( )>'))) { ($meth = '') } ; ((my  $call = undef) = '->' . $meth . '(' . Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '') . ')'); if (Main::bool(($self->{hyper}))) { return scalar ('[ map { $_' . $call . ' } @{ ' . $self->{invocant}->emit_parrot(("" . ' } ]'))) } ; ((my  $List_args = []) = $self->{arguments}); ((my  $str = undef) = ''); ((my  $ii = undef) = 10); for my $arg ( @{$List_args || []} ) { ($str = $str . '  save $P' . $ii . '
+sub emit_parrot { my $self = $_[0]; if (Main::bool(((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))))) { if (Main::bool(($self->{hyper}))) { return scalar ('[ map { Main::' . $self->{method} . '( $_, ' . ', ' . Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), '') . ')' . ' } @{ ' . $self->{invocant}->emit_parrot(("" . ' } ]'))) } else { return scalar ('Main::' . $self->{method} . '(' . $self->{invocant}->emit_parrot(("" . ', ') . Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), '') . ')')) } } ; ((my  $meth = undef) = $self->{method}); if (Main::bool(($meth eq 'postcircumfix:<( )>'))) { ($meth = '') } ; ((my  $call = undef) = '->' . $meth . '(' . Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), '') . ')'); if (Main::bool(($self->{hyper}))) { return scalar ('[ map { $_' . $call . ' } @{ ' . $self->{invocant}->emit_parrot(("" . ' } ]'))) } ; ((my  $List_args = []) = $self->{arguments}); ((my  $str = undef) = ''); ((my  $ii = undef) = 10); for my $arg ( @{$List_args || []} ) { ($str = $str . '  save $P' . $ii . '
 '); ($ii = ($ii + 1)) }; ((my  $i = undef) = 10); for my $arg ( @{$List_args || []} ) { ($str = $str . $arg->emit_parrot(("" . '  $P') . $i . ' = $P0' . '
 ')); ($i = ($i + 1)) }; ($str = $str . $self->{invocant}->emit_parrot(("" . '  $P0 = $P0.') . $meth . '(')); ($i = 0); (my  $List_p = []); for my $arg ( @{$List_args || []} ) { ($List_p->[$i] = '$P' . (($i + 10))); ($i = ($i + 1)) }; ($str = $str . Main::join($List_p, ', ') . ')' . '
 '); for my $arg ( @{$List_args || []} ) { ($ii = ($ii - 1)); ($str = $str . '  restore $P' . $ii . '
@@ -258,10 +258,10 @@ sub arguments { $_[0]->{arguments} };
 sub emit_parrot { my $self = $_[0]; ((my  $code = undef) = $self->{code}); if (Main::bool(($code eq 'die'))) { return scalar ('  $P0 = new .Exception' . '
 ' . '  $P0[' . '"' . '_message' . '"' . '] = ' . '"' . 'something broke' . '"' . '
 ' . '  throw $P0' . '
-') } ; if (Main::bool(($code eq 'say'))) { return scalar (Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '  print $P0' . '
+') } ; if (Main::bool(($code eq 'say'))) { return scalar (Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), '  print $P0' . '
 ') . '  print $P0' . '
 ' . '  print ' . '"' . '\\' . 'n' . '"' . '
-') } ; if (Main::bool(($code eq 'print'))) { return scalar (Main::join(([ map { $_->emit_parrot() } @{ $self->{arguments} } ]), '  print $P0' . '
+') } ; if (Main::bool(($code eq 'print'))) { return scalar (Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), '  print $P0' . '
 ') . '  print $P0' . '
 ') } ; if (Main::bool(($code eq 'array'))) { return scalar ('  # TODO - array() is no-op' . '
 ') } ; if (Main::bool(($code eq 'prefix:<~>'))) { return scalar (($self->{arguments}->[0])->emit_parrot(("" . '  $S0 = $P0') . '
@@ -357,9 +357,9 @@ sub body { $_[0]->{body} };
 sub otherwise { $_[0]->{otherwise} };
 ((my  $label = undef) = 100);
 sub emit_parrot { my $self = $_[0]; ($label = ($label + 1)); ((my  $id = undef) = $label); return scalar ($self->{cond}->emit_parrot(("" . '  unless $P0 goto ifelse') . $id . '
-' . Main::join(([ map { $_->emit_parrot() } @{ $self->{body} } ]), '') . '  goto ifend' . $id . '
+' . Main::join(([ map { $_->emit_parrot() } @{( $self->{body} )} ]), '') . '  goto ifend' . $id . '
 ' . 'ifelse' . $id . ':' . '
-' . Main::join(([ map { $_->emit_parrot() } @{ $self->{otherwise} } ]), '') . 'ifend' . $id . ':' . '
+' . Main::join(([ map { $_->emit_parrot() } @{( $self->{otherwise} )} ]), '') . 'ifend' . $id . ':' . '
 ')) }
 }
 
@@ -378,7 +378,7 @@ sub emit_parrot { my $self = $_[0]; ((my  $cond = undef) = $self->{cond}); ($lab
 ' . '  unless $P1 goto iter_done' . $id . '
 ' . '  $P2 = shift $P1' . '
 ' . '  store_lex \'' . $self->{topic}->full_name(("" . '\', $P2') . '
-' . Main::join(([ map { $_->emit_parrot() } @{ $self->{body} } ]), '') . '  goto test_iter' . $id . '
+' . Main::join(([ map { $_->emit_parrot() } @{( $self->{body} )} ]), '') . '  goto test_iter' . $id . '
 ' . ' iter_done' . $id . ':' . '
 ' . '  restore $P2' . '
 ' . '  restore $P1' . '
@@ -420,7 +420,7 @@ sub emit_parrot { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((my  $
 ')); ($i = ($i + 1)) }; return scalar ('.sub ' . '"' . $self->{name} . '"' . ' :method :outer(' . '"' . '_class_vars_' . '"' . ')' . '
 ' . '  .param pmc params  :slurpy' . '
 ' . '  .lex \'' . $invocant->full_name(("" . '\', self') . '
-' . $str . Main::join(([ map { $_->emit_parrot() } @{ $self->{block} } ]), '') . '.end' . '
+' . $str . Main::join(([ map { $_->emit_parrot() } @{( $self->{block} )} ]), '') . '.end' . '
 ' . '
 ')) }
 }
@@ -436,7 +436,7 @@ sub emit_parrot { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((my  $
 ' . '  .lex \'' . $field->full_name(("" . '\', $P0') . '
 ')); ($i = ($i + 1)) }; return scalar ('.sub ' . '"' . $self->{name} . '"' . ' :outer(' . '"' . '_class_vars_' . '"' . ')' . '
 ' . '  .param pmc params  :slurpy' . '
-' . $str . Main::join(([ map { $_->emit_parrot() } @{ $self->{block} } ]), '') . '.end' . '
+' . $str . Main::join(([ map { $_->emit_parrot() } @{( $self->{block} )} ]), '') . '.end' . '
 ' . '
 ') }
 }
@@ -446,7 +446,7 @@ sub emit_parrot { my $self = $_[0]; ((my  $sig = undef) = $self->{sig}); ((my  $
 package Do;
 sub new { shift; bless { @_ }, "Do" }
 sub block { $_[0]->{block} };
-sub emit_parrot { my $self = $_[0]; Main::join(([ map { $_->emit_parrot() } @{ $self->{block} } ]), '') }
+sub emit_parrot { my $self = $_[0]; Main::join(([ map { $_->emit_parrot() } @{( $self->{block} )} ]), '') }
 }
 
 ;

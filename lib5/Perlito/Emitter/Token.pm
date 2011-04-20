@@ -38,8 +38,8 @@ sub set_captures_to_array { my $self = $_[0]; $self->{term}->set_captures_to_arr
 package Rul::Or;
 sub new { shift; bless { @_ }, "Rul::Or" }
 sub or_list { $_[0]->{or_list} };
-sub emit_perl6 { my $self = $_[0]; '(do { ' . 'my $pos1 = $MATCH.to; (do { ' . Main::join(([ map { $_->emit_perl6() } @{ $self->{or_list} } ]), '}) || (do { $MATCH.to = $pos1; ') . '}) })' };
-sub set_captures_to_array { my $self = $_[0]; [ map { $_->set_captures_to_array() } @{ $self->{or_list} } ] }
+sub emit_perl6 { my $self = $_[0]; '(do { ' . 'my $pos1 = $MATCH.to; (do { ' . Main::join(([ map { $_->emit_perl6() } @{( $self->{or_list} )} ]), '}) || (do { $MATCH.to = $pos1; ') . '}) })' };
+sub set_captures_to_array { my $self = $_[0]; [ map { $_->set_captures_to_array() } @{( $self->{or_list} )} ] }
 }
 
 ;
@@ -47,8 +47,8 @@ sub set_captures_to_array { my $self = $_[0]; [ map { $_->set_captures_to_array(
 package Rul::Concat;
 sub new { shift; bless { @_ }, "Rul::Concat" }
 sub concat { $_[0]->{concat} };
-sub emit_perl6 { my $self = $_[0]; '(' . Main::join(([ map { $_->emit_perl6() } @{ $self->{concat} } ]), ' && ') . ')' };
-sub set_captures_to_array { my $self = $_[0]; [ map { $_->set_captures_to_array() } @{ $self->{concat} } ] }
+sub emit_perl6 { my $self = $_[0]; '(' . Main::join(([ map { $_->emit_perl6() } @{( $self->{concat} )} ]), ' && ') . ')' };
+sub set_captures_to_array { my $self = $_[0]; [ map { $_->set_captures_to_array() } @{( $self->{concat} )} ] }
 }
 
 ;
