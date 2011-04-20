@@ -1,7 +1,6 @@
 
-. util-perl5/update-ast-perl5.sh
 rm tmp.js
-perl perlito.pl --verbose -Bjs util-js/perlito.pl
+perl -Ilib5 perlito.pl --verbose -Cjs util-js/perlito.pl > tmp.js
 rm perlito-old.js
 mv perlito.js perlito-old.js
 mv tmp.js perlito.js

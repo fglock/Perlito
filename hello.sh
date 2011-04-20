@@ -1,1 +1,1 @@
-echo 'class Main { say "hello, World" }' | perl perlito.pl -Bperl5
+perl -Ilib5 perlito.pl -Bperl5 -e 'class Main { say "hello, World" }' | perl -Ilib5

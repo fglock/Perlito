@@ -17,7 +17,7 @@ class Main {
     use Perlito::Macro;
 
     my $_V6_COMPILER_NAME    = 'Perlito';
-    my $_V6_COMPILER_VERSION = '6.0';
+    my $_V6_COMPILER_VERSION = '7.0';
     my $source      = '';
     my $backend     = '';
     my $execute     = 0;

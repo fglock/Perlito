@@ -1,1 +1,1 @@
-echo 'class Main { say "hello, World" }' | perl perlito.pl -Cparrot | parrot -
+perl -Ilib5 perlito.pl -Cparrot -e 'class Main { say "hello, World" }' | parrot -

@@ -63,10 +63,7 @@ if ( test( "${target_dir}-new" ) ) {
 
 sub test {
     warn "\n";
-    warn "automatic testing is not implemented yet. Please use one of:\n";
-    for ( qw( perl5 lisp js go python ruby1.9 ) ) {
-        warn "  prove -e \"perl perlito.pl -B$_\"\n"
-    }
+    warn "automatic testing is not implemented yet.\n";
     return 0;
 }
 sub backup {

@@ -1,9 +1,6 @@
-dev version - 2011-04-30
-- supported backends: Perl 5, Python 2, Javascript
-- backends pending upgrade to the new AST: Go, Common Lisp, Ruby 1.9, Eval
-- backends not supported in this version: Parrot, Rakudo, Clojure
+7.0  2011-04-20
+- supported backends: Perl 5, Python 2.6, Javascript
 
-- new option "-Bipy", run in .Net using Iron Python
 - added "perlito" command-line compiler and shell
 - new distribution "v6.pm" (Perlito in Perl 5)
   This replaces Pugs::Compiler::Perl5 as the v6.pm compiler in CPAN.
@@ -12,6 +9,12 @@ dev version - 2011-04-30
 - 'unless' and statement modifiers
 - several fixes in List, Hash, Array, Block, Bool, Str, Mu
 - operators: numeric autoincrements, defined-or, range
+
+  Regressions:
+
+- removed '-B' command line flag
+- backends pending upgrade to the new AST: Go, Common Lisp, Ruby 1.9, Eval
+- backends not supported in this version: Parrot, Rakudo, Clojure
 
 6.0  2010-07-27
 - Ruby backend bootstrap.

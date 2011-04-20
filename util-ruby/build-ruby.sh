@@ -1,4 +1,6 @@
 
+export PERL5LIB=lib5
+
 rm -rf librb/
 
 mkdir librb
