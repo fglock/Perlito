@@ -1,4 +1,4 @@
-dev version - 2011-04-05
+dev version - 2011-04-30
 - supported backends: Perl 5, Python 2, Javascript
 - backends pending upgrade to the new AST: Go, Common Lisp, Ruby 1.9, Eval
 - backends not supported in this version: Parrot, Rakudo, Clojure

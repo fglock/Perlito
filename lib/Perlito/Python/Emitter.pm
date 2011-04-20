@@ -839,14 +839,8 @@ class Do {
     method emit_python { $self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
+        my $block = self.simplify.block;
         # generate an anonymous sub in the current block
-        my $block;
-        if $.block.isa('Lit::Block') {
-            $block = $.block.stmts;
-        }
-        else {
-            $block = [ $.block ]
-        }
         Perlito::Python::LexicalBlock::push_stmt_python( 
                 Perlito::Python::AnonSub.new( 
                     name  => $label, 
