@@ -2,17 +2,13 @@ TODO list for Perlito
 
 CPAN distribution
 
-- cross compilation doesn't work (can't create the temporary "AST" files)
+- cross compilation doesn't work (can't create the temporary "AST" files) - FIXED
 
 Eval.pm module
 
 - add exceptions
 
 - complete ast nodes implementation
-
-Command line compiler (perlito.pl)
-
-(no issues at the moment)
 
 Command line compiler (util/perlito.pl)
 
@@ -64,11 +60,7 @@ Missing Backends
 
 - MO in MP6 
 
-- Python - FIXED
-
 - Clojure
-
-- v6.pm - FIXED
 
 Missing Features
 
@@ -84,8 +76,6 @@ Missing Features
 - debugger
 
 - chain operators - supported by the grammar, but no AST representation
-
-- statement modifiers - supported by the grammar, but no AST representation
 
 - "loop(;;)"
 
@@ -118,13 +108,9 @@ Grammar
 
 - parse Namespaces as array of string (we are going to split them anyway)
 
-- operator precedence - FIXED
-
 - double quote variable interpolation - FIXED (without method calls)
 
 - and expression interpolation 
-
-- all statements need a semicolon - FIXED 
 
 - the grammar should be aware of function arity
 
@@ -132,9 +118,6 @@ Semantics
 
 - @a.values and %a.keys return Array
   These should return a List 
-
-- In Perlito, @a = [] initializes @a to empty Array - FIXED
-  This should create an array with an array inside.
 
 - Not implemented: %a = (list) 
 
