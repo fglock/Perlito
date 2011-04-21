@@ -66,12 +66,12 @@ class Perlito::Javascript::LexicalBlock {
         }
         if $.top_level {
             $str =  
-                  'try { ' ~ $str ~ ' } catch(err) { '
+                  'try { ' ~ $str ~ '; } catch(err) { '
                   ~ 'if ( err instanceof Error ) { '
-                    ~ 'throw(err) '
+                    ~ 'throw(err); '
                   ~ '} '
                   ~ 'else { '
-                    ~ 'return(err) '
+                    ~ 'return(err); '
                   ~ '} '
                 ~ '} ';
         }
@@ -91,8 +91,8 @@ class CompUnit {
             ~ 'if (typeof ' ~ $class_name ~ ' != \'object\') {' ~ "\n"
             ~ '  ' ~ $class_name ~ ' = function() {};' ~ "\n"
             ~ '  ' ~ $class_name ~ ' = new ' ~ $class_name ~ ';' ~ "\n"
-            ~ '  ' ~ $class_name ~ '.f_isa = function (s) { return s == \'' ~ $.name ~ '\' };' ~ "\n"
-            ~ '  ' ~ $class_name ~ '.f_perl = function () { return \'' ~ $.name ~ '.new(\' + Main._dump(this) + \')\' };' ~ "\n"
+            ~ '  ' ~ $class_name ~ '.f_isa = function (s) { return s == \'' ~ $.name ~ '\'; };' ~ "\n"
+            ~ '  ' ~ $class_name ~ '.f_perl = function () { return \'' ~ $.name ~ '.new(\' + Main._dump(this) + \')\'; };' ~ "\n"
             ~ '}' ~ "\n"
             ~ '(function () {' ~ "\n"
             ~ '  var v__NAMESPACE = ' ~ $class_name ~ ';' ~ "\n";
@@ -114,7 +114,7 @@ class CompUnit {
               ~ '  // accessor ' ~ $decl.var.name() ~ "\n"
               ~ '  ' ~ $class_name ~ '.v_' ~ $decl.var.name() ~ ' = null;' ~ "\n"
               ~ '  ' ~ $class_name ~ '.f_' ~ $decl.var.name() 
-                    ~ ' = function () { return this.v_' ~ $decl.var.name() ~ ' }' ~ "\n";
+                    ~ ' = function () { return this.v_' ~ $decl.var.name() ~ '; };' ~ "\n";
             }
             if $decl.isa( 'Method' ) {
                 my $sig      = $decl.sig;
@@ -151,7 +151,7 @@ class CompUnit {
             }
         }
         $str = $str ~ '}' 
-            ~ ')();' ~ "\n";
+            ~ ')()' ~ "\n";
     }
     sub emit_javascript_program( $comp_units ) {
         my $str = '';
@@ -186,7 +186,9 @@ class Lit::Block {
     has $.sig;
     has @.stmts;
     method emit_javascript {
-        (@.stmts.>>emit_javascript).join('; ')
+        return (@.stmts.>>emit_javascript).join('; ') ~ ';'
+            if @.stmts.elems;
+        return '';
     }
 }
 
@@ -303,7 +305,7 @@ class Call {
                   '(function () { ' 
                 ~   'var tmp = {' ~ $str.join(',') ~ '}; '
                 ~   'tmp.__proto__ = ' ~ Main::to_javascript_namespace($invocant) ~ '; '
-                ~   'return tmp '
+                ~   'return tmp; '
                 ~ '})()'
         }
 
@@ -322,7 +324,7 @@ class Call {
                 return 
                     '(function (a_) { '
                         ~ 'var out = []; ' 
-                        ~ 'if ( a_ == null ) { return out }; ' 
+                        ~ 'if ( a_ == null ) { return out; }; ' 
                         ~ 'for(var i = 0; i < a_.length; i++) { '
                             ~ 'out.push( f_' ~ $.method ~ '(a_[i]) ) } return out;'
                     ~ ' })(' ~ $invocant ~ ')'
@@ -346,7 +348,7 @@ class Call {
             return
                     '(function (a_) { '
                         ~ 'var out = []; ' 
-                        ~ 'if ( a_ == null ) { return out }; ' 
+                        ~ 'if ( a_ == null ) { return out; }; ' 
                         ~ 'for(var i = 0; i < a_.length; i++) { '
                             ~ 'out.push( a_[i].f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ') ) '
                         ~ '}; '
@@ -423,18 +425,18 @@ class Apply {
         { 
             return 'f_and('
                 ~ @.arguments[0].emit_javascript() ~ ', ' 
-                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 
+                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '; })' 
         }
         if   $code eq 'infix:<||>'    
           || $code eq 'infix:<or>'
         { 
             return 'f_or('  
                 ~ @.arguments[0].emit_javascript() ~ ', ' 
-                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 
+                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '; })' 
         }
         if $code eq 'infix:<//>' { return 'f_defined_or('  
                 ~ @.arguments[0].emit_javascript() ~ ', ' 
-                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '})' 
+                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '; })' 
         }
         if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' }
         if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' }
