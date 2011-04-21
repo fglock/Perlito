@@ -12,7 +12,7 @@ class Perlito::Javascript::LexicalBlock {
             }
         }
         if !@block {
-            return 'null';
+            return 'null;';
         }
         my $str = '';
         for @block -> $decl { 
@@ -46,12 +46,12 @@ class Perlito::Javascript::LexicalBlock {
                 $body      = Perlito::Javascript::LexicalBlock.new( block => $body.stmts, needs_return => 1 );
                 $str = $str
                       ~ 'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
-                      ~     'return (function () { ' ~ $body.emit_javascript()      ~ ' })() }';
+                      ~     'return (function () { ' ~ $body.emit_javascript()      ~ ' })(); }';
                 if $otherwise { 
                     $otherwise = Perlito::Javascript::LexicalBlock.new( block => $otherwise.stmts, needs_return => 1 );
                     $str = $str 
                       ~ ' else { ' 
-                      ~     'return (function () { ' ~ $otherwise.emit_javascript() ~ ' })() }';
+                      ~     'return (function () { ' ~ $otherwise.emit_javascript() ~ ' })(); }';
                 }
             }
             elsif  $last_statement.isa( 'Apply' ) && $last_statement.code eq 'return'
@@ -75,7 +75,7 @@ class Perlito::Javascript::LexicalBlock {
                   ~ '} '
                 ~ '} ';
         }
-        return $str;
+        return $str ~ ';';
     }
 }
 
@@ -88,7 +88,7 @@ class CompUnit {
         my $class_name = Main::to_javascript_namespace($.name);
         my $str =
               '// class ' ~ $.name ~ "\n"
-            ~ 'if (typeof ' ~ $class_name ~ ' != \'object\') {' ~ "\n"
+            ~ 'if (typeof ' ~ $class_name ~ ' !== \'object\') {' ~ "\n"
             ~ '  ' ~ $class_name ~ ' = function() {};' ~ "\n"
             ~ '  ' ~ $class_name ~ ' = new ' ~ $class_name ~ ';' ~ "\n"
             ~ '  ' ~ $class_name ~ '.f_isa = function (s) { return s == \'' ~ $.name ~ '\'; };' ~ "\n"
@@ -619,12 +619,12 @@ class If {
         }
         my $body      = Perlito::Javascript::LexicalBlock.new( block => $.body.stmts, needs_return => 0 );
         my $s = 'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
-              ~ '(function () { ' ~ $body.emit_javascript()      ~ ' })() }';
+              ~ '(function () { ' ~ $body.emit_javascript()      ~ ' })(); }';
         if $.otherwise { 
             my $otherwise = Perlito::Javascript::LexicalBlock.new( block => $.otherwise.stmts, needs_return => 0 );
             $s = $s 
               ~ ' else { ' 
-              ~ '(function () { ' ~ $otherwise.emit_javascript() ~ ' })() }';
+              ~ '(function () { ' ~ $otherwise.emit_javascript() ~ ' })(); }';
         }
         return $s;
     }
