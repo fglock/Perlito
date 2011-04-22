@@ -43,38 +43,46 @@ sub modulename_to_filename ($s) {
     my $ident = Main.module_name( $s, 0 );
     return ($$ident).join("/");
 }
+
+sub expand_use($stmt) {
+    my $module_name = $stmt.mod;
+    if !(%module_seen{$module_name}) {
+        %module_seen{$module_name} = 1;
+        # say "  now use: ", $module_name;
+        if ($backend eq 'perl5') || ($backend eq 'ast-perl6') {
+            # skip 'use' statements for this backend
+        }
+        else {
+            # TODO - look for a precompiled version
+            # build the filename
+            my $filename = $module_name;
+            $filename = $perl6lib ~ '/' ~ modulename_to_filename($filename) ~ '.pm';
+            if ( $verbose ) {
+                warn "// now loading: ", $filename;
+            }
+            # load source 
+            my $source = IO::slurp( $filename );
+
+            # compile; push AST into comp_units
+            # warn $source;
+            my $m = Perlito::Grammar.exp_stmts($source, 0);
+            add_comp_unit($$m);
+        }
+    }
+}
+
 sub add_comp_unit (@parse) {
     for @parse -> $comp_unit {
-        if $comp_unit.isa('CompUnit') {
+        if $expand_use && $comp_unit.isa('Use') {
+            expand_use($comp_unit);
+        }
+        elsif $comp_unit.isa('CompUnit') {
             if $verbose {
                 warn "parsed comp_unit: '", $comp_unit.name, "'"; 
             }
             for @( $comp_unit.body ) -> $stmt {
                 if $expand_use && $stmt.isa('Use') {
-                    my $module_name = $stmt.mod;
-                    if !(%module_seen{$module_name}) {
-                        %module_seen{$module_name} = 1;
-                        # say "  now use: ", $module_name;
-                        if ($backend eq 'perl5') || ($backend eq 'ast-perl6') {
-                            # skip 'use' statements for this backend
-                        }
-                        else {
-                            # TODO - look for a precompiled version
-                            # build the filename
-                            my $filename = $module_name;
-                            $filename = $perl6lib ~ '/' ~ modulename_to_filename($filename) ~ '.pm';
-                            if ( $verbose ) {
-                                warn "// now loading: ", $filename;
-                            }
-                            # load source 
-                            my $source = IO::slurp( $filename );
-
-                            # compile; push AST into comp_units
-                            # warn $source;
-                            my $m = Perlito::Grammar.exp_stmts($source, 0);
-                            add_comp_unit($$m);
-                        }
-                    }
+                    expand_use($stmt);
                 }
             }
         }

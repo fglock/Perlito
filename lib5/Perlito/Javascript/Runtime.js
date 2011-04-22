@@ -152,13 +152,23 @@ if (typeof f_say !== 'function') {
 }
 
 if (typeof f_die !== 'function') {
-    f_die = function(s) {
+    f_die = function() {
+        var i;
+        var s = '';
+        for (i = 0; i < f_die.arguments.length; i++) {
+            s = s + f_die.arguments[i];
+        }
         print("Died: " + s + "\n");
     };
 }
 
 if (typeof f_warn !== 'function') {
-    f_warn = function(s) {
+    f_warn = function() {
+        var i;
+        var s = '';
+        for (i = 0; i < f_warn.arguments.length; i++) {
+            s = s + f_warn.arguments[i];
+        }
         print("Warning: " + s + "\n");
     };
 }

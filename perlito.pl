@@ -113,31 +113,40 @@ package GLOBAL;
             ((my  $ident = undef) = Main->module_name($s, 0));
             return scalar (Main::join((${$ident}), '/'))
         };
+        sub expand_use {
+            my $stmt = $_[0];
+            ((my  $module_name = undef) = $stmt->mod());
+            if (Main::bool(!Main::bool(($Hash_module_seen->{$module_name})))) {
+                ($Hash_module_seen->{$module_name} = 1);
+                if (Main::bool(((($backend eq 'perl5')) || (($backend eq 'ast-perl6'))))) {
+
+                }
+                else {
+                    ((my  $filename = undef) = $module_name);
+                    ($filename = $perl6lib . '/' . modulename_to_filename($filename) . '.pm');
+                    if (Main::bool(($verbose))) {
+                        warn('// now loading: ', $filename)
+                    };
+                    ((my  $source = undef) = IO::slurp($filename));
+                    ((my  $m = undef) = Perlito::Grammar->exp_stmts($source, 0));
+                    add_comp_unit(${$m})
+                }
+            }
+        };
         sub add_comp_unit {
             my $List_parse = $_[0];
             for my $comp_unit ( @{$List_parse || []} ) {
-                if (Main::bool(Main::isa($comp_unit, 'CompUnit'))) {
-                    if (Main::bool($verbose)) {
-                        warn('parsed comp_unit: \'', $comp_unit->name(), '\'')
-                    };
-                    for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {
-                        if (Main::bool(($expand_use && Main::isa($stmt, 'Use')))) {
-                            ((my  $module_name = undef) = $stmt->mod());
-                            if (Main::bool(!Main::bool(($Hash_module_seen->{$module_name})))) {
-                                ($Hash_module_seen->{$module_name} = 1);
-                                if (Main::bool(((($backend eq 'perl5')) || (($backend eq 'ast-perl6'))))) {
-
-                                }
-                                else {
-                                    ((my  $filename = undef) = $module_name);
-                                    ($filename = $perl6lib . '/' . modulename_to_filename($filename) . '.pm');
-                                    if (Main::bool(($verbose))) {
-                                        warn('// now loading: ', $filename)
-                                    };
-                                    ((my  $source = undef) = IO::slurp($filename));
-                                    ((my  $m = undef) = Perlito::Grammar->exp_stmts($source, 0));
-                                    add_comp_unit(${$m})
-                                }
+                if (Main::bool(($expand_use && Main::isa($comp_unit, 'Use')))) {
+                    expand_use($comp_unit)
+                }
+                else {
+                    if (Main::bool(Main::isa($comp_unit, 'CompUnit'))) {
+                        if (Main::bool($verbose)) {
+                            warn('parsed comp_unit: \'', $comp_unit->name(), '\'')
+                        };
+                        for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {
+                            if (Main::bool(($expand_use && Main::isa($stmt, 'Use')))) {
+                                expand_use($stmt)
                             }
                         }
                     }
