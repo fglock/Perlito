@@ -10,19 +10,19 @@ our $MATCH = Perlito::Match->new();
 {
 package GLOBAL;
     sub new { shift; bless { @_ }, "GLOBAL" }
-    
+
     # use v6 
 ;
     {
     package Perlito::Match;
         sub new { shift; bless { @_ }, "Perlito::Match" }
         sub from { $_[0]->{from} };
-sub to { $_[0]->{to} };
-sub str { $_[0]->{str} };
-sub bool { $_[0]->{bool} };
-sub capture { $_[0]->{capture} };
-sub hash { $_[0]->{hash} };
-sub array { $_[0]->{array} };
+        sub to { $_[0]->{to} };
+        sub str { $_[0]->{str} };
+        sub bool { $_[0]->{bool} };
+        sub capture { $_[0]->{capture} };
+        sub hash { $_[0]->{hash} };
+        sub array { $_[0]->{array} };
         sub perl {
             my $self = $_[0];
             return scalar ('Match.new(' . 'from => ' . Main::perl($self->{from}, ("" . ', to => ') . Main::perl($self->{to}, ("" . ', bool => ') . Main::perl(($self->{bool}->bool()), ("" . ', capture => ') . Main::perl($self->{capture}, ("" . ', hash => ') . Main::perl($self->{hash}, ("" . ', array => ') . Main::perl($self->{array}, ("" . ')'))))))))
@@ -49,11 +49,11 @@ $self->{bool}->Bool()
     {
     package Perlito::Grammar;
         sub new { shift; bless { @_ }, "Perlito::Grammar" }
-                sub is_newline {
+        sub is_newline {
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-(my  $MATCH = undef);
+            (my  $MATCH = undef);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
@@ -67,7 +67,7 @@ $self->{bool}->Bool()
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-(my  $MATCH = undef);
+            (my  $MATCH = undef);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
@@ -81,7 +81,7 @@ $self->{bool}->Bool()
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-(my  $MATCH = undef);
+            (my  $MATCH = undef);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
@@ -95,7 +95,7 @@ $self->{bool}->Bool()
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-(my  $MATCH = undef);
+            (my  $MATCH = undef);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
@@ -109,7 +109,7 @@ $self->{bool}->Bool()
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-(my  $MATCH = undef);
+            (my  $MATCH = undef);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
@@ -125,7 +125,7 @@ $self->{bool}->Bool()
     {
     package IO;
         sub new { shift; bless { @_ }, "IO" }
-                sub slurp {
+        sub slurp {
             die('stub')
         }
     }
@@ -134,7 +134,7 @@ $self->{bool}->Bool()
     {
     package Main;
         sub new { shift; bless { @_ }, "Main" }
-                sub to_lisp_identifier {
+        sub to_lisp_identifier {
             my $ident = $_[0];
             return scalar ('sv-' . $ident)
         };

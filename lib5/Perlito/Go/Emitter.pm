@@ -10,89 +10,81 @@ our $MATCH = Perlito::Match->new();
 {
 package GLOBAL;
     sub new { shift; bless { @_ }, "GLOBAL" }
-    
+
     # use v6 
 ;
     {
     package Perlito::Go::LexicalBlock;
         sub new { shift; bless { @_ }, "Perlito::Go::LexicalBlock" }
         sub block { $_[0]->{block} };
-sub needs_return { $_[0]->{needs_return} };
-sub top_level { $_[0]->{top_level} };
+        sub needs_return { $_[0]->{needs_return} };
+        sub top_level { $_[0]->{top_level} };
         sub emit_go {
             my $self = $_[0];
             if (Main::bool(!Main::bool(($self->{block})))) {
-                    return scalar ('')
-            }
-;
+                return scalar ('')
+            };
             ((my  $str = undef) = '');
-(my  $Hash_decl_seen = {});
-for my $decl1 ( @{$self->{block} || []} ) {     ((my  $decl = undef) = $decl1);
-    if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) {
-            ($decl = $decl->parameters())
-    }
-;
-    if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
-            ((my  $var_name = undef) = (($decl)->var())->emit_go());
-            if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) {
-                    ($str = $str . $decl->emit_go_init());
-                    ($Hash_decl_seen->{$var_name} = 1)
-            }
-
-    }
- };
-(my  $last_statement = undef);
+            (my  $Hash_decl_seen = {});
+            for my $decl1 ( @{$self->{block} || []} ) {
+                ((my  $decl = undef) = $decl1);
+                if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) {
+                    ($decl = $decl->parameters())
+                };
+                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
+                    ((my  $var_name = undef) = (($decl)->var())->emit_go());
+                    if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) {
+                        ($str = $str . $decl->emit_go_init());
+                        ($Hash_decl_seen->{$var_name} = 1)
+                    }
+                }
+            };
+            (my  $last_statement = undef);
             if (Main::bool($self->{needs_return})) {
-                    ($last_statement = pop( @{$self->{block}} ))
-            }
-;
-for my $decl ( @{$self->{block} || []} ) {     if (Main::bool((!Main::bool(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))))))) {
-            ($str = $str . ($decl)->emit_go(("" . ';')))
-    }
- };
+                ($last_statement = pop( @{$self->{block}} ))
+            };
+            for my $decl ( @{$self->{block} || []} ) {
+                if (Main::bool((!Main::bool(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))))))) {
+                    ($str = $str . ($decl)->emit_go(("" . ';')))
+                }
+            };
             if (Main::bool(($self->{needs_return} && $last_statement))) {
-                    if (Main::bool(Main::isa($last_statement, 'If'))) {
-                            ((my  $cond = undef) = $last_statement->cond());
-                            ((my  $body = undef) = $last_statement->body());
-                            ((my  $otherwise = undef) = $last_statement->otherwise());
-                            if (Main::bool((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>')))) {
-                                    ($cond = ($cond->arguments())->[0]);
-                                    ($body = $last_statement->otherwise());
-                                    ($otherwise = $last_statement->body())
-                            }
-;
-                            if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) {
-                                    ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => do {
-(my  $List_a = []);
-(my  $List_v = []);
+                if (Main::bool(Main::isa($last_statement, 'If'))) {
+                    ((my  $cond = undef) = $last_statement->cond());
+                    ((my  $body = undef) = $last_statement->body());
+                    ((my  $otherwise = undef) = $last_statement->otherwise());
+                    if (Main::bool((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>')))) {
+                        ($cond = ($cond->arguments())->[0]);
+                        ($body = $last_statement->otherwise());
+                        ($otherwise = $last_statement->body())
+                    };
+                    if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) {
+                        ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => do {
+    (my  $List_a = []);
+    (my  $List_v = []);
     push( @{$List_a}, $cond );
     $List_a
 })))
-                            }
-;
-                            ($body = Perlito::Go::LexicalBlock->new(('block' => $body), ('needs_return' => 1), ('top_level' => $self->{top_level})));
-                            ($otherwise = Perlito::Go::LexicalBlock->new(('block' => $otherwise), ('needs_return' => 1), ('top_level' => $self->{top_level})));
-                            ($str = $str . 'if tobool( ' . Call::emit_go_call($cond, 'Bool') . ' ) { ' . $body->emit_go(("" . ' } else { ') . $otherwise->emit_go(("" . ' }'))))
+                    };
+                    ($body = Perlito::Go::LexicalBlock->new(('block' => $body), ('needs_return' => 1), ('top_level' => $self->{top_level})));
+                    ($otherwise = Perlito::Go::LexicalBlock->new(('block' => $otherwise), ('needs_return' => 1), ('top_level' => $self->{top_level})));
+                    ($str = $str . 'if tobool( ' . Call::emit_go_call($cond, 'Bool') . ' ) { ' . $body->emit_go(("" . ' } else { ') . $otherwise->emit_go(("" . ' }'))))
+                }
+                else {
+                    if (Main::bool((Main::isa($last_statement, 'Return') || Main::isa($last_statement, 'For')))) {
+                        ($str = $str . $last_statement->emit_go())
                     }
                     else {
-                            if (Main::bool((Main::isa($last_statement, 'Return') || Main::isa($last_statement, 'For')))) {
-                                    ($str = $str . $last_statement->emit_go())
-                            }
-                            else {
-                                    ($last_statement = Return->new(('result' => $last_statement)));
-                                    if (Main::bool($self->{top_level})) {
-                                            ($str = $str . $last_statement->emit_go())
-                                    }
-                                    else {
-                                            ($str = $str . $last_statement->emit_go_simple())
-                                    }
-
-                            }
-
+                        ($last_statement = Return->new(('result' => $last_statement)));
+                        if (Main::bool($self->{top_level})) {
+                            ($str = $str . $last_statement->emit_go())
+                        }
+                        else {
+                            ($str = $str . $last_statement->emit_go_simple())
+                        }
                     }
-
-            }
-;
+                }
+            };
             return scalar ($str)
         }
     }
@@ -102,87 +94,91 @@ for my $decl ( @{$self->{block} || []} ) {     if (Main::bool((!Main::bool(((Mai
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
         sub name { $_[0]->{name} };
-sub attributes { $_[0]->{attributes} };
-sub methods { $_[0]->{methods} };
-sub body { $_[0]->{body} };
+        sub attributes { $_[0]->{attributes} };
+        sub methods { $_[0]->{methods} };
+        sub body { $_[0]->{body} };
         sub emit_go {
             my $self = $_[0];
             ((my  $class_name = undef) = Main::to_go_namespace($self->{name}));
             ((my  $str = undef) = '// instances of class ' . $self->{name} . '
 ' . 'type ' . $class_name . ' struct {' . '
 ');
-for my $decl ( @{(([values( %{($self->{attributes})} )]) || []) || []} ) {     if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
-            ($str = $str . '  ' . 'v_' . ($decl->var())->name(("" . ' *Any;') . '
+            for my $decl ( @{(([values( %{($self->{attributes})} )]) || []) || []} ) {
+                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
+                    ($str = $str . '  ' . 'v_' . ($decl->var())->name(("" . ' *Any;') . '
 '))
-    }
- };
+                }
+            };
             ($str = $str . '}' . '
 ');
             ($str = $str . '// methods in class ' . $self->{name} . '
 ' . 'var Method_' . $class_name . ' struct {' . '
 ');
-for my $decl ( @{(([values( %{($self->{methods})} )]) || []) || []} ) {     if (Main::bool(Main::isa($decl, 'Method'))) {
-            ($str = $str . '  ' . 'f_' . $decl->name(("" . ' func (*') . $class_name . ', Capture) *Any;' . '
+            for my $decl ( @{(([values( %{($self->{methods})} )]) || []) || []} ) {
+                if (Main::bool(Main::isa($decl, 'Method'))) {
+                    ($str = $str . '  ' . 'f_' . $decl->name(("" . ' func (*') . $class_name . ', Capture) *Any;' . '
 '))
-    }
- };
-for my $decl ( @{(([values( %{($self->{attributes})} )]) || []) || []} ) {     if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
-            ($str = $str . '  ' . 'f_' . ($decl->var())->name(("" . ' func (*') . $class_name . ', Capture) *Any;' . '
+                }
+            };
+            for my $decl ( @{(([values( %{($self->{attributes})} )]) || []) || []} ) {
+                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
+                    ($str = $str . '  ' . 'f_' . ($decl->var())->name(("" . ' func (*') . $class_name . ', Capture) *Any;' . '
 '))
-    }
- };
+                }
+            };
             ($str = $str . '}' . '
 ');
             ($str = $str . '// namespace ' . $self->{name} . '
 ' . 'var Namespace_' . $class_name . ' struct {' . '
 ');
-for my $decl ( @{$self->{body} || []} ) {     if (Main::bool(Main::isa($decl, 'Sub'))) {
-            ($str = $str . '  ' . 'f_' . $decl->name(("" . ' Function;') . '
+            for my $decl ( @{$self->{body} || []} ) {
+                if (Main::bool(Main::isa($decl, 'Sub'))) {
+                    ($str = $str . '  ' . 'f_' . $decl->name(("" . ' Function;') . '
 '))
-    }
- };
+                }
+            };
             ($str = $str . '}' . '
 ');
             ($str = $str . 'var Run_' . $class_name . ' func ();' . '
 ');
             ($str = $str . '// method wrappers for ' . $self->{name} . '
 ');
-for my $decl ( @{(([values( %{($self->{methods})} )]) || []) || []} ) {     if (Main::bool(Main::isa($decl, 'Method'))) {
-            ($str = $str . 'func (v_self *' . $class_name . ') f_' . $decl->name(("" . ' (v Capture) *Any {') . '
+            for my $decl ( @{(([values( %{($self->{methods})} )]) || []) || []} ) {
+                if (Main::bool(Main::isa($decl, 'Method'))) {
+                    ($str = $str . 'func (v_self *' . $class_name . ') f_' . $decl->name(("" . ' (v Capture) *Any {') . '
 ' . '  return Method_' . $class_name . '.f_' . $decl->name(("" . '(v_self, v);') . '
 ' . '}' . '
 ')))
-    }
- };
-for my $decl ( @{(([values( %{($self->{attributes})} )]) || []) || []} ) {     if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
-            ($str = $str . 'func (v_self *' . $class_name . ') f_' . ($decl->var())->name(("" . ' (v Capture) *Any {') . '
+                }
+            };
+            for my $decl ( @{(([values( %{($self->{attributes})} )]) || []) || []} ) {
+                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
+                    ($str = $str . 'func (v_self *' . $class_name . ') f_' . ($decl->var())->name(("" . ' (v Capture) *Any {') . '
 ' . '  return Method_' . $class_name . '.f_' . ($decl->var())->name(("" . '(v_self, v);') . '
 ' . '}' . '
 ')))
-    }
- };
+                }
+            };
             if (Main::bool(!Main::bool((($self->{methods})->{'isa'})))) {
-                    ($str = $str . 'func (v_self *' . $class_name . ') f_isa (v Capture) *Any { ' . 'return toBool( "' . $self->{name} . '" == tostr( v.p[0] ) ) ' . '}' . '
+                ($str = $str . 'func (v_self *' . $class_name . ') f_isa (v Capture) *Any { ' . 'return toBool( "' . $self->{name} . '" == tostr( v.p[0] ) ) ' . '}' . '
 ')
-            }
-;
+            };
             if (Main::bool(!Main::bool((($self->{methods})->{'perl'})))) {
-                    ($str = $str . 'func (v_self *' . $class_name . ') f_perl (v Capture) *Any { ' . 'return toStr( "::' . $self->{name} . '(" ');
-                    ((my  $sep = undef) = '');
-for my $decl ( @{(([values( %{($self->{attributes})} )]) || []) || []} ) {     if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
-            ($str = $str . $sep . '+ "' . ($decl->var())->name(("" . ' => "') . '+ tostr((*(*v_self).f_' . ($decl->var())->name(("" . '(Capture{})).(perl_er).f_perl(Capture{})) '))));
-            ($sep = '+ ", " ')
-    }
- };
-                    ($str = $str . '+ ")" ) }' . '
+                ($str = $str . 'func (v_self *' . $class_name . ') f_perl (v Capture) *Any { ' . 'return toStr( "::' . $self->{name} . '(" ');
+                ((my  $sep = undef) = '');
+                for my $decl ( @{(([values( %{($self->{attributes})} )]) || []) || []} ) {
+                    if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
+                        ($str = $str . $sep . '+ "' . ($decl->var())->name(("" . ' => "') . '+ tostr((*(*v_self).f_' . ($decl->var())->name(("" . '(Capture{})).(perl_er).f_perl(Capture{})) '))));
+                        ($sep = '+ ", " ')
+                    }
+                };
+                ($str = $str . '+ ")" ) }' . '
 ')
-            }
-;
+            };
             if (Main::bool(((!Main::bool((($self->{methods})->{'Bool'}))) && (!Main::bool((($self->{attributes})->{'Bool'})))))) {
-                    ($str = $str . 'func (v_self *' . $class_name . ') f_Bool (v Capture) *Any { ' . 'return b_true() ' . '}' . '
+                ($str = $str . 'func (v_self *' . $class_name . ') f_Bool (v Capture) *Any { ' . 'return b_true() ' . '}' . '
 ')
-            }
-;
+            };
             ($str = $str . '// prototype of ' . $self->{name} . '
 ' . 'var Proto_' . $class_name . ' *Any;' . '
 ');
@@ -193,79 +189,78 @@ for my $decl ( @{(([values( %{($self->{attributes})} )]) || []) || []} ) {     i
 ');
             ($str = $str . '  Proto_' . $class_name . ' = ' . 'func() *Any { ' . 'var m = new(' . $class_name . '); ' . 'var m1 Any = m; ' . 'return &m1; ' . '}();' . '
 ');
-(my  $Hash_decl_seen = {});
-for my $decl1 ( @{$self->{body} || []} ) {     ((my  $decl = undef) = $decl1);
-    if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) {
-            ($decl = $decl->parameters())
-    }
-;
-    if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
-            ((my  $var_name = undef) = (($decl)->var())->emit_go());
-            if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) {
-                    ($str = $str . $decl->emit_go_init());
-                    ($Hash_decl_seen->{$var_name} = 1)
-            }
-
-    }
- };
-for my $decl ( @{$self->{body} || []} ) {     if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
-            ($str = $str . '  // accessor ' . ($decl->var())->name(("" . '
+            (my  $Hash_decl_seen = {});
+            for my $decl1 ( @{$self->{body} || []} ) {
+                ((my  $decl = undef) = $decl1);
+                if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) {
+                    ($decl = $decl->parameters())
+                };
+                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
+                    ((my  $var_name = undef) = (($decl)->var())->emit_go());
+                    if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) {
+                        ($str = $str . $decl->emit_go_init());
+                        ($Hash_decl_seen->{$var_name} = 1)
+                    }
+                }
+            };
+            for my $decl ( @{$self->{body} || []} ) {
+                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
+                    ($str = $str . '  // accessor ' . ($decl->var())->name(("" . '
 ') . '  Method_' . $class_name . '.f_' . ($decl->var())->name(("" . ' = func (v_self *') . $class_name . ', v Capture) *Any {' . '
 ')));
-            ($str = $str . '    ' . 'if v_self.v_' . ($decl->var())->name(("" . ' == nil {') . '
+                    ($str = $str . '    ' . 'if v_self.v_' . ($decl->var())->name(("" . ' == nil {') . '
 ' . '      ' . (Decl->new(('decl' => 'my'), ('type' => undef()), ('var' => Var->new(('sigil' => ($decl->var())->sigil()), ('twigil' => ''), ('namespace' => ''), ('name' => 'tmp')))))->emit_go_init(("" . '      ') . 'v_self.v_' . ($decl->var())->name(("" . ' = ') . (Var->new(('sigil' => ($decl->var())->sigil()), ('twigil' => ''), ('namespace' => ''), ('name' => 'tmp')))->emit_go(("" . ';') . '
 ' . '    ' . '}' . '
 ')))));
-            ($str = $str . '    ' . 'if *v_self.v_' . ($decl->var())->name(("" . ' == nil {') . '
+                    ($str = $str . '    ' . 'if *v_self.v_' . ($decl->var())->name(("" . ' == nil {') . '
 ' . '      ' . (Decl->new(('decl' => 'my'), ('type' => undef()), ('var' => Var->new(('sigil' => ($decl->var())->sigil()), ('twigil' => ''), ('namespace' => ''), ('name' => 'tmp')))))->emit_go_init(("" . '      ') . 'v_self.v_' . ($decl->var())->name(("" . ' = ') . (Var->new(('sigil' => ($decl->var())->sigil()), ('twigil' => ''), ('namespace' => ''), ('name' => 'tmp')))->emit_go(("" . ';') . '
 ' . '    ' . '}' . '
 ')))));
-            ($str = $str . '    ' . 'return v_self.v_' . ($decl->var())->name(("" . '
+                    ($str = $str . '    ' . 'return v_self.v_' . ($decl->var())->name(("" . '
 ') . '  };' . '
 '))
-    }
-;
-    if (Main::bool(Main::isa($decl, 'Method'))) {
-            ((my  $sig = undef) = $decl->sig());
-            ((my  $block = undef) = Perlito::Go::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
-            ($str = $str . '  // method ' . $decl->name(("" . '
+                };
+                if (Main::bool(Main::isa($decl, 'Method'))) {
+                    ((my  $sig = undef) = $decl->sig());
+                    ((my  $block = undef) = Perlito::Go::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
+                    ($str = $str . '  // method ' . $decl->name(("" . '
 ') . '  Method_' . $class_name . '.f_' . $decl->name(("" . ' = func (self *') . $class_name . ', v Capture) *Any {' . '
 ')));
-            ($str = $str . '    var self1 Any = self;' . '
+                    ($str = $str . '    var self1 Any = self;' . '
 ' . '    var ' . ($sig->invocant())->emit_go(("" . ' *Any = &self1;') . '
 ' . '    ' . ($sig->invocant())->emit_go(("" . ' = ') . ($sig->invocant())->emit_go(("" . ';') . '
 ' . '    ' . $sig->emit_go_bind(("" . '
 '))))));
-            ($str = $str . '    p := make(chan *Any); go func () { ' . '
+                    ($str = $str . '    p := make(chan *Any); go func () { ' . '
 ' . '        ' . $block->emit_go(("" . '; p <- nil }(); ') . '
 ' . '    return <-p; ' . '
 ' . '  };' . '
 '))
-    }
-;
-    if (Main::bool(Main::isa($decl, 'Sub'))) {
-            ((my  $sig = undef) = $decl->sig());
-            ((my  $block = undef) = Perlito::Go::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
-            ($str = $str . '  // sub ' . $decl->name(("" . '
+                };
+                if (Main::bool(Main::isa($decl, 'Sub'))) {
+                    ((my  $sig = undef) = $decl->sig());
+                    ((my  $block = undef) = Perlito::Go::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
+                    ($str = $str . '  // sub ' . $decl->name(("" . '
 ') . '  Namespace_' . $class_name . '.f_' . $decl->name(("" . ' = Function( func (v Capture) *Any {') . '
 ')));
-            ($str = $str . '    ' . $sig->emit_go_bind(("" . '
+                    ($str = $str . '    ' . $sig->emit_go_bind(("" . '
 ') . '    p := make(chan *Any); go func () { ' . '
 ' . '        ' . $block->emit_go(("" . '; p <- nil }(); ') . '
 ')));
-            ($str = $str . '    return <-p; ' . '
+                    ($str = $str . '    return <-p; ' . '
 ' . '  } );' . '
 ')
-    }
- };
+                }
+            };
             ($str = $str . '  // main runtime block of ' . $self->{name} . '
 ' . '  Run_' . $class_name . ' = func () {' . '
 ');
-for my $decl ( @{$self->{body} || []} ) {     if (Main::bool((((!Main::bool(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))))) && (!Main::bool((Main::isa($decl, 'Method'))))) && (!Main::bool((Main::isa($decl, 'Sub'))))))) {
-            ($str = $str . '    ' . ($decl)->emit_go(("" . ';') . '
+            for my $decl ( @{$self->{body} || []} ) {
+                if (Main::bool((((!Main::bool(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))))) && (!Main::bool((Main::isa($decl, 'Method'))))) && (!Main::bool((Main::isa($decl, 'Sub'))))))) {
+                    ($str = $str . '    ' . ($decl)->emit_go(("" . ';') . '
 '))
-    }
- };
+                }
+            };
             ($str = $str . '  }' . '
 ');
             ($str = $str . '}' . '
@@ -275,36 +270,42 @@ for my $decl ( @{$self->{body} || []} ) {     if (Main::bool((((!Main::bool(((Ma
         sub emit_go_program {
             my $comp_units = $_[0];
             ((my  $str = undef) = '');
-(my  $Hash_unit_seen = {});
-(my  $List_tmp_comp_unit = []);
-for my $comp_unit ( @{(($comp_units) || []) || []} ) {     ((my  $name = undef) = $comp_unit->name());
-    if (Main::bool($Hash_unit_seen->{$name})) {
-for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {     push( @{($Hash_unit_seen->{$name})->body()}, $stmt ) }
-    }
-    else {
-            ($Hash_unit_seen->{$name} = $comp_unit);
-            push( @{$List_tmp_comp_unit}, $comp_unit )
-    }
- };
+            (my  $Hash_unit_seen = {});
+            (my  $List_tmp_comp_unit = []);
+            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+                ((my  $name = undef) = $comp_unit->name());
+                if (Main::bool($Hash_unit_seen->{$name})) {
+                    for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {
+                        push( @{($Hash_unit_seen->{$name})->body()}, $stmt )
+                    }
+                }
+                else {
+                    ($Hash_unit_seen->{$name} = $comp_unit);
+                    push( @{$List_tmp_comp_unit}, $comp_unit )
+                }
+            };
             ($comp_units = $List_tmp_comp_unit);
-for my $comp_unit ( @{(($comp_units) || []) || []} ) { for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {     if (Main::bool(Main::isa($stmt, 'Method'))) {
-            (($comp_unit->methods())->{$stmt->name()} = $stmt)
-    }
-;
-    if (Main::bool((Main::isa($stmt, 'Decl') && (($stmt->decl() eq 'has'))))) {
-            (($comp_unit->attributes())->{($stmt->var())->name()} = $stmt)
-    }
- } };
-for my $comp_unit ( @{(($comp_units) || []) || []} ) {     ($str = $str . $comp_unit->emit_go()) };
+            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+                for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {
+                    if (Main::bool(Main::isa($stmt, 'Method'))) {
+                        (($comp_unit->methods())->{$stmt->name()} = $stmt)
+                    };
+                    if (Main::bool((Main::isa($stmt, 'Decl') && (($stmt->decl() eq 'has'))))) {
+                        (($comp_unit->attributes())->{($stmt->var())->name()} = $stmt)
+                    }
+                }
+            };
+            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+                ($str = $str . $comp_unit->emit_go())
+            };
             if (Main::bool(!Main::bool(($Hash_unit_seen->{'Perlito::Grammar'})))) {
-                    ($str = $str . 'type Perlito__Grammar struct' . '{' . '}' . '
+                ($str = $str . 'type Perlito__Grammar struct' . '{' . '}' . '
 ')
-            }
-;
+            };
             ($str = $str . '// interfaces for all methods' . '
 ');
             ((my  $Hash_meth_seen = {}) = do {
-(my  $Hash_a = {});
+    (my  $Hash_a = {});
     ($Hash_a->{'join'} = 1);
     ($Hash_a->{'perl'} = 1);
     ($Hash_a->{'scalar'} = 1);
@@ -329,30 +330,36 @@ for my $comp_unit ( @{(($comp_units) || []) || []} ) {     ($str = $str . $comp_
     ($Hash_a->{'function'} = 1);
     $Hash_a
 });
-for my $comp_unit ( @{(($comp_units) || []) || []} ) { for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {     if (Main::bool((Main::isa($stmt, 'Method') && !Main::bool(($Hash_meth_seen->{$stmt->name()}))))) {
-            ((my  $meth = undef) = $stmt->name());
-            ($str = $str . 'type ' . $meth . '_er interface ' . '{' . ' f_' . $meth . ' (Capture) *Any }' . '
+            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+                for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {
+                    if (Main::bool((Main::isa($stmt, 'Method') && !Main::bool(($Hash_meth_seen->{$stmt->name()}))))) {
+                        ((my  $meth = undef) = $stmt->name());
+                        ($str = $str . 'type ' . $meth . '_er interface ' . '{' . ' f_' . $meth . ' (Capture) *Any }' . '
 ');
-            ($Hash_meth_seen->{$meth} = 1)
-    }
-;
-    if (Main::bool(((Main::isa($stmt, 'Decl') && (($stmt->decl() eq 'has'))) && !Main::bool(($Hash_meth_seen->{($stmt->var())->name()}))))) {
-            ((my  $meth = undef) = ($stmt->var())->name());
-            ($str = $str . 'type ' . $meth . '_er interface ' . '{' . ' f_' . $meth . ' (Capture) *Any }' . '
+                        ($Hash_meth_seen->{$meth} = 1)
+                    };
+                    if (Main::bool(((Main::isa($stmt, 'Decl') && (($stmt->decl() eq 'has'))) && !Main::bool(($Hash_meth_seen->{($stmt->var())->name()}))))) {
+                        ((my  $meth = undef) = ($stmt->var())->name());
+                        ($str = $str . 'type ' . $meth . '_er interface ' . '{' . ' f_' . $meth . ' (Capture) *Any }' . '
 ');
-            ($Hash_meth_seen->{$meth} = 1)
-    }
- } };
+                        ($Hash_meth_seen->{$meth} = 1)
+                    }
+                }
+            };
             ($str = $str . '
 ' . 'func main () ' . '{' . '
 ' . '  Init_Perlito__Match();' . '
 ');
-for my $comp_unit ( @{(($comp_units) || []) || []} ) {     ($str = $str . '  Init_' . Main::to_go_namespace($comp_unit->name()) . '();' . '
-') };
+            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+                ($str = $str . '  Init_' . Main::to_go_namespace($comp_unit->name()) . '();' . '
+')
+            };
             ($str = $str . '  Init_Prelude();' . '
 ');
-for my $comp_unit ( @{(($comp_units) || []) || []} ) {     ($str = $str . '  Run_' . Main::to_go_namespace($comp_unit->name()) . '();' . '
-') };
+            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+                ($str = $str . '  Run_' . Main::to_go_namespace($comp_unit->name()) . '();' . '
+')
+            };
             ($str = $str . '}' . '
 ');
             return scalar ($str)
@@ -407,7 +414,7 @@ for my $comp_unit ( @{(($comp_units) || []) || []} ) {     ($str = $str . '  Run
     {
     package Val::Undef;
         sub new { shift; bless { @_ }, "Val::Undef" }
-                sub emit_go {
+        sub emit_go {
             my $self = $_[0];
             'u_undef()'
         }
@@ -418,7 +425,7 @@ for my $comp_unit ( @{(($comp_units) || []) || []} ) {     ($str = $str . '  Run
     package Val::Object;
         sub new { shift; bless { @_ }, "Val::Object" }
         sub class { $_[0]->{class} };
-sub fields { $_[0]->{fields} };
+        sub fields { $_[0]->{fields} };
         sub emit_go {
             my $self = $_[0];
             die('Val::Object - not used yet')
@@ -453,7 +460,7 @@ sub fields { $_[0]->{fields} };
     {
     package Lit::Code;
         sub new { shift; bless { @_ }, "Lit::Code" }
-        
+
     }
 
 ;
@@ -461,17 +468,19 @@ sub fields { $_[0]->{fields} };
     package Lit::Object;
         sub new { shift; bless { @_ }, "Lit::Object" }
         sub class { $_[0]->{class} };
-sub fields { $_[0]->{fields} };
+        sub fields { $_[0]->{fields} };
         sub emit_go {
             my $self = $_[0];
             ((my  $fields = undef) = $self->{fields});
             ((my  $str = undef) = '');
-for my $field ( @{($fields || []) || []} ) {     ($str = $str . 'if m.v_' . ($field->[0])->buf(("" . ' == nil {') . '
+            for my $field ( @{($fields || []) || []} ) {
+                ($str = $str . 'if m.v_' . ($field->[0])->buf(("" . ' == nil {') . '
 ' . 'var p Any; ' . '
 ' . 'm.v_' . ($field->[0])->buf(("" . ' = &p; ') . '
 ' . '}' . '
 ' . '*m.v_' . ($field->[0])->buf(("" . ' = *') . ($field->[1])->emit_go(("" . '; ') . '
-'))))) };
+')))))
+            };
             'func() *Any { ' . '
 ' . '  var m = new(' . Main::to_go_namespace($self->{class}) . '); ' . '
 ' . '  ' . $str . '
@@ -486,7 +495,7 @@ for my $field ( @{($fields || []) || []} ) {     ($str = $str . 'if m.v_' . ($fi
     package Index;
         sub new { shift; bless { @_ }, "Index" }
         sub obj { $_[0]->{obj} };
-sub index_exp { $_[0]->{index_exp} };
+        sub index_exp { $_[0]->{index_exp} };
         sub emit_go {
             my $self = $_[0];
             '(*(*' . $self->{obj}->emit_go(("" . ').(array_er).f_array(Capture{}))') . '.(index_er).f_index( Capture{ p : []*Any{ ' . $self->{index_exp}->emit_go(("" . ' }} )')))
@@ -498,7 +507,7 @@ sub index_exp { $_[0]->{index_exp} };
     package Lookup;
         sub new { shift; bless { @_ }, "Lookup" }
         sub obj { $_[0]->{obj} };
-sub index_exp { $_[0]->{index_exp} };
+        sub index_exp { $_[0]->{index_exp} };
         sub emit_go {
             my $self = $_[0];
             '(*(*' . $self->{obj}->emit_go(("" . ').(hash_er).f_hash(Capture{}))') . '.(lookup_er).f_lookup( Capture{ p : []*Any{ ' . $self->{index_exp}->emit_go(("" . ' }} )')))
@@ -510,13 +519,13 @@ sub index_exp { $_[0]->{index_exp} };
     package Var;
         sub new { shift; bless { @_ }, "Var" }
         sub sigil { $_[0]->{sigil} };
-sub twigil { $_[0]->{twigil} };
-sub namespace { $_[0]->{namespace} };
-sub name { $_[0]->{name} };
+        sub twigil { $_[0]->{twigil} };
+        sub namespace { $_[0]->{namespace} };
+        sub name { $_[0]->{name} };
         sub emit_go {
             my $self = $_[0];
             ((my  $table = undef) = do {
-(my  $Hash_a = {});
+    (my  $Hash_a = {});
     ($Hash_a->{'$'} = 'v_');
     ($Hash_a->{'@'} = 'List_');
     ($Hash_a->{'%'} = 'Hash_');
@@ -525,17 +534,15 @@ sub name { $_[0]->{name} };
 });
             ((my  $ns = undef) = '');
             if (Main::bool($self->{namespace})) {
-                    ($ns = Main::to_go_namespace($self->{namespace}) . '.')
-            }
-;
+                ($ns = Main::to_go_namespace($self->{namespace}) . '.')
+            };
             (Main::bool((($self->{twigil} eq '.'))) ? ('(*v_self).(' . $self->{name} . '_er).f_' . $self->{name} . '(Capture{})') : ((Main::bool((($self->{name} eq '/'))) ? ('v_MATCH') : ($table->{$self->{sigil}} . $ns . $self->{name}))))
         };
         sub plain_name {
             my $self = $_[0];
             if (Main::bool($self->{namespace})) {
-                    return scalar ($self->{namespace} . '.' . $self->{name})
-            }
-;
+                return scalar ($self->{namespace} . '.' . $self->{name})
+            };
             return scalar ($self->{name})
         }
     }
@@ -545,57 +552,60 @@ sub name { $_[0]->{name} };
     package Bind;
         sub new { shift; bless { @_ }, "Bind" }
         sub parameters { $_[0]->{parameters} };
-sub arguments { $_[0]->{arguments} };
+        sub arguments { $_[0]->{arguments} };
         sub emit_go {
             my $self = $_[0];
             if (Main::bool(Main::isa($self->{parameters}, 'Lit::Array'))) {
-                    ((my  $a = undef) = $self->{parameters}->array1());
-                    ((my  $str = undef) = 'func () *Any { ' . 'List_tmp := ' . $self->{arguments}->emit_go(("" . '; ')));
-                    ((my  $i = undef) = 0);
-for my $var ( @{($a || []) || []} ) {     ((my  $bind = undef) = Bind->new(('parameters' => $var), ('arguments' => Index->new(('obj' => Var->new(('sigil' => '@'), ('twigil' => ''), ('namespace' => ''), ('name' => 'tmp'))), ('index_exp' => Val::Int->new(('int' => $i)))))));
-    ($str = $str . ' ' . $bind->emit_go(("" . '; ')));
-    ($i = ($i + 1)) };
-                    return scalar ($str . ' return List_tmp }()')
-            }
-;
+                ((my  $a = undef) = $self->{parameters}->array1());
+                ((my  $str = undef) = 'func () *Any { ' . 'List_tmp := ' . $self->{arguments}->emit_go(("" . '; ')));
+                ((my  $i = undef) = 0);
+                for my $var ( @{($a || []) || []} ) {
+                    ((my  $bind = undef) = Bind->new(('parameters' => $var), ('arguments' => Index->new(('obj' => Var->new(('sigil' => '@'), ('twigil' => ''), ('namespace' => ''), ('name' => 'tmp'))), ('index_exp' => Val::Int->new(('int' => $i)))))));
+                    ($str = $str . ' ' . $bind->emit_go(("" . '; ')));
+                    ($i = ($i + 1))
+                };
+                return scalar ($str . ' return List_tmp }()')
+            };
             if (Main::bool(Main::isa($self->{parameters}, 'Lit::Hash'))) {
-                    ((my  $a = undef) = $self->{parameters}->hash1());
-                    ((my  $b = undef) = $self->{arguments}->hash1());
-                    ((my  $str = undef) = 'do { ');
-                    ((my  $i = undef) = 0);
-(my  $arg = undef);
-for my $var ( @{($a || []) || []} ) {     ($arg = Val::Undef->new());
-for my $var2 ( @{($b || []) || []} ) {     if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) {
-            ($arg = $var2->[1])
-    }
- };
-    ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
-    ($str = $str . ' ' . $bind->emit_go(("" . '; ')));
-    ($i = ($i + 1)) };
-                    return scalar ($str . $self->{parameters}->emit_go(("" . ' }')))
-            }
-;
+                ((my  $a = undef) = $self->{parameters}->hash1());
+                ((my  $b = undef) = $self->{arguments}->hash1());
+                ((my  $str = undef) = 'do { ');
+                ((my  $i = undef) = 0);
+                (my  $arg = undef);
+                for my $var ( @{($a || []) || []} ) {
+                    ($arg = Val::Undef->new());
+                    for my $var2 ( @{($b || []) || []} ) {
+                        if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) {
+                            ($arg = $var2->[1])
+                        }
+                    };
+                    ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
+                    ($str = $str . ' ' . $bind->emit_go(("" . '; ')));
+                    ($i = ($i + 1))
+                };
+                return scalar ($str . $self->{parameters}->emit_go(("" . ' }')))
+            };
             if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) {
-                    ((my  $class = undef) = $self->{parameters}->class());
-                    ((my  $a = undef) = $self->{parameters}->fields());
-                    ((my  $b = undef) = $self->{arguments});
-                    ((my  $str = undef) = 'do { ');
-                    ((my  $i = undef) = 0);
-(my  $arg = undef);
-for my $var ( @{($a || []) || []} ) {     ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do {
-(my  $List_a = []);
-(my  $List_v = []);
+                ((my  $class = undef) = $self->{parameters}->class());
+                ((my  $a = undef) = $self->{parameters}->fields());
+                ((my  $b = undef) = $self->{arguments});
+                ((my  $str = undef) = 'do { ');
+                ((my  $i = undef) = 0);
+                (my  $arg = undef);
+                for my $var ( @{($a || []) || []} ) {
+                    ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do {
+    (my  $List_a = []);
+    (my  $List_v = []);
     $List_a
 }), ('hyper' => 0)))));
-    ($str = $str . ' ' . $bind->emit_go(("" . '; ')));
-    ($i = ($i + 1)) };
-                    return scalar ($str . $self->{parameters}->emit_go(("" . ' }')))
-            }
-;
+                    ($str = $str . ' ' . $bind->emit_go(("" . '; ')));
+                    ($i = ($i + 1))
+                };
+                return scalar ($str . $self->{parameters}->emit_go(("" . ' }')))
+            };
             if (Main::bool(Main::isa($self->{parameters}, 'Call'))) {
-                    return scalar ('func () *Any { ' . 'var tmp = ' . Call::emit_go_call($self->{parameters}->invocant(), $self->{parameters}->method()) . '; ' . '*tmp = *( ' . $self->{arguments}->emit_go(("" . ' ); ') . 'return tmp; ' . '}()'))
-            }
-;
+                return scalar ('func () *Any { ' . 'var tmp = ' . Call::emit_go_call($self->{parameters}->invocant(), $self->{parameters}->method()) . '; ' . '*tmp = *( ' . $self->{arguments}->emit_go(("" . ' ); ') . 'return tmp; ' . '}()'))
+            };
             '*' . $self->{parameters}->emit_go(("" . ' = *(') . $self->{arguments}->emit_go(("" . ')')))
         }
     }
@@ -616,35 +626,31 @@ for my $var ( @{($a || []) || []} ) {     ((my  $bind = undef) = Bind->new(('par
     package Call;
         sub new { shift; bless { @_ }, "Call" }
         sub invocant { $_[0]->{invocant} };
-sub hyper { $_[0]->{hyper} };
-sub method { $_[0]->{method} };
-sub arguments { $_[0]->{arguments} };
+        sub hyper { $_[0]->{hyper} };
+        sub method { $_[0]->{method} };
+        sub arguments { $_[0]->{arguments} };
         sub emit_go {
             my $self = $_[0];
             ((my  $invocant = undef) = $self->{invocant}->emit_go());
             if (Main::bool(Main::isa(($self->{invocant}), 'Proto'))) {
-                    if (Main::bool(($self->{invocant}->name() eq 'self'))) {
-                            ($invocant = 'v_self')
-                    }
-                    else {
-                            ($invocant = 'Proto_' . $invocant)
-                    }
-
-            }
-;
+                if (Main::bool(($self->{invocant}->name() eq 'self'))) {
+                    ($invocant = 'v_self')
+                }
+                else {
+                    ($invocant = 'Proto_' . $invocant)
+                }
+            };
             ((my  $meth = undef) = $self->{method});
             if (Main::bool(($meth eq 'postcircumfix:<( )>'))) {
-                    if (Main::bool(($self->{hyper}))) {
-                            ($meth = '')
-                    }
-                    else {
-                            return scalar ('((*' . $invocant . ').(function_er).f_function( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } ))')
-                    }
-
-            }
-;
+                if (Main::bool(($self->{hyper}))) {
+                    ($meth = '')
+                }
+                else {
+                    return scalar ('((*' . $invocant . ').(function_er).f_function( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } ))')
+                }
+            };
             if (Main::bool(($self->{hyper}))) {
-                    return scalar ('func (a_ *Any) *Any { ' . '
+                return scalar ('func (a_ *Any) *Any { ' . '
 ' . '  var out = a_array(); ' . '
 ' . '  var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); ' . '
 ' . '  for pos := 0; pos <= i.n; pos++ { ' . '
@@ -652,8 +658,7 @@ sub arguments { $_[0]->{arguments} };
 ' . '  } ' . '
 ' . '  return out; ' . '
 ' . '}(' . $invocant . ')')
-            }
-;
+            };
             return scalar ('(*' . $invocant . ').(' . $meth . '_er).f_' . $meth . '( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
         };
         sub emit_go_call {
@@ -661,9 +666,8 @@ sub arguments { $_[0]->{arguments} };
             my $meth_name = $_[1];
             ((my  $invocant1 = undef) = $invocant->emit_go());
             if (Main::bool(Main::isa(($invocant), 'Proto'))) {
-                    ($invocant1 = 'Proto_' . $invocant1)
-            }
-;
+                ($invocant1 = 'Proto_' . $invocant1)
+            };
             ((my  $meth = undef) = $meth_name);
             return scalar ('(*' . $invocant1 . ').(' . $meth . '_er).f_' . $meth . '(Capture{})')
         }
@@ -674,8 +678,8 @@ sub arguments { $_[0]->{arguments} };
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
         sub code { $_[0]->{code} };
-sub arguments { $_[0]->{arguments} };
-sub namespace { $_[0]->{namespace} };
+        sub arguments { $_[0]->{arguments} };
+        sub namespace { $_[0]->{namespace} };
         sub emit_go {
             my $self = $_[0];
             ((my  $code = undef) = $self->{code});
@@ -683,187 +687,143 @@ sub namespace { $_[0]->{namespace} };
 
             }
             else {
-                    return scalar ('(' . $self->{code}->emit_go(("" . ')->(') . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')'))
-            }
-;
+                return scalar ('(' . $self->{code}->emit_go(("" . ')->(') . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')'))
+            };
             if (Main::bool(($code eq 'self'))) {
-                    return scalar ('v_self')
-            }
-;
+                return scalar ('v_self')
+            };
             if (Main::bool(($code eq 'False'))) {
-                    return scalar ('b_false()')
-            }
-;
+                return scalar ('b_false()')
+            };
             if (Main::bool(($code eq 'True'))) {
-                    return scalar ('b_true()')
-            }
-;
+                return scalar ('b_true()')
+            };
             if (Main::bool(($code eq 'make'))) {
-                    return scalar ('func () *Any { ' . 'tmp := ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . '; ' . '*(*v_MATCH).(capture_er).f_capture(Capture{}) = *tmp; ' . 'return tmp; ' . '}()')
-            }
-;
+                return scalar ('func () *Any { ' . 'tmp := ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . '; ' . '*(*v_MATCH).(capture_er).f_capture(Capture{}) = *tmp; ' . 'return tmp; ' . '}()')
+            };
             if (Main::bool(($code eq 'go'))) {
-                    return scalar ('go func () { ' . '
+                return scalar ('go func () { ' . '
 ' . '        ' . (Perlito::Go::LexicalBlock->new(('block' => ($self->{arguments}->[0])->block()), ('needs_return' => 0), ('top_level' => 1)))->emit_go(("" . '
 ') . '    }()'))
-            }
-;
+            };
             if (Main::bool(($code eq 'say'))) {
-                    return scalar ('f_print( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ', toStr("\\n") } } )')
-            }
-;
+                return scalar ('f_print( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ', toStr("\\n") } } )')
+            };
             if (Main::bool(($code eq 'print'))) {
-                    return scalar ('f_print( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
-            }
-;
+                return scalar ('f_print( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
+            };
             if (Main::bool(($code eq 'warn'))) {
-                    return scalar ('f_print_stderr( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ', toStr("\\n") } } )')
-            }
-;
+                return scalar ('f_print_stderr( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ', toStr("\\n") } } )')
+            };
             if (Main::bool(($code eq 'die'))) {
-                    return scalar ('f_die( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
-            }
-;
+                return scalar ('f_die( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
+            };
             if (Main::bool(($code eq 'defined'))) {
-                    return scalar ('f_defined( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
-            }
-;
+                return scalar ('f_defined( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
+            };
             if (Main::bool(($code eq 'pop'))) {
-                    return scalar ('f_pop( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
-            }
-;
+                return scalar ('f_pop( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
+            };
             if (Main::bool(($code eq 'push'))) {
-                    return scalar ('f_push( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
-            }
-;
+                return scalar ('f_push( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
+            };
             if (Main::bool(($code eq 'shift'))) {
-                    return scalar ('f_shift( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
-            }
-;
+                return scalar ('f_shift( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
+            };
             if (Main::bool(($code eq 'index'))) {
-                    return scalar ('f_index( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
-            }
-;
+                return scalar ('f_index( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
+            };
             if (Main::bool(($code eq 'substr'))) {
-                    return scalar ('f_substr( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
-            }
-;
+                return scalar ('f_substr( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
+            };
             if (Main::bool(($code eq 'scalar'))) {
-                    return scalar ('f_scalar( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
-            }
-;
+                return scalar ('f_scalar( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
+            };
             if (Main::bool(($code eq 'Int'))) {
-                    return scalar ('toInt(' . 'toint(' . ($self->{arguments}->[0])->emit_go(("" . ')') . ')'))
-            }
-;
+                return scalar ('toInt(' . 'toint(' . ($self->{arguments}->[0])->emit_go(("" . ')') . ')'))
+            };
             if (Main::bool(($code eq 'Num'))) {
-                    return scalar ('toNum(' . 'tonum(' . ($self->{arguments}->[0])->emit_go(("" . ')') . ')'))
-            }
-;
+                return scalar ('toNum(' . 'tonum(' . ($self->{arguments}->[0])->emit_go(("" . ')') . ')'))
+            };
             if (Main::bool(($code eq 'exists'))) {
-                    ((my  $arg = undef) = $self->{arguments}->[0]);
-                    if (Main::bool(Main::isa($arg, 'Lookup'))) {
-                            return scalar ('(*' . ($arg->obj())->emit_go(("" . ')') . '.(exists_er).f_exists(Capture{ p : []*Any{ ' . ($arg->index_exp())->emit_go(("" . ' } } )'))))
-                    }
-
-            }
-;
+                ((my  $arg = undef) = $self->{arguments}->[0]);
+                if (Main::bool(Main::isa($arg, 'Lookup'))) {
+                    return scalar ('(*' . ($arg->obj())->emit_go(("" . ')') . '.(exists_er).f_exists(Capture{ p : []*Any{ ' . ($arg->index_exp())->emit_go(("" . ' } } )'))))
+                }
+            };
             if (Main::bool(($code eq 'prefix:<~>'))) {
-                    return scalar (Call::emit_go_call($self->{arguments}->[0], 'Str'))
-            }
-;
+                return scalar (Call::emit_go_call($self->{arguments}->[0], 'Str'))
+            };
             if (Main::bool(($code eq 'prefix:<!>'))) {
-                    return scalar ('toBool(!tobool(' . ($self->{arguments}->[0])->emit_go(("" . '))')))
-            }
-;
+                return scalar ('toBool(!tobool(' . ($self->{arguments}->[0])->emit_go(("" . '))')))
+            };
             if (Main::bool(($code eq 'prefix:<?>'))) {
-                    return scalar (Call::emit_go_call($self->{arguments}->[0], 'Bool'))
-            }
-;
+                return scalar (Call::emit_go_call($self->{arguments}->[0], 'Bool'))
+            };
             if (Main::bool(($code eq 'prefix:<$>'))) {
-                    return scalar ('f_scalar( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
-            }
-;
+                return scalar ('f_scalar( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )')
+            };
             if (Main::bool(($code eq 'prefix:<@>'))) {
-                    return scalar (Call::emit_go_call($self->{arguments}->[0], 'array'))
-            }
-;
+                return scalar (Call::emit_go_call($self->{arguments}->[0], 'array'))
+            };
             if (Main::bool(($code eq 'prefix:<%>'))) {
-                    return scalar (Call::emit_go_call($self->{arguments}->[0], 'hash'))
-            }
-;
+                return scalar (Call::emit_go_call($self->{arguments}->[0], 'hash'))
+            };
             if (Main::bool(($code eq 'infix:<~>'))) {
-                    return scalar ('toStr( ' . 'tostr(' . ($self->{arguments}->[0])->emit_go(("" . ') + ') . 'tostr(' . ($self->{arguments}->[1])->emit_go(("" . ') ') . ')')))
-            }
-;
+                return scalar ('toStr( ' . 'tostr(' . ($self->{arguments}->[0])->emit_go(("" . ') + ') . 'tostr(' . ($self->{arguments}->[1])->emit_go(("" . ') ') . ')')))
+            };
             if (Main::bool(($code eq 'infix:<+>'))) {
-                    return scalar ('f_add( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
-            }
-;
+                return scalar ('f_add( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
+            };
             if (Main::bool(($code eq 'infix:<->'))) {
-                    return scalar ('f_sub( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
-            }
-;
+                return scalar ('f_sub( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
+            };
             if (Main::bool(($code eq 'infix:<*>'))) {
-                    return scalar ('f_mul( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
-            }
-;
+                return scalar ('f_mul( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
+            };
             if (Main::bool(($code eq 'infix:</>'))) {
-                    return scalar ('f_div( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
-            }
-;
+                return scalar ('f_div( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
+            };
             if (Main::bool(($code eq 'infix:<>>'))) {
-                    return scalar ('f_greater( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
-            }
-;
+                return scalar ('f_greater( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
+            };
             if (Main::bool(($code eq 'infix:<<>'))) {
-                    return scalar ('f_smaller( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
-            }
-;
+                return scalar ('f_smaller( ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ')')
+            };
             if (Main::bool(($code eq 'infix:<>=>'))) {
-                    return scalar ('toBool( ' . 'toint(' . ($self->{arguments}->[0])->emit_go(("" . ') >= ') . 'toint(' . ($self->{arguments}->[1])->emit_go(("" . ') ') . ')')))
-            }
-;
+                return scalar ('toBool( ' . 'toint(' . ($self->{arguments}->[0])->emit_go(("" . ') >= ') . 'toint(' . ($self->{arguments}->[1])->emit_go(("" . ') ') . ')')))
+            };
             if (Main::bool(($code eq 'infix:<<=>'))) {
-                    return scalar ('toBool( ' . 'toint(' . ($self->{arguments}->[0])->emit_go(("" . ') <= ') . 'toint(' . ($self->{arguments}->[1])->emit_go(("" . ') ') . ')')))
-            }
-;
+                return scalar ('toBool( ' . 'toint(' . ($self->{arguments}->[0])->emit_go(("" . ') <= ') . 'toint(' . ($self->{arguments}->[1])->emit_go(("" . ') ') . ')')))
+            };
             if (Main::bool(($code eq 'infix:<&&>'))) {
-                    return scalar ('f_and( ' . 'func () *Any { return ' . ($self->{arguments}->[0])->emit_go(("" . ' }, ') . 'func () *Any { return ' . ($self->{arguments}->[1])->emit_go(("" . ' } ') . ')')))
-            }
-;
+                return scalar ('f_and( ' . 'func () *Any { return ' . ($self->{arguments}->[0])->emit_go(("" . ' }, ') . 'func () *Any { return ' . ($self->{arguments}->[1])->emit_go(("" . ' } ') . ')')))
+            };
             if (Main::bool(($code eq 'infix:<||>'))) {
-                    return scalar ('f_or( ' . 'func () *Any { return ' . ($self->{arguments}->[0])->emit_go(("" . ' }, ') . 'func () *Any { return ' . ($self->{arguments}->[1])->emit_go(("" . ' } ') . ')')))
-            }
-;
+                return scalar ('f_or( ' . 'func () *Any { return ' . ($self->{arguments}->[0])->emit_go(("" . ' }, ') . 'func () *Any { return ' . ($self->{arguments}->[1])->emit_go(("" . ' } ') . ')')))
+            };
             if (Main::bool(($code eq 'infix:<eq>'))) {
-                    return scalar ('toBool(' . 'tostr(' . ($self->{arguments}->[0])->emit_go(("" . ') == ') . 'tostr(' . ($self->{arguments}->[1])->emit_go(("" . ')') . ')')))
-            }
-;
+                return scalar ('toBool(' . 'tostr(' . ($self->{arguments}->[0])->emit_go(("" . ') == ') . 'tostr(' . ($self->{arguments}->[1])->emit_go(("" . ')') . ')')))
+            };
             if (Main::bool(($code eq 'infix:<ne>'))) {
-                    return scalar ('toBool(' . 'tostr(' . ($self->{arguments}->[0])->emit_go(("" . ') != ') . 'tostr(' . ($self->{arguments}->[1])->emit_go(("" . ')') . ')')))
-            }
-;
+                return scalar ('toBool(' . 'tostr(' . ($self->{arguments}->[0])->emit_go(("" . ') != ') . 'tostr(' . ($self->{arguments}->[1])->emit_go(("" . ')') . ')')))
+            };
             if (Main::bool(($code eq 'infix:<==>'))) {
-                    return scalar ('toBool(' . 'toint(' . ($self->{arguments}->[0])->emit_go(("" . ') == ') . 'toint(' . ($self->{arguments}->[1])->emit_go(("" . ') ') . ')')))
-            }
-;
+                return scalar ('toBool(' . 'toint(' . ($self->{arguments}->[0])->emit_go(("" . ') == ') . 'toint(' . ($self->{arguments}->[1])->emit_go(("" . ') ') . ')')))
+            };
             if (Main::bool(($code eq 'infix:<!=>'))) {
-                    return scalar ('toBool(' . 'toint(' . ($self->{arguments}->[0])->emit_go(("" . ') != ') . 'toint(' . ($self->{arguments}->[1])->emit_go(("" . ') ') . ')')))
-            }
-;
+                return scalar ('toBool(' . 'toint(' . ($self->{arguments}->[0])->emit_go(("" . ') != ') . 'toint(' . ($self->{arguments}->[1])->emit_go(("" . ') ') . ')')))
+            };
             if (Main::bool(($code eq 'ternary:<?? !!>'))) {
-                    return scalar ('func () *Any { ' . 'if tobool( ' . Call::emit_go_call($self->{arguments}->[0], 'Bool') . ' ) ' . '{ return ' . ($self->{arguments}->[1])->emit_go(("" . ' }; ') . 'return ' . ($self->{arguments}->[2])->emit_go(("" . ' ') . '}()')))
-            }
-;
+                return scalar ('func () *Any { ' . 'if tobool( ' . Call::emit_go_call($self->{arguments}->[0], 'Bool') . ' ) ' . '{ return ' . ($self->{arguments}->[1])->emit_go(("" . ' }; ') . 'return ' . ($self->{arguments}->[2])->emit_go(("" . ' ') . '}()')))
+            };
             ($code = 'f_' . $self->{code});
             if (Main::bool($self->{namespace})) {
-                    ($code = 'Namespace_' . Main::to_go_namespace($self->{namespace}) . '.' . $code)
+                ($code = 'Namespace_' . Main::to_go_namespace($self->{namespace}) . '.' . $code)
             }
             else {
-                    ($code = 'this_namespace.' . $code)
-            }
-;
+                ($code = 'this_namespace.' . $code)
+            };
             $code . '( Capture{ p : []*Any{ ' . Main::join(([ map { $_->emit_go() } @{( $self->{arguments} )} ]), ', ') . ' } } )'
         }
     }
@@ -876,19 +836,17 @@ sub namespace { $_[0]->{namespace} };
         sub emit_go {
             my $self = $_[0];
             if (Main::bool(Main::isa(($self->{result}), 'Bind'))) {
-                    ((my  $tmp = undef) = ($self->{result})->parameters());
-                    return scalar ('(func () { ' . ($self->{result})->emit_go(("" . '; ') . 'p <- ' . $tmp->emit_go(("" . '; ') . 'runtime.Goexit(); ' . '}())')))
-            }
-;
+                ((my  $tmp = undef) = ($self->{result})->parameters());
+                return scalar ('(func () { ' . ($self->{result})->emit_go(("" . '; ') . 'p <- ' . $tmp->emit_go(("" . '; ') . 'runtime.Goexit(); ' . '}())')))
+            };
             return scalar ('(func () { ' . 'var tmp *Any = ' . ($self->{result})->emit_go(("" . '; ') . 'p <- tmp; ' . 'runtime.Goexit(); ' . '}())'))
         };
         sub emit_go_simple {
             my $self = $_[0];
             if (Main::bool(Main::isa(($self->{result}), 'Bind'))) {
-                    ((my  $tmp = undef) = ($self->{result})->parameters());
-                    return scalar ('return (func () *Any { ' . ($self->{result})->emit_go(("" . '; ') . 'return ' . $tmp->emit_go(("" . '; ') . '}())')))
-            }
-;
+                ((my  $tmp = undef) = ($self->{result})->parameters());
+                return scalar ('return (func () *Any { ' . ($self->{result})->emit_go(("" . '; ') . 'return ' . $tmp->emit_go(("" . '; ') . '}())')))
+            };
             return scalar ('return( ' . $self->{result}->emit_go(("" . ')')))
         }
     }
@@ -898,30 +856,27 @@ sub namespace { $_[0]->{namespace} };
     package If;
         sub new { shift; bless { @_ }, "If" }
         sub cond { $_[0]->{cond} };
-sub body { $_[0]->{body} };
-sub otherwise { $_[0]->{otherwise} };
+        sub body { $_[0]->{body} };
+        sub otherwise { $_[0]->{otherwise} };
         sub emit_go {
             my $self = $_[0];
             ((my  $cond = undef) = $self->{cond});
             if (Main::bool((Main::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<!>')))) {
-                    ((my  $if = undef) = If->new(('cond' => ($cond->arguments())->[0]), ('body' => $self->{otherwise}), ('otherwise' => $self->{body})));
-                    return scalar ($if->emit_go())
-            }
-;
+                ((my  $if = undef) = If->new(('cond' => ($cond->arguments())->[0]), ('body' => $self->{otherwise}), ('otherwise' => $self->{body})));
+                return scalar ($if->emit_go())
+            };
             if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) {
-                    ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => do {
-(my  $List_a = []);
-(my  $List_v = []);
+                ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => do {
+    (my  $List_a = []);
+    (my  $List_v = []);
     push( @{$List_a}, $cond );
     $List_a
 })))
-            }
-;
+            };
             ((my  $s = undef) = 'if tobool( ' . Call::emit_go_call($cond, 'Bool') . ' ) { ' . (Perlito::Go::LexicalBlock->new(('block' => $self->{body}), ('needs_return' => 0)))->emit_go(("" . ' }')));
             if (Main::bool(!Main::bool(($self->{otherwise})))) {
-                    return scalar ($s)
-            }
-;
+                return scalar ($s)
+            };
             return scalar ($s . ' else { ' . (Perlito::Go::LexicalBlock->new(('block' => $self->{otherwise}), ('needs_return' => 0)))->emit_go(("" . ' }')))
         }
     }
@@ -931,8 +886,8 @@ sub otherwise { $_[0]->{otherwise} };
     package For;
         sub new { shift; bless { @_ }, "For" }
         sub cond { $_[0]->{cond} };
-sub body { $_[0]->{body} };
-sub topic { $_[0]->{topic} };
+        sub body { $_[0]->{body} };
+        sub topic { $_[0]->{topic} };
         sub emit_go {
             my $self = $_[0];
             'func (a_ *Any) { ' . '
@@ -951,7 +906,7 @@ sub topic { $_[0]->{topic} };
     package When;
         sub new { shift; bless { @_ }, "When" }
         sub parameters { $_[0]->{parameters} };
-sub body { $_[0]->{body} };
+        sub body { $_[0]->{body} };
         sub emit_go {
             my $self = $_[0];
             die('TODO - When')
@@ -963,21 +918,20 @@ sub body { $_[0]->{body} };
     package While;
         sub new { shift; bless { @_ }, "While" }
         sub init { $_[0]->{init} };
-sub cond { $_[0]->{cond} };
-sub continue { $_[0]->{continue} };
-sub body { $_[0]->{body} };
+        sub cond { $_[0]->{cond} };
+        sub continue { $_[0]->{continue} };
+        sub body { $_[0]->{body} };
         sub emit_go {
             my $self = $_[0];
             ((my  $cond = undef) = $self->{cond});
             if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq '@')))) {
-                    ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => do {
-(my  $List_a = []);
-(my  $List_v = []);
+                ($cond = Apply->new(('code' => 'prefix:<@>'), ('arguments' => do {
+    (my  $List_a = []);
+    (my  $List_v = []);
     push( @{$List_a}, $cond );
     $List_a
 })))
-            }
-;
+            };
             return scalar ('for ' . ((Main::bool($self->{init}) ? $self->{init}->emit_go(("" . '; ')) : ';')) . 'tobool( ' . Call::emit_go_call($cond, 'Bool') . ' ); ' . ((Main::bool($self->{continue}) ? $self->{continue}->emit_go(("" . ' ')) : '')) . '{ ' . (Perlito::Go::LexicalBlock->new(('block' => $self->{body}), ('needs_return' => 0)))->emit_go(("" . ' }')))
         }
     }
@@ -987,8 +941,8 @@ sub body { $_[0]->{body} };
     package Decl;
         sub new { shift; bless { @_ }, "Decl" }
         sub decl { $_[0]->{decl} };
-sub type { $_[0]->{type} };
-sub var { $_[0]->{var} };
+        sub type { $_[0]->{type} };
+        sub var { $_[0]->{var} };
         sub emit_go {
             my $self = $_[0];
 $self->{var}->emit_go()
@@ -996,33 +950,30 @@ $self->{var}->emit_go()
         sub emit_go_init {
             my $self = $_[0];
             if (Main::bool(($self->{decl} eq 'my'))) {
-                    ((my  $str = undef) = '');
-                    ($str = $str . 'var ' . ($self->{var})->emit_go(("" . ' *Any;') . '
+                ((my  $str = undef) = '');
+                ($str = $str . 'var ' . ($self->{var})->emit_go(("" . ' *Any;') . '
 '));
-                    ($str = $str . ($self->{var})->emit_go(("" . ' = ') . ($self->{var})->emit_go(("" . ';') . '
+                ($str = $str . ($self->{var})->emit_go(("" . ' = ') . ($self->{var})->emit_go(("" . ';') . '
 ')));
-                    if (Main::bool((($self->{var})->sigil() eq '%'))) {
-                            ($str = $str . ($self->{var})->emit_go(("" . ' = h_hash();') . '
+                if (Main::bool((($self->{var})->sigil() eq '%'))) {
+                    ($str = $str . ($self->{var})->emit_go(("" . ' = h_hash();') . '
+'))
+                }
+                else {
+                    if (Main::bool((($self->{var})->sigil() eq '@'))) {
+                        ($str = $str . ($self->{var})->emit_go(("" . ' = a_array();') . '
 '))
                     }
                     else {
-                            if (Main::bool((($self->{var})->sigil() eq '@'))) {
-                                    ($str = $str . ($self->{var})->emit_go(("" . ' = a_array();') . '
+                        ($str = $str . ($self->{var})->emit_go(("" . ' = u_undef();') . '
 '))
-                            }
-                            else {
-                                    ($str = $str . ($self->{var})->emit_go(("" . ' = u_undef();') . '
-'))
-                            }
-
                     }
-;
-                    return scalar ($str)
+                };
+                return scalar ($str)
             }
             else {
-                    die('not implemented: Decl \'' . $self->{decl} . '\'')
+                die('not implemented: Decl \'' . $self->{decl} . '\'')
             }
-
         }
     }
 
@@ -1031,8 +982,8 @@ $self->{var}->emit_go()
     package Sig;
         sub new { shift; bless { @_ }, "Sig" }
         sub invocant { $_[0]->{invocant} };
-sub positional { $_[0]->{positional} };
-sub named { $_[0]->{named} };
+        sub positional { $_[0]->{positional} };
+        sub named { $_[0]->{named} };
         sub emit_go {
             my $self = $_[0];
             ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
@@ -1041,13 +992,15 @@ sub named { $_[0]->{named} };
             my $self = $_[0];
             ((my  $str = undef) = '');
             ((my  $i = undef) = 0);
-for my $decl ( @{(($self->{positional}) || []) || []} ) {     ($str = $str . '  var ' . $decl->emit_go(("" . ' *Any;' . '
+            for my $decl ( @{(($self->{positional}) || []) || []} ) {
+                ($str = $str . '  var ' . $decl->emit_go(("" . ' *Any;' . '
 ') . '  if len(v.p) > ' . $i . ' ' . '{' . '
 ' . '    ' . $decl->emit_go(("" . ' = v.p[') . $i . '];' . '
 ' . '  }' . '
 ')));
-    ($str = $str . $decl->emit_go(("" . ' = ') . $decl->emit_go(("" . '; '))));
-    ($i = ($i + 1)) };
+                ($str = $str . $decl->emit_go(("" . ' = ') . $decl->emit_go(("" . '; '))));
+                ($i = ($i + 1))
+            };
             return scalar ($str)
         }
     }
@@ -1057,8 +1010,8 @@ for my $decl ( @{(($self->{positional}) || []) || []} ) {     ($str = $str . '  
     package Method;
         sub new { shift; bless { @_ }, "Method" }
         sub name { $_[0]->{name} };
-sub sig { $_[0]->{sig} };
-sub block { $_[0]->{block} };
+        sub sig { $_[0]->{sig} };
+        sub block { $_[0]->{block} };
         sub emit_go {
             my $self = $_[0];
             ((my  $invocant = undef) = ($self->{sig})->invocant());
@@ -1075,18 +1028,17 @@ sub block { $_[0]->{block} };
     package Sub;
         sub new { shift; bless { @_ }, "Sub" }
         sub name { $_[0]->{name} };
-sub sig { $_[0]->{sig} };
-sub block { $_[0]->{block} };
+        sub sig { $_[0]->{sig} };
+        sub block { $_[0]->{block} };
         sub emit_go {
             my $self = $_[0];
             if (Main::bool(($self->{name} eq ''))) {
-                    return scalar ('toFunction( func(v Capture) *Any { ' . '    ' . ($self->{sig})->emit_go_bind(("" . '
+                return scalar ('toFunction( func(v Capture) *Any { ' . '    ' . ($self->{sig})->emit_go_bind(("" . '
 ') . '    p := make(chan *Any); go func () { ' . '
 ' . '        ' . (Perlito::Go::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1), ('top_level' => 1)))->emit_go(("" . '; p <- nil }(); ') . '
 ' . '    return <-p; ' . '
 ' . '} ' . ')')))
-            }
-;
+            };
             'func ' . $self->{name} . '(v Capture) *Any { ' . '    ' . ($self->{sig})->emit_go_bind(("" . '
 ') . '    p := make(chan *Any); go func () { ' . '
 ' . '        ' . (Perlito::Go::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1), ('top_level' => 1)))->emit_go(("" . '; p <- nil }(); ') . '

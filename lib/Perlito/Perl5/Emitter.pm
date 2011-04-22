@@ -38,7 +38,7 @@ class CompUnit {
           Perl5::tab($level)    ~ "\{\n"
         ~ Perl5::tab($level)    ~ 'package ' ~ $.name ~ ";" ~ "\n" 
         ~ Perl5::tab($level + 1)    ~ 'sub new { shift; bless { @_ }, "' ~ $.name ~ '" }'  ~ "\n" 
-        ~ Perl5::tab($level + 1)    ~ (@body.>>emit_perl5_indented( $level + 1 )).join( ";\n" ) ~ "\n"
+        ~                             (@body.>>emit_perl5_indented( $level + 1 )).join( ";\n" ) ~ "\n"
         ~ Perl5::tab($level)    ~ "}\n"
         ~ "\n"
     }
@@ -95,7 +95,7 @@ class Lit::Block {
                 push @body, $_ 
             }
         }
-        (@body.>>emit_perl5_indented( $level + 1 )).join(";\n") 
+        (@body.>>emit_perl5_indented( $level )).join(";\n") 
     }
 }
 
@@ -445,11 +445,12 @@ class If {
     method emit_perl5_indented( $level ) {
         return Perl5::tab($level) ~ 'if (' ~ Perl5::to_bool($.cond).emit_perl5() ~ ") \{\n" 
              ~   (($.body).emit_perl5_indented( $level + 1 )) ~ "\n"
-             ~ Perl5::tab($level) ~ "}\n" 
+             ~ Perl5::tab($level) ~ "}" 
              ~  ($.otherwise 
-                ??  ( Perl5::tab($level) ~ "else \{\n" 
+                ??  ( "\n"
+                    ~ Perl5::tab($level) ~ "else \{\n" 
                     ~   (($.otherwise).emit_perl5_indented( $level + 1 )) ~ "\n" 
-                    ~ Perl5::tab($level) ~ "}\n"
+                    ~ Perl5::tab($level) ~ "}"
                     )
                 !! '' 
                 );
@@ -469,13 +470,13 @@ class While {
         {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         }
-           'for ( '
+           Perl5::tab($level) ~ 'for ( '
         ~  ( $.init     ?? $.init.emit_perl5()           ~ '; ' !! '; ' )
         ~  ( $cond      ?? Perl5::to_bool($cond).emit_perl5() ~ '; ' !! '; ' )
         ~  ( $.continue ?? $.continue.emit_perl5()       ~ ' '  !! ' '  )
-        ~  ') { ' 
-        ~       $.body.emit_perl5() 
-        ~ ' }'
+        ~  ') {' ~ "\n"
+        ~       $.body.emit_perl5_indented( $level + 1 ) ~ "\n"
+        ~ Perl5::tab($level) ~ "}" 
     }
 }
 
@@ -492,9 +493,9 @@ class For {
         if $.body.sig() {
             $sig = 'my ' ~ $.body.sig.emit_perl5() ~ ' ';
         }
-        return  'for ' ~ $sig ~ '( @{' ~ $cond.emit_perl5() ~ ' || []} ) { ' 
-             ~   $.body.emit_perl5() 
-             ~ ' }';
+        return  Perl5::tab($level) ~ 'for ' ~ $sig ~ '( @{' ~ $cond.emit_perl5() ~ ' || []} ) {' ~ "\n" 
+             ~   $.body.emit_perl5_indented( $level + 1 ) ~ "\n"
+             ~ Perl5::tab($level) ~ "}" 
     }
 }
 
@@ -507,7 +508,7 @@ class Decl {
         my $decl = $.decl;
         my $name = $.var.plain_name;
         if $decl eq 'has' {
-            return 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} }';
+            return Perl5::tab($level) ~ 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} }';
         }
         my $str = 
             '(' ~ $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_perl5() ~ ' = ';
@@ -520,7 +521,7 @@ class Decl {
         else {
             $str = $str ~ 'undef)';
         }
-        return $str;
+        return Perl5::tab($level) ~ $str;
     }
 }
 
