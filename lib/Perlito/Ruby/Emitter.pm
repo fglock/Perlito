@@ -63,7 +63,7 @@ class Perlito::Ruby::AnonSub {
     has $.sig;
     has @.block;
     has $.handles_return_exception;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $sig = $.sig;
         my $pos = $sig.positional;
@@ -112,7 +112,7 @@ class Perlito::Ruby::LexicalBlock {
         return 0;
     }
 
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         if !(@.block) {
             push @.block, Val::Undef.new();
@@ -260,7 +260,7 @@ class CompUnit {
     has %.methods;
     has @.body;
 
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my @s;
         my $block = Perlito::Ruby::LexicalBlock.new( block => @.body );
@@ -291,7 +291,7 @@ class Val::Int {
 
 class Val::Bit {
     has $.bit;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ ( $.bit ?? 'true' !! 'false' )
     }
@@ -307,14 +307,14 @@ class Val::Num {
 
 class Val::Buf {
     has $.buf;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ '"' ~ Main::javascript_escape_string($.buf) ~ '"' 
     }
 }
 
 class Val::Undef {
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 'nil'
     }
@@ -323,7 +323,7 @@ class Val::Undef {
 class Val::Object {
     has $.class;
     has %.fields;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 
             $.class.emit_ruby ~ '(' ~ %.fields.emit_ruby ~ ')';
@@ -332,7 +332,7 @@ class Val::Object {
 
 class Lit::Array {
     has @.array1;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $ast = self.expand_interpolation;
         return $ast.emit_ruby_indented($level);
@@ -341,7 +341,7 @@ class Lit::Array {
 
 class Lit::Hash {
     has @.hash1;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $ast = self.expand_interpolation;
         return $ast.emit_ruby_indented($level);
@@ -356,7 +356,7 @@ class Lit::Code {
 class Lit::Object {
     has $.class;
     has @.fields;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $fields = @.fields;
         my @str;
@@ -372,7 +372,7 @@ class Lit::Object {
 class Index {
     has $.obj;
     has $.index_exp;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 
             $.obj.emit_ruby ~ '[' ~ $.index_exp.emit_ruby ~ ']';
@@ -382,7 +382,7 @@ class Index {
 class Lookup {
     has $.obj;
     has $.index_exp;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 
             $.obj.emit_ruby ~ '[' ~ $.index_exp.emit_ruby ~ ']';
@@ -399,7 +399,7 @@ class Var {
         '%' => 'hash_',
         '&' => 'code_',
     };
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
             return Ruby::tab($level) ~ 'ARGV'
@@ -428,7 +428,7 @@ class Var {
 class Bind {
     has $.parameters;
     has $.arguments;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         if $.parameters.isa( 'Index' ) {
             return Ruby::tab($level)  
@@ -454,7 +454,7 @@ class Bind {
 
 class Proto {
     has $.name;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ '$' ~ Main::to_go_namespace($.name) 
     }
@@ -466,7 +466,7 @@ class Call {
     has $.method;
     has @.arguments;
     #has $.hyper;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $invocant = $.invocant.emit_ruby;
         if     ($.method eq 'perl')
@@ -516,7 +516,7 @@ class Apply {
     has @.arguments;
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 
-            $self.emit_ruby
+            self.emit_ruby
     }
     method emit_ruby {
         my $code = $.code;
@@ -597,13 +597,13 @@ class Apply {
         'namespace.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
     }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ $self.emit_ruby 
+        Ruby::tab($level) ~ self.emit_ruby 
     }
 }
 
 class Return {
     has $.result;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 'return ' ~ $.result.emit_ruby ~ '';
     }
@@ -613,7 +613,7 @@ class If {
     has $.cond;
     has @.body;
     has @.otherwise;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $has_body = @.body ?? 1 !! 0;
         my $has_otherwise = @.otherwise ?? 1 !! 0;
@@ -647,7 +647,7 @@ class While {
     has $.cond;
     has $.continue;
     has @.body;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $body_block = Perlito::Ruby::LexicalBlock.new( block => @.body );
         if $body_block.has_my_decl() {
@@ -670,7 +670,7 @@ class For {
     has $.cond;
     has @.body;
     has @.topic;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $body_block = Perlito::Ruby::LexicalBlock.new( block => @.body );
         Ruby::tab($level) ~   'for ' ~ $.topic.emit_ruby_name ~ " in " ~ $.cond.emit_ruby ~ "\n"
@@ -683,7 +683,7 @@ class Decl {
     has $.decl;
     has $.type;
     has $.var;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $decl = $.decl;
         my $name = $.var.name;
@@ -719,7 +719,7 @@ class Method {
     has $.name;
     has $.sig;
     has @.block;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $sig = $.sig;
         my $invocant = $sig.invocant; 
@@ -749,7 +749,7 @@ class Sub {
     has $.name;
     has $.sig;
     has @.block;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $label = "_anon_" ~ Perlito::Ruby::LexicalBlock::get_ident_ruby;
         if ( $.name eq '' ) {
@@ -791,7 +791,7 @@ class Sub {
 
 class Do {
     has @.block;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my @s;
         push @s, Ruby::tab($level)   ~ "Proc.new\{ || ";
@@ -803,7 +803,7 @@ class Do {
 
 class Use {
     has $.mod;
-    method emit_ruby { $self.emit_ruby_indented(0) }
+    method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         # Ruby::tab($level) ~ 'from ' ~ Main::to_go_namespace($.mod) ~ ' import *'
         return '';
