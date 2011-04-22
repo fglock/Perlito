@@ -1,5 +1,17 @@
 use v6;
 
+class Javascript {
+    sub tab($level) {
+        my $s = '';
+        my $count = $level;
+        while $count > 0 {
+            $s = $s ~ "    ";
+            $count = $count - 1;
+        }
+        return $s;
+    }
+}
+
 class Perlito::Javascript::LexicalBlock {
     has @.block;
     has $.needs_return;

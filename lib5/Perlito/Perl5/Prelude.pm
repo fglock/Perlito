@@ -9,28 +9,34 @@ use Perlito::Perl5::Prelude;
 our $MATCH = Perlito::Match->new();
 {
 package GLOBAL;
-sub new { shift; bless { @_ }, "GLOBAL" }
-
-# use v6 
+    sub new { shift; bless { @_ }, "GLOBAL" }
+    
+    # use v6 
 ;
-{
-package Perlito::Match;
-sub new { shift; bless { @_ }, "Perlito::Match" }
-sub from { $_[0]->{from} };
+    {
+    package Perlito::Match;
+        sub new { shift; bless { @_ }, "Perlito::Match" }
+        sub from { $_[0]->{from} };
 sub to { $_[0]->{to} };
 sub str { $_[0]->{str} };
 sub bool { $_[0]->{bool} };
-sub scalar { my $self = $_[0]; substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))) }
-}
+        sub scalar {
+            my $self = $_[0];
+            substr($self->{str}, $self->{from}, (($self->{to} - $self->{from})))
+        }
+    }
 
 ;
-{
-package Pair;
-sub new { shift; bless { @_ }, "Pair" }
-sub key { $_[0]->{key} };
+    {
+    package Pair;
+        sub new { shift; bless { @_ }, "Pair" }
+        sub key { $_[0]->{key} };
 sub value { $_[0]->{value} };
-sub perl { my $self = $_[0]; return scalar ($self->{key} . ' => ' . Main::perl($self->{value}, )) }
-}
+        sub perl {
+            my $self = $_[0];
+            return scalar ($self->{key} . ' => ' . Main::perl($self->{value}, ))
+        }
+    }
 
 
 }

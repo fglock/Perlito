@@ -9,58 +9,159 @@ use Perlito::Perl5::Prelude;
 our $MATCH = Perlito::Match->new();
 {
 package GLOBAL;
-sub new { shift; bless { @_ }, "GLOBAL" }
-
-# use v6 
+    sub new { shift; bless { @_ }, "GLOBAL" }
+    
+    # use v6 
 ;
-{
-package Perlito::Match;
-sub new { shift; bless { @_ }, "Perlito::Match" }
-sub from { $_[0]->{from} };
+    {
+    package Perlito::Match;
+        sub new { shift; bless { @_ }, "Perlito::Match" }
+        sub from { $_[0]->{from} };
 sub to { $_[0]->{to} };
 sub str { $_[0]->{str} };
 sub bool { $_[0]->{bool} };
 sub capture { $_[0]->{capture} };
 sub hash { $_[0]->{hash} };
 sub array { $_[0]->{array} };
-sub perl { my $self = $_[0]; return scalar ('Match.new(' . 'from => ' . Main::perl($self->{from}, ("" . ', to => ') . Main::perl($self->{to}, ("" . ', bool => ') . Main::perl(($self->{bool}->bool()), ("" . ', capture => ') . Main::perl($self->{capture}, ("" . ', hash => ') . Main::perl($self->{hash}, ("" . ', array => ') . Main::perl($self->{array}, ("" . ')')))))))) };
-sub Bool { my $self = $_[0]; $self->{bool}->Bool() };
-sub Str { my $self = $_[0]; die('TODO') };
-sub scalar { my $self = $_[0]; die('TODO') };
-sub exists { my $self = $_[0]; die('TODO') }
-}
+        sub perl {
+            my $self = $_[0];
+            return scalar ('Match.new(' . 'from => ' . Main::perl($self->{from}, ("" . ', to => ') . Main::perl($self->{to}, ("" . ', bool => ') . Main::perl(($self->{bool}->bool()), ("" . ', capture => ') . Main::perl($self->{capture}, ("" . ', hash => ') . Main::perl($self->{hash}, ("" . ', array => ') . Main::perl($self->{array}, ("" . ')'))))))))
+        };
+        sub Bool {
+            my $self = $_[0];
+$self->{bool}->Bool()
+        };
+        sub Str {
+            my $self = $_[0];
+            die('TODO')
+        };
+        sub scalar {
+            my $self = $_[0];
+            die('TODO')
+        };
+        sub exists {
+            my $self = $_[0];
+            die('TODO')
+        }
+    }
 
 ;
-{
-package Perlito::Grammar;
-sub new { shift; bless { @_ }, "Perlito::Grammar" }
-sub is_newline { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; (my  $MATCH = undef); ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { ((my  $pos1 = undef) = $MATCH->to()); (do { (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))) }) }))); $MATCH };
-sub word { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; (my  $MATCH = undef); ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { ((my  $pos1 = undef) = $MATCH->to()); (do { (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))) }) }))); $MATCH };
-sub digit { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; (my  $MATCH = undef); ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { ((my  $pos1 = undef) = $MATCH->to()); (do { (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))) }) }))); $MATCH };
-sub not_newline { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; (my  $MATCH = undef); ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { ((my  $pos1 = undef) = $MATCH->to()); (do { (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))) }) }))); $MATCH };
-sub space { my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; (my  $MATCH = undef); ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1))); (($MATCH)->{bool} = ((do { ((my  $pos1 = undef) = $MATCH->to()); (do { (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))) }) }))); $MATCH }
-}
+    {
+    package Perlito::Grammar;
+        sub new { shift; bless { @_ }, "Perlito::Grammar" }
+                sub is_newline {
+            my $grammar = $_[0];
+            my $str = $_[1];
+            my $pos = $_[2];
+(my  $MATCH = undef);
+            ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+            (($MATCH)->{bool} = ((do {
+    ((my  $pos1 = undef) = $MATCH->to());
+    (do {
+    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+})
+})));
+            $MATCH
+        };
+        sub word {
+            my $grammar = $_[0];
+            my $str = $_[1];
+            my $pos = $_[2];
+(my  $MATCH = undef);
+            ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+            (($MATCH)->{bool} = ((do {
+    ((my  $pos1 = undef) = $MATCH->to());
+    (do {
+    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+})
+})));
+            $MATCH
+        };
+        sub digit {
+            my $grammar = $_[0];
+            my $str = $_[1];
+            my $pos = $_[2];
+(my  $MATCH = undef);
+            ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+            (($MATCH)->{bool} = ((do {
+    ((my  $pos1 = undef) = $MATCH->to());
+    (do {
+    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+})
+})));
+            $MATCH
+        };
+        sub not_newline {
+            my $grammar = $_[0];
+            my $str = $_[1];
+            my $pos = $_[2];
+(my  $MATCH = undef);
+            ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+            (($MATCH)->{bool} = ((do {
+    ((my  $pos1 = undef) = $MATCH->to());
+    (do {
+    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+})
+})));
+            $MATCH
+        };
+        sub space {
+            my $grammar = $_[0];
+            my $str = $_[1];
+            my $pos = $_[2];
+(my  $MATCH = undef);
+            ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+            (($MATCH)->{bool} = ((do {
+    ((my  $pos1 = undef) = $MATCH->to());
+    (do {
+    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+})
+})));
+            $MATCH
+        }
+    }
 
 ;
-{
-package IO;
-sub new { shift; bless { @_ }, "IO" }
-sub slurp { die('stub') }
-}
+    {
+    package IO;
+        sub new { shift; bless { @_ }, "IO" }
+                sub slurp {
+            die('stub')
+        }
+    }
 
 ;
-{
-package Main;
-sub new { shift; bless { @_ }, "Main" }
-sub to_lisp_identifier { my $ident = $_[0]; return scalar ('sv-' . $ident) };
-sub lisp_dump_object { my $class_name = $_[0]; my $data = $_[1]; return scalar ($class_name . '( ' . Main::join(([ map { Main::perl( $_, , ) } @{( $data )} ]), ', ') . ' )') };
-sub to_go_namespace { die('TODO') };
-sub to_javascript_namespace { die('TODO') };
-sub javascript_escape_string { die('TODO') };
-sub to_lisp_namespace { die('TODO') };
-sub lisp_escape_string { die('TODO') };
-sub perl_escape_string { die('TODO') }
-}
+    {
+    package Main;
+        sub new { shift; bless { @_ }, "Main" }
+                sub to_lisp_identifier {
+            my $ident = $_[0];
+            return scalar ('sv-' . $ident)
+        };
+        sub lisp_dump_object {
+            my $class_name = $_[0];
+            my $data = $_[1];
+            return scalar ($class_name . '( ' . Main::join(([ map { Main::perl( $_, , ) } @{( $data )} ]), ', ') . ' )')
+        };
+        sub to_go_namespace {
+            die('TODO')
+        };
+        sub to_javascript_namespace {
+            die('TODO')
+        };
+        sub javascript_escape_string {
+            die('TODO')
+        };
+        sub to_lisp_namespace {
+            die('TODO')
+        };
+        sub lisp_escape_string {
+            die('TODO')
+        };
+        sub perl_escape_string {
+            die('TODO')
+        }
+    }
 
 
 }
