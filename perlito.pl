@@ -116,6 +116,12 @@ package GLOBAL;
         sub expand_use {
             my $stmt = $_[0];
             ((my  $module_name = undef) = $stmt->mod());
+            if (Main::bool(($module_name eq 'v6'))) {
+                return ()
+            }
+            else {
+
+            };
             if (Main::bool(!Main::bool(($Hash_module_seen->{$module_name})))) {
                 ($Hash_module_seen->{$module_name} = 1);
                 if (Main::bool(((($backend eq 'perl5')) || (($backend eq 'ast-perl6'))))) {
