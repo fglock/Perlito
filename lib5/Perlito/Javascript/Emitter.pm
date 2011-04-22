@@ -42,6 +42,20 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
+            if (Main::bool($self->{top_level})) {
+                ((my  $block = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $self->block()), ('needs_return' => $self->needs_return()), ('top_level' => 0)));
+                return scalar (Javascript::tab($level) . 'try {' . '
+' . $block->emit_javascript_indented(($level + 1)) . ';' . '
+' . Javascript::tab($level) . '}' . '
+' . Javascript::tab($level) . 'catch(err) {' . '
+' . Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) {' . '
+' . Javascript::tab(($level + 2)) . 'throw(err);' . '
+' . Javascript::tab(($level + 1)) . '}' . '
+' . Javascript::tab(($level + 1)) . 'else {' . '
+' . Javascript::tab(($level + 2)) . 'return(err);' . '
+' . Javascript::tab(($level + 1)) . '}' . '
+' . Javascript::tab($level) . '}')
+            };
             (my  $List_block = []);
             for ( @{$self->{block} || []} ) {
                 if (Main::bool(defined($_))) {
@@ -49,17 +63,17 @@ $self->emit_javascript_indented(0)
                 }
             };
             if (Main::bool(!Main::bool($List_block))) {
-                return scalar ('null;')
+                return scalar (Javascript::tab($level) . 'null;')
             };
-            ((my  $str = undef) = '');
+            (my  $List_str = []);
             for my $decl ( @{$List_block || []} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my')))) {
-                    ($str = $str . $decl->emit_javascript_init())
+                    push( @{$List_str}, Javascript::tab($level) . $decl->emit_javascript_init() )
                 };
                 if (Main::bool((Main::isa($decl, 'Apply') && ($decl->code() eq 'infix:<=>')))) {
                     ((my  $var = undef) = $decl->arguments()->[0]);
                     if (Main::bool((Main::isa($var, 'Decl') && ($var->decl() eq 'my')))) {
-                        ($str = $str . $var->emit_javascript_init())
+                        push( @{$List_str}, Javascript::tab($level) . $var->emit_javascript_init() )
                     }
                 }
             };
@@ -69,7 +83,7 @@ $self->emit_javascript_indented(0)
             };
             for my $decl ( @{$List_block || []} ) {
                 if (Main::bool(!Main::bool(((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my')))))) {
-                    ($str = $str . $decl->emit_javascript() . ';')
+                    push( @{$List_str}, $decl->emit_javascript_indented($level) . ';' )
                 }
             };
             if (Main::bool(($self->{needs_return} && $last_statement))) {
@@ -86,25 +100,26 @@ $self->emit_javascript_indented(0)
 })))
                     };
                     ($body = Perlito::Javascript::LexicalBlock->new(('block' => $body->stmts()), ('needs_return' => 1)));
-                    ($str = $str . 'if ( f_bool(' . $cond->emit_javascript() . ') ) { ' . 'return (function () { ' . $body->emit_javascript() . ' })(); }');
+                    push( @{$List_str}, Javascript::tab($level) . 'if ( f_bool(' . $cond->emit_javascript() . ') ) { ' . 'return (function () {' . '
+' . $body->emit_javascript_indented(($level + 1)) . ' })(); }' );
                     if (Main::bool($otherwise)) {
                         ($otherwise = Perlito::Javascript::LexicalBlock->new(('block' => $otherwise->stmts()), ('needs_return' => 1)));
-                        ($str = $str . ' else { ' . 'return (function () { ' . $otherwise->emit_javascript() . ' })(); }')
+                        push( @{$List_str}, Javascript::tab($level) . 'else {' . '
+' . 'return (function () {' . '
+' . $otherwise->emit_javascript_indented(($level + 1)) . ' })(); }' )
                     }
                 }
                 else {
                     if (Main::bool(((Main::isa($last_statement, 'Apply') && ($last_statement->code() eq 'return')) || Main::isa($last_statement, 'For')))) {
-                        ($str = $str . $last_statement->emit_javascript())
+                        push( @{$List_str}, $last_statement->emit_javascript_indented($level) )
                     }
                     else {
-                        ($str = $str . 'return(' . $last_statement->emit_javascript() . ')')
+                        push( @{$List_str}, Javascript::tab($level) . 'return(' . $last_statement->emit_javascript() . ')' )
                     }
                 }
             };
-            if (Main::bool($self->{top_level})) {
-                ($str = 'try { ' . $str . '; } catch(err) { ' . 'if ( err instanceof Error ) { ' . 'throw(err); ' . '} ' . 'else { ' . 'return(err); ' . '} ' . '} ')
-            };
-            return scalar ($str . ';')
+            return scalar (Main::join($List_str, '
+') . ';')
         }
     }
 
@@ -206,7 +221,7 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            $self->{int}
+            Javascript::tab($level) . $self->{int}
         }
     }
 
@@ -222,7 +237,7 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (Main::bool($self->{bit}) ? 'true' : 'false')
+            Javascript::tab($level) . ((Main::bool($self->{bit}) ? 'true' : 'false'))
         }
     }
 
@@ -238,7 +253,7 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            $self->{num}
+            Javascript::tab($level) . $self->{num}
         }
     }
 
@@ -254,7 +269,7 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            '"' . Main::javascript_escape_string($self->{buf}) . '"'
+            Javascript::tab($level) . '"' . Main::javascript_escape_string($self->{buf}) . '"'
         }
     }
 
@@ -272,7 +287,8 @@ $self->emit_javascript_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             if (Main::bool(scalar( @{$self->{stmts}} ))) {
-                return scalar (Main::join(([ map { $_->emit_javascript() } @{( $self->{stmts} )} ]), '; ') . ';')
+                return scalar (Main::join(([ map { $_->emit_javascript_indented($level) } @{( $self->{stmts} )} ]), ';' . '
+') . ';')
             }
             else {
 
@@ -294,7 +310,7 @@ $self->emit_javascript_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $ast = undef) = $self->expand_interpolation());
-            return scalar ($ast->emit_javascript())
+            return scalar ($ast->emit_javascript_indented($level))
         }
     }
 
@@ -311,7 +327,7 @@ $self->emit_javascript_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $ast = undef) = $self->expand_interpolation());
-            return scalar ($ast->emit_javascript())
+            return scalar ($ast->emit_javascript_indented($level))
         }
     }
 
@@ -328,7 +344,7 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            $self->{obj}->emit_javascript() . '[' . $self->{index_exp}->emit_javascript() . ']'
+            Javascript::tab($level) . $self->{obj}->emit_javascript() . '[' . $self->{index_exp}->emit_javascript() . ']'
         }
     }
 
@@ -360,7 +376,7 @@ $self->emit_javascript_indented(0)
             ($str = $str . 'if (' . $var_js . ' == null) { ' . $var_js . ' = {} }; ');
             ((my  $index_js = undef) = $self->{index_exp}->emit_javascript());
             ($str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . '); ');
-            return scalar ('(function () { ' . $str . '})()')
+            return scalar (Javascript::tab($level) . '(function () { ' . $str . '})()')
         }
     }
 
@@ -414,7 +430,7 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Main::to_javascript_namespace($self->{name})
+            Javascript::tab($level) . Main::to_javascript_namespace($self->{name})
         }
     }
 
@@ -469,7 +485,7 @@ $self->emit_javascript_indented(0)
             if (Main::bool(($meth eq 'postcircumfix:<( )>'))) {
                 return scalar ('(' . $invocant . ')(' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . ')')
             };
-            return scalar ($invocant . '.f_' . $meth . '(' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . ')')
+            return scalar (Javascript::tab($level) . $invocant . '.f_' . $meth . '(' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . ')')
         }
     }
 
@@ -492,19 +508,19 @@ $self->emit_javascript_indented(0)
 
             }
             else {
-                return scalar ('(' . $self->{code}->emit_javascript() . ')->(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')')
+                return scalar (Javascript::tab($level) . '(' . $self->{code}->emit_javascript() . ')->(' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . ')')
             };
             if (Main::bool(($code eq 'self'))) {
-                return scalar ('v_self')
+                return scalar (Javascript::tab($level) . 'v_self')
             };
             if (Main::bool(($code eq 'Mu'))) {
-                return scalar ('null')
+                return scalar (Javascript::tab($level) . 'null')
             };
             if (Main::bool(($code eq 'make'))) {
-                return scalar ('(v_MATCH.v_capture = ' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . ')')
+                return scalar (Javascript::tab($level) . '(v_MATCH.v_capture = ' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . ')')
             };
             if (Main::bool(($code eq 'defined'))) {
-                return scalar ('(' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . ' != null)')
+                return scalar (Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . ' != null)')
             };
             if (Main::bool(($code eq 'substr'))) {
                 return scalar ('(' . ($self->{arguments}->[0])->emit_javascript() . ' || "").substr(' . ($self->{arguments}->[1])->emit_javascript() . ', ' . ($self->{arguments}->[2])->emit_javascript() . ')')
@@ -753,10 +769,11 @@ $self->emit_javascript_indented(0)
 })))
             };
             ((my  $body = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0)));
-            ((my  $s = undef) = 'if ( f_bool(' . $cond->emit_javascript() . ') ) { ' . '(function () { ' . $body->emit_javascript() . ' })(); }');
+            ((my  $s = undef) = Javascript::tab($level) . 'if ( f_bool(' . $cond->emit_javascript() . ') ) { ' . '(function () { ' . $body->emit_javascript_indented(($level + 1)) . ' })(); }');
             if (Main::bool($self->{otherwise})) {
                 ((my  $otherwise = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $self->{otherwise}->stmts()), ('needs_return' => 0)));
-                ($s = $s . ' else { ' . '(function () { ' . $otherwise->emit_javascript() . ' })(); }')
+                ($s = $s . '
+' . Javascript::tab($level) . 'else { ' . '(function () { ' . $otherwise->emit_javascript_indented(($level + 1)) . ' })(); }')
             };
             return scalar ($s)
         }
@@ -778,7 +795,7 @@ $self->emit_javascript_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $body = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0)));
-            return scalar ('for ( ' . ((Main::bool($self->{init}) ? $self->{init}->emit_javascript() . '; ' : '; ')) . ((Main::bool($self->{cond}) ? 'f_bool(' . $self->{cond}->emit_javascript() . '); ' : '; ')) . ((Main::bool($self->{continue}) ? $self->{continue}->emit_javascript() . ' ' : ' ')) . ') { ' . '(function () { ' . $body->emit_javascript() . ' })()' . ' }')
+            return scalar (Javascript::tab($level) . 'for ( ' . ((Main::bool($self->{init}) ? $self->{init}->emit_javascript() . '; ' : '; ')) . ((Main::bool($self->{cond}) ? 'f_bool(' . $self->{cond}->emit_javascript() . '); ' : '; ')) . ((Main::bool($self->{continue}) ? $self->{continue}->emit_javascript() . ' ' : ' ')) . ') { ' . '(function () { ' . $body->emit_javascript_indented(($level + 1)) . ' })()' . ' }')
         }
     }
 
@@ -807,9 +824,9 @@ $self->emit_javascript_indented(0)
             ((my  $body = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0)));
             ((my  $sig = undef) = 'v__');
             if (Main::bool($self->{body}->sig())) {
-                ($sig = $self->{body}->sig()->emit_javascript())
+                ($sig = $self->{body}->sig()->emit_javascript_indented(($level + 1)))
             };
-            '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' . '(function (' . $sig . ') ' . '{' . ' ' . $body->emit_javascript() . ' })(a_[i_]) } })' . '(' . $cond->emit_javascript() . ')'
+            Javascript::tab($level) . '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' . '(function (' . $sig . ') ' . '{' . ' ' . $body->emit_javascript_indented(($level + 1)) . ' })(a_[i_]) } })' . '(' . $cond->emit_javascript() . ')'
         }
     }
 
@@ -827,7 +844,7 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-$self->{var}->emit_javascript()
+            Javascript::tab($level) . $self->{var}->emit_javascript()
         };
         sub emit_javascript_init {
             my $self = $_[0];
@@ -883,7 +900,7 @@ $self->emit_javascript_indented(0)
             ((my  $invocant = undef) = $sig->invocant());
             ((my  $pos = undef) = $sig->positional());
             ((my  $str = undef) = Main::join([ map { $_->emit_javascript() } @{( $pos )} ], ', '));
-            'function ' . $self->{name} . '(' . $str . ') { ' . (Perlito::Javascript::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript() . ' }'
+            Javascript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') { ' . (Perlito::Javascript::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . ' }'
         }
     }
 
@@ -904,7 +921,7 @@ $self->emit_javascript_indented(0)
             ((my  $sig = undef) = $self->{sig});
             ((my  $pos = undef) = $sig->positional());
             ((my  $str = undef) = Main::join([ map { $_->emit_javascript() } @{( $pos )} ], ', '));
-            'function ' . $self->{name} . '(' . $str . ') { ' . (Perlito::Javascript::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript() . ' }'
+            Javascript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') { ' . (Perlito::Javascript::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . ' }'
         }
     }
 
@@ -921,7 +938,7 @@ $self->emit_javascript_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $block = undef) = $self->simplify()->block());
-            return scalar ('(function () { ' . (Perlito::Javascript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript() . ' })()')
+            return scalar (Javascript::tab($level) . '(function () { ' . (Perlito::Javascript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . ' })()')
         }
     }
 
@@ -937,7 +954,7 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            '// use ' . $self->{mod} . '
+            Javascript::tab($level) . '// use ' . $self->{mod} . '
 '
         }
     }
