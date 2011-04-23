@@ -75,15 +75,15 @@ class Perlito::Javascript::LexicalBlock {
                 }
                 $body      = Perlito::Javascript::LexicalBlock.new( block => $body.stmts, needs_return => 1 );
                 @str.push Javascript::tab($level) ~ 
-                        'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
-                        ~   'return (function () {' ~ "\n" 
-                        ~       $body.emit_javascript_indented($level+1)      ~ ' })(); }';
+                        'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { return (function () {' ~ "\n" 
+                        ~       $body.emit_javascript_indented($level+1) ~ "\n"
+                        ~ Javascript::tab($level) ~ '})(); }';
                 if $otherwise { 
                     $otherwise = Perlito::Javascript::LexicalBlock.new( block => $otherwise.stmts, needs_return => 1 );
-                    @str.push Javascript::tab($level) ~ 
-                        'else {' ~ "\n" 
-                        ~   'return (function () {' ~ "\n" 
-                        ~       $otherwise.emit_javascript_indented($level+1) ~ ' })(); }';
+                    @str.push 
+                          Javascript::tab($level) ~ 'else { return (function () {' ~ "\n" 
+                        ~       $otherwise.emit_javascript_indented($level+1) ~ "\n"
+                        ~ Javascript::tab($level) ~ '})(); }';
                 }
             }
             elsif  $last_statement.isa( 'Apply' ) && $last_statement.code eq 'return'
@@ -121,12 +121,12 @@ class CompUnit {
 
         for @.body -> $decl { 
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
-                $str = $str ~ $decl.emit_javascript_init; 
+                $str = $str ~ '  ' ~ $decl.emit_javascript_init; 
             }
             if $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' {
                 my $var = $decl.arguments[0];
                 if $var.isa( 'Decl' ) && $var.decl eq 'my' {
-                    $str = $str ~ $var.emit_javascript_init; 
+                    $str = $str ~ '  ' ~ $var.emit_javascript_init; 
                 }
             }
         }
@@ -148,7 +148,7 @@ class CompUnit {
               ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name()
                     ~ ' = function (' ~ ($pos.>>emit_javascript).join(', ') ~ ') {' ~ "\n"
               ~ '    var ' ~ $invocant.emit_javascript() ~ ' = this;' ~ "\n"
-              ~ '    ' ~ $block.emit_javascript() ~ "\n"
+              ~         $block.emit_javascript_indented( $level + 1 ) ~ "\n"
               ~ '  }' ~ "\n"
               ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name() ~ ';  // v8 bug workaround' ~ "\n";
             }
@@ -160,7 +160,7 @@ class CompUnit {
               ~ '  // sub ' ~ $decl.name() ~ "\n"
               ~ '  ' ~ $class_name ~ '.f_' ~ $decl.name()
                     ~ ' = function (' ~ ($pos.>>emit_javascript).join(', ') ~ ') {' ~ "\n"
-              ~ '    ' ~ $block.emit_javascript() ~ "\n"
+              ~         $block.emit_javascript_indented( $level + 1 ) ~ "\n"
               ~ '  }' ~ "\n";
             }
         } 
@@ -169,7 +169,7 @@ class CompUnit {
                && (!( $decl.isa( 'Method'))) 
                && (!( $decl.isa( 'Sub'))) 
             {
-                $str = $str ~ ($decl).emit_javascript() ~ ';';
+                $str = $str ~ ($decl).emit_javascript_indented( $level + 1 ) ~ ';';
             }
         }
         $str = $str ~ '}' 
@@ -503,7 +503,7 @@ class Apply {
             return emit_javascript_bind( @.arguments[0], @.arguments[1] );
         }
         if $code eq 'return' {
-            return 'throw(' 
+            return Javascript::tab($level) ~ 'throw(' 
                 ~   (@.arguments ?? @.arguments[0].emit_javascript() !! 'null')
                 ~ ')'
         }
@@ -525,7 +525,7 @@ class Apply {
         {
             $code = 'v__NAMESPACE.' ~ $code;
         }
-        $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+        Javascript::tab($level) ~ $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
     }
 
     # TODO - this would be called from emit_javascript_bind()
@@ -655,13 +655,17 @@ class If {
         }
         my $body      = Perlito::Javascript::LexicalBlock.new( block => $.body.stmts, needs_return => 0 );
         my $s = Javascript::tab($level) ~ 'if ( f_bool(' ~ $cond.emit_javascript() ~ ') ) { ' 
-              ~ '(function () { ' ~ $body.emit_javascript_indented( $level + 1 )      ~ ' })(); }';
+            ~ '(function () {' ~ "\n"
+            ~       $body.emit_javascript_indented( $level + 1 ) ~ "\n"
+            ~ Javascript::tab($level) ~ '})(); }';
         if $.otherwise { 
             my $otherwise = Perlito::Javascript::LexicalBlock.new( block => $.otherwise.stmts, needs_return => 0 );
             $s = $s 
-              ~ "\n"
-              ~ Javascript::tab($level) ~ 'else { ' 
-              ~ '(function () { ' ~ $otherwise.emit_javascript_indented( $level + 1 ) ~ ' })(); }';
+                ~ "\n"
+                ~ Javascript::tab($level) ~ 'else { ' 
+                ~   '(function () {' ~ "\n"
+                ~       $otherwise.emit_javascript_indented( $level + 1 ) ~ "\n"
+                ~ Javascript::tab($level) ~ '})(); }';
         }
         return $s;
     }
@@ -754,9 +758,9 @@ class Method {
         my $invocant = $sig.invocant; 
         my $pos = $sig.positional;
         my $str = $pos.>>emit_javascript.join(', ');  
-        Javascript::tab($level) ~ 'function ' ~ $.name ~ '(' ~ $str ~ ') { ' ~ 
-          (Perlito::Javascript::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript_indented( $level + 1 ) ~ 
-        ' }'
+          Javascript::tab($level) ~ 'function ' ~ $.name ~ '(' ~ $str ~ ') {' ~ "\n"
+        ~   (Perlito::Javascript::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript_indented( $level + 1 ) ~ "\n"
+        ~ Javascript::tab($level) ~ '}'
     }
 }
 
@@ -769,9 +773,9 @@ class Sub {
         my $sig = $.sig;
         my $pos = $sig.positional;
         my $str = $pos.>>emit_javascript.join(', ');  
-        Javascript::tab($level) ~ 'function ' ~ $.name ~ '(' ~ $str ~ ') { ' ~ 
-          (Perlito::Javascript::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript_indented( $level + 1 ) ~ 
-        ' }'
+          Javascript::tab($level) ~ 'function ' ~ $.name ~ '(' ~ $str ~ ') {' ~ "\n"
+        ~   (Perlito::Javascript::LexicalBlock.new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript_indented( $level + 1 ) ~ "\n"
+        ~ Javascript::tab($level) ~ '}'
     }
 }
 
@@ -781,9 +785,9 @@ class Do {
     method emit_javascript_indented( $level ) {
         my $block = self.simplify.block;
         return
-            Javascript::tab($level) ~ '(function () { ' ~ 
-              (Perlito::Javascript::LexicalBlock.new( block => $block, needs_return => 1 )).emit_javascript_indented( $level + 1 ) ~ 
-            ' })()'
+              Javascript::tab($level) ~ '(function () { ' ~ "\n"
+            ~   (Perlito::Javascript::LexicalBlock.new( block => $block, needs_return => 1 )).emit_javascript_indented( $level + 1 ) ~ "\n"
+            ~ Javascript::tab($level) ~ '})()'
     }
 }
 
