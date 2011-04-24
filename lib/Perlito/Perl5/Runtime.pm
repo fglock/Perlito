@@ -121,16 +121,6 @@ package Perlito::Grammar;
         );
         $MATCH;
     }
-    sub not_newline { 
-        my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
-        my $MATCH; $MATCH = Perlito::Match->new( 
-            str => $str,from => $pos,to => $pos, bool => 0 ); 
-        return $MATCH if ord( substr($str, $MATCH->to()) ) == 10
-            || ord( substr($str, $MATCH->to()) ) == 13;
-        $MATCH->{to} = ( 1 + $MATCH->to );
-        $MATCH->{bool} = ( 1 );
-        $MATCH;
-    }
     
 package IO;
 

@@ -871,20 +871,6 @@ func Init_Prelude() {
 		*m.(bool_er).f_bool(Capture{}) = Bool(b1)
 		return &m
 	}
-	Method_Perlito__Grammar.f_not_newline = func(v_grammar *Perlito__Grammar, v Capture) *Any {
-		var s1 = tostr(v.p[0])
-		var i1 = toint(v.p[1])
-		var b1 = (s1[i1] != 13 && s1[i1] != 10)
-		if b1 {
-			i1++
-		}
-		var m Any = new(Perlito__Match)
-		*m.(str_er).f_str(Capture{}) = *v.p[0]
-		*m.(from_er).f_from(Capture{}) = *v.p[1]
-		*m.(to_er).f_to(Capture{}) = Int(i1)
-		*m.(bool_er).f_bool(Capture{}) = Bool(b1)
-		return &m
-	}
 	Method_Perlito__Grammar.f_space = func(v_grammar *Perlito__Grammar, v Capture) *Any {
 		var s1 = tostr(v.p[0])
 		var i1 = toint(v.p[1])

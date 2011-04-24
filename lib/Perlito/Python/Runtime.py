@@ -523,11 +523,6 @@ except NameError:
             if m:
                 return Perlito__Match(v_str=s, v_from=pos, v_to=m.end() + pos, v_bool=1 )
             return Perlito__Match(v_bool=0)
-        def f_not_newline(self, s, pos):
-            m = re.match( r"\r|\n", s[pos:] )
-            if m:
-                return Perlito__Match(v_bool=0)
-            return Perlito__Match(v_str=s, v_from=pos, v_to=pos+1, v_bool=1 )
         def f_isa(self, name):
             return name == 'Grammar'
 Perlito__Grammar_proto = Perlito__Grammar()

@@ -325,17 +325,6 @@
               (let ((m (make-instance 'mp-Perlito-Match))) 
                  (setf (sv-bool m) nil) m)))))
 
-;; token <not_newline>
-(if (not (ignore-errors (find-method 'sv-not_newline () ())))
-   (defgeneric sv-not_newline (sv-grammar &optional sv-str sv-pos)
-      (:documentation "a method")))
-(defmethod sv-not_newline ((sv-grammar mp-Perlito-Grammar) &optional sv-str sv-pos)
-    (if (not (ignore-errors (or (char= (aref sv-str sv-pos) #\Return) (char= (aref sv-str sv-pos) #\Newline))))
-         (let ((m (make-instance 'mp-Perlito-Match))) 
-            (setf (sv-str m) sv-str)(setf (sv-from m) sv-pos)(setf (sv-to m) (+ sv-pos 1))(setf (sv-bool m) 1) m)
-         (let ((m (make-instance 'mp-Perlito-Match))) 
-            (setf (sv-bool m) nil) m)))
-
 
 ;; Match objects
 

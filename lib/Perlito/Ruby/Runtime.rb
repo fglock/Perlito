@@ -169,19 +169,6 @@ class C_Perlito__Grammar
         end
         return m
     end
-    def f_not_newline(s, pos)
-        /^(\r|\n)/.match(s[pos,1])
-        m = C_Perlito__Match.new
-        if $~
-            m.v_bool = false
-        else
-            m.v_str  = s
-            m.v_from = pos
-            m.v_to   = pos + 1
-            m.v_bool = true
-        end
-        return m
-    end
 end
 
 def _dump(o)

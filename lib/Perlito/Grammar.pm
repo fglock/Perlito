@@ -6,6 +6,10 @@ use Perlito::Expression;
 use Perlito::Grammar::Regex;
 use Perlito::Grammar::Control;
  
+token not_newline {
+    <!before \n> .
+}
+
 token ident {
     [ <!before \d ><.word> | _ ]   [ <.word> | _ | <.digit> ]*
 }

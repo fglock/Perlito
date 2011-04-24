@@ -19,6 +19,39 @@ package GLOBAL;
         use Perlito::Expression;
         use Perlito::Grammar::Regex;
         use Perlito::Grammar::Control;
+        sub not_newline {
+            my $grammar = $_[0];
+            my $str = $_[1];
+            my $pos = $_[2];
+            (my  $MATCH = undef);
+            ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+            (($MATCH)->{bool} = ((do {
+    ((my  $pos1 = undef) = $MATCH->to());
+    (do {
+    ((do {
+    ((my  $tmp = undef) = $MATCH);
+    ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
+    (($MATCH)->{bool} = (do {
+    ((my  $pos1 = undef) = $MATCH->to());
+    (do {
+    ((my  $m2 = undef) = $grammar->is_newline($str, $MATCH->to()));
+    if (Main::bool($m2)) {
+        (($MATCH)->{to} = $m2->to());
+        1
+    }
+    else {
+        0
+    }
+})
+}));
+    (($tmp)->{bool} = !Main::bool($MATCH));
+    ($MATCH = $tmp);
+    Main::bool($MATCH)
+}) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+})
+})));
+            $MATCH
+        };
         sub ident {
             my $grammar = $_[0];
             my $str = $_[1];
