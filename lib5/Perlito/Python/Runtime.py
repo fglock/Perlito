@@ -30,7 +30,7 @@ if recursion < 2000:
 
 __all__ = ['mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'mp6_isa',
            'mp6_and', 'mp6_or', 'mp6_defined_or',
-           'mp6_join', 'mp6_index', 'mp6_id',
+           'mp6_join', 'mp6_index', 'mp6_id', 'mp6_split',
            'mp6_Mu', 
            'mp6_Array', 'mp6_Hash', 'mp6_Scalar',
            'mp6_Return', 
@@ -133,6 +133,13 @@ def mp6_join(l, s):
     if not mp6_isa(l, 'Array'):
         return str(l)
     return s.join(l.f_map( lambda x: str(x) ).l)
+
+def mp6_split(l, s):
+    try:
+        l = l.f_get()
+    except AttributeError:
+        None
+    return mp6_Array(str(l).split(s))
 
 def mp6_index(s, s2):
     try:

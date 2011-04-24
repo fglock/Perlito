@@ -369,6 +369,7 @@ class Call {
                 ~ ')';
         }
         if    ($.method eq 'join') 
+           || ($.method eq 'split') 
            || ($.method eq 'shift') 
            || ($.method eq 'unshift') 
            || ($.method eq 'push') 

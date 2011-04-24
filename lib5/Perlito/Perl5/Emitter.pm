@@ -336,7 +336,7 @@ $self->emit_perl5_indented(0)
                     return scalar (Perl5::tab($level) . '[' . $self->{method} . '( %{' . $invocant . '} )' . ']')
                 }
             };
-            if (Main::bool(((((((((($self->{method} eq 'perl')) || (($self->{method} eq 'id'))) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'chars'))) || (($self->{method} eq 'isa'))) || (($self->{method} eq 'pairs'))))) {
+            if (Main::bool((((((((((($self->{method} eq 'perl')) || (($self->{method} eq 'id'))) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'split'))) || (($self->{method} eq 'chars'))) || (($self->{method} eq 'isa'))) || (($self->{method} eq 'pairs'))))) {
                 if (Main::bool(($self->{hyper}))) {
                     return scalar (Perl5::tab($level) . '[ map { Main::' . $self->{method} . '( $_, ' . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ')' . ' } @{( ' . $invocant . ' )} ]')
                 }

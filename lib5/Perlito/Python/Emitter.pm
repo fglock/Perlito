@@ -517,7 +517,7 @@ $self->emit_python_indented(0)
                 };
                 return scalar (Python::tab($level) . '__builtin__.' . Main::to_go_namespace($self->{invocant}->name()) . '(' . Main::join($List_str, ', ') . ')')
             };
-            if (Main::bool(((((($self->{method} eq 'id')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'isa'))))) {
+            if (Main::bool((((((($self->{method} eq 'id')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'split'))) || (($self->{method} eq 'isa'))))) {
                 if (Main::bool(($self->{hyper}))) {
                     return scalar (Python::tab($level) . 'f_map(' . $invocant . ', lambda x: Main.' . $self->{method} . '(x, ' . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ', ') . '))')
                 }

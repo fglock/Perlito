@@ -414,6 +414,7 @@ class Call {
         if     ($.method eq 'id')
             || ($.method eq 'yaml')
             || ($.method eq 'join')
+            || ($.method eq 'split')
             || ($.method eq 'isa')
         { 
             if ($.hyper) {

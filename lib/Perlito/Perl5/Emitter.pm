@@ -214,6 +214,7 @@ class Call {
             || ($.method eq 'yaml')
             || ($.method eq 'say' )
             || ($.method eq 'join')
+            || ($.method eq 'split')
             || ($.method eq 'chars')
             || ($.method eq 'isa')
             || ($.method eq 'pairs')

@@ -476,7 +476,7 @@ $self->emit_javascript_indented(0)
                 };
                 return scalar ('f_' . $self->{method} . '(' . $invocant . ((Main::bool(($self->{arguments} || [])) ? ', ' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') : '')) . ')')
             };
-            if (Main::bool((((((($self->{method} eq 'join')) || (($self->{method} eq 'shift'))) || (($self->{method} eq 'unshift'))) || (($self->{method} eq 'push'))) || (($self->{method} eq 'pop'))))) {
+            if (Main::bool(((((((($self->{method} eq 'join')) || (($self->{method} eq 'split'))) || (($self->{method} eq 'shift'))) || (($self->{method} eq 'unshift'))) || (($self->{method} eq 'push'))) || (($self->{method} eq 'pop'))))) {
                 return scalar ($invocant . '.' . $self->{method} . '(' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . ')')
             };
             ((my  $meth = undef) = $self->{method});

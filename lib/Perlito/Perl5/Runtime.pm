@@ -238,6 +238,17 @@ package Main;
         }
     }
 
+    sub split {
+        return '' unless defined $_[0];
+        my $can = UNIVERSAL::can($_[0] => 'split');
+        if ($can) {
+            $can->(@_);
+        }
+        else {
+            [ split($_[1], $_[0], -1) ];
+        }
+    }
+
     sub bool { 
         my $ref = ref($_[0]);
         return scalar(@{$_[0]}) if $ref eq 'ARRAY';
