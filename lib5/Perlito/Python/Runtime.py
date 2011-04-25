@@ -73,6 +73,14 @@ def f_map(v, f):
         return mp6_Array([]) 
 __builtin__.f_map = f_map
 
+def f_chr(n):
+    return chr(n)
+__builtin__.f_chr = f_chr
+
+def f_ord(n):
+    return ord(str(n))
+__builtin__.f_ord = f_ord
+
 def mp6_to_scalar(v):
     try:
         return v.f_scalar()
@@ -525,11 +533,6 @@ except NameError:
             if m:
                 return Perlito__Match(v_str=s, v_from=pos, v_to=m.end() + pos, v_bool=1 )
             return Perlito__Match(v_bool=0)
-        def f_is_newline(self, s, pos):
-            m = re.match( r"\r\n?|\n\r?", s[pos:] )
-            if m:
-                return Perlito__Match(v_str=s, v_from=pos, v_to=m.end() + pos, v_bool=1 )
-            return Perlito__Match(v_bool=0)
         def f_isa(self, name):
             return name == 'Grammar'
 Perlito__Grammar_proto = Perlito__Grammar()
@@ -551,15 +554,6 @@ class Main:
         o = s.replace( "\\", "\\\\");
         o = o.replace( '"', "\\\"");
         return o;
-    def f_javascript_escape_string(self, s):
-        o = s.replace( "\\", "\\\\");
-        o = o.replace( '"', "\\\"");
-        o = o.replace( "\n", "\\n");
-        return o;
-    def f_perl_escape_string(self, s):
-        o = s.replace( "\\", "\\\\")
-        o = o.replace( "'", "\\'")
-        return o
     def f_to_javascript_namespace(self, s):
         o = s.replace( "::", "$");
         return o;
@@ -622,7 +616,7 @@ def f_perl(o, last_seen={}):
         if type(o) == type(1.1):
             return str(o)
         if type(o) == type("aa"):
-            return '"' + Main_proto.f_javascript_escape_string(o) + '"'
+            return '"' + o + '"'
         if type(o) == type([]):
             try:
                 if seen[id(o)]:

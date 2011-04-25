@@ -191,15 +191,15 @@ $stmt->eval($env1)
                 ($ns = $self->{namespace} . '::')
             }
             else {
-                if (Main::bool((((($self->{sigil} eq '@')) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) {
+                if (Main::bool((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) {
                     return scalar ((\@ARGV))
                 };
                 if (Main::bool(($self->{twigil} eq '.'))) {
-                    warn('Interpreter TODO: $.' . $self->{name});
-                    return scalar ('$self->{' . $self->{name} . '}')
+                    warn('Interpreter TODO: ' . chr(36) . '.' . $self->{name});
+                    return scalar (chr(36) . 'self-' . chr(62) . chr(123) . $self->{name} . chr(125))
                 };
-                if (Main::bool(($self->{name} eq '/'))) {
-                    warn('Interpreter TODO: $/');
+                if (Main::bool(($self->{name} eq chr(47)))) {
+                    warn('Interpreter TODO: ' . chr(36) . chr(47));
                     return scalar ($self->{sigil} . 'MATCH')
                 }
             };
@@ -209,7 +209,7 @@ $stmt->eval($env1)
                     return scalar ($e->{$name})
                 }
             };
-            warn('Interpreter runtime error: variable \'', $name, '\' not found')
+            warn('Interpreter runtime error: variable ' . chr(39), $name, chr(39) . ' not found')
         };
         sub plain_name {
             my $self = $_[0];
@@ -246,7 +246,7 @@ $stmt->eval($env1)
             warn('Interpreter TODO: Call');
             ((my  $invocant = undef) = $self->{invocant}->eval($env));
             if (Main::bool(($invocant eq 'self'))) {
-                ($invocant = '$self')
+                ($invocant = chr(36) . 'self')
             };
             if (Main::bool(($self->{hyper}))) {
 
@@ -254,7 +254,7 @@ $stmt->eval($env1)
             else {
 
             };
-            warn('Interpreter runtime error: method \'', $self->{method}, '()\' not found')
+            warn('Interpreter runtime error: method ' . chr(39), $self->{method}, chr(40) . chr(41) . chr(39) . ' not found')
         }
     }
 
@@ -278,7 +278,7 @@ $stmt->eval($env1)
                     return scalar ((($e->{$code})->($env, $self->{arguments})))
                 }
             };
-            warn('Interpreter runtime error: subroutine \'', $code, '()\' not found')
+            warn('Interpreter runtime error: subroutine ' . chr(39), $code, chr(40) . chr(41) . chr(39) . ' not found')
         }
     }
 
@@ -454,7 +454,7 @@ $self->{var}->plain_name()
             ((my  $sig = undef) = $self->{sig});
             ((my  $invocant = undef) = $sig->invocant());
             ((my  $pos = undef) = $sig->positional());
-            ((my  $str = undef) = 'my $List__ = \\@_; ')
+            ((my  $str = undef) = 'my ' . chr(36) . 'List__ ' . chr(61) . ' ' . chr(92) . chr(64) . '_' . chr(59) . ' ')
         }
     }
 
@@ -477,7 +477,7 @@ $self->{var}->plain_name()
     my $args = $_[1];
     (my  $Hash_context = {});
     ((my  $n = undef) = 0);
-    ($Hash_context->{'@_'} = $args);
+    ($Hash_context->{chr(64) . '_'} = $args);
     for my $name ( @{$List_param_name || []} ) {
         ($Hash_context->{$name} = ($args->[$n])->eval($env));
         ($n = ($n + 1))

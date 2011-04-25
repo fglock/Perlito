@@ -400,7 +400,7 @@ class Val::Num {
 
 class Val::Buf {
     has $.buf;
-    method emit_go { 'toStr("' ~ Main::javascript_escape_string($.buf) ~ '")' }
+    method emit_go { 'toStr("' ~ $.buf ~ '")' }
 }
 
 class Val::Undef {

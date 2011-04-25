@@ -22,7 +22,7 @@ package GLOBAL;
             ((my  $needs_interpolation = undef) = 0);
             (my  $List_items = []);
             for my $item ( @{$self->{array1} || []} ) {
-                if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
+                if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)) || ($item->code() eq 'list:' . chr(60) . ',' . chr(62))))))) {
                     for my $arg ( @{(($item->arguments()) || []) || []} ) {
                         push( @{$List_items}, $arg )
                     }
@@ -32,7 +32,7 @@ package GLOBAL;
                 }
             };
             for my $item ( @{$List_items || []} ) {
-                if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<@>') || ($item->code() eq 'infix:<..>'))))))) {
+                if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:' . chr(60) . chr(64) . chr(62)) || ($item->code() eq 'infix:' . chr(60) . '..' . chr(62)))))))) {
                     ($needs_interpolation = 1)
                 }
             };
@@ -41,23 +41,23 @@ package GLOBAL;
             };
             (my  $List_s = []);
             for my $item ( @{$List_items || []} ) {
-                if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq '@')) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<@>') || ($item->code() eq 'infix:<..>'))))))) {
+                if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:' . chr(60) . chr(64) . chr(62)) || ($item->code() eq 'infix:' . chr(60) . '..' . chr(62)))))))) {
                     push( @{$List_s}, Apply->new(('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => '@'), ('twigil' => '')) );
+    push( @{$List_a}, Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')) );
     push( @{$List_a}, $item );
     $List_a
-}), ('code' => 'infix:<=>'), ('namespace' => '')) );
-                    push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => '$'), ('twigil' => ''))), ('stmts' => do {
+}), ('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('namespace' => '')) );
+                    push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, Call->new(('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, Index->new(('index_exp' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => '$'), ('twigil' => ''))), ('obj' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => '@'), ('twigil' => '')))) );
+    push( @{$List_a}, Index->new(('index_exp' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('obj' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')))) );
     $List_a
-}), ('hyper' => ''), ('invocant' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => '@'), ('twigil' => ''))), ('method' => 'push')) );
+}), ('hyper' => ''), ('invocant' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => ''))), ('method' => 'push')) );
     $List_a
 }))), ('cond' => Apply->new(('arguments' => do {
     (my  $List_a = []);
@@ -73,14 +73,14 @@ package GLOBAL;
     (my  $List_a = []);
     (my  $List_v = []);
     $List_a
-}), ('hyper' => ''), ('invocant' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => '@'), ('twigil' => ''))), ('method' => 'elems')) );
+}), ('hyper' => ''), ('invocant' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => ''))), ('method' => 'elems')) );
     push( @{$List_a}, Val::Int->new(('int' => 1)) );
     $List_a
-}), ('code' => 'infix:<->'), ('namespace' => '')) );
+}), ('code' => 'infix:' . chr(60) . '-' . chr(62)), ('namespace' => '')) );
     $List_a
-}), ('code' => 'circumfix:<( )>'), ('namespace' => '')) );
+}), ('code' => 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)), ('namespace' => '')) );
     $List_a
-}), ('code' => 'infix:<..>'), ('namespace' => ''))), ('topic' => undef)) )
+}), ('code' => 'infix:' . chr(60) . '..' . chr(62)), ('namespace' => ''))), ('topic' => undef)) )
                 }
                 else {
                     push( @{$List_s}, Call->new(('arguments' => do {
@@ -88,19 +88,19 @@ package GLOBAL;
     (my  $List_v = []);
     push( @{$List_a}, $item );
     $List_a
-}), ('hyper' => ''), ('invocant' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => '@'), ('twigil' => ''))), ('method' => 'push')) )
+}), ('hyper' => ''), ('invocant' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => ''))), ('method' => 'push')) )
                 }
             };
             return scalar (Do->new(('block' => Lit::Block->new(('sig' => undef), ('stmts' => do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => '@'), ('twigil' => '')))) );
-    push( @{$List_a}, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => '@'), ('twigil' => '')))) );
+    push( @{$List_a}, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')))) );
+    push( @{$List_a}, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')))) );
     ($List_v = $List_s);
     for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
-    push( @{$List_a}, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => '@'), ('twigil' => '')) );
+    push( @{$List_a}, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')) );
     $List_a
 })))))
         }
@@ -115,7 +115,7 @@ package GLOBAL;
             my $self = $_[0];
             (my  $List_items = []);
             for my $item ( @{$self->{hash1} || []} ) {
-                if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
+                if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)) || ($item->code() eq 'list:' . chr(60) . ',' . chr(62))))))) {
                     for my $arg ( @{(($item->arguments()) || []) || []} ) {
                         push( @{$List_items}, $arg )
                     }
@@ -126,31 +126,31 @@ package GLOBAL;
             };
             (my  $List_s = []);
             for my $item ( @{$List_items || []} ) {
-                if (Main::bool((Main::isa($item, 'Apply') && ($item->code() eq 'infix:<=>>')))) {
+                if (Main::bool((Main::isa($item, 'Apply') && ($item->code() eq 'infix:' . chr(60) . chr(61) . chr(62) . chr(62))))) {
                     push( @{$List_s}, Apply->new(('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, Lookup->new(('index_exp' => $item->arguments()->[0]), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => '%'), ('twigil' => '')))) );
+    push( @{$List_a}, Lookup->new(('index_exp' => $item->arguments()->[0]), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37)), ('twigil' => '')))) );
     push( @{$List_a}, $item->arguments()->[1] );
     $List_a
-}), ('code' => 'infix:<=>'), ('namespace' => '')) )
+}), ('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('namespace' => '')) )
                 }
                 else {
-                    if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq '%')) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<%>'))))) {
-                        push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => '$'), ('twigil' => ''))), ('stmts' => do {
+                    if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq chr(37))) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:' . chr(60) . chr(37) . chr(62)))))) {
+                        push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, Apply->new(('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, Lookup->new(('index_exp' => Call->new(('arguments' => undef), ('hyper' => ''), ('invocant' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => '$'), ('twigil' => ''))), ('method' => 'key'))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => '%'), ('twigil' => '')))) );
+    push( @{$List_a}, Lookup->new(('index_exp' => Call->new(('arguments' => undef), ('hyper' => ''), ('invocant' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('method' => 'key'))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37)), ('twigil' => '')))) );
     push( @{$List_a}, Call->new(('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
     $List_a
-}), ('hyper' => ''), ('invocant' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => '$'), ('twigil' => ''))), ('method' => 'value')) );
+}), ('hyper' => ''), ('invocant' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('method' => 'value')) );
     $List_a
-}), ('code' => 'infix:<=>'), ('namespace' => '')) );
+}), ('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('namespace' => '')) );
     $List_a
 }))), ('cond' => Apply->new(('arguments' => do {
     (my  $List_a = []);
@@ -160,9 +160,9 @@ package GLOBAL;
     (my  $List_v = []);
     push( @{$List_a}, Call->new(('arguments' => undef), ('hyper' => ''), ('invocant' => $item), ('method' => 'pairs')) );
     $List_a
-}), ('code' => 'circumfix:<( )>'), ('namespace' => '')) );
+}), ('code' => 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)), ('namespace' => '')) );
     $List_a
-}), ('code' => 'prefix:<@>'), ('namespace' => ''))), ('topic' => undef)) )
+}), ('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('namespace' => ''))), ('topic' => undef)) )
                     }
                     else {
                         die('Error in hash composer: ', Main::perl($item, ))
@@ -172,12 +172,12 @@ package GLOBAL;
             return scalar (Do->new(('block' => Lit::Block->new(('sig' => undef), ('stmts' => do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => '%'), ('twigil' => '')))) );
+    push( @{$List_a}, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37)), ('twigil' => '')))) );
     ($List_v = $List_s);
     for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
-    push( @{$List_a}, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => '%'), ('twigil' => '')) );
+    push( @{$List_a}, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37)), ('twigil' => '')) );
     $List_a
 })))))
         }
@@ -203,7 +203,7 @@ package GLOBAL;
             };
             if (Main::bool((scalar( @{$block} ) == 1))) {
                 ((my  $stmt = undef) = $block->[0]);
-                if (Main::bool((Main::isa($stmt, 'Apply') && ($stmt->code() eq 'circumfix:<( )>')))) {
+                if (Main::bool((Main::isa($stmt, 'Apply') && ($stmt->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62))))) {
                     ((my  $args = undef) = $stmt->arguments());
                     return scalar (Do->new(('block' => $args->[0]))->simplify())
                 };

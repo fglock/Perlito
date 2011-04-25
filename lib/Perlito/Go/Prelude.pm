@@ -60,10 +60,8 @@ class Main {
 
     sub to_go_namespace          { die "TODO" }
     sub to_javascript_namespace  { die "TODO" }
-    sub javascript_escape_string { die "TODO" }
     sub to_lisp_namespace        { die "TODO" }
     sub lisp_escape_string       { die "TODO" }
-    sub perl_escape_string       { die "TODO" }
 }
 
 =begin

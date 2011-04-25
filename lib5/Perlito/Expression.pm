@@ -18,7 +18,7 @@ package GLOBAL;
         use Perlito::Perl5::Emitter;
         sub expand_list {
             my $param_list = $_[0];
-            if (Main::bool(((Main::isa($param_list, 'Apply')) && ((($param_list->code()) eq 'list:<,>'))))) {
+            if (Main::bool(((Main::isa($param_list, 'Apply')) && ((($param_list->code()) eq 'list:' . chr(60) . ',' . chr(62)))))) {
                 ((my  $args = undef) = do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -69,7 +69,7 @@ package GLOBAL;
             if (Main::bool(!Main::bool((Main::isa($stmt, 'Apply'))))) {
                 return scalar ($o)
             };
-            if (Main::bool((($stmt->code()) eq 'infix:<=>>'))) {
+            if (Main::bool((($stmt->code()) eq 'infix:' . chr(60) . chr(61) . chr(62) . chr(62)))) {
                 return scalar (Lit::Hash->new(('hash1' => do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -77,11 +77,11 @@ package GLOBAL;
     $List_a
 })))
             };
-            if (Main::bool((($stmt->code()) ne 'list:<,>'))) {
+            if (Main::bool((($stmt->code()) ne 'list:' . chr(60) . ',' . chr(62)))) {
                 return scalar ($o)
             };
             for my $item ( @{(($stmt->arguments()) || []) || []} ) {
-                if (Main::bool((Main::isa($item, 'Apply') && (($item->code()) eq 'infix:<=>>')))) {
+                if (Main::bool((Main::isa($item, 'Apply') && (($item->code()) eq 'infix:' . chr(60) . chr(61) . chr(62) . chr(62))))) {
                     return scalar (Lit::Hash->new(('hash1' => expand_list($stmt))))
                 }
             };
@@ -115,12 +115,12 @@ package GLOBAL;
                     ($v = Apply->new(('code' => $v->[3]), ('arguments' => $param_list), ('namespace' => $v->[2])));
                     return scalar ($v)
                 };
-                if (Main::bool(($v->[1] eq '( )'))) {
+                if (Main::bool(($v->[1] eq chr(40) . ' ' . chr(41)))) {
                     ((my  $param_list = undef) = expand_list($v->[2]));
-                    ($v = Apply->new(('code' => 'circumfix:<( )>'), ('arguments' => $param_list), ('namespace' => '')));
+                    ($v = Apply->new(('code' => 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)), ('arguments' => $param_list), ('namespace' => '')));
                     return scalar ($v)
                 };
-                if (Main::bool(($v->[1] eq '[ ]'))) {
+                if (Main::bool(($v->[1] eq chr(91) . ' ' . chr(93)))) {
                     ((my  $param_list = undef) = expand_list($v->[2]));
                     ($v = Lit::Array->new(('array1' => $param_list)));
                     return scalar ($v)
@@ -130,15 +130,15 @@ package GLOBAL;
                     ($v = block_or_hash($v));
                     return scalar ($v)
                 };
-                if (Main::bool(($v->[1] eq '.( )'))) {
-                    ($v = Call->new(('invocant' => undef), ('method' => 'postcircumfix:<( )>'), ('arguments' => $v->[2]), ('hyper' => 0)));
+                if (Main::bool(($v->[1] eq '.' . chr(40) . ' ' . chr(41)))) {
+                    ($v = Call->new(('invocant' => undef), ('method' => 'postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)), ('arguments' => $v->[2]), ('hyper' => 0)));
                     return scalar ($v)
                 };
-                if (Main::bool(($v->[1] eq '.[ ]'))) {
+                if (Main::bool(($v->[1] eq '.' . chr(91) . ' ' . chr(93)))) {
                     ($v = Index->new(('obj' => undef), ('index_exp' => $v->[2])));
                     return scalar ($v)
                 };
-                if (Main::bool(($v->[1] eq '.{ }'))) {
+                if (Main::bool(($v->[1] eq '.' . chr(123) . ' ' . chr(125)))) {
                     ($v = Lookup->new(('obj' => undef), ('index_exp' => $v->[2])));
                     return scalar ($v)
                 };
@@ -173,7 +173,7 @@ package GLOBAL;
                 push( @{$v}, $value );
                 return scalar ($v)
             };
-            if (Main::bool(($v->[1] eq '( )'))) {
+            if (Main::bool(($v->[1] eq chr(40) . ' ' . chr(41)))) {
                 ((my  $param_list = undef) = expand_list($v->[2]));
                 if (Main::bool((Main::isa($value, 'Apply') && !Main::bool((defined($value->arguments())))))) {
                     (($value)->{arguments} = $param_list);
@@ -183,10 +183,10 @@ package GLOBAL;
                     (($value)->{arguments} = $param_list);
                     return scalar ($value)
                 };
-                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list), ('hyper' => 0)));
+                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)), ('arguments' => $param_list), ('hyper' => 0)));
                 return scalar ($v)
             };
-            if (Main::bool(($v->[1] eq '[ ]'))) {
+            if (Main::bool(($v->[1] eq chr(91) . ' ' . chr(93)))) {
                 ($v = Index->new(('obj' => $value), ('index_exp' => $v->[2])));
                 return scalar ($v)
             };
@@ -194,17 +194,17 @@ package GLOBAL;
                 ($v = Lookup->new(('obj' => $value), ('index_exp' => ($v->[2])->[0])));
                 return scalar ($v)
             };
-            if (Main::bool(($v->[1] eq '.( )'))) {
+            if (Main::bool(($v->[1] eq '.' . chr(40) . ' ' . chr(41)))) {
                 ((my  $param_list = undef) = expand_list($v->[2]));
-                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list), ('hyper' => 0)));
+                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)), ('arguments' => $param_list), ('hyper' => 0)));
                 return scalar ($v)
             };
-            if (Main::bool(($v->[1] eq '.[ ]'))) {
-                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<[ ]>'), ('arguments' => $v->[2]), ('hyper' => 0)));
+            if (Main::bool(($v->[1] eq '.' . chr(91) . ' ' . chr(93)))) {
+                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:' . chr(60) . chr(91) . ' ' . chr(93) . chr(62)), ('arguments' => $v->[2]), ('hyper' => 0)));
                 return scalar ($v)
             };
-            if (Main::bool(($v->[1] eq '.{ }'))) {
-                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<{ }>'), ('arguments' => $v->[2]), ('hyper' => 0)));
+            if (Main::bool(($v->[1] eq '.' . chr(123) . ' ' . chr(125)))) {
+                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:' . chr(60) . chr(123) . ' ' . chr(125) . chr(62)), ('arguments' => $v->[2]), ('hyper' => 0)));
                 return scalar ($v)
             };
             push( @{$op}, $value );
@@ -215,7 +215,7 @@ package GLOBAL;
     my $num_stack = $_[1];
     ((my  $last_op = undef) = shift( @{$op_stack} ));
     if (Main::bool(($last_op->[0] eq 'prefix'))) {
-        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'prefix:<' . $last_op->[1] . '>'), ('arguments' => do {
+        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'prefix:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, pop_term($num_stack) );
@@ -224,7 +224,7 @@ package GLOBAL;
     }
     else {
         if (Main::bool(($last_op->[0] eq 'postfix'))) {
-            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'postfix:<' . $last_op->[1] . '>'), ('arguments' => do {
+            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'postfix:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, pop_term($num_stack) );
@@ -240,12 +240,12 @@ package GLOBAL;
                     (my  $arg = undef);
                     if (Main::bool((scalar( @{$num_stack} ) < 2))) {
                         ((my  $v2 = undef) = pop_term($num_stack));
-                        if (Main::bool(((Main::isa($v2, 'Apply')) && (($v2->code() eq ('list:<' . $last_op->[1] . '>')))))) {
+                        if (Main::bool(((Main::isa($v2, 'Apply')) && (($v2->code() eq ('list:' . chr(60) . $last_op->[1] . chr(62))))))) {
                             push( @{($v2->arguments())}, undef );
                             push( @{$num_stack}, $v2 )
                         }
                         else {
-                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'list:<' . $last_op->[1] . '>'), ('arguments' => do {
+                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'list:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, $v2 );
@@ -265,7 +265,7 @@ package GLOBAL;
     $List_a
 })
                     };
-                    if (Main::bool((((Main::isa(($arg->[0]), 'Apply')) && (($last_op->[0] eq 'infix'))) && ((($arg->[0])->code() eq ('list:<' . $last_op->[1] . '>')))))) {
+                    if (Main::bool((((Main::isa(($arg->[0]), 'Apply')) && (($last_op->[0] eq 'infix'))) && ((($arg->[0])->code() eq ('list:' . chr(60) . $last_op->[1] . chr(62))))))) {
                         push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ($arg->[0])->code()), ('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -278,7 +278,7 @@ package GLOBAL;
 })) );
                         return ()
                     };
-                    push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'list:<' . $last_op->[1] . '>'), ('arguments' => $arg)) )
+                    push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'list:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => $arg)) )
                 }
                 else {
                     if (Main::bool(Perlito::Precedence::is_assoc_type('chain', $last_op->[1]))) {
@@ -293,7 +293,7 @@ package GLOBAL;
     push( @{$List_a}, $v2 );
     $List_a
 });
-                        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'infix:<' . $last_op->[1] . '>'), ('arguments' => $arg)) )
+                        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'infix:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => $arg)) )
                     }
                     else {
                         if (Main::bool(($last_op->[0] eq 'ternary'))) {
@@ -301,7 +301,7 @@ package GLOBAL;
                                 die('Missing value after ternary operator')
                             };
                             ((my  $v2 = undef) = pop_term($num_stack));
-                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'ternary:<' . $last_op->[1] . '>'), ('arguments' => do {
+                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'ternary:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, pop_term($num_stack) );
@@ -312,10 +312,10 @@ package GLOBAL;
                         }
                         else {
                             if (Main::bool(((scalar( @{$num_stack} ) < 2)))) {
-                                die('missing value after operator \'' . $last_op->[1] . '\'')
+                                die('missing value after operator ' . chr(39) . $last_op->[1] . chr(39))
                             };
                             ((my  $v2 = undef) = pop_term($num_stack));
-                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'infix:<' . $last_op->[1] . '>'), ('arguments' => do {
+                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'infix:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, pop_term($num_stack) );
@@ -395,7 +395,7 @@ package GLOBAL;
     (do {
     ((my  $last_pos = undef) = $MATCH->to());
     if (Main::bool(!Main::bool((do {
-    (('>>' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
+    ((chr(62) . chr(62) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
 })))) {
         (($MATCH)->{to} = $last_pos)
     };
@@ -413,7 +413,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (((((((((((((((((((((((((((((do {
-    (((((('.(' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    (((((('.' . chr(40) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->paren_parse($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -423,19 +423,19 @@ package GLOBAL;
     else {
         0
     }
-})) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(41) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, 'postfix_or_term' );
-    push( @{$List_a}, '.( )' );
+    push( @{$List_a}, '.' . chr(40) . ' ' . chr(41) );
     push( @{$List_a}, ${$MATCH->{'paren_parse'}} );
     $List_a
 }))
 }) || 1)))
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('.[' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    ((((((('.' . chr(91) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->square_parse($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -445,19 +445,19 @@ package GLOBAL;
     else {
         0
     }
-})) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(93) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, 'postfix_or_term' );
-    push( @{$List_a}, '.[ ]' );
+    push( @{$List_a}, '.' . chr(91) . ' ' . chr(93) );
     push( @{$List_a}, ${$MATCH->{'square_parse'}} );
     $List_a
 }))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('.{' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    ((((((('.' . chr(123) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->curly_parse($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -467,19 +467,19 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('}' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, 'postfix_or_term' );
-    push( @{$List_a}, '.{ }' );
+    push( @{$List_a}, '.' . chr(123) . ' ' . chr(125) );
     push( @{$List_a}, ${$MATCH->{'curly_parse'}} );
     $List_a
 }))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((((chr(40) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->paren_parse($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -489,19 +489,19 @@ package GLOBAL;
     else {
         0
     }
-})) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(41) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, 'postfix_or_term' );
-    push( @{$List_a}, '( )' );
+    push( @{$List_a}, chr(40) . ' ' . chr(41) );
     push( @{$List_a}, ${$MATCH->{'paren_parse'}} );
     $List_a
 }))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('[' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((((chr(91) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->square_parse($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -511,19 +511,19 @@ package GLOBAL;
     else {
         0
     }
-})) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(93) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, 'postfix_or_term' );
-    push( @{$List_a}, '[ ]' );
+    push( @{$List_a}, chr(91) . ' ' . chr(93) );
     push( @{$List_a}, ${$MATCH->{'square_parse'}} );
     $List_a
 }))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('->' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    ((((((('-' . chr(62) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $last_pos = undef) = $MATCH->to());
     if (Main::bool(!Main::bool((do {
     ((my  $m2 = undef) = Perlito::Grammar->ws($str, $MATCH->to()));
@@ -565,7 +565,7 @@ package GLOBAL;
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((((('{' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((((((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $last_pos = undef) = $MATCH->to());
     if (Main::bool(!Main::bool((do {
     ((my  $m2 = undef) = Perlito::Grammar->ws($str, $MATCH->to()));
@@ -605,7 +605,7 @@ package GLOBAL;
         (($MATCH)->{to} = $last_pos)
     };
     1
-})) && ((('}' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -737,7 +737,7 @@ package GLOBAL;
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('??' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    (((((((chr(63) . chr(63) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->ternary_parse($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -747,12 +747,12 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('!!' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && (((do {
+})) && (((chr(33) . chr(33) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, 'op' );
-    push( @{$List_a}, '?? !!' );
+    push( @{$List_a}, chr(63) . chr(63) . ' ' . chr(33) . chr(33) );
     push( @{$List_a}, ${$MATCH->{'ternary_parse'}} );
     $List_a
 }))
@@ -780,7 +780,7 @@ package GLOBAL;
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('$<' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    (((((((chr(36) . chr(60) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->capture_name($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -790,12 +790,12 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Lookup->new(('obj' => Var->new(('sigil' => '$'), ('twigil' => ''), ('name' => '/'))), ('index_exp' => Val::Buf->new(('buf' => ("" . $MATCH->{'capture_name'}))))) );
+    push( @{$List_a}, Lookup->new(('obj' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => chr(47)))), ('index_exp' => Val::Buf->new(('buf' => ("" . $MATCH->{'capture_name'}))))) );
     $List_a
 }))
 }) || 1))))
@@ -847,7 +847,7 @@ package GLOBAL;
         (($MATCH)->{to} = $last_pos)
     };
     1
-}) && ((('=>' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))))
+}) && (((chr(61) . chr(62) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))))
 })
 }));
     (($tmp)->{bool} = Main::bool($MATCH));
@@ -882,7 +882,7 @@ package GLOBAL;
     }
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    (((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(40) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }))
 })
 }));
@@ -918,7 +918,7 @@ package GLOBAL;
     }
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    (((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(40) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }))
 })
 }));
@@ -954,7 +954,7 @@ package GLOBAL;
     }
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    (((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(40) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }))
 })
 }));
@@ -990,7 +990,7 @@ package GLOBAL;
     }
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    (((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(40) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }))
 })
 }));
@@ -1446,7 +1446,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (((do {
-    (('#' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(35) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
     (($MATCH)->{to} = $pos1);
     ((do {
@@ -1599,11 +1599,11 @@ package GLOBAL;
     (my  $List_v = []);
     push( @{$List_a}, 'and' );
     push( @{$List_a}, 'or' );
-    push( @{$List_a}, '!!' );
-    push( @{$List_a}, ']' );
-    push( @{$List_a}, ')' );
-    push( @{$List_a}, '}' );
-    push( @{$List_a}, ';' );
+    push( @{$List_a}, chr(33) . chr(33) );
+    push( @{$List_a}, chr(93) );
+    push( @{$List_a}, chr(41) );
+    push( @{$List_a}, chr(125) );
+    push( @{$List_a}, chr(59) );
     push( @{$List_a}, 'if' );
     push( @{$List_a}, 'else' );
     push( @{$List_a}, 'elsif' );
@@ -1675,7 +1675,7 @@ package GLOBAL;
             return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, '!!' );
+    push( @{$List_a}, chr(33) . chr(33) );
     $List_a
 }))
         };
@@ -1686,7 +1686,7 @@ package GLOBAL;
             return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, '}' );
+    push( @{$List_a}, chr(125) );
     $List_a
 }))
         };
@@ -1697,7 +1697,7 @@ package GLOBAL;
             return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, ']' );
+    push( @{$List_a}, chr(93) );
     $List_a
 }))
         };
@@ -1708,7 +1708,7 @@ package GLOBAL;
             return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, ')' );
+    push( @{$List_a}, chr(41) );
     $List_a
 }))
         };
@@ -1762,10 +1762,10 @@ package GLOBAL;
             ((my  $prec = undef) = Perlito::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => do {
     (my  $List_a = []);
     (my  $List_v = []);
-    push( @{$List_a}, ']' );
-    push( @{$List_a}, ')' );
-    push( @{$List_a}, '}' );
-    push( @{$List_a}, ';' );
+    push( @{$List_a}, chr(93) );
+    push( @{$List_a}, chr(41) );
+    push( @{$List_a}, chr(125) );
+    push( @{$List_a}, chr(59) );
     push( @{$List_a}, 'if' );
     push( @{$List_a}, 'else' );
     push( @{$List_a}, 'elsif' );
@@ -1957,7 +1957,7 @@ package GLOBAL;
 }) && (do {
     ((my  $pos1 = undef) = $MATCH->to());
     ((do {
-    ((((';' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((((chr(59) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $last_pos = undef) = $MATCH->to());
     if (Main::bool(!Main::bool((do {
     ((my  $m2 = undef) = Perlito::Grammar->ws($str, $MATCH->to()));
@@ -1988,7 +1988,7 @@ package GLOBAL;
 }) && (do {
     ((my  $last_pos = undef) = $MATCH->to());
     if (Main::bool(!Main::bool((do {
-    ((';' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(59) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })))) {
         (($MATCH)->{to} = $last_pos)
     };
@@ -2054,7 +2054,7 @@ package GLOBAL;
             };
             ((my  $modifier_exp = undef) = $self->exp_parse($str, $modifier->to()));
             if (Main::bool(!Main::bool(($modifier_exp)))) {
-                die('Expected expression after \'', $modifier, '\'')
+                die('Expected expression after ' . chr(39), $modifier, chr(39))
             };
             if (Main::bool((${$modifier_exp})->{'end_block'})) {
                 die('Unexpected block after expression near ', $modifier->to())
@@ -2100,7 +2100,7 @@ package GLOBAL;
     $List_a
 })))))))
             };
-            die('Unexpected statement modifier \'' . $modifier . '\'')
+            die('Unexpected statement modifier ' . chr(39) . $modifier . chr(39))
         }
     }
 

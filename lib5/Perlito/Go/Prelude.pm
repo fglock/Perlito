@@ -25,7 +25,7 @@ package GLOBAL;
         sub array { $_[0]->{array} };
         sub perl {
             my $self = $_[0];
-            return scalar ('Match.new(' . 'from => ' . Main::perl($self->{from}, ("" . ', to => ') . Main::perl($self->{to}, ("" . ', bool => ') . Main::perl(($self->{bool}->bool()), ("" . ', capture => ') . Main::perl($self->{capture}, ("" . ', hash => ') . Main::perl($self->{hash}, ("" . ', array => ') . Main::perl($self->{array}, ("" . ')'))))))))
+            return scalar ('Match.new' . chr(40) . 'from ' . chr(61) . chr(62) . ' ' . Main::perl($self->{from}, ("" . ', to ' . chr(61) . chr(62) . ' ') . Main::perl($self->{to}, ("" . ', bool ' . chr(61) . chr(62) . ' ') . Main::perl(($self->{bool}->bool()), ("" . ', capture ' . chr(61) . chr(62) . ' ') . Main::perl($self->{capture}, ("" . ', hash ' . chr(61) . chr(62) . ' ') . Main::perl($self->{hash}, ("" . ', array ' . chr(61) . chr(62) . ' ') . Main::perl($self->{array}, ("" . chr(41)))))))))
         };
         sub Bool {
             my $self = $_[0];
@@ -141,7 +141,7 @@ $self->{bool}->Bool()
         sub lisp_dump_object {
             my $class_name = $_[0];
             my $data = $_[1];
-            return scalar ($class_name . '( ' . Main::join(([ map { Main::perl( $_, , ) } @{( $data )} ]), ', ') . ' )')
+            return scalar ($class_name . chr(40) . ' ' . Main::join(([ map { Main::perl( $_, , ) } @{( $data )} ]), ', ') . ' ' . chr(41))
         };
         sub to_go_namespace {
             die('TODO')
@@ -149,16 +149,10 @@ $self->{bool}->Bool()
         sub to_javascript_namespace {
             die('TODO')
         };
-        sub javascript_escape_string {
-            die('TODO')
-        };
         sub to_lisp_namespace {
             die('TODO')
         };
         sub lisp_escape_string {
-            die('TODO')
-        };
-        sub perl_escape_string {
             die('TODO')
         }
     }

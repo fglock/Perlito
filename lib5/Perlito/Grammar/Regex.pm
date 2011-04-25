@@ -100,7 +100,7 @@ package GLOBAL;
     for ( ; Main::bool(((do {
     ((my  $pos1 = undef) = $MATCH->to());
     ((do {
-    (((('\\' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
@@ -109,7 +109,7 @@ package GLOBAL;
     (($MATCH)->{bool} = (do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    (('\'' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
     (($tmp)->{bool} = !Main::bool($MATCH));
@@ -147,10 +147,10 @@ package GLOBAL;
     for ( ; Main::bool(((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (((((do {
-    (((('\\' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((('\'' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((((((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->literal($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -159,10 +159,10 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('\'' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
+})) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((('{' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((((((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->string_code($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -171,10 +171,10 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('}' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
+})) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((('<' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((((((chr(60) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->metasyntax_exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -183,7 +183,7 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
@@ -192,7 +192,7 @@ package GLOBAL;
     (($MATCH)->{bool} = (do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    (('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
     (($tmp)->{bool} = !Main::bool($MATCH));
@@ -231,7 +231,7 @@ package GLOBAL;
     for ( ; Main::bool(((do {
     ((my  $pos1 = undef) = $MATCH->to());
     ((do {
-    (((('\\' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
@@ -240,7 +240,7 @@ package GLOBAL;
     (($MATCH)->{bool} = (do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    ((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(93) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
     (($tmp)->{bool} = !Main::bool($MATCH));
@@ -283,7 +283,7 @@ package GLOBAL;
     }
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((('[' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((((((chr(91) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->char_range($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -292,7 +292,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
+})) && (((chr(93) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
 }))
 })));
             $MATCH
@@ -312,10 +312,10 @@ package GLOBAL;
     for ( ; Main::bool(((do {
     ((my  $pos1 = undef) = $MATCH->to());
     ((((do {
-    (((('\\' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((('\'' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((((((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->literal($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -324,10 +324,10 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('\'' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
+})) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((('{' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((((((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->string_code($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -336,7 +336,7 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('}' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
+})) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
@@ -345,7 +345,7 @@ package GLOBAL;
     (($MATCH)->{bool} = (do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    (('}' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
     (($tmp)->{bool} = !Main::bool($MATCH));
@@ -403,7 +403,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     ((((do {
-    (((((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((((((chr(40) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->rule($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -413,7 +413,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(41) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
     (my  $Hash_a = {});
     ($Hash_a->{'capturing_group'} = ${$MATCH->{'rule'}});
@@ -422,7 +422,7 @@ package GLOBAL;
 }) || 1)))
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('[' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((((chr(91) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->rule($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -432,12 +432,12 @@ package GLOBAL;
     else {
         0
     }
-})) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(93) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (${$MATCH->{'rule'}}))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('<' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((((chr(60) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->metasyntax_exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -447,7 +447,7 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => ${$MATCH->{'metasyntax_exp'}}), ('captures' => 1))))
 }) || 1))))
 })) || (do {
@@ -468,7 +468,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (((do {
-    (((((('$<' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    ((((((chr(36) . chr(60) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->rule_ident($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -478,8 +478,8 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
-    ($MATCH->{capture} = ('$/{' . '\'' . $MATCH->{'rule_ident'} . '\'' . '}'))
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+    ($MATCH->{capture} = (chr(36) . chr(47) . chr(123) . chr(39) . $MATCH->{'rule_ident'} . chr(39) . chr(125)))
 }) || 1)))
 }) || (do {
     (($MATCH)->{to} = $pos1);
@@ -504,7 +504,7 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ($MATCH->{capture} = ($MATCH->{'Perlito::Grammar.var_sigil'} . '/[' . $MATCH->{'Perlito::Grammar.val_int'} . ']'))
+    ($MATCH->{capture} = ($MATCH->{'Perlito::Grammar.var_sigil'} . chr(47) . chr(91) . $MATCH->{'Perlito::Grammar.val_int'} . chr(93)))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
@@ -554,7 +554,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (((((((((((((((do {
-    (((((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((((((chr(40) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->rule($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -564,12 +564,12 @@ package GLOBAL;
     else {
         0
     }
-})) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(41) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::Capture->new(('rule_exp' => ${$MATCH->{'rule'}}))))
 }) || 1)))
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('<(' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    (((((((chr(60) . chr(40) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->rule($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -579,12 +579,12 @@ package GLOBAL;
     else {
         0
     }
-})) && (((')>' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && (((do {
+})) && (((chr(41) . chr(62) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::CaptureResult->new(('rule_exp' => ${$MATCH->{'rule'}}))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((((('<after' eq substr($str, $MATCH->to(), 6)) && ((($MATCH)->{to} = (6 + $MATCH->to()))))) && (do {
+    ((((((((chr(60) . 'after' eq substr($str, $MATCH->to(), 6)) && ((($MATCH)->{to} = (6 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -603,12 +603,12 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::After->new(('rule_exp' => ${$MATCH->{'rule'}}))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((((('<before' eq substr($str, $MATCH->to(), 7)) && ((($MATCH)->{to} = (7 + $MATCH->to()))))) && (do {
+    ((((((((chr(60) . 'before' eq substr($str, $MATCH->to(), 7)) && ((($MATCH)->{to} = (7 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -627,12 +627,12 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::Before->new(('rule_exp' => ${$MATCH->{'rule'}}))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((((('<!before' eq substr($str, $MATCH->to(), 8)) && ((($MATCH)->{to} = (8 + $MATCH->to()))))) && (do {
+    ((((((((chr(60) . chr(33) . 'before' eq substr($str, $MATCH->to(), 8)) && ((($MATCH)->{to} = (8 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -651,12 +651,12 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::NotBefore->new(('rule_exp' => ${$MATCH->{'rule'}}))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('<!' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    (((((((chr(60) . chr(33) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->metasyntax_exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -666,7 +666,7 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
     (my  $Hash_a = {});
     ($Hash_a->{'negate'} = do {
@@ -679,7 +679,7 @@ package GLOBAL;
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('<+' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    (((((((chr(60) . '+' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->char_class($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -689,12 +689,12 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::CharClass->new(('chars' => ("" . $MATCH->{'char_class'})))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('<-' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    (((((((chr(60) . '-' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->char_class($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -704,12 +704,12 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::NegateCharClass->new(('chars' => ("" . $MATCH->{'char_class'})))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('\'' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->literal($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -719,12 +719,12 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('\'' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::Constant->new(('constant' => ${$MATCH->{'literal'}}))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((((('<' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('\'' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+    (((((((((chr(60) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $m2 = undef) = $grammar->literal($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -734,12 +734,12 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('\'' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::Constant->new(('constant' => ${$MATCH->{'literal'}}))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((('<' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((chr(60) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $pos1 = undef) = $MATCH->to());
     ((((do {
     (((do {
@@ -752,12 +752,12 @@ package GLOBAL;
     else {
         0
     }
-}) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+}) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::InterpolateVar->new(('var' => ${$MATCH->{'variables'}}))))
 }) || 1)))
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('?' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((((chr(63) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->metasyntax_exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -767,7 +767,7 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => ${$MATCH->{'metasyntax_exp'}}), ('captures' => 0))))
 }) || 1))))
 })) || (do {
@@ -782,7 +782,7 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => ${$MATCH->{'metasyntax_exp'}}), ('captures' => 0))))
 }) || 1))))
 })) || (do {
@@ -797,14 +797,14 @@ package GLOBAL;
     else {
         0
     }
-}) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+}) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => ${$MATCH->{'metasyntax_exp'}}), ('captures' => 1))))
 }) || 1))))
 }))
 })))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('{' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->parsed_code($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -814,15 +814,45 @@ package GLOBAL;
     else {
         0
     }
-})) && ((('}' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (Rul::Block->new(('closure' => ${$MATCH->{'parsed_code'}}))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((('\\' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $pos1 = undef) = $MATCH->to());
-    (do {
-    ((do {
+    (((do {
+    ((((((('c' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (((chr(91) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+    ((my  $m2 = undef) = Perlito::Grammar->digits($str, $MATCH->to()));
+    if (Main::bool($m2)) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'Perlito::Grammar.digits'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((chr(93) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+    ($MATCH->{capture} = (Rul::Constant->new(('constant' => chr($MATCH->{'Perlito::Grammar.digits'})))))
+}) || 1)))
+}) || (do {
+    (($MATCH)->{to} = $pos1);
+    (((((('c' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((my  $m2 = undef) = Perlito::Grammar->digits($str, $MATCH->to()));
+    if (Main::bool($m2)) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'Perlito::Grammar.digits'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((do {
+    ($MATCH->{capture} = (Rul::Constant->new(('constant' => chr($MATCH->{'Perlito::Grammar.digits'})))))
+}) || 1))))
+})) || (do {
+    (($MATCH)->{to} = $pos1);
+    (((do {
     ((my  $m2 = undef) = $grammar->any($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -834,8 +864,8 @@ package GLOBAL;
     }
 }) && (((do {
     ($MATCH->{capture} = (Rul::SpecialChar->new(('char' => ${$MATCH->{'any'}}))))
-}) || 1)))
-})
+}) || 1))))
+}))
 })))
 })) || (do {
     (($MATCH)->{to} = $pos1);
@@ -844,7 +874,7 @@ package GLOBAL;
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((((('[' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((((chr(91) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->rule($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -854,7 +884,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((chr(93) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (${$MATCH->{'rule'}}))
 }) || 1))))
 }))
@@ -898,7 +928,7 @@ package GLOBAL;
         (($MATCH)->{to} = $last_pos)
     };
     1
-}) && ((('=' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+}) && (((chr(61) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $last_pos = undef) = $MATCH->to());
     if (Main::bool(!Main::bool((do {
     ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
@@ -956,22 +986,22 @@ package GLOBAL;
     (($MATCH)->{bool} = (do {
     ((my  $pos1 = undef) = $MATCH->to());
     (((((((((((do {
-    ((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(93) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
     (($MATCH)->{to} = $pos1);
-    (((('}' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(41) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
     ((((':' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((('?' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(63) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
     (((('+' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
@@ -980,13 +1010,13 @@ package GLOBAL;
     (((('*' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((('|' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(124) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((('&' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(38) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((('/' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ((((chr(47) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }))
 }));
     (($tmp)->{bool} = !Main::bool($MATCH));
@@ -1065,7 +1095,7 @@ package GLOBAL;
     ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (((do {
-    (('?' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(63) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((('*' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
@@ -1087,7 +1117,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (((do {
-    (('?' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(63) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((('+' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
@@ -1298,7 +1328,7 @@ package GLOBAL;
 }) && (do {
     ((my  $pos1 = undef) = $MATCH->to());
     ((do {
-    ((((('|' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((chr(124) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->or_list_exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -1372,7 +1402,7 @@ package GLOBAL;
         (($MATCH)->{to} = $last_pos)
     };
     1
-}) && ((('|' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+}) && (((chr(124) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (1)

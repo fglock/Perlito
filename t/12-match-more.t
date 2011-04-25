@@ -20,9 +20,9 @@ class Main {
         say 'not ok 2';
     }
 
-    $m = Perlito::Grammar.is_newline( "ab\ndef", 2 );
+    $m = Perlito::Grammar.space( "ab def", 2 );
     # say 'match scalar: ', $$m;
-    if ($$m) eq "\n" {
+    if ($$m) eq " " {
         say 'ok 3';
     }
     else {

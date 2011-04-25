@@ -10,6 +10,37 @@ class Javascript {
         }
         return $s;
     }
+
+    sub escape_string($s) {
+        my @out;
+        my $tmp = '';
+        return "''" if $s eq '';
+        for 0 .. $s.chars() - 1 -> $i {
+            my $c = substr($s, $i, 1);
+            if     (($c ge 'a') && ($c le 'z'))
+                || (($c ge 'A') && ($c le 'Z'))
+                || (($c ge '0') && ($c le '9'))
+                ||  ($c eq '_')
+                ||  ($c eq ',')
+                ||  ($c eq '.')
+                ||  ($c eq ':')
+                ||  ($c eq '-')
+                ||  ($c eq '+')
+                ||  ($c eq '*')
+                ||  ($c eq ' ')
+            {
+                $tmp = $tmp ~ $c;
+            }
+            else {
+                @out.push "'$tmp'" if $tmp ne '';
+                @out.push "String.fromCharCode({ ord($c) })";
+                $tmp = '';
+            }
+        }
+        @out.push "'$tmp'" if $tmp ne '';
+        return @out.join(' + ');
+    }
+
 }
 
 class Perlito::Javascript::LexicalBlock {
@@ -205,7 +236,7 @@ class Val::Num {
 class Val::Buf {
     has $.buf;
     method emit_javascript { self.emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) { Javascript::tab($level) ~ '"' ~ Main::javascript_escape_string($.buf) ~ '"' }
+    method emit_javascript_indented( $level ) { Javascript::tab($level) ~ Javascript::escape_string($.buf) }
 }
 
 class Lit::Block {
@@ -419,6 +450,10 @@ class Apply {
                  ' || "").substr(' ~ (@.arguments[1]).emit_javascript() ~
                  ', ' ~ (@.arguments[2]).emit_javascript() ~ ')' 
         }
+
+        if $code eq 'chr'        { return 'String.fromCharCode(' ~ (@.arguments[0]).emit_javascript() ~ ')' }
+        if $code eq 'ord'        { return '(' ~ (@.arguments[0]).emit_javascript() ~ ').charCodeAt(0)' }
+
         if $code eq 'Int'        { return 'parseInt(' ~ (@.arguments[0]).emit_javascript() ~ ')' }
         if $code eq 'Num'        { return 'parseFloat(' ~ (@.arguments[0]).emit_javascript() ~ ')' }
         if $code eq 'prefix:<~>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').f_string()' }

@@ -309,7 +309,7 @@ class Val::Buf {
     has $.buf;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ '"' ~ Main::javascript_escape_string($.buf) ~ '"' 
+        Ruby::tab($level) ~ '"' ~ $.buf ~ '"' 
     }
 }
 

@@ -10,6 +10,37 @@ class Python {
         }
         return $s;
     }
+
+    sub escape_string($s) {
+        my @out;
+        my $tmp = '';
+        return "''" if $s eq '';
+        for 0 .. $s.chars() - 1 -> $i {
+            my $c = substr($s, $i, 1);
+            if     (($c ge 'a') && ($c le 'z'))
+                || (($c ge 'A') && ($c le 'Z'))
+                || (($c ge '0') && ($c le '9'))
+                ||  ($c eq '_')
+                ||  ($c eq ',')
+                ||  ($c eq '.')
+                ||  ($c eq ':')
+                ||  ($c eq '-')
+                ||  ($c eq '+')
+                ||  ($c eq '*')
+                ||  ($c eq ' ')
+            {
+                $tmp = $tmp ~ $c;
+            }
+            else {
+                @out.push "'$tmp'" if $tmp ne '';
+                @out.push "chr({ ord($c) })";
+                $tmp = '';
+            }
+        }
+        @out.push "'$tmp'" if $tmp ne '';
+        return @out.join(' + ');
+    }
+
 }
 
 class Perlito::Python::AnonSub {
@@ -301,7 +332,7 @@ class Val::Buf {
     has $.buf;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        Python::tab($level) ~ '"' ~ Main::javascript_escape_string($.buf) ~ '"' 
+        Python::tab($level) ~ Python::escape_string($.buf) 
     }
 }
 

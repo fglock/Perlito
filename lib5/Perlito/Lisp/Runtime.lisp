@@ -55,13 +55,6 @@
 (if (not (ignore-errors (find-method 'sv-push () ())))
   (defgeneric sv-push (self x)
       (:documentation "push")))
-(if (not (ignore-errors (find-method 'sv-perl_escape_string () ())))
-  (defgeneric sv-perl_escape_string (self)
-      (:documentation "escape a single quoted perl string value")))
-(if (not (ignore-errors (find-method 'sv-javascript_escape_string () ())))
-  (defgeneric sv-javascript_escape_string (self)
-      (:documentation "escape a single quoted javascript string value")))
-
 
 ;; "undef"
 
@@ -375,23 +368,6 @@
                              "\"" "\\\""))
 (defun mp-Main-sv-lisp_escape_string (s)
   (sv-lisp_escape_string s))
-
-(defmethod sv-perl_escape_string ((s string)) 
-    (replace-substring
-        (replace-substring s "\\" "\\\\")
-                             "'" "\\\'"))
-(defun mp-Main-sv-perl_escape_string (s)
-  (sv-perl_escape_string s))
-
-(defmethod sv-javascript_escape_string ((s string)) 
-    (replace-substring
-      (replace-substring
-        (replace-substring s "\\" "\\\\")
-                             "\"" "\\\"")
-                             "
-" "\\n"))
-(defun mp-Main-sv-javascript_escape_string (s)
-  (sv-javascript_escape_string s))
 
 (if (not (ignore-errors (find-method 'sv-to_lisp_namespace () ())))
   (defgeneric sv-to_lisp_namespace (self)

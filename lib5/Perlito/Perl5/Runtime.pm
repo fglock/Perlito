@@ -2,6 +2,10 @@
 use v5;
 binmode(STDOUT, ":utf8");
 use Scalar::Util;
+use Encode;
+
+$_ = Encode::decode('utf-8', $_)
+    for @ARGV;
 
 {
     package Perlito::Match;
@@ -108,20 +112,6 @@ package Perlito::Grammar;
         $MATCH;
     }
 
-    sub is_newline { 
-        my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
-        my $MATCH; $MATCH = Perlito::Match->new( 
-            str => $str,from => $pos,to => $pos, ); 
-        return $MATCH unless ord( substr($str, $MATCH->to()) ) == 10
-            || ord( substr($str, $MATCH->to()) ) == 13;
-        $MATCH->{bool} = (
-            substr($str, $MATCH->to()) =~ m/(?m)^(\n\r?|\r\n?)/
-            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->to() )))
-            : 0
-        );
-        $MATCH;
-    }
-    
 package IO;
 
     sub slurp {
@@ -205,7 +195,9 @@ package Main;
         }
         else {
             return $o if $o =~ /^[0-9]/ && (0+$o) eq $o;
-            return "'" . perl_escape_string($o) . "'";
+            $o =~ s/\\/\\\\/g;
+            $o =~ s/'/\\'/g;
+            return "'" . $o . "'";
         }
         my $can = UNIVERSAL::can($o => 'perl');
         return $can->($o) if $can;
@@ -276,26 +268,12 @@ package Main;
         $s =~ s/"/\\"/g;
         return $s;
     }
-    sub javascript_escape_string {
-        my $s = $_[0];
-        $s =~ s/\\/\\\\/g;
-        $s =~ s/"/\\"/g;
-        $s =~ s/\n/\\n/g;
-        return $s;
-    }
     # Javascript emitter
     sub to_javascript_namespace {
         my $s = $_[0];
         my $sigil;
         ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
         $s =~ s/::/\$/g;
-        return $s;
-    }
-    # Perl emitter
-    sub perl_escape_string {
-        my $s = $_[0];
-        $s =~ s/\\/\\\\/g;
-        $s =~ s/'/\\'/g;
         return $s;
     }
     # Go emitter

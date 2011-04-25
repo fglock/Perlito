@@ -161,6 +161,11 @@ token rule_terms {
 #        | ( x | X | o | O ) \[ (<-[ \] ]>*) \]
 #          #  \x[0021]  \X[0021]
 #          { make Rul::SpecialChar.new( char => '\\' ~ $0 ~ $1 ) }
+
+        | c \[ <Perlito::Grammar.digits> \]
+          { make Rul::Constant.new( constant => chr( $<Perlito::Grammar.digits> ) ) }
+        | c <Perlito::Grammar.digits>
+          { make Rul::Constant.new( constant => chr( $<Perlito::Grammar.digits> ) ) }
         | <any>
           #  \e  \E
           { make Rul::SpecialChar.new( char => $$<any> ) }

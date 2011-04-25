@@ -41,11 +41,11 @@ package GLOBAL;
     (my  $List_v = []);
     $List_a
 });
-        ((my  $perl6lib = undef) = './lib');
+        ((my  $perl6lib = undef) = '.' . chr(47) . 'lib');
         ((my  $expand_use = undef) = 1);
         if (Main::bool($verbose)) {
-            warn('// Perlito compiler');
-            warn('// ARGS: ', Main::perl((\@ARGV), ))
+            warn(chr(47) . chr(47) . ' Perlito compiler');
+            warn(chr(47) . chr(47) . ' ARGS: ', Main::perl((\@ARGV), ))
         };
         (my  $Hash_module_seen = {});
         sub module_name {
@@ -111,7 +111,7 @@ package GLOBAL;
         sub modulename_to_filename {
             my $s = $_[0];
             ((my  $ident = undef) = Main->module_name($s, 0));
-            return scalar (Main::join((${$ident}), '/'))
+            return scalar (Main::join((${$ident}), chr(47)))
         };
         sub expand_use {
             my $stmt = $_[0];
@@ -129,9 +129,9 @@ package GLOBAL;
                 }
                 else {
                     ((my  $filename = undef) = $module_name);
-                    ($filename = $perl6lib . '/' . modulename_to_filename($filename) . '.pm');
+                    ($filename = $perl6lib . chr(47) . modulename_to_filename($filename) . '.pm');
                     if (Main::bool(($verbose))) {
-                        warn('// now loading: ', $filename)
+                        warn(chr(47) . chr(47) . ' now loading: ', $filename)
                     };
                     ((my  $source = undef) = IO::slurp($filename));
                     ((my  $m = undef) = Perlito::Grammar->exp_stmts($source, 0));
@@ -148,7 +148,7 @@ package GLOBAL;
                 else {
                     if (Main::bool(Main::isa($comp_unit, 'CompUnit'))) {
                         if (Main::bool($verbose)) {
-                            warn('parsed comp_unit: \'', $comp_unit->name(), '\'')
+                            warn('parsed comp_unit: ' . chr(39), $comp_unit->name(), chr(39))
                         };
                         for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {
                             if (Main::bool(($expand_use && Main::isa($stmt, 'Use')))) {
@@ -188,17 +188,7 @@ package GLOBAL;
         else {
             if (Main::bool((((((\@ARGV)->[0] eq '-h')) || (((\@ARGV)->[0] eq '--help'))) || (($backend eq ''))))) {
                 ($backend = '');
-                Main::say($_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION, '
-perlito [switches] [programfile]
-  switches:
-    -h --help
-    -v --verbose
-    -V --version
-    -Ctarget        target backend: go, js, lisp, parrot, perl5, python, ruby, ast-perl6
-    --expand_use --noexpand_use
-                    expand \'use\' statements at compile time
-    -e program      one line of program (omit programfile)
-');
+                Main::say($_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION, chr(10) . 'perlito ' . chr(91) . 'switches' . chr(93) . ' ' . chr(91) . 'programfile' . chr(93) . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Ctarget        target backend: go, js, lisp, parrot, perl5, python, ruby, ast-perl6' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program ' . chr(40) . 'omit programfile' . chr(41) . chr(10));
                 shift( @{(\@ARGV)} )
             }
         };
@@ -213,17 +203,17 @@ perlito [switches] [programfile]
         if (Main::bool(($backend && (\@ARGV)))) {
             (my  $prelude_filename = undef);
             if (Main::bool(($backend eq 'lisp'))) {
-                ($prelude_filename = $perl6lib . '/Perlito/Lisp/Prelude.pm')
+                ($prelude_filename = $perl6lib . chr(47) . 'Perlito' . chr(47) . 'Lisp' . chr(47) . 'Prelude.pm')
             };
             if (Main::bool(($backend eq 'js'))) {
-                ($prelude_filename = $perl6lib . '/Perlito/Javascript/Prelude.pm')
+                ($prelude_filename = $perl6lib . chr(47) . 'Perlito' . chr(47) . 'Javascript' . chr(47) . 'Prelude.pm')
             };
             if (Main::bool(($backend eq 'go'))) {
-                ($prelude_filename = $perl6lib . '/Perlito/Go/Prelude.pm')
+                ($prelude_filename = $perl6lib . chr(47) . 'Perlito' . chr(47) . 'Go' . chr(47) . 'Prelude.pm')
             };
             if (Main::bool($prelude_filename)) {
                 if (Main::bool($verbose)) {
-                    warn('// loading lib: ', $prelude_filename)
+                    warn(chr(47) . chr(47) . ' loading lib: ', $prelude_filename)
                 };
                 ($source = IO::slurp($prelude_filename));
                 ((my  $m = undef) = Perlito::Grammar->exp_stmts($source, 0));
@@ -232,18 +222,18 @@ perlito [switches] [programfile]
             if (Main::bool(((\@ARGV)->[0] eq '-e'))) {
                 shift( @{(\@ARGV)} );
                 if (Main::bool($verbose)) {
-                    warn('// source from command line: ', (\@ARGV)->[0])
+                    warn(chr(47) . chr(47) . ' source from command line: ', (\@ARGV)->[0])
                 };
                 ($source = shift( @{(\@ARGV)} ))
             }
             else {
                 if (Main::bool($verbose)) {
-                    warn('// source from file: ', (\@ARGV)->[0])
+                    warn(chr(47) . chr(47) . ' source from file: ', (\@ARGV)->[0])
                 };
                 ($source = IO::slurp(shift( @{(\@ARGV)} )))
             };
             if (Main::bool($verbose)) {
-                warn('// backend: ', $backend);
+                warn(chr(47) . chr(47) . ' backend: ', $backend);
                 warn('now parsing')
             };
             ((my  $m = undef) = Perlito::Grammar->exp_stmts($source, 0));
@@ -255,70 +245,70 @@ perlito [switches] [programfile]
     $List_a
 });
             if (Main::bool(($backend eq 'ast-perl6'))) {
-                Main::say('# AST dump - do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
+                Main::say(chr(35) . ' AST dump - do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
                 Main::say(Main::perl($comp_units, ))
             };
             if (Main::bool(($backend eq 'go'))) {
-                Main::say('// Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
-                ((my  $filename = undef) = $perl6lib . '/Perlito/Go/Runtime.go');
+                Main::say(chr(47) . chr(47) . ' Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
+                ((my  $filename = undef) = $perl6lib . chr(47) . 'Perlito' . chr(47) . 'Go' . chr(47) . 'Runtime.go');
                 if (Main::bool(($verbose))) {
-                    warn('// now loading: ', $filename)
+                    warn(chr(47) . chr(47) . ' now loading: ', $filename)
                 };
                 ((my  $source = undef) = IO::slurp($filename));
                 Main::say($source);
                 Main::say(CompUnit::emit_go_program($comp_units))
             };
             if (Main::bool(($backend eq 'lisp'))) {
-                Main::say(';; Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
-                ((my  $filename = undef) = $perl6lib . '/Perlito/Lisp/Runtime.lisp');
+                Main::say(chr(59) . chr(59) . ' Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
+                ((my  $filename = undef) = $perl6lib . chr(47) . 'Perlito' . chr(47) . 'Lisp' . chr(47) . 'Runtime.lisp');
                 if (Main::bool(($verbose))) {
-                    warn('// now loading: ', $filename)
+                    warn(chr(47) . chr(47) . ' now loading: ', $filename)
                 };
                 ((my  $source = undef) = IO::slurp($filename));
                 Main::say($source);
                 Main::say(CompUnit::emit_lisp_program($comp_units));
-                Main::say('(compiler-main)');
-                Main::say(';; Note: the line below creates a binary executable:');
-                Main::say(';; (sb-ext:save-lisp-and-die "tmp.out" :toplevel \'compiler-main :executable t )')
+                Main::say(chr(40) . 'compiler-main' . chr(41));
+                Main::say(chr(59) . chr(59) . ' Note: the line below creates a binary executable:');
+                Main::say(chr(59) . chr(59) . ' ' . chr(40) . 'sb-ext:save-lisp-and-die ' . chr(34) . 'tmp.out' . chr(34) . ' :toplevel ' . chr(39) . 'compiler-main :executable t ' . chr(41))
             };
             if (Main::bool(($backend eq 'perl5'))) {
-                Main::say('# Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
+                Main::say(chr(35) . ' Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
                 Main::print(CompUnit::emit_perl5_program($comp_units))
             };
             if (Main::bool(($backend eq 'js'))) {
-                Main::say('// Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
-                ((my  $filename = undef) = $perl6lib . '/Perlito/Javascript/Runtime.js');
+                Main::say(chr(47) . chr(47) . ' Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
+                ((my  $filename = undef) = $perl6lib . chr(47) . 'Perlito' . chr(47) . 'Javascript' . chr(47) . 'Runtime.js');
                 if (Main::bool(($verbose))) {
-                    warn('// now loading: ', $filename)
+                    warn(chr(47) . chr(47) . ' now loading: ', $filename)
                 };
                 ((my  $source = undef) = IO::slurp($filename));
                 Main::say($source);
                 Main::print(CompUnit::emit_javascript_program($comp_units))
             };
             if (Main::bool(($backend eq 'python'))) {
-                Main::say('# Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
-                Main::say('#-*- coding: utf-8 -*-');
+                Main::say(chr(35) . ' Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
+                Main::say(chr(35) . '-*- coding: utf-8 -*-');
                 Main::say('');
                 Main::say('from Perlito__Python__Runtime import *');
                 Main::say('from Perlito__Python__Prelude import *');
                 Main::say('import __builtin__');
-                Main::say('__all__ = []');
+                Main::say('__all__ ' . chr(61) . ' ' . chr(91) . chr(93));
                 Main::say('');
                 for my $c ( @{(($comp_units) || []) || []} ) {
                     Main::say($c->emit_python())
                 }
             };
             if (Main::bool(($backend eq 'ruby'))) {
-                Main::say('# Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
+                Main::say(chr(35) . ' Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
                 Main::say('');
-                Main::say('require \'Perlito/Ruby/Runtime.rb\'');
+                Main::say('require ' . chr(39) . 'Perlito' . chr(47) . 'Ruby' . chr(47) . 'Runtime.rb' . chr(39));
                 Main::say('');
                 for my $c ( @{(($comp_units) || []) || []} ) {
                     Main::say($c->emit_ruby())
                 }
             };
             if (Main::bool(($backend eq 'parrot'))) {
-                Main::say('# Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
+                Main::say(chr(35) . ' Do not edit this file - Generated by ', $_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
                 for my $c ( @{(($comp_units) || []) || []} ) {
                     Main::say($c->emit_parrot())
                 }

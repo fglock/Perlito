@@ -22,6 +22,37 @@ class Perl5 {
         }
         return Apply.new( code => 'bool', arguments => [ $cond ] );
     }
+
+    sub escape_string($s) {
+        my @out;
+        my $tmp = '';
+        return "''" if $s eq '';
+        for 0 .. $s.chars() - 1 -> $i {
+            my $c = substr($s, $i, 1);
+            if     (($c ge 'a') && ($c le 'z'))
+                || (($c ge 'A') && ($c le 'Z'))
+                || (($c ge '0') && ($c le '9'))
+                ||  ($c eq '_')
+                ||  ($c eq ',')
+                ||  ($c eq '.')
+                ||  ($c eq ':')
+                ||  ($c eq '-')
+                ||  ($c eq '+')
+                ||  ($c eq '*')
+                ||  ($c eq ' ')
+            {
+                $tmp = $tmp ~ $c;
+            }
+            else {
+                @out.push "'$tmp'" if $tmp ne '';
+                @out.push "chr({ ord($c) })";
+                $tmp = '';
+            }
+        }
+        @out.push "'$tmp'" if $tmp ne '';
+        return @out.join(' . ');
+    }
+
 }
 
 class CompUnit {
@@ -81,7 +112,9 @@ class Val::Num {
 class Val::Buf {
     has $.buf;
     method emit_perl5 { self.emit_perl5_indented(0) }
-    method emit_perl5_indented( $level ) { Perl5::tab($level) ~ '\'' ~ Main::perl_escape_string($.buf) ~ '\'' }
+    method emit_perl5_indented( $level ) { 
+        Perl5::tab($level) ~ Perl5::escape_string($.buf) 
+    }
 }
 
 class Lit::Block {

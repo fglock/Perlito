@@ -6,6 +6,11 @@ use Perlito::Expression;
 use Perlito::Grammar::Regex;
 use Perlito::Grammar::Control;
  
+token is_newline {
+    | \c10 \c13?
+    | \c13 \c10?
+}
+
 token not_newline {
     <!before \n> .
 }
@@ -150,6 +155,10 @@ token double_quoted_unescape {
         { make "\n" }
     |  \\ t  
         { make chr(9) }
+    |  \\ c \[ <digits> \]
+        { make chr( $<digits> ) }
+    |  \\ c <digits> 
+        { make chr( $<digits> ) }
     |  \\ <char_any>  
         { make ~$<char_any> }
     |  <char_any_double_quote> 
@@ -198,6 +207,10 @@ token val_buf {
         }
     | \' <single_quoted_unescape>  \' 
         { make Val::Buf.new( buf => $$<single_quoted_unescape> ) }
+}
+
+token digits {
+    \d+
 }
 
 token val_int {

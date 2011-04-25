@@ -190,7 +190,9 @@ def mp6_perl(o)
         return 'undef'
     end
     if o.class == String
-        return "'" + $Main.f_perl_escape_string(o) + "'"   
+        o = s.gsub( "\\", "\\\\\\")
+        o = o.gsub( "'",  "\\\\\'")
+        return "'" + o + "'"   
     end
     if o.class == Fixnum || o.class == Float || o.class == Bignum
         return o.to_s
@@ -220,17 +222,6 @@ class C_Main
         o = s.gsub( "\\", "\\\\\\");
         o = o.gsub( '"',  "\\\\\"");
         return o;
-    end
-    def f_javascript_escape_string(s)
-        o = s.gsub( "\\", "\\\\\\");
-        o = o.gsub( '"',  "\\\\\"");
-        o = o.gsub( "\n", "\\\\n");
-        return o;
-    end
-    def f_perl_escape_string(s)
-        o = s.gsub( "\\", "\\\\\\")
-        o = o.gsub( "'",  "\\\\\'")
-        return o
     end
     def f_to_javascript_namespace(s)
         o = s.gsub( "::", "$");
