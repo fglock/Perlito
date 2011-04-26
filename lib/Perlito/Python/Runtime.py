@@ -583,7 +583,7 @@ class IO:
     def f_isa(v_self, name):
         return name == 'IO'
     def f_slurp(self, name):
-        return file(unicode(name)).read()
+        return file(unicode(name)).read().decode('utf-8')
 IO_proto = IO()
 __builtin__.IO = IO
 __builtin__.IO_proto = IO_proto
