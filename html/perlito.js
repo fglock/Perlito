@@ -57,13 +57,6 @@ if (typeof Main !== 'object') {
         o = o.replace(/"/g, "\\\"");
         return o;
     };
-    Main.f_javascript_escape_string = function(s) {
-        var o = s;
-        o = o.replace(/\\/g, "\\\\");
-        o = o.replace(/"/g, "\\\"");
-        o = o.replace(/\n/g, "\\n");
-        return o;
-    };
     Main.f_to_javascript_namespace = function(s) {
         var o = s;
         o = o.replace(/::/g, "$");

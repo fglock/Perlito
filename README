@@ -28,7 +28,7 @@ USING PERLITO
 
 Using the Javascript backend in the browser
 
-    Open the file 'perlito.html' in a browser (Firefox, Chrome, Safari).
+    Open the file 'html/perlito.html' in a browser (Firefox, Chrome, Safari).
 
     Alternately, browse to:
 
