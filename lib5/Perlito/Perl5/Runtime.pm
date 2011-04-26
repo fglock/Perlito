@@ -121,7 +121,7 @@ package IO;
         local $/ = undef;
         $source = <FILE>;
         close FILE;
-        return $source;
+        return Encode::decode( 'utf-8', $source );
     }
 
 package Main;
