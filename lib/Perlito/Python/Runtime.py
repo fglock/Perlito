@@ -74,7 +74,7 @@ def f_map(v, f):
 __builtin__.f_map = f_map
 
 def f_chr(n):
-    return chr(n)
+    return unichr(mp6_to_num(str(n)))
 __builtin__.f_chr = f_chr
 
 def f_ord(n):
