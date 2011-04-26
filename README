@@ -44,10 +44,10 @@ Using the Javascript backend in the command line
 
     # compile util/perlito.pl to Javascript, using perlito.pl:
     export PERL5LIB=lib5
-    perl perlito.pl -Cjs util/perlito.pl > util-js/perlito.js
+    perl perlito.pl -Cjs util/perlito.pl > perlito.js
 
     # testing the bootstrap with the v8 developer shell
-    d8 util-js/perlito.js -- -Cjs util/perlito.pl > perlito-new.js
+    d8 perlito.js -- -Cjs util/perlito.pl > perlito-new.js
 
 Using the Perl 5 backend
 
@@ -91,7 +91,7 @@ RUNNING TESTS
 
     Javascript:
 
-    find t/*.t | perl -ne ' print "*** $_"; chomp; print ` d8 util-js/perlito.js -- -Cjs $_ > tmp.js && d8 tmp.js ` '
+    find t/*.t | perl -ne ' print "*** $_"; chomp; print ` d8 perlito.js -- -Cjs $_ > tmp.js && d8 tmp.js ` '
 
     Python 2.6:
 
