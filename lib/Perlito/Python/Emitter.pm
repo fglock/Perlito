@@ -14,7 +14,7 @@ class Python {
     sub escape_string($s) {
         my @out;
         my $tmp = '';
-        return "''" if $s eq '';
+        return "u''" if $s eq '';
         for 0 .. $s.chars() - 1 -> $i {
             my $c = substr($s, $i, 1);
             if     (($c ge 'a') && ($c le 'z'))
@@ -32,12 +32,12 @@ class Python {
                 $tmp = $tmp ~ $c;
             }
             else {
-                @out.push "'$tmp'" if $tmp ne '';
-                @out.push "chr({ ord($c) })";
+                @out.push "u'$tmp'" if $tmp ne '';
+                @out.push "unichr({ ord($c) })";
                 $tmp = '';
             }
         }
-        @out.push "'$tmp'" if $tmp ne '';
+        @out.push "u'$tmp'" if $tmp ne '';
         return @out.join(' + ');
     }
 
@@ -276,12 +276,12 @@ class CompUnit {
         push @s, Python::tab($level+2)  ~           "def f__setattr__(self, k, v):";
         push @s, Python::tab($level+3)  ~               "return self.__dict__[k].f_set(v)";
         push @s, Python::tab($level+2)  ~           "def f_isa(self, name):";
-        push @s, Python::tab($level+3)  ~               "return name == '" ~ $.name ~ "'";
+        push @s, Python::tab($level+3)  ~               "return name == u'" ~ $.name ~ "'";
         push @s, Python::tab($level+2)  ~           "def f_bool(self):";
         push @s, Python::tab($level+3)  ~               "return 1";
 
         push @s, Python::tab($level+2)  ~           "def __getattr__(self, attr):";
-        push @s, Python::tab($level+3)  ~               "if attr[0:2] == 'v_':";
+        push @s, Python::tab($level+3)  ~               "if attr[0:2] == u'v_':";
         push @s, Python::tab($level+4)  ~                   "self.__dict__[attr] = mp6_Scalar()";
         push @s, Python::tab($level+4)  ~                   "return self.__dict__[attr]";
         push @s, Python::tab($level+3)  ~               "raise AttributeError(attr)";
@@ -534,7 +534,7 @@ class Apply {
         if $code eq 'Int'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_python     ~ ')' };
         if $code eq 'Num'        { return 'mp6_to_num(' ~ (@.arguments[0]).emit_python     ~ ')' };
 
-        if $code eq 'prefix:<~>' { return 'str('   ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
+        if $code eq 'prefix:<~>' { return 'unicode('   ~ (@.arguments.>>emit_python).join(' ') ~ ')' };
         if $code eq 'prefix:<!>' { 
             return 'not mp6_to_bool('  ~ (@.arguments.>>emit_python).join(' ') ~ ')' 
         }
@@ -546,7 +546,7 @@ class Apply {
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
 
-        if $code eq 'list:<~>'   { return '(str('  ~ (@.arguments.>>emit_python).join(') + str(')  ~ '))' };
+        if $code eq 'list:<~>'   { return '(unicode('  ~ (@.arguments.>>emit_python).join(') + unicode(')  ~ '))' };
         if $code eq 'infix:<+>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') + mp6_to_num(')  ~ '))' };
         if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_python).join(' - ')  ~ ')' };
         if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_python).join(' * ')  ~ ')' };
@@ -565,10 +565,10 @@ class Apply {
         if $code eq 'infix:<//>' { 
             return 'mp6_defined_or('  ~ (@.arguments[0]).emit_python() ~ ', lambda: ' ~ (@.arguments[1]).emit_python() ~ ')' 
         }
-        if $code eq 'infix:<eq>' { return '(str('  ~ (@.arguments.>>emit_python).join(') == str(')  ~ '))' };
-        if $code eq 'infix:<ne>' { return '(str('  ~ (@.arguments.>>emit_python).join(') != str(')  ~ '))' };
-        if $code eq 'infix:<ge>' { return '(str('  ~ (@.arguments.>>emit_python).join(') >= str(')  ~ '))' };
-        if $code eq 'infix:<le>' { return '(str('  ~ (@.arguments.>>emit_python).join(') <= str(')  ~ '))' };
+        if $code eq 'infix:<eq>' { return '(unicode('  ~ (@.arguments.>>emit_python).join(') == unicode(')  ~ '))' };
+        if $code eq 'infix:<ne>' { return '(unicode('  ~ (@.arguments.>>emit_python).join(') != unicode(')  ~ '))' };
+        if $code eq 'infix:<ge>' { return '(unicode('  ~ (@.arguments.>>emit_python).join(') >= unicode(')  ~ '))' };
+        if $code eq 'infix:<le>' { return '(unicode('  ~ (@.arguments.>>emit_python).join(') <= unicode(')  ~ '))' };
 
         if $code eq 'infix:<==>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') == mp6_to_num(') ~ '))' };
         if $code eq 'infix:<!=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') != mp6_to_num(') ~ '))' };

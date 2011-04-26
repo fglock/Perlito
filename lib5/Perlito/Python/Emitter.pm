@@ -31,7 +31,7 @@ package GLOBAL;
             (my  $List_out = []);
             ((my  $tmp = undef) = '');
             if (Main::bool(($s eq ''))) {
-                return scalar (chr(39) . chr(39))
+                return scalar ('u' . chr(39) . chr(39))
             }
             else {
 
@@ -43,19 +43,19 @@ package GLOBAL;
                 }
                 else {
                     if (Main::bool(($tmp ne ''))) {
-                        push( @{$List_out}, chr(39) . $tmp . chr(39) )
+                        push( @{$List_out}, 'u' . chr(39) . $tmp . chr(39) )
                     }
                     else {
 
                     };
-                    push( @{$List_out}, 'chr' . chr(40) . do {
+                    push( @{$List_out}, 'unichr' . chr(40) . do {
     ord($c)
 } . chr(41) );
                     ($tmp = '')
                 }
             };
             if (Main::bool(($tmp ne ''))) {
-                push( @{$List_out}, chr(39) . $tmp . chr(39) )
+                push( @{$List_out}, 'u' . chr(39) . $tmp . chr(39) )
             }
             else {
 
@@ -312,11 +312,11 @@ $self->emit_python_indented(0)
             push( @{$List_s}, Python::tab(($level + 2)) . 'def f__setattr__' . chr(40) . 'self, k, v' . chr(41) . ':' );
             push( @{$List_s}, Python::tab(($level + 3)) . 'return self.__dict__' . chr(91) . 'k' . chr(93) . '.f_set' . chr(40) . 'v' . chr(41) );
             push( @{$List_s}, Python::tab(($level + 2)) . 'def f_isa' . chr(40) . 'self, name' . chr(41) . ':' );
-            push( @{$List_s}, Python::tab(($level + 3)) . 'return name ' . chr(61) . chr(61) . ' ' . chr(39) . $self->{name} . chr(39) );
+            push( @{$List_s}, Python::tab(($level + 3)) . 'return name ' . chr(61) . chr(61) . ' u' . chr(39) . $self->{name} . chr(39) );
             push( @{$List_s}, Python::tab(($level + 2)) . 'def f_bool' . chr(40) . 'self' . chr(41) . ':' );
             push( @{$List_s}, Python::tab(($level + 3)) . 'return 1' );
             push( @{$List_s}, Python::tab(($level + 2)) . 'def __getattr__' . chr(40) . 'self, attr' . chr(41) . ':' );
-            push( @{$List_s}, Python::tab(($level + 3)) . 'if attr' . chr(91) . '0:2' . chr(93) . ' ' . chr(61) . chr(61) . ' ' . chr(39) . 'v_' . chr(39) . ':' );
+            push( @{$List_s}, Python::tab(($level + 3)) . 'if attr' . chr(91) . '0:2' . chr(93) . ' ' . chr(61) . chr(61) . ' u' . chr(39) . 'v_' . chr(39) . ':' );
             push( @{$List_s}, Python::tab(($level + 4)) . 'self.__dict__' . chr(91) . 'attr' . chr(93) . ' ' . chr(61) . ' mp6_Scalar' . chr(40) . chr(41) );
             push( @{$List_s}, Python::tab(($level + 4)) . 'return self.__dict__' . chr(91) . 'attr' . chr(93) );
             push( @{$List_s}, Python::tab(($level + 3)) . 'raise AttributeError' . chr(40) . 'attr' . chr(41) );
@@ -637,7 +637,7 @@ $self->emit_python_indented(0)
                 return scalar ('mp6_to_num' . chr(40) . ($self->{arguments}->[0])->emit_python(("" . chr(41))))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(126) . chr(62)))) {
-                return scalar ('str' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ' ') . chr(41))
+                return scalar ('unicode' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(33) . chr(62)))) {
                 return scalar ('not mp6_to_bool' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ' ') . chr(41))
@@ -655,7 +655,7 @@ $self->emit_python_indented(0)
                 return scalar (chr(37) . chr(123) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ' ') . chr(125))
             };
             if (Main::bool(($code eq 'list:' . chr(60) . chr(126) . chr(62)))) {
-                return scalar (chr(40) . 'str' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' + str' . chr(40)) . chr(41) . chr(41))
+                return scalar (chr(40) . 'unicode' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' + unicode' . chr(40)) . chr(41) . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . '+' . chr(62)))) {
                 return scalar (chr(40) . 'mp6_to_num' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' + mp6_to_num' . chr(40)) . chr(41) . chr(41))
@@ -679,16 +679,16 @@ $self->emit_python_indented(0)
                 return scalar ('mp6_defined_or' . chr(40) . ($self->{arguments}->[0])->emit_python() . ', lambda: ' . ($self->{arguments}->[1])->emit_python() . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . 'eq' . chr(62)))) {
-                return scalar (chr(40) . 'str' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' ' . chr(61) . chr(61) . ' str' . chr(40)) . chr(41) . chr(41))
+                return scalar (chr(40) . 'unicode' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' ' . chr(61) . chr(61) . ' unicode' . chr(40)) . chr(41) . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . 'ne' . chr(62)))) {
-                return scalar (chr(40) . 'str' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' ' . chr(33) . chr(61) . ' str' . chr(40)) . chr(41) . chr(41))
+                return scalar (chr(40) . 'unicode' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' ' . chr(33) . chr(61) . ' unicode' . chr(40)) . chr(41) . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . 'ge' . chr(62)))) {
-                return scalar (chr(40) . 'str' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' ' . chr(62) . chr(61) . ' str' . chr(40)) . chr(41) . chr(41))
+                return scalar (chr(40) . 'unicode' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' ' . chr(62) . chr(61) . ' unicode' . chr(40)) . chr(41) . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . 'le' . chr(62)))) {
-                return scalar (chr(40) . 'str' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' ' . chr(60) . chr(61) . ' str' . chr(40)) . chr(41) . chr(41))
+                return scalar (chr(40) . 'unicode' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' ' . chr(60) . chr(61) . ' unicode' . chr(40)) . chr(41) . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . chr(61) . chr(61) . chr(62)))) {
                 return scalar (chr(40) . 'mp6_to_num' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' ' . chr(61) . chr(61) . ' mp6_to_num' . chr(40)) . chr(41) . chr(41))
