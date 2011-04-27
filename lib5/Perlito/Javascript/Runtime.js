@@ -373,7 +373,7 @@ f_num = function(o) {
         return o.f_num();
     }
     if (typeof o !== 'number') {
-        return parseFloat(o);
+        return parseFloat(f_string(o));
     }
     return o;
 };

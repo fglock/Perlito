@@ -83,22 +83,22 @@ class Perlito::Expression {
             }
             if $v[1] eq 'methcall' {
                 # say "#   Call ", ($v[2]).perl;
-                if ($v[3]){'end_block'} {
+                if ($v[3])<end_block> {
                     # say "# pop_term: found end_block in Call";
-                    $num_stack.unshift( ($v[3]){'end_block'} );
+                    $num_stack.unshift( ($v[3])<end_block> );
                 }
-                my $param_list = expand_list( ($v[3]){'exp'} );
+                my $param_list = expand_list( ($v[3])<exp> );
                 $v = Call.new( invocant => Mu, method => $v[2], arguments => $param_list, hyper => $v[4] );
                 # say "#     ", $v.perl;
                 return $v;
             }
             if $v[1] eq 'funcall' {
                 # say "#   Apply ", ($v[2]).perl;
-                if ($v[4]){'end_block'} {
+                if ($v[4])<end_block> {
                     # say "# pop_term: found end_block in Apply";
-                    $num_stack.unshift( ($v[4]){'end_block'} );
+                    $num_stack.unshift( ($v[4])<end_block> );
                 }
-                my $param_list = expand_list( ($v[4]){'exp'} );
+                my $param_list = expand_list( ($v[4])<exp> );
                 $v = Apply.new( code => $v[3], arguments => $param_list, namespace => $v[2] );
                 # say "#     ", $v.perl;
                 return $v;
@@ -172,7 +172,7 @@ class Perlito::Expression {
         }
         if $v[1] eq 'methcall' {
             # say "#   Call ", ($v[2]).perl;
-            my $param_list = expand_list(($v[3]){'exp'});
+            my $param_list = expand_list(($v[3])<exp>);
             $v = Call.new( invocant => $value, method => $v[2], arguments => $param_list, hyper => $v[4] );
             return $v;
         }
@@ -365,14 +365,15 @@ class Perlito::Expression {
         | '.{' <curly_parse>   '}'                      { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
+        | '<' <Perlito::Grammar.ident> '>'              { make [ 'postfix_or_term',  'block', [Val::Buf.new('buf' => $$<Perlito::Grammar.ident>)] ] }
 
         | '->' <.Perlito::Grammar.ws>? <list_parse> 
                     { 
-                        my $block = ($$<list_parse>){'end_block'};
+                        my $block = ($$<list_parse>)<end_block>;
                         if $block.sig() {
                             die "Signature error in block"
                         }
-                        make [ 'postfix_or_term', 'block', $block.stmts, ($$<list_parse>){'exp'} ] 
+                        make [ 'postfix_or_term', 'block', $block.stmts, ($$<list_parse>)<exp> ] 
                     }
         | '{'  <.Perlito::Grammar.ws>?
                <Perlito::Grammar.exp_stmts> <.Perlito::Grammar.ws>? '}'
@@ -688,17 +689,17 @@ class Perlito::Expression {
             # say "# not a statement or expression";
             return $res;
         }
-        if ($$res){'exp'}.isa('Lit::Block') {
+        if ($$res)<exp>.isa('Lit::Block') {
             # standalone block
-            ($$res){'exp'} = Do.new(block => ($$res){'exp'});
+            ($$res)<exp> = Do.new(block => ($$res)<exp>);
         }
-        if ($$res){'end_block'} {
-            # warn "Block: ", (($$res){'end_block'}).perl;
+        if ($$res)<end_block> {
+            # warn "Block: ", (($$res)<end_block>).perl;
             die "Unexpected block after expression near ", $pos;
         }
-        if ($$res){'terminated'} {
+        if ($$res)<terminated> {
             # say "# statement expression terminated result: ", $res.perl;
-            $res.capture = ($$res){'exp'};
+            $res.capture = ($$res)<exp>;
             return $res;
         }
         # say "# look for a statement modifier";
@@ -706,7 +707,7 @@ class Perlito::Expression {
         if !($modifier) {
             # say "# statement expression no modifier result: ", $res.perl;
             # TODO - require a statement terminator 
-            $res.capture = ($$res){'exp'};
+            $res.capture = ($$res)<exp>;
             return $res;
         }
         my $modifier_exp = self.exp_parse($str, $modifier.to);
@@ -714,8 +715,8 @@ class Perlito::Expression {
         if !($modifier_exp) {
             die "Expected expression after '", $modifier, "'";
         }
-        if ($$modifier_exp){'end_block'} {
-            # warn "Block: ", (($$modifier_exp){'end_block'}).perl;
+        if ($$modifier_exp)<end_block> {
+            # warn "Block: ", (($$modifier_exp)<end_block>).perl;
             die "Unexpected block after expression near ", $modifier.to;
         }
         # TODO - require a statement terminator 
@@ -727,31 +728,31 @@ class Perlito::Expression {
             return Perlito::Match.new( 
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
                 capture => If.new(
-                    cond      => ($$modifier_exp){'exp'},
-                    body      => Lit::Block.new(stmts => [ ($$res){'exp'} ]),
+                    cond      => ($$modifier_exp)<exp>,
+                    body      => Lit::Block.new(stmts => [ ($$res)<exp> ]),
                     otherwise => Lit::Block.new(stmts => [ ]) ) );
         }
         if $modifier eq 'unless' {
             return Perlito::Match.new( 
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
                 capture => If.new(
-                    cond      => ($$modifier_exp){'exp'},
+                    cond      => ($$modifier_exp)<exp>,
                     body      => Lit::Block.new(stmts => [ ]),
-                    otherwise => Lit::Block.new(stmts => [ ($$res){'exp'} ]) ) );
+                    otherwise => Lit::Block.new(stmts => [ ($$res)<exp> ]) ) );
         }
         if $modifier eq 'while' {
             return Perlito::Match.new( 
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
                 capture => While.new(
-                    cond    => ($$modifier_exp){'exp'},
-                    body    => Lit::Block.new(stmts => [ ($$res){'exp'} ] ) ) );
+                    cond    => ($$modifier_exp)<exp>,
+                    body    => Lit::Block.new(stmts => [ ($$res)<exp> ] ) ) );
         }
         if $modifier eq 'for' {
             return Perlito::Match.new( 
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp.to, 'bool' => 1, 
                 capture => For.new(
-                    cond    => ($$modifier_exp){'exp'},
-                    body    => Lit::Block.new(stmts => [ ($$res){'exp'} ] ) ) );
+                    cond    => ($$modifier_exp)<exp>,
+                    body    => Lit::Block.new(stmts => [ ($$res)<exp> ] ) ) );
         }
         die "Unexpected statement modifier '$modifier'";
     } 

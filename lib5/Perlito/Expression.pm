@@ -412,7 +412,7 @@ package GLOBAL;
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
-    (((((((((((((((((((((((((((((do {
+    ((((((((((((((((((((((((((((((do {
     (((((('.' . chr(40) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2 = undef) = $grammar->paren_parse($str, $MATCH->to()));
     if (Main::bool($m2)) {
@@ -518,6 +518,33 @@ package GLOBAL;
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, chr(91) . ' ' . chr(93) );
     push( @{$List_a}, ${$MATCH->{'square_parse'}} );
+    $List_a
+}))
+}) || 1))))
+})) || (do {
+    (($MATCH)->{to} = $pos1);
+    (((((((chr(60) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((my  $m2 = undef) = Perlito::Grammar->ident($str, $MATCH->to()));
+    if (Main::bool($m2)) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'Perlito::Grammar.ident'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+    ($MATCH->{capture} = (do {
+    (my  $List_a = []);
+    (my  $List_v = []);
+    push( @{$List_a}, 'postfix_or_term' );
+    push( @{$List_a}, 'block' );
+    push( @{$List_a}, do {
+    (my  $List_a = []);
+    (my  $List_v = []);
+    push( @{$List_a}, Val::Buf->new(('buf' => ${$MATCH->{'Perlito::Grammar.ident'}})) );
+    $List_a
+} );
     $List_a
 }))
 }) || 1))))
