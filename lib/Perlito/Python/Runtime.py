@@ -74,7 +74,7 @@ def f_map(v, f):
 __builtin__.f_map = f_map
 
 def f_chr(n):
-    return unichr(mp6_to_num(str(n)))
+    return unichr(mp6_to_num(n))
 __builtin__.f_chr = f_chr
 
 def f_ord(n):
@@ -164,6 +164,7 @@ def mp6_to_num(s):
         c = coerce(s, 0);
         return c[0]
     except TypeError:
+        s = unicode(s)
         try:
             s.index(".")
             return float(s)
@@ -183,7 +184,7 @@ def mp6_to_num(s):
 class mp6_Array:
     def __init__(self, l):
         self.l = l
-    def __str__(self):
+    def __unicode__(self):
         return " ".join(map(lambda x: unicode(x), self.l))
     def __int__(self):
         return len(self.l)
@@ -265,7 +266,7 @@ class mp6_Array:
 class mp6_Hash:
     def __init__(self, l):
         self.l = l
-    def __str__(self):
+    def __unicode__(self):
         return unicode(self.l)
     def __int__(self):
         return len(self.l)
@@ -333,7 +334,7 @@ class mp6_Hash:
         return unicode(self.l)
 
 class mp6_Mu:
-    def __str__(self):
+    def __unicode__(self):
         return ""
     def __int__(self):
         return 0
@@ -359,7 +360,7 @@ class mp6_Scalar:
         self.v = v
     def __getattr__(self,name):
         return getattr(self.v, name)
-    def __str__(self):
+    def __unicode__(self):
         return unicode(self.v)
     def f_perl(self, seen={}):
         return f_perl(self.v, seen)
@@ -396,7 +397,7 @@ class mp6_Mu_get_proxy(mp6_Mu):
         self.v = v
     def __getattr__(self,name):
         return getattr(self.v, name)
-    def __str__(self):
+    def __unicode__(self):
         return unicode(self.v)
     def f_perl(self, seen={}):
         return f_perl(self.v, seen)
@@ -476,12 +477,12 @@ class Perlito__Match:
             self.__dict__[k] = mp6_Scalar()
             self.__dict__[k].f_set(v)
         return self.__dict__[k]
-    def __str__(self):
+    def __unicode__(self):
         if mp6_to_bool(self.v_bool):
             if not(mp6_isa(self.v_capture,'Mu')): 
                 return unicode(self.v_capture)
             return self.v_str[self.v_from:self.v_to]
-        return ''
+        return u''
     def f_bool(self):
         return mp6_to_bool(self.v_bool)
     def f_set(self, m):
