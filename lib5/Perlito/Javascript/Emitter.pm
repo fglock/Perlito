@@ -524,7 +524,7 @@ $self->emit_javascript_indented(0)
                 return scalar (chr(40) . ($self->{arguments}->[0])->emit_javascript() . ' ' . chr(124) . chr(124) . ' ' . chr(34) . chr(34) . chr(41) . '.substr' . chr(40) . ($self->{arguments}->[1])->emit_javascript() . ', ' . ($self->{arguments}->[2])->emit_javascript() . chr(41))
             };
             if (Main::bool(($code eq 'chr'))) {
-                return scalar ('String.fromCharCode' . chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41))
+                return scalar ('String.fromCharCode' . chr(40) . 'f_num' . chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41) . chr(41))
             };
             if (Main::bool(($code eq 'ord'))) {
                 return scalar (chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41) . '.charCodeAt' . chr(40) . '0' . chr(41))

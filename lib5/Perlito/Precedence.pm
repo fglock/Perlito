@@ -83,7 +83,7 @@ package GLOBAL;
             ((my  $c02 = undef) = substr($str, $pos, 2));
             ((my  $hyper_left = undef) = 0);
             ((my  $hyper_right = undef) = 0);
-            if (Main::bool(((($c01 eq chr(194) . chr(171))) || (($c01 eq chr(194) . chr(187)))))) {
+            if (Main::bool(((($c01 eq chr(171))) || (($c01 eq chr(187)))))) {
                 ($hyper_left = $c01);
                 ($pos = ($pos + 1));
                 ($c02 = substr($str, $pos, 2))
@@ -106,7 +106,7 @@ package GLOBAL;
                     ($pos = ($pos + 3));
                     ((my  $c01 = undef) = substr($str, $pos, 2));
                     ((my  $c02 = undef) = substr($str, $pos, 3));
-                    if (Main::bool(((($c01 eq chr(194) . chr(171))) || (($c01 eq chr(194) . chr(187)))))) {
+                    if (Main::bool(((($c01 eq chr(171))) || (($c01 eq chr(187)))))) {
                         ($hyper_right = $c01);
                         ($pos = ($pos + 1))
                     }
@@ -142,7 +142,7 @@ package GLOBAL;
                     ($pos = ($pos + 2));
                     ((my  $c01 = undef) = substr($str, $pos, 1));
                     ((my  $c02 = undef) = substr($str, $pos, 2));
-                    if (Main::bool(((($c01 eq chr(194) . chr(171))) || (($c01 eq chr(194) . chr(187)))))) {
+                    if (Main::bool(((($c01 eq chr(171))) || (($c01 eq chr(187)))))) {
                         ($hyper_right = $c01);
                         ($pos = ($pos + 1))
                     }
@@ -177,7 +177,7 @@ package GLOBAL;
                     ($pos = ($pos + 1));
                     ((my  $c01 = undef) = substr($str, $pos, 1));
                     ((my  $c02 = undef) = substr($str, $pos, 2));
-                    if (Main::bool(((($c01 eq chr(194) . chr(171))) || (($c01 eq chr(194) . chr(187)))))) {
+                    if (Main::bool(((($c01 eq chr(171))) || (($c01 eq chr(187)))))) {
                         ($hyper_right = $c01);
                         ($pos = ($pos + 1))
                     }

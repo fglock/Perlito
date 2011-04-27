@@ -41,27 +41,27 @@ __all__ = ['mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'mp6_isa',
 
 def f_print(*msg):
     for m in msg:
-        sys.stdout.write(str(m))
+        sys.stdout.write(unicode(m).encode('utf-8'))
     return 1;
 __builtin__.f_print = f_print
 
 def f_say(*msg):
     for m in msg:
-        sys.stdout.write(str(m))
+        sys.stdout.write(unicode(m).encode('utf-8'))
     sys.stdout.write("\n")
     return 1;
 __builtin__.f_say = f_say
 
 def f_warn(*msg):
     for m in msg:
-        sys.stderr.write(str(m))
+        sys.stderr.write(unicode(m).encode('utf-8'))
     sys.stderr.write("\n")
 __builtin__.f_warn = f_warn
 
 def f_die(*msg):
     sys.stderr.write("Died: ")
     for m in msg:
-        sys.stderr.write(str(m))
+        sys.stderr.write(unicode(m).encode('utf-8'))
     sys.stderr.write("\n")
     raise mp6_Die()
 __builtin__.f_die = f_die
@@ -74,11 +74,11 @@ def f_map(v, f):
 __builtin__.f_map = f_map
 
 def f_chr(n):
-    return chr(n)
+    return unichr(mp6_to_num(n))
 __builtin__.f_chr = f_chr
 
 def f_ord(n):
-    return ord(str(n))
+    return ord(unicode(n))
 __builtin__.f_ord = f_ord
 
 def mp6_to_scalar(v):
@@ -97,8 +97,10 @@ def mp6_to_bool(o):
             return o != 0
         if type(o) == type(1.1):
             return o != 0
-        if type(o) == type("aa"):
+        if type(o) == type("a"):
             return o != "" and o != "0"
+        if type(o) == type(u"a"):
+            return o != u"" and o != u"0"
         return False
 
 def mp6_and(x, y):
@@ -128,7 +130,9 @@ def mp6_isa(v, name):
             return (name == 'Int') or (name == 'Num')
         if type(v) == type(1.1):
             return name == 'Num'
-        if type(v) == type("aa"):
+        if type(v) == type("a"):
+            return name == 'Str'
+        if type(v) == type(u"a"):
             return name == 'Str'
         f_warn("Warning: Can't calculate .isa() on ", v.__class__.__name__, " ", f_perl(v))
         return False
@@ -139,15 +143,15 @@ def mp6_join(l, s):
     except AttributeError:
         None
     if not mp6_isa(l, 'Array'):
-        return str(l)
-    return s.join(l.f_map( lambda x: str(x) ).l)
+        return unicode(l)
+    return s.join(l.f_map( lambda x: unicode(x) ).l)
 
 def mp6_split(l, s):
     try:
         l = l.f_get()
     except AttributeError:
         None
-    return mp6_Array(str(l).split(s))
+    return mp6_Array(unicode(l).split(s))
 
 def mp6_index(s, s2):
     try:
@@ -160,6 +164,7 @@ def mp6_to_num(s):
         c = coerce(s, 0);
         return c[0]
     except TypeError:
+        s = unicode(s)
         try:
             s.index(".")
             return float(s)
@@ -179,8 +184,8 @@ def mp6_to_num(s):
 class mp6_Array:
     def __init__(self, l):
         self.l = l
-    def __str__(self):
-        return " ".join(map(lambda x: str(x), self.l))
+    def __unicode__(self):
+        return " ".join(map(lambda x: unicode(x), self.l))
     def __int__(self):
         return len(self.l)
     def f_bool(self):
@@ -247,7 +252,7 @@ class mp6_Array:
     def f_isa(self, name):
         return name == 'Array'
     def str(self):
-        return str(self.l)
+        return unicode(self.l)
     def f_map(self, f):
         result = []
         v = map(f, self.l)
@@ -261,8 +266,8 @@ class mp6_Array:
 class mp6_Hash:
     def __init__(self, l):
         self.l = l
-    def __str__(self):
-        return str(self.l)
+    def __unicode__(self):
+        return unicode(self.l)
     def __int__(self):
         return len(self.l)
     def f_bool(self):
@@ -326,10 +331,10 @@ class mp6_Hash:
     def f_isa(self, name):
         return name == 'Hash'
     def str(self):
-        return str(self.l)
+        return unicode(self.l)
 
 class mp6_Mu:
-    def __str__(self):
+    def __unicode__(self):
         return ""
     def __int__(self):
         return 0
@@ -355,8 +360,8 @@ class mp6_Scalar:
         self.v = v
     def __getattr__(self,name):
         return getattr(self.v, name)
-    def __str__(self):
-        return str(self.v)
+    def __unicode__(self):
+        return unicode(self.v)
     def f_perl(self, seen={}):
         return f_perl(self.v, seen)
     def f_id(self):
@@ -392,8 +397,8 @@ class mp6_Mu_get_proxy(mp6_Mu):
         self.v = v
     def __getattr__(self,name):
         return getattr(self.v, name)
-    def __str__(self):
-        return str(self.v)
+    def __unicode__(self):
+        return unicode(self.v)
     def f_perl(self, seen={}):
         return f_perl(self.v, seen)
     def f_id(self):
@@ -472,12 +477,12 @@ class Perlito__Match:
             self.__dict__[k] = mp6_Scalar()
             self.__dict__[k].f_set(v)
         return self.__dict__[k]
-    def __str__(self):
+    def __unicode__(self):
         if mp6_to_bool(self.v_bool):
             if not(mp6_isa(self.v_capture,'Mu')): 
-                return str(self.v_capture)
+                return unicode(self.v_capture)
             return self.v_str[self.v_from:self.v_to]
-        return ''
+        return u''
     def f_bool(self):
         return mp6_to_bool(self.v_bool)
     def f_set(self, m):
@@ -579,7 +584,7 @@ class IO:
     def f_isa(v_self, name):
         return name == 'IO'
     def f_slurp(self, name):
-        return file(str(name)).read()
+        return file(unicode(name)).read().decode('utf-8')
 IO_proto = IO()
 __builtin__.IO = IO
 __builtin__.IO_proto = IO_proto
@@ -610,13 +615,15 @@ def f_perl(o, last_seen={}):
         return o.f_perl(seen)
     except AttributeError:
         if type(o) == type(False):
-            return str(o)
+            return unicode(o)
         if type(o) == type(1):
-            return str(o)
+            return unicode(o)
         if type(o) == type(1.1):
-            return str(o)
-        if type(o) == type("aa"):
+            return unicode(o)
+        if type(o) == type("a"):
             return '"' + o + '"'
+        if type(o) == type(u"a"):
+            return u'"' + o + u'"'
         if type(o) == type([]):
             try:
                 if seen[id(o)]:
@@ -640,5 +647,5 @@ def f_perl(o, last_seen={}):
 __builtin__.f_perl = f_perl
 
 __builtin__.List_ARGS = mp6_Array([])
-List_ARGS.l.extend(sys.argv[1:])
+List_ARGS.l.extend( map(lambda x: x.decode("utf-8"), sys.argv[1:]) )
 

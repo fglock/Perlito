@@ -161,7 +161,7 @@ if (typeof f_warn !== 'function') {
 }
 
 f_chr = function(o) {
-    return String.fromCharCode(o);
+    return String.fromCharCode(f_num(o));
 };
 
 f_elems = function(o) {
@@ -362,17 +362,24 @@ f_string = function(o) {
     return o;
 };
 
+f_num = function(o) {
+    if (o == null) {
+        return 0;
+    }
+    if (typeof o === 'object' && (o instanceof Array)) {
+        return o.length;
+    }
+    if (typeof o.f_num === 'function') {
+        return o.f_num();
+    }
+    if (typeof o !== 'number') {
+        return parseFloat(o);
+    }
+    return o;
+};
+
 f_add = function(o1, o2) {
-    if (typeof o1 === 'string') {
-        if (typeof o2 === 'string') {
-            return parseFloat(o1) + parseFloat(o2);
-        }
-        return parseFloat(o1) + o2;
-    }
-    if (typeof o2 === 'string') {
-        return o1 + parseFloat(o2);
-    }
-    return o1 + o2;
+    return f_num(o1) + f_num(o2)
 };
 
 f_bool = function(o) {

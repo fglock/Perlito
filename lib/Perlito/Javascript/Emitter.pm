@@ -451,7 +451,7 @@ class Apply {
                  ', ' ~ (@.arguments[2]).emit_javascript() ~ ')' 
         }
 
-        if $code eq 'chr'        { return 'String.fromCharCode(' ~ (@.arguments[0]).emit_javascript() ~ ')' }
+        if $code eq 'chr'        { return 'String.fromCharCode(f_num(' ~ (@.arguments[0]).emit_javascript() ~ '))' }
         if $code eq 'ord'        { return '(' ~ (@.arguments[0]).emit_javascript() ~ ').charCodeAt(0)' }
 
         if $code eq 'Int'        { return 'parseInt(' ~ (@.arguments[0]).emit_javascript() ~ ')' }
