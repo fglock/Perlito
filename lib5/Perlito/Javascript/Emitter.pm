@@ -61,6 +61,21 @@ package GLOBAL;
 
             };
             return scalar (Main::join($List_out, ' + '))
+        };
+        ((my  $Hash_reserved = {}) = do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'print'} = 1);
+    $Hash_a
+});
+        sub escape_function {
+            my $s = $_[0];
+            if (Main::bool(exists($Hash_reserved->{$s}))) {
+                return scalar ('f_' . $s)
+            }
+            else {
+
+            };
+            return scalar ($s)
         }
     }
 
@@ -126,7 +141,7 @@ $self->emit_javascript_indented(0)
 })))
                     };
                     ($body = Perlito::Javascript::LexicalBlock->new(('block' => $body->stmts()), ('needs_return' => 1)));
-                    push( @{$List_str}, Javascript::tab($level) . 'if ' . chr(40) . ' f_bool' . chr(40) . $cond->emit_javascript() . chr(41) . ' ' . chr(41) . ' ' . chr(123) . ' return ' . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . chr(10) . $body->emit_javascript_indented(($level + 1)) . chr(10) . Javascript::tab($level) . chr(125) . chr(41) . chr(40) . chr(41) . chr(59) . ' ' . chr(125) );
+                    push( @{$List_str}, Javascript::tab($level) . 'if ' . chr(40) . ' ' . Javascript::escape_function('bool') . chr(40) . $cond->emit_javascript() . chr(41) . ' ' . chr(41) . ' ' . chr(123) . ' return ' . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . chr(10) . $body->emit_javascript_indented(($level + 1)) . chr(10) . Javascript::tab($level) . chr(125) . chr(41) . chr(40) . chr(41) . chr(59) . ' ' . chr(125) );
                     if (Main::bool($otherwise)) {
                         ($otherwise = Perlito::Javascript::LexicalBlock->new(('block' => $otherwise->stmts()), ('needs_return' => 1)));
                         push( @{$List_str}, Javascript::tab($level) . 'else ' . chr(123) . ' return ' . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . chr(10) . $otherwise->emit_javascript_indented(($level + 1)) . chr(10) . Javascript::tab($level) . chr(125) . chr(41) . chr(40) . chr(41) . chr(59) . ' ' . chr(125) )
@@ -161,7 +176,7 @@ $self->emit_javascript_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $class_name = undef) = Main::to_javascript_namespace($self->{name}));
-            ((my  $str = undef) = chr(47) . chr(47) . ' class ' . $self->{name} . chr(10) . 'if ' . chr(40) . 'typeof ' . $class_name . ' ' . chr(33) . chr(61) . chr(61) . ' ' . chr(39) . 'object' . chr(39) . chr(41) . ' ' . chr(123) . chr(10) . '  ' . $class_name . ' ' . chr(61) . ' function' . chr(40) . chr(41) . ' ' . chr(123) . chr(125) . chr(59) . chr(10) . '  ' . $class_name . ' ' . chr(61) . ' new ' . $class_name . chr(59) . chr(10) . '  ' . $class_name . '.f_isa ' . chr(61) . ' function ' . chr(40) . 's' . chr(41) . ' ' . chr(123) . ' return s ' . chr(61) . chr(61) . ' ' . chr(39) . $self->{name} . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . chr(10) . '  ' . $class_name . '.f_perl ' . chr(61) . ' function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return ' . chr(39) . $self->{name} . '.new' . chr(40) . chr(39) . ' + Main._dump' . chr(40) . 'this' . chr(41) . ' + ' . chr(39) . chr(41) . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . chr(10) . chr(125) . chr(10) . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . chr(10) . '  var v__NAMESPACE ' . chr(61) . ' ' . $class_name . chr(59) . chr(10));
+            ((my  $str = undef) = chr(47) . chr(47) . ' class ' . $self->{name} . chr(10) . 'if ' . chr(40) . 'typeof ' . $class_name . ' ' . chr(33) . chr(61) . chr(61) . ' ' . chr(39) . 'object' . chr(39) . chr(41) . ' ' . chr(123) . chr(10) . '  ' . $class_name . ' ' . chr(61) . ' function' . chr(40) . chr(41) . ' ' . chr(123) . chr(125) . chr(59) . chr(10) . '  ' . $class_name . ' ' . chr(61) . ' new ' . $class_name . chr(59) . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function('isa') . ' ' . chr(61) . ' function ' . chr(40) . 's' . chr(41) . ' ' . chr(123) . ' return s ' . chr(61) . chr(61) . ' ' . chr(39) . $self->{name} . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function('perl') . ' ' . chr(61) . ' function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return ' . chr(39) . $self->{name} . '.new' . chr(40) . chr(39) . ' + Main._dump' . chr(40) . 'this' . chr(41) . ' + ' . chr(39) . chr(41) . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . chr(10) . chr(125) . chr(10) . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . chr(10) . '  var v__NAMESPACE ' . chr(61) . ' ' . $class_name . chr(59) . chr(10));
             for my $decl ( @{$self->{body} || []} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     ($str = $str . '  ' . $decl->emit_javascript_init())
@@ -175,20 +190,20 @@ $self->emit_javascript_indented(0)
             };
             for my $decl ( @{$self->{body} || []} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
-                    ($str = $str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . chr(10) . '  ' . $class_name . '.v_' . $decl->var()->name() . ' ' . chr(61) . ' null' . chr(59) . chr(10) . '  ' . $class_name . '.f_' . $decl->var()->name() . ' ' . chr(61) . ' function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . chr(10))
+                    ($str = $str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . chr(10) . '  ' . $class_name . '.v_' . $decl->var()->name() . ' ' . chr(61) . ' null' . chr(59) . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function($decl->var()->name()) . ' ' . chr(61) . ' function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . chr(10))
                 };
                 if (Main::bool(Main::isa($decl, 'Method'))) {
                     ((my  $sig = undef) = $decl->sig());
                     ((my  $pos = undef) = $sig->positional());
                     ((my  $invocant = undef) = $sig->invocant());
                     ((my  $block = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
-                    ($str = $str . '  ' . chr(47) . chr(47) . ' method ' . $decl->name() . chr(10) . '  ' . $class_name . '.f_' . $decl->name() . ' ' . chr(61) . ' function ' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . chr(41) . ' ' . chr(123) . chr(10) . '    var ' . $invocant->emit_javascript() . ' ' . chr(61) . ' this' . chr(59) . chr(10) . $block->emit_javascript_indented(($level + 1)) . chr(10) . '  ' . chr(125) . chr(10) . '  ' . $class_name . '.f_' . $decl->name() . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . chr(10))
+                    ($str = $str . '  ' . chr(47) . chr(47) . ' method ' . $decl->name() . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function ' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . chr(41) . ' ' . chr(123) . chr(10) . '    var ' . $invocant->emit_javascript() . ' ' . chr(61) . ' this' . chr(59) . chr(10) . $block->emit_javascript_indented(($level + 1)) . chr(10) . '  ' . chr(125) . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . chr(10))
                 };
                 if (Main::bool(Main::isa($decl, 'Sub'))) {
                     ((my  $sig = undef) = $decl->sig());
                     ((my  $pos = undef) = $sig->positional());
                     ((my  $block = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
-                    ($str = $str . '  ' . chr(47) . chr(47) . ' sub ' . $decl->name() . chr(10) . '  ' . $class_name . '.f_' . $decl->name() . ' ' . chr(61) . ' function ' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . chr(41) . ' ' . chr(123) . chr(10) . $block->emit_javascript_indented(($level + 1)) . chr(10) . '  ' . chr(125) . chr(10))
+                    ($str = $str . '  ' . chr(47) . chr(47) . ' sub ' . $decl->name() . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function ' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . chr(41) . ' ' . chr(123) . chr(10) . $block->emit_javascript_indented(($level + 1)) . chr(10) . '  ' . chr(125) . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . chr(10))
                 }
             };
             for my $decl ( @{$self->{body} || []} ) {
@@ -469,21 +484,21 @@ $self->emit_javascript_indented(0)
             };
             if (Main::bool(((((((((((($self->{method} eq 'perl')) || (($self->{method} eq 'isa'))) || (($self->{method} eq 'id'))) || (($self->{method} eq 'scalar'))) || (($self->{method} eq 'keys'))) || (($self->{method} eq 'values'))) || (($self->{method} eq 'pairs'))) || (($self->{method} eq 'elems'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'chars'))))) {
                 if (Main::bool(($self->{hyper}))) {
-                    return scalar (chr(40) . 'function ' . chr(40) . 'a_' . chr(41) . ' ' . chr(123) . ' ' . 'var out ' . chr(61) . ' ' . chr(91) . chr(93) . chr(59) . ' ' . 'if ' . chr(40) . ' a_ ' . chr(61) . chr(61) . ' null ' . chr(41) . ' ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for' . chr(40) . 'var i ' . chr(61) . ' 0' . chr(59) . ' i ' . chr(60) . ' a_.length' . chr(59) . ' i++' . chr(41) . ' ' . chr(123) . ' ' . 'out.push' . chr(40) . ' f_' . $self->{method} . chr(40) . 'a_' . chr(91) . 'i' . chr(93) . chr(41) . ' ' . chr(41) . ' ' . chr(125) . ' return out' . chr(59) . ' ' . chr(125) . chr(41) . chr(40) . $invocant . chr(41))
+                    return scalar (chr(40) . 'function ' . chr(40) . 'a_' . chr(41) . ' ' . chr(123) . ' ' . 'var out ' . chr(61) . ' ' . chr(91) . chr(93) . chr(59) . ' ' . 'if ' . chr(40) . ' a_ ' . chr(61) . chr(61) . ' null ' . chr(41) . ' ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for' . chr(40) . 'var i ' . chr(61) . ' 0' . chr(59) . ' i ' . chr(60) . ' a_.length' . chr(59) . ' i++' . chr(41) . ' ' . chr(123) . ' ' . 'out.push' . chr(40) . ' ' . Javascript::escape_function($self->{method}) . chr(40) . 'a_' . chr(91) . 'i' . chr(93) . chr(41) . ' ' . chr(41) . ' ' . chr(125) . ' return out' . chr(59) . ' ' . chr(125) . chr(41) . chr(40) . $invocant . chr(41))
                 };
-                return scalar ('f_' . $self->{method} . chr(40) . $invocant . ((Main::bool(($self->{arguments} || [])) ? ', ' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') : '')) . chr(41))
+                return scalar (Javascript::escape_function($self->{method}) . chr(40) . $invocant . ((Main::bool(($self->{arguments} || [])) ? ', ' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') : '')) . chr(41))
             };
             if (Main::bool(((((((($self->{method} eq 'join')) || (($self->{method} eq 'split'))) || (($self->{method} eq 'shift'))) || (($self->{method} eq 'unshift'))) || (($self->{method} eq 'push'))) || (($self->{method} eq 'pop'))))) {
                 return scalar ($invocant . '.' . $self->{method} . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41))
             };
             ((my  $meth = undef) = $self->{method});
             if (Main::bool(($self->{hyper}))) {
-                return scalar (chr(40) . 'function ' . chr(40) . 'a_' . chr(41) . ' ' . chr(123) . ' ' . 'var out ' . chr(61) . ' ' . chr(91) . chr(93) . chr(59) . ' ' . 'if ' . chr(40) . ' a_ ' . chr(61) . chr(61) . ' null ' . chr(41) . ' ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for' . chr(40) . 'var i ' . chr(61) . ' 0' . chr(59) . ' i ' . chr(60) . ' a_.length' . chr(59) . ' i++' . chr(41) . ' ' . chr(123) . ' ' . 'out.push' . chr(40) . ' a_' . chr(91) . 'i' . chr(93) . '.f_' . $meth . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41) . ' ' . chr(41) . ' ' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . chr(41) . chr(40) . $invocant . chr(41))
+                return scalar (chr(40) . 'function ' . chr(40) . 'a_' . chr(41) . ' ' . chr(123) . ' ' . 'var out ' . chr(61) . ' ' . chr(91) . chr(93) . chr(59) . ' ' . 'if ' . chr(40) . ' a_ ' . chr(61) . chr(61) . ' null ' . chr(41) . ' ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for' . chr(40) . 'var i ' . chr(61) . ' 0' . chr(59) . ' i ' . chr(60) . ' a_.length' . chr(59) . ' i++' . chr(41) . ' ' . chr(123) . ' ' . 'out.push' . chr(40) . ' a_' . chr(91) . 'i' . chr(93) . '.' . Javascript::escape_function($meth) . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41) . ' ' . chr(41) . ' ' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . chr(41) . chr(40) . $invocant . chr(41))
             };
             if (Main::bool(($meth eq 'postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)))) {
                 return scalar (chr(40) . $invocant . chr(41) . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41))
             };
-            return scalar (Javascript::tab($level) . $invocant . '.f_' . $meth . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41))
+            return scalar (Javascript::tab($level) . $invocant . '.' . Javascript::escape_function($meth) . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41))
         }
     }
 
@@ -524,7 +539,7 @@ $self->emit_javascript_indented(0)
                 return scalar (chr(40) . ($self->{arguments}->[0])->emit_javascript() . ' ' . chr(124) . chr(124) . ' ' . chr(34) . chr(34) . chr(41) . '.substr' . chr(40) . ($self->{arguments}->[1])->emit_javascript() . ', ' . ($self->{arguments}->[2])->emit_javascript() . chr(41))
             };
             if (Main::bool(($code eq 'chr'))) {
-                return scalar ('String.fromCharCode' . chr(40) . 'f_num' . chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41) . chr(41))
+                return scalar ('String.fromCharCode' . chr(40) . Javascript::escape_function('num') . chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41) . chr(41))
             };
             if (Main::bool(($code eq 'ord'))) {
                 return scalar (chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41) . '.charCodeAt' . chr(40) . '0' . chr(41))
@@ -536,22 +551,22 @@ $self->emit_javascript_indented(0)
                 return scalar ('parseFloat' . chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(126) . chr(62)))) {
-                return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . '.f_string' . chr(40) . chr(41))
+                return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . '.' . Javascript::escape_function('string') . chr(40) . chr(41))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(33) . chr(62)))) {
-                return scalar (chr(40) . ' f_bool' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . ' ' . chr(63) . ' false : true' . chr(41))
+                return scalar (chr(40) . ' ' . Javascript::escape_function('bool') . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . ' ' . chr(63) . ' false : true' . chr(41))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(63) . chr(62)))) {
-                return scalar (chr(40) . ' f_bool' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . ' ' . chr(63) . ' true : false' . chr(41))
+                return scalar (chr(40) . ' ' . Javascript::escape_function('bool') . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . ' ' . chr(63) . ' true : false' . chr(41))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(36) . chr(62)))) {
-                return scalar ('f_scalar' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41))
+                return scalar (Javascript::escape_function('scalar') . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(64) . chr(62)))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(37) . chr(62)))) {
-                return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . '.f_hash' . chr(40) . chr(41))
+                return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . '.' . Javascript::escape_function('hash') . chr(40) . chr(41))
             };
             if (Main::bool(($code eq 'postfix:' . chr(60) . '++' . chr(62)))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . '++')
@@ -566,10 +581,10 @@ $self->emit_javascript_indented(0)
                 return scalar ('--' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
             if (Main::bool(($code eq 'list:' . chr(60) . chr(126) . chr(62)))) {
-                return scalar (chr(40) . 'f_string' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), chr(41) . ' + f_string' . chr(40)) . chr(41) . chr(41))
+                return scalar (chr(40) . Javascript::escape_function('string') . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), chr(41) . ' + ' . Javascript::escape_function('string') . chr(40)) . chr(41) . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . '+' . chr(62)))) {
-                return scalar ('f_add' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41))
+                return scalar (Javascript::escape_function('add') . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . '-' . chr(62)))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' - ') . chr(41))
@@ -599,13 +614,13 @@ $self->emit_javascript_indented(0)
                 return scalar (chr(40) . 'function ' . chr(40) . 'a' . chr(41) . ' ' . chr(123) . ' ' . 'for ' . chr(40) . 'var i' . chr(61) . $self->{arguments}->[0]->emit_javascript() . ', l' . chr(61) . $self->{arguments}->[1]->emit_javascript() . chr(59) . ' ' . 'i' . chr(60) . chr(61) . 'l' . chr(59) . ' ++i' . chr(41) . chr(123) . ' ' . 'a.push' . chr(40) . 'i' . chr(41) . ' ' . chr(125) . chr(59) . ' ' . 'return a ' . chr(125) . chr(41) . chr(40) . chr(91) . chr(93) . chr(41))
             };
             if (Main::bool((($code eq 'infix:' . chr(60) . chr(38) . chr(38) . chr(62)) || ($code eq 'infix:' . chr(60) . 'and' . chr(62))))) {
-                return scalar ('f_and' . chr(40) . $self->{arguments}->[0]->emit_javascript() . ', ' . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return ' . $self->{arguments}->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . chr(41))
+                return scalar (Javascript::escape_function('and') . chr(40) . $self->{arguments}->[0]->emit_javascript() . ', ' . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return ' . $self->{arguments}->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . chr(41))
             };
             if (Main::bool((($code eq 'infix:' . chr(60) . chr(124) . chr(124) . chr(62)) || ($code eq 'infix:' . chr(60) . 'or' . chr(62))))) {
-                return scalar ('f_or' . chr(40) . $self->{arguments}->[0]->emit_javascript() . ', ' . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return ' . $self->{arguments}->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . chr(41))
+                return scalar (Javascript::escape_function('or') . chr(40) . $self->{arguments}->[0]->emit_javascript() . ', ' . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return ' . $self->{arguments}->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . chr(47) . chr(47) . chr(62)))) {
-                return scalar ('f_defined_or' . chr(40) . $self->{arguments}->[0]->emit_javascript() . ', ' . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return ' . $self->{arguments}->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . chr(41))
+                return scalar (Javascript::escape_function('defined_or') . chr(40) . $self->{arguments}->[0]->emit_javascript() . ', ' . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return ' . $self->{arguments}->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . 'eq' . chr(62)))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ' . chr(61) . chr(61) . ' ') . chr(41))
@@ -626,7 +641,7 @@ $self->emit_javascript_indented(0)
                 return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ' . chr(33) . chr(61) . ' ') . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . chr(61) . chr(61) . chr(61) . chr(62)))) {
-                return scalar (chr(40) . 'f_id' . chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41) . ' ' . chr(61) . chr(61) . ' f_id' . chr(40) . ($self->{arguments}->[1])->emit_javascript() . chr(41) . chr(41))
+                return scalar (chr(40) . Javascript::escape_function('id') . chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41) . ' ' . chr(61) . chr(61) . ' ' . Javascript::escape_function('id') . chr(40) . ($self->{arguments}->[1])->emit_javascript() . chr(41) . chr(41))
             };
             if (Main::bool(($code eq 'exists'))) {
                 ((my  $arg = undef) = $self->{arguments}->[0]);
@@ -635,7 +650,7 @@ $self->emit_javascript_indented(0)
                 }
             };
             if (Main::bool(($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62)))) {
-                return scalar (chr(40) . ' f_bool' . chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41) . ' ' . chr(63) . ' ' . ($self->{arguments}->[1])->emit_javascript() . ' : ' . ($self->{arguments}->[2])->emit_javascript() . chr(41))
+                return scalar (chr(40) . ' ' . Javascript::escape_function('bool') . chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41) . ' ' . chr(63) . ' ' . ($self->{arguments}->[1])->emit_javascript() . ' : ' . ($self->{arguments}->[2])->emit_javascript() . chr(41))
             };
             if (Main::bool(($code eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41))
@@ -646,13 +661,15 @@ $self->emit_javascript_indented(0)
             if (Main::bool(($code eq 'return'))) {
                 return scalar (Javascript::tab($level) . 'throw' . chr(40) . ((Main::bool(($self->{arguments} || [])) ? $self->{arguments}->[0]->emit_javascript() : 'null')) . chr(41))
             };
-            ($code = 'f_' . $self->{code});
             if (Main::bool($self->{namespace})) {
-                ($code = Main::to_javascript_namespace($self->{namespace}) . '.' . $code)
+                ($code = Main::to_javascript_namespace($self->{namespace}) . '.' . Javascript::escape_function($code))
             }
             else {
-                if (Main::bool(((((((((((($code ne 'f_index')) && (($code ne 'f_die'))) && (($code ne 'f_shift'))) && (($code ne 'f_unshift'))) && (($code ne 'f_push'))) && (($code ne 'f_pop'))) && (($code ne 'f_chr'))) && (($code ne 'f_say'))) && (($code ne 'f_print'))) && (($code ne 'f_warn'))))) {
-                    ($code = 'v__NAMESPACE.' . $code)
+                if (Main::bool(((((((((((($code ne 'index')) && (($code ne 'die'))) && (($code ne 'shift'))) && (($code ne 'unshift'))) && (($code ne 'push'))) && (($code ne 'pop'))) && (($code ne 'chr'))) && (($code ne 'say'))) && (($code ne 'print'))) && (($code ne 'warn'))))) {
+                    ($code = 'v__NAMESPACE.' . Javascript::escape_function($code))
+                }
+                else {
+                    ($code = Javascript::escape_function($self->{code}))
                 }
             };
             Javascript::tab($level) . $code . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41)
@@ -773,7 +790,7 @@ $self->emit_javascript_indented(0)
 })))
             };
             ((my  $body = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0)));
-            ((my  $s = undef) = Javascript::tab($level) . 'if ' . chr(40) . ' f_bool' . chr(40) . $cond->emit_javascript() . chr(41) . ' ' . chr(41) . ' ' . chr(123) . ' ' . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . chr(10) . $body->emit_javascript_indented(($level + 1)) . chr(10) . Javascript::tab($level) . chr(125) . chr(41) . chr(40) . chr(41) . chr(59) . ' ' . chr(125));
+            ((my  $s = undef) = Javascript::tab($level) . 'if ' . chr(40) . ' ' . Javascript::escape_function('bool') . chr(40) . $cond->emit_javascript() . chr(41) . ' ' . chr(41) . ' ' . chr(123) . ' ' . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . chr(10) . $body->emit_javascript_indented(($level + 1)) . chr(10) . Javascript::tab($level) . chr(125) . chr(41) . chr(40) . chr(41) . chr(59) . ' ' . chr(125));
             if (Main::bool($self->{otherwise})) {
                 ((my  $otherwise = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $self->{otherwise}->stmts()), ('needs_return' => 0)));
                 ($s = $s . chr(10) . Javascript::tab($level) . 'else ' . chr(123) . ' ' . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . chr(10) . $otherwise->emit_javascript_indented(($level + 1)) . chr(10) . Javascript::tab($level) . chr(125) . chr(41) . chr(40) . chr(41) . chr(59) . ' ' . chr(125))
@@ -798,7 +815,7 @@ $self->emit_javascript_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $body = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0)));
-            return scalar (Javascript::tab($level) . 'for ' . chr(40) . ' ' . ((Main::bool($self->{init}) ? $self->{init}->emit_javascript() . chr(59) . ' ' : chr(59) . ' ')) . ((Main::bool($self->{cond}) ? 'f_bool' . chr(40) . $self->{cond}->emit_javascript() . chr(41) . chr(59) . ' ' : chr(59) . ' ')) . ((Main::bool($self->{continue}) ? $self->{continue}->emit_javascript() . ' ' : ' ')) . chr(41) . ' ' . chr(123) . ' ' . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . ' ' . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . chr(41) . chr(40) . chr(41) . ' ' . chr(125))
+            return scalar (Javascript::tab($level) . 'for ' . chr(40) . ' ' . ((Main::bool($self->{init}) ? $self->{init}->emit_javascript() . chr(59) . ' ' : chr(59) . ' ')) . ((Main::bool($self->{cond}) ? Javascript::escape_function('bool') . chr(40) . $self->{cond}->emit_javascript() . chr(41) . chr(59) . ' ' : chr(59) . ' ')) . ((Main::bool($self->{continue}) ? $self->{continue}->emit_javascript() . ' ' : ' ')) . chr(41) . ' ' . chr(123) . ' ' . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . ' ' . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . chr(41) . chr(40) . chr(41) . ' ' . chr(125))
         }
     }
 
