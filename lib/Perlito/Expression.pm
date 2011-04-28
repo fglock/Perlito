@@ -362,10 +362,10 @@ class Perlito::Expression {
     token operator { 
         | '.(' <paren_parse>   ')'                      { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
         | '.[' <square_parse>  ']'                      { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
-        | '.{' <curly_parse>   '}'                      { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
+        | '.{' <curly_parse>   '}'                      { make [ 'postfix_or_term',  'block', $$<curly_parse>   ] }
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
-        | '<' <Perlito::Grammar.ident> '>'              { make [ 'postfix_or_term',  'block', [Val::Buf.new('buf' => $$<Perlito::Grammar.ident>)] ] }
+        | [ '.<' | '<' ] <Perlito::Grammar.ident> '>'   { make [ 'postfix_or_term',  'block', [Val::Buf.new('buf' => $$<Perlito::Grammar.ident>)] ] }
 
         | '->' <.Perlito::Grammar.ws>? <list_parse> 
                     { 

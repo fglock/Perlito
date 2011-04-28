@@ -472,7 +472,7 @@ package GLOBAL;
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, 'postfix_or_term' );
-    push( @{$List_a}, '.' . chr(123) . ' ' . chr(125) );
+    push( @{$List_a}, 'block' );
     push( @{$List_a}, ${$MATCH->{'curly_parse'}} );
     $List_a
 }))
@@ -523,7 +523,15 @@ package GLOBAL;
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((((chr(60) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    (((((do {
+    ((my  $pos1 = undef) = $MATCH->to());
+    ((do {
+    (('.' . chr(60) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
+}) || (do {
+    (($MATCH)->{to} = $pos1);
+    ((((chr(60) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+}))
+}) && (do {
     ((my  $m2 = undef) = Perlito::Grammar->ident($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
