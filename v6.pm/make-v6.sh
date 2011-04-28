@@ -11,6 +11,9 @@ perl -pi -e 's/use v6;/use v6-perlito;/' t/*.t
 rm -rf t/bugs
 cp -r ../lib5 lib
 
+cp ../lib/Perlito/Python/Prelude.pm lib/Perlito/Python/Prelude.pm
+cp ../lib/Perlito/Ruby/Runtime.rb   lib/Perlito/Ruby/Runtime.rb
+
 perldoc -otext v6.pm > README
 
 mkdir lib/v6
