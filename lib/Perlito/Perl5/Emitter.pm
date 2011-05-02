@@ -357,11 +357,26 @@ class Apply {
         if $code eq 'infix:<<=>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' <= ')  ~ ')' }
         if $code eq 'infix:<x>'  { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' x ')   ~ ')' }
         
-        if $code eq 'infix:<&&>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' && ')  ~ ')' }
-        if $code eq 'infix:<||>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' || ')  ~ ')' }
-        if $code eq 'infix:<and>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' and ')  ~ ')' }
-        if $code eq 'infix:<or>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' or ')  ~ ')' }
-        if $code eq 'infix:<//>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' // ')  ~ ')' }
+        if   $code eq 'infix:<&&>'
+          || $code eq 'infix:<and>'
+        {
+            return return Perl5::tab($level) ~ 'Main::and('
+                ~ @.arguments[0].emit_perl5() ~ ', '
+                ~ 'sub { ' ~ @.arguments[1].emit_perl5() ~ ' })'
+        }
+        if   $code eq 'infix:<||>'
+          || $code eq 'infix:<or>'
+        {
+            return return Perl5::tab($level) ~ 'Main::or('
+                ~ @.arguments[0].emit_perl5() ~ ', '
+                ~ 'sub { ' ~ @.arguments[1].emit_perl5() ~ ' })'
+        }
+        if $code eq 'infix:<//>' { 
+            return return Perl5::tab($level) ~ 'Main::defined_or('
+                ~ @.arguments[0].emit_perl5() ~ ', '
+                ~ 'sub { ' ~ @.arguments[1].emit_perl5() ~ ' })'
+        }
+
         if $code eq 'infix:<eq>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' eq ')  ~ ')' }
         if $code eq 'infix:<ne>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' ne ')  ~ ')' }
         if $code eq 'infix:<le>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' le ')  ~ ')' }

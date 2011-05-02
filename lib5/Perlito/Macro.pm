@@ -22,7 +22,7 @@ package GLOBAL;
             ((my  $needs_interpolation = undef) = 0);
             (my  $List_items = []);
             for my $item ( @{$self->{array1} || []} ) {
-                if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)) || ($item->code() eq 'list:' . chr(60) . ',' . chr(62))))))) {
+                if (Main::bool(Main::and(Main::isa($item, 'Apply'), sub { (Main::or(($item->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)), sub { ($item->code() eq 'list:' . chr(60) . ',' . chr(62)) })) }))) {
                     for my $arg ( @{(($item->arguments()) || []) || []} ) {
                         push( @{$List_items}, $arg )
                     }
@@ -32,16 +32,16 @@ package GLOBAL;
                 }
             };
             for my $item ( @{$List_items || []} ) {
-                if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:' . chr(60) . chr(64) . chr(62)) || ($item->code() eq 'infix:' . chr(60) . '..' . chr(62)))))))) {
+                if (Main::bool(Main::or(Main::and(Main::isa($item, 'Var'), sub { ($item->sigil() eq chr(64)) }), sub { Main::and(Main::isa($item, 'Apply'), sub { (Main::or(($item->code() eq 'prefix:' . chr(60) . chr(64) . chr(62)), sub { ($item->code() eq 'infix:' . chr(60) . '..' . chr(62)) })) }) }))) {
                     ($needs_interpolation = 1)
                 }
             };
-            if (Main::bool(($needs_interpolation && (scalar( @{$List_items} ) == 1)))) {
+            if (Main::bool(Main::and($needs_interpolation, sub { (scalar( @{$List_items} ) == 1) }))) {
                 return scalar ($List_items->[0])
             };
             (my  $List_s = []);
             for my $item ( @{$List_items || []} ) {
-                if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:' . chr(60) . chr(64) . chr(62)) || ($item->code() eq 'infix:' . chr(60) . '..' . chr(62)))))))) {
+                if (Main::bool(Main::or(Main::and(Main::isa($item, 'Var'), sub { ($item->sigil() eq chr(64)) }), sub { Main::and(Main::isa($item, 'Apply'), sub { (Main::or(($item->code() eq 'prefix:' . chr(60) . chr(64) . chr(62)), sub { ($item->code() eq 'infix:' . chr(60) . '..' . chr(62)) })) }) }))) {
                     push( @{$List_s}, Apply->new(('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -115,7 +115,7 @@ package GLOBAL;
             my $self = $_[0];
             (my  $List_items = []);
             for my $item ( @{$self->{hash1} || []} ) {
-                if (Main::bool((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)) || ($item->code() eq 'list:' . chr(60) . ',' . chr(62))))))) {
+                if (Main::bool(Main::and(Main::isa($item, 'Apply'), sub { (Main::or(($item->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)), sub { ($item->code() eq 'list:' . chr(60) . ',' . chr(62)) })) }))) {
                     for my $arg ( @{(($item->arguments()) || []) || []} ) {
                         push( @{$List_items}, $arg )
                     }
@@ -126,7 +126,7 @@ package GLOBAL;
             };
             (my  $List_s = []);
             for my $item ( @{$List_items || []} ) {
-                if (Main::bool((Main::isa($item, 'Apply') && ($item->code() eq 'infix:' . chr(60) . chr(61) . chr(62) . chr(62))))) {
+                if (Main::bool(Main::and(Main::isa($item, 'Apply'), sub { ($item->code() eq 'infix:' . chr(60) . chr(61) . chr(62) . chr(62)) }))) {
                     push( @{$List_s}, Apply->new(('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -136,7 +136,7 @@ package GLOBAL;
 }), ('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('namespace' => '')) )
                 }
                 else {
-                    if (Main::bool(((Main::isa($item, 'Var') && ($item->sigil() eq chr(37))) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:' . chr(60) . chr(37) . chr(62)))))) {
+                    if (Main::bool(Main::or(Main::and(Main::isa($item, 'Var'), sub { ($item->sigil() eq chr(37)) }), sub { Main::and(Main::isa($item, 'Apply'), sub { ($item->code() eq 'prefix:' . chr(60) . chr(37) . chr(62)) }) }))) {
                         push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -203,7 +203,7 @@ package GLOBAL;
             };
             if (Main::bool((scalar( @{$block} ) == 1))) {
                 ((my  $stmt = undef) = $block->[0]);
-                if (Main::bool((Main::isa($stmt, 'Apply') && ($stmt->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62))))) {
+                if (Main::bool(Main::and(Main::isa($stmt, 'Apply'), sub { ($stmt->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)) }))) {
                     ((my  $args = undef) = $stmt->arguments());
                     return scalar (Do->new(('block' => $args->[0]))->simplify())
                 };

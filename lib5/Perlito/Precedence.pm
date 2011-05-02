@@ -44,11 +44,11 @@ package GLOBAL;
         };
         sub is_term {
             my $token = $_[0];
-            ((($token->[0] eq 'term')) || (($token->[0] eq 'postfix_or_term')))
+            Main::or((($token->[0] eq 'term')), sub { (($token->[0] eq 'postfix_or_term')) })
         };
         sub is_ident_middle {
             my $c = $_[0];
-            (((((($c ge 'a')) && (($c le 'z')))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_')))
+            Main::or(Main::or((Main::and((($c ge 'a')), sub { (($c le 'z')) })), sub { (Main::and((($c ge '0')), sub { (($c le '9')) })) }), sub { (($c eq '_')) })
         };
         (my  $Op1 = undef);
         (my  $Op2 = undef);
@@ -65,7 +65,7 @@ package GLOBAL;
                 if (Main::bool(($s eq $tok))) {
                     ((my  $c1 = undef) = substr($str, (($pos + $l) - 1), 1));
                     ((my  $c2 = undef) = substr($str, ($pos + $l), 1));
-                    if (Main::bool((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq chr(40))))))) {
+                    if (Main::bool(Main::and(is_ident_middle($c1), sub { (Main::or(is_ident_middle($c2), sub { ($c2 eq chr(40)) })) }))) {
 
                     }
                     else {
@@ -83,13 +83,13 @@ package GLOBAL;
             ((my  $c02 = undef) = substr($str, $pos, 2));
             ((my  $hyper_left = undef) = 0);
             ((my  $hyper_right = undef) = 0);
-            if (Main::bool(((($c01 eq chr(171))) || (($c01 eq chr(187)))))) {
+            if (Main::bool(Main::or((($c01 eq chr(171))), sub { (($c01 eq chr(187))) }))) {
                 ($hyper_left = $c01);
                 ($pos = ($pos + 1));
                 ($c02 = substr($str, $pos, 2))
             }
             else {
-                if (Main::bool(((($c02 eq chr(60) . chr(60))) || (($c02 eq chr(62) . chr(62)))))) {
+                if (Main::bool(Main::or((($c02 eq chr(60) . chr(60))), sub { (($c02 eq chr(62) . chr(62))) }))) {
                     ($hyper_left = $c02);
                     ($pos = ($pos + 2));
                     ($c02 = substr($str, $pos, 2))
@@ -99,19 +99,19 @@ package GLOBAL;
             if (Main::bool(exists($Op3->{$op3}))) {
                 ((my  $c1 = undef) = substr($str, ($pos + 2), 1));
                 ((my  $c2 = undef) = substr($str, ($pos + 3), 1));
-                if (Main::bool((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq chr(40))))))) {
+                if (Main::bool(Main::and(is_ident_middle($c1), sub { (Main::or(is_ident_middle($c2), sub { ($c2 eq chr(40)) })) }))) {
 
                 }
                 else {
                     ($pos = ($pos + 3));
                     ((my  $c01 = undef) = substr($str, $pos, 2));
                     ((my  $c02 = undef) = substr($str, $pos, 3));
-                    if (Main::bool(((($c01 eq chr(171))) || (($c01 eq chr(187)))))) {
+                    if (Main::bool(Main::or((($c01 eq chr(171))), sub { (($c01 eq chr(187))) }))) {
                         ($hyper_right = $c01);
                         ($pos = ($pos + 1))
                     }
                     else {
-                        if (Main::bool(((($c02 eq chr(60) . chr(60))) || (($c02 eq chr(62) . chr(62)))))) {
+                        if (Main::bool(Main::or((($c02 eq chr(60) . chr(60))), sub { (($c02 eq chr(62) . chr(62))) }))) {
                             ($hyper_right = $c02);
                             ($pos = ($pos + 2))
                         }
@@ -135,19 +135,19 @@ package GLOBAL;
             if (Main::bool(exists($Op2->{$op2}))) {
                 ((my  $c1 = undef) = substr($str, ($pos + 1), 1));
                 ((my  $c2 = undef) = substr($str, ($pos + 2), 1));
-                if (Main::bool((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq chr(40))))))) {
+                if (Main::bool(Main::and(is_ident_middle($c1), sub { (Main::or(is_ident_middle($c2), sub { ($c2 eq chr(40)) })) }))) {
 
                 }
                 else {
                     ($pos = ($pos + 2));
                     ((my  $c01 = undef) = substr($str, $pos, 1));
                     ((my  $c02 = undef) = substr($str, $pos, 2));
-                    if (Main::bool(((($c01 eq chr(171))) || (($c01 eq chr(187)))))) {
+                    if (Main::bool(Main::or((($c01 eq chr(171))), sub { (($c01 eq chr(187))) }))) {
                         ($hyper_right = $c01);
                         ($pos = ($pos + 1))
                     }
                     else {
-                        if (Main::bool(((($c02 eq chr(60) . chr(60))) || (($c02 eq chr(62) . chr(62)))))) {
+                        if (Main::bool(Main::or((($c02 eq chr(60) . chr(60))), sub { (($c02 eq chr(62) . chr(62))) }))) {
                             ($hyper_right = $c02);
                             ($pos = ($pos + 2))
                         }
@@ -170,19 +170,19 @@ package GLOBAL;
             ((my  $op1 = undef) = substr($str, $pos, 1));
             if (Main::bool(exists($Op1->{$op1}))) {
                 ((my  $c2 = undef) = substr($str, ($pos + 1), 1));
-                if (Main::bool((is_ident_middle($op1) && ((is_ident_middle($c2) || ($c2 eq chr(40))))))) {
+                if (Main::bool(Main::and(is_ident_middle($op1), sub { (Main::or(is_ident_middle($c2), sub { ($c2 eq chr(40)) })) }))) {
 
                 }
                 else {
                     ($pos = ($pos + 1));
                     ((my  $c01 = undef) = substr($str, $pos, 1));
                     ((my  $c02 = undef) = substr($str, $pos, 2));
-                    if (Main::bool(((($c01 eq chr(171))) || (($c01 eq chr(187)))))) {
+                    if (Main::bool(Main::or((($c01 eq chr(171))), sub { (($c01 eq chr(187))) }))) {
                         ($hyper_right = $c01);
                         ($pos = ($pos + 1))
                     }
                     else {
-                        if (Main::bool(((($c02 eq chr(60) . chr(60))) || (($c02 eq chr(62) . chr(62)))))) {
+                        if (Main::bool(Main::or((($c02 eq chr(60) . chr(60))), sub { (($c02 eq chr(62) . chr(62))) }))) {
                             ($hyper_right = $c02);
                             ($pos = ($pos + 2))
                         }
@@ -215,7 +215,7 @@ package GLOBAL;
     $Hash_a
 })
             };
-            ((my  $assoc = undef) = ($param->{'assoc'} || 'left'));
+            ((my  $assoc = undef) = Main::or($param->{'assoc'}, sub { 'left' }));
             ($Operator->{$fixity}->{$name} = 1);
             ($Precedence->{$name} = $precedence);
             ($Assoc->{$assoc}->{$name} = 1);
@@ -537,8 +537,8 @@ package GLOBAL;
             if (Main::bool((($token->[0]) eq 'space'))) {
                 ($token = $get_token->())
             };
-            for ( ; Main::bool(((defined($token)) && (($token->[0] ne 'end'))));  ) {
-                if (Main::bool(((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ','))))))) {
+            for ( ; Main::bool(Main::and((defined($token)), sub { (($token->[0] ne 'end')) }));  ) {
+                if (Main::bool(Main::and((($token->[1] eq ',')), sub { (Main::or((($last->[1] eq '*start*')), sub { (($last->[1] eq ',')) })) }))) {
                     push( @{$num_stack}, do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -547,14 +547,14 @@ package GLOBAL;
     $List_a
 } )
                 };
-                if (Main::bool(($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !Main::bool((is_term($last)))))))) {
+                if (Main::bool(Main::and($Operator->{'prefix'}->{$token->[1]}, sub { (Main::or((($last->[1] eq '*start*')), sub { !Main::bool((is_term($last))) })) }))) {
                     ($token->[0] = 'prefix');
                     unshift( @{$op_stack}, $token )
                 }
                 else {
-                    if (Main::bool((($Operator->{'postfix'}->{$token->[1]} && is_term($last)) && (($Allow_space_before->{'postfix'}->{$token->[1]} || !Main::bool(($last_has_space))))))) {
+                    if (Main::bool(Main::and(Main::and($Operator->{'postfix'}->{$token->[1]}, sub { is_term($last) }), sub { (Main::or($Allow_space_before->{'postfix'}->{$token->[1]}, sub { !Main::bool(($last_has_space)) })) }))) {
                         ((my  $pr = undef) = $Precedence->{$token->[1]});
-                        for ( ; Main::bool((scalar( @{$op_stack} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))));  ) {
+                        for ( ; Main::bool(Main::and(scalar( @{$op_stack} ), sub { (($pr <= $Precedence->{($op_stack->[0])->[1]})) }));  ) {
 $reduce->($op_stack, $num_stack)
                         };
                         if (Main::bool((($token->[0]) ne 'postfix_or_term'))) {
@@ -563,7 +563,7 @@ $reduce->($op_stack, $num_stack)
                         unshift( @{$op_stack}, $token )
                     }
                     else {
-                        if (Main::bool((((($token->[1] eq 'block')) && is_term($last)) && $last_has_space))) {
+                        if (Main::bool(Main::and(Main::and((($token->[1] eq 'block')), sub { is_term($last) }), sub { $last_has_space }))) {
                             for ( ; Main::bool(scalar( @{$op_stack} ));  ) {
 $reduce->($op_stack, $num_stack)
                             };
@@ -586,12 +586,12 @@ $reduce->($op_stack, $num_stack)
                                 if (Main::bool($Precedence->{$token->[1]})) {
                                     ((my  $pr = undef) = $Precedence->{$token->[1]});
                                     if (Main::bool($Assoc->{'right'}->{$token->[1]})) {
-                                        for ( ; Main::bool((scalar( @{$op_stack} ) && (($pr < $Precedence->{($op_stack->[0])->[1]}))));  ) {
+                                        for ( ; Main::bool(Main::and(scalar( @{$op_stack} ), sub { (($pr < $Precedence->{($op_stack->[0])->[1]})) }));  ) {
 $reduce->($op_stack, $num_stack)
                                         }
                                     }
                                     else {
-                                        for ( ; Main::bool((scalar( @{$op_stack} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))));  ) {
+                                        for ( ; Main::bool(Main::and(scalar( @{$op_stack} ), sub { (($pr <= $Precedence->{($op_stack->[0])->[1]})) }));  ) {
 $reduce->($op_stack, $num_stack)
                                         }
                                     };
@@ -620,7 +620,7 @@ $reduce->($op_stack, $num_stack)
                     ($last_has_space = 0)
                 }
             };
-            if (Main::bool((defined($token) && (($token->[0] ne 'end'))))) {
+            if (Main::bool(Main::and(defined($token), sub { (($token->[0] ne 'end')) }))) {
                 die('Unexpected end token: ', Main::perl($token, ))
             };
             for ( ; Main::bool(scalar( @{$op_stack} ));  ) {

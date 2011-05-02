@@ -35,7 +35,7 @@ package GLOBAL;
             my $args = $_[1];
             (my  $List_s = []);
             for my $cond ( @{(($args) || []) || []} ) {
-                if (Main::bool(((Main::isa($cond, 'Val::Int')) || (Main::isa($cond, 'Val::Num'))))) {
+                if (Main::bool(Main::or((Main::isa($cond, 'Val::Int')), sub { (Main::isa($cond, 'Val::Num')) }))) {
                     push( @{$List_s}, $cond->emit_ruby() )
                 }
                 else {
@@ -49,11 +49,11 @@ package GLOBAL;
             my $args = $_[1];
             (my  $List_s = []);
             for my $cond ( @{(($args) || []) || []} ) {
-                if (Main::bool(((Main::isa($cond, 'Val::Int')) || (Main::isa($cond, 'Val::Num'))))) {
+                if (Main::bool(Main::or((Main::isa($cond, 'Val::Int')), sub { (Main::isa($cond, 'Val::Num')) }))) {
                     push( @{$List_s}, chr(40) . $cond->emit_ruby(("" . ' ' . chr(33) . chr(61) . ' 0 ' . chr(41))) )
                 }
                 else {
-                    if (Main::bool((((((((Main::isa($cond, 'Apply')) && (($cond->code() eq 'infix:' . chr(60) . chr(124) . chr(124) . chr(62))))) || (((Main::isa($cond, 'Apply')) && (($cond->code() eq 'infix:' . chr(60) . chr(38) . chr(38) . chr(62)))))) || (((Main::isa($cond, 'Apply')) && (($cond->code() eq 'prefix:' . chr(60) . chr(33) . chr(62)))))) || (((Main::isa($cond, 'Apply')) && (($cond->code() eq 'prefix:' . chr(60) . chr(63) . chr(62)))))) || (Main::isa($cond, 'Val::Bit'))))) {
+                    if (Main::bool(Main::or(Main::or(Main::or(Main::or((Main::and((Main::isa($cond, 'Apply')), sub { (($cond->code() eq 'infix:' . chr(60) . chr(124) . chr(124) . chr(62))) })), sub { (Main::and((Main::isa($cond, 'Apply')), sub { (($cond->code() eq 'infix:' . chr(60) . chr(38) . chr(38) . chr(62))) })) }), sub { (Main::and((Main::isa($cond, 'Apply')), sub { (($cond->code() eq 'prefix:' . chr(60) . chr(33) . chr(62))) })) }), sub { (Main::and((Main::isa($cond, 'Apply')), sub { (($cond->code() eq 'prefix:' . chr(60) . chr(63) . chr(62))) })) }), sub { (Main::isa($cond, 'Val::Bit')) }))) {
                         push( @{$List_s}, $cond->emit_ruby() )
                     }
                     else {
@@ -129,10 +129,10 @@ $self->emit_ruby_indented(0)
         sub has_my_decl {
             my $self = $_[0];
             for my $decl ( @{$self->{block} || []} ) {
-                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
+                if (Main::bool(Main::and(Main::isa($decl, 'Decl'), sub { (($decl->decl() eq 'my')) }))) {
                     return scalar (1)
                 };
-                if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) {
+                if (Main::bool(Main::and(Main::and(Main::isa($decl, 'Bind'), sub { Main::isa(($decl->parameters()), 'Decl') }), sub { ((($decl->parameters())->decl() eq 'my')) }))) {
                     return scalar (1)
                 }
             };
@@ -164,11 +164,11 @@ $self->emit_ruby_indented(0)
     $List_a
 });
             for my $decl ( @{$self->{block} || []} ) {
-                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
+                if (Main::bool(Main::and(Main::isa($decl, 'Decl'), sub { (($decl->decl() eq 'has')) }))) {
                     push( @{$has_decl}, $decl )
                 }
                 else {
-                    if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'has'))))) {
+                    if (Main::bool(Main::and(Main::and(Main::isa($decl, 'Bind'), sub { Main::isa(($decl->parameters()), 'Decl') }), sub { ((($decl->parameters())->decl() eq 'has')) }))) {
                         push( @{$has_decl}, $decl )
                     }
                     else {
@@ -178,13 +178,13 @@ $self->emit_ruby_indented(0)
             };
             if (Main::bool((($has_decl) || []))) {
                 for my $decl ( @{(($has_decl) || []) || []} ) {
-                    if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
+                    if (Main::bool(Main::and(Main::isa($decl, 'Decl'), sub { (($decl->decl() eq 'has')) }))) {
                         push( @{$List_s}, Ruby::tab($level) . 'attr_accessor :v_' . ($decl->var())->name() );
                         push( @{$List_s}, Ruby::tab($level) . 'def f_' . ($decl->var())->name(("" . chr(40) . chr(41))) );
                         push( @{$List_s}, Ruby::tab(($level + 1)) . 'return self.v_' . ($decl->var())->name() );
                         push( @{$List_s}, Ruby::tab($level) . 'end' )
                     };
-                    if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'has'))))) {
+                    if (Main::bool(Main::and(Main::and(Main::isa($decl, 'Bind'), sub { Main::isa(($decl->parameters()), 'Decl') }), sub { ((($decl->parameters())->decl() eq 'has')) }))) {
                         push( @{$List_s}, Ruby::tab($level) . 'attr_accessor :v_' . (($decl->parameters())->var())->name() );
                         push( @{$List_s}, Ruby::tab($level) . 'def f_' . (($decl->parameters())->var())->name(("" . chr(40) . chr(41))) );
                         push( @{$List_s}, Ruby::tab(($level + 1)) . 'return self.v_' . (($decl->parameters())->var())->name() );
@@ -197,7 +197,7 @@ $self->emit_ruby_indented(0)
             (my  $List_my_init = []);
             (my  $Hash_my_seen = {});
             for my $decl ( @{(($block) || []) || []} ) {
-                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
+                if (Main::bool(Main::and(Main::isa($decl, 'Decl'), sub { (($decl->decl() eq 'my')) }))) {
                     if (Main::bool(!Main::bool(($Hash_my_seen->{($decl->var())->name()})))) {
                         push( @{$List_my_decl}, ($decl->var())->emit_ruby_name() );
                         push( @{$List_my_init}, $decl->emit_ruby_init() );
@@ -205,7 +205,7 @@ $self->emit_ruby_indented(0)
                         ($Hash_my_seen->{($decl->var())->name()} = 1)
                     }
                 };
-                if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) {
+                if (Main::bool(Main::and(Main::and(Main::isa($decl, 'Bind'), sub { Main::isa(($decl->parameters()), 'Decl') }), sub { ((($decl->parameters())->decl() eq 'my')) }))) {
                     if (Main::bool(!Main::bool(($Hash_my_seen->{(($decl->parameters())->var())->name()})))) {
                         push( @{$List_my_decl}, (($decl->parameters())->var())->emit_ruby_name() );
                         push( @{$List_my_init}, ($decl->parameters())->emit_ruby_init() );
@@ -238,7 +238,7 @@ $self->emit_ruby_indented(0)
                 };
                 push( @{$List_s}, $s2 )
             };
-            if (Main::bool(($self->{needs_return} && $last_statement))) {
+            if (Main::bool(Main::and($self->{needs_return}, sub { $last_statement }))) {
                 ($List_anon_block = do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -258,7 +258,7 @@ $self->emit_ruby_indented(0)
                     if (Main::bool($body_block->has_my_decl())) {
                         ($body_block = Return->new(('result' => Do->new(('block' => ($last_statement->body()))))))
                     };
-                    if (Main::bool(($has_otherwise && $otherwise_block->has_my_decl()))) {
+                    if (Main::bool(Main::and($has_otherwise, sub { $otherwise_block->has_my_decl() }))) {
                         ($otherwise_block = Return->new(('result' => Do->new(('block' => ($last_statement->otherwise()))))))
                     };
                     ($s2 = Ruby::tab($level) . 'if ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
@@ -280,7 +280,7 @@ $self->emit_ruby_indented(0)
                         ($s2 = $s2 . chr(10) . Ruby::tab($level) . 'return ' . ($last_statement->parameters())->emit_ruby())
                     }
                     else {
-                        if (Main::bool((Main::isa($last_statement, 'Return') || Main::isa($last_statement, 'For')))) {
+                        if (Main::bool(Main::or(Main::isa($last_statement, 'Return'), sub { Main::isa($last_statement, 'For') }))) {
                             ($s2 = $last_statement->emit_ruby_indented($level))
                         }
                         else {
@@ -548,7 +548,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            if (Main::bool((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) {
+            if (Main::bool(Main::and(Main::and((($self->{sigil} eq chr(64))), sub { (($self->{twigil} eq '*')) }), sub { (($self->{name} eq 'ARGS')) }))) {
                 return scalar (Ruby::tab($level) . 'ARGV')
             };
             return scalar (Ruby::tab($level) . ((Main::bool((($self->{twigil} eq '.'))) ? ('self.v_' . $self->{name} . '') : ((Main::bool((($self->{name} eq chr(47)))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name} . ''))))))
@@ -617,7 +617,7 @@ $self->emit_ruby_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $invocant = undef) = $self->{invocant}->emit_ruby());
-            if (Main::bool(((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'isa'))))) {
+            if (Main::bool(Main::or(Main::or(Main::or((($self->{method} eq 'perl')), sub { (($self->{method} eq 'yaml')) }), sub { (($self->{method} eq 'say')) }), sub { (($self->{method} eq 'isa')) }))) {
                 if (Main::bool(($self->{hyper}))) {
                     return scalar ($invocant . '.map ' . chr(123) . chr(124) . 'x' . chr(124) . ' x.' . $self->{method} . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41) . chr(125))
                 }
@@ -638,7 +638,7 @@ $self->emit_ruby_indented(0)
             if (Main::bool(($meth eq 'postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)))) {
                 return scalar (Ruby::tab($level) . $invocant . '.call' . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41))
             };
-            if (Main::bool(((((((($meth eq 'values')) || (($meth eq 'keys'))) || (($meth eq 'push'))) || (($meth eq 'shift'))) || (($meth eq 'concat'))) || (($meth eq 'join'))))) {
+            if (Main::bool(Main::or(Main::or(Main::or(Main::or(Main::or((($meth eq 'values')), sub { (($meth eq 'keys')) }), sub { (($meth eq 'push')) }), sub { (($meth eq 'shift')) }), sub { (($meth eq 'concat')) }), sub { (($meth eq 'join')) }))) {
                 return scalar (Ruby::tab($level) . $invocant . '.' . $meth . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41))
             };
             if (Main::bool(($meth eq 'chars'))) {
@@ -847,7 +847,7 @@ $self->emit_ruby_indented(0)
             if (Main::bool($body_block->has_my_decl())) {
                 ($body_block = Do->new(('block' => $self->{body})))
             };
-            if (Main::bool(($has_otherwise && $otherwise_block->has_my_decl()))) {
+            if (Main::bool(Main::and($has_otherwise, sub { $otherwise_block->has_my_decl() }))) {
                 ($otherwise_block = Do->new(('block' => $self->{otherwise})))
             };
             ((my  $s = undef) = Ruby::tab($level) . 'if ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
@@ -885,7 +885,7 @@ $self->emit_ruby_indented(0)
             if (Main::bool($body_block->has_my_decl())) {
                 ($body_block = Do->new(('block' => $self->{body})))
             };
-            if (Main::bool(($self->{init} && $self->{continue}))) {
+            if (Main::bool(Main::and($self->{init}, sub { $self->{continue} }))) {
                 die('not implemented ' . chr(40) . 'While' . chr(41))
             };
             Ruby::tab($level) . 'while ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {

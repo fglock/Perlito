@@ -2,7 +2,7 @@ use v6;
 
 class Main {
 
-    say '1..11';
+    say '1..12';
 
     my $x = 1;
     if $x != "1" {
@@ -52,5 +52,9 @@ class Main {
         print 'not '
     };
     say 'ok 11 - plus with string';
+
+    # $x ~= "a";
+    # print "not " if $x ne "2a";
+    # say "ok 12 - ||=";
 
 }

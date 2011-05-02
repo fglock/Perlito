@@ -191,7 +191,7 @@ $stmt->eval($env1)
                 ($ns = $self->{namespace} . '::')
             }
             else {
-                if (Main::bool((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) {
+                if (Main::bool(Main::and(Main::and((($self->{sigil} eq chr(64))), sub { (($self->{twigil} eq '*')) }), sub { (($self->{name} eq 'ARGS')) }))) {
                     return scalar ((\@ARGV))
                 };
                 if (Main::bool(($self->{twigil} eq '.'))) {

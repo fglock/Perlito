@@ -25,7 +25,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    ((((((((((('u' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+    Main::and(Main::and(Main::and(Main::and(Main::and(Main::and(Main::and(Main::and((Main::and(('u' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })), sub { (Main::and(('n' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('l' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('e' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('s' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('s' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (do {
     ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -34,7 +34,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (do {
+}) }), sub { (do {
     ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -44,7 +44,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((do {
+}) }), sub { (Main::or((do {
     ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
     if (Main::bool(!Main::bool((defined($body))))) {
         die('Missing code block in ' . chr(39) . 'unless' . chr(39))
@@ -54,7 +54,7 @@ package GLOBAL;
     (my  $List_v = []);
     $List_a
 }))), ('otherwise' => $body))))
-}) || 1)))
+}), sub { 1 })) })
 })
 })));
             $MATCH
@@ -68,7 +68,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    ((((((('i' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('f' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+    Main::and(Main::and(Main::and(Main::and((Main::and(('i' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })), sub { (Main::and(('f' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (do {
     ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -77,7 +77,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (do {
+}) }), sub { (do {
     ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -87,10 +87,10 @@ package GLOBAL;
     else {
         0
     }
-})) && (do {
+}) }), sub { (do {
     ((my  $pos1 = undef) = $MATCH->to());
-    (((do {
-    (((((((do {
+    Main::or(Main::or((do {
+    Main::and(Main::and(Main::and(Main::and(Main::and(Main::and((do {
     ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -99,7 +99,7 @@ package GLOBAL;
     else {
         0
     }
-}) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+}), sub { (Main::and(('e' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('l' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('s' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('e' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (do {
     ((my  $m2 = undef) = $grammar->exp2($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -109,7 +109,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((do {
+}) }), sub { (Main::or((do {
     ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
     ((my  $otherwise = undef) = (${$MATCH->{'exp2'}})->{'exp'});
     if (Main::bool(!Main::bool((defined($body))))) {
@@ -122,10 +122,10 @@ package GLOBAL;
         ($otherwise = Lit::Block->new(('stmts' => $otherwise->hash1())))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body), ('otherwise' => $otherwise))))
-}) || 1)))
-}) || (do {
+}), sub { 1 })) })
+}), sub { (do {
     (($MATCH)->{to} = $pos1);
-    (((((((do {
+    (Main::and(Main::and(Main::and(Main::and(Main::and((do {
     ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -134,7 +134,7 @@ package GLOBAL;
     else {
         0
     }
-}) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+}), sub { (Main::and(('e' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('l' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('s' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (do {
     ((my  $m2 = undef) = $grammar->if($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -144,7 +144,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((do {
+}) }), sub { (Main::or((do {
     ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
     if (Main::bool(!Main::bool((defined($body))))) {
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
@@ -155,10 +155,10 @@ package GLOBAL;
     push( @{$List_a}, ${$MATCH->{'if'}} );
     $List_a
 }))))))
-}) || 1))))
-})) || (do {
+}), sub { 1 })) }))
+}) }), sub { (do {
     (($MATCH)->{to} = $pos1);
-    ((((do {
+    ((Main::or((do {
     ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
     if (Main::bool(!Main::bool((defined($body))))) {
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
@@ -168,9 +168,9 @@ package GLOBAL;
     (my  $List_v = []);
     $List_a
 }))))
-}) || 1)))
-}))
-}))
+}), sub { 1 })))
+}) })
+}) })
 })
 })));
             $MATCH
@@ -184,7 +184,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    ((((((((('w' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('h' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+    Main::and(Main::and(Main::and(Main::and(Main::and(Main::and((Main::and(('w' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })), sub { (Main::and(('h' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('e' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('n' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (do {
     ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -193,7 +193,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (do {
+}) }), sub { (do {
     ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -203,13 +203,13 @@ package GLOBAL;
     else {
         0
     }
-})) && (((do {
+}) }), sub { (Main::or((do {
     ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
     if (Main::bool(!Main::bool((defined($body))))) {
         die('Missing code block in ' . chr(39) . 'when' . chr(39))
     };
     ($MATCH->{capture} = (When->new(('parameters' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body))))
-}) || 1)))
+}), sub { 1 })) })
 })
 })));
             $MATCH
@@ -223,7 +223,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    (((((((('f' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('r' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+    Main::and(Main::and(Main::and(Main::and(Main::and((Main::and(('f' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })), sub { (Main::and(('o' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('r' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (do {
     ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -232,7 +232,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (do {
+}) }), sub { (do {
     ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -242,13 +242,13 @@ package GLOBAL;
     else {
         0
     }
-})) && (((do {
+}) }), sub { (Main::or((do {
     ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
     if (Main::bool(!Main::bool((defined($body))))) {
         die('Missing code block in ' . chr(39) . 'when' . chr(39))
     };
     ($MATCH->{capture} = (For->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('topic' => undef), ('body' => $body))))
-}) || 1)))
+}), sub { 1 })) })
 })
 })));
             $MATCH
@@ -262,7 +262,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    (((((((((('w' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('h' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('i' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+    Main::and(Main::and(Main::and(Main::and(Main::and(Main::and(Main::and((Main::and(('w' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })), sub { (Main::and(('h' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('i' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('l' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('e' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (do {
     ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -271,7 +271,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (do {
+}) }), sub { (do {
     ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -281,13 +281,13 @@ package GLOBAL;
     else {
         0
     }
-})) && (((do {
+}) }), sub { (Main::or((do {
     ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
     if (Main::bool(!Main::bool((defined($body))))) {
         die('Missing code block in ' . chr(39) . 'while' . chr(39))
     };
     ($MATCH->{capture} = (While->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body))))
-}) || 1)))
+}), sub { 1 })) })
 })
 })));
             $MATCH
@@ -301,7 +301,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    ((((((((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('p' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+    Main::and(Main::and(Main::and(Main::and(Main::and(Main::and((Main::and(('l' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })), sub { (Main::and(('o' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('o' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (Main::and(('p' eq substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })) }), sub { (do {
     ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -310,7 +310,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (do {
+}) }), sub { (do {
     ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -320,7 +320,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((do {
+}) }), sub { (Main::or((do {
     ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
     if (Main::bool(!Main::bool((defined($body))))) {
         ($body = (${$MATCH->{'exp'}})->{'exp'});
@@ -334,7 +334,7 @@ package GLOBAL;
     else {
         die(chr(39) . 'loop' . chr(39) . ' with parameters is not implemented')
     }
-}) || 1)))
+}), sub { 1 })) })
 })
 })));
             $MATCH

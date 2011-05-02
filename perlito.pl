@@ -57,7 +57,7 @@ package GLOBAL;
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    ((do {
+    Main::and((do {
     ((my  $m2 = undef) = Perlito::Grammar->ident($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -67,10 +67,10 @@ package GLOBAL;
     else {
         0
     }
-}) && (do {
+}), sub { (do {
     ((my  $pos1 = undef) = $MATCH->to());
-    ((do {
-    ((((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    Main::or((do {
+    Main::and(Main::and((Main::and(('::' eq substr($str, $MATCH->to(), 2)), sub { ((($MATCH)->{to} = (2 + $MATCH->to()))) })), sub { (do {
     ((my  $m2 = undef) = $grammar->module_name($str, $MATCH->to()));
     if (Main::bool($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -80,7 +80,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((do {
+}) }), sub { (Main::or((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -91,19 +91,19 @@ package GLOBAL;
     };
     $List_a
 }))
-}) || 1)))
-}) || (do {
+}), sub { 1 })) })
+}), sub { (do {
     (($MATCH)->{to} = $pos1);
-    ((1 && (((do {
+    (Main::and(1, sub { (Main::or((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = []);
     (my  $List_v = []);
     push( @{$List_a}, ("" . $MATCH->{'Perlito::Grammar.ident'}) );
     $List_a
 }))
-}) || 1))))
-}))
-}))
+}), sub { 1 })) }))
+}) })
+}) })
 })
 })));
             $MATCH
@@ -124,7 +124,7 @@ package GLOBAL;
             };
             if (Main::bool(!Main::bool(($Hash_module_seen->{$module_name})))) {
                 ($Hash_module_seen->{$module_name} = 1);
-                if (Main::bool(((($backend eq 'perl5')) || (($backend eq 'ast-perl6'))))) {
+                if (Main::bool(Main::or((($backend eq 'perl5')), sub { (($backend eq 'ast-perl6')) }))) {
 
                 }
                 else {
@@ -142,7 +142,7 @@ package GLOBAL;
         sub add_comp_unit {
             my $List_parse = $_[0];
             for my $comp_unit ( @{$List_parse || []} ) {
-                if (Main::bool(($expand_use && Main::isa($comp_unit, 'Use')))) {
+                if (Main::bool(Main::and($expand_use, sub { Main::isa($comp_unit, 'Use') }))) {
                     expand_use($comp_unit)
                 }
                 else {
@@ -151,7 +151,7 @@ package GLOBAL;
                             warn('parsed comp_unit: ' . chr(39), $comp_unit->name(), chr(39))
                         };
                         for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {
-                            if (Main::bool(($expand_use && Main::isa($stmt, 'Use')))) {
+                            if (Main::bool(Main::and($expand_use, sub { Main::isa($stmt, 'Use') }))) {
                                 expand_use($stmt)
                             }
                         }
@@ -160,7 +160,7 @@ package GLOBAL;
                 push( @{$comp_units}, $comp_unit )
             }
         };
-        if (Main::bool(((((\@ARGV)->[0] eq '-v')) || (((\@ARGV)->[0] eq '--verbose'))))) {
+        if (Main::bool(Main::or((((\@ARGV)->[0] eq '-v')), sub { (((\@ARGV)->[0] eq '--verbose')) }))) {
             ($verbose = 1);
             shift( @{(\@ARGV)} )
         };
@@ -168,7 +168,7 @@ package GLOBAL;
             ($backend = substr((\@ARGV)->[0], 2, 10));
             ($execute = 0);
             shift( @{(\@ARGV)} );
-            if (Main::bool((((($backend eq 'perl5')) || (($backend eq 'python'))) || (($backend eq 'ruby'))))) {
+            if (Main::bool(Main::or(Main::or((($backend eq 'perl5')), sub { (($backend eq 'python')) }), sub { (($backend eq 'ruby')) }))) {
                 ($expand_use = 0)
             }
         };
@@ -176,17 +176,17 @@ package GLOBAL;
             ($backend = substr((\@ARGV)->[0], 2, 10));
             ($execute = 1);
             shift( @{(\@ARGV)} );
-            if (Main::bool((((($backend eq 'perl5')) || (($backend eq 'python'))) || (($backend eq 'ruby'))))) {
+            if (Main::bool(Main::or(Main::or((($backend eq 'perl5')), sub { (($backend eq 'python')) }), sub { (($backend eq 'ruby')) }))) {
                 ($expand_use = 0)
             }
         };
-        if (Main::bool(((((\@ARGV)->[0] eq '-V')) || (((\@ARGV)->[0] eq '--version'))))) {
+        if (Main::bool(Main::or((((\@ARGV)->[0] eq '-V')), sub { (((\@ARGV)->[0] eq '--version')) }))) {
             ($backend = '');
             Main::say($_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION);
             shift( @{(\@ARGV)} )
         }
         else {
-            if (Main::bool((((((\@ARGV)->[0] eq '-h')) || (((\@ARGV)->[0] eq '--help'))) || (($backend eq ''))))) {
+            if (Main::bool(Main::or(Main::or((((\@ARGV)->[0] eq '-h')), sub { (((\@ARGV)->[0] eq '--help')) }), sub { (($backend eq '')) }))) {
                 ($backend = '');
                 Main::say($_V6_COMPILER_NAME, ' ', $_V6_COMPILER_VERSION, chr(10) . 'perlito ' . chr(91) . 'switches' . chr(93) . ' ' . chr(91) . 'programfile' . chr(93) . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Ctarget        target backend: go, js, lisp, parrot, perl5, python, ruby, ast-perl6' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program ' . chr(40) . 'omit programfile' . chr(41) . chr(10));
                 shift( @{(\@ARGV)} )
@@ -200,7 +200,7 @@ package GLOBAL;
             ($expand_use = 0);
             shift( @{(\@ARGV)} )
         };
-        if (Main::bool(($backend && (\@ARGV)))) {
+        if (Main::bool(Main::and($backend, sub { (\@ARGV) }))) {
             (my  $prelude_filename = undef);
             if (Main::bool(($backend eq 'lisp'))) {
                 ($prelude_filename = $perl6lib . chr(47) . 'Perlito' . chr(47) . 'Lisp' . chr(47) . 'Prelude.pm')
