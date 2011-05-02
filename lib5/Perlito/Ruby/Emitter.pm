@@ -19,8 +19,8 @@ package GLOBAL;
         sub to_str {
             my $op = $_[0];
             my $args = $_[1];
-            (my  $List_s = []);
-            for my $cond ( @{(($args) || []) || []} ) {
+            (my  $List_s = bless [], 'ARRAY');
+            for my $cond ( @{(($args))} ) {
                 if (Main::bool(Main::isa($cond, 'Val::Buf'))) {
                     push( @{$List_s}, $cond->emit_ruby() )
                 }
@@ -33,8 +33,8 @@ package GLOBAL;
         sub to_num {
             my $op = $_[0];
             my $args = $_[1];
-            (my  $List_s = []);
-            for my $cond ( @{(($args) || []) || []} ) {
+            (my  $List_s = bless [], 'ARRAY');
+            for my $cond ( @{(($args))} ) {
                 if (Main::bool(((Main::isa($cond, 'Val::Int')) || (Main::isa($cond, 'Val::Num'))))) {
                     push( @{$List_s}, $cond->emit_ruby() )
                 }
@@ -47,8 +47,8 @@ package GLOBAL;
         sub to_bool {
             my $op = $_[0];
             my $args = $_[1];
-            (my  $List_s = []);
-            for my $cond ( @{(($args) || []) || []} ) {
+            (my  $List_s = bless [], 'ARRAY');
+            for my $cond ( @{(($args))} ) {
                 if (Main::bool(((Main::isa($cond, 'Val::Int')) || (Main::isa($cond, 'Val::Num'))))) {
                     push( @{$List_s}, chr(40) . $cond->emit_ruby(("" . ' ' . chr(33) . chr(61) . ' 0 ' . chr(41))) )
                 }
@@ -93,15 +93,15 @@ $self->emit_ruby_indented(0)
             ((my  $sig = undef) = $self->{sig});
             ((my  $pos = undef) = $sig->positional());
             ((my  $args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-            for my $field ( @{($pos || []) || []} ) {
+            for my $field ( @{($pos)} ) {
                 push( @{$args}, $field->emit_ruby_name() )
             };
             ((my  $block = undef) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
-            (my  $List_s = []);
+            (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, Ruby::tab($level) . ((Main::bool($self->{name}) ? ('f_' . $self->{name} . ' ' . chr(61) . ' ') : '')) . 'lambda' . chr(123) . ' ' . chr(124) . Main::join($args, ', ') . chr(124) . ' ' );
             push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) );
             push( @{$List_s}, Ruby::tab($level) . chr(125) );
@@ -117,7 +117,7 @@ $self->emit_ruby_indented(0)
         sub needs_return { $_[0]->{needs_return} };
         sub top_level { $_[0]->{top_level} };
         (my  $ident = undef);
-        (my  $List_anon_block = []);
+        (my  $List_anon_block = bless [], 'ARRAY');
         sub push_stmt_ruby {
             my $block = $_[0];
             push( @{$List_anon_block}, $block )
@@ -128,7 +128,7 @@ $self->emit_ruby_indented(0)
         };
         sub has_my_decl {
             my $self = $_[0];
-            for my $decl ( @{$self->{block} || []} ) {
+            for my $decl ( @{$self->{block}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     return scalar (1)
                 };
@@ -148,22 +148,22 @@ $self->emit_ruby_indented(0)
             if (Main::bool(!Main::bool(($self->{block})))) {
                 push( @{$self->{block}}, Val::Undef->new() )
             };
-            (my  $List_s = []);
-            (my  $List_tmp = []);
-            for my $stmt ( @{$List_anon_block || []} ) {
+            (my  $List_s = bless [], 'ARRAY');
+            (my  $List_tmp = bless [], 'ARRAY');
+            for my $stmt ( @{$List_anon_block} ) {
                 push( @{$List_tmp}, $stmt )
             };
             ((my  $has_decl = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $block = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-            for my $decl ( @{$self->{block} || []} ) {
+            for my $decl ( @{$self->{block}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                     push( @{$has_decl}, $decl )
                 }
@@ -176,8 +176,8 @@ $self->emit_ruby_indented(0)
                     }
                 }
             };
-            if (Main::bool((($has_decl) || []))) {
-                for my $decl ( @{(($has_decl) || []) || []} ) {
+            if (Main::bool((($has_decl)))) {
+                for my $decl ( @{(($has_decl))} ) {
                     if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                         push( @{$List_s}, Ruby::tab($level) . 'attr_accessor :v_' . ($decl->var())->name() );
                         push( @{$List_s}, Ruby::tab($level) . 'def f_' . ($decl->var())->name(("" . chr(40) . chr(41))) );
@@ -193,10 +193,10 @@ $self->emit_ruby_indented(0)
                 }
             };
             ((my  $has_my_decl = undef) = 0);
-            (my  $List_my_decl = []);
-            (my  $List_my_init = []);
-            (my  $Hash_my_seen = {});
-            for my $decl ( @{(($block) || []) || []} ) {
+            (my  $List_my_decl = bless [], 'ARRAY');
+            (my  $List_my_init = bless [], 'ARRAY');
+            (my  $Hash_my_seen = bless {}, 'HASH');
+            for my $decl ( @{(($block))} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     if (Main::bool(!Main::bool(($Hash_my_seen->{($decl->var())->name()})))) {
                         push( @{$List_my_decl}, ($decl->var())->emit_ruby_name() );
@@ -221,30 +221,30 @@ $self->emit_ruby_indented(0)
             if (Main::bool($self->{needs_return})) {
                 ($last_statement = pop( @{$block} ))
             };
-            for my $stmt ( @{(($block) || []) || []} ) {
+            for my $stmt ( @{(($block))} ) {
                 ($List_anon_block = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 } );
     $List_a
 });
                 ((my  $s2 = undef) = $stmt->emit_ruby_indented($level));
-                for my $stmt ( @{$List_anon_block || []} ) {
+                for my $stmt ( @{$List_anon_block} ) {
                     push( @{$List_s}, $stmt->emit_ruby_indented($level) )
                 };
                 push( @{$List_s}, $s2 )
             };
             if (Main::bool(($self->{needs_return} && $last_statement))) {
                 ($List_anon_block = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 } );
     $List_a
@@ -262,8 +262,8 @@ $self->emit_ruby_indented(0)
                         ($otherwise_block = Return->new(('result' => Do->new(('block' => ($last_statement->otherwise()))))))
                     };
                     ($s2 = Ruby::tab($level) . 'if ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 }) . chr(10) . $body_block->emit_ruby_indented(($level + 1)));
@@ -288,7 +288,7 @@ $self->emit_ruby_indented(0)
                         }
                     }
                 };
-                for my $stmt ( @{$List_anon_block || []} ) {
+                for my $stmt ( @{$List_anon_block} ) {
                     push( @{$List_s}, $stmt->emit_ruby_indented($level) )
                 };
                 push( @{$List_s}, $s2 )
@@ -316,10 +316,10 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (my  $List_s = []);
+            (my  $List_s = bless [], 'ARRAY');
             ((my  $block = undef) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body})));
             ((my  $name = undef) = Main::to_go_namespace($self->{name}));
-            for my $decl ( @{$self->{body} || []} ) {
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool(Main::isa($decl, 'Use'))) {
                     push( @{$List_s}, Ruby::tab($level) . 'require ' . chr(39) . Main::to_go_namespace($decl->mod()) . '.rb' . chr(39) )
                 }
@@ -484,8 +484,8 @@ $self->emit_ruby_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $fields = undef) = $self->{fields});
-            (my  $List_str = []);
-            for my $field ( @{($fields || []) || []} ) {
+            (my  $List_str = bless [], 'ARRAY');
+            for my $field ( @{($fields)} ) {
                 push( @{$List_str}, 'o.v_' . ($field->[0])->buf(("" . chr(61)) . ($field->[1])->emit_ruby(("" . chr(59) . ' '))) )
             };
             Ruby::tab($level) . 'Proc.new ' . chr(123) . ' ' . chr(124) . 'o' . chr(124) . ' ' . Main::join($List_str, ' ') . 'o ' . chr(125) . '.call' . chr(40) . 'C_' . Main::to_go_namespace($self->{class}) . '.new' . chr(41)
@@ -534,7 +534,7 @@ $self->emit_ruby_indented(0)
         sub twigil { $_[0]->{twigil} };
         sub name { $_[0]->{name} };
         ((my  $table = undef) = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = 'v_');
     ($Hash_a->{chr(64)} = 'list_');
     ($Hash_a->{chr(37)} = 'hash_');
@@ -623,11 +623,11 @@ $self->emit_ruby_indented(0)
                 }
                 else {
                     return scalar ('mp6_' . $self->{method} . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{invocant} );
     ($List_v = $self->{arguments});
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
+    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
@@ -769,16 +769,16 @@ $self->emit_ruby_indented(0)
             };
             if (Main::bool(($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62)))) {
                 return scalar (chr(40) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{arguments}->[0] );
     $List_a
 }) . ' ' . chr(63) . ' ' . ($self->{arguments}->[1])->emit_ruby(("" . ' : ') . ($self->{arguments}->[2])->emit_ruby(("" . chr(41)))))
             };
             if (Main::bool(($code eq 'substr'))) {
                 return scalar (Ruby::to_str(' + ', do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{arguments}->[0] );
     $List_a
 }) . chr(91) . ($self->{arguments}->[1])->emit_ruby(("" . ', ') . ($self->{arguments}->[2])->emit_ruby(("" . chr(93)))))
@@ -840,8 +840,8 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $has_body = undef) = (Main::bool(($self->{body} || [])) ? 1 : 0));
-            ((my  $has_otherwise = undef) = (Main::bool(($self->{otherwise} || [])) ? 1 : 0));
+            ((my  $has_body = undef) = (Main::bool(($self->{body})) ? 1 : 0));
+            ((my  $has_otherwise = undef) = (Main::bool(($self->{otherwise})) ? 1 : 0));
             ((my  $body_block = undef) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body})));
             ((my  $otherwise_block = undef) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{otherwise})));
             if (Main::bool($body_block->has_my_decl())) {
@@ -851,8 +851,8 @@ $self->emit_ruby_indented(0)
                 ($otherwise_block = Do->new(('block' => $self->{otherwise})))
             };
             ((my  $s = undef) = Ruby::tab($level) . 'if ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{cond} );
     $List_a
 }) . chr(10) . $body_block->emit_ruby_indented(($level + 1)));
@@ -889,8 +889,8 @@ $self->emit_ruby_indented(0)
                 die('not implemented ' . chr(40) . 'While' . chr(41))
             };
             Ruby::tab($level) . 'while ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{cond} );
     $List_a
 }) . chr(10) . $body_block->emit_ruby_indented(($level + 1)) . chr(10) . Ruby::tab($level) . 'end'
@@ -982,28 +982,28 @@ $self->emit_ruby_indented(0)
             ((my  $invocant = undef) = $sig->invocant());
             ((my  $pos = undef) = $sig->positional());
             ((my  $args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $default_args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $meth_args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-            for my $field ( @{($pos || []) || []} ) {
+            for my $field ( @{($pos)} ) {
                 ((my  $arg = undef) = $field->emit_ruby_name());
                 push( @{$args}, $arg );
                 push( @{$default_args}, $arg . chr(61) . 'nil' );
                 push( @{$meth_args}, $arg . chr(61) . 'nil' )
             };
             ((my  $block = undef) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
-            (my  $List_s = []);
+            (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, Ruby::tab($level) . 'send' . chr(40) . ' :define_method, ' . chr(34) . 'f_' . $self->{name} . chr(34) . '.to_sym, lambda' . chr(92) . chr(123) . ' ' . chr(124) . Main::join($default_args, ', ') . chr(124) );
             push( @{$List_s}, Ruby::tab(($level + 1)) . $invocant->emit_ruby_name(("" . ' ' . chr(61) . ' self')) );
             push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) );
@@ -1034,22 +1034,22 @@ $self->emit_ruby_indented(0)
             ((my  $sig = undef) = $self->{sig});
             ((my  $pos = undef) = $sig->positional());
             ((my  $args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $default_args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $meth_args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'self' );
     $List_a
 });
-            for my $field ( @{($pos || []) || []} ) {
+            for my $field ( @{($pos)} ) {
                 ((my  $arg = undef) = $field->emit_ruby_name());
                 push( @{$args}, $arg );
                 push( @{$default_args}, $arg . chr(61) . 'nil' );
@@ -1057,7 +1057,7 @@ $self->emit_ruby_indented(0)
             };
             ((my  $block = undef) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
             ((my  $label2 = undef) = '_anon_' . Perlito::Ruby::LexicalBlock::get_ident_ruby());
-            (my  $List_s = []);
+            (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, Ruby::tab($level) . 'send' . chr(40) . ' :define_method, ' . chr(34) . 'f_' . $self->{name} . chr(34) . '.to_sym, lambda' . chr(123) . ' ' . chr(124) . Main::join($default_args, ', ') . chr(124) );
             push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) );
             push( @{$List_s}, Ruby::tab($level) . chr(125) . ' ' . chr(41) );
@@ -1077,7 +1077,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (my  $List_s = []);
+            (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, Ruby::tab($level) . 'Proc.new' . chr(123) . ' ' . chr(124) . chr(124) . ' ' );
             push( @{$List_s}, (Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 0)))->emit_ruby_indented(($level + 1)) );
             push( @{$List_s}, Ruby::tab($level) . chr(125) . '.call' . chr(40) . chr(41) );

@@ -141,7 +141,7 @@ $self->{term}->set_captures_to_array()
         sub emit_perl6 {
             my $self = $_[0];
             ((my  $table = undef) = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = chr(36));
     ($Hash_a->{chr(64)} = chr(36) . 'List_');
     ($Hash_a->{chr(37)} = chr(36) . 'Hash_');

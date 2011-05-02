@@ -1829,8 +1829,8 @@ package GLOBAL;
         }
         else {
             ($MATCH->{'double_quoted_buf'} = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $m2 );
     $List_a
 })
@@ -1978,8 +1978,8 @@ package GLOBAL;
         }
         else {
             ($MATCH->{'Perlito::Expression.delimited_statement'} = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $m2 );
     $List_a
 })
@@ -2026,8 +2026,8 @@ package GLOBAL;
         }
         else {
             ($MATCH->{'ident'} = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $m2 );
     $List_a
 })
@@ -2116,7 +2116,7 @@ package GLOBAL;
     }
 })) && (((do {
     ($MATCH->{capture} = (Sig->new(('invocant' => ${$MATCH->{'var_invocant'}}), ('positional' => Perlito::Expression::expand_list((${$MATCH->{'Perlito::Expression.list_parse'}})->{'exp'})), ('named' => do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 }))))
 }) || 1)))
@@ -2177,11 +2177,11 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     ((((do {
     ($MATCH->{capture} = (Sig->new(('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self'))), ('positional' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 }), ('named' => do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 }))))
 }) || 1)))

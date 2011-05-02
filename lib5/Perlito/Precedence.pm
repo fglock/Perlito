@@ -17,19 +17,19 @@ package GLOBAL;
         sub reduce { $_[0]->{reduce} };
         sub end_token { $_[0]->{end_token} };
         ((my  $Operator = undef) = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 });
         ((my  $Precedence = undef) = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 });
         ((my  $Assoc = undef) = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 });
         ((my  $Allow_space_before = undef) = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 });
         sub is_assoc_type {
@@ -59,7 +59,7 @@ package GLOBAL;
             my $str = $_[1];
             my $pos = $_[2];
             ((my  $from = undef) = $pos);
-            for my $tok ( @{(($End_token) || []) || []} ) {
+            for my $tok ( @{(($End_token))} ) {
                 ((my  $l = undef) = Main::chars($tok, ));
                 ((my  $s = undef) = substr($str, $pos, $l));
                 if (Main::bool(($s eq $tok))) {
@@ -70,8 +70,8 @@ package GLOBAL;
                     }
                     else {
                         return scalar (Perlito::Match->new(('str' => $str), ('from' => $from), ('to' => ($pos + 2)), ('bool' => 1), ('capture' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'end' );
     push( @{$List_a}, $s );
     $List_a
@@ -117,12 +117,12 @@ package GLOBAL;
                         }
                     };
                     return scalar (Perlito::Match->new(('str' => $str), ('from' => $from), ('to' => $pos), ('bool' => 1), ('capture' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'op' );
     push( @{$List_a}, $op3 );
     push( @{$List_a}, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'hyper_left'} = $hyper_left);
     ($Hash_a->{'hyper_right'} = $hyper_right);
     $Hash_a
@@ -153,12 +153,12 @@ package GLOBAL;
                         }
                     };
                     return scalar (Perlito::Match->new(('str' => $str), ('from' => $from), ('to' => $pos), ('bool' => 1), ('capture' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'op' );
     push( @{$List_a}, $op2 );
     push( @{$List_a}, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'hyper_left'} = $hyper_left);
     ($Hash_a->{'hyper_right'} = $hyper_right);
     $Hash_a
@@ -188,12 +188,12 @@ package GLOBAL;
                         }
                     };
                     return scalar (Perlito::Match->new(('str' => $str), ('from' => $from), ('to' => $pos), ('bool' => 1), ('capture' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'op' );
     push( @{$List_a}, $op1 );
     push( @{$List_a}, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'hyper_left'} = $hyper_left);
     ($Hash_a->{'hyper_right'} = $hyper_right);
     $Hash_a
@@ -211,7 +211,7 @@ package GLOBAL;
             my $param = $_[3];
             if (Main::bool(!Main::bool((defined($param))))) {
                 ($param = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 })
             };
@@ -236,57 +236,57 @@ package GLOBAL;
         };
         ((my  $prec = undef) = 100);
         add_op('postfix', '.' . chr(40) . ' ' . chr(41), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', '.' . chr(91) . ' ' . chr(93), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', '.' . chr(123) . ' ' . chr(125), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', chr(40) . ' ' . chr(41), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', chr(91) . ' ' . chr(93), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', 'funcall', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', 'funcall_no_params', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', 'methcall', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', 'methcall_no_params', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', 'block', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', 'hash', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
@@ -294,18 +294,18 @@ package GLOBAL;
         add_op('prefix', '++', $prec);
         add_op('prefix', '--', $prec);
         add_op('postfix', '++', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         add_op('postfix', '--', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
         ($prec = ($prec - 1));
         add_op('infix', '**', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
@@ -325,21 +325,21 @@ package GLOBAL;
         add_op('infix', '-', $prec);
         ($prec = ($prec - 1));
         add_op('infix', chr(126), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'list');
     $Hash_a
 });
         add_op('prefix', chr(126), $prec);
         ($prec = ($prec - 1));
         add_op('infix', chr(38), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'list');
     $Hash_a
 });
         add_op('prefix', chr(38), $prec);
         ($prec = ($prec - 1));
         add_op('infix', chr(124), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'list');
     $Hash_a
 });
@@ -356,72 +356,72 @@ package GLOBAL;
         add_op('infix', chr(94) . '..' . chr(94), $prec);
         ($prec = ($prec - 1));
         add_op('infix', chr(61) . chr(61) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', 'ne', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', 'eq', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', 'lt', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', 'le', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', 'gt', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', 'ge', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', chr(60) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', chr(62) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', chr(61) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', chr(33) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', chr(60), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', chr(62), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
         add_op('infix', chr(126) . chr(126), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
@@ -434,62 +434,62 @@ package GLOBAL;
         add_op('ternary', chr(63) . chr(63) . ' ' . chr(33) . chr(33), $prec);
         ($prec = ($prec - 1));
         add_op('infix', chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', ':' . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', chr(124) . chr(124) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', chr(38) . chr(38) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', chr(124) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', chr(38) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', chr(47) . chr(47) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', '+' . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', '-' . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', '*' . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', chr(47) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
         add_op('infix', chr(126) . chr(61), $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
@@ -499,7 +499,7 @@ package GLOBAL;
         add_op('infix', chr(61) . chr(62), $prec);
         ($prec = ($prec - 1));
         add_op('list', ',', $prec, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'list');
     $Hash_a
 });
@@ -516,18 +516,18 @@ package GLOBAL;
             ((my  $last_end_token = undef) = $End_token);
             ($End_token = $self->end_token());
             ((my  $op_stack = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $num_stack = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $last = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'op' );
     push( @{$List_a}, '*start*' );
     $List_a
@@ -540,8 +540,8 @@ package GLOBAL;
             for ( ; Main::bool(((defined($token)) && (($token->[0] ne 'end'))));  ) {
                 if (Main::bool(((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ','))))))) {
                     push( @{$num_stack}, do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
     push( @{$List_a}, undef );
     $List_a

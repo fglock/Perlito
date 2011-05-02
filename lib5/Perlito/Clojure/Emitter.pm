@@ -25,7 +25,7 @@ package GLOBAL;
             ((my  $str = undef) = '');
             ((my  $has_my_decl = undef) = 0);
             ((my  $my_decl = undef) = '');
-            for my $decl ( @{$self->{block} || []} ) {
+            for my $decl ( @{$self->{block}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     ($has_my_decl = 1);
                     ($my_decl = $my_decl . chr(40) . ($decl->var())->emit_clojure() . ' ' . chr(40) . 'sv-undef' . chr(41) . chr(41))
@@ -41,7 +41,7 @@ package GLOBAL;
             else {
                 ($str = $str . chr(40) . 'do ')
             };
-            for my $decl ( @{$self->{block} || []} ) {
+            for my $decl ( @{$self->{block}} ) {
                 if (Main::bool((!Main::bool(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))))))) {
                     ($str = $str . ($decl)->emit_clojure())
                 }
@@ -65,7 +65,7 @@ package GLOBAL;
             ($str = $str . chr(40) . 'defpackage ' . $class_name . chr(10) . '  ' . chr(40) . ':use common-lisp mp-Main' . chr(41) . chr(41) . chr(10) . chr(59) . chr(59) . ' ' . chr(40) . 'in-package ' . $class_name . chr(41) . chr(10));
             ((my  $has_my_decl = undef) = 0);
             ((my  $my_decl = undef) = '');
-            for my $decl ( @{$self->{body} || []} ) {
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     ($has_my_decl = 1);
                     ($my_decl = $my_decl . chr(40) . ($decl->var())->emit_clojure() . ' ' . chr(40) . 'sv-undef' . chr(41) . chr(41))
@@ -80,7 +80,7 @@ package GLOBAL;
             };
             ($str = $str . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-class ' . chr(39) . $class_name . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defclass ' . $class_name . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(10) . chr(10) . chr(40) . 'let ' . chr(40) . 'x' . chr(41) . ' ' . chr(10) . '  ' . chr(40) . 'setq x ' . chr(40) . 'make-instance ' . chr(39) . $class_name . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defun proto-' . $class_name . ' ' . chr(40) . chr(41) . ' x' . chr(41) . chr(41) . chr(10));
             ((my  $dumper = undef) = '');
-            for my $decl ( @{$self->{body} || []} ) {
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                     ((my  $accessor_name = undef) = ($decl->var())->name());
                     ($dumper = $dumper . chr(40) . 'let ' . chr(40) . chr(40) . 'm ' . chr(40) . 'make-instance ' . chr(39) . 'mp-Pair' . chr(41) . chr(41) . chr(41) . ' ' . chr(40) . 'setf ' . chr(40) . 'sv-key m' . chr(41) . ' ' . chr(34) . Main::lisp_escape_string($accessor_name) . chr(34) . chr(41) . ' ' . chr(40) . 'setf ' . chr(40) . 'sv-value m' . chr(41) . ' ' . chr(40) . Main::to_lisp_identifier($accessor_name) . ' self' . chr(41) . chr(41) . ' m' . chr(41) . ' ');
@@ -92,7 +92,7 @@ package GLOBAL;
                     ((my  $pos = undef) = $sig->positional());
                     ((my  $str_specific = undef) = chr(40) . $invocant->emit_clojure() . ' ' . $class_name . chr(41));
                     ((my  $str_optionals = undef) = '');
-                    for my $field ( @{($pos || []) || []} ) {
+                    for my $field ( @{($pos)} ) {
                         ($str_optionals = $str_optionals . ' ' . $field->emit_clojure())
                     };
                     if (Main::bool(($str_optionals))) {
@@ -108,7 +108,7 @@ package GLOBAL;
             if (Main::bool(($self->{name} ne 'Pair'))) {
                 ($str = $str . chr(40) . 'defmethod sv-perl ' . chr(40) . chr(40) . 'self ' . $class_name . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'mp-Main::sv-lisp_dump_object ' . chr(34) . '::' . Main::lisp_escape_string($self->{name}) . chr(34) . ' ' . chr(40) . 'list ' . $dumper . chr(41) . chr(41) . chr(41) . chr(10) . chr(10))
             };
-            for my $decl ( @{$self->{body} || []} ) {
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool((((!Main::bool(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))))) && (!Main::bool((Main::isa($decl, 'Method'))))) && (!Main::bool((Main::isa($decl, 'Sub'))))))) {
                     ($str = $str . ($decl)->emit_clojure() . chr(10))
                 }
@@ -228,7 +228,7 @@ package GLOBAL;
             if (Main::bool($self->{fields})) {
                 ((my  $fields = undef) = $self->{fields});
                 ((my  $str = undef) = '');
-                for my $field ( @{($fields || []) || []} ) {
+                for my $field ( @{($fields)} ) {
                     ($str = $str . chr(40) . 'setf ' . chr(40) . Main::to_lisp_identifier(($field->[0])->buf()) . ' m' . chr(41) . ' ' . ($field->[1])->emit_clojure() . chr(41))
                 };
                 chr(40) . 'let ' . chr(40) . chr(40) . 'm ' . chr(40) . 'make-instance ' . chr(39) . Main::to_lisp_namespace($self->{class}) . chr(41) . chr(41) . chr(41) . ' ' . $str . ' m' . chr(41)
@@ -301,10 +301,10 @@ package GLOBAL;
                 ((my  $str = undef) = 'do ' . chr(123) . ' ');
                 ((my  $i = undef) = 0);
                 (my  $arg = undef);
-                for my $var ( @{($a || []) || []} ) {
+                for my $var ( @{($a)} ) {
                     ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 }), ('hyper' => 0)))));
                     ($str = $str . ' ' . $bind->emit_clojure() . ' ');
@@ -530,8 +530,8 @@ package GLOBAL;
             ((my  $block = undef) = Perlito::Clojure::LexicalBlock->new(('block' => $self->{body})));
             if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                 ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))
@@ -594,8 +594,8 @@ package GLOBAL;
             ((my  $pos = undef) = $sig->positional());
             ((my  $block = undef) = Perlito::Clojure::LexicalBlock->new(('block' => $self->{block})));
             (my  $str = undef);
-            if (Main::bool(($pos || []))) {
-                for my $field ( @{($pos || []) || []} ) {
+            if (Main::bool(($pos))) {
+                for my $field ( @{($pos)} ) {
                     ($str = $str . $field->emit_clojure() . ' ')
                 }
             };

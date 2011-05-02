@@ -28,7 +28,7 @@ package GLOBAL;
         };
         sub escape_string {
             my $s = $_[0];
-            (my  $List_out = []);
+            (my  $List_out = bless [], 'ARRAY');
             ((my  $tmp = undef) = '');
             if (Main::bool(($s eq ''))) {
                 return scalar (chr(39) . chr(39))
@@ -36,7 +36,7 @@ package GLOBAL;
             else {
 
             };
-            for my $i ( @{[0 .. (Main::chars($s, ) - 1)] || []} ) {
+            for my $i ( @{[0 .. (Main::chars($s, ) - 1)]} ) {
                 ((my  $c = undef) = substr($s, $i, 1));
                 if (Main::bool((((((((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_'))) || (($c eq ','))) || (($c eq '.'))) || (($c eq ':'))) || (($c eq '-'))) || (($c eq '+'))) || (($c eq '*'))) || (($c eq ' '))))) {
                     ($tmp = $tmp . $c)
@@ -62,8 +62,8 @@ package GLOBAL;
             };
             return scalar (Main::join($List_out, ' + '))
         };
-        ((my  $Hash_reserved = {}) = do {
-    (my  $Hash_a = {});
+        ((my  $Hash_reserved = bless {}, 'HASH') = do {
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'print'} = 1);
     $Hash_a
 });
@@ -97,8 +97,8 @@ $self->emit_javascript_indented(0)
                 ((my  $block = undef) = Perlito::Javascript::LexicalBlock->new(('block' => $self->block()), ('needs_return' => $self->needs_return()), ('top_level' => 0)));
                 return scalar (Javascript::tab($level) . 'try ' . chr(123) . chr(10) . $block->emit_javascript_indented(($level + 1)) . chr(59) . chr(10) . Javascript::tab($level) . chr(125) . chr(10) . Javascript::tab($level) . 'catch' . chr(40) . 'err' . chr(41) . ' ' . chr(123) . chr(10) . Javascript::tab(($level + 1)) . 'if ' . chr(40) . ' err instanceof Error ' . chr(41) . ' ' . chr(123) . chr(10) . Javascript::tab(($level + 2)) . 'throw' . chr(40) . 'err' . chr(41) . chr(59) . chr(10) . Javascript::tab(($level + 1)) . chr(125) . chr(10) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . chr(10) . Javascript::tab(($level + 2)) . 'return' . chr(40) . 'err' . chr(41) . chr(59) . chr(10) . Javascript::tab(($level + 1)) . chr(125) . chr(10) . Javascript::tab($level) . chr(125))
             };
-            (my  $List_block = []);
-            for ( @{$self->{block} || []} ) {
+            (my  $List_block = bless [], 'ARRAY');
+            for ( @{$self->{block}} ) {
                 if (Main::bool(defined($_))) {
                     push( @{$List_block}, $_ )
                 }
@@ -106,8 +106,8 @@ $self->emit_javascript_indented(0)
             if (Main::bool(!Main::bool($List_block))) {
                 return scalar (Javascript::tab($level) . 'null' . chr(59))
             };
-            (my  $List_str = []);
-            for my $decl ( @{$List_block || []} ) {
+            (my  $List_str = bless [], 'ARRAY');
+            for my $decl ( @{$List_block} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my')))) {
                     push( @{$List_str}, Javascript::tab($level) . $decl->emit_javascript_init() )
                 };
@@ -122,7 +122,7 @@ $self->emit_javascript_indented(0)
             if (Main::bool($self->{needs_return})) {
                 ($last_statement = pop( @{$List_block} ))
             };
-            for my $decl ( @{$List_block || []} ) {
+            for my $decl ( @{$List_block} ) {
                 if (Main::bool(!Main::bool(((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my')))))) {
                     push( @{$List_str}, $decl->emit_javascript_indented($level) . chr(59) )
                 }
@@ -134,8 +134,8 @@ $self->emit_javascript_indented(0)
                     ((my  $otherwise = undef) = $last_statement->otherwise());
                     if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                         ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))
@@ -177,7 +177,7 @@ $self->emit_javascript_indented(0)
             my $level = $_[1];
             ((my  $class_name = undef) = Main::to_javascript_namespace($self->{name}));
             ((my  $str = undef) = chr(47) . chr(47) . ' class ' . $self->{name} . chr(10) . 'if ' . chr(40) . 'typeof ' . $class_name . ' ' . chr(33) . chr(61) . chr(61) . ' ' . chr(39) . 'object' . chr(39) . chr(41) . ' ' . chr(123) . chr(10) . '  ' . $class_name . ' ' . chr(61) . ' function' . chr(40) . chr(41) . ' ' . chr(123) . chr(125) . chr(59) . chr(10) . '  ' . $class_name . ' ' . chr(61) . ' new ' . $class_name . chr(59) . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function('isa') . ' ' . chr(61) . ' function ' . chr(40) . 's' . chr(41) . ' ' . chr(123) . ' return s ' . chr(61) . chr(61) . ' ' . chr(39) . $self->{name} . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function('perl') . ' ' . chr(61) . ' function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return ' . chr(39) . $self->{name} . '.new' . chr(40) . chr(39) . ' + Main._dump' . chr(40) . 'this' . chr(41) . ' + ' . chr(39) . chr(41) . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . chr(10) . chr(125) . chr(10) . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . chr(10) . '  var v__NAMESPACE ' . chr(61) . ' ' . $class_name . chr(59) . chr(10));
-            for my $decl ( @{$self->{body} || []} ) {
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     ($str = $str . '  ' . $decl->emit_javascript_init())
                 };
@@ -188,7 +188,7 @@ $self->emit_javascript_indented(0)
                     }
                 }
             };
-            for my $decl ( @{$self->{body} || []} ) {
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                     ($str = $str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . chr(10) . '  ' . $class_name . '.v_' . $decl->var()->name() . ' ' . chr(61) . ' null' . chr(59) . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function($decl->var()->name()) . ' ' . chr(61) . ' function ' . chr(40) . chr(41) . ' ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . chr(10))
                 };
@@ -206,7 +206,7 @@ $self->emit_javascript_indented(0)
                     ($str = $str . '  ' . chr(47) . chr(47) . ' sub ' . $decl->name() . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function ' . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . chr(41) . ' ' . chr(123) . chr(10) . $block->emit_javascript_indented(($level + 1)) . chr(10) . '  ' . chr(125) . chr(10) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . chr(10))
                 }
             };
-            for my $decl ( @{$self->{body} || []} ) {
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool((((!Main::bool(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))))) && (!Main::bool((Main::isa($decl, 'Method'))))) && (!Main::bool((Main::isa($decl, 'Sub'))))))) {
                     ($str = $str . ($decl)->emit_javascript_indented(($level + 1)) . chr(59))
                 }
@@ -216,7 +216,7 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_program {
             my $comp_units = $_[0];
             ((my  $str = undef) = '');
-            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+            for my $comp_unit ( @{(($comp_units))} ) {
                 ($str = $str . $comp_unit->emit_javascript())
             };
             return scalar ($str)
@@ -409,7 +409,7 @@ $self->emit_javascript_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $table = undef) = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = 'v_');
     ($Hash_a->{chr(64)} = 'List_');
     ($Hash_a->{chr(37)} = 'Hash_');
@@ -468,11 +468,11 @@ $self->emit_javascript_indented(0)
             };
             if (Main::bool(($self->{method} eq 'new'))) {
                 ((my  $str = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-                for my $field ( @{$self->{arguments} || []} ) {
+                for my $field ( @{$self->{arguments}} ) {
                     if (Main::bool((Main::isa($field, 'Apply') && ($field->code() eq 'infix:' . chr(60) . chr(61) . chr(62) . chr(62))))) {
                         push( @{$str}, 'v_' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript() )
                     }
@@ -486,7 +486,7 @@ $self->emit_javascript_indented(0)
                 if (Main::bool(($self->{hyper}))) {
                     return scalar (chr(40) . 'function ' . chr(40) . 'a_' . chr(41) . ' ' . chr(123) . ' ' . 'var out ' . chr(61) . ' ' . chr(91) . chr(93) . chr(59) . ' ' . 'if ' . chr(40) . ' a_ ' . chr(61) . chr(61) . ' null ' . chr(41) . ' ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for' . chr(40) . 'var i ' . chr(61) . ' 0' . chr(59) . ' i ' . chr(60) . ' a_.length' . chr(59) . ' i++' . chr(41) . ' ' . chr(123) . ' ' . 'out.push' . chr(40) . ' ' . Javascript::escape_function($self->{method}) . chr(40) . 'a_' . chr(91) . 'i' . chr(93) . chr(41) . ' ' . chr(41) . ' ' . chr(125) . ' return out' . chr(59) . ' ' . chr(125) . chr(41) . chr(40) . $invocant . chr(41))
                 };
-                return scalar (Javascript::escape_function($self->{method}) . chr(40) . $invocant . ((Main::bool(($self->{arguments} || [])) ? ', ' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') : '')) . chr(41))
+                return scalar (Javascript::escape_function($self->{method}) . chr(40) . $invocant . ((Main::bool(($self->{arguments})) ? ', ' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') : '')) . chr(41))
             };
             if (Main::bool(((((((($self->{method} eq 'join')) || (($self->{method} eq 'split'))) || (($self->{method} eq 'shift'))) || (($self->{method} eq 'unshift'))) || (($self->{method} eq 'push'))) || (($self->{method} eq 'pop'))))) {
                 return scalar ($invocant . '.' . $self->{method} . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41))
@@ -659,7 +659,7 @@ $self->emit_javascript_indented(0)
                 return scalar (emit_javascript_bind($self->{arguments}->[0], $self->{arguments}->[1]))
             };
             if (Main::bool(($code eq 'return'))) {
-                return scalar (Javascript::tab($level) . 'throw' . chr(40) . ((Main::bool(($self->{arguments} || [])) ? $self->{arguments}->[0]->emit_javascript() : 'null')) . chr(41))
+                return scalar (Javascript::tab($level) . 'throw' . chr(40) . ((Main::bool(($self->{arguments})) ? $self->{arguments}->[0]->emit_javascript() : 'null')) . chr(41))
             };
             if (Main::bool($self->{namespace})) {
                 ($code = Main::to_javascript_namespace($self->{namespace}) . '.' . Javascript::escape_function($code))
@@ -681,7 +681,7 @@ $self->emit_javascript_indented(0)
                 ((my  $a = undef) = $parameters->array1());
                 ((my  $str = undef) = 'do ' . chr(123) . ' ');
                 ((my  $i = undef) = 0);
-                for my $var ( @{($a || []) || []} ) {
+                for my $var ( @{($a)} ) {
                     ($str = $str . ' ' . emit_javascript_bind($var, Index->new(('obj' => $arguments), ('index_exp' => Val::Int->new(('int' => $i))))) . chr(59) . ' ');
                     ($i = ($i + 1))
                 };
@@ -693,9 +693,9 @@ $self->emit_javascript_indented(0)
                 ((my  $str = undef) = 'do ' . chr(123) . ' ');
                 ((my  $i = undef) = 0);
                 (my  $arg = undef);
-                for my $var ( @{($a || []) || []} ) {
+                for my $var ( @{($a)} ) {
                     ($arg = Apply->new(('code' => 'Mu')));
-                    for my $var2 ( @{($b || []) || []} ) {
+                    for my $var2 ( @{($b)} ) {
                         if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) {
                             ($arg = $var2->[1])
                         }
@@ -746,8 +746,8 @@ $self->emit_javascript_indented(0)
             };
             if (Main::bool(((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64)))))) {
                 ($arguments = Lit::Array->new(('array1' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
 })))
@@ -755,8 +755,8 @@ $self->emit_javascript_indented(0)
             else {
                 if (Main::bool(((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37)))))) {
                     ($arguments = Lit::Hash->new(('hash1' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
 })))
@@ -783,8 +783,8 @@ $self->emit_javascript_indented(0)
             ((my  $cond = undef) = $self->{cond});
             if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                 ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))
@@ -835,8 +835,8 @@ $self->emit_javascript_indented(0)
             ((my  $cond = undef) = $self->{cond});
             if (Main::bool(!Main::bool(((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))))) {
                 ($cond = Lit::Array->new(('array1' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))

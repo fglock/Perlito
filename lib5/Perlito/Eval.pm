@@ -22,19 +22,19 @@ package GLOBAL;
             my $self = $_[0];
             my $env = $_[1];
             ((my  $env1 = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 } );
-    ($List_v = ($env || []));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
+    ($List_v = ($env));
+    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
 });
-            for my $stmt ( @{$self->{body} || []} ) {
+            for my $stmt ( @{$self->{body}} ) {
 $stmt->eval($env1)
             }
         }
@@ -98,19 +98,19 @@ $stmt->eval($env1)
             my $self = $_[0];
             my $env = $_[1];
             ((my  $env1 = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 } );
-    ($List_v = ($env || []));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
+    ($List_v = ($env));
+    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
 });
-            for my $stmt ( @{$self->{stmts} || []} ) {
+            for my $stmt ( @{$self->{stmts}} ) {
 $stmt->eval($env1)
             }
         }
@@ -124,8 +124,8 @@ $stmt->eval($env1)
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            (my  $List_a = []);
-            for my $v ( @{$self->{array1} || []} ) {
+            (my  $List_a = bless [], 'ARRAY');
+            for my $v ( @{$self->{array1}} ) {
                 push( @{$List_a}, $v->eval($env) )
             };
             return scalar ($List_a)
@@ -140,8 +140,8 @@ $stmt->eval($env1)
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            (my  $Hash_h = {});
-            for my $field ( @{$self->{hash1} || []} ) {
+            (my  $Hash_h = bless {}, 'HASH');
+            for my $field ( @{$self->{hash1}} ) {
                 ((my  $pair = undef) = $field->arguments());
                 ($Hash_h->{($pair->[0])->eval($env)} = ($pair->[1])->eval($env))
             };
@@ -204,7 +204,7 @@ $stmt->eval($env1)
                 }
             };
             ((my  $name = undef) = $self->{sigil} . $ns . $self->{name});
-            for my $e ( @{(($env) || []) || []} ) {
+            for my $e ( @{(($env))} ) {
                 if (Main::bool(exists($e->{$name}))) {
                     return scalar ($e->{$name})
                 }
@@ -273,7 +273,7 @@ $stmt->eval($env1)
                 ($ns = $self->{namespace} . '::')
             };
             ((my  $code = undef) = $ns . $self->{code});
-            for my $e ( @{(($env) || []) || []} ) {
+            for my $e ( @{(($env))} ) {
                 if (Main::bool(exists($e->{$code}))) {
                     return scalar ((($e->{$code})->($env, $self->{arguments})))
                 }
@@ -295,37 +295,37 @@ $stmt->eval($env1)
             ((my  $cond = undef) = $self->{cond});
             if (Main::bool($cond->eval($env))) {
                 ((my  $env1 = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 } );
-    ($List_v = ($env || []));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
+    ($List_v = ($env));
+    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
 });
-                for my $stmt ( @{((($self->{body})->stmts()) || []) || []} ) {
+                for my $stmt ( @{((($self->{body})->stmts()))} ) {
 $stmt->eval($env1)
                 }
             }
             else {
                 ((my  $env1 = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 } );
-    ($List_v = ($env || []));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
+    ($List_v = ($env));
+    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
 });
-                for my $stmt ( @{((($self->{otherwise})->stmts()) || []) || []} ) {
+                for my $stmt ( @{((($self->{otherwise})->stmts()))} ) {
 $stmt->eval($env1)
                 }
             };
@@ -346,25 +346,25 @@ $stmt->eval($env1)
             ((my  $cond = undef) = $self->{cond});
             ((my  $topic_name = undef) = (($self->{body})->sig())->plain_name());
             ((my  $env1 = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 } );
-    ($List_v = ($env || []));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
+    ($List_v = ($env));
+    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
 });
-            for my $topic ( @{(($cond->eval($env)) || []) || []} ) {
+            for my $topic ( @{(($cond->eval($env)))} ) {
                 ($env1->[0] = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{$topic_name} = $topic);
     $Hash_a
 });
-                for my $stmt ( @{((($self->{body})->stmts()) || []) || []} ) {
+                for my $stmt ( @{((($self->{body})->stmts()))} ) {
 $stmt->eval($env1)
                 }
             };
@@ -468,32 +468,32 @@ $self->{var}->plain_name()
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            (my  $List_param_name = []);
-            for my $field ( @{(($self->{sig}->positional()) || []) || []} ) {
+            (my  $List_param_name = bless [], 'ARRAY');
+            for my $field ( @{(($self->{sig}->positional()))} ) {
                 push( @{$List_param_name}, $field->plain_name() )
             };
             ((my  $sub = undef) = sub  {
     my $env = $_[0];
     my $args = $_[1];
-    (my  $Hash_context = {});
+    (my  $Hash_context = bless {}, 'HASH');
     ((my  $n = undef) = 0);
     ($Hash_context->{chr(64) . '_'} = $args);
-    for my $name ( @{$List_param_name || []} ) {
+    for my $name ( @{$List_param_name} ) {
         ($Hash_context->{$name} = ($args->[$n])->eval($env));
         ($n = ($n + 1))
     };
     ((my  $env1 = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $Hash_context );
-    ($List_v = ($env || []));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
+    ($List_v = ($env));
+    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
 });
     (my  $r = undef);
-    for my $stmt ( @{$self->{block} || []} ) {
+    for my $stmt ( @{$self->{block}} ) {
         ($r = $stmt->eval($env1))
     };
     return scalar ($r)
@@ -514,19 +514,19 @@ $self->{var}->plain_name()
             my $self = $_[0];
             my $env = $_[1];
             ((my  $env1 = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 } );
-    ($List_v = ($env || []));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
+    ($List_v = ($env));
+    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
 });
-            for my $stmt ( @{$self->{block} || []} ) {
+            for my $stmt ( @{$self->{block}} ) {
 $stmt->eval($env1)
             }
         }

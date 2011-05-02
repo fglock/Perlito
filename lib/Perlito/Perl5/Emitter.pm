@@ -338,7 +338,7 @@ class Apply {
         if $code eq 'prefix:<?>' { return Perl5::tab($level) ~ 'Main::bool('  ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
 
         if $code eq 'prefix:<$>' { return Perl5::tab($level) ~ '${' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' }
-        if $code eq 'prefix:<@>' { return Perl5::tab($level) ~ '(' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ' || [])' }
+        if $code eq 'prefix:<@>' { return Perl5::tab($level) ~ '(' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ')' }
         if $code eq 'prefix:<%>' { return Perl5::tab($level) ~ '%{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' }
 
         if $code eq 'postfix:<++>' { return Perl5::tab($level) ~ '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')++' }
@@ -527,7 +527,7 @@ class For {
         if $.body.sig() {
             $sig = 'my ' ~ $.body.sig.emit_perl5() ~ ' ';
         }
-        return  Perl5::tab($level) ~ 'for ' ~ $sig ~ '( @{' ~ $cond.emit_perl5() ~ ' || []} ) {' ~ "\n" 
+        return  Perl5::tab($level) ~ 'for ' ~ $sig ~ '( @{' ~ $cond.emit_perl5() ~ '} ) {' ~ "\n" 
              ~   $.body.emit_perl5_indented( $level + 1 ) ~ "\n"
              ~ Perl5::tab($level) ~ "}" 
     }
@@ -547,10 +547,10 @@ class Decl {
         my $str = 
             '(' ~ $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_perl5() ~ ' = ';
         if ($.var).sigil eq '%' {
-            $str = $str ~ '{})';
+            $str = $str ~ 'bless {}, \'HASH\')';
         }
         elsif ($.var).sigil eq '@' {
-            $str = $str ~ '[])';
+            $str = $str ~ 'bless [], \'ARRAY\')';
         }
         else {
             $str = $str ~ 'undef)';

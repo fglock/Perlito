@@ -28,7 +28,7 @@ package GLOBAL;
         };
         sub escape_string {
             my $s = $_[0];
-            (my  $List_out = []);
+            (my  $List_out = bless [], 'ARRAY');
             ((my  $tmp = undef) = '');
             if (Main::bool(($s eq ''))) {
                 return scalar ('u' . chr(39) . chr(39))
@@ -36,7 +36,7 @@ package GLOBAL;
             else {
 
             };
-            for my $i ( @{[0 .. (Main::chars($s, ) - 1)] || []} ) {
+            for my $i ( @{[0 .. (Main::chars($s, ) - 1)]} ) {
                 ((my  $c = undef) = substr($s, $i, 1));
                 if (Main::bool((((((((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_'))) || (($c eq ','))) || (($c eq '.'))) || (($c eq ':'))) || (($c eq '-'))) || (($c eq '+'))) || (($c eq '*'))) || (($c eq ' '))))) {
                     ($tmp = $tmp . $c)
@@ -82,15 +82,15 @@ $self->emit_python_indented(0)
             ((my  $sig = undef) = $self->{sig});
             ((my  $pos = undef) = $sig->positional());
             ((my  $args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-            for my $field ( @{($pos || []) || []} ) {
+            for my $field ( @{($pos)} ) {
                 push( @{$args}, $field->emit_python_name() )
             };
             ((my  $block = undef) = Perlito::Python::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
-            (my  $List_s = []);
+            (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, Python::tab($level) . 'def f_' . $self->{name} . chr(40) . Main::join($args, ', ') . chr(41) . ':' );
             if (Main::bool($self->{handles_return_exception})) {
                 push( @{$List_s}, Python::tab(($level + 1)) . 'try:' );
@@ -113,7 +113,7 @@ $self->emit_python_indented(0)
         sub needs_return { $_[0]->{needs_return} };
         sub top_level { $_[0]->{top_level} };
         (my  $ident = undef);
-        (my  $List_anon_block = []);
+        (my  $List_anon_block = bless [], 'ARRAY');
         sub push_stmt_python {
             my $block = $_[0];
             push( @{$List_anon_block}, $block )
@@ -124,7 +124,7 @@ $self->emit_python_indented(0)
         };
         sub has_my_decl {
             my $self = $_[0];
-            for my $decl ( @{$self->{block} || []} ) {
+            for my $decl ( @{$self->{block}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     return scalar (1)
                 };
@@ -141,8 +141,8 @@ $self->emit_python_indented(0)
         sub emit_python_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (my  $List_block = []);
-            for ( @{$self->{block} || []} ) {
+            (my  $List_block = bless [], 'ARRAY');
+            for ( @{$self->{block}} ) {
                 if (Main::bool(defined($_))) {
                     push( @{$List_block}, $_ )
                 }
@@ -150,22 +150,22 @@ $self->emit_python_indented(0)
             if (Main::bool(!Main::bool(($List_block)))) {
                 push( @{$List_block}, Apply->new(('code' => 'Mu')) )
             };
-            (my  $List_s = []);
-            (my  $List_tmp = []);
-            for my $stmt ( @{$List_anon_block || []} ) {
+            (my  $List_s = bless [], 'ARRAY');
+            (my  $List_tmp = bless [], 'ARRAY');
+            for my $stmt ( @{$List_anon_block} ) {
                 push( @{$List_tmp}, $stmt )
             };
             ((my  $has_decl = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $block = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-            for my $decl ( @{$List_block || []} ) {
+            for my $decl ( @{$List_block} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                     push( @{$has_decl}, $decl )
                 }
@@ -174,12 +174,12 @@ $self->emit_python_indented(0)
                         push( @{$has_decl}, $decl )
                     }
                     else {
-                        push( @{(($block) || [])}, $decl )
+                        push( @{(($block))}, $decl )
                     }
                 }
             };
-            if (Main::bool((($has_decl) || []))) {
-                for my $decl ( @{(($has_decl) || []) || []} ) {
+            if (Main::bool((($has_decl)))) {
+                for my $decl ( @{(($has_decl))} ) {
                     if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                         ((my  $label = undef) = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python());
                         push( @{$List_s}, Python::tab($level) . 'def f_' . $label . chr(40) . 'v_self' . chr(41) . ':' );
@@ -194,7 +194,7 @@ $self->emit_python_indented(0)
                     }
                 }
             };
-            for my $decl ( @{(($block) || []) || []} ) {
+            for my $decl ( @{(($block))} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     push( @{$List_s}, Python::tab($level) . ($decl->var())->emit_python_name() . ' ' . chr(61) . ' ' . $decl->emit_python_init() . '' )
                 }
@@ -206,24 +206,24 @@ $self->emit_python_indented(0)
             };
             (my  $last_statement = undef);
             if (Main::bool($self->{needs_return})) {
-                ($last_statement = pop( @{(($block) || [])} ))
+                ($last_statement = pop( @{(($block))} ))
             };
-            for my $stmt ( @{(($block) || []) || []} ) {
+            for my $stmt ( @{(($block))} ) {
                 ($List_anon_block = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
                 ((my  $s2 = undef) = $stmt->emit_python_indented($level));
-                for my $stmt ( @{$List_anon_block || []} ) {
+                for my $stmt ( @{$List_anon_block} ) {
                     push( @{$List_s}, $stmt->emit_python_indented($level) )
                 };
                 push( @{$List_s}, $s2 )
             };
             if (Main::bool(($self->{needs_return} && $last_statement))) {
                 ($List_anon_block = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
                 (my  $s2 = undef);
@@ -265,7 +265,7 @@ $self->emit_python_indented(0)
                         }
                     }
                 };
-                for my $stmt ( @{$List_anon_block || []} ) {
+                for my $stmt ( @{$List_anon_block} ) {
                     push( @{$List_s}, $stmt->emit_python_indented($level) )
                 };
                 push( @{$List_s}, $s2 )
@@ -290,11 +290,11 @@ $self->emit_python_indented(0)
         sub emit_python_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (my  $List_s = []);
+            (my  $List_s = bless [], 'ARRAY');
             ((my  $block = undef) = Perlito::Python::LexicalBlock->new(('block' => $self->{body})));
             ((my  $label = undef) = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python());
             ((my  $name = undef) = Main::to_go_namespace($self->{name}));
-            for my $decl ( @{$self->{body} || []} ) {
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool(Main::isa($decl, 'Use'))) {
                     if (Main::bool(($decl->mod() ne 'v6'))) {
                         push( @{$List_s}, Python::tab($level) . 'import ' . Main::to_go_namespace($decl->mod()) )
@@ -477,7 +477,7 @@ $self->emit_python_indented(0)
         sub twigil { $_[0]->{twigil} };
         sub name { $_[0]->{name} };
         ((my  $table = undef) = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = 'v_');
     ($Hash_a->{chr(64)} = 'List_');
     ($Hash_a->{chr(37)} = 'Hash_');
@@ -535,8 +535,8 @@ $self->emit_python_indented(0)
             my $level = $_[1];
             ((my  $invocant = undef) = $self->{invocant}->emit_python());
             if (Main::bool(($self->{method} eq 'new'))) {
-                (my  $List_str = []);
-                for my $field ( @{$self->{arguments} || []} ) {
+                (my  $List_str = bless [], 'ARRAY');
+                for my $field ( @{$self->{arguments}} ) {
                     if (Main::bool((Main::isa($field, 'Apply') && ($field->code() eq 'infix:' . chr(60) . chr(61) . chr(62) . chr(62))))) {
                         push( @{$List_str}, 'v_' . $field->arguments()->[0]->buf() . chr(61) . $field->arguments()->[1]->emit_python() )
                     }
@@ -722,13 +722,13 @@ $self->emit_python_indented(0)
             };
             if (Main::bool(($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62)))) {
                 ((my  $ast = undef) = Do->new(('block' => If->new(('cond' => ($self->{arguments}->[0])), ('body' => Lit::Block->new(('stmts' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{arguments}->[1] );
     $List_a
 }))), ('otherwise' => Lit::Block->new(('stmts' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{arguments}->[2] );
     $List_a
 })))))));
@@ -782,8 +782,8 @@ $self->emit_python_indented(0)
             };
             if (Main::bool(((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64)))))) {
                 ($arguments = Lit::Array->new(('array1' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
 })))
@@ -791,8 +791,8 @@ $self->emit_python_indented(0)
             else {
                 if (Main::bool(((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37)))))) {
                     ($arguments = Lit::Hash->new(('hash1' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
 })))
@@ -816,8 +816,8 @@ $self->emit_python_indented(0)
         sub emit_python_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $has_body = undef) = (Main::bool(($self->{body} || [])) ? 1 : 0));
-            ((my  $has_otherwise = undef) = (Main::bool(($self->{otherwise} || [])) ? 1 : 0));
+            ((my  $has_body = undef) = (Main::bool(($self->{body})) ? 1 : 0));
+            ((my  $has_otherwise = undef) = (Main::bool(($self->{otherwise})) ? 1 : 0));
             ((my  $body_block = undef) = Perlito::Python::LexicalBlock->new(('block' => $self->{body}->stmts())));
             if (Main::bool($body_block->has_my_decl())) {
                 ($body_block = Do->new(('block' => $self->{body})))
@@ -882,12 +882,12 @@ $self->emit_python_indented(0)
                 ((my  $label = undef) = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python());
                 ((my  $anon_var = undef) = ($self->{body}->sig() || Var->new(('name' => '_'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))));
                 ((my  $anon_sig = undef) = Sig->new(('invocant' => undef), ('positional' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $anon_var );
     $List_a
 }), ('named' => do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 })));
                 Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $self->{body}->stmts()), ('sig' => $anon_sig), ('handles_return_exception' => 0)));
@@ -963,22 +963,22 @@ $self->emit_python_indented(0)
             ((my  $invocant = undef) = $sig->invocant());
             ((my  $pos = undef) = $sig->positional());
             ((my  $args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $default_args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $meth_args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             push( @{$meth_args}, $invocant->emit_python_name() );
-            for my $field ( @{($pos || []) || []} ) {
+            for my $field ( @{($pos)} ) {
                 ((my  $arg = undef) = $field->emit_python_name());
                 push( @{$args}, $arg );
                 push( @{$default_args}, $arg . chr(61) . 'mp6_Scalar' . chr(40) . chr(41) );
@@ -986,7 +986,7 @@ $self->emit_python_indented(0)
             };
             ((my  $label = undef) = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python());
             ((my  $block = undef) = Perlito::Python::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
-            (my  $List_s = []);
+            (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, Python::tab($level) . 'def f_' . $label . chr(40) . Main::join($meth_args, ', ') . chr(41) . ':' );
             push( @{$List_s}, Python::tab(($level + 1)) . 'try:' );
             push( @{$List_s}, $block->emit_python_indented(($level + 2)) );
@@ -1019,22 +1019,22 @@ $self->emit_python_indented(0)
             ((my  $sig = undef) = $self->{sig});
             ((my  $pos = undef) = $sig->positional());
             ((my  $args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $default_args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
             ((my  $meth_args = undef) = do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'self' );
     $List_a
 });
-            for my $field ( @{($pos || []) || []} ) {
+            for my $field ( @{($pos)} ) {
                 ((my  $arg = undef) = $field->emit_python_name());
                 push( @{$args}, $arg );
                 push( @{$default_args}, $arg . chr(61) . 'mp6_Scalar' . chr(40) . chr(41) );
@@ -1042,7 +1042,7 @@ $self->emit_python_indented(0)
             };
             ((my  $block = undef) = Perlito::Python::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
             ((my  $label2 = undef) = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python());
-            (my  $List_s = []);
+            (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, Python::tab($level) . 'def f_' . $self->{name} . chr(40) . Main::join($default_args, ', ') . chr(41) . ':' );
             push( @{$List_s}, Python::tab(($level + 1)) . 'try:' );
             push( @{$List_s}, $block->emit_python_indented(($level + 2)) );
@@ -1072,11 +1072,11 @@ $self->emit_python_indented(0)
             ((my  $label = undef) = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python());
             ((my  $block = undef) = $self->simplify()->block());
             Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $block), ('sig' => Sig->new(('invocant' => undef), ('positional' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 }), ('named' => do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 }))), ('handles_return_exception' => 0)));
             return scalar (Python::tab($level) . 'f_' . $label . chr(40) . chr(41))

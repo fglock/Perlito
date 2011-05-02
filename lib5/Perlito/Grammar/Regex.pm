@@ -16,7 +16,7 @@ package GLOBAL;
     {
     package Perlito::Grammar::Regex;
         sub new { shift; bless { @_ }, "Perlito::Grammar::Regex" }
-        (my  $Hash_rule_terms = {});
+        (my  $Hash_rule_terms = bless {}, 'HASH');
         sub ws {
             my $grammar = $_[0];
             my $str = $_[1];
@@ -415,7 +415,7 @@ package GLOBAL;
     }
 })) && (((chr(41) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'capturing_group'} = ${$MATCH->{'rule'}});
     $Hash_a
 }))
@@ -668,9 +668,9 @@ package GLOBAL;
     }
 })) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'negate'} = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'metasyntax'} = ${$MATCH->{'metasyntax_exp'}});
     $Hash_a
 });
@@ -1245,11 +1245,11 @@ package GLOBAL;
     }
 }) && (((do {
     ($MATCH->{capture} = (do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ${$MATCH->{'quantifier'}} );
-    ($List_v = ((${$MATCH->{'concat_list'}}) || []));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
+    ($List_v = ((${$MATCH->{'concat_list'}})));
+    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
@@ -1259,8 +1259,8 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     ((((do {
     ($MATCH->{capture} = (do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ${$MATCH->{'quantifier'}} );
     $List_a
 }))
@@ -1271,8 +1271,8 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     ((((do {
     ($MATCH->{capture} = (do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 }))
 }) || 1)))
@@ -1340,11 +1340,11 @@ package GLOBAL;
     }
 })) && (((do {
     ($MATCH->{capture} = (do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ${$MATCH->{'concat_exp'}} );
-    ($List_v = ((${$MATCH->{'or_list_exp'}}) || []));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))] || []} ) {
+    ($List_v = ((${$MATCH->{'or_list_exp'}})));
+    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
@@ -1354,8 +1354,8 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     ((((do {
     ($MATCH->{capture} = (do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ${$MATCH->{'concat_exp'}} );
     $List_a
 }))
@@ -1366,8 +1366,8 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     ((((do {
     ($MATCH->{capture} = (do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 }))
 }) || 1)))

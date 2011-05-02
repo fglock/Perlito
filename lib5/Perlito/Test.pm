@@ -59,7 +59,7 @@ package GLOBAL;
             my $depends = $_[4];
             ((my  $test = undef) = !Main::bool((($got eq $expected))));
             Perlito::Test::proclaim($test, 'isnt' . chr(33) . ' ' . $desc, $todo, $got, $expected, $depends, do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'negate'} = 1);
     $Hash_a
 })

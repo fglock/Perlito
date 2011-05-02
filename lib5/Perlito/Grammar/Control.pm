@@ -50,8 +50,8 @@ package GLOBAL;
         die('Missing code block in ' . chr(39) . 'unless' . chr(39))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 }))), ('otherwise' => $body))))
 }) || 1)))
@@ -150,8 +150,8 @@ package GLOBAL;
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ${$MATCH->{'if'}} );
     $List_a
 }))))))
@@ -164,8 +164,8 @@ package GLOBAL;
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body), ('otherwise' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 }))))
 }) || 1)))

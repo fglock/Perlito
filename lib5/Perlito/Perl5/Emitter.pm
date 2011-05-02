@@ -32,15 +32,15 @@ package GLOBAL;
                 return scalar ($cond)
             };
             return scalar (Apply->new(('code' => 'bool'), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))
         };
         sub escape_string {
             my $s = $_[0];
-            (my  $List_out = []);
+            (my  $List_out = bless [], 'ARRAY');
             ((my  $tmp = undef) = '');
             if (Main::bool(($s eq ''))) {
                 return scalar (chr(39) . chr(39))
@@ -48,7 +48,7 @@ package GLOBAL;
             else {
 
             };
-            for my $i ( @{[0 .. (Main::chars($s, ) - 1)] || []} ) {
+            for my $i ( @{[0 .. (Main::chars($s, ) - 1)]} ) {
                 ((my  $c = undef) = substr($s, $i, 1));
                 if (Main::bool((((((((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_'))) || (($c eq ','))) || (($c eq '.'))) || (($c eq ':'))) || (($c eq '-'))) || (($c eq '+'))) || (($c eq '*'))) || (($c eq ' '))))) {
                     ($tmp = $tmp . $c)
@@ -89,8 +89,8 @@ $self->emit_perl5_indented(0)
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (my  $List_body = []);
-            for ( @{$self->{body} || []} ) {
+            (my  $List_body = bless [], 'ARRAY');
+            for ( @{$self->{body}} ) {
                 if (Main::bool(defined($_))) {
                     push( @{$List_body}, $_ )
                 }
@@ -100,7 +100,7 @@ $self->emit_perl5_indented(0)
         sub emit_perl5_program {
             my $comp_units = $_[0];
             ((my  $str = undef) = '' . 'use v5' . chr(59) . chr(10) . 'use utf8' . chr(59) . chr(10) . 'use strict' . chr(59) . chr(10) . 'use warnings' . chr(59) . chr(10) . 'no warnings ' . chr(40) . chr(39) . 'redefine' . chr(39) . ', ' . chr(39) . 'once' . chr(39) . ', ' . chr(39) . 'void' . chr(39) . ', ' . chr(39) . 'uninitialized' . chr(39) . ', ' . chr(39) . 'misc' . chr(39) . ', ' . chr(39) . 'recursion' . chr(39) . chr(41) . chr(59) . chr(10) . 'use Perlito::Perl5::Runtime' . chr(59) . chr(10) . 'use Perlito::Perl5::Prelude' . chr(59) . chr(10) . 'our ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match-' . chr(62) . 'new' . chr(40) . chr(41) . chr(59) . chr(10));
-            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+            for my $comp_unit ( @{(($comp_units))} ) {
                 ($str = $str . $comp_unit->emit_perl5_indented(0))
             };
             ($str = $str . '1' . chr(59) . chr(10));
@@ -185,8 +185,8 @@ $self->emit_perl5_indented(0)
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (my  $List_body = []);
-            for ( @{$self->{stmts} || []} ) {
+            (my  $List_body = bless [], 'ARRAY');
+            for ( @{$self->{stmts}} ) {
                 if (Main::bool(defined($_))) {
                     push( @{$List_body}, $_ )
                 }
@@ -279,7 +279,7 @@ $self->emit_perl5_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $table = undef) = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = chr(36));
     ($Hash_a->{chr(64)} = chr(36) . 'List_');
     ($Hash_a->{chr(37)} = chr(36) . 'Hash_');
@@ -475,7 +475,7 @@ $self->emit_perl5_indented(0)
                 return scalar (Perl5::tab($level) . chr(36) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(64) . chr(62)))) {
-                return scalar (Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . ' ' . chr(124) . chr(124) . ' ' . chr(91) . chr(93) . chr(41))
+                return scalar (Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(37) . chr(62)))) {
                 return scalar (Perl5::tab($level) . chr(37) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125))
@@ -568,8 +568,8 @@ $self->emit_perl5_indented(0)
                 ((my  $cond = undef) = $self->{arguments}->[0]);
                 if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                     ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))
@@ -601,7 +601,7 @@ $self->emit_perl5_indented(0)
                 ((my  $a = undef) = $parameters->array1());
                 ((my  $str = undef) = 'do ' . chr(123) . ' ');
                 ((my  $i = undef) = 0);
-                for my $var ( @{($a || []) || []} ) {
+                for my $var ( @{($a)} ) {
                     ($str = $str . ' ' . emit_perl5_bind($var, Index->new(('obj' => $arguments), ('index_exp' => Val::Int->new(('int' => $i))))) . chr(59) . ' ');
                     ($i = ($i + 1))
                 };
@@ -613,13 +613,13 @@ $self->emit_perl5_indented(0)
                 ((my  $str = undef) = 'do ' . chr(123) . ' ');
                 ((my  $i = undef) = 0);
                 (my  $arg = undef);
-                for my $var ( @{($a || []) || []} ) {
+                for my $var ( @{($a)} ) {
                     ($arg = Apply->new(('code' => 'Mu'), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 })));
-                    for my $var2 ( @{($b || []) || []} ) {
+                    for my $var2 ( @{($b)} ) {
                         if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) {
                             ($arg = $var2->[1])
                         }
@@ -631,8 +631,8 @@ $self->emit_perl5_indented(0)
             };
             if (Main::bool(((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64)))))) {
                 ($arguments = Lit::Array->new(('array1' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
 })))
@@ -640,8 +640,8 @@ $self->emit_perl5_indented(0)
             else {
                 if (Main::bool(((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37)))))) {
                     ($arguments = Lit::Hash->new(('hash1' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
 })))
@@ -687,8 +687,8 @@ $self->emit_perl5_indented(0)
             ((my  $cond = undef) = $self->{cond});
             if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                 ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))
@@ -713,8 +713,8 @@ $self->emit_perl5_indented(0)
             ((my  $cond = undef) = $self->{cond});
             if (Main::bool(!Main::bool(((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))))) {
                 ($cond = Lit::Array->new(('array1' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))
@@ -723,7 +723,7 @@ $self->emit_perl5_indented(0)
             if (Main::bool($self->{body}->sig())) {
                 ($sig = 'my ' . $self->{body}->sig()->emit_perl5() . ' ')
             };
-            return scalar (Perl5::tab($level) . 'for ' . $sig . chr(40) . ' ' . chr(64) . chr(123) . $cond->emit_perl5() . ' ' . chr(124) . chr(124) . ' ' . chr(91) . chr(93) . chr(125) . ' ' . chr(41) . ' ' . chr(123) . chr(10) . $self->{body}->emit_perl5_indented(($level + 1)) . chr(10) . Perl5::tab($level) . chr(125))
+            return scalar (Perl5::tab($level) . 'for ' . $sig . chr(40) . ' ' . chr(64) . chr(123) . $cond->emit_perl5() . chr(125) . ' ' . chr(41) . ' ' . chr(123) . chr(10) . $self->{body}->emit_perl5_indented(($level + 1)) . chr(10) . Perl5::tab($level) . chr(125))
         }
     }
 
@@ -748,11 +748,11 @@ $self->emit_perl5_indented(0)
             };
             ((my  $str = undef) = chr(40) . $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_perl5() . ' ' . chr(61) . ' ');
             if (Main::bool((($self->{var})->sigil() eq chr(37)))) {
-                ($str = $str . chr(123) . chr(125) . chr(41))
+                ($str = $str . 'bless ' . chr(123) . chr(125) . ', ' . chr(39) . 'HASH' . chr(39) . chr(41))
             }
             else {
                 if (Main::bool((($self->{var})->sigil() eq chr(64)))) {
-                    ($str = $str . chr(91) . chr(93) . chr(41))
+                    ($str = $str . 'bless ' . chr(91) . chr(93) . ', ' . chr(39) . 'ARRAY' . chr(39) . chr(41))
                 }
                 else {
                     ($str = $str . 'undef' . chr(41))
@@ -799,7 +799,7 @@ $self->emit_perl5_indented(0)
             ((my  $pos = undef) = $sig->positional());
             ((my  $str = undef) = '');
             ((my  $i = undef) = 1);
-            for my $field ( @{($pos || []) || []} ) {
+            for my $field ( @{($pos)} ) {
                 ($str = $str . Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_' . chr(91) . $i . chr(93) . chr(59) . chr(10));
                 ($i = ($i + 1))
             };
@@ -825,7 +825,7 @@ $self->emit_perl5_indented(0)
             ((my  $pos = undef) = $sig->positional());
             ((my  $str = undef) = '');
             ((my  $i = undef) = 0);
-            for my $field ( @{($pos || []) || []} ) {
+            for my $field ( @{($pos)} ) {
                 ($str = $str . Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_' . chr(91) . $i . chr(93) . chr(59) . chr(10));
                 ($i = ($i + 1))
             };

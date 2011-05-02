@@ -19,8 +19,8 @@ package GLOBAL;
         sub block { $_[0]->{block} };
         sub emit_lisp {
             my $self = $_[0];
-            (my  $List_block = []);
-            for ( @{$self->{block} || []} ) {
+            (my  $List_block = bless [], 'ARRAY');
+            for ( @{$self->{block}} ) {
                 if (Main::bool(defined($_))) {
                     push( @{$List_block}, $_ )
                 }
@@ -32,8 +32,8 @@ package GLOBAL;
             ((my  $has_my_decl = undef) = 0);
             ((my  $my_decl = undef) = '');
             ((my  $my_ignore = undef) = '');
-            (my  $Hash_decl_seen = {});
-            for my $decl ( @{$self->{block} || []} ) {
+            (my  $Hash_decl_seen = bless {}, 'HASH');
+            for my $decl ( @{$self->{block}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     ((my  $var_name = undef) = ($decl->var())->emit_lisp());
                     if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) {
@@ -59,7 +59,7 @@ package GLOBAL;
             else {
                 ($str = $str . chr(40) . 'progn ')
             };
-            for my $decl ( @{$self->{block} || []} ) {
+            for my $decl ( @{$self->{block}} ) {
                 if (Main::bool((!Main::bool(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))))))) {
                     ($str = $str . ($decl)->emit_lisp())
                 }
@@ -83,8 +83,8 @@ package GLOBAL;
             ((my  $has_my_decl = undef) = 0);
             ((my  $my_decl = undef) = '');
             ((my  $my_ignore = undef) = '');
-            (my  $Hash_decl_seen = {});
-            for my $decl ( @{$self->{body} || []} ) {
+            (my  $Hash_decl_seen = bless {}, 'HASH');
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     ((my  $var_name = undef) = ($decl->var())->emit_lisp());
                     if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) {
@@ -108,7 +108,7 @@ package GLOBAL;
                 ($str = $str . chr(40) . 'let ' . chr(40) . $my_decl . chr(41) . chr(10) . $my_ignore)
             };
             ((my  $dumper = undef) = '');
-            for my $decl ( @{$self->{body} || []} ) {
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                     ((my  $accessor_name = undef) = ($decl->var())->name());
                     ($dumper = $dumper . chr(40) . 'let ' . chr(40) . chr(40) . 'm ' . chr(40) . 'make-instance ' . chr(39) . 'mp-Pair' . chr(41) . chr(41) . chr(41) . ' ' . chr(40) . 'setf ' . chr(40) . 'sv-key m' . chr(41) . ' ' . chr(34) . Main::lisp_escape_string($accessor_name) . chr(34) . chr(41) . ' ' . chr(40) . 'setf ' . chr(40) . 'sv-value m' . chr(41) . ' ' . chr(40) . Main::to_lisp_identifier($accessor_name) . ' self' . chr(41) . chr(41) . ' m' . chr(41) . ' ')
@@ -120,7 +120,7 @@ package GLOBAL;
                     ((my  $str_specific = undef) = chr(40) . $invocant->emit_lisp() . ' ' . $class_name . chr(41));
                     ((my  $str_optionals = undef) = '');
                     ((my  $ignorable = undef) = '');
-                    for my $field ( @{($pos || []) || []} ) {
+                    for my $field ( @{($pos)} ) {
                         ($str_optionals = $str_optionals . ' ' . $field->emit_lisp());
                         ($ignorable = $ignorable . chr(10) . '  ' . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $field->emit_lisp() . chr(41) . chr(41))
                     };
@@ -134,8 +134,8 @@ package GLOBAL;
                     ((my  $pos = undef) = ($decl->sig())->positional());
                     (my  $param = undef);
                     ((my  $ignorable = undef) = '');
-                    if (Main::bool(($pos || []))) {
-                        for my $field ( @{($pos || []) || []} ) {
+                    if (Main::bool(($pos))) {
+                        for my $field ( @{($pos)} ) {
                             ($param = $param . $field->emit_lisp() . ' ');
                             ($ignorable = $ignorable . chr(10) . '  ' . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $field->emit_lisp() . chr(41) . chr(41))
                         }
@@ -152,7 +152,7 @@ package GLOBAL;
                 ($str = $str . chr(40) . 'defmethod sv-perl ' . chr(40) . chr(40) . 'self ' . $class_name . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'mp-Main-sv-lisp_dump_object ' . chr(34) . Main::lisp_escape_string($self->{name}) . chr(34) . ' ' . chr(40) . 'list ' . $dumper . chr(41) . chr(41) . chr(41) . chr(10) . chr(10))
             };
             ($str = $str . chr(40) . 'defun run-' . $class_name . ' ' . chr(40) . chr(41) . chr(10));
-            for my $decl ( @{$self->{body} || []} ) {
+            for my $decl ( @{$self->{body}} ) {
                 if (Main::bool((((!Main::bool(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))))) && (!Main::bool((Main::isa($decl, 'Method'))))) && (!Main::bool((Main::isa($decl, 'Sub'))))))) {
                     ($str = $str . ($decl)->emit_lisp() . chr(10))
                 }
@@ -166,12 +166,12 @@ package GLOBAL;
         sub emit_lisp_program {
             my $comp_units = $_[0];
             ((my  $str = undef) = '');
-            (my  $Hash_unit_seen = {});
-            (my  $List_tmp_comp_unit = []);
-            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+            (my  $Hash_unit_seen = bless {}, 'HASH');
+            (my  $List_tmp_comp_unit = bless [], 'ARRAY');
+            for my $comp_unit ( @{(($comp_units))} ) {
                 ((my  $name = undef) = $comp_unit->name());
                 if (Main::bool($Hash_unit_seen->{$name})) {
-                    for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {
+                    for my $stmt ( @{(($comp_unit->body()))} ) {
                         push( @{($Hash_unit_seen->{$name})->body()}, $stmt )
                     }
                 }
@@ -181,8 +181,8 @@ package GLOBAL;
                 }
             };
             ($comp_units = $List_tmp_comp_unit);
-            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
-                for my $stmt ( @{(($comp_unit->body()) || []) || []} ) {
+            for my $comp_unit ( @{(($comp_units))} ) {
+                for my $stmt ( @{(($comp_unit->body()))} ) {
                     if (Main::bool(Main::isa($stmt, 'Method'))) {
                         (($comp_unit->methods())->{$stmt->name()} = $stmt)
                     };
@@ -191,14 +191,14 @@ package GLOBAL;
                     }
                 }
             };
-            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+            for my $comp_unit ( @{(($comp_units))} ) {
                 ((my  $class_name = undef) = Main::to_lisp_namespace($comp_unit->name()));
                 if (Main::bool(($class_name ne 'mp-Main'))) {
                     ($str = $str . chr(40) . 'defpackage ' . $class_name . chr(10) . '  ' . chr(40) . ':use common-lisp mp-Main' . chr(41) . chr(41) . chr(10))
                 };
                 ($str = $str . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-class ' . chr(39) . $class_name . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defclass ' . $class_name . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(10));
                 ($str = $str . chr(40) . 'let ' . chr(40) . 'x' . chr(41) . chr(10) . '  ' . chr(40) . 'setq x ' . chr(40) . 'make-instance ' . chr(39) . $class_name . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defun proto-' . $class_name . ' ' . chr(40) . chr(41) . ' x' . chr(41) . chr(41) . chr(10));
-                for my $decl ( @{(($comp_unit->body()) || []) || []} ) {
+                for my $decl ( @{(($comp_unit->body()))} ) {
                     if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                         ((my  $accessor_name = undef) = ($decl->var())->name());
                         ($str = $str . chr(59) . chr(59) . ' has ' . chr(36) . '.' . $accessor_name . chr(10) . chr(40) . 'let ' . chr(40) . chr(40) . 'new-slots ' . chr(40) . 'list ' . chr(40) . 'list :name ' . chr(39) . Main::to_lisp_identifier($accessor_name) . chr(10) . '  :readers ' . chr(39) . chr(40) . Main::to_lisp_identifier($accessor_name) . chr(41) . chr(10) . '  :writers ' . chr(39) . chr(40) . chr(40) . 'setf ' . Main::to_lisp_identifier($accessor_name) . chr(41) . chr(41) . chr(10) . '  :initform ' . chr(39) . chr(40) . 'sv-undef' . chr(41) . chr(10) . '  :initfunction ' . chr(40) . 'constantly ' . chr(40) . 'sv-undef' . chr(41) . chr(41) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . chr(40) . 'dolist ' . chr(40) . 'slot-defn ' . chr(40) . 'sb-mop:class-direct-slots ' . chr(40) . 'find-class ' . chr(39) . $class_name . chr(41) . chr(41) . chr(41) . chr(10) . chr(40) . 'push ' . chr(40) . 'list :name ' . chr(40) . 'sb-mop:slot-definition-name slot-defn' . chr(41) . chr(10) . '  :readers ' . chr(40) . 'sb-mop:slot-definition-readers slot-defn' . chr(41) . chr(10) . '  :writers ' . chr(40) . 'sb-mop:slot-definition-writers slot-defn' . chr(41) . chr(10) . '  :initform ' . chr(40) . 'sb-mop:slot-definition-initform slot-defn' . chr(41) . chr(10) . '  :initfunction ' . chr(40) . 'sb-mop:slot-definition-initfunction slot-defn' . chr(41) . chr(41) . chr(10) . 'new-slots' . chr(41) . chr(41) . chr(10) . chr(40) . 'sb-mop:ensure-class ' . chr(39) . $class_name . ' :direct-slots new-slots' . chr(41) . chr(41) . chr(10) . chr(10))
@@ -209,7 +209,7 @@ package GLOBAL;
                         ((my  $pos = undef) = $sig->positional());
                         ((my  $str_generic = undef) = $invocant->emit_lisp());
                         ((my  $str_optionals = undef) = '');
-                        for my $field ( @{($pos || []) || []} ) {
+                        for my $field ( @{($pos)} ) {
                             ($str_optionals = $str_optionals . ' ' . $field->emit_lisp())
                         };
                         if (Main::bool(($str_optionals))) {
@@ -220,8 +220,8 @@ package GLOBAL;
                     if (Main::bool(Main::isa($decl, 'Sub'))) {
                         ((my  $pos = undef) = ($decl->sig())->positional());
                         (my  $param = undef);
-                        if (Main::bool(($pos || []))) {
-                            for my $field ( @{($pos || []) || []} ) {
+                        if (Main::bool(($pos))) {
+                            for my $field ( @{($pos)} ) {
                                 ($param = $param . $field->emit_lisp() . ' ')
                             }
                         };
@@ -233,11 +233,11 @@ package GLOBAL;
                     }
                 }
             };
-            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+            for my $comp_unit ( @{(($comp_units))} ) {
                 ($str = $str . $comp_unit->emit_lisp() . chr(10))
             };
             ($str = $str . chr(40) . 'defun compiler-main ' . chr(40) . chr(41) . chr(10) . '  ' . chr(40) . 'progn' . chr(10) . '    ' . chr(40) . 'init-argv' . chr(41));
-            for my $comp_unit ( @{(($comp_units) || []) || []} ) {
+            for my $comp_unit ( @{(($comp_units))} ) {
                 ($str = $str . chr(10) . '    ' . chr(40) . 'run-' . Main::to_lisp_namespace($comp_unit->name()) . chr(41))
             };
             ($str = $str . chr(41) . chr(41) . chr(10));
@@ -353,7 +353,7 @@ package GLOBAL;
             if (Main::bool($self->{fields})) {
                 ((my  $fields = undef) = $self->{fields});
                 ((my  $str = undef) = '');
-                for my $field ( @{($fields || []) || []} ) {
+                for my $field ( @{($fields)} ) {
                     ($str = $str . chr(40) . 'setf ' . chr(40) . Main::to_lisp_identifier(($field->[0])->buf()) . ' m' . chr(41) . ' ' . ($field->[1])->emit_lisp() . chr(41))
                 };
                 chr(40) . 'let ' . chr(40) . chr(40) . 'm ' . chr(40) . 'make-instance ' . chr(39) . Main::to_lisp_namespace($self->{class}) . chr(41) . chr(41) . chr(41) . ' ' . $str . ' m' . chr(41)
@@ -426,10 +426,10 @@ package GLOBAL;
                 ((my  $str = undef) = 'do ' . chr(123) . ' ');
                 ((my  $i = undef) = 0);
                 (my  $arg = undef);
-                for my $var ( @{($a || []) || []} ) {
+                for my $var ( @{($a)} ) {
                     ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 }), ('hyper' => 0)))));
                     ($str = $str . ' ' . $bind->emit_lisp() . ' ');
@@ -676,8 +676,8 @@ package GLOBAL;
             ((my  $block = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{body})));
             if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                 ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))
@@ -696,7 +696,7 @@ package GLOBAL;
         sub body { $_[0]->{body} };
         sub emit_lisp {
             my $self = $_[0];
-            ((my  $List_body = []) = $self->{body});
+            ((my  $List_body = bless [], 'ARRAY') = $self->{body});
             if (Main::bool($self->{continue})) {
                 push( @{$List_body}, $self->{continue} )
             };
@@ -772,8 +772,8 @@ package GLOBAL;
             ((my  $pos = undef) = $sig->positional());
             ((my  $block = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{block})));
             (my  $str = undef);
-            if (Main::bool(($pos || []))) {
-                for my $field ( @{($pos || []) || []} ) {
+            if (Main::bool(($pos))) {
+                for my $field ( @{($pos)} ) {
                     ($str = $str . $field->emit_lisp() . ' ')
                 }
             };

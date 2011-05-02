@@ -124,6 +124,18 @@ package IO;
         return Encode::decode( 'utf-8', $source );
     }
 
+package ARRAY;
+
+    use overload (
+        bool     => sub { scalar(@{$_[0]}) },
+    );
+
+package HASH;
+
+    use overload (
+        bool     => sub { scalar(keys %{$_[0]}) },
+    );
+
 package Main;
 
     sub True { 1 }
@@ -242,10 +254,7 @@ package Main;
     }
 
     sub bool { 
-        my $ref = ref($_[0]);
-        return scalar(@{$_[0]}) if $ref eq 'ARRAY';
-        return scalar(keys %{$_[0]}) if $ref eq 'HASH';
-        return $_[0] ? 1 : 0;
+        $_[0] ? 1 : 0
     }
 
     # Lisp emitter

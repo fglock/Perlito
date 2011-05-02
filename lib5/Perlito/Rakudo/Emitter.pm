@@ -112,7 +112,7 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $fields = undef) = $self->{hash1});
             ((my  $str = undef) = '');
-            for my $field ( @{($fields || []) || []} ) {
+            for my $field ( @{($fields)} ) {
                 ($str = $str . ($field->[0])->emit(("" . ' ' . chr(61) . chr(62) . ' ') . ($field->[1])->emit(("" . ','))))
             };
             chr(123) . ' ' . $str . ' ' . chr(125)
@@ -136,7 +136,7 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $fields = undef) = $self->{fields});
             ((my  $str = undef) = '');
-            for my $field ( @{($fields || []) || []} ) {
+            for my $field ( @{($fields)} ) {
                 ($str = $str . ($field->[0])->emit(("" . ' ' . chr(61) . chr(62) . ' ') . ($field->[1])->emit(("" . ','))))
             };
             $self->{class} . '.new' . chr(40) . ' ' . $str . ' ' . chr(41)
@@ -177,7 +177,7 @@ $self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(12
         sub emit {
             my $self = $_[0];
             ((my  $table = undef) = do {
-    (my  $Hash_a = {});
+    (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = chr(36));
     ($Hash_a->{chr(64)} = chr(36) . 'List_');
     ($Hash_a->{chr(37)} = chr(36) . 'Hash_');
@@ -200,7 +200,7 @@ $self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(12
                 ((my  $a = undef) = $self->{parameters}->array());
                 ((my  $str = undef) = 'do ' . chr(123) . ' ');
                 ((my  $i = undef) = 0);
-                for my $var ( @{($a || []) || []} ) {
+                for my $var ( @{($a)} ) {
                     ((my  $bind = undef) = Bind->new(('parameters' => $var), ('arguments' => Index->new(('obj' => $self->{arguments}), ('index_exp' => Val::Int->new(('int' => $i)))))));
                     ($str = $str . ' ' . $bind->emit(("" . chr(59) . ' ')));
                     ($i = ($i + 1))
@@ -213,9 +213,9 @@ $self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(12
                 ((my  $str = undef) = 'do ' . chr(123) . ' ');
                 ((my  $i = undef) = 0);
                 (my  $arg = undef);
-                for my $var ( @{($a || []) || []} ) {
+                for my $var ( @{($a)} ) {
                     ($arg = Val::Undef->new());
-                    for my $var2 ( @{($b || []) || []} ) {
+                    for my $var2 ( @{($b)} ) {
                         if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) {
                             ($arg = $var2->[1])
                         }
@@ -233,10 +233,10 @@ $self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(12
                 ((my  $str = undef) = 'do ' . chr(123) . ' ');
                 ((my  $i = undef) = 0);
                 (my  $arg = undef);
-                for my $var ( @{($a || []) || []} ) {
+                for my $var ( @{($a)} ) {
                     ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     $List_a
 }), ('hyper' => 0)))));
                     ($str = $str . ' ' . $bind->emit(("" . chr(59) . ' ')));
@@ -410,8 +410,8 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
             ((my  $cond = undef) = $self->{cond});
             if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                 ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
-    (my  $List_a = []);
-    (my  $List_v = []);
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))
@@ -460,7 +460,7 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
             ((my  $pos = undef) = $sig->positional());
             ((my  $str = undef) = '');
             ((my  $pos = undef) = $sig->positional());
-            for my $field ( @{($pos || []) || []} ) {
+            for my $field ( @{($pos)} ) {
                 ($str = $str . '' . $field->emit(("" . chr(63) . ', ')))
             };
             'method ' . $self->{name} . chr(40) . $invocant->emit(("" . ': ') . $str . chr(41) . ' ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), chr(59) . ' ') . ' ' . chr(125))
@@ -480,7 +480,7 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
             ((my  $pos = undef) = $sig->positional());
             (my  $str = undef);
             ((my  $pos = undef) = $sig->positional());
-            for my $field ( @{($pos || []) || []} ) {
+            for my $field ( @{($pos)} ) {
                 ($str = $str . '' . $field->emit(("" . chr(63) . ', ')))
             };
             if (Main::bool(($self->{name} eq ''))) {
