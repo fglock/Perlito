@@ -26,28 +26,28 @@ package GLOBAL;
             (my  $item = undef);
             ((my  $s = undef) = '.namespace ' . chr(91) . ' ' . chr(34) . $self->{name} . chr(34) . ' ' . chr(93) . ' ' . chr(10) . '.sub _ :main :anon' . chr(10) . '.end' . chr(10) . chr(10) . '.sub ' . chr(34) . '_class_vars_' . chr(34) . ' :anon' . chr(10));
             for my $item ( @{($a || []) || []} ) {
-                if (Main::bool(Main::and((Main::isa($item, 'Decl')), sub { (($item->decl() ne 'has')) }))) {
+                if (Main::bool(((Main::isa($item, 'Decl')) && (($item->decl() ne 'has'))))) {
                     ($s = $s . $item->emit_parrot())
                 }
             };
             ($s = $s . '.end' . chr(10) . chr(10));
             for my $item ( @{($a || []) || []} ) {
-                if (Main::bool(Main::or(Main::isa($item, 'Sub'), sub { Main::isa($item, 'Method') }))) {
+                if (Main::bool((Main::isa($item, 'Sub') || Main::isa($item, 'Method')))) {
                     ($s = $s . $item->emit_parrot())
                 }
             };
             for my $item ( @{($a || []) || []} ) {
-                if (Main::bool(Main::and((Main::isa($item, 'Decl')), sub { (($item->decl() eq 'has')) }))) {
+                if (Main::bool(((Main::isa($item, 'Decl')) && (($item->decl() eq 'has'))))) {
                     ((my  $name = undef) = ($item->var())->name());
                     ($s = $s . '.sub ' . chr(34) . $name . chr(34) . ' :method' . chr(10) . '  .param pmc val      :optional' . chr(10) . '  .param int has_val  :opt_flag' . chr(10) . '  unless has_val goto ifelse' . chr(10) . '  setattribute self, ' . chr(34) . $name . chr(34) . ', val' . chr(10) . '  goto ifend' . chr(10) . 'ifelse:' . chr(10) . '  val ' . chr(61) . ' getattribute self, ' . chr(34) . $name . chr(34) . chr(10) . 'ifend:' . chr(10) . '  .return' . chr(40) . 'val' . chr(41) . chr(10) . '.end' . chr(10) . chr(10))
                 }
             };
             ($s = $s . '.sub _ :anon :load :init :outer' . chr(40) . chr(34) . '_class_vars_' . chr(34) . chr(41) . chr(10) . '  .local pmc self' . chr(10) . '  newclass self, ' . chr(34) . $self->{name} . chr(34) . chr(10));
             for my $item ( @{($a || []) || []} ) {
-                if (Main::bool(Main::and((Main::isa($item, 'Decl')), sub { (($item->decl() eq 'has')) }))) {
+                if (Main::bool(((Main::isa($item, 'Decl')) && (($item->decl() eq 'has'))))) {
                     ($s = $s . $item->emit_parrot())
                 };
-                if (Main::bool(Main::or(Main::or(Main::isa($item, 'Decl'), sub { Main::isa($item, 'Sub') }), sub { Main::isa($item, 'Method') }))) {
+                if (Main::bool(((Main::isa($item, 'Decl') || Main::isa($item, 'Sub')) || Main::isa($item, 'Method')))) {
 
                 }
                 else {
@@ -352,7 +352,7 @@ package GLOBAL;
         sub arguments { $_[0]->{arguments} };
         sub emit_parrot {
             my $self = $_[0];
-            if (Main::bool(Main::or(Main::or(Main::or((($self->{method} eq 'perl')), sub { (($self->{method} eq 'yaml')) }), sub { (($self->{method} eq 'say')) }), sub { (($self->{method} eq 'join')) }))) {
+            if (Main::bool(((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))))) {
                 if (Main::bool(($self->{hyper}))) {
                     return scalar (chr(91) . ' map ' . chr(123) . ' Main::' . $self->{method} . chr(40) . ' ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), '') . chr(41) . ' ' . chr(125) . ' ' . chr(64) . chr(123) . ' ' . $self->{invocant}->emit_parrot(("" . ' ' . chr(125) . ' ' . chr(93))))
                 }
@@ -597,7 +597,7 @@ $self->{result}->emit_parrot(("" . '  .return' . chr(40) . ' ' . chr(36) . 'P0 '
             ((my  $cond = undef) = $self->{cond});
             ($label = ($label + 1));
             ((my  $id = undef) = $label);
-            if (Main::bool(Main::and(Main::isa($cond, 'Var'), sub { ($cond->sigil() ne chr(64)) }))) {
+            if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() ne chr(64))))) {
                 ($cond = Lit::Array->new(('array1' => do {
     (my  $List_a = []);
     (my  $List_v = []);

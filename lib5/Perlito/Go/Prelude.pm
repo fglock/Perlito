@@ -58,7 +58,7 @@ $self->{bool}->Bool()
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    Main::and(('' ne substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })
+    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 })));
             $MATCH
@@ -72,7 +72,7 @@ $self->{bool}->Bool()
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    Main::and(('' ne substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })
+    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 })));
             $MATCH
@@ -86,7 +86,7 @@ $self->{bool}->Bool()
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    Main::and(('' ne substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })
+    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 })));
             $MATCH
@@ -100,7 +100,7 @@ $self->{bool}->Bool()
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    Main::and(('' ne substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })
+    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 })));
             $MATCH
@@ -114,7 +114,7 @@ $self->{bool}->Bool()
             (($MATCH)->{bool} = ((do {
     ((my  $pos1 = undef) = $MATCH->to());
     (do {
-    Main::and(('' ne substr($str, $MATCH->to(), 1)), sub { ((($MATCH)->{to} = (1 + $MATCH->to()))) })
+    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 })));
             $MATCH

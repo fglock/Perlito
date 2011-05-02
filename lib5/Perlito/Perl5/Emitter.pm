@@ -28,7 +28,7 @@ package GLOBAL;
         };
         sub to_bool {
             my $cond = $_[0];
-            if (Main::bool(Main::or(Main::or(Main::or(Main::isa($cond, 'Val::Num'), sub { Main::isa($cond, 'Val::Buf') }), sub { Main::isa($cond, 'Val::Int') }), sub { (Main::and(Main::isa($cond, 'Apply'), sub { (Main::or(Main::or((($cond->code() eq 'bool')), sub { (($cond->code() eq 'True')) }), sub { (($cond->code() eq 'False')) })) })) }))) {
+            if (Main::bool((((Main::isa($cond, 'Val::Num') || Main::isa($cond, 'Val::Buf')) || Main::isa($cond, 'Val::Int')) || ((Main::isa($cond, 'Apply') && ((((($cond->code() eq 'bool')) || (($cond->code() eq 'True'))) || (($cond->code() eq 'False'))))))))) {
                 return scalar ($cond)
             };
             return scalar (Apply->new(('code' => 'bool'), ('arguments' => do {
@@ -50,7 +50,7 @@ package GLOBAL;
             };
             for my $i ( @{[0 .. (Main::chars($s, ) - 1)] || []} ) {
                 ((my  $c = undef) = substr($s, $i, 1));
-                if (Main::bool(Main::or(Main::or(Main::or(Main::or(Main::or(Main::or(Main::or(Main::or(Main::or(Main::or((Main::and((($c ge 'a')), sub { (($c le 'z')) })), sub { (Main::and((($c ge 'A')), sub { (($c le 'Z')) })) }), sub { (Main::and((($c ge '0')), sub { (($c le '9')) })) }), sub { (($c eq '_')) }), sub { (($c eq ',')) }), sub { (($c eq '.')) }), sub { (($c eq ':')) }), sub { (($c eq '-')) }), sub { (($c eq '+')) }), sub { (($c eq '*')) }), sub { (($c eq ' ')) }))) {
+                if (Main::bool((((((((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_'))) || (($c eq ','))) || (($c eq '.'))) || (($c eq ':'))) || (($c eq '-'))) || (($c eq '+'))) || (($c eq '*'))) || (($c eq ' '))))) {
                     ($tmp = $tmp . $c)
                 }
                 else {
@@ -291,7 +291,7 @@ $self->emit_perl5_indented(0)
                 ($ns = $self->{namespace} . '::')
             }
             else {
-                if (Main::bool(Main::and(Main::and((($self->{sigil} eq chr(64))), sub { (($self->{twigil} eq '*')) }), sub { (($self->{name} eq 'ARGS')) }))) {
+                if (Main::bool((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) {
                     return scalar (Perl5::tab($level) . chr(40) . chr(92) . chr(64) . 'ARGV' . chr(41))
                 };
                 if (Main::bool(($self->{twigil} eq '.'))) {
@@ -347,7 +347,7 @@ $self->emit_perl5_indented(0)
             if (Main::bool(($invocant eq 'self'))) {
                 ($invocant = chr(36) . 'self')
             };
-            if (Main::bool(Main::or((($self->{method} eq 'values')), sub { (($self->{method} eq 'keys')) }))) {
+            if (Main::bool(((($self->{method} eq 'values')) || (($self->{method} eq 'keys'))))) {
                 if (Main::bool(($self->{hyper}))) {
                     die('not implemented')
                 }
@@ -355,7 +355,7 @@ $self->emit_perl5_indented(0)
                     return scalar (Perl5::tab($level) . chr(91) . $self->{method} . chr(40) . ' ' . chr(37) . chr(123) . $invocant . chr(125) . ' ' . chr(41) . chr(93))
                 }
             };
-            if (Main::bool(Main::or(Main::or(Main::or(Main::or(Main::or(Main::or(Main::or(Main::or((($self->{method} eq 'perl')), sub { (($self->{method} eq 'id')) }), sub { (($self->{method} eq 'yaml')) }), sub { (($self->{method} eq 'say')) }), sub { (($self->{method} eq 'join')) }), sub { (($self->{method} eq 'split')) }), sub { (($self->{method} eq 'chars')) }), sub { (($self->{method} eq 'isa')) }), sub { (($self->{method} eq 'pairs')) }))) {
+            if (Main::bool((((((((((($self->{method} eq 'perl')) || (($self->{method} eq 'id'))) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'split'))) || (($self->{method} eq 'chars'))) || (($self->{method} eq 'isa'))) || (($self->{method} eq 'pairs'))))) {
                 if (Main::bool(($self->{hyper}))) {
                     return scalar (Perl5::tab($level) . chr(91) . ' map ' . chr(123) . ' Main::' . $self->{method} . chr(40) . ' ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41) . ' ' . chr(125) . ' ' . chr(64) . chr(123) . chr(40) . ' ' . $invocant . ' ' . chr(41) . chr(125) . ' ' . chr(93))
                 }
@@ -384,7 +384,7 @@ $self->emit_perl5_indented(0)
             };
             ((my  $call = undef) = '-' . chr(62) . $meth . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41));
             if (Main::bool(($self->{hyper}))) {
-                if (Main::bool(!Main::bool((Main::and(Main::isa($self->{invocant}, 'Apply'), sub { ($self->{invocant}->code() eq 'prefix:' . chr(60) . chr(64) . chr(62)) }))))) {
+                if (Main::bool(!Main::bool(((Main::isa($self->{invocant}, 'Apply') && ($self->{invocant}->code() eq 'prefix:' . chr(60) . chr(64) . chr(62))))))) {
                     ($invocant = chr(64) . chr(123) . chr(40) . ' ' . $invocant . ' ' . chr(41) . chr(125))
                 };
                 return scalar (Perl5::tab($level) . chr(91) . ' map ' . chr(123) . ' ' . chr(36) . '_' . $call . ' ' . chr(125) . ' ' . $invocant . ' ' . chr(93))
@@ -522,14 +522,20 @@ $self->emit_perl5_indented(0)
             if (Main::bool(($code eq 'infix:' . chr(60) . 'x' . chr(62)))) {
                 return scalar (Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' x ') . chr(41))
             };
-            if (Main::bool(Main::or(($code eq 'infix:' . chr(60) . chr(38) . chr(38) . chr(62)), sub { ($code eq 'infix:' . chr(60) . 'and' . chr(62)) }))) {
-                return scalar (return scalar (Perl5::tab($level) . 'Main::and' . chr(40) . $self->{arguments}->[0]->emit_perl5() . ', ' . 'sub ' . chr(123) . ' ' . $self->{arguments}->[1]->emit_perl5() . ' ' . chr(125) . chr(41)))
+            if (Main::bool(($code eq 'infix:' . chr(60) . chr(38) . chr(38) . chr(62)))) {
+                return scalar (Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ' . chr(38) . chr(38) . ' ') . chr(41))
             };
-            if (Main::bool(Main::or(($code eq 'infix:' . chr(60) . chr(124) . chr(124) . chr(62)), sub { ($code eq 'infix:' . chr(60) . 'or' . chr(62)) }))) {
-                return scalar (return scalar (Perl5::tab($level) . 'Main::or' . chr(40) . $self->{arguments}->[0]->emit_perl5() . ', ' . 'sub ' . chr(123) . ' ' . $self->{arguments}->[1]->emit_perl5() . ' ' . chr(125) . chr(41)))
+            if (Main::bool(($code eq 'infix:' . chr(60) . chr(124) . chr(124) . chr(62)))) {
+                return scalar (Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ' . chr(124) . chr(124) . ' ') . chr(41))
+            };
+            if (Main::bool(($code eq 'infix:' . chr(60) . 'and' . chr(62)))) {
+                return scalar (Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' and ') . chr(41))
+            };
+            if (Main::bool(($code eq 'infix:' . chr(60) . 'or' . chr(62)))) {
+                return scalar (Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' or ') . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . chr(47) . chr(47) . chr(62)))) {
-                return scalar (return scalar (Perl5::tab($level) . 'Main::defined_or' . chr(40) . $self->{arguments}->[0]->emit_perl5() . ', ' . 'sub ' . chr(123) . ' ' . $self->{arguments}->[1]->emit_perl5() . ' ' . chr(125) . chr(41)))
+                return scalar (Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ' . chr(47) . chr(47) . ' ') . chr(41))
             };
             if (Main::bool(($code eq 'infix:' . chr(60) . 'eq' . chr(62)))) {
                 return scalar (Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' eq ') . chr(41))
@@ -560,7 +566,7 @@ $self->emit_perl5_indented(0)
             };
             if (Main::bool(($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62)))) {
                 ((my  $cond = undef) = $self->{arguments}->[0]);
-                if (Main::bool(Main::and(Main::isa($cond, 'Var'), sub { ($cond->sigil() eq chr(64)) }))) {
+                if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                     ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -577,7 +583,7 @@ $self->emit_perl5_indented(0)
                 return scalar (Perl5::tab($level) . emit_perl5_bind($self->{arguments}->[0], $self->{arguments}->[1]))
             };
             if (Main::bool(($code eq 'return'))) {
-                if (Main::bool(Main::and($self->{arguments}, sub { (scalar( @{$self->{arguments}} ) == 1) }))) {
+                if (Main::bool(($self->{arguments} && (scalar( @{$self->{arguments}} ) == 1)))) {
                     return scalar (Perl5::tab($level) . 'return scalar ' . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41))
                 };
                 return scalar (Perl5::tab($level) . 'return ' . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41))
@@ -623,7 +629,7 @@ $self->emit_perl5_indented(0)
                 };
                 return scalar ($str . $parameters->emit_perl5() . ' ' . chr(125))
             };
-            if (Main::bool(Main::or(Main::and(Main::isa($parameters, 'Var'), sub { ($parameters->sigil() eq chr(64)) }), sub { Main::and(Main::isa($parameters, 'Decl'), sub { ($parameters->var()->sigil() eq chr(64)) }) }))) {
+            if (Main::bool(((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64)))))) {
                 ($arguments = Lit::Array->new(('array1' => do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -632,7 +638,7 @@ $self->emit_perl5_indented(0)
 })))
             }
             else {
-                if (Main::bool(Main::or(Main::and(Main::isa($parameters, 'Var'), sub { ($parameters->sigil() eq chr(37)) }), sub { Main::and(Main::isa($parameters, 'Decl'), sub { ($parameters->var()->sigil() eq chr(37)) }) }))) {
+                if (Main::bool(((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37)))))) {
                     ($arguments = Lit::Hash->new(('hash1' => do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -679,7 +685,7 @@ $self->emit_perl5_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $cond = undef) = $self->{cond});
-            if (Main::bool(Main::and(Main::isa($cond, 'Var'), sub { ($cond->sigil() eq chr(64)) }))) {
+            if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                 ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);
@@ -705,7 +711,7 @@ $self->emit_perl5_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $cond = undef) = $self->{cond});
-            if (Main::bool(!Main::bool((Main::and(Main::isa($cond, 'Var'), sub { ($cond->sigil() eq chr(64)) }))))) {
+            if (Main::bool(!Main::bool(((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))))) {
                 ($cond = Lit::Array->new(('array1' => do {
     (my  $List_a = []);
     (my  $List_v = []);

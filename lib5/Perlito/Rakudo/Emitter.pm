@@ -273,7 +273,7 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
             if (Main::bool(($invocant eq 'self'))) {
                 ($invocant = chr(36) . 'self')
             };
-            if (Main::bool(Main::or(Main::or(Main::or(Main::or(Main::or((($self->{method} eq 'perl')), sub { (($self->{method} eq 'yaml')) }), sub { (($self->{method} eq 'say')) }), sub { (($self->{method} eq 'join')) }), sub { (($self->{method} eq 'chars')) }), sub { (($self->{method} eq 'isa')) }))) {
+            if (Main::bool(((((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'chars'))) || (($self->{method} eq 'isa'))))) {
                 if (Main::bool(($self->{hyper}))) {
                     return scalar (chr(91) . ' map ' . chr(123) . ' ' . chr(38) . 'Main::' . $self->{method} . chr(40) . ' ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41) . ' ' . chr(125) . ' ' . chr(64) . chr(40) . ' ' . $invocant . ' ' . chr(41) . ' ' . chr(93))
                 }
@@ -408,7 +408,7 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
         sub emit {
             my $self = $_[0];
             ((my  $cond = undef) = $self->{cond});
-            if (Main::bool(Main::and(Main::isa($cond, 'Var'), sub { ($cond->sigil() eq chr(64)) }))) {
+            if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                 ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);

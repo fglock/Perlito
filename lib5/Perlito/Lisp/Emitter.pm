@@ -34,7 +34,7 @@ package GLOBAL;
             ((my  $my_ignore = undef) = '');
             (my  $Hash_decl_seen = {});
             for my $decl ( @{$self->{block} || []} ) {
-                if (Main::bool(Main::and(Main::isa($decl, 'Decl'), sub { (($decl->decl() eq 'my')) }))) {
+                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     ((my  $var_name = undef) = ($decl->var())->emit_lisp());
                     if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) {
                         ($has_my_decl = 1);
@@ -43,7 +43,7 @@ package GLOBAL;
                         ($Hash_decl_seen->{$var_name} = 1)
                     }
                 };
-                if (Main::bool(Main::and(Main::and(Main::isa($decl, 'Bind'), sub { Main::isa(($decl->parameters()), 'Decl') }), sub { ((($decl->parameters())->decl() eq 'my')) }))) {
+                if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) {
                     ((my  $var_name = undef) = (($decl->parameters())->var())->emit_lisp());
                     if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) {
                         ($has_my_decl = 1);
@@ -60,7 +60,7 @@ package GLOBAL;
                 ($str = $str . chr(40) . 'progn ')
             };
             for my $decl ( @{$self->{block} || []} ) {
-                if (Main::bool((!Main::bool((Main::and(Main::isa($decl, 'Decl'), sub { (($decl->decl() eq 'my')) })))))) {
+                if (Main::bool((!Main::bool(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))))))) {
                     ($str = $str . ($decl)->emit_lisp())
                 }
             };
@@ -85,7 +85,7 @@ package GLOBAL;
             ((my  $my_ignore = undef) = '');
             (my  $Hash_decl_seen = {});
             for my $decl ( @{$self->{body} || []} ) {
-                if (Main::bool(Main::and(Main::isa($decl, 'Decl'), sub { (($decl->decl() eq 'my')) }))) {
+                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     ((my  $var_name = undef) = ($decl->var())->emit_lisp());
                     if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) {
                         ($has_my_decl = 1);
@@ -94,7 +94,7 @@ package GLOBAL;
                         ($Hash_decl_seen->{$var_name} = 1)
                     }
                 };
-                if (Main::bool(Main::and(Main::and(Main::isa($decl, 'Bind'), sub { Main::isa(($decl->parameters()), 'Decl') }), sub { ((($decl->parameters())->decl() eq 'my')) }))) {
+                if (Main::bool(((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my'))))) {
                     ((my  $var_name = undef) = (($decl->parameters())->var())->emit_lisp());
                     if (Main::bool(!Main::bool(($Hash_decl_seen->{$var_name})))) {
                         ($has_my_decl = 1);
@@ -109,7 +109,7 @@ package GLOBAL;
             };
             ((my  $dumper = undef) = '');
             for my $decl ( @{$self->{body} || []} ) {
-                if (Main::bool(Main::and(Main::isa($decl, 'Decl'), sub { (($decl->decl() eq 'has')) }))) {
+                if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                     ((my  $accessor_name = undef) = ($decl->var())->name());
                     ($dumper = $dumper . chr(40) . 'let ' . chr(40) . chr(40) . 'm ' . chr(40) . 'make-instance ' . chr(39) . 'mp-Pair' . chr(41) . chr(41) . chr(41) . ' ' . chr(40) . 'setf ' . chr(40) . 'sv-key m' . chr(41) . ' ' . chr(34) . Main::lisp_escape_string($accessor_name) . chr(34) . chr(41) . ' ' . chr(40) . 'setf ' . chr(40) . 'sv-value m' . chr(41) . ' ' . chr(40) . Main::to_lisp_identifier($accessor_name) . ' self' . chr(41) . chr(41) . ' m' . chr(41) . ' ')
                 };
@@ -153,7 +153,7 @@ package GLOBAL;
             };
             ($str = $str . chr(40) . 'defun run-' . $class_name . ' ' . chr(40) . chr(41) . chr(10));
             for my $decl ( @{$self->{body} || []} ) {
-                if (Main::bool(Main::and(Main::and((!Main::bool((Main::and(Main::isa($decl, 'Decl'), sub { (Main::or((($decl->decl() eq 'has')), sub { (($decl->decl() eq 'my')) })) })))), sub { (!Main::bool((Main::isa($decl, 'Method')))) }), sub { (!Main::bool((Main::isa($decl, 'Sub')))) }))) {
+                if (Main::bool((((!Main::bool(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))))) && (!Main::bool((Main::isa($decl, 'Method'))))) && (!Main::bool((Main::isa($decl, 'Sub'))))))) {
                     ($str = $str . ($decl)->emit_lisp() . chr(10))
                 }
             };
@@ -186,7 +186,7 @@ package GLOBAL;
                     if (Main::bool(Main::isa($stmt, 'Method'))) {
                         (($comp_unit->methods())->{$stmt->name()} = $stmt)
                     };
-                    if (Main::bool(Main::and(Main::isa($stmt, 'Decl'), sub { (($stmt->decl() eq 'has')) }))) {
+                    if (Main::bool((Main::isa($stmt, 'Decl') && (($stmt->decl() eq 'has'))))) {
                         (($comp_unit->attributes())->{($stmt->var())->name()} = $stmt)
                     }
                 }
@@ -199,7 +199,7 @@ package GLOBAL;
                 ($str = $str . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-class ' . chr(39) . $class_name . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defclass ' . $class_name . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(10));
                 ($str = $str . chr(40) . 'let ' . chr(40) . 'x' . chr(41) . chr(10) . '  ' . chr(40) . 'setq x ' . chr(40) . 'make-instance ' . chr(39) . $class_name . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defun proto-' . $class_name . ' ' . chr(40) . chr(41) . ' x' . chr(41) . chr(41) . chr(10));
                 for my $decl ( @{(($comp_unit->body()) || []) || []} ) {
-                    if (Main::bool(Main::and(Main::isa($decl, 'Decl'), sub { (($decl->decl() eq 'has')) }))) {
+                    if (Main::bool((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                         ((my  $accessor_name = undef) = ($decl->var())->name());
                         ($str = $str . chr(59) . chr(59) . ' has ' . chr(36) . '.' . $accessor_name . chr(10) . chr(40) . 'let ' . chr(40) . chr(40) . 'new-slots ' . chr(40) . 'list ' . chr(40) . 'list :name ' . chr(39) . Main::to_lisp_identifier($accessor_name) . chr(10) . '  :readers ' . chr(39) . chr(40) . Main::to_lisp_identifier($accessor_name) . chr(41) . chr(10) . '  :writers ' . chr(39) . chr(40) . chr(40) . 'setf ' . Main::to_lisp_identifier($accessor_name) . chr(41) . chr(41) . chr(10) . '  :initform ' . chr(39) . chr(40) . 'sv-undef' . chr(41) . chr(10) . '  :initfunction ' . chr(40) . 'constantly ' . chr(40) . 'sv-undef' . chr(41) . chr(41) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . chr(40) . 'dolist ' . chr(40) . 'slot-defn ' . chr(40) . 'sb-mop:class-direct-slots ' . chr(40) . 'find-class ' . chr(39) . $class_name . chr(41) . chr(41) . chr(41) . chr(10) . chr(40) . 'push ' . chr(40) . 'list :name ' . chr(40) . 'sb-mop:slot-definition-name slot-defn' . chr(41) . chr(10) . '  :readers ' . chr(40) . 'sb-mop:slot-definition-readers slot-defn' . chr(41) . chr(10) . '  :writers ' . chr(40) . 'sb-mop:slot-definition-writers slot-defn' . chr(41) . chr(10) . '  :initform ' . chr(40) . 'sb-mop:slot-definition-initform slot-defn' . chr(41) . chr(10) . '  :initfunction ' . chr(40) . 'sb-mop:slot-definition-initfunction slot-defn' . chr(41) . chr(41) . chr(10) . 'new-slots' . chr(41) . chr(41) . chr(10) . chr(40) . 'sb-mop:ensure-class ' . chr(39) . $class_name . ' :direct-slots new-slots' . chr(41) . chr(41) . chr(10) . chr(10))
                     };
@@ -403,7 +403,7 @@ package GLOBAL;
                 ($ns = Main::to_lisp_namespace($self->{namespace}) . '-')
             }
             else {
-                if (Main::bool(Main::and(Main::and((($self->{sigil} eq chr(64))), sub { (($self->{twigil} eq '*')) }), sub { (($self->{name} eq 'ARGS')) }))) {
+                if (Main::bool((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS'))))) {
                     return scalar ('*mp6-args*')
                 }
             };
@@ -437,7 +437,7 @@ package GLOBAL;
                 };
                 return scalar ($str . $self->{parameters}->emit_lisp() . ' ' . chr(125))
             };
-            if (Main::bool(Main::and(Main::isa($self->{parameters}, 'Decl'), sub { (($self->{parameters}->decl() eq 'my')) }))) {
+            if (Main::bool((Main::isa($self->{parameters}, 'Decl') && (($self->{parameters}->decl() eq 'my'))))) {
                 return scalar (chr(40) . 'setf ' . ($self->{parameters}->var())->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . chr(41))
             };
             chr(40) . 'setf ' . $self->{parameters}->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . chr(41)
@@ -484,7 +484,7 @@ package GLOBAL;
                     return scalar (chr(40) . 'length ' . $invocant . chr(41))
                 }
             };
-            if (Main::bool(Main::or((($self->{method} eq 'yaml')), sub { (($self->{method} eq 'say')) }))) {
+            if (Main::bool(((($self->{method} eq 'yaml')) || (($self->{method} eq 'say'))))) {
                 if (Main::bool(($self->{hyper}))) {
                     return scalar (chr(91) . ' map ' . chr(123) . ' ' . $self->{method} . chr(40) . ' ' . chr(36) . '_, ' . ', ' . $arguments . chr(41) . ' ' . chr(125) . ' ' . chr(64) . chr(123) . ' ' . $invocant . ' ' . chr(125) . ' ' . chr(93))
                 }
@@ -674,7 +674,7 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $cond = undef) = $self->{cond});
             ((my  $block = undef) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{body})));
-            if (Main::bool(Main::and(Main::isa($cond, 'Var'), sub { ($cond->sigil() eq chr(64)) }))) {
+            if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                 ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
     (my  $List_a = []);
     (my  $List_v = []);

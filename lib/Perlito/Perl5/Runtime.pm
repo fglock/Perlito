@@ -248,27 +248,6 @@ package Main;
         return $_[0] ? 1 : 0;
     }
 
-    sub and {
-        if (bool($_[0])) {
-            return $_[1]();
-        }
-        return $_[0];
-    }
-    
-    sub or {
-        if (bool($_[0])) {
-            return $_[0];
-        }
-        return $_[1]();
-    }
-    
-    sub defined_or {
-        if (!defined($_[0])) {
-            return $_[1]();
-        }
-        return $_[0];
-    }
-
     # Lisp emitter
     sub to_lisp_identifier {
         my $s = $_[0];
