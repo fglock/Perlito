@@ -551,7 +551,7 @@ $self->emit_javascript_indented(0)
                 return scalar ('parseFloat' . chr(40) . ($self->{arguments}->[0])->emit_javascript() . chr(41))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(126) . chr(62)))) {
-                return scalar (chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . '.' . Javascript::escape_function('string') . chr(40) . chr(41))
+                return scalar (Javascript::escape_function('string') . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
             if (Main::bool(($code eq 'prefix:' . chr(60) . chr(33) . chr(62)))) {
                 return scalar (chr(40) . ' ' . Javascript::escape_function('bool') . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . chr(41) . ' ' . chr(63) . ' false : true' . chr(41))
