@@ -443,6 +443,56 @@ package GLOBAL;
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
+        add_op('infix', chr(124) . chr(124) . chr(61), $prec, do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
+        add_op('infix', chr(38) . chr(38) . chr(61), $prec, do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
+        add_op('infix', chr(124) . chr(61), $prec, do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
+        add_op('infix', chr(38) . chr(61), $prec, do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
+        add_op('infix', chr(47) . chr(47) . chr(61), $prec, do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
+        add_op('infix', '+' . chr(61), $prec, do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
+        add_op('infix', '-' . chr(61), $prec, do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
+        add_op('infix', '*' . chr(61), $prec, do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
+        add_op('infix', chr(47) . chr(61), $prec, do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
+        add_op('infix', chr(126) . chr(61), $prec, do {
+    (my  $Hash_a = {});
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
         ($prec = ($prec - 1));
         add_op('prefix', 'not', $prec);
         ($prec = ($prec - 1));
