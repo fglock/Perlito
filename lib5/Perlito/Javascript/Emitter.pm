@@ -516,6 +516,10 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
+            ((my  $apply) = $self->op_assign());
+            if ($apply) {
+                return scalar ($apply->emit_javascript_indented($level))
+            };
             ((my  $code) = $self->{code});
             if (Main::isa($code, 'Str')) {
 

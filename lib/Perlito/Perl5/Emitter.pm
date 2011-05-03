@@ -291,6 +291,12 @@ class Apply {
     has $.namespace;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
+
+        my $apply = self.op_assign();
+        if $apply {
+            return $apply.emit_perl5_indented( $level );
+        }
+
         my $ns = '';
         if $.namespace {
             $ns = $.namespace ~ '::';

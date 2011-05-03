@@ -489,6 +489,12 @@ class Apply {
             self.emit_python
     }
     method emit_python {
+
+        my $apply = self.op_assign();
+        if $apply {
+            return $apply.emit_python;
+        }
+
         my $code = $.code;
         
         # check that expressions don't overflow the Python parser stack

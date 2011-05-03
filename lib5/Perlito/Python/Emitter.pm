@@ -587,6 +587,10 @@ $self->emit_python_indented(0)
         };
         sub emit_python {
             my $self = $_[0];
+            ((my  $apply) = $self->op_assign());
+            if ($apply) {
+                return scalar ($apply->emit_python())
+            };
             ((my  $code) = $self->{code});
             if (Main::isa(($self->{arguments}->[0]), 'Apply')) {
                 ((my  $args2) = $self->{arguments}->[0]->arguments());

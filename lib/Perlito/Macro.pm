@@ -175,6 +175,40 @@ class Lit::Hash {
     }
 }
 
+class Apply {
+    method op_assign {
+        my $code = $.code;
+        return 0 unless $code.isa( 'Str' );
+
+        if $code eq 'infix:<~=>' {
+            return Apply.new(
+                code      => 'infix:<=>',
+                arguments => [
+                    @.arguments[0],
+                    Apply.new(
+                        code    => 'list:<~>',
+                        arguments => @.arguments,
+                    ),
+                ]
+            );
+        }
+        if $code eq 'infix:<||=>' {
+            return Apply.new(
+                code      => 'infix:<=>',
+                arguments => [
+                    @.arguments[0],
+                    Apply.new(
+                        code    => 'infix:<||>',
+                        arguments => @.arguments,
+                    ),
+                ]
+            );
+        }
+
+        return 0;
+    }
+}
+
 class Do {
     method simplify {
         my $block;

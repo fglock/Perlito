@@ -444,6 +444,12 @@ class Apply {
     has $.namespace;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
+
+        my $apply = self.op_assign();
+        if $apply {
+            return $apply.emit_javascript_indented( $level );
+        }
+
         my $code = $.code;
 
         if $code.isa( 'Str' ) { }

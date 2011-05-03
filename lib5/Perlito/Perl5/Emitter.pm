@@ -397,6 +397,10 @@ $self->emit_perl5_indented(0)
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
+            ((my  $apply) = $self->op_assign());
+            if ($apply) {
+                return scalar ($apply->emit_perl5_indented($level))
+            };
             ((my  $ns) = '');
             if ($self->{namespace}) {
                 ($ns = $self->{namespace} . '::')
