@@ -12,11 +12,11 @@
 
 my $out = $document.getElementById('print-result');
 
-$out ~= "using the 'document' object\n";
+$out<value> ~= "using the 'document' object\n";
 
 say "hello, World!";
 
-$out ~= "goodbye $_\n" for 1 .. 3;
+$out<value> ~= "goodbye $_\n" for 1 .. 3;
 </textarea><br/>
 		<input type="button" value="Execute" onclick="execute()"/>
 
