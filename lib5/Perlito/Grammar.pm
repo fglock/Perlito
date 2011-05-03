@@ -23,16 +23,16 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     ((((chr(10) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
     ((chr(13) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -40,10 +40,10 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((((chr(13) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
     ((chr(10) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -56,19 +56,19 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $m2 = undef) = $grammar->is_newline($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->is_newline($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -77,9 +77,9 @@ package GLOBAL;
     }
 })
 }));
-    (($tmp)->{bool} = !Main::bool($MATCH));
+    (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })
 })));
@@ -89,22 +89,19 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
-    ((do {
-    ((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $m2 = undef) = $grammar->digit($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->digit($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -113,64 +110,34 @@ package GLOBAL;
     }
 })
 }));
-    (($tmp)->{bool} = !Main::bool($MATCH));
+    (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && (do {
-    ((my  $m2 = undef) = $grammar->word($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    ((my  $count) = 0);
+    for ( ; ((do {
+    ((my  $m2) = $grammar->word($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}))
-}) || (do {
-    (($MATCH)->{to} = $pos1);
-    (((('_' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
-}))
-}) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    for ( ; Main::bool(((do {
-    ((my  $pos1 = undef) = $MATCH->to());
-    (((do {
-    ((my  $m2 = undef) = $grammar->word($str, $MATCH->to()));
-    if (Main::bool($m2)) {
-        (($MATCH)->{to} = $m2->to());
-        1
-    }
-    else {
-        0
-    }
-}) || (do {
-    (($MATCH)->{to} = $pos1);
-    (((('_' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
-})) || (do {
-    (($MATCH)->{to} = $pos1);
-    ((do {
-    ((my  $m2 = undef) = $grammar->digit($str, $MATCH->to()));
-    if (Main::bool($m2)) {
-        (($MATCH)->{to} = $m2->to());
-        1
-    }
-    else {
-        0
-    }
-}))
-}))
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
             ($last_match_null = 0)
         };
-        ($last_pos = $MATCH->to())
+        ($last_pos = $MATCH->to());
+        ($count = ($count + 1))
     };
     (($MATCH)->{to} = $last_pos);
-    1
+    ($count > 0)
 }))
 })
 })));
@@ -180,14 +147,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $m2 = undef) = $grammar->ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -195,14 +162,14 @@ package GLOBAL;
         0
     }
 }) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    for ( ; Main::bool(((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    for ( ; ((do {
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -211,8 +178,8 @@ package GLOBAL;
     }
 }))
 })
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -231,14 +198,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((do {
-    ((my  $m2 = undef) = $grammar->ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -246,26 +213,26 @@ package GLOBAL;
         0
     }
 }) && (do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = Main::bool($MATCH));
+    (($tmp)->{bool} = !!($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 })) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    for ( ; Main::bool(((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    for ( ; ((do {
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -273,21 +240,21 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = Main::bool($MATCH));
+    (($tmp)->{bool} = !!($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }))
 })
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -306,14 +273,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
-    ((my  $m2 = undef) = $grammar->namespace_before_ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->namespace_before_ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'namespace_before_ident'} = $m2);
         1
@@ -337,14 +304,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
-    ((my  $m2 = undef) = $grammar->is_newline($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->is_newline($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -352,19 +319,19 @@ package GLOBAL;
         0
     }
 }) && (((chr(61) . 'end' eq substr($str, $MATCH->to(), 4)) && ((($MATCH)->{to} = (4 + $MATCH->to())))))) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = $grammar->not_newline($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    for ( ; ((do {
+    ((my  $m2) = $grammar->not_newline($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -378,19 +345,19 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = $grammar->not_newline($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    for ( ; ((do {
+    ((my  $m2) = $grammar->not_newline($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -401,8 +368,8 @@ package GLOBAL;
     (($MATCH)->{to} = $last_pos);
     1
 })) && (do {
-    ((my  $m2 = undef) = $grammar->pod_begin($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->pod_begin($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -418,31 +385,31 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    ((my  $count = undef) = 0);
-    for ( ; Main::bool(((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    ((my  $count) = 0);
+    for ( ; ((do {
+    ((my  $pos1) = $MATCH->to());
     (((do {
     ((((chr(35) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = $grammar->not_newline($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    for ( ; ((do {
+    ((my  $m2) = $grammar->not_newline($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -456,8 +423,8 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
-    ((my  $m2 = undef) = $grammar->is_newline($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->is_newline($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -465,11 +432,11 @@ package GLOBAL;
         0
     }
 }) && (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (((do {
     ((((chr(61) . 'begin' eq substr($str, $MATCH->to(), 6)) && ((($MATCH)->{to} = (6 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->pod_begin($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->pod_begin($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -480,8 +447,8 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((((chr(61) . 'for' eq substr($str, $MATCH->to(), 4)) && ((($MATCH)->{to} = (4 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->pod_begin($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->pod_begin($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -497,8 +464,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     ((do {
-    ((my  $m2 = undef) = $grammar->space($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->space($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -507,8 +474,8 @@ package GLOBAL;
     }
 }))
 }))
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -527,22 +494,22 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -554,22 +521,22 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -581,22 +548,22 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -608,14 +575,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((((((((do {
-    ((my  $m2 = undef) = $grammar->full_ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'full_ident'} = $m2);
         1
@@ -624,38 +591,38 @@ package GLOBAL;
         0
     }
 }) && (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
 })) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
 })) && (do {
-    ((my  $m2 = undef) = $grammar->exp_stmts($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
@@ -664,17 +631,17 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -689,10 +656,10 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (((do {
     (('my' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
 }) || (do {
@@ -709,14 +676,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $m2 = undef) = $grammar->exp_stmts($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
@@ -735,14 +702,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $m2 = undef) = Perlito::Expression->exp_parse($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = Perlito::Expression->exp_parse($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito::Expression.exp_parse'} = $m2);
         1
@@ -761,14 +728,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $m2 = undef) = Perlito::Expression->exp_parse($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = Perlito::Expression->exp_parse($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito::Expression.exp_parse'} = $m2);
         1
@@ -787,14 +754,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     ((do {
-    ((my  $m2 = undef) = $grammar->ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'ident'} = $m2);
         1
@@ -818,22 +785,22 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
     (('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
 }) && (do {
-    ((my  $m2 = undef) = $grammar->full_ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'full_ident'} = $m2);
         1
@@ -857,10 +824,10 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((((do {
     ((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
@@ -880,14 +847,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $pos1) = $MATCH->to());
     ((((do {
     (('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
@@ -900,7 +867,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((('*' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }))
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -912,13 +879,13 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (((do {
-    ((my  $m2 = undef) = $grammar->full_ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'full_ident'} = $m2);
         1
@@ -932,8 +899,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     ((do {
-    ((my  $m2 = undef) = $grammar->digit($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->digit($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'digit'} = $m2);
         1
@@ -950,14 +917,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((((do {
-    ((my  $m2 = undef) = $grammar->var_sigil($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->var_sigil($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'var_sigil'} = $m2);
         1
@@ -966,8 +933,8 @@ package GLOBAL;
         0
     }
 }) && (do {
-    ((my  $m2 = undef) = $grammar->var_twigil($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->var_twigil($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'var_twigil'} = $m2);
         1
@@ -976,8 +943,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->optional_namespace_before_ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->optional_namespace_before_ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'optional_namespace_before_ident'} = $m2);
         1
@@ -986,8 +953,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->var_name($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->var_name($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'var_name'} = $m2);
         1
@@ -1006,13 +973,13 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     (('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
@@ -1020,7 +987,7 @@ package GLOBAL;
     (((('E' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }))
 }) && (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (((do {
     (('+' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
@@ -1031,20 +998,20 @@ package GLOBAL;
     (1)
 }))
 })) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    ((my  $count = undef) = 0);
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = $grammar->digit($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    ((my  $count) = 0);
+    for ( ; ((do {
+    ((my  $m2) = $grammar->digit($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1064,29 +1031,29 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     ((((('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    ((my  $count = undef) = 0);
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = $grammar->digit($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    ((my  $count) = 0);
+    for ( ; ((do {
+    ((my  $m2) = $grammar->digit($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1098,17 +1065,17 @@ package GLOBAL;
     (($MATCH)->{to} = $last_pos);
     ($count > 0)
 })) && (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
-    ((my  $m2 = undef) = $grammar->exponent($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = $grammar->exponent($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -1116,20 +1083,20 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    ((my  $count = undef) = 0);
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = $grammar->digit($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    ((my  $count) = 0);
+    for ( ; ((do {
+    ((my  $m2) = $grammar->digit($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1141,10 +1108,10 @@ package GLOBAL;
     (($MATCH)->{to} = $last_pos);
     ($count > 0)
 }) && (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
-    ((my  $m2 = undef) = $grammar->exponent($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exponent($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1154,20 +1121,20 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((((('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    ((my  $count = undef) = 0);
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = $grammar->digit($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    ((my  $count) = 0);
+    for ( ; ((do {
+    ((my  $m2) = $grammar->digit($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1179,17 +1146,17 @@ package GLOBAL;
     (($MATCH)->{to} = $last_pos);
     ($count > 0)
 })) && (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
-    ((my  $m2 = undef) = $grammar->exponent($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = $grammar->exponent($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -1208,10 +1175,10 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
@@ -1222,36 +1189,36 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = !Main::bool($MATCH));
+    (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    for ( ; Main::bool(((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    for ( ; ((do {
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     ((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
@@ -1260,13 +1227,13 @@ package GLOBAL;
 }))
 })
 }));
-    (($tmp)->{bool} = !Main::bool($MATCH));
+    (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1285,14 +1252,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (((((do {
     ((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->single_quoted_unescape($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
@@ -1306,8 +1273,8 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->single_quoted_unescape($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
@@ -1321,8 +1288,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     ((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->single_quoted_unescape($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
@@ -1336,8 +1303,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     ((((do {
-    ((my  $m2 = undef) = $grammar->char_any_single_quote($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->char_any_single_quote($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any_single_quote'} = $m2);
         1
@@ -1346,8 +1313,8 @@ package GLOBAL;
         0
     }
 }) && (do {
-    ((my  $m2 = undef) = $grammar->single_quoted_unescape($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
@@ -1369,18 +1336,18 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (((((do {
     ((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
@@ -1398,22 +1365,22 @@ package GLOBAL;
 }))
 })
 }));
-    (($tmp)->{bool} = !Main::bool($MATCH));
+    (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    for ( ; Main::bool(((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    for ( ; ((do {
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((((((do {
     ((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
@@ -1434,13 +1401,13 @@ package GLOBAL;
 }))
 })
 }));
-    (($tmp)->{bool} = !Main::bool($MATCH));
+    (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1459,10 +1426,10 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((((((do {
     (((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (chr(10)))
@@ -1475,8 +1442,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     (((((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('c' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((chr(91) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->digits($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->digits($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'digits'} = $m2);
         1
@@ -1490,8 +1457,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     (((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('c' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->digits($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->digits($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'digits'} = $m2);
         1
@@ -1505,8 +1472,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     ((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->char_any($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
@@ -1520,8 +1487,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
-    ((my  $m2 = undef) = $grammar->char_any_double_quote($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->char_any_double_quote($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any_double_quote'} = $m2);
         1
@@ -1540,35 +1507,35 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (((((do {
     ((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = Main::bool($MATCH));
+    (($tmp)->{bool} = !!($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->var_twigil($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->var_twigil($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1576,8 +1543,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1587,12 +1554,12 @@ package GLOBAL;
 }))
 })
 }));
-    (($tmp)->{bool} = Main::bool($MATCH));
+    (($tmp)->{bool} = !!($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && (do {
-    ((my  $m2 = undef) = Perlito::Expression->operator($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = Perlito::Expression->operator($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito::Expression.operator'} = $m2);
         1
@@ -1606,8 +1573,8 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
-    ((my  $m2 = undef) = $grammar->char_any($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
@@ -1623,29 +1590,29 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((chr(64) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = Main::bool($MATCH));
+    (($tmp)->{bool} = !!($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     ((((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((((chr(64) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->var_twigil($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->var_twigil($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1653,8 +1620,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1664,12 +1631,12 @@ package GLOBAL;
 }))
 })
 }));
-    (($tmp)->{bool} = Main::bool($MATCH));
+    (($tmp)->{bool} = !!($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && (do {
-    ((my  $m2 = undef) = Perlito::Expression->operator($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = Perlito::Expression->operator($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito::Expression.operator'} = $m2);
         1
@@ -1683,8 +1650,8 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
-    ((my  $m2 = undef) = $grammar->char_any($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
@@ -1700,29 +1667,29 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((chr(37) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = Main::bool($MATCH));
+    (($tmp)->{bool} = !!($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     ((((do {
-    ((my  $tmp = undef) = $MATCH);
+    ((my  $tmp) = $MATCH);
     ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
     (($MATCH)->{bool} = (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((((chr(37) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->var_twigil($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->var_twigil($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1730,8 +1697,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1741,12 +1708,12 @@ package GLOBAL;
 }))
 })
 }));
-    (($tmp)->{bool} = Main::bool($MATCH));
+    (($tmp)->{bool} = !!($MATCH));
     ($MATCH = $tmp);
-    Main::bool($MATCH)
+    !!($MATCH)
 }) && (do {
-    ((my  $m2 = undef) = Perlito::Expression->operator($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = Perlito::Expression->operator($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito::Expression.operator'} = $m2);
         1
@@ -1760,8 +1727,8 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
-    ((my  $m2 = undef) = $grammar->char_any($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
@@ -1777,8 +1744,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     (((((((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->exp_stmts($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
@@ -1792,8 +1759,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
-    ((my  $m2 = undef) = $grammar->double_quoted_unescape($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->double_quoted_unescape($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'double_quoted_unescape'} = $m2);
         1
@@ -1812,19 +1779,19 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     ((((((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = $grammar->double_quoted_buf($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    for ( ; ((do {
+    ((my  $m2) = $grammar->double_quoted_buf($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
-        if (Main::bool(exists($MATCH->{'double_quoted_buf'}))) {
+        if (exists($MATCH->{'double_quoted_buf'})) {
             push( @{($MATCH->{'double_quoted_buf'})}, $m2 )
         }
         else {
@@ -1840,8 +1807,8 @@ package GLOBAL;
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1852,8 +1819,8 @@ package GLOBAL;
     (($MATCH)->{to} = $last_pos);
     1
 })) && (((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
-    ((my  $args = undef) = $MATCH->{'double_quoted_buf'});
-    if (Main::bool(!Main::bool($args))) {
+    ((my  $args) = $MATCH->{'double_quoted_buf'});
+    if (!($args)) {
         ($MATCH->{capture} = (Val::Buf->new(('buf' => ''))))
     }
     else {
@@ -1863,8 +1830,8 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((((((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
-    ((my  $m2 = undef) = $grammar->single_quoted_unescape($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
@@ -1883,25 +1850,25 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    ((my  $count = undef) = 0);
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = $grammar->digit($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    ((my  $count) = 0);
+    for ( ; ((do {
+    ((my  $m2) = $grammar->digit($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1920,26 +1887,26 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    ((my  $count = undef) = 0);
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = $grammar->digit($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    ((my  $count) = 0);
+    for ( ; ((do {
+    ((my  $m2) = $grammar->digit($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1961,19 +1928,19 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
-    ((my  $last_match_null = undef) = 0);
-    ((my  $last_pos = undef) = $MATCH->to());
-    for ( ; Main::bool(((do {
-    ((my  $m2 = undef) = Perlito::Expression->delimited_statement($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    for ( ; ((do {
+    ((my  $m2) = Perlito::Expression->delimited_statement($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
-        if (Main::bool(exists($MATCH->{'Perlito::Expression.delimited_statement'}))) {
+        if (exists($MATCH->{'Perlito::Expression.delimited_statement'})) {
             push( @{($MATCH->{'Perlito::Expression.delimited_statement'})}, $m2 )
         }
         else {
@@ -1989,8 +1956,8 @@ package GLOBAL;
     else {
         0
     }
-}) && (($last_match_null < 2))));  ) {
-        if (Main::bool(($last_pos == $MATCH->to()))) {
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -2011,17 +1978,17 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
-    ((my  $last_pos = undef) = $MATCH->to());
-    if (Main::bool(!Main::bool((do {
-    ((my  $m2 = undef) = $grammar->ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = $grammar->ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
-        if (Main::bool(exists($MATCH->{'ident'}))) {
+        if (exists($MATCH->{'ident'})) {
             push( @{($MATCH->{'ident'})}, $m2 )
         }
         else {
@@ -2037,7 +2004,7 @@ package GLOBAL;
     else {
         0
     }
-})))) {
+}))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -2049,14 +2016,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
-    ((my  $m2 = undef) = $grammar->var_ident($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->var_ident($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'var_ident'} = $m2);
         1
@@ -2080,14 +2047,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((((do {
-    ((my  $m2 = undef) = $grammar->var_invocant($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->var_invocant($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'var_invocant'} = $m2);
         1
@@ -2096,8 +2063,8 @@ package GLOBAL;
         0
     }
 }) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2105,8 +2072,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = Perlito::Expression->list_parse($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = Perlito::Expression->list_parse($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito::Expression.list_parse'} = $m2);
         1
@@ -2128,14 +2095,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     (((((((do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2143,8 +2110,8 @@ package GLOBAL;
         0
     }
 }) && (((chr(40) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2152,8 +2119,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->args_sig($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->args_sig($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'args_sig'} = $m2);
         1
@@ -2162,8 +2129,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2193,14 +2160,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((((((((((do {
-    ((my  $m2 = undef) = $grammar->opt_name($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_name($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'opt_name'} = $m2);
         1
@@ -2209,8 +2176,8 @@ package GLOBAL;
         0
     }
 }) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2218,8 +2185,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->method_sig($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->method_sig($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'method_sig'} = $m2);
         1
@@ -2228,8 +2195,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2237,8 +2204,8 @@ package GLOBAL;
         0
     }
 })) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2246,8 +2213,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->exp_stmts($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
@@ -2256,8 +2223,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2265,7 +2232,7 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     ((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
@@ -2285,14 +2252,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((((((((((do {
-    ((my  $m2 = undef) = $grammar->opt_name($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_name($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'opt_name'} = $m2);
         1
@@ -2301,8 +2268,8 @@ package GLOBAL;
         0
     }
 }) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2310,8 +2277,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->method_sig($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->method_sig($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'method_sig'} = $m2);
         1
@@ -2320,8 +2287,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2329,8 +2296,8 @@ package GLOBAL;
         0
     }
 })) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2338,8 +2305,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->exp_stmts($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
@@ -2348,8 +2315,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2357,7 +2324,7 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     ((do {
     ((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 }) || (do {
@@ -2377,14 +2344,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((((((do {
-    ((my  $m2 = undef) = $grammar->opt_name($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_name($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'opt_name'} = $m2);
         1
@@ -2393,8 +2360,8 @@ package GLOBAL;
         0
     }
 }) && (do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2402,8 +2369,8 @@ package GLOBAL;
         0
     }
 })) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = Perlito::Grammar::Regex->rule($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = Perlito::Grammar::Regex->rule($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito::Grammar::Regex.rule'} = $m2);
         1
@@ -2412,8 +2379,8 @@ package GLOBAL;
         0
     }
 })) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
-    ((my  $source = undef) = $MATCH->{'opt_name'} . ' ' . chr(40) . ' ' . chr(36) . 'grammar: ' . chr(36) . 'str, ' . chr(36) . 'pos ' . chr(41) . ' ' . chr(123) . ' ' . 'my ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match.new' . chr(40) . ' str ' . chr(61) . chr(62) . ' ' . chr(36) . 'str, from ' . chr(61) . chr(62) . ' ' . chr(36) . 'pos, to ' . chr(61) . chr(62) . ' ' . chr(36) . 'pos, bool ' . chr(61) . chr(62) . ' 1 ' . chr(41) . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . chr(40) . ' ' . (${$MATCH->{'Perlito::Grammar::Regex.rule'}})->emit_perl6() . chr(41) . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(125));
-    ((my  $ast = undef) = Perlito::Grammar->method_def($source, 0));
+    ((my  $source) = $MATCH->{'opt_name'} . ' ' . chr(40) . ' ' . chr(36) . 'grammar: ' . chr(36) . 'str, ' . chr(36) . 'pos ' . chr(41) . ' ' . chr(123) . ' ' . 'my ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match.new' . chr(40) . ' str ' . chr(61) . chr(62) . ' ' . chr(36) . 'str, from ' . chr(61) . chr(62) . ' ' . chr(36) . 'pos, to ' . chr(61) . chr(62) . ' ' . chr(36) . 'pos, bool ' . chr(61) . chr(62) . ' 1 ' . chr(41) . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . chr(40) . ' ' . (${$MATCH->{'Perlito::Grammar::Regex.rule'}})->emit_perl6() . chr(41) . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(125));
+    ((my  $ast) = Perlito::Grammar->method_def($source, 0));
     ($MATCH->{capture} = (${$ast}))
 }) || 1)))
 })

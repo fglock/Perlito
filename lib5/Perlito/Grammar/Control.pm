@@ -20,14 +20,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((((((((((('u' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -35,8 +35,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -45,8 +45,8 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
-    if (Main::bool(!Main::bool((defined($body))))) {
+    ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
+    if (!((defined($body)))) {
         die('Missing code block in ' . chr(39) . 'unless' . chr(39))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
@@ -63,14 +63,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((((((('i' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('f' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -78,8 +78,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -88,11 +88,11 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (((do {
     (((((((do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -100,8 +100,8 @@ package GLOBAL;
         0
     }
 }) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->exp2($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp2($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp2'} = $m2);
         1
@@ -110,15 +110,15 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
-    ((my  $otherwise = undef) = (${$MATCH->{'exp2'}})->{'exp'});
-    if (Main::bool(!Main::bool((defined($body))))) {
+    ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
+    ((my  $otherwise) = (${$MATCH->{'exp2'}})->{'exp'});
+    if (!((defined($body)))) {
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
     };
-    if (Main::bool(!Main::bool((defined($otherwise))))) {
+    if (!((defined($otherwise)))) {
         die('Missing code block in ' . chr(39) . 'else' . chr(39))
     };
-    if (Main::bool(Main::isa($otherwise, 'Lit::Hash'))) {
+    if (Main::isa($otherwise, 'Lit::Hash')) {
         ($otherwise = Lit::Block->new(('stmts' => $otherwise->hash1())))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body), ('otherwise' => $otherwise))))
@@ -126,8 +126,8 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     (((((((do {
-    ((my  $m2 = undef) = $grammar->opt_ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -135,8 +135,8 @@ package GLOBAL;
         0
     }
 }) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->if($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->if($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'if'} = $m2);
         1
@@ -145,8 +145,8 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
-    if (Main::bool(!Main::bool((defined($body))))) {
+    ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
+    if (!((defined($body)))) {
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => do {
@@ -159,8 +159,8 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     ((((do {
-    ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
-    if (Main::bool(!Main::bool((defined($body))))) {
+    ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
+    if (!((defined($body)))) {
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body), ('otherwise' => do {
@@ -179,14 +179,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((((((((('w' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('h' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -194,8 +194,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -204,8 +204,8 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
-    if (Main::bool(!Main::bool((defined($body))))) {
+    ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
+    if (!((defined($body)))) {
         die('Missing code block in ' . chr(39) . 'when' . chr(39))
     };
     ($MATCH->{capture} = (When->new(('parameters' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body))))
@@ -218,14 +218,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((((((('f' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('r' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -233,8 +233,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -243,11 +243,11 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
-    if (Main::bool(!Main::bool((defined($body))))) {
+    ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
+    if (!((defined($body)))) {
         die('Missing code block in ' . chr(39) . 'when' . chr(39))
     };
-    ($MATCH->{capture} = (For->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('topic' => undef), ('body' => $body))))
+    ($MATCH->{capture} = (For->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('topic' => undef()), ('body' => $body))))
 }) || 1)))
 })
 })));
@@ -257,14 +257,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     (((((((((('w' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('h' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('i' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -272,8 +272,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -282,8 +282,8 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
-    if (Main::bool(!Main::bool((defined($body))))) {
+    ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
+    if (!((defined($body)))) {
         die('Missing code block in ' . chr(39) . 'while' . chr(39))
     };
     ($MATCH->{capture} = (While->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body))))
@@ -296,14 +296,14 @@ package GLOBAL;
             my $grammar = $_[0];
             my $str = $_[1];
             my $pos = $_[2];
-            (my  $MATCH = undef);
+            (my  $MATCH);
             ($MATCH = Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
-    ((my  $pos1 = undef) = $MATCH->to());
+    ((my  $pos1) = $MATCH->to());
     (do {
     ((((((((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('p' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
-    ((my  $m2 = undef) = $grammar->ws($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -311,8 +311,8 @@ package GLOBAL;
         0
     }
 })) && (do {
-    ((my  $m2 = undef) = $grammar->exp($str, $MATCH->to()));
-    if (Main::bool($m2)) {
+    ((my  $m2) = $grammar->exp($str, $MATCH->to()));
+    if ($m2) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -321,10 +321,10 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ((my  $body = undef) = (${$MATCH->{'exp'}})->{'end_block'});
-    if (Main::bool(!Main::bool((defined($body))))) {
+    ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
+    if (!((defined($body)))) {
         ($body = (${$MATCH->{'exp'}})->{'exp'});
-        if (Main::bool(Main::isa($body, 'Lit::Block'))) {
+        if (Main::isa($body, 'Lit::Block')) {
             ($MATCH->{capture} = (While->new(('cond' => Val::Bit->new(('bit' => 1))), ('body' => $body))))
         }
         else {

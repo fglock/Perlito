@@ -23,8 +23,8 @@ package GLOBAL;
         sub capture { $_[0]->{capture} };
         sub scalar {
             my $self = $_[0];
-            if (Main::bool($self->{bool})) {
-                if (Main::bool(defined($self->{capture}))) {
+            if ($self->{bool}) {
+                if (defined($self->{capture})) {
                     return scalar ($self->{capture})
                 };
                 return scalar (substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))))
@@ -35,8 +35,8 @@ package GLOBAL;
         };
         sub string {
             my $self = $_[0];
-            if (Main::bool($self->{bool})) {
-                if (Main::bool(defined($self->{capture}))) {
+            if ($self->{bool}) {
+                if (defined($self->{capture})) {
                     return scalar ($self->{capture})
                 };
                 return scalar (substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))))

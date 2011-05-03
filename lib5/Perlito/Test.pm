@@ -13,11 +13,11 @@ package GLOBAL;
     {
     package Perlito::Test;
         sub new { shift; bless { @_ }, "Perlito::Test" }
-        (my  $num_of_tests_run = undef);
-        (my  $num_of_tests_failed = undef);
-        (my  $num_of_tests_badpass = undef);
-        (my  $num_of_tests_planned = undef);
-        (my  $testing_started = undef);
+        (my  $num_of_tests_run);
+        (my  $num_of_tests_failed);
+        (my  $num_of_tests_badpass);
+        (my  $num_of_tests_planned);
+        (my  $testing_started);
         sub plan {
             my $number_of_tests = $_[0];
             ($testing_started = 1);
@@ -37,7 +37,7 @@ package GLOBAL;
             my $desc = $_[2];
             my $todo = $_[3];
             my $depends = $_[4];
-            ((my  $test = undef) = ($got eq $expected));
+            ((my  $test) = ($got eq $expected));
             Perlito::Test::proclaim($test, 'is' . chr(33) . ' ' . $desc, $todo, $got, $expected, $depends)
         };
         sub is_deeply {
@@ -46,9 +46,9 @@ package GLOBAL;
             my $desc = $_[2];
             my $todo = $_[3];
             my $depends = $_[4];
-            ((my  $got_perl = undef) = Main::perl($got, ));
-            ((my  $expected_perl = undef) = Main::perl($expected, ));
-            ((my  $test = undef) = (($got_perl eq $expected_perl)));
+            ((my  $got_perl) = Main::perl($got, ));
+            ((my  $expected_perl) = Main::perl($expected, ));
+            ((my  $test) = (($got_perl eq $expected_perl)));
             Perlito::Test::proclaim($test, 'is deeply' . chr(33) . ' ' . $desc, $todo, $got_perl, $expected_perl, $depends)
         };
         sub isnt {
@@ -57,7 +57,7 @@ package GLOBAL;
             my $desc = $_[2];
             my $todo = $_[3];
             my $depends = $_[4];
-            ((my  $test = undef) = !Main::bool((($got eq $expected))));
+            ((my  $test) = !((($got eq $expected))));
             Perlito::Test::proclaim($test, 'isnt' . chr(33) . ' ' . $desc, $todo, $got, $expected, $depends, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'negate'} = 1);
@@ -122,7 +122,7 @@ package GLOBAL;
             my $negate = $_[6];
             ($testing_started = 1);
             ($num_of_tests_run = ($num_of_tests_run + 1));
-            if (Main::bool(($cond))) {
+            if (($cond)) {
                 Main::say('ok ', $num_of_tests_run)
             }
             else {
@@ -139,16 +139,16 @@ package GLOBAL;
             Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::report_failure not implemented')
         };
         sub test_ends {
-            if (Main::bool((!Main::bool($testing_started)))) {
+            if ((!($testing_started))) {
                 return ()
             };
-            if (Main::bool((!Main::bool($num_of_tests_planned)))) {
+            if ((!($num_of_tests_planned))) {
                 Main::say('1..' . $num_of_tests_run)
             };
-            if (Main::bool((($num_of_tests_planned != $num_of_tests_run)))) {
+            if ((($num_of_tests_planned != $num_of_tests_run))) {
                 Main::say(chr(35) . ' Looks like you planned ' . $num_of_tests_planned . ' tests, but ran ' . $num_of_tests_run)
             };
-            if (Main::bool(($num_of_tests_failed))) {
+            if (($num_of_tests_failed)) {
                 Main::say(chr(35) . ' Looks like you failed ' . $num_of_tests_failed . ' tests of ' . $num_of_tests_run)
             };
             ($num_of_tests_run = 0);

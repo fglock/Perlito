@@ -16,7 +16,7 @@ token not_newline {
 }
 
 token ident {
-    [ <!before \d ><.word> | _ ]   [ <.word> | _ | <.digit> ]*
+    <!before \d > <.word>+
 }
 
 token full_ident {

@@ -77,36 +77,35 @@ $_ = Encode::decode('utf-8', $_)
 
 package Perlito::Grammar;
     sub space { 
-        my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
-        my $MATCH; 
-        $MATCH = Perlito::Match->new( 
-            str => $str,from => $pos,to => $pos, ); 
+        # my $grammar = $_[0]; 
+        my $str = $_[1]; my $pos = $_[2]; 
+        my $MATCH = bless { str => $str, from => $pos, to => $pos }, 'Perlito::Match';
         $MATCH->{bool} = (
-            substr($str, $MATCH->to()) =~ m/^([[:space:]])/
-            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->to() )))
+            substr($str, $MATCH->{to}) =~ m/^([[:space:]])/
+            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->{to} )))
             : 0
         );
         $MATCH;
     }
     sub digit { 
-        my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
-        my $MATCH; $MATCH = Perlito::Match->new( 
-            str => $str,from => $pos,to => $pos, ); 
+        # my $grammar = $_[0]; 
+        my $str = $_[1]; my $pos = $_[2]; 
+        my $MATCH = bless { str => $str, from => $pos, to => $pos }, 'Perlito::Match';
         $MATCH->{bool} = (
-            substr($str, $MATCH->to()) =~ m/^([[:digit:]])/
-            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->to() )))
+            substr($str, $MATCH->{to}) =~ m/^([[:digit:]])/
+            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->{to} )))
             : 0
         );
         $MATCH;
     }
 
     sub word { 
-        my $grammar = $_[0]; my $str = $_[1]; my $pos = $_[2]; 
-        my $MATCH; $MATCH = Perlito::Match->new( 
-            str => $str,from => $pos,to => $pos, ); 
+        # my $grammar = $_[0]; 
+        my $str = $_[1]; my $pos = $_[2]; 
+        my $MATCH = bless { str => $str, from => $pos, to => $pos }, 'Perlito::Match';
         $MATCH->{bool} = (
-            substr($str, $MATCH->to()) =~ m/^([[:word:]])/
-            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->to() )))
+            substr($str, $MATCH->{to}) =~ m/^([[:word:]])/
+            ? ( 1 + ($MATCH->{to} = ( length( $1 ) + $MATCH->{to} )))
             : 0
         );
         $MATCH;

@@ -25,10 +25,10 @@ package GLOBAL;
         sub bool { $_[0]->{bool} };
         sub scalar {
             my $self = $_[0];
-            if (Main::bool($self->{bool})) {
+            if ($self->{bool}) {
                 return scalar (undef())
             };
-            if (Main::bool(defined($self->{result_object}))) {
+            if (defined($self->{result_object})) {
                 return scalar ($self->{result_object})
             };
             return scalar (substr($self->{str}, $self->{from}, ((($self->{to} - $self->{from})) + 1)))

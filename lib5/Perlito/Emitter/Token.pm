@@ -18,14 +18,14 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Rul" }
         sub constant {
             my $str = $_[0];
-            ((my  $len = undef) = Main::chars($str, ));
-            if (Main::bool(($str eq chr(92)))) {
+            ((my  $len) = Main::chars($str, ));
+            if (($str eq chr(92))) {
                 ($str = chr(92) . chr(92))
             };
-            if (Main::bool(($str eq chr(39)))) {
+            if (($str eq chr(39))) {
                 ($str = chr(92) . chr(39))
             };
-            if (Main::bool(($len))) {
+            if (($len)) {
                 chr(40) . ' ' . chr(39) . $str . chr(39) . ' eq substr' . chr(40) . ' ' . chr(36) . 'str, ' . chr(36) . 'MATCH.to, ' . $len . chr(41) . ' ' . chr(38) . chr(38) . ' ' . chr(40) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . $len . ' + ' . chr(36) . 'MATCH.to ' . chr(41) . chr(41)
             }
             else {
@@ -46,18 +46,18 @@ package GLOBAL;
         sub ws3 { $_[0]->{ws3} };
         sub emit_perl6 {
             my $self = $_[0];
-            if (Main::bool(((($self->{quant} eq '')) && (($self->{greedy} eq ''))))) {
+            if (((($self->{quant} eq '')) && (($self->{greedy} eq '')))) {
                 return scalar ($self->{term}->emit_perl6())
             };
-            if (Main::bool(((($self->{quant} eq '+')) && (($self->{greedy} eq ''))))) {
+            if (((($self->{quant} eq '+')) && (($self->{greedy} eq '')))) {
 $self->{term}->set_captures_to_array();
                 return scalar (chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'my ' . chr(36) . 'count ' . chr(61) . ' 0' . chr(59) . ' ' . 'while ' . $self->{term}->emit_perl6() . ' ' . chr(38) . chr(38) . ' ' . chr(40) . chr(36) . 'last_match_null ' . chr(60) . ' 2' . chr(41) . ' ' . chr(123) . ' ' . 'if ' . chr(36) . 'last_pos ' . chr(61) . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(40) . chr(41) . ' ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' ' . chr(36) . 'last_match_null + 1' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . chr(36) . 'count ' . chr(61) . ' ' . chr(36) . 'count + 1' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(36) . 'count ' . chr(62) . ' 0' . chr(59) . ' ' . chr(125) . chr(41))
             };
-            if (Main::bool(((($self->{quant} eq '*')) && (($self->{greedy} eq ''))))) {
+            if (((($self->{quant} eq '*')) && (($self->{greedy} eq '')))) {
 $self->{term}->set_captures_to_array();
                 return scalar (chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'while ' . $self->{term}->emit_perl6() . ' ' . chr(38) . chr(38) . ' ' . chr(40) . chr(36) . 'last_match_null ' . chr(60) . ' 2' . chr(41) . ' ' . chr(123) . ' ' . 'if ' . chr(36) . 'last_pos ' . chr(61) . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(40) . chr(41) . ' ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' ' . chr(36) . 'last_match_null + 1' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . '1 ' . chr(125) . chr(41))
             };
-            if (Main::bool(((($self->{quant} eq chr(63))) && (($self->{greedy} eq ''))))) {
+            if (((($self->{quant} eq chr(63))) && (($self->{greedy} eq '')))) {
 $self->{term}->set_captures_to_array();
                 return scalar (chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'if ' . chr(33) . chr(40) . 'do ' . chr(123) . $self->{term}->emit_perl6() . chr(125) . chr(41) . ' ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . chr(41))
             };
@@ -108,13 +108,13 @@ $self->{term}->set_captures_to_array()
         sub captures { $_[0]->{captures} };
         sub emit_perl6 {
             my $self = $_[0];
-            ((my  $meth = undef) = (Main::bool(((1 + index($self->{metasyntax}, '.')))) ? $self->{metasyntax} : (chr(36) . 'grammar.' . $self->{metasyntax})));
-            (my  $code = undef);
-            if (Main::bool(($self->{captures} == 1))) {
+            ((my  $meth) = (((1 + index($self->{metasyntax}, '.'))) ? $self->{metasyntax} : (chr(36) . 'grammar.' . $self->{metasyntax})));
+            (my  $code);
+            if (($self->{captures} == 1)) {
                 ($code = 'if ' . chr(36) . 'm2 ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'm2.to' . chr(59) . ' ' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' ' . chr(36) . 'm2' . chr(59) . ' 1 ' . chr(125) . ' else ' . chr(123) . ' False ' . chr(125) . chr(59) . ' ')
             }
             else {
-                if (Main::bool(($self->{captures} > 1))) {
+                if (($self->{captures} > 1)) {
                     ($code = 'if ' . chr(36) . 'm2 ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'm2.to' . chr(59) . ' ' . 'if exists ' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(123) . ' ' . chr(40) . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . chr(41) . '.push' . chr(40) . ' ' . chr(36) . 'm2 ' . chr(41) . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' ' . chr(91) . ' ' . chr(36) . 'm2 ' . chr(93) . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . ' else ' . chr(123) . ' False ' . chr(125) . chr(59) . ' ')
                 }
                 else {
@@ -125,7 +125,7 @@ $self->{term}->set_captures_to_array()
         };
         sub set_captures_to_array {
             my $self = $_[0];
-            if (Main::bool(($self->{captures} > 0))) {
+            if (($self->{captures} > 0)) {
                 ($self->{captures} = ($self->{captures} + 1))
             }
         }
@@ -140,7 +140,7 @@ $self->{term}->set_captures_to_array()
         sub name { $_[0]->{name} };
         sub emit_perl6 {
             my $self = $_[0];
-            ((my  $table = undef) = do {
+            ((my  $table) = do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = chr(36));
     ($Hash_a->{chr(64)} = chr(36) . 'List_');
@@ -159,7 +159,7 @@ $self->{term}->set_captures_to_array()
         sub constant { $_[0]->{constant} };
         sub emit_perl6 {
             my $self = $_[0];
-            ((my  $str = undef) = $self->{constant});
+            ((my  $str) = $self->{constant});
             Rul::constant($str)
         };
         sub set_captures_to_array {
@@ -189,20 +189,20 @@ $self->{term}->set_captures_to_array()
         sub char { $_[0]->{char} };
         sub emit_perl6 {
             my $self = $_[0];
-            ((my  $char = undef) = $self->{char});
-            if (Main::bool(($char eq 'n'))) {
+            ((my  $char) = $self->{char});
+            if (($char eq 'n')) {
                 return scalar (Rul::Subrule->new(('metasyntax' => 'is_newline'), ('captures' => 0))->emit_perl6())
             };
-            if (Main::bool(($char eq 'N'))) {
+            if (($char eq 'N')) {
                 return scalar (Rul::Subrule->new(('metasyntax' => 'not_newline'), ('captures' => 0))->emit_perl6())
             };
-            if (Main::bool(($char eq 'd'))) {
+            if (($char eq 'd')) {
                 return scalar (Rul::Subrule->new(('metasyntax' => 'digit'), ('captures' => 0))->emit_perl6())
             };
-            if (Main::bool(($char eq 's'))) {
+            if (($char eq 's')) {
                 return scalar (Rul::Subrule->new(('metasyntax' => 'space'), ('captures' => 0))->emit_perl6())
             };
-            if (Main::bool(($char eq 't'))) {
+            if (($char eq 't')) {
                 return scalar (Rul::constant(chr(9)))
             };
             return scalar (Rul::constant($char))

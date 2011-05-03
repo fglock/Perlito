@@ -110,8 +110,8 @@ package GLOBAL;
         sub hash1 { $_[0]->{hash1} };
         sub emit {
             my $self = $_[0];
-            ((my  $fields = undef) = $self->{hash1});
-            ((my  $str = undef) = '');
+            ((my  $fields) = $self->{hash1});
+            ((my  $str) = '');
             for my $field ( @{($fields)} ) {
                 ($str = $str . ($field->[0])->emit(("" . ' ' . chr(61) . chr(62) . ' ') . ($field->[1])->emit(("" . ','))))
             };
@@ -134,8 +134,8 @@ package GLOBAL;
         sub fields { $_[0]->{fields} };
         sub emit {
             my $self = $_[0];
-            ((my  $fields = undef) = $self->{fields});
-            ((my  $str = undef) = '');
+            ((my  $fields) = $self->{fields});
+            ((my  $str) = '');
             for my $field ( @{($fields)} ) {
                 ($str = $str . ($field->[0])->emit(("" . ' ' . chr(61) . chr(62) . ' ') . ($field->[1])->emit(("" . ','))))
             };
@@ -176,7 +176,7 @@ $self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(12
         sub name { $_[0]->{name} };
         sub emit {
             my $self = $_[0];
-            ((my  $table = undef) = do {
+            ((my  $table) = do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = chr(36));
     ($Hash_a->{chr(64)} = chr(36) . 'List_');
@@ -184,7 +184,7 @@ $self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(12
     ($Hash_a->{chr(38)} = chr(36) . 'Code_');
     $Hash_a
 });
-            (Main::bool((($self->{twigil} eq '.'))) ? (chr(36) . 'self.' . chr(123) . $self->{name} . chr(125)) : ((Main::bool((($self->{name} eq chr(47)))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name}))))
+            ((($self->{twigil} eq '.')) ? (chr(36) . 'self.' . chr(123) . $self->{name} . chr(125)) : (((($self->{name} eq chr(47))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name}))))
         }
     }
 
@@ -196,45 +196,45 @@ $self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(12
         sub arguments { $_[0]->{arguments} };
         sub emit {
             my $self = $_[0];
-            if (Main::bool(Main::isa($self->{parameters}, 'Lit::Array'))) {
-                ((my  $a = undef) = $self->{parameters}->array());
-                ((my  $str = undef) = 'do ' . chr(123) . ' ');
-                ((my  $i = undef) = 0);
+            if (Main::isa($self->{parameters}, 'Lit::Array')) {
+                ((my  $a) = $self->{parameters}->array());
+                ((my  $str) = 'do ' . chr(123) . ' ');
+                ((my  $i) = 0);
                 for my $var ( @{($a)} ) {
-                    ((my  $bind = undef) = Bind->new(('parameters' => $var), ('arguments' => Index->new(('obj' => $self->{arguments}), ('index_exp' => Val::Int->new(('int' => $i)))))));
+                    ((my  $bind) = Bind->new(('parameters' => $var), ('arguments' => Index->new(('obj' => $self->{arguments}), ('index_exp' => Val::Int->new(('int' => $i)))))));
                     ($str = $str . ' ' . $bind->emit(("" . chr(59) . ' ')));
                     ($i = ($i + 1))
                 };
                 return scalar ($str . $self->{parameters}->emit(("" . ' ' . chr(125))))
             };
-            if (Main::bool(Main::isa($self->{parameters}, 'Lit::Hash'))) {
-                ((my  $a = undef) = $self->{parameters}->hash());
-                ((my  $b = undef) = $self->{arguments}->hash());
-                ((my  $str = undef) = 'do ' . chr(123) . ' ');
-                ((my  $i = undef) = 0);
-                (my  $arg = undef);
+            if (Main::isa($self->{parameters}, 'Lit::Hash')) {
+                ((my  $a) = $self->{parameters}->hash());
+                ((my  $b) = $self->{arguments}->hash());
+                ((my  $str) = 'do ' . chr(123) . ' ');
+                ((my  $i) = 0);
+                (my  $arg);
                 for my $var ( @{($a)} ) {
                     ($arg = Val::Undef->new());
                     for my $var2 ( @{($b)} ) {
-                        if (Main::bool((($var2->[0])->buf() eq ($var->[0])->buf()))) {
+                        if ((($var2->[0])->buf() eq ($var->[0])->buf())) {
                             ($arg = $var2->[1])
                         }
                     };
-                    ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
+                    ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
                     ($str = $str . ' ' . $bind->emit(("" . chr(59) . ' ')));
                     ($i = ($i + 1))
                 };
                 return scalar ($str . $self->{parameters}->emit(("" . ' ' . chr(125))))
             };
-            if (Main::bool(Main::isa($self->{parameters}, 'Lit::Object'))) {
-                ((my  $class = undef) = $self->{parameters}->class());
-                ((my  $a = undef) = $self->{parameters}->fields());
-                ((my  $b = undef) = $self->{arguments});
-                ((my  $str = undef) = 'do ' . chr(123) . ' ');
-                ((my  $i = undef) = 0);
-                (my  $arg = undef);
+            if (Main::isa($self->{parameters}, 'Lit::Object')) {
+                ((my  $class) = $self->{parameters}->class());
+                ((my  $a) = $self->{parameters}->fields());
+                ((my  $b) = $self->{arguments});
+                ((my  $str) = 'do ' . chr(123) . ' ');
+                ((my  $i) = 0);
+                (my  $arg);
                 for my $var ( @{($a)} ) {
-                    ((my  $bind = undef) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do {
+                    ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
@@ -269,24 +269,24 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
         sub arguments { $_[0]->{arguments} };
         sub emit {
             my $self = $_[0];
-            ((my  $invocant = undef) = $self->{invocant}->emit());
-            if (Main::bool(($invocant eq 'self'))) {
+            ((my  $invocant) = $self->{invocant}->emit());
+            if (($invocant eq 'self')) {
                 ($invocant = chr(36) . 'self')
             };
-            if (Main::bool(((((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'chars'))) || (($self->{method} eq 'isa'))))) {
-                if (Main::bool(($self->{hyper}))) {
+            if (((((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'chars'))) || (($self->{method} eq 'isa')))) {
+                if (($self->{hyper})) {
                     return scalar (chr(91) . ' map ' . chr(123) . ' ' . chr(38) . 'Main::' . $self->{method} . chr(40) . ' ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41) . ' ' . chr(125) . ' ' . chr(64) . chr(40) . ' ' . $invocant . ' ' . chr(41) . ' ' . chr(93))
                 }
                 else {
                     return scalar (chr(38) . 'Main::' . $self->{method} . chr(40) . $invocant . ', ' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41))
                 }
             };
-            ((my  $meth = undef) = $self->{method});
-            if (Main::bool(($meth eq 'postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)))) {
+            ((my  $meth) = $self->{method});
+            if (($meth eq 'postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62))) {
                 ($meth = '')
             };
-            ((my  $call = undef) = '.' . $meth . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41));
-            if (Main::bool(($self->{hyper}))) {
+            ((my  $call) = '.' . $meth . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41));
+            if (($self->{hyper})) {
                 chr(91) . ' map ' . chr(123) . ' ' . chr(36) . '_' . $call . ' ' . chr(125) . ' ' . chr(64) . chr(40) . ' ' . $invocant . ' ' . chr(41) . ' ' . chr(93)
             }
             else {
@@ -303,71 +303,71 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
         sub arguments { $_[0]->{arguments} };
         sub emit {
             my $self = $_[0];
-            ((my  $code = undef) = $self->{code});
-            if (Main::bool(Main::isa($code, 'Str'))) {
+            ((my  $code) = $self->{code});
+            if (Main::isa($code, 'Str')) {
 
             }
             else {
                 return scalar (chr(40) . $self->{code}->emit(("" . chr(41) . '.' . chr(40)) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
             };
-            if (Main::bool(($code eq 'self'))) {
+            if (($code eq 'self')) {
                 return scalar (chr(36) . 'self')
             };
-            if (Main::bool(($code eq 'say'))) {
+            if (($code eq 'say')) {
                 return scalar ('say' . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41))
             };
-            if (Main::bool(($code eq 'print'))) {
+            if (($code eq 'print')) {
                 return scalar ('print' . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41))
             };
-            if (Main::bool(($code eq 'array'))) {
+            if (($code eq 'array')) {
                 return scalar (chr(64) . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
-            if (Main::bool(($code eq 'prefix:' . chr(60) . chr(126) . chr(62)))) {
+            if (($code eq 'prefix:' . chr(60) . chr(126) . chr(62))) {
                 return scalar (chr(40) . chr(34) . chr(34) . ' . ' . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
-            if (Main::bool(($code eq 'prefix:' . chr(60) . chr(33) . chr(62)))) {
+            if (($code eq 'prefix:' . chr(60) . chr(33) . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . ' ' . chr(63) . chr(63) . ' 0 ' . chr(33) . chr(33) . ' 1' . chr(41))
             };
-            if (Main::bool(($code eq 'prefix:' . chr(60) . chr(63) . chr(62)))) {
+            if (($code eq 'prefix:' . chr(60) . chr(63) . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . ' ' . chr(63) . chr(63) . ' 1 ' . chr(33) . chr(33) . ' 0' . chr(41))
             };
-            if (Main::bool(($code eq 'prefix:' . chr(60) . chr(36) . chr(62)))) {
+            if (($code eq 'prefix:' . chr(60) . chr(36) . chr(62))) {
                 return scalar (chr(36) . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
-            if (Main::bool(($code eq 'prefix:' . chr(60) . chr(64) . chr(62)))) {
+            if (($code eq 'prefix:' . chr(60) . chr(64) . chr(62))) {
                 return scalar (chr(64) . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
-            if (Main::bool(($code eq 'prefix:' . chr(60) . chr(37) . chr(62)))) {
+            if (($code eq 'prefix:' . chr(60) . chr(37) . chr(62))) {
                 return scalar (chr(37) . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ') . chr(41))
             };
-            if (Main::bool(($code eq 'infix:' . chr(60) . chr(126) . chr(62)))) {
+            if (($code eq 'infix:' . chr(60) . chr(126) . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ' . chr(126) . ' ') . chr(41))
             };
-            if (Main::bool(($code eq 'infix:' . chr(60) . '+' . chr(62)))) {
+            if (($code eq 'infix:' . chr(60) . '+' . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' + ') . chr(41))
             };
-            if (Main::bool(($code eq 'infix:' . chr(60) . '-' . chr(62)))) {
+            if (($code eq 'infix:' . chr(60) . '-' . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' - ') . chr(41))
             };
-            if (Main::bool(($code eq 'infix:' . chr(60) . chr(38) . chr(38) . chr(62)))) {
+            if (($code eq 'infix:' . chr(60) . chr(38) . chr(38) . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ' . chr(38) . chr(38) . ' ') . chr(41))
             };
-            if (Main::bool(($code eq 'infix:' . chr(60) . chr(124) . chr(124) . chr(62)))) {
+            if (($code eq 'infix:' . chr(60) . chr(124) . chr(124) . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ' . chr(124) . chr(124) . ' ') . chr(41))
             };
-            if (Main::bool(($code eq 'infix:' . chr(60) . 'eq' . chr(62)))) {
+            if (($code eq 'infix:' . chr(60) . 'eq' . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' eq ') . chr(41))
             };
-            if (Main::bool(($code eq 'infix:' . chr(60) . 'ne' . chr(62)))) {
+            if (($code eq 'infix:' . chr(60) . 'ne' . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ne ') . chr(41))
             };
-            if (Main::bool(($code eq 'infix:' . chr(60) . chr(61) . chr(61) . chr(62)))) {
+            if (($code eq 'infix:' . chr(60) . chr(61) . chr(61) . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ' . chr(61) . chr(61) . ' ') . chr(41))
             };
-            if (Main::bool(($code eq 'infix:' . chr(60) . chr(33) . chr(61) . chr(62)))) {
+            if (($code eq 'infix:' . chr(60) . chr(33) . chr(61) . chr(62))) {
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ' . chr(33) . chr(61) . ' ') . chr(41))
             };
-            if (Main::bool(($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62)))) {
+            if (($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62))) {
                 return scalar (chr(40) . ($self->{arguments}->[0])->emit(("" . ' ' . chr(63) . chr(63) . ' ') . ($self->{arguments}->[1])->emit(("" . ' ' . chr(33) . chr(33) . ' ') . ($self->{arguments}->[2])->emit(("" . chr(41))))))
             };
             '' . $self->{code} . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41)
@@ -407,8 +407,8 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
         sub topic { $_[0]->{topic} };
         sub emit {
             my $self = $_[0];
-            ((my  $cond = undef) = $self->{cond});
-            if (Main::bool((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
+            ((my  $cond) = $self->{cond});
+            if ((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64)))) {
                 ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -455,11 +455,11 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
         sub block { $_[0]->{block} };
         sub emit {
             my $self = $_[0];
-            ((my  $sig = undef) = $self->{sig});
-            ((my  $invocant = undef) = $sig->invocant());
-            ((my  $pos = undef) = $sig->positional());
-            ((my  $str = undef) = '');
-            ((my  $pos = undef) = $sig->positional());
+            ((my  $sig) = $self->{sig});
+            ((my  $invocant) = $sig->invocant());
+            ((my  $pos) = $sig->positional());
+            ((my  $str) = '');
+            ((my  $pos) = $sig->positional());
             for my $field ( @{($pos)} ) {
                 ($str = $str . '' . $field->emit(("" . chr(63) . ', ')))
             };
@@ -476,14 +476,14 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
         sub block { $_[0]->{block} };
         sub emit {
             my $self = $_[0];
-            ((my  $sig = undef) = $self->{sig});
-            ((my  $pos = undef) = $sig->positional());
-            (my  $str = undef);
-            ((my  $pos = undef) = $sig->positional());
+            ((my  $sig) = $self->{sig});
+            ((my  $pos) = $sig->positional());
+            (my  $str);
+            ((my  $pos) = $sig->positional());
             for my $field ( @{($pos)} ) {
                 ($str = $str . '' . $field->emit(("" . chr(63) . ', ')))
             };
-            if (Main::bool(($self->{name} eq ''))) {
+            if (($self->{name} eq '')) {
                 return scalar (chr(40) . 'sub ' . chr(40) . $str . chr(41) . ' ' . ' ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), chr(59) . ' ') . ' ' . chr(125) . chr(41))
             };
             'sub ' . $self->{name} . chr(40) . $str . chr(41) . ' ' . ' ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), chr(59) . ' ') . ' ' . chr(125)

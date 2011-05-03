@@ -11,18 +11,6 @@ class Perl5 {
         return $s;
     }
 
-    sub to_bool ($cond) {
-        if $cond.isa( 'Val::Num' ) || $cond.isa( 'Val::Buf' ) || $cond.isa( 'Val::Int' ) 
-          || ( $cond.isa( 'Apply' ) &&
-                ( ($cond.code eq 'bool') || ($cond.code eq 'True') || ($cond.code eq 'False')
-                ) 
-             )
-        {
-            return $cond;
-        }
-        return Apply.new( code => 'bool', arguments => [ $cond ] );
-    }
-
     sub escape_string($s) {
         my @out;
         my $tmp = '';
@@ -315,7 +303,7 @@ class Apply {
         }
 
         if $code eq 'self'       { return Perl5::tab($level) ~ '$self' }
-        if $code eq 'Mu'         { return Perl5::tab($level) ~ 'undef' }
+        if $code eq 'Mu'         { return Perl5::tab($level) ~ 'undef()' }
 
         if $code eq 'make'       { return Perl5::tab($level) ~ '($MATCH->{capture} = ('   ~ (@.arguments.>>emit_perl5).join(', ') ~ '))' }
 
@@ -331,11 +319,11 @@ class Apply {
 
         if $code eq 'Int'        { return Perl5::tab($level) ~ '(0+' ~ (@.arguments[0]).emit_perl5()             ~ ')' }
         if $code eq 'Num'        { return Perl5::tab($level) ~ '(0+' ~ (@.arguments[0]).emit_perl5()             ~ ')' }
-        if $code eq 'bool'       { return Perl5::tab($level) ~ 'Main::bool('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
+        if $code eq 'bool'       { return Perl5::tab($level) ~ '!!('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
 
         if $code eq 'prefix:<~>' { return Perl5::tab($level) ~ '("" . ' ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
-        if $code eq 'prefix:<!>' { return Perl5::tab($level) ~ '!Main::bool(' ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
-        if $code eq 'prefix:<?>' { return Perl5::tab($level) ~ 'Main::bool('  ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
+        if $code eq 'prefix:<!>' { return Perl5::tab($level) ~ '!(' ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
+        if $code eq 'prefix:<?>' { return Perl5::tab($level) ~ '!!('  ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
 
         if $code eq 'prefix:<$>' { return Perl5::tab($level) ~ '${' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' }
         if $code eq 'prefix:<@>' { return Perl5::tab($level) ~ '(' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ')' }
@@ -382,7 +370,7 @@ class Apply {
             {
                 $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
             }
-            return Perl5::tab($level) ~ '(' ~ Perl5::to_bool($cond).emit_perl5() ~
+            return Perl5::tab($level) ~ '(' ~ $cond.emit_perl5() ~
                  ' ? ' ~ (@.arguments[1]).emit_perl5() ~
                  ' : ' ~ (@.arguments[2]).emit_perl5() ~
                   ')' 
@@ -477,7 +465,7 @@ class If {
     has $.otherwise;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
-        return Perl5::tab($level) ~ 'if (' ~ Perl5::to_bool($.cond).emit_perl5() ~ ") \{\n" 
+        return Perl5::tab($level) ~ 'if (' ~ $.cond.emit_perl5() ~ ") \{\n" 
              ~   (($.body).emit_perl5_indented( $level + 1 )) ~ "\n"
              ~ Perl5::tab($level) ~ "}" 
              ~  ($.otherwise 
@@ -506,7 +494,7 @@ class While {
         }
            Perl5::tab($level) ~ 'for ( '
         ~  ( $.init     ?? $.init.emit_perl5()           ~ '; ' !! '; ' )
-        ~  ( $cond      ?? Perl5::to_bool($cond).emit_perl5() ~ '; ' !! '; ' )
+        ~  ( $cond      ?? $cond.emit_perl5()            ~ '; ' !! '; ' )
         ~  ( $.continue ?? $.continue.emit_perl5()       ~ ' '  !! ' '  )
         ~  ') {' ~ "\n"
         ~       $.body.emit_perl5_indented( $level + 1 ) ~ "\n"
@@ -545,15 +533,15 @@ class Decl {
             return Perl5::tab($level) ~ 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} }';
         }
         my $str = 
-            '(' ~ $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_perl5() ~ ' = ';
+            '(' ~ $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_perl5();
         if ($.var).sigil eq '%' {
-            $str = $str ~ 'bless {}, \'HASH\')';
+            $str = $str ~ ' = bless {}, \'HASH\')';
         }
         elsif ($.var).sigil eq '@' {
-            $str = $str ~ 'bless [], \'ARRAY\')';
+            $str = $str ~ ' = bless [], \'ARRAY\')';
         }
         else {
-            $str = $str ~ 'undef)';
+            $str = $str ~ ')';
         }
         return Perl5::tab($level) ~ $str;
     }
