@@ -10,11 +10,13 @@
         <p>Source program:</p>
 		<textarea id="source" cols="70" rows="10">
 
-$document.getElementById('print-result').<value> = 
-    "using the 'document' object\n";
+my $out = $document.getElementById('print-result');
+
+$out ~= "using the 'document' object\n";
 
 say "hello, World!";
 
+$out ~= "goodbye $_\n" for 1 .. 3;
 </textarea><br/>
 		<input type="button" value="Execute" onclick="execute()"/>
 
