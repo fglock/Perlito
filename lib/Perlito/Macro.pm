@@ -204,6 +204,18 @@ class Apply {
                 ]
             );
         }
+        if $code eq 'infix:<//=>' {
+            return Apply.new(
+                code      => 'infix:<=>',
+                arguments => [
+                    @.arguments[0],
+                    Apply.new(
+                        code    => 'infix:<//>',
+                        arguments => @.arguments,
+                    ),
+                ]
+            );
+        }
 
         return 0;
     }

@@ -214,6 +214,15 @@ package GLOBAL;
     $List_a
 })))
             };
+            if (($code eq 'infix:' . chr(60) . chr(47) . chr(47) . chr(61) . chr(62))) {
+                return scalar (Apply->new(('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, $self->{arguments}->[0] );
+    push( @{$List_a}, Apply->new(('code' => 'infix:' . chr(60) . chr(47) . chr(47) . chr(62)), ('arguments' => $self->{arguments})) );
+    $List_a
+})))
+            };
             return scalar (0)
         }
     }

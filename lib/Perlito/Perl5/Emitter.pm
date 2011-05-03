@@ -5,7 +5,7 @@ class Perl5 {
         my $s = '';
         my $count = $level;
         while $count > 0 {
-            $s = $s ~ "    ";
+            $s ~= "    ";
             $count = $count - 1;
         }
         return $s;
@@ -72,9 +72,9 @@ class CompUnit {
             ~ "use Perlito::Perl5::Prelude;\n"
             ~ "our \$MATCH = Perlito::Match->new();\n";
         for @($comp_units) -> $comp_unit {
-            $str = $str ~ $comp_unit.emit_perl5_indented(0)
+            $str ~= $comp_unit.emit_perl5_indented(0)
         }
-        $str = $str ~ "1;\n";
+        $str ~= "1;\n";
         return $str;
     }
 }
@@ -418,7 +418,7 @@ class Apply {
             my $str = 'do { ';
             my $i = 0;
             for @$a -> $var { 
-                $str = $str ~ ' ' 
+                $str ~= ' ' 
                     ~ emit_perl5_bind( $var, 
                             Index.new(
                                 obj    => $arguments,
@@ -446,7 +446,7 @@ class Apply {
                         $arg = $var2[1];
                     }
                 }
-                $str = $str ~ ' ' ~ emit_perl5_bind( $var[1], $arg ) ~ '; ';
+                $str ~= ' ' ~ emit_perl5_bind( $var[1], $arg ) ~ '; ';
                 $i = $i + 1;
             }
             return $str ~ $parameters.emit_perl5() ~ ' }';
@@ -541,13 +541,13 @@ class Decl {
         my $str = 
             '(' ~ $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_perl5();
         if ($.var).sigil eq '%' {
-            $str = $str ~ ' = bless {}, \'HASH\')';
+            $str ~= ' = bless {}, \'HASH\')';
         }
         elsif ($.var).sigil eq '@' {
-            $str = $str ~ ' = bless [], \'ARRAY\')';
+            $str ~= ' = bless [], \'ARRAY\')';
         }
         else {
-            $str = $str ~ ')';
+            $str ~= ')';
         }
         return Perl5::tab($level) ~ $str;
     }
@@ -576,7 +576,7 @@ class Method {
 
         my $i = 1;
         for @$pos -> $field { 
-            $str = $str ~ Perl5::tab( $level + 1 ) ~ 'my ' ~ $field.emit_perl5() ~ ' = $_[' ~ $i ~ '];' ~ "\n";
+            $str ~= Perl5::tab( $level + 1 ) ~ 'my ' ~ $field.emit_perl5() ~ ' = $_[' ~ $i ~ '];' ~ "\n";
             $i = $i + 1;
         }
 
@@ -599,7 +599,7 @@ class Sub {
         my $str = '';
         my $i = 0;
         for @$pos -> $field { 
-            $str = $str ~ Perl5::tab( $level + 1 ) ~ 'my ' ~ $field.emit_perl5() ~ ' = $_[' ~ $i ~ '];' ~ "\n";
+            $str ~= Perl5::tab( $level + 1 ) ~ 'my ' ~ $field.emit_perl5() ~ ' = $_[' ~ $i ~ '];' ~ "\n";
             $i = $i + 1;
         }
           Perl5::tab($level) ~ 'sub ' ~ $.name ~ " \{\n" 
