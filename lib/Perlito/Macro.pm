@@ -176,41 +176,28 @@ class Lit::Hash {
 }
 
 class Apply {
+
+    my %op = (
+        'infix:<+=>'  => 'infix:<+>',
+        'infix:<-=>'  => 'infix:<->',
+        'infix:<*=>'  => 'infix:<*>',
+        'infix:</=>'  => 'infix:</>',
+        'infix:<||=>' => 'infix:<||>',
+        'infix:<//=>' => 'infix:<//>',
+        'infix:<~=>'  => 'list:<~>',
+    );
+
     method op_assign {
         my $code = $.code;
         return 0 unless $code.isa( 'Str' );
 
-        if $code eq 'infix:<~=>' {
+        if exists %op{$code} {
             return Apply.new(
                 code      => 'infix:<=>',
                 arguments => [
                     @.arguments[0],
                     Apply.new(
-                        code    => 'list:<~>',
-                        arguments => @.arguments,
-                    ),
-                ]
-            );
-        }
-        if $code eq 'infix:<||=>' {
-            return Apply.new(
-                code      => 'infix:<=>',
-                arguments => [
-                    @.arguments[0],
-                    Apply.new(
-                        code    => 'infix:<||>',
-                        arguments => @.arguments,
-                    ),
-                ]
-            );
-        }
-        if $code eq 'infix:<//=>' {
-            return Apply.new(
-                code      => 'infix:<=>',
-                arguments => [
-                    @.arguments[0],
-                    Apply.new(
-                        code    => 'infix:<//>',
+                        code    => %op{$code},
                         arguments => @.arguments,
                     ),
                 ]
