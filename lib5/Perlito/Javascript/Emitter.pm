@@ -300,13 +300,7 @@ $self->emit_javascript_indented(0)
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
-            if (scalar( @{$self->{stmts}} )) {
-                return scalar (Main::join(([ map { $_->emit_javascript_indented($level) } @{( $self->{stmts} )} ]), chr(59) . chr(10)) . chr(59))
-            }
-            else {
-
-            };
-            return scalar ('')
+            return scalar (Javascript::tab($level) . chr(40) . 'function ' . chr(40) . chr(41) . ' ' . chr(123) . ' ' . chr(10) . (Perlito::Javascript::LexicalBlock->new(('block' => $self->{stmts}), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . chr(10) . Javascript::tab($level) . chr(125) . chr(41))
         }
     }
 
