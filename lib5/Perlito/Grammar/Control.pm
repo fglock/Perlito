@@ -163,11 +163,11 @@ package GLOBAL;
     if (!((defined($body)))) {
         die('Missing code block in ' . chr(39) . 'if' . chr(39))
     };
-    ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body), ('otherwise' => do {
+    ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
-}))))
+}))))))
 }) || 1)))
 }))
 }))

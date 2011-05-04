@@ -32,9 +32,6 @@ package GLOBAL;
             ((my  $tmp) = '');
             if (($s eq '')) {
                 return scalar ('u' . chr(39) . chr(39))
-            }
-            else {
-
             };
             for my $i ( @{[0 .. (Main::chars($s, ) - 1)]} ) {
                 ((my  $c) = substr($s, $i, 1));
@@ -44,9 +41,6 @@ package GLOBAL;
                 else {
                     if (($tmp ne '')) {
                         push( @{$List_out}, 'u' . chr(39) . $tmp . chr(39) )
-                    }
-                    else {
-
                     };
                     push( @{$List_out}, 'unichr' . chr(40) . do {
     ord($c)
@@ -56,9 +50,6 @@ package GLOBAL;
             };
             if (($tmp ne '')) {
                 push( @{$List_out}, 'u' . chr(39) . $tmp . chr(39) )
-            }
-            else {
-
             };
             return scalar (Main::join($List_out, ' + '))
         }

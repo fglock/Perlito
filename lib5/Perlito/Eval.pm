@@ -250,9 +250,6 @@ $stmt->eval($env1)
             };
             if (($self->{hyper})) {
 
-            }
-            else {
-
             };
             warn('Interpreter runtime error: method ' . chr(39), $self->{method}, chr(40) . chr(41) . chr(39) . ' not found')
         }

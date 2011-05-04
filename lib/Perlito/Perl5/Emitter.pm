@@ -110,13 +110,9 @@ class Lit::Block {
     has @.stmts;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
-        my @body;
-        for @.stmts {
-            if defined($_) {
-                push @body, $_ 
-            }
-        }
-        (@body.>>emit_perl5_indented( $level )).join(";\n") 
+          Perl5::tab($level) ~ "sub \{\n" 
+        ~   @.stmts.>>emit_perl5_indented( $level + 1 ).join(";\n") ~ "\n"
+        ~ Perl5::tab($level) ~ "}"
     }
 }
 
@@ -472,12 +468,15 @@ class If {
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         return Perl5::tab($level) ~ 'if (' ~ $.cond.emit_perl5() ~ ") \{\n" 
-             ~   (($.body).emit_perl5_indented( $level + 1 )) ~ "\n"
+             ~  ($.body 
+                ?? $.body.stmts.>>emit_perl5_indented( $level + 1 ).join(";\n") ~ "\n"
+                !! ''
+                )
              ~ Perl5::tab($level) ~ "}" 
-             ~  ($.otherwise 
+             ~  ($.otherwise && $.otherwise.stmts.elems()
                 ??  ( "\n"
                     ~ Perl5::tab($level) ~ "else \{\n" 
-                    ~   (($.otherwise).emit_perl5_indented( $level + 1 )) ~ "\n" 
+                    ~   $.otherwise.stmts.>>emit_perl5_indented( $level + 1 ).join(";\n") ~ "\n"
                     ~ Perl5::tab($level) ~ "}"
                     )
                 !! '' 
@@ -503,7 +502,7 @@ class While {
         ~  ( $cond      ?? $cond.emit_perl5()            ~ '; ' !! '; ' )
         ~  ( $.continue ?? $.continue.emit_perl5()       ~ ' '  !! ' '  )
         ~  ') {' ~ "\n"
-        ~       $.body.emit_perl5_indented( $level + 1 ) ~ "\n"
+        ~       $.body.stmts.>>emit_perl5_indented( $level + 1 ).join(";\n") ~ "\n"
         ~ Perl5::tab($level) ~ "}" 
     }
 }
@@ -522,7 +521,7 @@ class For {
             $sig = 'my ' ~ $.body.sig.emit_perl5() ~ ' ';
         }
         return  Perl5::tab($level) ~ 'for ' ~ $sig ~ '( @{' ~ $cond.emit_perl5() ~ '} ) {' ~ "\n" 
-             ~   $.body.emit_perl5_indented( $level + 1 ) ~ "\n"
+             ~   $.body.stmts.>>emit_perl5_indented( $level + 1 ).join(";\n") ~ "\n"
              ~ Perl5::tab($level) ~ "}" 
     }
 }

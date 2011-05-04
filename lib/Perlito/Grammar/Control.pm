@@ -64,7 +64,7 @@ token if {
             make If.new( 
                 cond => ($$<exp>){'exp'}, 
                 body => $body, 
-                otherwise => [ ],
+                otherwise => Lit::Block.new(stmts => [ ]),
              ) 
         }
     ]

@@ -118,9 +118,6 @@ package GLOBAL;
             ((my  $module_name) = $stmt->mod());
             if (($module_name eq 'v6')) {
                 return ()
-            }
-            else {
-
             };
             if (!(($Hash_module_seen->{$module_name}))) {
                 ($Hash_module_seen->{$module_name} = 1);

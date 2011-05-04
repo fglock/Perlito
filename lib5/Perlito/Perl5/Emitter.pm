@@ -32,9 +32,6 @@ package GLOBAL;
             ((my  $tmp) = '');
             if (($s eq '')) {
                 return scalar (chr(39) . chr(39))
-            }
-            else {
-
             };
             for my $i ( @{[0 .. (Main::chars($s, ) - 1)]} ) {
                 ((my  $c) = substr($s, $i, 1));
@@ -44,9 +41,6 @@ package GLOBAL;
                 else {
                     if (($tmp ne '')) {
                         push( @{$List_out}, chr(39) . $tmp . chr(39) )
-                    }
-                    else {
-
                     };
                     push( @{$List_out}, 'chr' . chr(40) . do {
     ord($c)
@@ -56,9 +50,6 @@ package GLOBAL;
             };
             if (($tmp ne '')) {
                 push( @{$List_out}, chr(39) . $tmp . chr(39) )
-            }
-            else {
-
             };
             return scalar (Main::join($List_out, ' . '))
         }
@@ -173,13 +164,7 @@ $self->emit_perl5_indented(0)
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (my  $List_body = bless [], 'ARRAY');
-            for ( @{$self->{stmts}} ) {
-                if (defined($_)) {
-                    push( @{$List_body}, $_ )
-                }
-            };
-            Main::join(([ map { $_->emit_perl5_indented($level) } @{( $List_body )} ]), chr(59) . chr(10))
+            Perl5::tab($level) . 'sub ' . chr(123) . chr(10) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{stmts} )} ], chr(59) . chr(10)) . chr(10) . Perl5::tab($level) . chr(125)
         }
     }
 
@@ -657,7 +642,7 @@ $self->emit_perl5_indented(0)
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
-            return scalar (Perl5::tab($level) . 'if ' . chr(40) . $self->{cond}->emit_perl5() . chr(41) . ' ' . chr(123) . chr(10) . (($self->{body})->emit_perl5_indented(($level + 1))) . chr(10) . Perl5::tab($level) . chr(125) . (($self->{otherwise} ? (chr(10) . Perl5::tab($level) . 'else ' . chr(123) . chr(10) . (($self->{otherwise})->emit_perl5_indented(($level + 1))) . chr(10) . Perl5::tab($level) . chr(125)) : '')))
+            return scalar (Perl5::tab($level) . 'if ' . chr(40) . $self->{cond}->emit_perl5() . chr(41) . ' ' . chr(123) . chr(10) . (($self->{body} ? Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], chr(59) . chr(10)) . chr(10) : '')) . Perl5::tab($level) . chr(125) . ((($self->{otherwise} && scalar( @{$self->{otherwise}->stmts()} )) ? (chr(10) . Perl5::tab($level) . 'else ' . chr(123) . chr(10) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ], chr(59) . chr(10)) . chr(10) . Perl5::tab($level) . chr(125)) : '')))
         }
     }
 
@@ -685,7 +670,7 @@ $self->emit_perl5_indented(0)
     $List_a
 })))
             };
-            Perl5::tab($level) . 'for ' . chr(40) . ' ' . (($self->{init} ? $self->{init}->emit_perl5() . chr(59) . ' ' : chr(59) . ' ')) . (($cond ? $cond->emit_perl5() . chr(59) . ' ' : chr(59) . ' ')) . (($self->{continue} ? $self->{continue}->emit_perl5() . ' ' : ' ')) . chr(41) . ' ' . chr(123) . chr(10) . $self->{body}->emit_perl5_indented(($level + 1)) . chr(10) . Perl5::tab($level) . chr(125)
+            Perl5::tab($level) . 'for ' . chr(40) . ' ' . (($self->{init} ? $self->{init}->emit_perl5() . chr(59) . ' ' : chr(59) . ' ')) . (($cond ? $cond->emit_perl5() . chr(59) . ' ' : chr(59) . ' ')) . (($self->{continue} ? $self->{continue}->emit_perl5() . ' ' : ' ')) . chr(41) . ' ' . chr(123) . chr(10) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], chr(59) . chr(10)) . chr(10) . Perl5::tab($level) . chr(125)
         }
     }
 
@@ -715,7 +700,7 @@ $self->emit_perl5_indented(0)
             if ($self->{body}->sig()) {
                 ($sig = 'my ' . $self->{body}->sig()->emit_perl5() . ' ')
             };
-            return scalar (Perl5::tab($level) . 'for ' . $sig . chr(40) . ' ' . chr(64) . chr(123) . $cond->emit_perl5() . chr(125) . ' ' . chr(41) . ' ' . chr(123) . chr(10) . $self->{body}->emit_perl5_indented(($level + 1)) . chr(10) . Perl5::tab($level) . chr(125))
+            return scalar (Perl5::tab($level) . 'for ' . $sig . chr(40) . ' ' . chr(64) . chr(123) . $cond->emit_perl5() . chr(125) . ' ' . chr(41) . ' ' . chr(123) . chr(10) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], chr(59) . chr(10)) . chr(10) . Perl5::tab($level) . chr(125))
         }
     }
 
