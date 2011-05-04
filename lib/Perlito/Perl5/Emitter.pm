@@ -360,7 +360,7 @@ class Apply {
         if $code eq 'infix:<==>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' == ')  ~ ')' }
         if $code eq 'infix:<!=>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' != ')  ~ ')' }
         if $code eq 'infix:<=>>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' => ')  ~ ')' }
-        if $code eq 'infix:<..>' { return Perl5::tab($level) ~ '['  ~ (@.arguments.>>emit_perl5).join(' .. ')  ~ ']' }
+        if $code eq 'infix:<..>' { return Perl5::tab($level) ~ '(bless ['  ~ (@.arguments.>>emit_perl5).join(' .. ')  ~ "], 'ARRAY')" }
         if $code eq 'infix:<===>' { 
             return Perl5::tab($level) ~ '(Main::id(' ~ (@.arguments[0]).emit_perl5() ~ ') eq Main::id(' ~ (@.arguments[1]).emit_perl5() ~ '))' 
         }

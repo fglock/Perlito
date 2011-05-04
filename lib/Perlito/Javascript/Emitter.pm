@@ -254,8 +254,12 @@ class Lit::Block {
     has @.stmts;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
+        my $sig = 'v__';
+        if $.sig {
+            $sig = $.sig.emit_javascript_indented( $level + 1 );
+        }
         return
-              Javascript::tab($level) ~ '(function () { ' ~ "\n"
+              Javascript::tab($level) ~ "(function ($sig) \{\n"
             ~   (Perlito::Javascript::LexicalBlock.new( block => @.stmts, needs_return => 1 )).emit_javascript_indented( $level + 1 ) ~ "\n"
             ~ Javascript::tab($level) ~ '})'
     }

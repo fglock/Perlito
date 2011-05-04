@@ -536,7 +536,7 @@ $self->emit_perl5_indented(0)
                 return scalar (Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ' . chr(61) . chr(62) . ' ') . chr(41))
             };
             if (($code eq 'infix:' . chr(60) . '..' . chr(62))) {
-                return scalar (Perl5::tab($level) . chr(91) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' .. ') . chr(93))
+                return scalar (Perl5::tab($level) . chr(40) . 'bless ' . chr(91) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' .. ') . chr(93) . ', ' . chr(39) . 'ARRAY' . chr(39) . chr(41))
             };
             if (($code eq 'infix:' . chr(60) . chr(61) . chr(61) . chr(61) . chr(62))) {
                 return scalar (Perl5::tab($level) . chr(40) . 'Main::id' . chr(40) . ($self->{arguments}->[0])->emit_perl5() . chr(41) . ' eq Main::id' . chr(40) . ($self->{arguments}->[1])->emit_perl5() . chr(41) . chr(41))

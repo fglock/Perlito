@@ -343,11 +343,14 @@ class Lit::Block {
     method emit_python_indented( $level ) {
         my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
         # generate an anonymous sub in the current block
+        my $anon_var = $.sig
+            || Var.new( 'name' => '_', 'namespace' => '', 'sigil' => '$', 'twigil' => '' );
+        my $anon_sig = Sig.new( invocant => Mu, positional => [ $anon_var ], named => {} );
         Perlito::Python::LexicalBlock::push_stmt_python( 
                 Perlito::Python::AnonSub.new( 
                     name  => $label, 
                     block => @.stmts,
-                    sig   => Sig.new( invocant => Mu, positional => [], named => {} ),
+                    sig   => $anon_sig,
                     handles_return_exception => 0,
                 )
             );
@@ -603,7 +606,7 @@ class Apply {
         if $code eq 'infix:<<=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') <= mp6_to_num(') ~ '))' };
         if $code eq 'infix:<>=>' { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') >= mp6_to_num(') ~ '))' };
         if $code eq 'infix:<..>' { 
-            return 'range('  ~ (@.arguments[0]).emit_python() ~ ', 1 + ' ~ (@.arguments[1]).emit_python() ~ ')' 
+            return 'mp6_Array(range('  ~ (@.arguments[0]).emit_python() ~ ', 1 + ' ~ (@.arguments[1]).emit_python() ~ '))' 
         }
         if $code eq 'infix:<===>' {
              return '(mp6_id(' ~ (@.arguments[0]).emit_python() ~ ') == mp6_id(' ~ (@.arguments[1]).emit_python() ~ '))'

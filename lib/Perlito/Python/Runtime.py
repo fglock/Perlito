@@ -262,6 +262,8 @@ class mp6_Array:
             except AttributeError:
                 result.append(v[x])
         return mp6_Array(result)
+    def f_say(self):
+        f_say(self)
  
 class mp6_Hash:
     def __init__(self, l):

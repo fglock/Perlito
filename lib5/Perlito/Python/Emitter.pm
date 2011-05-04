@@ -406,14 +406,17 @@ $self->emit_python_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $label) = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python());
-            Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $self->{stmts}), ('sig' => Sig->new(('invocant' => undef()), ('positional' => do {
+            ((my  $anon_var) = ($self->{sig} || Var->new(('name' => '_'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))));
+            ((my  $anon_sig) = Sig->new(('invocant' => undef()), ('positional' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, $anon_var );
     $List_a
 }), ('named' => do {
     (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
-}))), ('handles_return_exception' => 0)));
+})));
+            Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $self->{stmts}), ('sig' => $anon_sig), ('handles_return_exception' => 0)));
             return scalar (Python::tab($level) . 'f_' . $label . '')
         }
     }
@@ -730,7 +733,7 @@ $self->emit_python_indented(0)
                 return scalar (chr(40) . 'mp6_to_num' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), chr(41) . ' ' . chr(62) . chr(61) . ' mp6_to_num' . chr(40)) . chr(41) . chr(41))
             };
             if (($code eq 'infix:' . chr(60) . '..' . chr(62))) {
-                return scalar ('range' . chr(40) . ($self->{arguments}->[0])->emit_python() . ', 1 + ' . ($self->{arguments}->[1])->emit_python() . chr(41))
+                return scalar ('mp6_Array' . chr(40) . 'range' . chr(40) . ($self->{arguments}->[0])->emit_python() . ', 1 + ' . ($self->{arguments}->[1])->emit_python() . chr(41) . chr(41))
             };
             if (($code eq 'infix:' . chr(60) . chr(61) . chr(61) . chr(61) . chr(62))) {
                 return scalar (chr(40) . 'mp6_id' . chr(40) . ($self->{arguments}->[0])->emit_python() . chr(41) . ' ' . chr(61) . chr(61) . ' mp6_id' . chr(40) . ($self->{arguments}->[1])->emit_python() . chr(41) . chr(41))

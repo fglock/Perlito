@@ -129,6 +129,10 @@ package ARRAY;
         bool     => sub { scalar(@{$_[0]}) },
     );
 
+    sub map {
+        bless [ CORE::map( $_[1]($_), @{$_[0]} ) ], 'ARRAY'
+    }
+
 package HASH;
 
     use overload (
