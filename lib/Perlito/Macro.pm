@@ -183,6 +183,9 @@ class Apply {
         'infix:<*=>'  => 'infix:<*>',
         'infix:</=>'  => 'infix:</>',
         'infix:<||=>' => 'infix:<||>',
+        'infix:<&&=>' => 'infix:<&&>',
+        'infix:<|=>'  => 'infix:<|>',
+        'infix:<&=>'  => 'infix:<&>',
         'infix:<//=>' => 'infix:<//>',
         'infix:<~=>'  => 'list:<~>',
     );
@@ -191,13 +194,13 @@ class Apply {
         my $code = $.code;
         return 0 unless $code.isa( 'Str' );
 
-        if exists %op{$code} {
+        if exists( %op{$code} ) {
             return Apply.new(
                 code      => 'infix:<=>',
                 arguments => [
                     @.arguments[0],
                     Apply.new(
-                        code    => %op{$code},
+                        code      => %op{$code},
                         arguments => @.arguments,
                     ),
                 ]

@@ -187,6 +187,20 @@ package GLOBAL;
     {
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
+        ((my  $Hash_op = bless {}, 'HASH') = do {
+    (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{'infix:' . chr(60) . '+' . chr(61) . chr(62)} = 'infix:' . chr(60) . '+' . chr(62));
+    ($Hash_a->{'infix:' . chr(60) . '-' . chr(61) . chr(62)} = 'infix:' . chr(60) . '-' . chr(62));
+    ($Hash_a->{'infix:' . chr(60) . '*' . chr(61) . chr(62)} = 'infix:' . chr(60) . '*' . chr(62));
+    ($Hash_a->{'infix:' . chr(60) . chr(47) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(47) . chr(62));
+    ($Hash_a->{'infix:' . chr(60) . chr(124) . chr(124) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(124) . chr(124) . chr(62));
+    ($Hash_a->{'infix:' . chr(60) . chr(38) . chr(38) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(38) . chr(38) . chr(62));
+    ($Hash_a->{'infix:' . chr(60) . chr(124) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(124) . chr(62));
+    ($Hash_a->{'infix:' . chr(60) . chr(38) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(38) . chr(62));
+    ($Hash_a->{'infix:' . chr(60) . chr(47) . chr(47) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(47) . chr(47) . chr(62));
+    ($Hash_a->{'infix:' . chr(60) . chr(126) . chr(61) . chr(62)} = 'list:' . chr(60) . chr(126) . chr(62));
+    $Hash_a
+});
         sub op_assign {
             my $self = $_[0];
             ((my  $code) = $self->{code});
@@ -196,30 +210,12 @@ package GLOBAL;
             else {
                 return scalar (0)
             };
-            if (($code eq 'infix:' . chr(60) . chr(126) . chr(61) . chr(62))) {
+            if (exists($Hash_op->{$code})) {
                 return scalar (Apply->new(('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{arguments}->[0] );
-    push( @{$List_a}, Apply->new(('code' => 'list:' . chr(60) . chr(126) . chr(62)), ('arguments' => $self->{arguments})) );
-    $List_a
-})))
-            };
-            if (($code eq 'infix:' . chr(60) . chr(124) . chr(124) . chr(61) . chr(62))) {
-                return scalar (Apply->new(('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('arguments' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{arguments}->[0] );
-    push( @{$List_a}, Apply->new(('code' => 'infix:' . chr(60) . chr(124) . chr(124) . chr(62)), ('arguments' => $self->{arguments})) );
-    $List_a
-})))
-            };
-            if (($code eq 'infix:' . chr(60) . chr(47) . chr(47) . chr(61) . chr(62))) {
-                return scalar (Apply->new(('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('arguments' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{arguments}->[0] );
-    push( @{$List_a}, Apply->new(('code' => 'infix:' . chr(60) . chr(47) . chr(47) . chr(62)), ('arguments' => $self->{arguments})) );
+    push( @{$List_a}, Apply->new(('code' => $Hash_op->{$code}), ('arguments' => $self->{arguments})) );
     $List_a
 })))
             };
