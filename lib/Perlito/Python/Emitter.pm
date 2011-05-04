@@ -336,6 +336,26 @@ class Val::Buf {
     }
 }
 
+class Lit::Block {
+    has $.sig;
+    has @.stmts;
+    method emit_python { self.emit_python_indented(0) }
+    method emit_python_indented( $level ) {
+        my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
+        # generate an anonymous sub in the current block
+        Perlito::Python::LexicalBlock::push_stmt_python( 
+                Perlito::Python::AnonSub.new( 
+                    name  => $label, 
+                    block => @.stmts,
+                    sig   => Sig.new( invocant => Mu, positional => [], named => {} ),
+                    handles_return_exception => 0,
+                )
+            );
+        # return a ref to the anonymous sub
+        return Python::tab($level) ~ "f_" ~ $label ~ "";
+    }
+}
+
 class Lit::Array {
     has @.array1;
     method emit_python { self.emit_python_indented(0) }

@@ -394,6 +394,32 @@ $self->emit_python_indented(0)
 
 ;
     {
+    package Lit::Block;
+        sub new { shift; bless { @_ }, "Lit::Block" }
+        sub sig { $_[0]->{sig} };
+        sub stmts { $_[0]->{stmts} };
+        sub emit_python {
+            my $self = $_[0];
+$self->emit_python_indented(0)
+        };
+        sub emit_python_indented {
+            my $self = $_[0];
+            my $level = $_[1];
+            ((my  $label) = '_anon_' . Perlito::Python::LexicalBlock::get_ident_python());
+            Perlito::Python::LexicalBlock::push_stmt_python(Perlito::Python::AnonSub->new(('name' => $label), ('block' => $self->{stmts}), ('sig' => Sig->new(('invocant' => undef()), ('positional' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    $List_a
+}), ('named' => do {
+    (my  $Hash_a = bless {}, 'HASH');
+    $Hash_a
+}))), ('handles_return_exception' => 0)));
+            return scalar (Python::tab($level) . 'f_' . $label . '')
+        }
+    }
+
+;
+    {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub array1 { $_[0]->{array1} };
