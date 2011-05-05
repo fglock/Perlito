@@ -33,7 +33,7 @@ package GLOBAL;
             if (($s eq '')) {
                 return scalar ('u' . chr(39) . chr(39))
             };
-            for my $i ( @{[0 .. (Main::chars($s, ) - 1)]} ) {
+            for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
                 if ((((((((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_'))) || (($c eq ','))) || (($c eq '.'))) || (($c eq ':'))) || (($c eq '-'))) || (($c eq '+'))) || (($c eq '*'))) || (($c eq ' ')))) {
                     ($tmp = $tmp . $c)
@@ -566,12 +566,12 @@ $self->emit_python_indented(0)
                 };
                 return scalar (Python::tab($level) . '__builtin__.' . Main::to_go_namespace($self->{invocant}->name()) . chr(40) . Main::join($List_str, ', ') . chr(41))
             };
-            if ((((((($self->{method} eq 'id')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'split'))) || (($self->{method} eq 'isa')))) {
+            if (((((((($self->{method} eq 'id')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'split'))) || (($self->{method} eq 'isa'))) || (($self->{method} eq 'say')))) {
                 if (($self->{hyper})) {
                     return scalar (Python::tab($level) . 'f_map' . chr(40) . $invocant . ', lambda x: Main.' . $self->{method} . chr(40) . 'x, ' . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ', ') . chr(41) . chr(41))
                 }
                 else {
-                    return scalar (Python::tab($level) . 'mp6_' . $self->{method} . chr(40) . $invocant . ', ' . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ', ') . chr(41))
+                    return scalar (Python::tab($level) . 'f_' . $self->{method} . chr(40) . $invocant . ', ' . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ', ') . chr(41))
                 }
             };
             ((my  $meth) = $self->{method});
@@ -736,7 +736,7 @@ $self->emit_python_indented(0)
                 return scalar ('mp6_Array' . chr(40) . 'range' . chr(40) . ($self->{arguments}->[0])->emit_python() . ', 1 + ' . ($self->{arguments}->[1])->emit_python() . chr(41) . chr(41))
             };
             if (($code eq 'infix:' . chr(60) . chr(61) . chr(61) . chr(61) . chr(62))) {
-                return scalar (chr(40) . 'mp6_id' . chr(40) . ($self->{arguments}->[0])->emit_python() . chr(41) . ' ' . chr(61) . chr(61) . ' mp6_id' . chr(40) . ($self->{arguments}->[1])->emit_python() . chr(41) . chr(41))
+                return scalar (chr(40) . 'f_id' . chr(40) . ($self->{arguments}->[0])->emit_python() . chr(41) . ' ' . chr(61) . chr(61) . ' f_id' . chr(40) . ($self->{arguments}->[1])->emit_python() . chr(41) . chr(41))
             };
             if (($code eq 'exists')) {
                 ((my  $arg) = $self->{arguments}->[0]);
@@ -774,7 +774,7 @@ $self->emit_python_indented(0)
                 return scalar ('mp6_index' . chr(40) . ($self->{arguments}->[0])->emit_python() . ', ' . ($self->{arguments}->[1])->emit_python() . chr(41))
             };
             if (($code eq 'defined')) {
-                return scalar ('not mp6_isa' . chr(40) . ($self->{arguments}->[0])->emit_python() . ',' . chr(39) . 'Mu' . chr(39) . chr(41))
+                return scalar ('not f_isa' . chr(40) . ($self->{arguments}->[0])->emit_python() . ',' . chr(39) . 'Mu' . chr(39) . chr(41))
             };
             if (($code eq 'shift')) {
                 return scalar (($self->{arguments}->[0])->emit_python() . '.f_shift' . chr(40) . chr(41))

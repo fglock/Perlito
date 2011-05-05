@@ -470,12 +470,13 @@ class Call {
             || ($.method eq 'join')
             || ($.method eq 'split')
             || ($.method eq 'isa')
+            || ($.method eq 'say')
         { 
             if ($.hyper) {
                 return Python::tab($level) ~ 'f_map(' ~ $invocant ~ ', lambda x: Main.' ~ $.method ~ '(x, ' ~ (@.arguments.>>emit_python).join(', ') ~ '))';
             }
             else {
-                return Python::tab($level) ~ "mp6_" ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
+                return Python::tab($level) ~ "f_" ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
             }
         };
 
@@ -609,7 +610,7 @@ class Apply {
             return 'mp6_Array(range('  ~ (@.arguments[0]).emit_python() ~ ', 1 + ' ~ (@.arguments[1]).emit_python() ~ '))' 
         }
         if $code eq 'infix:<===>' {
-             return '(mp6_id(' ~ (@.arguments[0]).emit_python() ~ ') == mp6_id(' ~ (@.arguments[1]).emit_python() ~ '))'
+             return '(f_id(' ~ (@.arguments[0]).emit_python() ~ ') == f_id(' ~ (@.arguments[1]).emit_python() ~ '))'
         }
 
         if $code eq 'exists'     {
@@ -652,7 +653,7 @@ class Apply {
         if $code eq 'index' { 
             return 'mp6_index(' ~ (@.arguments[0]).emit_python() ~ ', ' ~ (@.arguments[1]).emit_python() ~ ')' 
         } 
-        if $code eq 'defined' { return 'not mp6_isa(' ~ (@.arguments[0]).emit_python() ~ ",'Mu')" } 
+        if $code eq 'defined' { return 'not f_isa(' ~ (@.arguments[0]).emit_python() ~ ",'Mu')" } 
         if $code eq 'shift'   { return (@.arguments[0]).emit_python() ~ '.f_shift()' } 
         if $code eq 'pop'     { return (@.arguments[0]).emit_python() ~ '.f_pop()'   } 
         if $code eq 'push'    { return (@.arguments[0]).emit_python() ~ '.f_push('    ~ (@.arguments[1]).emit_python() ~ ')' } 

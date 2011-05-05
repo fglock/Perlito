@@ -28,9 +28,9 @@ recursion = sys.getrecursionlimit()
 if recursion < 2000:
     sys.setrecursionlimit(2000)
 
-__all__ = ['mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'mp6_isa',
+__all__ = ['mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'f_isa',
            'mp6_and', 'mp6_or', 'mp6_defined_or',
-           'mp6_join', 'mp6_index', 'mp6_id', 'mp6_split',
+           'f_join', 'mp6_index', 'f_id', 'f_split',
            'mp6_Mu', 
            'mp6_Array', 'mp6_Hash', 'mp6_Scalar',
            'mp6_Return', 
@@ -114,11 +114,11 @@ def mp6_or(x, y):
     return y()
 
 def mp6_defined_or(x, y):
-    if mp6_isa(x, 'Mu'):
+    if f_isa(x, 'Mu'):
         return y()
     return x
 
-def mp6_isa(v, name):
+def f_isa(v, name):
     try:
         v = v.f_get()
     except AttributeError:
@@ -137,16 +137,16 @@ def mp6_isa(v, name):
         f_warn("Warning: Can't calculate .isa() on ", v.__class__.__name__, " ", f_perl(v))
         return False
 
-def mp6_join(l, s):
+def f_join(l, s):
     try:
         l = l.f_get()
     except AttributeError:
         None
-    if not mp6_isa(l, 'Array'):
+    if not f_isa(l, 'Array'):
         return unicode(l)
     return s.join(l.f_map( lambda x: unicode(x) ).l)
 
-def mp6_split(l, s):
+def f_split(l, s):
     try:
         l = l.f_get()
     except AttributeError:
@@ -378,7 +378,7 @@ class mp6_Scalar:
     def f_perl(self, seen={}):
         return f_perl(self.v, seen)
     def f_id(self):
-        return mp6_id(self.v)
+        return f_id(self.v)
     def f_bool(self):
         return mp6_to_bool(self.v)
     def f_set(self, v):
@@ -415,7 +415,7 @@ class mp6_Mu_get_proxy(mp6_Mu):
     def f_perl(self, seen={}):
         return f_perl(self.v, seen)
     def f_id(self):
-        return mp6_id(self.v)
+        return f_id(self.v)
     def f_bool(self):
         return mp6_to_bool(self.v)
     def f_get(self):
@@ -492,7 +492,7 @@ class Perlito__Match:
         return self.__dict__[k]
     def __unicode__(self):
         if mp6_to_bool(self.v_bool):
-            if not(mp6_isa(self.v_capture,'Mu')): 
+            if not(f_isa(self.v_capture,'Mu')): 
                 return unicode(self.v_capture)
             return self.v_str[self.v_from:self.v_to]
         return u''
@@ -513,7 +513,7 @@ class Perlito__Match:
         return self.v_m.f_lookup(k)
     def f_scalar(self):
         if mp6_to_bool(self.v_bool):
-            if not(mp6_isa(self.v_capture,'Mu')): 
+            if not(f_isa(self.v_capture,'Mu')): 
                 return self.v_capture
             return self.v_str[self.v_from:self.v_to]
         return self.v_capture
@@ -616,7 +616,7 @@ def _dump(o, seen):
     name = o.__class__.__name__.replace( "__", "::")
     return name + ".new(" + ", ".join(out) + ")"
 
-def mp6_id(o):
+def f_id(o):
     try:
         return o.f_id()
     except AttributeError:
