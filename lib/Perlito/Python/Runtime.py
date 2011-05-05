@@ -273,6 +273,10 @@ class mp6_Array:
                 except AttributeError:
                     result.append(v[x])
         return mp6_Array(result)
+    def f_sort(self, f=lambda x: x):
+        # TODO: add "key="
+        result = sorted(self.l)
+        return mp6_Array(result)
     def f_say(self):
         f_say(self)
  
