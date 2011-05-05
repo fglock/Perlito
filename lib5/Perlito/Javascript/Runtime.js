@@ -264,6 +264,16 @@ pairs = function(o) {
     return out;
 };
 
+Array.prototype.grep = function grep(f) {
+    var res = new Array()
+    for (var i in this) {
+        if (bool(f(this[i]))) {
+            res.push(this[i])
+        }
+    }
+    return res
+}
+
 var _id = 0;
 id = function(o) {
     if (o == null) {
