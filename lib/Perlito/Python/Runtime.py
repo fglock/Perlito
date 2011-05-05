@@ -262,6 +262,17 @@ class mp6_Array:
             except AttributeError:
                 result.append(v[x])
         return mp6_Array(result)
+    def f_grep(self, f):
+        result = []
+        v = self.l
+        for x in range(0, len(v)):
+            item = v[x]
+            if mp6_to_bool(f(item)):
+                try:
+                    result.append(v[x].f_get())
+                except AttributeError:
+                    result.append(v[x])
+        return mp6_Array(result)
     def f_say(self):
         f_say(self)
  
