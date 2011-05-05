@@ -285,6 +285,15 @@ class Apply {
     has $.code;
     has @.arguments;
     has $.namespace;
+
+    my %op_perl5 = (
+        say     => 'Main::say',
+        print   => 'Main::print',
+        map     => 'Main::map',
+        grep    => 'Main::grep',
+        sort    => 'Main::sort',
+    );
+
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
 
@@ -309,8 +318,9 @@ class Apply {
 
         if $code eq 'make'       { return Perl5::tab($level) ~ '($MATCH->{capture} = ('   ~ (@.arguments.>>emit_perl5).join(', ') ~ '))' }
 
-        if $code eq 'say'        { return Perl5::tab($level) ~ 'Main::say('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
-        if $code eq 'print'      { return Perl5::tab($level) ~ 'Main::print(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
+        if exists %op_perl5{$code} {
+            return Perl5::tab($level) ~ %op_perl5{$code} ~ '('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')'
+        }
         if $code eq 'warn'       { return Perl5::tab($level) ~ 'warn('        ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
 
         if $code eq 'array'      { return Perl5::tab($level) ~ '@{' ~ (@.arguments.>>emit_perl5).join(' ')           ~ '}'   }

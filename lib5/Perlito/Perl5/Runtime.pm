@@ -131,12 +131,14 @@ package ARRAY;
         '""'     => \&Str,
     );
 
-    sub map {
-        bless [ CORE::map( $_[1]($_), @{$_[0]} ) ], 'ARRAY'
+    sub map  { bless [ CORE::map(  $_[1]($_), @{$_[0]} ) ], 'ARRAY' }
+    sub grep { bless [ CORE::grep( $_[1]($_), @{$_[0]} ) ], 'ARRAY' }
+    sub sort { 
+          $_[1] 
+        ? bless [ CORE::sort( $_[1]($_), @{$_[0]} ) ], 'ARRAY' 
+        : bless [ CORE::sort( @{$_[0]} ) ], 'ARRAY' 
     }
-    sub grep {
-        bless [ CORE::grep( $_[1]($_), @{$_[0]} ) ], 'ARRAY'
-    }
+
     sub Str {
         join( " ", CORE::map { Main::Str($_) } @{$_[0]} )
     }
@@ -153,6 +155,14 @@ package HASH;
     }
 
 package Main;
+
+    sub map  { bless [ CORE::map(  $_[0]($_), @{$_[1]} ) ], 'ARRAY' }
+    sub grep { bless [ CORE::grep( $_[0]($_), @{$_[1]} ) ], 'ARRAY' }
+    sub sort { 
+          $_[1]
+        ? bless [ CORE::sort( $_[0]($_), @{$_[1]} ) ], 'ARRAY' 
+        : bless [ CORE::sort( @{$_[0]} ) ], 'ARRAY'
+    }
 
     sub True { 1 }
     sub Str {

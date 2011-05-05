@@ -375,6 +375,15 @@ $self->emit_perl5_indented(0)
         sub code { $_[0]->{code} };
         sub arguments { $_[0]->{arguments} };
         sub namespace { $_[0]->{namespace} };
+        ((my  $Hash_op_perl5 = bless {}, 'HASH') = do {
+    (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{'say'} = 'Main::say');
+    ($Hash_a->{'print'} = 'Main::print');
+    ($Hash_a->{'map'} = 'Main::map');
+    ($Hash_a->{'grep'} = 'Main::grep');
+    ($Hash_a->{'sort'} = 'Main::sort');
+    $Hash_a
+});
         sub emit_perl5 {
             my $self = $_[0];
 $self->emit_perl5_indented(0)
@@ -406,11 +415,8 @@ $self->emit_perl5_indented(0)
             if (($code eq 'make')) {
                 return scalar (Perl5::tab($level) . chr(40) . chr(36) . 'MATCH-' . chr(62) . chr(123) . 'capture' . chr(125) . ' ' . chr(61) . ' ' . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41) . chr(41))
             };
-            if (($code eq 'say')) {
-                return scalar (Perl5::tab($level) . 'Main::say' . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41))
-            };
-            if (($code eq 'print')) {
-                return scalar (Perl5::tab($level) . 'Main::print' . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41))
+            if (exists($Hash_op_perl5->{$code})) {
+                return scalar (Perl5::tab($level) . $Hash_op_perl5->{$code} . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41))
             };
             if (($code eq 'warn')) {
                 return scalar (Perl5::tab($level) . 'warn' . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41))
