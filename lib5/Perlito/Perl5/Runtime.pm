@@ -50,8 +50,9 @@ $_ = Encode::decode('utf-8', $_)
         CORE::values %{$_[0]};
     }
     sub pairs {
-        map Pair->new( key => $_, value => $_[0]{$_} ),
+        bless [ map Pair->new( key => $_, value => $_[0]{$_} ),
             CORE::keys %{$_[0]}
+        ], 'ARRAY';
     }
     
     sub flat {
@@ -127,26 +128,39 @@ package ARRAY;
 
     use overload (
         bool     => sub { scalar(@{$_[0]}) },
+        '""'     => \&Str,
     );
 
     sub map {
         bless [ CORE::map( $_[1]($_), @{$_[0]} ) ], 'ARRAY'
+    }
+    sub grep {
+        bless [ CORE::grep( $_[1]($_), @{$_[0]} ) ], 'ARRAY'
+    }
+    sub Str {
+        join( " ", CORE::map { Main::Str($_) } @{$_[0]} )
     }
 
 package HASH;
 
     use overload (
         bool     => sub { scalar(keys %{$_[0]}) },
+        '""'     => \&Str,
     );
+
+    sub Str {
+        join( "\n", map { $_ . "\t" . Main::Str($_[0]{$_}) } keys %{$_[0]} )
+    }
 
 package Main;
 
     sub True { 1 }
     sub Str {
-        local $_;
+        my $can = UNIVERSAL::can($o => 'Str');
+        return $can->($o) if $can;
         if ( ref($_[0]) ) {
-            return join( " ", map { Str($_) } @{$_[0]} ) if ref($_[0]) eq 'ARRAY';
-            return join( "\n", map { $_ . "\t" . Str($_[0]{$_}) } keys %{$_[0]} ) if ref($_[0]) eq 'HASH';
+            return ARRAY::Str($_[0]) if ref($_[0]) eq 'ARRAY';
+            return HASH::Str($_[0])  if ref($_[0]) eq 'HASH';
         }
         return $_[0];
     }
@@ -181,10 +195,10 @@ package Main;
     }
 
     sub pairs {
-        [
+        bless [
             map Pair->new( key => $_, value => $_[0]{$_} ),
                 CORE::keys %{$_[0]}
-        ]
+        ], 'ARRAY';
     }
  
     sub id {
