@@ -270,7 +270,7 @@ package GLOBAL;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     ($List_v = ((($arg->[0])->arguments())));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     push( @{$List_a}, $arg->[1] );
@@ -1239,8 +1239,10 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $pos1) = $MATCH->to());
-    ((do {
     (((do {
+    ((((((':' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
     ((my  $m2) = Perlito::Grammar->ws($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());
@@ -1249,7 +1251,11 @@ package GLOBAL;
     else {
         0
     }
-}) && (do {
+}))) {
+        (($MATCH)->{to} = $last_pos)
+    };
+    1
+})) && (do {
     ((my  $m2) = $grammar->list_parse($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());
@@ -1272,6 +1278,36 @@ package GLOBAL;
 }))
 }) || 1)))
 }) || (do {
+    (($MATCH)->{to} = $pos1);
+    (((((((chr(40) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((my  $m2) = $grammar->paren_parse($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'paren_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((chr(41) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+    ($MATCH->{capture} = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'postfix_or_term' );
+    push( @{$List_a}, 'methcall' );
+    push( @{$List_a}, ("" . $MATCH->{'Perlito::Grammar.ident'}) );
+    push( @{$List_a}, do {
+    (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{'end_block'} = undef());
+    ($Hash_a->{'exp'} = ${$MATCH->{'paren_parse'}});
+    ($Hash_a->{'terminated'} = 0);
+    $Hash_a
+} );
+    push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
+    $List_a
+}))
+}) || 1))))
+})) || (do {
     (($MATCH)->{to} = $pos1);
     ((((do {
     ($MATCH->{capture} = (do {

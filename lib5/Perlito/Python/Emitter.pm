@@ -655,10 +655,10 @@ $self->emit_python_indented(0)
                 return scalar (chr(91) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ' ') . chr(93))
             };
             if (($code eq 'Int')) {
-                return scalar ('mp6_to_num' . chr(40) . ($self->{arguments}->[0])->emit_python(("" . chr(41))))
+                return scalar ('mp6_to_num' . chr(40) . ($self->{arguments}->[0])->emit_python() . chr(41))
             };
             if (($code eq 'Num')) {
-                return scalar ('mp6_to_num' . chr(40) . ($self->{arguments}->[0])->emit_python(("" . chr(41))))
+                return scalar ('mp6_to_num' . chr(40) . ($self->{arguments}->[0])->emit_python() . chr(41))
             };
             if (($code eq 'prefix:' . chr(60) . chr(126) . chr(62))) {
                 return scalar ('unicode' . chr(40) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ' ') . chr(41))

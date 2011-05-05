@@ -1249,7 +1249,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ${$MATCH->{'quantifier'}} );
     ($List_v = ((${$MATCH->{'concat_list'}})));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
@@ -1344,7 +1344,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ${$MATCH->{'concat_exp'}} );
     ($List_v = ((${$MATCH->{'or_list_exp'}})));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a

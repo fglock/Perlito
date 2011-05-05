@@ -32,12 +32,12 @@ class Perl5 {
                 $tmp = $tmp ~ $c;
             }
             else {
-                @out.push "'$tmp'" if $tmp ne '';
-                @out.push "chr({ ord($c) })";
+                @out.push: "'$tmp'" if $tmp ne '';
+                @out.push: "chr({ ord($c) })";
                 $tmp = '';
             }
         }
-        @out.push "'$tmp'" if $tmp ne '';
+        @out.push: "'$tmp'" if $tmp ne '';
         return @out.join(' . ');
     }
 

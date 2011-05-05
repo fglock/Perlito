@@ -7100,8 +7100,12 @@ List_a.push((function () { var tmp = {v_decl: scalar((function () { if (v_MATCH 
     var v_pos1 = null;
 
 (v_pos1 = v_MATCH.to());
-    return(or(((function () { 
-    return(and(and(((function () { 
+    return(or(or(((function () { 
+    return(and(and(and((and((':' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return ((function () { 
+    var v_last_pos = null;
+
+(v_last_pos = v_MATCH.to());
+    if ( bool(( bool(((function () { 
     var v_m2 = null;
 
 (v_m2 = Perlito$Grammar.ws(v_str, v_MATCH.to()));
@@ -7112,7 +7116,14 @@ List_a.push((function () { var tmp = {v_decl: scalar((function () { if (v_MATCH 
     else { return (function () {
         return(false);
     })(); };
-})()), function () { return ((function () { 
+})())) ? false : true)) ) { (function () {
+(v_MATCH.v_to = v_last_pos);;
+    })(); }
+    else { (function () {
+        null;
+    })(); };
+    return(1);
+})()); }), function () { return ((function () { 
     var v_m2 = null;
 
 (v_m2 = v_grammar.list_parse(v_str, v_MATCH.to()));
@@ -7139,6 +7150,41 @@ List_a.push(scalar((function () { if (v_MATCH == null) { v_MATCH = {} }; return 
 })()));
 })()), function () { return 1; })); }));
 })()), function () { return ((function () { 
+(v_MATCH.v_to = v_pos1);
+    return((and(and(and((and((String.fromCharCode(40) == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return ((function () { 
+    var v_m2 = null;
+
+(v_m2 = v_grammar.paren_parse(v_str, v_MATCH.to()));
+    if ( bool(v_m2) ) { return (function () {
+(v_MATCH.v_to = v_m2.to());
+(function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH['paren_parse']  = v_m2); })();
+        return(1);
+    })(); }
+    else { return (function () {
+        return(false);
+    })(); };
+})()); }), function () { return (and((String.fromCharCode(41) == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })); }), function () { return (or(((function () { 
+    return((v_MATCH.v_capture = (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+List_a.push('postfix_or_term');
+List_a.push('methcall');
+List_a.push(string((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH['Perlito::Grammar.ident'] ); })()));
+List_a.push((function () { 
+    var Hash_a = {};
+
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['end_block']  = null); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['exp']  = scalar((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH['paren_parse'] ); })())); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['terminated']  = 0); })();
+    return(Hash_a);
+})());
+List_a.push(scalar((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH['hyper_op'] ); })()));
+    return(List_a);
+})()));
+})()), function () { return 1; })); })));
+})()); }), function () { return ((function () { 
 (v_MATCH.v_to = v_pos1);
     return(((or(((function () { 
     return((v_MATCH.v_capture = (function () { 
@@ -14491,7 +14537,7 @@ if (typeof Rul$Quantifier !== 'object') {
             else { (function () {
                 null;
             })(); };
-            warn((string('Rul::Quantifier: ') + string(perl(v_self, string((string(' not implemented')))))));
+            warn((string('Rul::Quantifier: ') + string(perl(v_self)) + string((string(' not implemented')))));
             return(v_self.v_term.emit_perl6());;
         }
         catch(err) {

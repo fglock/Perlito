@@ -61,7 +61,7 @@ $self->{term}->set_captures_to_array();
 $self->{term}->set_captures_to_array();
                 return scalar (chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'if ' . chr(33) . chr(40) . 'do ' . chr(123) . $self->{term}->emit_perl6() . chr(125) . chr(41) . ' ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . chr(41))
             };
-            warn('Rul::Quantifier: ' . Main::perl($self, ("" . ' not implemented')));
+            warn('Rul::Quantifier: ' . Main::perl($self, ) . ' not implemented');
 $self->{term}->emit_perl6()
         };
         sub set_captures_to_array {

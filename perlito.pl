@@ -86,7 +86,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ("" . $MATCH->{'Perlito::Grammar.ident'}) );
     ($List_v = ((${$MATCH->{'module_name'}})));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a

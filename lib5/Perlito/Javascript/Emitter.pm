@@ -33,7 +33,7 @@ package GLOBAL;
             if (($s eq '')) {
                 return scalar (chr(39) . chr(39))
             };
-            for my $i ( @{[0 .. (Main::chars($s, ) - 1)]} ) {
+            for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
                 if ((((((((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_'))) || (($c eq ','))) || (($c eq '.'))) || (($c eq ':'))) || (($c eq '-'))) || (($c eq '+'))) || (($c eq '*'))) || (($c eq ' ')))) {
                     ($tmp = $tmp . $c)

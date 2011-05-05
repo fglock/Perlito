@@ -25,7 +25,7 @@ package GLOBAL;
         sub array { $_[0]->{array} };
         sub perl {
             my $self = $_[0];
-            return scalar ('Match.new' . chr(40) . 'from ' . chr(61) . chr(62) . ' ' . Main::perl($self->{from}, ("" . ', to ' . chr(61) . chr(62) . ' ') . Main::perl($self->{to}, ("" . ', bool ' . chr(61) . chr(62) . ' ') . Main::perl(($self->{bool}->bool()), ("" . ', capture ' . chr(61) . chr(62) . ' ') . Main::perl($self->{capture}, ("" . ', hash ' . chr(61) . chr(62) . ' ') . Main::perl($self->{hash}, ("" . ', array ' . chr(61) . chr(62) . ' ') . Main::perl($self->{array}, ("" . chr(41)))))))))
+            return scalar ('Match.new' . chr(40) . 'from ' . chr(61) . chr(62) . ' ' . Main::perl($self->{from}, ) . ', to ' . chr(61) . chr(62) . ' ' . Main::perl($self->{to}, ) . ', bool ' . chr(61) . chr(62) . ' ' . Main::perl(($self->{bool}->bool()), ) . ', capture ' . chr(61) . chr(62) . ' ' . Main::perl($self->{capture}, ) . ', hash ' . chr(61) . chr(62) . ' ' . Main::perl($self->{hash}, ) . ', array ' . chr(61) . chr(62) . ' ' . Main::perl($self->{array}, ) . chr(41))
         };
         sub Bool {
             my $self = $_[0];

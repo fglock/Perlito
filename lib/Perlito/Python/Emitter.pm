@@ -32,12 +32,12 @@ class Python {
                 $tmp = $tmp ~ $c;
             }
             else {
-                @out.push "u'$tmp'" if $tmp ne '';
-                @out.push "unichr({ ord($c) })";
+                @out.push: "u'$tmp'" if $tmp ne '';
+                @out.push: "unichr({ ord($c) })";
                 $tmp = '';
             }
         }
-        @out.push "u'$tmp'" if $tmp ne '';
+        @out.push: "u'$tmp'" if $tmp ne '';
         return @out.join(' + ');
     }
 

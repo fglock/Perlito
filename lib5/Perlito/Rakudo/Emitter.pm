@@ -88,7 +88,7 @@ package GLOBAL;
         sub fields { $_[0]->{fields} };
         sub emit {
             my $self = $_[0];
-            'bless' . chr(40) . Main::perl($self->{fields}, ("" . ', ') . Main::perl($self->{class}, ("" . chr(41))))
+            'bless' . chr(40) . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . chr(41)
         }
     }
 
@@ -113,7 +113,7 @@ package GLOBAL;
             ((my  $fields) = $self->{hash1});
             ((my  $str) = '');
             for my $field ( @{($fields)} ) {
-                ($str = $str . ($field->[0])->emit(("" . ' ' . chr(61) . chr(62) . ' ') . ($field->[1])->emit(("" . ','))))
+                ($str = $str . ($field->[0])->emit() . ' ' . chr(61) . chr(62) . ' ' . ($field->[1])->emit() . ',')
             };
             chr(123) . ' ' . $str . ' ' . chr(125)
         }
@@ -137,7 +137,7 @@ package GLOBAL;
             ((my  $fields) = $self->{fields});
             ((my  $str) = '');
             for my $field ( @{($fields)} ) {
-                ($str = $str . ($field->[0])->emit(("" . ' ' . chr(61) . chr(62) . ' ') . ($field->[1])->emit(("" . ','))))
+                ($str = $str . ($field->[0])->emit() . ' ' . chr(61) . chr(62) . ' ' . ($field->[1])->emit() . ',')
             };
             $self->{class} . '.new' . chr(40) . ' ' . $str . ' ' . chr(41)
         }
@@ -151,7 +151,7 @@ package GLOBAL;
         sub index_exp { $_[0]->{index_exp} };
         sub emit {
             my $self = $_[0];
-$self->{obj}->emit(("" . '.' . chr(91)) . $self->{index_exp}->emit(("" . chr(93))))
+            $self->{obj}->emit() . '.' . chr(91) . $self->{index_exp}->emit() . chr(93)
         }
     }
 
@@ -163,7 +163,7 @@ $self->{obj}->emit(("" . '.' . chr(91)) . $self->{index_exp}->emit(("" . chr(93)
         sub index_exp { $_[0]->{index_exp} };
         sub emit {
             my $self = $_[0];
-$self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(125))))
+            $self->{obj}->emit() . '.' . chr(123) . $self->{index_exp}->emit() . chr(125)
         }
     }
 
@@ -202,10 +202,10 @@ $self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(12
                 ((my  $i) = 0);
                 for my $var ( @{($a)} ) {
                     ((my  $bind) = Bind->new(('parameters' => $var), ('arguments' => Index->new(('obj' => $self->{arguments}), ('index_exp' => Val::Int->new(('int' => $i)))))));
-                    ($str = $str . ' ' . $bind->emit(("" . chr(59) . ' ')));
+                    ($str = $str . ' ' . $bind->emit() . chr(59) . ' ');
                     ($i = ($i + 1))
                 };
-                return scalar ($str . $self->{parameters}->emit(("" . ' ' . chr(125))))
+                return scalar ($str . $self->{parameters}->emit() . ' ' . chr(125))
             };
             if (Main::isa($self->{parameters}, 'Lit::Hash')) {
                 ((my  $a) = $self->{parameters}->hash());
@@ -221,10 +221,10 @@ $self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(12
                         }
                     };
                     ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
-                    ($str = $str . ' ' . $bind->emit(("" . chr(59) . ' ')));
+                    ($str = $str . ' ' . $bind->emit() . chr(59) . ' ');
                     ($i = ($i + 1))
                 };
-                return scalar ($str . $self->{parameters}->emit(("" . ' ' . chr(125))))
+                return scalar ($str . $self->{parameters}->emit() . ' ' . chr(125))
             };
             if (Main::isa($self->{parameters}, 'Lit::Object')) {
                 ((my  $class) = $self->{parameters}->class());
@@ -239,12 +239,12 @@ $self->{obj}->emit(("" . '.' . chr(123)) . $self->{index_exp}->emit(("" . chr(12
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 }), ('hyper' => 0)))));
-                    ($str = $str . ' ' . $bind->emit(("" . chr(59) . ' ')));
+                    ($str = $str . ' ' . $bind->emit() . chr(59) . ' ');
                     ($i = ($i + 1))
                 };
-                return scalar ($str . $self->{parameters}->emit(("" . ' ' . chr(125))))
+                return scalar ($str . $self->{parameters}->emit() . ' ' . chr(125))
             };
-$self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit())
+            $self->{parameters}->emit() . ' ' . chr(61) . ' ' . $self->{arguments}->emit()
         }
     }
 
@@ -308,7 +308,7 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
 
             }
             else {
-                return scalar (chr(40) . $self->{code}->emit(("" . chr(41) . '.' . chr(40)) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
+                return scalar (chr(40) . $self->{code}->emit() . chr(41) . '.' . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41))
             };
             if (($code eq 'self')) {
                 return scalar (chr(36) . 'self')
@@ -368,7 +368,7 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
                 return scalar (chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ' ' . chr(33) . chr(61) . ' ') . chr(41))
             };
             if (($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62))) {
-                return scalar (chr(40) . ($self->{arguments}->[0])->emit(("" . ' ' . chr(63) . chr(63) . ' ') . ($self->{arguments}->[1])->emit(("" . ' ' . chr(33) . chr(33) . ' ') . ($self->{arguments}->[2])->emit(("" . chr(41))))))
+                return scalar (chr(40) . ($self->{arguments}->[0])->emit() . ' ' . chr(63) . chr(63) . ' ' . ($self->{arguments}->[1])->emit() . ' ' . chr(33) . chr(33) . ' ' . ($self->{arguments}->[2])->emit() . chr(41))
             };
             '' . $self->{code} . chr(40) . Main::join(([ map { $_->emit() } @{( $self->{arguments} )} ]), ', ') . chr(41)
         }
@@ -381,7 +381,7 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
         sub result { $_[0]->{result} };
         sub emit {
             my $self = $_[0];
-            return scalar ('return' . chr(40) . $self->{result}->emit(("" . chr(41))))
+            return scalar ('return' . chr(40) . $self->{result}->emit() . chr(41))
         }
     }
 
@@ -394,7 +394,7 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
         sub otherwise { $_[0]->{otherwise} };
         sub emit {
             my $self = $_[0];
-            'do ' . chr(123) . ' if ' . chr(40) . $self->{cond}->emit(("" . chr(41) . ' ' . chr(123) . ' ') . Main::join(([ map { $_->emit() } @{( $self->{body} )} ]), chr(59)) . ' ' . chr(125) . ' else ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{otherwise} )} ]), chr(59)) . ' ' . chr(125) . ' ' . chr(125))
+            'do ' . chr(123) . ' if ' . chr(40) . $self->{cond}->emit() . chr(41) . ' ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{body} )} ]), chr(59)) . ' ' . chr(125) . ' else ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{otherwise} )} ]), chr(59)) . ' ' . chr(125) . ' ' . chr(125)
         }
     }
 
@@ -416,7 +416,7 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
     $List_a
 })))
             };
-            'do ' . chr(123) . ' for my ' . $self->{topic}->emit(("" . ' ' . chr(40) . ' ') . $cond->emit(("" . ' ' . chr(41) . ' ' . chr(123) . ' ') . Main::join(([ map { $_->emit() } @{( $self->{body} )} ]), chr(59)) . ' ' . chr(125) . ' ' . chr(125)))
+            'do ' . chr(123) . ' for my ' . $self->{topic}->emit() . ' ' . chr(40) . ' ' . $cond->emit() . ' ' . chr(41) . ' ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{body} )} ]), chr(59)) . ' ' . chr(125) . ' ' . chr(125)
         }
     }
 
@@ -461,9 +461,9 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
             ((my  $str) = '');
             ((my  $pos) = $sig->positional());
             for my $field ( @{($pos)} ) {
-                ($str = $str . '' . $field->emit(("" . chr(63) . ', ')))
+                ($str = $str . '' . $field->emit() . chr(63) . ', ')
             };
-            'method ' . $self->{name} . chr(40) . $invocant->emit(("" . ': ') . $str . chr(41) . ' ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), chr(59) . ' ') . ' ' . chr(125))
+            'method ' . $self->{name} . chr(40) . $invocant->emit() . ': ' . $str . chr(41) . ' ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), chr(59) . ' ') . ' ' . chr(125)
         }
     }
 
@@ -481,7 +481,7 @@ $self->{parameters}->emit(("" . ' ' . chr(61) . ' ') . $self->{arguments}->emit(
             (my  $str);
             ((my  $pos) = $sig->positional());
             for my $field ( @{($pos)} ) {
-                ($str = $str . '' . $field->emit(("" . chr(63) . ', ')))
+                ($str = $str . '' . $field->emit() . chr(63) . ', ')
             };
             if (($self->{name} eq '')) {
                 return scalar (chr(40) . 'sub ' . chr(40) . $str . chr(41) . ' ' . ' ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), chr(59) . ' ') . ' ' . chr(125) . chr(41))

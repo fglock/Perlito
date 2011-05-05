@@ -29,7 +29,7 @@ package GLOBAL;
     $Hash_a
 } );
     ($List_v = ($env));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
@@ -105,7 +105,7 @@ $stmt->eval($env1)
     $Hash_a
 } );
     ($List_v = ($env));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
@@ -299,7 +299,7 @@ $stmt->eval($env1)
     $Hash_a
 } );
     ($List_v = ($env));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
@@ -317,7 +317,7 @@ $stmt->eval($env1)
     $Hash_a
 } );
     ($List_v = ($env));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
@@ -350,7 +350,7 @@ $stmt->eval($env1)
     $Hash_a
 } );
     ($List_v = ($env));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
@@ -484,7 +484,7 @@ $self->{var}->plain_name()
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $Hash_context );
     ($List_v = ($env));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
@@ -518,7 +518,7 @@ $self->{var}->plain_name()
     $Hash_a
 } );
     ($List_v = ($env));
-    for my $x ( @{[0 .. ((scalar( @{$List_v} ) - 1))]} ) {
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a

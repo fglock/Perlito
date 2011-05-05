@@ -32,12 +32,12 @@ class Javascript {
                 $tmp = $tmp ~ $c;
             }
             else {
-                @out.push "'$tmp'" if $tmp ne '';
-                @out.push "String.fromCharCode({ ord($c) })";
+                @out.push: "'$tmp'" if $tmp ne '';
+                @out.push: "String.fromCharCode({ ord($c) })";
                 $tmp = '';
             }
         }
-        @out.push "'$tmp'" if $tmp ne '';
+        @out.push: "'$tmp'" if $tmp ne '';
         return @out.join(' + ');
     }
 
@@ -87,12 +87,12 @@ class Perlito::Javascript::LexicalBlock {
         my @str;
         for @block -> $decl { 
             if $decl.isa( 'Decl' ) && $decl.decl eq 'my' {
-                @str.push Javascript::tab($level) ~ $decl.emit_javascript_init; 
+                @str.push: Javascript::tab($level) ~ $decl.emit_javascript_init; 
             }
             if $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>' {
                 my $var = $decl.arguments[0];
                 if $var.isa( 'Decl' ) && $var.decl eq 'my' {
-                    @str.push Javascript::tab($level) ~ $var.emit_javascript_init; 
+                    @str.push: Javascript::tab($level) ~ $var.emit_javascript_init; 
                 }
             }
         }
@@ -102,7 +102,7 @@ class Perlito::Javascript::LexicalBlock {
         }
         for @block -> $decl { 
             if !( $decl.isa( 'Decl' ) && $decl.decl eq 'my' ) {
-                @str.push $decl.emit_javascript_indented($level) ~ ';';
+                @str.push: $decl.emit_javascript_indented($level) ~ ';';
             }
         }
         if $.needs_return && $last_statement {
@@ -114,13 +114,13 @@ class Perlito::Javascript::LexicalBlock {
                     $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
                 }
                 $body      = Perlito::Javascript::LexicalBlock.new( block => $body.stmts, needs_return => 1 );
-                @str.push Javascript::tab($level) ~ 
+                @str.push: Javascript::tab($level) ~ 
                         'if ( ' ~ Javascript::escape_function('bool') ~ '(' ~ $cond.emit_javascript() ~ ') ) { return (function () {' ~ "\n" 
                         ~       $body.emit_javascript_indented($level+1) ~ "\n"
                         ~ Javascript::tab($level) ~ '})(); }';
                 if $otherwise { 
                     $otherwise = Perlito::Javascript::LexicalBlock.new( block => $otherwise.stmts, needs_return => 1 );
-                    @str.push 
+                    @str.push: 
                           Javascript::tab($level) ~ 'else { return (function () {' ~ "\n" 
                         ~       $otherwise.emit_javascript_indented($level+1) ~ "\n"
                         ~ Javascript::tab($level) ~ '})(); }';
@@ -130,10 +130,10 @@ class Perlito::Javascript::LexicalBlock {
                 || $last_statement.isa( 'For' ) 
             {
                 # Return, For - no changes for now 
-                @str.push $last_statement.emit_javascript_indented($level)
+                @str.push: $last_statement.emit_javascript_indented($level)
             }
             else {
-                @str.push Javascript::tab($level) ~ 'return(' ~ $last_statement.emit_javascript() ~ ')'
+                @str.push: Javascript::tab($level) ~ 'return(' ~ $last_statement.emit_javascript() ~ ')'
             }
         }
         return @str.join("\n") ~ ';';

@@ -215,7 +215,7 @@ package GLOBAL;
                         if (($str_optionals)) {
                             ($str_generic = $str_generic . ' ' . chr(38) . 'optional' . $str_optionals)
                         };
-                        ($str = $str . chr(59) . chr(59) . ' method ' . $decl->name(("" . chr(10)) . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-method ' . chr(39) . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defgeneric ' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $str_generic . chr(41) . chr(10) . '      ' . chr(40) . ':documentation ' . chr(34) . 'a method' . chr(34) . chr(41) . chr(41) . chr(41) . chr(10)))
+                        ($str = $str . chr(59) . chr(59) . ' method ' . $decl->name() . chr(10) . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-method ' . chr(39) . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defgeneric ' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $str_generic . chr(41) . chr(10) . '      ' . chr(40) . ':documentation ' . chr(34) . 'a method' . chr(34) . chr(41) . chr(41) . chr(41) . chr(10))
                     };
                     if (Main::isa($decl, 'Sub')) {
                         ((my  $pos) = ($decl->sig())->positional());
@@ -229,7 +229,7 @@ package GLOBAL;
                         if ($param) {
                             ($sig = chr(38) . 'optional ' . $param)
                         };
-                        ($str = $str . chr(59) . chr(59) . ' sub ' . $decl->name(("" . chr(10)) . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-method ' . chr(39) . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defgeneric ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $sig . chr(41) . chr(10) . '      ' . chr(40) . ':documentation ' . chr(34) . 'a method' . chr(34) . chr(41) . chr(41) . chr(41) . chr(10)))
+                        ($str = $str . chr(59) . chr(59) . ' sub ' . $decl->name() . chr(10) . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-method ' . chr(39) . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defgeneric ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $sig . chr(41) . chr(10) . '      ' . chr(40) . ':documentation ' . chr(34) . 'a method' . chr(34) . chr(41) . chr(41) . chr(41) . chr(10))
                     }
                 }
             };
@@ -307,7 +307,7 @@ package GLOBAL;
         sub fields { $_[0]->{fields} };
         sub emit_lisp {
             my $self = $_[0];
-            'bless' . chr(40) . Main::perl($self->{fields}, ("" . ', ') . Main::perl($self->{class}, ("" . chr(41))))
+            'bless' . chr(40) . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . chr(41)
         }
     }
 
@@ -682,7 +682,7 @@ package GLOBAL;
     $List_a
 })))
             };
-            chr(40) . 'loop for ' . $self->{topic}->emit_lisp(("" . ' across ') . $cond->emit_lisp() . ' do ' . $block->emit_lisp() . chr(41))
+            chr(40) . 'loop for ' . $self->{topic}->emit_lisp() . ' across ' . $cond->emit_lisp() . ' do ' . $block->emit_lisp() . chr(41)
         }
     }
 
