@@ -38,8 +38,8 @@ package GLOBAL;
                     ((my  $var_name) = ($decl->var())->emit_lisp());
                     if (!(($Hash_decl_seen->{$var_name}))) {
                         ($has_my_decl = 1);
-                        ($my_decl = $my_decl . Decl::emit_lisp_initializer($decl->var()));
-                        ($my_ignore = $my_ignore . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $var_name . chr(41) . chr(41) . chr(10));
+                        ($my_decl = ($my_decl . Decl::emit_lisp_initializer($decl->var())));
+                        ($my_ignore = ($my_ignore . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $var_name . (chr(41) . chr(41) . chr(10))));
                         ($Hash_decl_seen->{$var_name} = 1)
                     }
                 };
@@ -47,24 +47,24 @@ package GLOBAL;
                     ((my  $var_name) = (($decl->parameters())->var())->emit_lisp());
                     if (!(($Hash_decl_seen->{$var_name}))) {
                         ($has_my_decl = 1);
-                        ($my_decl = $my_decl . Decl::emit_lisp_initializer(($decl->parameters())->var()));
-                        ($my_ignore = $my_ignore . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $var_name . chr(41) . chr(41) . chr(10));
+                        ($my_decl = ($my_decl . Decl::emit_lisp_initializer(($decl->parameters())->var())));
+                        ($my_ignore = ($my_ignore . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $var_name . (chr(41) . chr(41) . chr(10))));
                         ($Hash_decl_seen->{$var_name} = 1)
                     }
                 }
             };
             if ($has_my_decl) {
-                ($str = $str . chr(40) . 'let ' . chr(40) . $my_decl . chr(41) . chr(10) . $my_ignore)
+                ($str = ($str . chr(40) . 'let ' . chr(40) . $my_decl . (chr(41) . chr(10)) . $my_ignore))
             }
             else {
-                ($str = $str . chr(40) . 'progn ')
+                ($str = ($str . chr(40) . 'progn '))
             };
             for my $decl ( @{$self->{block}} ) {
                 if ((!(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))))) {
-                    ($str = $str . ($decl)->emit_lisp())
+                    ($str = ($str . ($decl)->emit_lisp()))
                 }
             };
-            return scalar ($str . chr(41))
+            return scalar (($str . chr(41)))
         }
     }
 
@@ -79,7 +79,7 @@ package GLOBAL;
         sub emit_lisp {
             my $self = $_[0];
             ((my  $class_name) = Main::to_lisp_namespace($self->{name}));
-            ((my  $str) = chr(59) . chr(59) . ' class ' . $self->{name} . chr(10));
+            ((my  $str) = (chr(59) . chr(59) . ' class ' . $self->{name} . (chr(10))));
             ((my  $has_my_decl) = 0);
             ((my  $my_decl) = '');
             ((my  $my_ignore) = '');
@@ -89,8 +89,8 @@ package GLOBAL;
                     ((my  $var_name) = ($decl->var())->emit_lisp());
                     if (!(($Hash_decl_seen->{$var_name}))) {
                         ($has_my_decl = 1);
-                        ($my_decl = $my_decl . Decl::emit_lisp_initializer($decl->var()));
-                        ($my_ignore = $my_ignore . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $var_name . chr(41) . chr(41) . chr(10));
+                        ($my_decl = ($my_decl . Decl::emit_lisp_initializer($decl->var())));
+                        ($my_ignore = ($my_ignore . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $var_name . (chr(41) . chr(41) . chr(10))));
                         ($Hash_decl_seen->{$var_name} = 1)
                     }
                 };
@@ -98,37 +98,37 @@ package GLOBAL;
                     ((my  $var_name) = (($decl->parameters())->var())->emit_lisp());
                     if (!(($Hash_decl_seen->{$var_name}))) {
                         ($has_my_decl = 1);
-                        ($my_decl = $my_decl . Decl::emit_lisp_initializer(($decl->parameters())->var()));
-                        ($my_ignore = $my_ignore . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $var_name . chr(41) . chr(41) . chr(10));
+                        ($my_decl = ($my_decl . Decl::emit_lisp_initializer(($decl->parameters())->var())));
+                        ($my_ignore = ($my_ignore . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $var_name . (chr(41) . chr(41) . chr(10))));
                         ($Hash_decl_seen->{$var_name} = 1)
                     }
                 }
             };
             if ($has_my_decl) {
-                ($str = $str . chr(40) . 'let ' . chr(40) . $my_decl . chr(41) . chr(10) . $my_ignore)
+                ($str = ($str . chr(40) . 'let ' . chr(40) . $my_decl . (chr(41) . chr(10)) . $my_ignore))
             };
             ((my  $dumper) = '');
             for my $decl ( @{$self->{body}} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                     ((my  $accessor_name) = ($decl->var())->name());
-                    ($dumper = $dumper . chr(40) . 'let ' . chr(40) . chr(40) . 'm ' . chr(40) . 'make-instance ' . chr(39) . 'mp-Pair' . chr(41) . chr(41) . chr(41) . ' ' . chr(40) . 'setf ' . chr(40) . 'sv-key m' . chr(41) . ' ' . chr(34) . Main::lisp_escape_string($accessor_name) . chr(34) . chr(41) . ' ' . chr(40) . 'setf ' . chr(40) . 'sv-value m' . chr(41) . ' ' . chr(40) . Main::to_lisp_identifier($accessor_name) . ' self' . chr(41) . chr(41) . ' m' . chr(41) . ' ')
+                    ($dumper = ($dumper . chr(40) . 'let ' . chr(40) . chr(40) . 'm ' . chr(40) . 'make-instance ' . chr(39) . 'mp-Pair' . chr(41) . chr(41) . chr(41) . ' ' . chr(40) . 'setf ' . chr(40) . 'sv-key m' . chr(41) . ' ' . chr(34) . Main::lisp_escape_string($accessor_name) . chr(34) . chr(41) . ' ' . chr(40) . 'setf ' . chr(40) . 'sv-value m' . chr(41) . ' ' . chr(40) . Main::to_lisp_identifier($accessor_name) . ' self' . chr(41) . chr(41) . ' m' . chr(41) . ' '))
                 };
                 if (Main::isa($decl, 'Method')) {
                     ((my  $sig) = $decl->sig());
                     ((my  $invocant) = $sig->invocant());
                     ((my  $pos) = $sig->positional());
-                    ((my  $str_specific) = chr(40) . $invocant->emit_lisp() . ' ' . $class_name . chr(41));
+                    ((my  $str_specific) = (chr(40) . $invocant->emit_lisp() . ' ' . $class_name . chr(41)));
                     ((my  $str_optionals) = '');
                     ((my  $ignorable) = '');
                     for my $field ( @{($pos)} ) {
-                        ($str_optionals = $str_optionals . ' ' . $field->emit_lisp());
-                        ($ignorable = $ignorable . chr(10) . '  ' . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $field->emit_lisp() . chr(41) . chr(41))
+                        ($str_optionals = ($str_optionals . ' ' . $field->emit_lisp()));
+                        ($ignorable = ($ignorable . (chr(10)) . '  ' . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $field->emit_lisp() . (chr(41) . chr(41))))
                     };
                     if (($str_optionals)) {
-                        ($str_specific = $str_specific . ' ' . chr(38) . 'optional' . $str_optionals)
+                        ($str_specific = ($str_specific . ' ' . chr(38) . 'optional' . $str_optionals))
                     };
                     ((my  $block) = Perlito::Lisp::LexicalBlock->new(('block' => $decl->block())));
-                    ($str = $str . chr(59) . chr(59) . ' method ' . $decl->name() . chr(10) . chr(40) . 'defmethod ' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $str_specific . chr(41) . $ignorable . chr(10) . '  ' . chr(40) . 'block mp6-function' . chr(10) . '    ' . $block->emit_lisp() . chr(41) . chr(41) . chr(10))
+                    ($str = ($str . chr(59) . chr(59) . ' method ' . $decl->name() . (chr(10)) . chr(40) . 'defmethod ' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $str_specific . chr(41) . $ignorable . (chr(10)) . '  ' . chr(40) . 'block mp6-function' . (chr(10)) . '    ' . $block->emit_lisp() . (chr(41) . chr(41) . chr(10))))
                 };
                 if (Main::isa($decl, 'Sub')) {
                     ((my  $pos) = ($decl->sig())->positional());
@@ -136,32 +136,32 @@ package GLOBAL;
                     ((my  $ignorable) = '');
                     if (($pos)) {
                         for my $field ( @{($pos)} ) {
-                            ($param = $param . $field->emit_lisp() . ' ');
-                            ($ignorable = $ignorable . chr(10) . '  ' . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $field->emit_lisp() . chr(41) . chr(41))
+                            ($param = ($param . $field->emit_lisp() . ' '));
+                            ($ignorable = ($ignorable . (chr(10)) . '  ' . chr(40) . 'declare ' . chr(40) . 'ignorable ' . $field->emit_lisp() . (chr(41) . chr(41))))
                         }
                     };
                     ((my  $sig) = '');
                     if ($param) {
-                        ($sig = chr(38) . 'optional ' . $param)
+                        ($sig = (chr(38) . 'optional ' . $param))
                     };
                     ((my  $block) = Perlito::Lisp::LexicalBlock->new(('block' => $decl->block())));
-                    ($str = $str . chr(40) . 'defmethod ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $sig . chr(41) . $ignorable . chr(10) . '  ' . chr(40) . 'block mp6-function ' . $block->emit_lisp() . chr(41) . chr(41) . chr(10) . chr(40) . 'in-package ' . $class_name . chr(41) . chr(10) . '  ' . chr(40) . 'defun ' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $sig . chr(41) . chr(10) . '    ' . chr(40) . 'mp-Main::' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . $param . chr(41) . chr(41) . chr(10) . chr(40) . 'in-package mp-Main' . chr(41) . chr(10))
+                    ($str = ($str . chr(40) . 'defmethod ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $sig . chr(41) . $ignorable . (chr(10)) . '  ' . chr(40) . 'block mp6-function ' . $block->emit_lisp() . chr(41) . chr(41) . (chr(10)) . chr(40) . 'in-package ' . $class_name . chr(41) . (chr(10)) . '  ' . chr(40) . 'defun ' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $sig . chr(41) . (chr(10)) . '    ' . chr(40) . 'mp-Main::' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . $param . chr(41) . chr(41) . (chr(10)) . chr(40) . 'in-package mp-Main' . chr(41) . (chr(10))))
                 }
             };
             if (($self->{name} ne 'Pair')) {
-                ($str = $str . chr(40) . 'defmethod sv-perl ' . chr(40) . chr(40) . 'self ' . $class_name . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'mp-Main-sv-lisp_dump_object ' . chr(34) . Main::lisp_escape_string($self->{name}) . chr(34) . ' ' . chr(40) . 'list ' . $dumper . chr(41) . chr(41) . chr(41) . chr(10) . chr(10))
+                ($str = ($str . chr(40) . 'defmethod sv-perl ' . chr(40) . chr(40) . 'self ' . $class_name . chr(41) . chr(41) . (chr(10)) . '  ' . chr(40) . 'mp-Main-sv-lisp_dump_object ' . chr(34) . Main::lisp_escape_string($self->{name}) . chr(34) . ' ' . chr(40) . 'list ' . $dumper . chr(41) . chr(41) . chr(41) . (chr(10)) . (chr(10))))
             };
-            ($str = $str . chr(40) . 'defun run-' . $class_name . ' ' . chr(40) . chr(41) . chr(10));
+            ($str = ($str . chr(40) . 'defun run-' . $class_name . ' ' . chr(40) . chr(41) . (chr(10))));
             for my $decl ( @{$self->{body}} ) {
                 if ((((!(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))))) && (!((Main::isa($decl, 'Method'))))) && (!((Main::isa($decl, 'Sub')))))) {
-                    ($str = $str . ($decl)->emit_lisp() . chr(10))
+                    ($str = ($str . ($decl)->emit_lisp() . (chr(10))))
                 }
             };
-            ($str = $str . chr(41) . chr(10));
+            ($str = ($str . chr(41) . (chr(10))));
             if ($has_my_decl) {
-                ($str = $str . chr(41))
+                ($str = ($str . chr(41)))
             };
-            ($str = $str . chr(10) . chr(10))
+            ($str = ($str . (chr(10)) . (chr(10))))
         };
         sub emit_lisp_program {
             my $comp_units = $_[0];
@@ -194,14 +194,14 @@ package GLOBAL;
             for my $comp_unit ( @{(($comp_units))} ) {
                 ((my  $class_name) = Main::to_lisp_namespace($comp_unit->name()));
                 if (($class_name ne 'mp-Main')) {
-                    ($str = $str . chr(40) . 'defpackage ' . $class_name . chr(10) . '  ' . chr(40) . ':use common-lisp mp-Main' . chr(41) . chr(41) . chr(10))
+                    ($str = ($str . chr(40) . 'defpackage ' . $class_name . (chr(10)) . '  ' . chr(40) . ':use common-lisp mp-Main' . chr(41) . chr(41) . (chr(10))))
                 };
-                ($str = $str . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-class ' . chr(39) . $class_name . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defclass ' . $class_name . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(10));
-                ($str = $str . chr(40) . 'let ' . chr(40) . 'x' . chr(41) . chr(10) . '  ' . chr(40) . 'setq x ' . chr(40) . 'make-instance ' . chr(39) . $class_name . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defun proto-' . $class_name . ' ' . chr(40) . chr(41) . ' x' . chr(41) . chr(41) . chr(10));
+                ($str = ($str . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-class ' . chr(39) . $class_name . chr(41) . chr(41) . chr(41) . (chr(10)) . '  ' . chr(40) . 'defclass ' . $class_name . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . (chr(10))));
+                ($str = ($str . chr(40) . 'let ' . chr(40) . 'x' . chr(41) . (chr(10)) . '  ' . chr(40) . 'setq x ' . chr(40) . 'make-instance ' . chr(39) . $class_name . (chr(41) . chr(41) . chr(10)) . '  ' . chr(40) . 'defun proto-' . $class_name . ' ' . chr(40) . chr(41) . ' x' . chr(41) . chr(41) . (chr(10))));
                 for my $decl ( @{(($comp_unit->body()))} ) {
                     if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                         ((my  $accessor_name) = ($decl->var())->name());
-                        ($str = $str . chr(59) . chr(59) . ' has ' . chr(36) . '.' . $accessor_name . chr(10) . chr(40) . 'let ' . chr(40) . chr(40) . 'new-slots ' . chr(40) . 'list ' . chr(40) . 'list :name ' . chr(39) . Main::to_lisp_identifier($accessor_name) . chr(10) . '  :readers ' . chr(39) . chr(40) . Main::to_lisp_identifier($accessor_name) . chr(41) . chr(10) . '  :writers ' . chr(39) . chr(40) . chr(40) . 'setf ' . Main::to_lisp_identifier($accessor_name) . chr(41) . chr(41) . chr(10) . '  :initform ' . chr(39) . chr(40) . 'sv-undef' . chr(41) . chr(10) . '  :initfunction ' . chr(40) . 'constantly ' . chr(40) . 'sv-undef' . chr(41) . chr(41) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . chr(40) . 'dolist ' . chr(40) . 'slot-defn ' . chr(40) . 'sb-mop:class-direct-slots ' . chr(40) . 'find-class ' . chr(39) . $class_name . chr(41) . chr(41) . chr(41) . chr(10) . chr(40) . 'push ' . chr(40) . 'list :name ' . chr(40) . 'sb-mop:slot-definition-name slot-defn' . chr(41) . chr(10) . '  :readers ' . chr(40) . 'sb-mop:slot-definition-readers slot-defn' . chr(41) . chr(10) . '  :writers ' . chr(40) . 'sb-mop:slot-definition-writers slot-defn' . chr(41) . chr(10) . '  :initform ' . chr(40) . 'sb-mop:slot-definition-initform slot-defn' . chr(41) . chr(10) . '  :initfunction ' . chr(40) . 'sb-mop:slot-definition-initfunction slot-defn' . chr(41) . chr(41) . chr(10) . 'new-slots' . chr(41) . chr(41) . chr(10) . chr(40) . 'sb-mop:ensure-class ' . chr(39) . $class_name . ' :direct-slots new-slots' . chr(41) . chr(41) . chr(10) . chr(10))
+                        ($str = ($str . chr(59) . chr(59) . ' has ' . chr(36) . '.' . $accessor_name . (chr(10)) . chr(40) . 'let ' . chr(40) . chr(40) . 'new-slots ' . chr(40) . 'list ' . chr(40) . 'list :name ' . chr(39) . Main::to_lisp_identifier($accessor_name) . chr(10) . '  :readers ' . chr(39) . chr(40) . Main::to_lisp_identifier($accessor_name) . chr(41) . chr(10) . '  :writers ' . chr(39) . chr(40) . chr(40) . 'setf ' . Main::to_lisp_identifier($accessor_name) . chr(41) . chr(41) . chr(10) . '  :initform ' . chr(39) . chr(40) . 'sv-undef' . chr(41) . chr(10) . '  :initfunction ' . chr(40) . 'constantly ' . chr(40) . 'sv-undef' . chr(41) . chr(41) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . chr(40) . 'dolist ' . chr(40) . 'slot-defn ' . chr(40) . 'sb-mop:class-direct-slots ' . chr(40) . 'find-class ' . chr(39) . $class_name . chr(41) . chr(41) . chr(41) . chr(10) . chr(40) . 'push ' . chr(40) . 'list :name ' . chr(40) . 'sb-mop:slot-definition-name slot-defn' . chr(41) . chr(10) . '  :readers ' . chr(40) . 'sb-mop:slot-definition-readers slot-defn' . chr(41) . chr(10) . '  :writers ' . chr(40) . 'sb-mop:slot-definition-writers slot-defn' . chr(41) . chr(10) . '  :initform ' . chr(40) . 'sb-mop:slot-definition-initform slot-defn' . chr(41) . chr(10) . '  :initfunction ' . chr(40) . 'sb-mop:slot-definition-initfunction slot-defn' . chr(41) . chr(41) . chr(10) . 'new-slots' . chr(41) . chr(41) . chr(10) . chr(40) . 'sb-mop:ensure-class ' . chr(39) . $class_name . ' :direct-slots new-slots' . chr(41) . chr(41) . (chr(10) . chr(10))))
                     };
                     if (Main::isa($decl, 'Method')) {
                         ((my  $sig) = $decl->sig());
@@ -210,37 +210,37 @@ package GLOBAL;
                         ((my  $str_generic) = $invocant->emit_lisp());
                         ((my  $str_optionals) = '');
                         for my $field ( @{($pos)} ) {
-                            ($str_optionals = $str_optionals . ' ' . $field->emit_lisp())
+                            ($str_optionals = ($str_optionals . ' ' . $field->emit_lisp()))
                         };
                         if (($str_optionals)) {
-                            ($str_generic = $str_generic . ' ' . chr(38) . 'optional' . $str_optionals)
+                            ($str_generic = ($str_generic . ' ' . chr(38) . 'optional' . $str_optionals))
                         };
-                        ($str = $str . chr(59) . chr(59) . ' method ' . $decl->name() . chr(10) . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-method ' . chr(39) . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defgeneric ' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $str_generic . chr(41) . chr(10) . '      ' . chr(40) . ':documentation ' . chr(34) . 'a method' . chr(34) . chr(41) . chr(41) . chr(41) . chr(10))
+                        ($str = ($str . chr(59) . chr(59) . ' method ' . $decl->name() . (chr(10)) . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-method ' . chr(39) . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defgeneric ' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $str_generic . chr(41) . (chr(10)) . '      ' . chr(40) . ':documentation ' . chr(34) . 'a method' . chr(34) . chr(41) . chr(41) . chr(41) . (chr(10))))
                     };
                     if (Main::isa($decl, 'Sub')) {
                         ((my  $pos) = ($decl->sig())->positional());
                         (my  $param);
                         if (($pos)) {
                             for my $field ( @{($pos)} ) {
-                                ($param = $param . $field->emit_lisp() . ' ')
+                                ($param = ($param . $field->emit_lisp() . ' '))
                             }
                         };
                         ((my  $sig) = '');
                         if ($param) {
-                            ($sig = chr(38) . 'optional ' . $param)
+                            ($sig = (chr(38) . 'optional ' . $param))
                         };
-                        ($str = $str . chr(59) . chr(59) . ' sub ' . $decl->name() . chr(10) . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-method ' . chr(39) . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defgeneric ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $sig . chr(41) . chr(10) . '      ' . chr(40) . ':documentation ' . chr(34) . 'a method' . chr(34) . chr(41) . chr(41) . chr(41) . chr(10))
+                        ($str = ($str . chr(59) . chr(59) . ' sub ' . $decl->name() . (chr(10)) . chr(40) . 'if ' . chr(40) . 'not ' . chr(40) . 'ignore-errors ' . chr(40) . 'find-method ' . chr(39) . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . chr(41) . ' ' . chr(40) . chr(41) . chr(41) . chr(41) . chr(41) . chr(10) . '  ' . chr(40) . 'defgeneric ' . $class_name . '-' . Main::to_lisp_identifier($decl->name()) . ' ' . chr(40) . $sig . chr(41) . (chr(10)) . '      ' . chr(40) . ':documentation ' . chr(34) . 'a method' . chr(34) . chr(41) . chr(41) . chr(41) . (chr(10))))
                     }
                 }
             };
             for my $comp_unit ( @{(($comp_units))} ) {
-                ($str = $str . $comp_unit->emit_lisp() . chr(10))
+                ($str = ($str . $comp_unit->emit_lisp() . (chr(10))))
             };
-            ($str = $str . chr(40) . 'defun compiler-main ' . chr(40) . chr(41) . chr(10) . '  ' . chr(40) . 'progn' . chr(10) . '    ' . chr(40) . 'init-argv' . chr(41));
+            ($str = ($str . (chr(40) . 'defun compiler-main ' . chr(40) . chr(41) . chr(10)) . ('  ' . chr(40) . 'progn' . chr(10)) . ('    ' . chr(40) . 'init-argv' . chr(41))));
             for my $comp_unit ( @{(($comp_units))} ) {
-                ($str = $str . chr(10) . '    ' . chr(40) . 'run-' . Main::to_lisp_namespace($comp_unit->name()) . chr(41))
+                ($str = ($str . (chr(10) . '    ' . chr(40) . 'run-') . Main::to_lisp_namespace($comp_unit->name()) . (chr(41))))
             };
-            ($str = $str . chr(41) . chr(41) . chr(10));
+            ($str = ($str . (chr(41) . chr(41) . chr(10))));
             return scalar ($str)
         }
     }
@@ -285,7 +285,7 @@ package GLOBAL;
         sub buf { $_[0]->{buf} };
         sub emit_lisp {
             my $self = $_[0];
-            chr(34) . Main::lisp_escape_string($self->{buf}) . chr(34)
+            (chr(34) . Main::lisp_escape_string($self->{buf}) . chr(34))
         }
     }
 
@@ -307,7 +307,7 @@ package GLOBAL;
         sub fields { $_[0]->{fields} };
         sub emit_lisp {
             my $self = $_[0];
-            'bless' . chr(40) . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . chr(41)
+            ('bless' . chr(40) . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . chr(41))
         }
     }
 
@@ -354,12 +354,12 @@ package GLOBAL;
                 ((my  $fields) = $self->{fields});
                 ((my  $str) = '');
                 for my $field ( @{($fields)} ) {
-                    ($str = $str . chr(40) . 'setf ' . chr(40) . Main::to_lisp_identifier(($field->[0])->buf()) . ' m' . chr(41) . ' ' . ($field->[1])->emit_lisp() . chr(41))
+                    ($str = ($str . chr(40) . 'setf ' . chr(40) . Main::to_lisp_identifier(($field->[0])->buf()) . ' m' . chr(41) . ' ' . ($field->[1])->emit_lisp() . chr(41)))
                 };
-                chr(40) . 'let ' . chr(40) . chr(40) . 'm ' . chr(40) . 'make-instance ' . chr(39) . Main::to_lisp_namespace($self->{class}) . chr(41) . chr(41) . chr(41) . ' ' . $str . ' m' . chr(41)
+                (chr(40) . 'let ' . chr(40) . chr(40) . 'm ' . chr(40) . 'make-instance ' . chr(39) . Main::to_lisp_namespace($self->{class}) . chr(41) . chr(41) . chr(41) . ' ' . $str . ' m' . chr(41))
             }
             else {
-                return scalar (chr(40) . 'make-instance ' . chr(39) . Main::to_lisp_namespace($self->{class}) . chr(41))
+                return scalar ((chr(40) . 'make-instance ' . chr(39) . Main::to_lisp_namespace($self->{class}) . chr(41)))
             }
         }
     }
@@ -372,7 +372,7 @@ package GLOBAL;
         sub index_exp { $_[0]->{index_exp} };
         sub emit_lisp {
             my $self = $_[0];
-            return scalar (chr(40) . 'mp-Main::sv-array-index ' . $self->{obj}->emit_lisp() . ' ' . $self->{index_exp}->emit_lisp() . chr(41))
+            return scalar ((chr(40) . 'mp-Main::sv-array-index ' . $self->{obj}->emit_lisp() . ' ' . $self->{index_exp}->emit_lisp() . chr(41)))
         }
     }
 
@@ -384,7 +384,7 @@ package GLOBAL;
         sub index_exp { $_[0]->{index_exp} };
         sub emit_lisp {
             my $self = $_[0];
-            return scalar (chr(40) . 'mp-Main::sv-hash-lookup ' . $self->{index_exp}->emit_lisp() . ' ' . $self->{obj}->emit_lisp() . chr(41))
+            return scalar ((chr(40) . 'mp-Main::sv-hash-lookup ' . $self->{index_exp}->emit_lisp() . ' ' . $self->{obj}->emit_lisp() . chr(41)))
         }
     }
 
@@ -400,14 +400,14 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $ns) = '');
             if ($self->{namespace}) {
-                ($ns = Main::to_lisp_namespace($self->{namespace}) . '-')
+                ($ns = (Main::to_lisp_namespace($self->{namespace}) . '-'))
             }
             else {
                 if ((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS')))) {
                     return scalar ('*mp6-args*')
                 }
             };
-            ((($self->{twigil} eq '.')) ? (chr(40) . Main::to_lisp_identifier($self->{name}) . ' sv-self' . chr(41)) : (((($self->{name} eq chr(47))) ? (Main::to_lisp_identifier('MATCH')) : ($ns . Main::to_lisp_identifier($self->{name})))))
+            ((($self->{twigil} eq '.')) ? ((chr(40) . Main::to_lisp_identifier($self->{name}) . ' sv-self' . chr(41))) : (((($self->{name} eq chr(47))) ? (Main::to_lisp_identifier('MATCH')) : (($ns . Main::to_lisp_identifier($self->{name}))))))
         }
     }
 
@@ -432,15 +432,15 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 }), ('hyper' => 0)))));
-                    ($str = $str . ' ' . $bind->emit_lisp() . ' ');
+                    ($str = ($str . ' ' . $bind->emit_lisp() . ' '));
                     ($i = ($i + 1))
                 };
-                return scalar ($str . $self->{parameters}->emit_lisp() . ' ' . chr(125))
+                return scalar (($str . $self->{parameters}->emit_lisp() . ' ' . chr(125)))
             };
             if ((Main::isa($self->{parameters}, 'Decl') && (($self->{parameters}->decl() eq 'my')))) {
-                return scalar (chr(40) . 'setf ' . ($self->{parameters}->var())->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . chr(41))
+                return scalar ((chr(40) . 'setf ' . ($self->{parameters}->var())->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . chr(41)))
             };
-            chr(40) . 'setf ' . $self->{parameters}->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . chr(41)
+            (chr(40) . 'setf ' . $self->{parameters}->emit_lisp() . ' ' . $self->{arguments}->emit_lisp() . chr(41))
         }
     }
 
@@ -451,7 +451,7 @@ package GLOBAL;
         sub name { $_[0]->{name} };
         sub emit_lisp {
             my $self = $_[0];
-            chr(40) . 'proto-' . Main::to_lisp_namespace($self->{name}) . chr(41)
+            (chr(40) . 'proto-' . Main::to_lisp_namespace($self->{name}) . chr(41))
         }
     }
 
@@ -472,35 +472,35 @@ package GLOBAL;
             };
             if (($self->{method} eq 'isa')) {
                 if (((($self->{arguments}->[0])->buf()) eq 'Str')) {
-                    return scalar (chr(40) . 'typep ' . $invocant . ' ' . chr(39) . 'string' . chr(41))
+                    return scalar ((chr(40) . 'typep ' . $invocant . ' ' . chr(39) . 'string' . chr(41)))
                 };
-                return scalar (chr(40) . 'typep ' . $invocant . ' ' . chr(39) . Main::to_lisp_namespace(($self->{arguments}->[0])->buf()) . chr(41))
+                return scalar ((chr(40) . 'typep ' . $invocant . ' ' . chr(39) . Main::to_lisp_namespace(($self->{arguments}->[0])->buf()) . chr(41)))
             };
             if (($self->{method} eq 'chars')) {
                 if (($self->{hyper})) {
-                    die('not implemented')
+                    die(('not implemented'))
                 }
                 else {
-                    return scalar (chr(40) . 'length ' . $invocant . chr(41))
+                    return scalar ((chr(40) . 'length ' . $invocant . chr(41)))
                 }
             };
             if (((($self->{method} eq 'yaml')) || (($self->{method} eq 'say')))) {
                 if (($self->{hyper})) {
-                    return scalar (chr(91) . ' map ' . chr(123) . ' ' . $self->{method} . chr(40) . ' ' . chr(36) . '_, ' . ', ' . $arguments . chr(41) . ' ' . chr(125) . ' ' . chr(64) . chr(123) . ' ' . $invocant . ' ' . chr(125) . ' ' . chr(93))
+                    return scalar ((chr(91) . ' map ' . chr(123) . ' ' . $self->{method} . chr(40) . ' ' . chr(36) . '_, ' . ', ' . $arguments . chr(41) . ' ' . chr(125) . ' ' . chr(64) . chr(123) . ' ' . $invocant . ' ' . chr(125) . ' ' . chr(93)))
                 }
                 else {
-                    return scalar (chr(40) . $self->{method} . ' ' . $invocant . ' ' . $arguments . chr(41))
+                    return scalar ((chr(40) . $self->{method} . ' ' . $invocant . ' ' . $arguments . chr(41)))
                 }
             };
-            ((my  $meth) = Main::to_lisp_identifier($self->{method}) . ' ');
+            ((my  $meth) = (Main::to_lisp_identifier($self->{method}) . ' '));
             if (($self->{method} eq 'postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62))) {
-                return scalar (chr(40) . 'funcall ' . $invocant . ' ' . $arguments . chr(41))
+                return scalar ((chr(40) . 'funcall ' . $invocant . ' ' . $arguments . chr(41)))
             };
             if (($self->{hyper})) {
-                return scalar (chr(40) . 'map ' . chr(39) . 'vector ' . chr(35) . chr(39) . chr(40) . 'lambda ' . chr(40) . 'c' . chr(41) . ' ' . chr(40) . $meth . ' c' . chr(41) . chr(41) . ' ' . $invocant . chr(41))
+                return scalar ((chr(40) . 'map ' . chr(39) . 'vector ' . chr(35) . chr(39) . chr(40) . 'lambda ' . chr(40) . 'c' . chr(41) . ' ' . chr(40) . $meth . ' c' . chr(41) . chr(41) . ' ' . $invocant . chr(41)))
             }
             else {
-                return scalar (chr(40) . $meth . $invocant . ' ' . $arguments . chr(41))
+                return scalar ((chr(40) . $meth . $invocant . ' ' . $arguments . chr(41)))
             }
         }
     }
@@ -516,14 +516,14 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $ns) = '');
             if ($self->{namespace}) {
-                ($ns = Main::to_lisp_namespace($self->{namespace}) . '-')
+                ($ns = (Main::to_lisp_namespace($self->{namespace}) . '-'))
             };
-            ((my  $code) = $ns . $self->{code});
+            ((my  $code) = ($ns . $self->{code}));
             if (($code eq 'infix:' . chr(60) . chr(126) . chr(62))) {
-                return scalar (chr(40) . 'concatenate ' . chr(39) . 'string ' . chr(40) . 'sv-string ' . ($self->{arguments}->[0])->emit_lisp() . chr(41) . ' ' . chr(40) . 'sv-string ' . ($self->{arguments}->[1])->emit_lisp() . chr(41) . chr(41))
+                return scalar ((chr(40) . 'concatenate ' . chr(39) . 'string ' . chr(40) . 'sv-string ' . ($self->{arguments}->[0])->emit_lisp() . chr(41) . ' ' . chr(40) . 'sv-string ' . ($self->{arguments}->[1])->emit_lisp() . chr(41) . chr(41)))
             };
             if (($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62))) {
-                return scalar (chr(40) . 'if ' . chr(40) . 'sv-bool ' . ($self->{arguments}->[0])->emit_lisp() . chr(41) . ' ' . ($self->{arguments}->[1])->emit_lisp() . ' ' . ($self->{arguments}->[2])->emit_lisp() . chr(41))
+                return scalar ((chr(40) . 'if ' . chr(40) . 'sv-bool ' . ($self->{arguments}->[0])->emit_lisp() . chr(41) . ' ' . ($self->{arguments}->[1])->emit_lisp() . ' ' . ($self->{arguments}->[2])->emit_lisp() . chr(41)))
             };
             ((my  $args) = '');
             if ($self->{arguments}) {
@@ -539,22 +539,22 @@ package GLOBAL;
                 return scalar ('T')
             };
             if (($code eq 'make')) {
-                return scalar (chr(40) . 'setf ' . chr(40) . 'sv-capture sv-MATCH' . chr(41) . ' ' . $args . chr(41))
+                return scalar ((chr(40) . 'setf ' . chr(40) . 'sv-capture sv-MATCH' . chr(41) . ' ' . $args . chr(41)))
             };
             if (($code eq 'substr')) {
-                return scalar (chr(40) . 'sv-substr ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-substr ' . $args . chr(41)))
             };
             if (($code eq 'say')) {
-                return scalar (chr(40) . 'mp-Main::sv-say ' . chr(40) . 'list ' . $args . chr(41) . chr(41))
+                return scalar ((chr(40) . 'mp-Main::sv-say ' . chr(40) . 'list ' . $args . chr(41) . chr(41)))
             };
             if (($code eq 'print')) {
-                return scalar (chr(40) . 'mp-Main::sv-print ' . chr(40) . 'list ' . $args . chr(41) . chr(41))
+                return scalar ((chr(40) . 'mp-Main::sv-print ' . chr(40) . 'list ' . $args . chr(41) . chr(41)))
             };
             if (($code eq 'warn')) {
-                return scalar (chr(40) . 'write-line ' . chr(40) . 'format nil ' . chr(34) . chr(126) . chr(123) . chr(126) . 'a' . chr(126) . chr(125) . chr(34) . ' ' . chr(40) . 'list ' . $args . chr(41) . chr(41) . ' *error-output*' . chr(41))
+                return scalar ((chr(40) . 'write-line ' . chr(40) . 'format nil ' . chr(34) . chr(126) . chr(123) . chr(126) . 'a' . chr(126) . chr(125) . chr(34) . ' ' . chr(40) . 'list ' . $args . chr(41) . chr(41) . ' *error-output*' . chr(41)))
             };
             if (($code eq 'die')) {
-                return scalar (chr(40) . 'progn ' . chr(40) . 'write-line ' . chr(40) . 'format nil ' . chr(34) . chr(126) . chr(123) . chr(126) . 'a' . chr(126) . chr(125) . chr(34) . ' ' . chr(40) . 'list ' . $args . chr(41) . chr(41) . ' *error-output*' . chr(41) . ' ' . chr(40) . 'sb-ext:quit' . chr(41) . chr(41))
+                return scalar ((chr(40) . 'progn ' . chr(40) . 'write-line ' . chr(40) . 'format nil ' . chr(34) . chr(126) . chr(123) . chr(126) . 'a' . chr(126) . chr(125) . chr(34) . ' ' . chr(40) . 'list ' . $args . chr(41) . chr(41) . ' *error-output*' . chr(41) . ' ' . chr(40) . 'sb-ext:quit' . chr(41) . chr(41)))
             };
             if (($code eq 'array')) {
                 return scalar ($args)
@@ -562,20 +562,20 @@ package GLOBAL;
             if (($code eq 'exists')) {
                 ((my  $arg) = $self->{arguments}->[0]);
                 if (Main::isa($arg, 'Lookup')) {
-                    return scalar (chr(40) . 'nth-value 1 ' . $arg->emit_lisp() . chr(41))
+                    return scalar ((chr(40) . 'nth-value 1 ' . $arg->emit_lisp() . chr(41)))
                 }
             };
             if (($code eq 'list:' . chr(60) . chr(126) . chr(62))) {
-                return scalar (chr(40) . 'sv-string ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-string ' . $args . chr(41)))
             };
             if (($code eq 'prefix:' . chr(60) . chr(33) . chr(62))) {
-                return scalar (chr(40) . 'not ' . chr(40) . 'sv-bool ' . $args . chr(41) . chr(41))
+                return scalar ((chr(40) . 'not ' . chr(40) . 'sv-bool ' . $args . chr(41) . chr(41)))
             };
             if (($code eq 'prefix:' . chr(60) . chr(63) . chr(62))) {
-                return scalar (chr(40) . 'sv-bool ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-bool ' . $args . chr(41)))
             };
             if (($code eq 'prefix:' . chr(60) . chr(36) . chr(62))) {
-                return scalar (chr(40) . 'sv-scalar ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-scalar ' . $args . chr(41)))
             };
             if (($code eq 'prefix:' . chr(60) . chr(64) . chr(62))) {
                 return scalar ($args)
@@ -584,51 +584,51 @@ package GLOBAL;
                 return scalar ($args)
             };
             if (($code eq 'infix:' . chr(60) . '+' . chr(62))) {
-                return scalar (chr(40) . 'sv-add ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-add ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . '-' . chr(62))) {
-                return scalar (chr(40) . 'sv-sub ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-sub ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . '*' . chr(62))) {
-                return scalar (chr(40) . 'sv-mul ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-mul ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . chr(47) . chr(62))) {
-                return scalar (chr(40) . 'sv-div ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-div ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . chr(62) . chr(62))) {
-                return scalar (chr(40) . 'sv-numeric-bigger ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-numeric-bigger ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . chr(60) . chr(62))) {
-                return scalar (chr(40) . 'sv-numeric-smaller ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-numeric-smaller ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . chr(62) . chr(61) . chr(62))) {
-                return scalar (chr(40) . 'sv-numeric-bigger-equal ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-numeric-bigger-equal ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . chr(60) . chr(61) . chr(62))) {
-                return scalar (chr(40) . 'sv-numeric-smaller-equal ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-numeric-smaller-equal ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . chr(61) . chr(61) . chr(62))) {
-                return scalar (chr(40) . 'sv-numeric-equal ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-numeric-equal ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . chr(33) . chr(61) . chr(62))) {
-                return scalar (chr(40) . 'not ' . chr(40) . 'sv-numeric-equal ' . $args . chr(41) . chr(41))
+                return scalar ((chr(40) . 'not ' . chr(40) . 'sv-numeric-equal ' . $args . chr(41) . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . chr(38) . chr(38) . chr(62))) {
-                return scalar (chr(40) . 'sv-and ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-and ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . chr(124) . chr(124) . chr(62))) {
-                return scalar (chr(40) . 'sv-or ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-or ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . 'eq' . chr(62))) {
-                return scalar (chr(40) . 'sv-eq ' . $args . chr(41))
+                return scalar ((chr(40) . 'sv-eq ' . $args . chr(41)))
             };
             if (($code eq 'infix:' . chr(60) . 'ne' . chr(62))) {
-                return scalar (chr(40) . 'not ' . chr(40) . 'sv-eq ' . $args . chr(41) . chr(41))
+                return scalar ((chr(40) . 'not ' . chr(40) . 'sv-eq ' . $args . chr(41) . chr(41)))
             };
             if (($code eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62))) {
                 return scalar ($args)
             };
-            return scalar (chr(40) . $ns . Main::to_lisp_identifier($self->{code}) . ' ' . $args . chr(41))
+            return scalar ((chr(40) . $ns . Main::to_lisp_identifier($self->{code}) . ' ' . $args . chr(41)))
         }
     }
 
@@ -639,7 +639,7 @@ package GLOBAL;
         sub result { $_[0]->{result} };
         sub emit_lisp {
             my $self = $_[0];
-            return scalar (chr(40) . 'return-from mp6-function ' . $self->{result}->emit_lisp() . chr(41))
+            return scalar ((chr(40) . 'return-from mp6-function ' . $self->{result}->emit_lisp() . chr(41)))
         }
     }
 
@@ -655,10 +655,10 @@ package GLOBAL;
             ((my  $block1) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{body}->stmts())));
             if ($self->{otherwise}) {
                 ((my  $block2) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{otherwise}->stmts())));
-                return scalar (chr(40) . 'if ' . chr(40) . 'sv-bool ' . $self->{cond}->emit_lisp() . chr(41) . ' ' . $block1->emit_lisp() . ' ' . $block2->emit_lisp() . chr(41))
+                return scalar ((chr(40) . 'if ' . chr(40) . 'sv-bool ' . $self->{cond}->emit_lisp() . chr(41) . ' ' . $block1->emit_lisp() . ' ' . $block2->emit_lisp() . chr(41)))
             }
             else {
-                return scalar (chr(40) . 'if ' . chr(40) . 'sv-bool ' . $self->{cond}->emit_lisp() . chr(41) . ' ' . $block1->emit_lisp() . chr(41))
+                return scalar ((chr(40) . 'if ' . chr(40) . 'sv-bool ' . $self->{cond}->emit_lisp() . chr(41) . ' ' . $block1->emit_lisp() . chr(41)))
             }
         }
     }
@@ -682,7 +682,7 @@ package GLOBAL;
     $List_a
 })))
             };
-            chr(40) . 'loop for ' . $self->{topic}->emit_lisp() . ' across ' . $cond->emit_lisp() . ' do ' . $block->emit_lisp() . chr(41)
+            (chr(40) . 'loop for ' . $self->{topic}->emit_lisp() . ' across ' . $cond->emit_lisp() . ' do ' . $block->emit_lisp() . chr(41))
         }
     }
 
@@ -700,7 +700,7 @@ package GLOBAL;
             if ($self->{continue}) {
                 push( @{$List_body}, $self->{continue} )
             };
-            chr(40) . 'progn ' . (($self->{init} ? $self->{init}->emit_lisp() . ' ' : '')) . chr(40) . 'loop while ' . chr(40) . 'sv-bool ' . $self->{cond}->emit_lisp() . chr(41) . ' do ' . (Perlito::Lisp::LexicalBlock->new(('block' => $List_body)))->emit_lisp() . chr(41) . chr(41)
+            (chr(40) . 'progn ' . (($self->{init} ? ($self->{init}->emit_lisp() . ' ') : '')) . chr(40) . 'loop while ' . chr(40) . 'sv-bool ' . $self->{cond}->emit_lisp() . chr(41) . ' do ' . (Perlito::Lisp::LexicalBlock->new(('block' => $List_body)))->emit_lisp() . chr(41) . chr(41))
         }
     }
 
@@ -715,19 +715,19 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $decl) = $self->{decl});
             ((my  $name) = $self->{var}->name());
-            ((($decl eq 'has')) ? ('sub ' . $name . ' ' . chr(123) . ' ' . chr(64) . '_ ' . chr(61) . chr(61) . ' 1 ' . chr(63) . ' ' . chr(40) . ' ' . chr(36) . '_' . chr(91) . '0' . chr(93) . '-' . chr(62) . chr(123) . $name . chr(125) . ' ' . chr(41) . ' ' . ': ' . chr(40) . ' ' . chr(36) . '_' . chr(91) . '0' . chr(93) . '-' . chr(62) . chr(123) . $name . chr(125) . ' ' . chr(61) . ' ' . chr(36) . '_' . chr(91) . '1' . chr(93) . ' ' . chr(41) . ' ' . chr(125)) : $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_lisp())
+            ((($decl eq 'has')) ? (('sub ' . $name . ' ' . chr(123) . ' ' . chr(64) . '_ ' . chr(61) . chr(61) . ' 1 ' . chr(63) . ' ' . chr(40) . ' ' . chr(36) . '_' . chr(91) . '0' . chr(93) . '-' . chr(62) . chr(123) . $name . chr(125) . ' ' . chr(41) . ' ' . ': ' . chr(40) . ' ' . chr(36) . '_' . chr(91) . '0' . chr(93) . '-' . chr(62) . chr(123) . $name . chr(125) . ' ' . chr(61) . ' ' . chr(36) . '_' . chr(91) . '1' . chr(93) . ' ' . chr(41) . ' ' . chr(125))) : ($self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_lisp()))
         };
         sub emit_lisp_initializer {
             my $decl = $_[0];
             if (($decl->sigil() eq chr(37))) {
-                return scalar (chr(40) . $decl->emit_lisp() . ' ' . chr(40) . 'make-hash-table :test ' . chr(39) . 'equal' . chr(41) . chr(41))
+                return scalar ((chr(40) . $decl->emit_lisp() . ' ' . chr(40) . 'make-hash-table :test ' . chr(39) . 'equal' . chr(41) . chr(41)))
             }
             else {
                 if (($decl->sigil() eq chr(64))) {
-                    return scalar (chr(40) . $decl->emit_lisp() . ' ' . chr(40) . 'make-array 0 :fill-pointer t :adjustable t' . chr(41) . chr(41))
+                    return scalar ((chr(40) . $decl->emit_lisp() . ' ' . chr(40) . 'make-array 0 :fill-pointer t :adjustable t' . chr(41) . chr(41)))
                 }
                 else {
-                    return scalar (chr(40) . $decl->emit_lisp() . ' ' . chr(40) . 'sv-undef' . chr(41) . chr(41))
+                    return scalar ((chr(40) . $decl->emit_lisp() . ' ' . chr(40) . 'sv-undef' . chr(41) . chr(41)))
                 }
             }
         }
@@ -774,17 +774,17 @@ package GLOBAL;
             (my  $str);
             if (($pos)) {
                 for my $field ( @{($pos)} ) {
-                    ($str = $str . $field->emit_lisp() . ' ')
+                    ($str = ($str . $field->emit_lisp() . ' '))
                 }
             };
             if ($str) {
-                ($str = chr(38) . 'optional ' . $str)
+                ($str = (chr(38) . 'optional ' . $str))
             };
             if ($self->{name}) {
-                chr(40) . 'defun ' . Main::to_lisp_identifier($self->{name}) . ' ' . chr(40) . $str . chr(41) . chr(10) . '  ' . chr(40) . 'block mp6-function ' . $block->emit_lisp() . chr(41) . chr(41) . chr(10)
+                (chr(40) . 'defun ' . Main::to_lisp_identifier($self->{name}) . ' ' . chr(40) . $str . chr(41) . (chr(10)) . '  ' . chr(40) . 'block mp6-function ' . $block->emit_lisp() . chr(41) . chr(41) . (chr(10)))
             }
             else {
-                chr(40) . 'lambda ' . $self->{name} . ' ' . chr(40) . $str . chr(41) . chr(10) . '  ' . chr(40) . 'block mp6-function ' . $block->emit_lisp() . chr(41) . chr(41) . chr(10)
+                (chr(40) . 'lambda ' . $self->{name} . ' ' . chr(40) . $str . chr(41) . (chr(10)) . '  ' . chr(40) . 'block mp6-function ' . $block->emit_lisp() . chr(41) . chr(41) . (chr(10)))
             }
         }
     }
@@ -808,7 +808,7 @@ package GLOBAL;
         sub mod { $_[0]->{mod} };
         sub emit_lisp {
             my $self = $_[0];
-            chr(10) . chr(59) . chr(59) . ' use ' . Main::to_lisp_namespace($self->{mod}) . chr(10)
+            (chr(10) . chr(59) . chr(59) . ' use ' . Main::to_lisp_namespace($self->{mod}) . (chr(10)))
         }
     }
 

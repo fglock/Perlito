@@ -55,7 +55,7 @@ package GLOBAL;
         sub value { $_[0]->{value} };
         sub perl {
             my $self = $_[0];
-            return scalar ($self->{key} . ' ' . chr(61) . chr(62) . ' ' . Main::perl($self->{value}, ))
+            return scalar (($self->{key} . ' ' . chr(61) . chr(62) . ' ' . Main::perl($self->{value}, )))
         }
     }
 
@@ -65,12 +65,12 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Main" }
         sub to_lisp_identifier {
             my $ident = $_[0];
-            return scalar ('sv-' . $ident)
+            return scalar (('sv-' . $ident))
         };
         sub lisp_dump_object {
             my $class_name = $_[0];
             my $data = $_[1];
-            return scalar ($class_name . chr(40) . ' ' . Main::join(([ map { Main::perl( $_, , ) } @{( $data )} ]), ', ') . ' ' . chr(41))
+            return scalar (($class_name . chr(40) . ' ' . Main::join(([ map { Main::perl( $_, , ) } @{( $data )} ]), ', ') . ' ' . chr(41)))
         }
     }
 

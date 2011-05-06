@@ -48,7 +48,7 @@ $stmt->eval($env1)
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            (0+$self->{int})
+            0+($self->{int})
         }
     }
 
@@ -72,7 +72,7 @@ $stmt->eval($env1)
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            (0+$self->{num})
+            0+($self->{num})
         }
     }
 
@@ -188,35 +188,35 @@ $stmt->eval($env1)
             my $env = $_[1];
             ((my  $ns) = '');
             if ($self->{namespace}) {
-                ($ns = $self->{namespace} . '::')
+                ($ns = ($self->{namespace} . '::'))
             }
             else {
                 if ((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS')))) {
                     return scalar ((\@ARGV))
                 };
                 if (($self->{twigil} eq '.')) {
-                    warn('Interpreter TODO: ' . chr(36) . '.' . $self->{name});
-                    return scalar (chr(36) . 'self-' . chr(62) . chr(123) . $self->{name} . chr(125))
+                    warn(('Interpreter TODO: ' . chr(36) . '.' . $self->{name}));
+                    return scalar ((chr(36) . 'self-' . chr(62) . chr(123) . $self->{name} . chr(125)))
                 };
                 if (($self->{name} eq chr(47))) {
                     warn('Interpreter TODO: ' . chr(36) . chr(47));
-                    return scalar ($self->{sigil} . 'MATCH')
+                    return scalar (($self->{sigil} . 'MATCH'))
                 }
             };
-            ((my  $name) = $self->{sigil} . $ns . $self->{name});
+            ((my  $name) = ($self->{sigil} . $ns . $self->{name}));
             for my $e ( @{(($env))} ) {
                 if (exists($e->{$name})) {
                     return scalar ($e->{$name})
                 }
             };
-            warn('Interpreter runtime error: variable ' . chr(39), $name, chr(39) . ' not found')
+            warn(('Interpreter runtime error: variable ' . chr(39)), $name, (chr(39) . ' not found'))
         };
         sub plain_name {
             my $self = $_[0];
             if ($self->{namespace}) {
-                return scalar ($self->{sigil} . $self->{namespace} . '::' . $self->{name})
+                return scalar (($self->{sigil} . $self->{namespace} . '::' . $self->{name}))
             };
-            return scalar ($self->{sigil} . $self->{name})
+            return scalar (($self->{sigil} . $self->{name}))
         }
     }
 
@@ -228,7 +228,7 @@ $stmt->eval($env1)
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            ("" . $self->{name})
+            "".($self->{name})
         }
     }
 
@@ -243,7 +243,7 @@ $stmt->eval($env1)
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            warn('Interpreter TODO: Call');
+            warn(('Interpreter TODO: Call'));
             ((my  $invocant) = $self->{invocant}->eval($env));
             if (($invocant eq 'self')) {
                 ($invocant = chr(36) . 'self')
@@ -251,7 +251,7 @@ $stmt->eval($env1)
             if (($self->{hyper})) {
 
             };
-            warn('Interpreter runtime error: method ' . chr(39), $self->{method}, chr(40) . chr(41) . chr(39) . ' not found')
+            warn(('Interpreter runtime error: method ' . chr(39)), $self->{method}, (chr(40) . chr(41) . chr(39) . ' not found'))
         }
     }
 
@@ -267,15 +267,15 @@ $stmt->eval($env1)
             my $env = $_[1];
             ((my  $ns) = '');
             if ($self->{namespace}) {
-                ($ns = $self->{namespace} . '::')
+                ($ns = ($self->{namespace} . '::'))
             };
-            ((my  $code) = $ns . $self->{code});
+            ((my  $code) = ($ns . $self->{code}));
             for my $e ( @{(($env))} ) {
                 if (exists($e->{$code})) {
                     return scalar ((($e->{$code})->($env, $self->{arguments})))
                 }
             };
-            warn('Interpreter runtime error: subroutine ' . chr(39), $code, chr(40) . chr(41) . chr(39) . ' not found')
+            warn(('Interpreter runtime error: subroutine ' . chr(39)), $code, (chr(40) . chr(41) . chr(39) . ' not found'))
         }
     }
 
@@ -378,7 +378,7 @@ $stmt->eval($env1)
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            die('TODO - When')
+            die(('TODO - When'))
         }
     }
 
@@ -393,7 +393,7 @@ $stmt->eval($env1)
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            die('TODO - While')
+            die(('TODO - While'))
         }
     }
 
@@ -410,7 +410,7 @@ $stmt->eval($env1)
             ((my  $decl) = $self->{decl});
             ((my  $name) = $self->{var}->plain_name());
             if (($decl eq 'has')) {
-                warn('Interpreter TODO: has')
+                warn(('Interpreter TODO: has'))
             };
             if (!((exists(($env->[0])->{$name})))) {
                 (($env->[0])->{$name} = undef())
@@ -433,7 +433,7 @@ $self->{var}->plain_name()
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            warn('Interpreter TODO: Sig')
+            warn(('Interpreter TODO: Sig'))
         }
     }
 
@@ -447,7 +447,7 @@ $self->{var}->plain_name()
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            warn('Interpreter TODO: Method');
+            warn(('Interpreter TODO: Method'));
             ((my  $sig) = $self->{sig});
             ((my  $invocant) = $sig->invocant());
             ((my  $pos) = $sig->positional());
@@ -537,8 +537,8 @@ $stmt->eval($env1)
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            warn('Interpreter TODO: Use');
-            'use ' . $self->{mod}
+            warn(('Interpreter TODO: Use'));
+            ('use ' . $self->{mod})
         }
     }
 

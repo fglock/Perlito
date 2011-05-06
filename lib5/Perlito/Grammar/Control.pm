@@ -47,7 +47,7 @@ package GLOBAL;
 })) && (((do {
     ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
     if (!((defined($body)))) {
-        die('Missing code block in ' . chr(39) . 'unless' . chr(39))
+        die(('Missing code block in ' . chr(39) . 'unless' . chr(39)))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -113,10 +113,10 @@ package GLOBAL;
     ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
     ((my  $otherwise) = (${$MATCH->{'exp2'}})->{'exp'});
     if (!((defined($body)))) {
-        die('Missing code block in ' . chr(39) . 'if' . chr(39))
+        die(('Missing code block in ' . chr(39) . 'if' . chr(39)))
     };
     if (!((defined($otherwise)))) {
-        die('Missing code block in ' . chr(39) . 'else' . chr(39))
+        die(('Missing code block in ' . chr(39) . 'else' . chr(39)))
     };
     if (Main::isa($otherwise, 'Lit::Hash')) {
         ($otherwise = Lit::Block->new(('stmts' => $otherwise->hash1())))
@@ -147,7 +147,7 @@ package GLOBAL;
 })) && (((do {
     ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
     if (!((defined($body)))) {
-        die('Missing code block in ' . chr(39) . 'if' . chr(39))
+        die(('Missing code block in ' . chr(39) . 'if' . chr(39)))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -161,7 +161,7 @@ package GLOBAL;
     ((((do {
     ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
     if (!((defined($body)))) {
-        die('Missing code block in ' . chr(39) . 'if' . chr(39))
+        die(('Missing code block in ' . chr(39) . 'if' . chr(39)))
     };
     ($MATCH->{capture} = (If->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -206,7 +206,7 @@ package GLOBAL;
 })) && (((do {
     ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
     if (!((defined($body)))) {
-        die('Missing code block in ' . chr(39) . 'when' . chr(39))
+        die(('Missing code block in ' . chr(39) . 'when' . chr(39)))
     };
     ($MATCH->{capture} = (When->new(('parameters' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body))))
 }) || 1)))
@@ -245,7 +245,7 @@ package GLOBAL;
 })) && (((do {
     ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
     if (!((defined($body)))) {
-        die('Missing code block in ' . chr(39) . 'when' . chr(39))
+        die(('Missing code block in ' . chr(39) . 'when' . chr(39)))
     };
     ($MATCH->{capture} = (For->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('topic' => undef()), ('body' => $body))))
 }) || 1)))
@@ -284,7 +284,7 @@ package GLOBAL;
 })) && (((do {
     ((my  $body) = (${$MATCH->{'exp'}})->{'end_block'});
     if (!((defined($body)))) {
-        die('Missing code block in ' . chr(39) . 'while' . chr(39))
+        die(('Missing code block in ' . chr(39) . 'while' . chr(39)))
     };
     ($MATCH->{capture} = (While->new(('cond' => (${$MATCH->{'exp'}})->{'exp'}), ('body' => $body))))
 }) || 1)))
@@ -328,11 +328,11 @@ package GLOBAL;
             ($MATCH->{capture} = (While->new(('cond' => Val::Bit->new(('bit' => 1))), ('body' => $body))))
         }
         else {
-            die('Missing code block in ' . chr(39) . 'loop' . chr(39))
+            die(('Missing code block in ' . chr(39) . 'loop' . chr(39)))
         }
     }
     else {
-        die(chr(39) . 'loop' . chr(39) . ' with parameters is not implemented')
+        die((chr(39) . 'loop' . chr(39) . ' with parameters is not implemented'))
     }
 }) || 1)))
 })

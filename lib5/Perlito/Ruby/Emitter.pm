@@ -25,10 +25,10 @@ package GLOBAL;
                     push( @{$List_s}, $cond->emit_ruby() )
                 }
                 else {
-                    push( @{$List_s}, chr(40) . $cond->emit_ruby() . chr(41) . '.to_s' )
+                    push( @{$List_s}, (chr(40) . $cond->emit_ruby() . chr(41) . '.to_s') )
                 }
             };
-            return scalar (chr(40) . Main::join($List_s, $op) . chr(41))
+            return scalar ((chr(40) . Main::join($List_s, $op) . chr(41)))
         };
         sub to_num {
             my $op = $_[0];
@@ -39,10 +39,10 @@ package GLOBAL;
                     push( @{$List_s}, $cond->emit_ruby() )
                 }
                 else {
-                    push( @{$List_s}, 'mp6_to_num' . chr(40) . $cond->emit_ruby() . chr(41) )
+                    push( @{$List_s}, ('mp6_to_num' . chr(40) . $cond->emit_ruby() . chr(41)) )
                 }
             };
-            return scalar (chr(40) . Main::join($List_s, $op) . chr(41))
+            return scalar ((chr(40) . Main::join($List_s, $op) . chr(41)))
         };
         sub to_bool {
             my $op = $_[0];
@@ -50,25 +50,25 @@ package GLOBAL;
             (my  $List_s = bless [], 'ARRAY');
             for my $cond ( @{(($args))} ) {
                 if (((Main::isa($cond, 'Val::Int')) || (Main::isa($cond, 'Val::Num')))) {
-                    push( @{$List_s}, chr(40) . $cond->emit_ruby() . ' ' . chr(33) . chr(61) . ' 0 ' . chr(41) )
+                    push( @{$List_s}, (chr(40) . $cond->emit_ruby() . ' ' . chr(33) . chr(61) . ' 0 ' . chr(41)) )
                 }
                 else {
                     if ((((((((Main::isa($cond, 'Apply')) && (($cond->code() eq 'infix:' . chr(60) . chr(124) . chr(124) . chr(62))))) || (((Main::isa($cond, 'Apply')) && (($cond->code() eq 'infix:' . chr(60) . chr(38) . chr(38) . chr(62)))))) || (((Main::isa($cond, 'Apply')) && (($cond->code() eq 'prefix:' . chr(60) . chr(33) . chr(62)))))) || (((Main::isa($cond, 'Apply')) && (($cond->code() eq 'prefix:' . chr(60) . chr(63) . chr(62)))))) || (Main::isa($cond, 'Val::Bit')))) {
                         push( @{$List_s}, $cond->emit_ruby() )
                     }
                     else {
-                        push( @{$List_s}, 'mp6_to_bool' . chr(40) . $cond->emit_ruby() . chr(41) )
+                        push( @{$List_s}, ('mp6_to_bool' . chr(40) . $cond->emit_ruby() . chr(41)) )
                     }
                 }
             };
-            return scalar (chr(40) . Main::join($List_s, $op) . chr(41))
+            return scalar ((chr(40) . Main::join($List_s, $op) . chr(41)))
         };
         sub tab {
             my $level = $_[0];
             ((my  $s) = '');
             ((my  $count) = $level);
             for ( ; ($count > 0);  ) {
-                ($s = $s . '    ');
+                ($s = ($s . ('    ')));
                 ($count = ($count - 1))
             };
             return scalar ($s)
@@ -102,10 +102,10 @@ $self->emit_ruby_indented(0)
             };
             ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
             (my  $List_s = bless [], 'ARRAY');
-            push( @{$List_s}, Ruby::tab($level) . (($self->{name} ? ('f_' . $self->{name} . ' ' . chr(61) . ' ') : '')) . 'lambda' . chr(123) . ' ' . chr(124) . Main::join($args, ', ') . chr(124) . ' ' );
+            push( @{$List_s}, (Ruby::tab($level) . (($self->{name} ? (('f_' . $self->{name} . (' ' . chr(61) . ' '))) : '')) . ('lambda' . chr(123) . ' ' . chr(124)) . Main::join($args, (', ')) . (chr(124) . ' ')) );
             push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) );
-            push( @{$List_s}, Ruby::tab($level) . chr(125) );
-            return scalar (Main::join($List_s, chr(10)))
+            push( @{$List_s}, (Ruby::tab($level) . (chr(125))) );
+            return scalar (Main::join($List_s, (chr(10))))
         }
     }
 
@@ -179,16 +179,16 @@ $self->emit_ruby_indented(0)
             if ((($has_decl))) {
                 for my $decl ( @{(($has_decl))} ) {
                     if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
-                        push( @{$List_s}, Ruby::tab($level) . 'attr_accessor :v_' . ($decl->var())->name() );
-                        push( @{$List_s}, Ruby::tab($level) . 'def f_' . ($decl->var())->name() . chr(40) . chr(41) );
-                        push( @{$List_s}, Ruby::tab(($level + 1)) . 'return self.v_' . ($decl->var())->name() );
-                        push( @{$List_s}, Ruby::tab($level) . 'end' )
+                        push( @{$List_s}, (Ruby::tab($level) . 'attr_accessor :v_' . ($decl->var())->name()) );
+                        push( @{$List_s}, (Ruby::tab($level) . 'def f_' . ($decl->var())->name() . chr(40) . chr(41)) );
+                        push( @{$List_s}, (Ruby::tab(($level + 1)) . 'return self.v_' . ($decl->var())->name()) );
+                        push( @{$List_s}, (Ruby::tab($level) . ('end')) )
                     };
                     if (((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'has')))) {
-                        push( @{$List_s}, Ruby::tab($level) . 'attr_accessor :v_' . (($decl->parameters())->var())->name() );
-                        push( @{$List_s}, Ruby::tab($level) . 'def f_' . (($decl->parameters())->var())->name() . chr(40) . chr(41) );
-                        push( @{$List_s}, Ruby::tab(($level + 1)) . 'return self.v_' . (($decl->parameters())->var())->name() );
-                        push( @{$List_s}, Ruby::tab($level) . 'end' )
+                        push( @{$List_s}, (Ruby::tab($level) . 'attr_accessor :v_' . (($decl->parameters())->var())->name()) );
+                        push( @{$List_s}, (Ruby::tab($level) . 'def f_' . (($decl->parameters())->var())->name() . chr(40) . chr(41)) );
+                        push( @{$List_s}, (Ruby::tab(($level + 1)) . 'return self.v_' . (($decl->parameters())->var())->name()) );
+                        push( @{$List_s}, (Ruby::tab($level) . ('end')) )
                     }
                 }
             };
@@ -215,7 +215,7 @@ $self->emit_ruby_indented(0)
                 }
             };
             if ($has_my_decl) {
-                push( @{$List_s}, Ruby::tab($level) . 'Proc.new' . chr(123) . ' ' . chr(124) . Main::join($List_my_decl, ', ') . chr(124) )
+                push( @{$List_s}, (Ruby::tab($level) . ('Proc.new' . chr(123) . ' ' . chr(124)) . Main::join($List_my_decl, (', ')) . (chr(124))) )
             };
             (my  $last_statement);
             if ($self->{needs_return}) {
@@ -261,30 +261,30 @@ $self->emit_ruby_indented(0)
                     if (($has_otherwise && $otherwise_block->has_my_decl())) {
                         ($otherwise_block = Return->new(('result' => Do->new(('block' => ($last_statement->otherwise()))))))
                     };
-                    ($s2 = Ruby::tab($level) . 'if ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
+                    ($s2 = (Ruby::tab($level) . 'if ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-}) . chr(10) . $body_block->emit_ruby_indented(($level + 1)));
+}) . (chr(10)) . $body_block->emit_ruby_indented(($level + 1))));
                     if (($has_otherwise)) {
-                        ($s2 = $s2 . chr(10) . Ruby::tab($level) . 'else' . chr(10) . $otherwise_block->emit_ruby_indented(($level + 1)) . chr(10) . Ruby::tab($level) . 'end')
+                        ($s2 = ($s2 . (chr(10)) . Ruby::tab($level) . ('else' . chr(10)) . $otherwise_block->emit_ruby_indented(($level + 1)) . (chr(10)) . Ruby::tab($level) . ('end')))
                     }
                     else {
-                        ($s2 = $s2 . chr(10) . Ruby::tab($level) . 'end')
+                        ($s2 = ($s2 . (chr(10)) . Ruby::tab($level) . ('end')))
                     }
                 }
                 else {
                     if (Main::isa($last_statement, 'Bind')) {
                         ($s2 = $last_statement->emit_ruby_indented($level));
-                        ($s2 = $s2 . chr(10) . Ruby::tab($level) . 'return ' . ($last_statement->parameters())->emit_ruby())
+                        ($s2 = ($s2 . (chr(10)) . Ruby::tab($level) . ('return ') . ($last_statement->parameters())->emit_ruby()))
                     }
                     else {
                         if ((Main::isa($last_statement, 'Return') || Main::isa($last_statement, 'For'))) {
                             ($s2 = $last_statement->emit_ruby_indented($level))
                         }
                         else {
-                            ($s2 = Ruby::tab($level) . 'return ' . $last_statement->emit_ruby())
+                            ($s2 = (Ruby::tab($level) . ('return ') . $last_statement->emit_ruby()))
                         }
                     }
                 };
@@ -294,10 +294,10 @@ $self->emit_ruby_indented(0)
                 push( @{$List_s}, $s2 )
             };
             if ($has_my_decl) {
-                push( @{$List_s}, Ruby::tab($level) . chr(125) . '.call' . chr(40) . Main::join($List_my_init, ', ') . chr(41) )
+                push( @{$List_s}, (Ruby::tab($level) . (chr(125) . '.call' . chr(40)) . Main::join($List_my_init, (', ')) . (chr(41))) )
             };
             ($List_anon_block = $List_tmp);
-            return scalar (Main::join($List_s, chr(10)))
+            return scalar (Main::join($List_s, (chr(10))))
         }
     }
 
@@ -321,15 +321,15 @@ $self->emit_ruby_indented(0)
             ((my  $name) = Main::to_go_namespace($self->{name}));
             for my $decl ( @{$self->{body}} ) {
                 if (Main::isa($decl, 'Use')) {
-                    push( @{$List_s}, Ruby::tab($level) . 'require ' . chr(39) . Main::to_go_namespace($decl->mod()) . '.rb' . chr(39) )
+                    push( @{$List_s}, (Ruby::tab($level) . ('require ' . chr(39)) . Main::to_go_namespace($decl->mod()) . ('.rb' . chr(39))) )
                 }
             };
-            push( @{$List_s}, Ruby::tab($level) . 'class C_' . $name );
-            push( @{$List_s}, Ruby::tab(($level + 1)) . chr(36) . $name . ' ' . chr(61) . ' C_' . $name . '.new' . chr(40) . chr(41) );
-            push( @{$List_s}, Ruby::tab(($level + 1)) . 'namespace ' . chr(61) . ' ' . chr(36) . $name );
+            push( @{$List_s}, (Ruby::tab($level) . 'class C_' . $name) );
+            push( @{$List_s}, (Ruby::tab(($level + 1)) . chr(36) . $name . ' ' . chr(61) . ' C_' . $name . '.new' . chr(40) . chr(41)) );
+            push( @{$List_s}, (Ruby::tab(($level + 1)) . 'namespace ' . chr(61) . ' ' . chr(36) . $name) );
             push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) );
-            push( @{$List_s}, Ruby::tab($level) . 'end' );
-            return scalar (Main::join($List_s, chr(10)))
+            push( @{$List_s}, (Ruby::tab($level) . ('end')) );
+            return scalar (Main::join($List_s, (chr(10))))
         }
     }
 
@@ -345,7 +345,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . $self->{int}
+            (Ruby::tab($level) . $self->{int})
         }
     }
 
@@ -361,7 +361,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . (($self->{bit} ? 'true' : 'false'))
+            (Ruby::tab($level) . (($self->{bit} ? 'true' : 'false')))
         }
     }
 
@@ -377,7 +377,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . $self->{num}
+            (Ruby::tab($level) . $self->{num})
         }
     }
 
@@ -393,7 +393,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . chr(34) . $self->{buf} . chr(34)
+            (Ruby::tab($level) . chr(34) . $self->{buf} . chr(34))
         }
     }
 
@@ -408,7 +408,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . 'nil'
+            (Ruby::tab($level) . 'nil')
         }
     }
 
@@ -425,7 +425,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . $self->{class}->emit_ruby() . chr(40) . $self->{fields}->emit_ruby() . chr(41)
+            (Ruby::tab($level) . $self->{class}->emit_ruby() . chr(40) . $self->{fields}->emit_ruby() . chr(41))
         }
     }
 
@@ -486,9 +486,9 @@ $self->emit_ruby_indented(0)
             ((my  $fields) = $self->{fields});
             (my  $List_str = bless [], 'ARRAY');
             for my $field ( @{($fields)} ) {
-                push( @{$List_str}, 'o.v_' . ($field->[0])->buf() . chr(61) . ($field->[1])->emit_ruby() . chr(59) . ' ' )
+                push( @{$List_str}, ('o.v_' . ($field->[0])->buf() . chr(61) . ($field->[1])->emit_ruby() . (chr(59) . ' ')) )
             };
-            Ruby::tab($level) . 'Proc.new ' . chr(123) . ' ' . chr(124) . 'o' . chr(124) . ' ' . Main::join($List_str, ' ') . 'o ' . chr(125) . '.call' . chr(40) . 'C_' . Main::to_go_namespace($self->{class}) . '.new' . chr(41)
+            (Ruby::tab($level) . ('Proc.new ' . chr(123) . ' ' . chr(124) . 'o' . chr(124) . ' ') . Main::join($List_str, ' ') . ('o ' . chr(125) . '.call' . chr(40) . 'C_') . Main::to_go_namespace($self->{class}) . ('.new' . chr(41)))
         }
     }
 
@@ -505,7 +505,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . $self->{obj}->emit_ruby() . chr(91) . $self->{index_exp}->emit_ruby() . chr(93)
+            (Ruby::tab($level) . $self->{obj}->emit_ruby() . chr(91) . $self->{index_exp}->emit_ruby() . chr(93))
         }
     }
 
@@ -522,7 +522,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . $self->{obj}->emit_ruby() . chr(91) . $self->{index_exp}->emit_ruby() . chr(93)
+            (Ruby::tab($level) . $self->{obj}->emit_ruby() . chr(91) . $self->{index_exp}->emit_ruby() . chr(93))
         }
     }
 
@@ -549,13 +549,13 @@ $self->emit_ruby_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             if ((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS')))) {
-                return scalar (Ruby::tab($level) . 'ARGV')
+                return scalar ((Ruby::tab($level) . 'ARGV'))
             };
-            return scalar (Ruby::tab($level) . (((($self->{twigil} eq '.')) ? ('self.v_' . $self->{name} . '') : (((($self->{name} eq chr(47))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name} . ''))))))
+            return scalar ((Ruby::tab($level) . (((($self->{twigil} eq '.')) ? (('self.v_' . $self->{name} . '')) : (((($self->{name} eq chr(47))) ? (($table->{$self->{sigil}} . 'MATCH')) : (($table->{$self->{sigil}} . $self->{name} . ''))))))))
         };
         sub emit_ruby_name {
             my $self = $_[0];
-            return scalar ((((($self->{twigil} eq '.')) ? ('self.v_' . $self->{name}) : (((($self->{name} eq chr(47))) ? ($table->{$self->{sigil}} . 'MATCH') : ($table->{$self->{sigil}} . $self->{name}))))))
+            return scalar ((((($self->{twigil} eq '.')) ? (('self.v_' . $self->{name})) : (((($self->{name} eq chr(47))) ? (($table->{$self->{sigil}} . 'MATCH')) : (($table->{$self->{sigil}} . $self->{name})))))))
         }
     }
 
@@ -573,15 +573,15 @@ $self->emit_ruby_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             if (Main::isa($self->{parameters}, 'Index')) {
-                return scalar (Ruby::tab($level) . ($self->{parameters}->obj())->emit_ruby() . chr(91) . ($self->{parameters}->index_exp())->emit_ruby() . chr(93) . ' ' . chr(61) . ' ' . $self->{arguments}->emit_ruby())
+                return scalar ((Ruby::tab($level) . ($self->{parameters}->obj())->emit_ruby() . chr(91) . ($self->{parameters}->index_exp())->emit_ruby() . chr(93) . ' ' . chr(61) . ' ' . $self->{arguments}->emit_ruby()))
             };
             if (Main::isa($self->{parameters}, 'Lookup')) {
-                return scalar (Ruby::tab($level) . ($self->{parameters}->obj())->emit_ruby() . chr(91) . ($self->{parameters}->index_exp())->emit_ruby() . chr(93) . ' ' . chr(61) . ' ' . $self->{arguments}->emit_ruby())
+                return scalar ((Ruby::tab($level) . ($self->{parameters}->obj())->emit_ruby() . chr(91) . ($self->{parameters}->index_exp())->emit_ruby() . chr(93) . ' ' . chr(61) . ' ' . $self->{arguments}->emit_ruby()))
             };
             if (Main::isa($self->{parameters}, 'Call')) {
-                return scalar (Ruby::tab($level) . ($self->{parameters}->invocant())->emit_ruby() . '.v_' . $self->{parameters}->method() . ' ' . chr(61) . ' ' . $self->{arguments}->emit_ruby() . '')
+                return scalar ((Ruby::tab($level) . ($self->{parameters}->invocant())->emit_ruby() . ('.v_') . $self->{parameters}->method() . (' ' . chr(61) . ' ') . $self->{arguments}->emit_ruby() . ''))
             };
-            Ruby::tab($level) . $self->{parameters}->emit_ruby() . ' ' . chr(61) . ' ' . $self->{arguments}->emit_ruby()
+            (Ruby::tab($level) . $self->{parameters}->emit_ruby() . ' ' . chr(61) . ' ' . $self->{arguments}->emit_ruby())
         }
     }
 
@@ -597,7 +597,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . chr(36) . Main::to_go_namespace($self->{name})
+            (Ruby::tab($level) . chr(36) . Main::to_go_namespace($self->{name}))
         }
     }
 
@@ -619,10 +619,10 @@ $self->emit_ruby_indented(0)
             ((my  $invocant) = $self->{invocant}->emit_ruby());
             if (((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'isa')))) {
                 if (($self->{hyper})) {
-                    return scalar ($invocant . '.map ' . chr(123) . chr(124) . 'x' . chr(124) . ' x.' . $self->{method} . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41) . chr(125))
+                    return scalar (($invocant . ('.map ' . chr(123) . chr(124) . 'x' . chr(124) . ' x.') . $self->{method} . (chr(40)) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . (chr(41) . chr(125))))
                 }
                 else {
-                    return scalar ('mp6_' . $self->{method} . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( do {
+                    return scalar (('mp6_' . $self->{method} . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{invocant} );
@@ -631,25 +631,25 @@ $self->emit_ruby_indented(0)
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
-} )} ]), ', ') . chr(41))
+} )} ]), ', ') . chr(41)))
                 }
             };
             ((my  $meth) = $self->{method});
             if (($meth eq 'postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62))) {
-                return scalar (Ruby::tab($level) . $invocant . '.call' . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41))
+                return scalar ((Ruby::tab($level) . $invocant . '.call' . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
             };
             if (((((((($meth eq 'values')) || (($meth eq 'keys'))) || (($meth eq 'push'))) || (($meth eq 'shift'))) || (($meth eq 'concat'))) || (($meth eq 'join')))) {
-                return scalar (Ruby::tab($level) . $invocant . '.' . $meth . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41))
+                return scalar ((Ruby::tab($level) . $invocant . '.' . $meth . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
             };
             if (($meth eq 'chars')) {
-                return scalar (Ruby::tab($level) . '' . $invocant . '.length')
+                return scalar ((Ruby::tab($level) . '' . $invocant . ('.length')))
             };
-            ((my  $call) = 'f_' . $meth . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41));
+            ((my  $call) = ('f_' . $meth . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41)));
             if (($self->{hyper})) {
-                Ruby::tab($level) . $invocant . '.map ' . chr(123) . chr(124) . 'x' . chr(124) . ' x.' . $call . chr(125)
+                (Ruby::tab($level) . $invocant . ('.map ' . chr(123) . chr(124) . 'x' . chr(124) . ' x.') . $call . (chr(125)))
             }
             else {
-                Ruby::tab($level) . $invocant . '.' . $call
+                (Ruby::tab($level) . $invocant . '.' . $call)
             }
         }
     }
@@ -663,7 +663,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . $self->emit_ruby()
+            (Ruby::tab($level) . $self->emit_ruby())
         };
         sub emit_ruby {
             my $self = $_[0];
@@ -672,13 +672,13 @@ $self->emit_ruby_indented(0)
 
             }
             else {
-                return scalar (chr(40) . $self->{code}->emit_ruby() . chr(41) . '.' . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41))
+                return scalar ((chr(40) . $self->{code}->emit_ruby() . chr(41) . '.' . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
             };
             if (($code eq 'self')) {
                 return scalar ('self')
             };
             if (($code eq 'make')) {
-                return scalar ('v_MATCH.v_capture ' . chr(61) . ' ' . ($self->{arguments}->[0])->emit_ruby() . '')
+                return scalar (('v_MATCH.v_capture ' . chr(61) . ' ' . ($self->{arguments}->[0])->emit_ruby() . ''))
             };
             if (($code eq 'False')) {
                 return scalar ('false')
@@ -687,40 +687,40 @@ $self->emit_ruby_indented(0)
                 return scalar ('true')
             };
             if (($code eq 'say')) {
-                return scalar ('puts' . Ruby::to_str(' + ', $self->{arguments}))
+                return scalar (('puts' . Ruby::to_str(' + ', $self->{arguments})))
             };
             if (($code eq 'print')) {
-                return scalar ('print' . Ruby::to_str(' + ', $self->{arguments}))
+                return scalar (('print' . Ruby::to_str(' + ', $self->{arguments})))
             };
             if (($code eq 'warn')) {
-                return scalar (chr(36) . 'stdout.puts' . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41))
+                return scalar ((chr(36) . 'stdout.puts' . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
             };
             if (($code eq 'array')) {
-                return scalar (chr(91) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . chr(93))
+                return scalar ((chr(91) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . chr(93)))
             };
             if (($code eq 'Int')) {
-                return scalar (chr(40) . ($self->{arguments}->[0])->emit_ruby() . chr(41) . '.to_i')
+                return scalar ((chr(40) . ($self->{arguments}->[0])->emit_ruby() . chr(41) . '.to_i'))
             };
             if (($code eq 'Num')) {
-                return scalar (chr(40) . ($self->{arguments}->[0])->emit_ruby() . chr(41) . '.to_f')
+                return scalar ((chr(40) . ($self->{arguments}->[0])->emit_ruby() . chr(41) . '.to_f'))
             };
             if (($code eq 'prefix:' . chr(60) . chr(126) . chr(62))) {
                 return scalar (Ruby::to_str(' + ', $self->{arguments}))
             };
             if (($code eq 'prefix:' . chr(60) . chr(33) . chr(62))) {
-                return scalar (chr(33) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', $self->{arguments}))
+                return scalar ((chr(33) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', $self->{arguments})))
             };
             if (($code eq 'prefix:' . chr(60) . chr(63) . chr(62))) {
-                return scalar (chr(33) . chr(40) . chr(33) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', $self->{arguments}) . chr(41))
+                return scalar ((chr(33) . chr(40) . chr(33) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', $self->{arguments}) . chr(41)))
             };
             if (($code eq 'prefix:' . chr(60) . chr(36) . chr(62))) {
-                return scalar ('mp6_to_scalar' . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . chr(41))
+                return scalar (('mp6_to_scalar' . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . chr(41)))
             };
             if (($code eq 'prefix:' . chr(60) . chr(64) . chr(62))) {
-                return scalar (chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . chr(41))
+                return scalar ((chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . chr(41)))
             };
             if (($code eq 'prefix:' . chr(60) . chr(37) . chr(62))) {
-                return scalar (chr(37) . chr(123) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . chr(125))
+                return scalar ((chr(37) . chr(123) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . chr(125)))
             };
             if (($code eq 'infix:' . chr(60) . chr(126) . chr(62))) {
                 return scalar (Ruby::to_str(' + ', $self->{arguments}))
@@ -764,49 +764,49 @@ $self->emit_ruby_indented(0)
             if (($code eq 'exists')) {
                 ((my  $arg) = $self->{arguments}->[0]);
                 if (Main::isa($arg, 'Lookup')) {
-                    return scalar (chr(40) . ($arg->obj())->emit_ruby() . chr(41) . '.has_key' . chr(63) . chr(40) . ($arg->index_exp())->emit_ruby() . chr(41))
+                    return scalar ((chr(40) . ($arg->obj())->emit_ruby() . chr(41) . '.has_key' . chr(63) . chr(40) . ($arg->index_exp())->emit_ruby() . chr(41)))
                 }
             };
             if (($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62))) {
-                return scalar (chr(40) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
+                return scalar ((chr(40) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{arguments}->[0] );
     $List_a
-}) . ' ' . chr(63) . ' ' . ($self->{arguments}->[1])->emit_ruby() . ' : ' . ($self->{arguments}->[2])->emit_ruby() . chr(41))
+}) . ' ' . chr(63) . ' ' . ($self->{arguments}->[1])->emit_ruby() . ' : ' . ($self->{arguments}->[2])->emit_ruby() . chr(41)))
             };
             if (($code eq 'substr')) {
-                return scalar (Ruby::to_str(' + ', do {
+                return scalar ((Ruby::to_str(' + ', do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{arguments}->[0] );
     $List_a
-}) . chr(91) . ($self->{arguments}->[1])->emit_ruby() . ', ' . ($self->{arguments}->[2])->emit_ruby() . chr(93))
+}) . chr(91) . ($self->{arguments}->[1])->emit_ruby() . ', ' . ($self->{arguments}->[2])->emit_ruby() . chr(93)))
             };
             if (($code eq 'index')) {
-                return scalar (chr(40) . ($self->{arguments}->[0])->emit_ruby() . chr(41) . '.index' . chr(40) . ($self->{arguments}->[1])->emit_ruby() . chr(41))
+                return scalar ((chr(40) . ($self->{arguments}->[0])->emit_ruby() . chr(41) . '.index' . chr(40) . ($self->{arguments}->[1])->emit_ruby() . chr(41)))
             };
             if (($code eq 'shift')) {
-                return scalar (($self->{arguments}->[0])->emit_ruby() . '.shift' . chr(40) . chr(41))
+                return scalar ((($self->{arguments}->[0])->emit_ruby() . '.shift' . chr(40) . chr(41)))
             };
             if (($code eq 'pop')) {
-                return scalar (($self->{arguments}->[0])->emit_ruby() . '.pop' . chr(40) . chr(41))
+                return scalar ((($self->{arguments}->[0])->emit_ruby() . '.pop' . chr(40) . chr(41)))
             };
             if (($code eq 'push')) {
-                return scalar (($self->{arguments}->[0])->emit_ruby() . '.push' . chr(40) . ($self->{arguments}->[1])->emit_ruby() . chr(41))
+                return scalar ((($self->{arguments}->[0])->emit_ruby() . '.push' . chr(40) . ($self->{arguments}->[1])->emit_ruby() . chr(41)))
             };
             if (($code eq 'unshift')) {
-                return scalar (($self->{arguments}->[0])->emit_ruby() . '.unshift' . chr(40) . ($self->{arguments}->[1])->emit_ruby() . chr(41))
+                return scalar ((($self->{arguments}->[0])->emit_ruby() . '.unshift' . chr(40) . ($self->{arguments}->[1])->emit_ruby() . chr(41)))
             };
             if ($self->{namespace}) {
-                return scalar (chr(36) . Main::to_go_namespace($self->{namespace}) . '.f_' . $self->{code} . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41))
+                return scalar ((chr(36) . Main::to_go_namespace($self->{namespace}) . '.f_' . $self->{code} . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
             };
-            'namespace.f_' . $self->{code} . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41)
+            ('namespace.f_' . $self->{code} . chr(40) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . chr(41))
         };
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . $self->emit_ruby()
+            (Ruby::tab($level) . $self->emit_ruby())
         }
     }
 
@@ -822,7 +822,7 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            Ruby::tab($level) . 'return ' . $self->{result}->emit_ruby() . ''
+            (Ruby::tab($level) . 'return ' . $self->{result}->emit_ruby() . '')
         }
     }
 
@@ -850,17 +850,17 @@ $self->emit_ruby_indented(0)
             if (($has_otherwise && $otherwise_block->has_my_decl())) {
                 ($otherwise_block = Do->new(('block' => $self->{otherwise})))
             };
-            ((my  $s) = Ruby::tab($level) . 'if ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
+            ((my  $s) = (Ruby::tab($level) . 'if ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{cond} );
     $List_a
-}) . chr(10) . $body_block->emit_ruby_indented(($level + 1)));
+}) . (chr(10)) . $body_block->emit_ruby_indented(($level + 1))));
             if (($has_otherwise)) {
-                ($s = $s . chr(10) . Ruby::tab($level) . 'else' . chr(10) . $otherwise_block->emit_ruby_indented(($level + 1)) . chr(10) . Ruby::tab($level) . 'end')
+                ($s = ($s . (chr(10)) . Ruby::tab($level) . ('else' . chr(10)) . $otherwise_block->emit_ruby_indented(($level + 1)) . (chr(10)) . Ruby::tab($level) . ('end')))
             }
             else {
-                ($s = $s . chr(10) . Ruby::tab($level) . 'end')
+                ($s = ($s . (chr(10)) . Ruby::tab($level) . ('end')))
             };
             return scalar ($s)
         }
@@ -886,14 +886,14 @@ $self->emit_ruby_indented(0)
                 ($body_block = Do->new(('block' => $self->{body})))
             };
             if (($self->{init} && $self->{continue})) {
-                die('not implemented ' . chr(40) . 'While' . chr(41))
+                die(('not implemented ' . chr(40) . 'While' . chr(41)))
             };
-            Ruby::tab($level) . 'while ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
+            (Ruby::tab($level) . 'while ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{cond} );
     $List_a
-}) . chr(10) . $body_block->emit_ruby_indented(($level + 1)) . chr(10) . Ruby::tab($level) . 'end'
+}) . (chr(10)) . $body_block->emit_ruby_indented(($level + 1)) . (chr(10)) . Ruby::tab($level) . 'end')
         }
     }
 
@@ -912,7 +912,7 @@ $self->emit_ruby_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body})));
-            Ruby::tab($level) . 'for ' . $self->{topic}->emit_ruby_name() . ' in ' . $self->{cond}->emit_ruby() . chr(10) . $body_block->emit_ruby_indented(($level + 1)) . chr(10) . Ruby::tab($level) . 'end'
+            (Ruby::tab($level) . 'for ' . $self->{topic}->emit_ruby_name() . (' in ') . $self->{cond}->emit_ruby() . (chr(10)) . $body_block->emit_ruby_indented(($level + 1)) . (chr(10)) . Ruby::tab($level) . 'end')
         }
     }
 
@@ -932,7 +932,7 @@ $self->emit_ruby_indented(0)
             my $level = $_[1];
             ((my  $decl) = $self->{decl});
             ((my  $name) = $self->{var}->name());
-            Ruby::tab($level) . (((($decl eq 'has')) ? ('') : $self->{var}->emit_ruby()))
+            (Ruby::tab($level) . (((($decl eq 'has')) ? ('') : $self->{var}->emit_ruby())))
         };
         sub emit_ruby_init {
             my $self = $_[0];
@@ -999,16 +999,16 @@ $self->emit_ruby_indented(0)
             for my $field ( @{($pos)} ) {
                 ((my  $arg) = $field->emit_ruby_name());
                 push( @{$args}, $arg );
-                push( @{$default_args}, $arg . chr(61) . 'nil' );
-                push( @{$meth_args}, $arg . chr(61) . 'nil' )
+                push( @{$default_args}, ($arg . chr(61) . 'nil') );
+                push( @{$meth_args}, ($arg . chr(61) . 'nil') )
             };
             ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
             (my  $List_s = bless [], 'ARRAY');
-            push( @{$List_s}, Ruby::tab($level) . 'send' . chr(40) . ' :define_method, ' . chr(34) . 'f_' . $self->{name} . chr(34) . '.to_sym, lambda' . chr(92) . chr(123) . ' ' . chr(124) . Main::join($default_args, ', ') . chr(124) );
-            push( @{$List_s}, Ruby::tab(($level + 1)) . $invocant->emit_ruby_name() . ' ' . chr(61) . ' self' );
+            push( @{$List_s}, (Ruby::tab($level) . 'send' . chr(40) . ' :define_method, ' . chr(34) . 'f_' . $self->{name} . chr(34) . '.to_sym, lambda' . chr(92) . chr(123) . ' ' . chr(124) . Main::join($default_args, (', ')) . chr(124)) );
+            push( @{$List_s}, (Ruby::tab(($level + 1)) . $invocant->emit_ruby_name() . (' ' . chr(61) . ' self')) );
             push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) );
-            push( @{$List_s}, Ruby::tab($level) . chr(125) . ' ' . chr(41) );
-            return scalar (Main::join($List_s, chr(10)))
+            push( @{$List_s}, (Ruby::tab($level) . (chr(125) . ' ' . chr(41))) );
+            return scalar (Main::join($List_s, (chr(10))))
         }
     }
 
@@ -1026,10 +1026,10 @@ $self->emit_ruby_indented(0)
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $label) = '_anon_' . Perlito::Ruby::LexicalBlock::get_ident_ruby());
+            ((my  $label) = ('_anon_' . Perlito::Ruby::LexicalBlock::get_ident_ruby()));
             if ((($self->{name} eq ''))) {
                 Perlito::Ruby::LexicalBlock::push_stmt_ruby(Perlito::Ruby::AnonSub->new(('name' => $label), ('block' => $self->{block}), ('sig' => $self->{sig}), ('handles_return_exception' => 1)));
-                return scalar (Ruby::tab($level) . 'f_' . $label)
+                return scalar ((Ruby::tab($level) . 'f_' . $label))
             };
             ((my  $sig) = $self->{sig});
             ((my  $pos) = $sig->positional());
@@ -1052,16 +1052,16 @@ $self->emit_ruby_indented(0)
             for my $field ( @{($pos)} ) {
                 ((my  $arg) = $field->emit_ruby_name());
                 push( @{$args}, $arg );
-                push( @{$default_args}, $arg . chr(61) . 'nil' );
-                push( @{$meth_args}, $arg . chr(61) . 'nil' )
+                push( @{$default_args}, ($arg . chr(61) . 'nil') );
+                push( @{$meth_args}, ($arg . chr(61) . 'nil') )
             };
             ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
-            ((my  $label2) = '_anon_' . Perlito::Ruby::LexicalBlock::get_ident_ruby());
+            ((my  $label2) = ('_anon_' . Perlito::Ruby::LexicalBlock::get_ident_ruby()));
             (my  $List_s = bless [], 'ARRAY');
-            push( @{$List_s}, Ruby::tab($level) . 'send' . chr(40) . ' :define_method, ' . chr(34) . 'f_' . $self->{name} . chr(34) . '.to_sym, lambda' . chr(123) . ' ' . chr(124) . Main::join($default_args, ', ') . chr(124) );
+            push( @{$List_s}, (Ruby::tab($level) . 'send' . chr(40) . ' :define_method, ' . chr(34) . 'f_' . $self->{name} . chr(34) . '.to_sym, lambda' . chr(123) . ' ' . chr(124) . Main::join($default_args, (', ')) . chr(124)) );
             push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) );
-            push( @{$List_s}, Ruby::tab($level) . chr(125) . ' ' . chr(41) );
-            return scalar (Main::join($List_s, chr(10)))
+            push( @{$List_s}, (Ruby::tab($level) . (chr(125) . ' ' . chr(41))) );
+            return scalar (Main::join($List_s, (chr(10))))
         }
     }
 
@@ -1078,10 +1078,10 @@ $self->emit_ruby_indented(0)
             my $self = $_[0];
             my $level = $_[1];
             (my  $List_s = bless [], 'ARRAY');
-            push( @{$List_s}, Ruby::tab($level) . 'Proc.new' . chr(123) . ' ' . chr(124) . chr(124) . ' ' );
+            push( @{$List_s}, (Ruby::tab($level) . ('Proc.new' . chr(123) . ' ' . chr(124) . chr(124) . ' ')) );
             push( @{$List_s}, (Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 0)))->emit_ruby_indented(($level + 1)) );
-            push( @{$List_s}, Ruby::tab($level) . chr(125) . '.call' . chr(40) . chr(41) );
-            return scalar (Main::join($List_s, chr(10)))
+            push( @{$List_s}, (Ruby::tab($level) . (chr(125) . '.call' . chr(40) . chr(41))) );
+            return scalar (Main::join($List_s, (chr(10))))
         }
     }
 

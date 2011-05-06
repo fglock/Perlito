@@ -388,7 +388,7 @@ package GLOBAL;
         0
     }
 }) && (((do {
-    ($MATCH->{capture} = (("" . $MATCH)))
+    ($MATCH->{capture} = ("".($MATCH)))
 }) || 1)))
 })
 })));
@@ -479,7 +479,7 @@ package GLOBAL;
         0
     }
 })) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
-    ($MATCH->{capture} = (chr(36) . chr(47) . chr(123) . chr(39) . $MATCH->{'rule_ident'} . chr(39) . chr(125)))
+    ($MATCH->{capture} = ((chr(36) . chr(47) . chr(123) . chr(39) . $MATCH->{'rule_ident'} . chr(39) . chr(125))))
 }) || 1)))
 }) || (do {
     (($MATCH)->{to} = $pos1);
@@ -504,7 +504,7 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ($MATCH->{capture} = ($MATCH->{'Perlito::Grammar.var_sigil'} . chr(47) . chr(91) . $MATCH->{'Perlito::Grammar.val_int'} . chr(93)))
+    ($MATCH->{capture} = (($MATCH->{'Perlito::Grammar.var_sigil'} . chr(47) . chr(91) . $MATCH->{'Perlito::Grammar.val_int'} . chr(93))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
@@ -539,7 +539,7 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ($MATCH->{capture} = (Rul::Var->new(('sigil' => ("" . $MATCH->{'Perlito::Grammar.var_sigil'})), ('twigil' => ("" . $MATCH->{'Perlito::Grammar.var_twigil'})), ('name' => ("" . $MATCH->{'Perlito::Grammar.full_ident'})))))
+    ($MATCH->{capture} = (Rul::Var->new(('sigil' => "".($MATCH->{'Perlito::Grammar.var_sigil'})), ('twigil' => "".($MATCH->{'Perlito::Grammar.var_twigil'})), ('name' => "".($MATCH->{'Perlito::Grammar.full_ident'})))))
 }) || 1))))
 }))
 })));
@@ -690,7 +690,7 @@ package GLOBAL;
         0
     }
 })) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
-    ($MATCH->{capture} = (Rul::CharClass->new(('chars' => ("" . $MATCH->{'char_class'})))))
+    ($MATCH->{capture} = (Rul::CharClass->new(('chars' => "".($MATCH->{'char_class'})))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
@@ -705,7 +705,7 @@ package GLOBAL;
         0
     }
 })) && (((chr(62) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
-    ($MATCH->{capture} = (Rul::NegateCharClass->new(('chars' => ("" . $MATCH->{'char_class'})))))
+    ($MATCH->{capture} = (Rul::NegateCharClass->new(('chars' => "".($MATCH->{'char_class'})))))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);

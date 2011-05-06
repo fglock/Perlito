@@ -574,10 +574,10 @@ $reduce->($op_stack, $num_stack)
                         else {
                             if (is_term($token)) {
                                 if (is_term($last)) {
-                                    Main::say(chr(35) . '      last:  ', Main::perl($last, ));
-                                    Main::say(chr(35) . '      token: ', Main::perl($token, ));
-                                    Main::say(chr(35) . '      space: ', $last_has_space);
-                                    die('Value tokens must be separated by an operator')
+                                    Main::say((chr(35) . '      last:  '), Main::perl($last, ));
+                                    Main::say((chr(35) . '      token: '), Main::perl($token, ));
+                                    Main::say((chr(35) . '      space: '), $last_has_space);
+                                    die(('Value tokens must be separated by an operator'))
                                 };
                                 ($token->[0] = 'term');
                                 push( @{$num_stack}, $token )
@@ -604,7 +604,7 @@ $reduce->($op_stack, $num_stack)
                                     unshift( @{$op_stack}, $token )
                                 }
                                 else {
-                                    die('Unknown token: ' . chr(39), $token->[1], chr(39))
+                                    die(('Unknown token: ' . chr(39)), $token->[1], (chr(39)))
                                 }
                             }
                         }
@@ -621,7 +621,7 @@ $reduce->($op_stack, $num_stack)
                 }
             };
             if ((defined($token) && (($token->[0] ne 'end')))) {
-                die('Unexpected end token: ', Main::perl($token, ))
+                die(('Unexpected end token: '), Main::perl($token, ))
             };
             for ( ; scalar( @{$op_stack} );  ) {
 $reduce->($op_stack, $num_stack)

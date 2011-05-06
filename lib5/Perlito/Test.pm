@@ -22,14 +22,14 @@ package GLOBAL;
             my $number_of_tests = $_[0];
             ($testing_started = 1);
             ($num_of_tests_planned = $number_of_tests);
-            Main::say('1..' . $number_of_tests)
+            Main::say(('1..' . $number_of_tests))
         };
         sub ok {
             my $cond = $_[0];
             my $desc = $_[1];
             my $todo = $_[2];
             my $depends = $_[3];
-            Perlito::Test::proclaim($cond, 'ok' . chr(33) . ' ' . $desc, $todo, $depends)
+            Perlito::Test::proclaim($cond, ('ok' . chr(33) . ' ' . $desc), $todo, $depends)
         };
         sub is {
             my $got = $_[0];
@@ -38,7 +38,7 @@ package GLOBAL;
             my $todo = $_[3];
             my $depends = $_[4];
             ((my  $test) = ($got eq $expected));
-            Perlito::Test::proclaim($test, 'is' . chr(33) . ' ' . $desc, $todo, $got, $expected, $depends)
+            Perlito::Test::proclaim($test, ('is' . chr(33) . ' ' . $desc), $todo, $got, $expected, $depends)
         };
         sub is_deeply {
             my $got = $_[0];
@@ -49,7 +49,7 @@ package GLOBAL;
             ((my  $got_perl) = Main::perl($got, ));
             ((my  $expected_perl) = Main::perl($expected, ));
             ((my  $test) = (($got_perl eq $expected_perl)));
-            Perlito::Test::proclaim($test, 'is deeply' . chr(33) . ' ' . $desc, $todo, $got_perl, $expected_perl, $depends)
+            Perlito::Test::proclaim($test, ('is deeply' . chr(33) . ' ' . $desc), $todo, $got_perl, $expected_perl, $depends)
         };
         sub isnt {
             my $got = $_[0];
@@ -58,7 +58,7 @@ package GLOBAL;
             my $todo = $_[3];
             my $depends = $_[4];
             ((my  $test) = !((($got eq $expected))));
-            Perlito::Test::proclaim($test, 'isnt' . chr(33) . ' ' . $desc, $todo, $got, $expected, $depends, do {
+            Perlito::Test::proclaim($test, ('isnt' . chr(33) . ' ' . $desc), $todo, $got, $expected, $depends, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'negate'} = 1);
     $Hash_a
@@ -71,46 +71,46 @@ package GLOBAL;
             my $desc = $_[3];
             my $todo = $_[4];
             my $depends = $_[5];
-            Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::cmp_ok not implemented')
+            Main::say((chr(35) . chr(35) . chr(35) . ' Perlito::Test::cmp_ok not implemented'))
         };
         sub like {
-            Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::like not implemented')
+            Main::say((chr(35) . chr(35) . chr(35) . ' Perlito::Test::like not implemented'))
         };
         sub unlike {
-            Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::unlike not implemented')
+            Main::say((chr(35) . chr(35) . chr(35) . ' Perlito::Test::unlike not implemented'))
         };
         sub eval_dies_ok {
-            Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::eval_dies_ok not implemented')
+            Main::say((chr(35) . chr(35) . chr(35) . ' Perlito::Test::eval_dies_ok not implemented'))
         };
         sub isa_ok {
-            Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::isa_ok not implemented')
+            Main::say((chr(35) . chr(35) . chr(35) . ' Perlito::Test::isa_ok not implemented'))
         };
         sub use_ok {
-            Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::use_ok not implemented')
+            Main::say((chr(35) . chr(35) . chr(35) . ' Perlito::Test::use_ok not implemented'))
         };
         sub throws_ok {
-            Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::throws_ok not implemented')
+            Main::say((chr(35) . chr(35) . chr(35) . ' Perlito::Test::throws_ok not implemented'))
         };
         sub dies_ok {
-            Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::dies_ok not implemented')
+            Main::say((chr(35) . chr(35) . chr(35) . ' Perlito::Test::dies_ok not implemented'))
         };
         sub lives_ok {
-            Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::lives_ok not implemented')
+            Main::say((chr(35) . chr(35) . chr(35) . ' Perlito::Test::lives_ok not implemented'))
         };
         sub skip {
             my $reason = $_[0];
             my $depends = $_[1];
-            Perlito::Test::proclaim(1, '', 'skip ' . $reason, $depends)
+            Perlito::Test::proclaim(1, '', ('skip ' . $reason), $depends)
         };
         sub pass {
             my $desc = $_[0];
-            Perlito::Test::proclaim(1, 'pass' . chr(33) . ' ' . $desc)
+            Perlito::Test::proclaim(1, ('pass' . chr(33) . ' ' . $desc))
         };
         sub flunk {
             my $desc = $_[0];
             my $todo = $_[1];
             my $depends = $_[2];
-            Perlito::Test::proclaim(0, 'flunk' . chr(33) . ' ' . $desc, $todo, $depends)
+            Perlito::Test::proclaim(0, ('flunk' . chr(33) . ' ' . $desc), $todo, $depends)
         };
         sub proclaim {
             my $cond = $_[0];
@@ -123,10 +123,10 @@ package GLOBAL;
             ($testing_started = 1);
             ($num_of_tests_run = ($num_of_tests_run + 1));
             if (($cond)) {
-                Main::say('ok ', $num_of_tests_run)
+                Main::say(('ok '), $num_of_tests_run)
             }
             else {
-                Main::say('not ok ', $num_of_tests_run);
+                Main::say(('not ok '), $num_of_tests_run);
                 Perlito::Test::report_failure($todo, $got, $expected, $negate)
             };
             return scalar ($cond)
@@ -136,20 +136,20 @@ package GLOBAL;
             my $got = $_[1];
             my $expected = $_[2];
             my $negate = $_[3];
-            Main::say(chr(35) . chr(35) . chr(35) . ' Perlito::Test::report_failure not implemented')
+            Main::say((chr(35) . chr(35) . chr(35) . ' Perlito::Test::report_failure not implemented'))
         };
         sub test_ends {
             if ((!($testing_started))) {
                 return ()
             };
             if ((!($num_of_tests_planned))) {
-                Main::say('1..' . $num_of_tests_run)
+                Main::say(('1..' . $num_of_tests_run))
             };
             if ((($num_of_tests_planned != $num_of_tests_run))) {
-                Main::say(chr(35) . ' Looks like you planned ' . $num_of_tests_planned . ' tests, but ran ' . $num_of_tests_run)
+                Main::say((chr(35) . ' Looks like you planned ' . $num_of_tests_planned . (' tests, but ran ') . $num_of_tests_run))
             };
             if (($num_of_tests_failed)) {
-                Main::say(chr(35) . ' Looks like you failed ' . $num_of_tests_failed . ' tests of ' . $num_of_tests_run)
+                Main::say((chr(35) . ' Looks like you failed ' . $num_of_tests_failed . (' tests of ') . $num_of_tests_run))
             };
             ($num_of_tests_run = 0);
             ($num_of_tests_failed = 0);

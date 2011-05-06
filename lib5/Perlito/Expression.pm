@@ -159,7 +159,7 @@ package GLOBAL;
                 return scalar ($v)
             };
             if (($v->[1] eq 'funcall_no_params')) {
-                die('unexpected function call');
+                die(('unexpected function call'));
                 push( @{$v}, $value );
                 return scalar ($v)
             };
@@ -169,7 +169,7 @@ package GLOBAL;
                 return scalar ($v)
             };
             if (($v->[1] eq 'funcall')) {
-                die('unexpected function call');
+                die(('unexpected function call'));
                 push( @{$v}, $value );
                 return scalar ($v)
             };
@@ -215,7 +215,7 @@ package GLOBAL;
     my $num_stack = $_[1];
     ((my  $last_op) = shift( @{$op_stack} ));
     if (($last_op->[0] eq 'prefix')) {
-        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'prefix:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => do {
+        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('prefix:' . chr(60) . $last_op->[1] . chr(62))), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, pop_term($num_stack) );
@@ -224,7 +224,7 @@ package GLOBAL;
     }
     else {
         if (($last_op->[0] eq 'postfix')) {
-            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'postfix:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => do {
+            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('postfix:' . chr(60) . $last_op->[1] . chr(62))), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, pop_term($num_stack) );
@@ -240,12 +240,12 @@ package GLOBAL;
                     (my  $arg);
                     if ((scalar( @{$num_stack} ) < 2)) {
                         ((my  $v2) = pop_term($num_stack));
-                        if (((Main::isa($v2, 'Apply')) && (($v2->code() eq ('list:' . chr(60) . $last_op->[1] . chr(62)))))) {
+                        if (((Main::isa($v2, 'Apply')) && (($v2->code() eq (('list:' . chr(60) . $last_op->[1] . chr(62))))))) {
                             push( @{($v2->arguments())}, undef() );
                             push( @{$num_stack}, $v2 )
                         }
                         else {
-                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'list:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => do {
+                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('list:' . chr(60) . $last_op->[1] . chr(62))), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $v2 );
@@ -265,7 +265,7 @@ package GLOBAL;
     $List_a
 })
                     };
-                    if ((((Main::isa(($arg->[0]), 'Apply')) && (($last_op->[0] eq 'infix'))) && ((($arg->[0])->code() eq ('list:' . chr(60) . $last_op->[1] . chr(62)))))) {
+                    if ((((Main::isa(($arg->[0]), 'Apply')) && (($last_op->[0] eq 'infix'))) && ((($arg->[0])->code() eq (('list:' . chr(60) . $last_op->[1] . chr(62))))))) {
                         push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ($arg->[0])->code()), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -278,12 +278,12 @@ package GLOBAL;
 })) );
                         return ()
                     };
-                    push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'list:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => $arg)) )
+                    push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('list:' . chr(60) . $last_op->[1] . chr(62))), ('arguments' => $arg)) )
                 }
                 else {
                     if (Perlito::Precedence::is_assoc_type('chain', $last_op->[1])) {
                         if ((scalar( @{$num_stack} ) < 2)) {
-                            die('Missing value after operator ' . $last_op->[1])
+                            die(('Missing value after operator ' . $last_op->[1]))
                         };
                         ((my  $v2) = pop_term($num_stack));
                         ((my  $arg) = do {
@@ -293,15 +293,15 @@ package GLOBAL;
     push( @{$List_a}, $v2 );
     $List_a
 });
-                        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'infix:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => $arg)) )
+                        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('infix:' . chr(60) . $last_op->[1] . chr(62))), ('arguments' => $arg)) )
                     }
                     else {
                         if (($last_op->[0] eq 'ternary')) {
                             if (((scalar( @{$num_stack} ) < 2))) {
-                                die('Missing value after ternary operator')
+                                die(('Missing value after ternary operator'))
                             };
                             ((my  $v2) = pop_term($num_stack));
-                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'ternary:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => do {
+                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('ternary:' . chr(60) . $last_op->[1] . chr(62))), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, pop_term($num_stack) );
@@ -312,10 +312,10 @@ package GLOBAL;
                         }
                         else {
                             if (((scalar( @{$num_stack} ) < 2))) {
-                                die('missing value after operator ' . chr(39) . $last_op->[1] . chr(39))
+                                die(('missing value after operator ' . chr(39) . $last_op->[1] . (chr(39))))
                             };
                             ((my  $v2) = pop_term($num_stack));
-                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => 'infix:' . chr(60) . $last_op->[1] . chr(62)), ('arguments' => do {
+                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('infix:' . chr(60) . $last_op->[1] . chr(62))), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, pop_term($num_stack) );
@@ -586,7 +586,7 @@ package GLOBAL;
 })) && (((do {
     ((my  $block) = (${$MATCH->{'list_parse'}})->{'end_block'});
     if ($block->sig()) {
-        die('Signature error in block')
+        die(('Signature error in block'))
     };
     ($MATCH->{capture} = (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -830,7 +830,7 @@ package GLOBAL;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Lookup->new(('obj' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => chr(47)))), ('index_exp' => Val::Buf->new(('buf' => ("" . $MATCH->{'capture_name'}))))) );
+    push( @{$List_a}, Lookup->new(('obj' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => chr(47)))), ('index_exp' => Val::Buf->new(('buf' => "".($MATCH->{'capture_name'}))))) );
     $List_a
 }))
 }) || 1))))
@@ -893,7 +893,7 @@ package GLOBAL;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Val::Buf->new(('buf' => ("" . $MATCH->{'Perlito::Grammar.ident'}))) );
+    push( @{$List_a}, Val::Buf->new(('buf' => "".($MATCH->{'Perlito::Grammar.ident'}))) );
     $List_a
 }))
 }) || 1))))
@@ -1271,7 +1271,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall' );
-    push( @{$List_a}, ("" . $MATCH->{'Perlito::Grammar.ident'}) );
+    push( @{$List_a}, "".($MATCH->{'Perlito::Grammar.ident'}) );
     push( @{$List_a}, ${$MATCH->{'list_parse'}} );
     push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
     $List_a
@@ -1295,7 +1295,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall' );
-    push( @{$List_a}, ("" . $MATCH->{'Perlito::Grammar.ident'}) );
+    push( @{$List_a}, "".($MATCH->{'Perlito::Grammar.ident'}) );
     push( @{$List_a}, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'end_block'} = undef());
@@ -1315,7 +1315,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall_no_params' );
-    push( @{$List_a}, ("" . $MATCH->{'Perlito::Grammar.ident'}) );
+    push( @{$List_a}, "".($MATCH->{'Perlito::Grammar.ident'}) );
     push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
     $List_a
 }))
@@ -1372,8 +1372,8 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'funcall' );
-    push( @{$List_a}, ("" . $MATCH->{'Perlito::Grammar.optional_namespace_before_ident'}) );
-    push( @{$List_a}, ("" . $MATCH->{'Perlito::Grammar.ident'}) );
+    push( @{$List_a}, "".($MATCH->{'Perlito::Grammar.optional_namespace_before_ident'}) );
+    push( @{$List_a}, "".($MATCH->{'Perlito::Grammar.ident'}) );
     push( @{$List_a}, ${$MATCH->{'list_parse'}} );
     $List_a
 }))
@@ -1393,10 +1393,10 @@ package GLOBAL;
     ($MATCH = $tmp);
     !!($MATCH)
 }) && (((do {
-    ((my  $namespace) = ("" . $MATCH->{'Perlito::Grammar.optional_namespace_before_ident'}));
-    ((my  $name) = ("" . $MATCH->{'Perlito::Grammar.ident'}));
+    ((my  $namespace) = "".($MATCH->{'Perlito::Grammar.optional_namespace_before_ident'}));
+    ((my  $name) = "".($MATCH->{'Perlito::Grammar.ident'}));
     if ($namespace) {
-        ($name = $namespace . '::' . $name)
+        ($name = ($namespace . '::' . $name))
     };
     ($MATCH->{capture} = (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1414,8 +1414,8 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'funcall_no_params' );
-    push( @{$List_a}, ("" . $MATCH->{'Perlito::Grammar.optional_namespace_before_ident'}) );
-    push( @{$List_a}, ("" . $MATCH->{'Perlito::Grammar.ident'}) );
+    push( @{$List_a}, "".($MATCH->{'Perlito::Grammar.optional_namespace_before_ident'}) );
+    push( @{$List_a}, "".($MATCH->{'Perlito::Grammar.ident'}) );
     $List_a
 }))
 }) || 1)))
@@ -1723,7 +1723,7 @@ package GLOBAL;
             ((my  $get_token) = sub  {
     ((my  $m) = $self->operator($str, $last_pos));
     if (!($m)) {
-        die('Expected closing delimiter: ', (($delimiter)), ' near ', $last_pos)
+        die(('Expected closing delimiter: '), (($delimiter)), ' near ', $last_pos)
     };
     ((my  $v) = ${$m});
     if (($v->[0] ne 'end')) {
@@ -2112,7 +2112,7 @@ package GLOBAL;
                 ((${$res})->{'exp'} = Do->new(('block' => (${$res})->{'exp'})))
             };
             if ((${$res})->{'end_block'}) {
-                die('Unexpected block after expression near ', $pos)
+                die(('Unexpected block after expression near '), $pos)
             };
             if ((${$res})->{'terminated'}) {
                 (($res)->{capture} = (${$res})->{'exp'});
@@ -2125,12 +2125,12 @@ package GLOBAL;
             };
             ((my  $modifier_exp) = $self->exp_parse($str, $modifier->to()));
             if (!(($modifier_exp))) {
-                die('Expected expression after ' . chr(39), $modifier, chr(39))
+                die(('Expected expression after ' . chr(39)), $modifier, (chr(39)))
             };
             if ((${$modifier_exp})->{'end_block'}) {
-                die('Unexpected block after expression near ', $modifier->to())
+                die(('Unexpected block after expression near '), $modifier->to())
             };
-            ($modifier = ("" . $modifier));
+            ($modifier = "".($modifier));
             if (($modifier eq 'if')) {
                 return scalar (Perlito::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -2171,7 +2171,7 @@ package GLOBAL;
     $List_a
 })))))))
             };
-            die('Unexpected statement modifier ' . chr(39) . $modifier . chr(39))
+            die(('Unexpected statement modifier ' . chr(39) . $modifier . chr(39)))
         }
     }
 

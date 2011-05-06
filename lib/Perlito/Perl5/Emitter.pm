@@ -286,12 +286,48 @@ class Apply {
     has @.arguments;
     has $.namespace;
 
-    my %op_perl5 = (
+    my %op_prefix_perl5 = (
         say     => 'Main::say',
         print   => 'Main::print',
         map     => 'Main::map',
         grep    => 'Main::grep',
         sort    => 'Main::sort',
+        warn    => 'warn',
+        Int     => '0+',
+        Num     => '0+',
+        bool    => '!!',
+        'prefix:<~>'    => '"".',
+        'prefix:<!>'    => '!',
+        'prefix:<?>'    => '!!',
+        'prefix:<++>'   => '++',
+        'prefix:<-->'   => '--',
+    );
+
+    my %op_infix_perl5 = (
+        'list:<~>'   => ' . ',
+        'infix:<+>'  => ' + ',
+        'infix:<->'  => ' - ',
+        'infix:<*>'  => ' * ',
+        'infix:</>'  => ' / ',
+        'infix:<>>'  => ' > ',
+        'infix:<<>'  => ' < ',
+        'infix:<>=>' => ' >= ',
+        'infix:<<=>' => ' <= ',
+        'infix:<x>'  => ' x ',
+        
+        'infix:<&&>' => ' && ',
+        'infix:<||>' => ' || ',
+        'infix:<and>' => ' and ',
+        'infix:<or>' => ' or ',
+        'infix:<//>' => ' // ',
+        'infix:<eq>' => ' eq ',
+        'infix:<ne>' => ' ne ',
+        'infix:<le>' => ' le ',
+        'infix:<ge>' => ' ge ',
+ 
+        'infix:<==>' => ' == ',
+        'infix:<!=>' => ' != ',
+        'infix:<=>>' => ' => ',
     );
 
     method emit_perl5 { self.emit_perl5_indented(0) }
@@ -313,15 +349,17 @@ class Apply {
             return Perl5::tab($level) ~ '(' ~ $.code.emit_perl5() ~ ')->(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
         }
 
+        if exists %op_infix_perl5{$code} {
+            return Perl5::tab($level) ~ '(' ~ (@.arguments.>>emit_perl5).join( %op_infix_perl5{$code} ) ~ ')'
+        }
+        if exists %op_prefix_perl5{$code} {
+            return Perl5::tab($level) ~ %op_prefix_perl5{$code} ~ '('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')'
+        }
+
         if $code eq 'self'       { return Perl5::tab($level) ~ '$self' }
         if $code eq 'Mu'         { return Perl5::tab($level) ~ 'undef()' }
 
         if $code eq 'make'       { return Perl5::tab($level) ~ '($MATCH->{capture} = ('   ~ (@.arguments.>>emit_perl5).join(', ') ~ '))' }
-
-        if exists %op_perl5{$code} {
-            return Perl5::tab($level) ~ %op_perl5{$code} ~ '('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')'
-        }
-        if $code eq 'warn'       { return Perl5::tab($level) ~ 'warn('        ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
 
         if $code eq 'array'      { return Perl5::tab($level) ~ '@{' ~ (@.arguments.>>emit_perl5).join(' ')           ~ '}'   }
         if $code eq 'pop'        { return Perl5::tab($level) ~ 'pop( @{' ~ (@.arguments.>>emit_perl5).join(' ')      ~ '} )' }
@@ -329,47 +367,13 @@ class Apply {
         if $code eq 'shift'      { return Perl5::tab($level) ~ 'shift( @{' ~ (@.arguments.>>emit_perl5).join(' ')    ~ '} )' }
         if $code eq 'unshift'    { return Perl5::tab($level) ~ 'unshift( @{' ~ (@.arguments.>>emit_perl5).join(' ')  ~ '} )' }
 
-        if $code eq 'Int'        { return Perl5::tab($level) ~ '(0+' ~ (@.arguments[0]).emit_perl5()             ~ ')' }
-        if $code eq 'Num'        { return Perl5::tab($level) ~ '(0+' ~ (@.arguments[0]).emit_perl5()             ~ ')' }
-        if $code eq 'bool'       { return Perl5::tab($level) ~ '!!('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' }
-
-        if $code eq 'prefix:<~>' { return Perl5::tab($level) ~ '("" . ' ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
-        if $code eq 'prefix:<!>' { return Perl5::tab($level) ~ '!(' ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
-        if $code eq 'prefix:<?>' { return Perl5::tab($level) ~ '!!('  ~ (@.arguments.>>emit_perl5).join(' ') ~ ')' }
-
         if $code eq 'prefix:<$>' { return Perl5::tab($level) ~ '${' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' }
         if $code eq 'prefix:<@>' { return Perl5::tab($level) ~ '(' ~ (@.arguments.>>emit_perl5).join(' ')     ~ ')' }
         if $code eq 'prefix:<%>' { return Perl5::tab($level) ~ '%{' ~ (@.arguments.>>emit_perl5).join(' ')     ~ '}' }
 
         if $code eq 'postfix:<++>' { return Perl5::tab($level) ~ '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')++' }
         if $code eq 'postfix:<-->' { return Perl5::tab($level) ~ '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')--' }
-        if $code eq 'prefix:<++>'  { return Perl5::tab($level) ~ '++(' ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')' }
-        if $code eq 'prefix:<-->'  { return Perl5::tab($level) ~ '--(' ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')' }
 
-        if $code eq 'list:<~>'   { return Perl5::tab($level) ~ ''   ~ (@.arguments.>>emit_perl5).join(' . ')   ~ ''  }
-        if $code eq 'infix:<+>'  { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' + ')   ~ ')' }
-        if $code eq 'infix:<->'  { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' - ')   ~ ')' }
-        if $code eq 'infix:<*>'  { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' * ')   ~ ')' }
-        if $code eq 'infix:</>'  { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' / ')   ~ ')' }
-        if $code eq 'infix:<>>'  { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' > ')   ~ ')' }
-        if $code eq 'infix:<<>'  { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' < ')   ~ ')' }
-        if $code eq 'infix:<>=>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' >= ')  ~ ')' }
-        if $code eq 'infix:<<=>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' <= ')  ~ ')' }
-        if $code eq 'infix:<x>'  { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' x ')   ~ ')' }
-        
-        if $code eq 'infix:<&&>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' && ')  ~ ')' }
-        if $code eq 'infix:<||>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' || ')  ~ ')' }
-        if $code eq 'infix:<and>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' and ')  ~ ')' }
-        if $code eq 'infix:<or>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' or ')  ~ ')' }
-        if $code eq 'infix:<//>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' // ')  ~ ')' }
-        if $code eq 'infix:<eq>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' eq ')  ~ ')' }
-        if $code eq 'infix:<ne>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' ne ')  ~ ')' }
-        if $code eq 'infix:<le>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' le ')  ~ ')' }
-        if $code eq 'infix:<ge>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' ge ')  ~ ')' }
- 
-        if $code eq 'infix:<==>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' == ')  ~ ')' }
-        if $code eq 'infix:<!=>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' != ')  ~ ')' }
-        if $code eq 'infix:<=>>' { return Perl5::tab($level) ~ '('  ~ (@.arguments.>>emit_perl5).join(' => ')  ~ ')' }
         if $code eq 'infix:<..>' { return Perl5::tab($level) ~ '(bless ['  ~ (@.arguments.>>emit_perl5).join(' .. ')  ~ "], 'ARRAY')" }
         if $code eq 'infix:<===>' { 
             return Perl5::tab($level) ~ '(Main::id(' ~ (@.arguments[0]).emit_perl5() ~ ') eq Main::id(' ~ (@.arguments[1]).emit_perl5() ~ '))' 

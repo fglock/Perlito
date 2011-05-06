@@ -34,7 +34,7 @@ package GLOBAL;
         sub value { $_[0]->{value} };
         sub perl {
             my $self = $_[0];
-            return scalar ($self->{key} . ' ' . chr(61) . chr(62) . ' ' . Main::perl($self->{value}, ))
+            return scalar (($self->{key} . ' ' . chr(61) . chr(62) . ' ' . Main::perl($self->{value}, )))
         }
     }
 
