@@ -11,6 +11,23 @@ class Javascript {
         return $s;
     }
 
+    my %safe_char = (
+        '_' => 1,
+        ',' => 1,
+        '.' => 1,
+        ':' => 1,
+        '-' => 1,
+        '+' => 1,
+        '*' => 1,
+        ' ' => 1,
+        '(' => 1,
+        ')' => 1,
+        '<' => 1,
+        '>' => 1,
+        '[' => 1,
+        ']' => 1,
+    );
+
     sub escape_string($s) {
         my @out;
         my $tmp = '';
@@ -20,14 +37,7 @@ class Javascript {
             if     (($c ge 'a') && ($c le 'z'))
                 || (($c ge 'A') && ($c le 'Z'))
                 || (($c ge '0') && ($c le '9'))
-                ||  ($c eq '_')
-                ||  ($c eq ',')
-                ||  ($c eq '.')
-                ||  ($c eq ':')
-                ||  ($c eq '-')
-                ||  ($c eq '+')
-                ||  ($c eq '*')
-                ||  ($c eq ' ')
+                || exists( %safe_char{$c} )
             {
                 $tmp = $tmp ~ $c;
             }

@@ -25,7 +25,7 @@ package GLOBAL;
         sub array { $_[0]->{array} };
         sub perl {
             my $self = $_[0];
-            return scalar (('Match.new' . chr(40) . ('from ' . chr(61) . chr(62) . ' ') . Main::perl($self->{from}, ) . (', to ' . chr(61) . chr(62) . ' ') . Main::perl($self->{to}, ) . (', bool ' . chr(61) . chr(62) . ' ') . Main::perl(($self->{bool}->bool()), ) . (', capture ' . chr(61) . chr(62) . ' ') . Main::perl($self->{capture}, ) . (', hash ' . chr(61) . chr(62) . ' ') . Main::perl($self->{hash}, ) . (', array ' . chr(61) . chr(62) . ' ') . Main::perl($self->{array}, ) . (chr(41))))
+            return scalar (('Match.new(' . ('from ' . chr(61) . '> ') . Main::perl($self->{from}, ) . (', to ' . chr(61) . '> ') . Main::perl($self->{to}, ) . (', bool ' . chr(61) . '> ') . Main::perl(($self->{bool}->bool()), ) . (', capture ' . chr(61) . '> ') . Main::perl($self->{capture}, ) . (', hash ' . chr(61) . '> ') . Main::perl($self->{hash}, ) . (', array ' . chr(61) . '> ') . Main::perl($self->{array}, ) . (')')))
         };
         sub Bool {
             my $self = $_[0];
@@ -141,7 +141,7 @@ $self->{bool}->Bool()
         sub lisp_dump_object {
             my $class_name = $_[0];
             my $data = $_[1];
-            return scalar (($class_name . chr(40) . ' ' . Main::join((bless [ map { Main::perl( $_, , ) } @{( $data )} ], "ARRAY"), ', ') . ' ' . chr(41)))
+            return scalar (($class_name . '( ' . Main::join((bless [ map { Main::perl( $_, , ) } @{( $data )} ], "ARRAY"), ', ') . ' )'))
         };
         sub to_go_namespace {
             die(('TODO'))

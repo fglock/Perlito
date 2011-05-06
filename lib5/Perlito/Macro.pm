@@ -22,7 +22,7 @@ package GLOBAL;
             ((my  $needs_interpolation) = 0);
             (my  $List_items = bless [], 'ARRAY');
             for my $item ( @{$self->{array1}} ) {
-                if ((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)) || ($item->code() eq 'list:' . chr(60) . ',' . chr(62)))))) {
+                if ((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>'))))) {
                     for my $arg ( @{(($item->arguments()))} ) {
                         push( @{$List_items}, $arg )
                     }
@@ -32,7 +32,7 @@ package GLOBAL;
                 }
             };
             for my $item ( @{$List_items} ) {
-                if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:' . chr(60) . chr(64) . chr(62)) || ($item->code() eq 'infix:' . chr(60) . '..' . chr(62))))))) {
+                if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')))))) {
                     ($needs_interpolation = 1)
                 }
             };
@@ -41,14 +41,14 @@ package GLOBAL;
             };
             (my  $List_s = bless [], 'ARRAY');
             for my $item ( @{$List_items} ) {
-                if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:' . chr(60) . chr(64) . chr(62)) || ($item->code() eq 'infix:' . chr(60) . '..' . chr(62))))))) {
+                if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')))))) {
                     push( @{$List_s}, Apply->new(('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')) );
     push( @{$List_a}, $item );
     $List_a
-}), ('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('namespace' => '')) );
+}), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
                     push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -76,11 +76,11 @@ package GLOBAL;
 }), ('hyper' => ''), ('invocant' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => ''))), ('method' => 'elems')) );
     push( @{$List_a}, Val::Int->new(('int' => 1)) );
     $List_a
-}), ('code' => 'infix:' . chr(60) . '-' . chr(62)), ('namespace' => '')) );
+}), ('code' => 'infix:<->'), ('namespace' => '')) );
     $List_a
-}), ('code' => 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)), ('namespace' => '')) );
+}), ('code' => 'circumfix:<( )>'), ('namespace' => '')) );
     $List_a
-}), ('code' => 'infix:' . chr(60) . '..' . chr(62)), ('namespace' => ''))), ('topic' => undef())) )
+}), ('code' => 'infix:<..>'), ('namespace' => ''))), ('topic' => undef())) )
                 }
                 else {
                     push( @{$List_s}, Call->new(('arguments' => do {
@@ -115,7 +115,7 @@ package GLOBAL;
             my $self = $_[0];
             (my  $List_items = bless [], 'ARRAY');
             for my $item ( @{$self->{hash1}} ) {
-                if ((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)) || ($item->code() eq 'list:' . chr(60) . ',' . chr(62)))))) {
+                if ((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>'))))) {
                     for my $arg ( @{(($item->arguments()))} ) {
                         push( @{$List_items}, $arg )
                     }
@@ -126,17 +126,17 @@ package GLOBAL;
             };
             (my  $List_s = bless [], 'ARRAY');
             for my $item ( @{$List_items} ) {
-                if ((Main::isa($item, 'Apply') && ($item->code() eq 'infix:' . chr(60) . chr(61) . chr(62) . chr(62)))) {
+                if ((Main::isa($item, 'Apply') && ($item->code() eq 'infix:<' . chr(61) . '>>'))) {
                     push( @{$List_s}, Apply->new(('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Lookup->new(('index_exp' => $item->arguments()->[0]), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37)), ('twigil' => '')))) );
     push( @{$List_a}, $item->arguments()->[1] );
     $List_a
-}), ('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('namespace' => '')) )
+}), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) )
                 }
                 else {
-                    if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(37))) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:' . chr(60) . chr(37) . chr(62))))) {
+                    if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(37))) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(37) . '>')))) {
                         push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -150,7 +150,7 @@ package GLOBAL;
     $List_a
 }), ('hyper' => ''), ('invocant' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('method' => 'value')) );
     $List_a
-}), ('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('namespace' => '')) );
+}), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
     $List_a
 }))), ('cond' => Apply->new(('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -160,9 +160,9 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Call->new(('arguments' => undef()), ('hyper' => ''), ('invocant' => $item), ('method' => 'pairs')) );
     $List_a
-}), ('code' => 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)), ('namespace' => '')) );
+}), ('code' => 'circumfix:<( )>'), ('namespace' => '')) );
     $List_a
-}), ('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('namespace' => ''))), ('topic' => undef())) )
+}), ('code' => 'prefix:<' . chr(64) . '>'), ('namespace' => ''))), ('topic' => undef())) )
                     }
                     else {
                         die('Error in hash composer: ', Main::perl($item, ))
@@ -189,16 +189,16 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Apply" }
         ((my  $Hash_op = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'infix:' . chr(60) . '+' . chr(61) . chr(62)} = 'infix:' . chr(60) . '+' . chr(62));
-    ($Hash_a->{'infix:' . chr(60) . '-' . chr(61) . chr(62)} = 'infix:' . chr(60) . '-' . chr(62));
-    ($Hash_a->{'infix:' . chr(60) . '*' . chr(61) . chr(62)} = 'infix:' . chr(60) . '*' . chr(62));
-    ($Hash_a->{'infix:' . chr(60) . chr(47) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(47) . chr(62));
-    ($Hash_a->{'infix:' . chr(60) . chr(124) . chr(124) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(124) . chr(124) . chr(62));
-    ($Hash_a->{'infix:' . chr(60) . chr(38) . chr(38) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(38) . chr(38) . chr(62));
-    ($Hash_a->{'infix:' . chr(60) . chr(124) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(124) . chr(62));
-    ($Hash_a->{'infix:' . chr(60) . chr(38) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(38) . chr(62));
-    ($Hash_a->{'infix:' . chr(60) . chr(47) . chr(47) . chr(61) . chr(62)} = 'infix:' . chr(60) . chr(47) . chr(47) . chr(62));
-    ($Hash_a->{'infix:' . chr(60) . chr(126) . chr(61) . chr(62)} = 'list:' . chr(60) . chr(126) . chr(62));
+    ($Hash_a->{'infix:<+' . chr(61) . '>'} = 'infix:<+>');
+    ($Hash_a->{'infix:<-' . chr(61) . '>'} = 'infix:<->');
+    ($Hash_a->{'infix:<*' . chr(61) . '>'} = 'infix:<*>');
+    ($Hash_a->{'infix:<' . chr(47) . chr(61) . '>'} = 'infix:<' . chr(47) . '>');
+    ($Hash_a->{'infix:<' . chr(124) . chr(124) . chr(61) . '>'} = 'infix:<' . chr(124) . chr(124) . '>');
+    ($Hash_a->{'infix:<' . chr(38) . chr(38) . chr(61) . '>'} = 'infix:<' . chr(38) . chr(38) . '>');
+    ($Hash_a->{'infix:<' . chr(124) . chr(61) . '>'} = 'infix:<' . chr(124) . '>');
+    ($Hash_a->{'infix:<' . chr(38) . chr(61) . '>'} = 'infix:<' . chr(38) . '>');
+    ($Hash_a->{'infix:<' . chr(47) . chr(47) . chr(61) . '>'} = 'infix:<' . chr(47) . chr(47) . '>');
+    ($Hash_a->{'infix:<' . chr(126) . chr(61) . '>'} = 'list:<' . chr(126) . '>');
     $Hash_a
 });
         sub op_assign {
@@ -211,7 +211,7 @@ package GLOBAL;
                 return scalar (0)
             };
             if (exists($Hash_op->{$code})) {
-                return scalar (Apply->new(('code' => 'infix:' . chr(60) . chr(61) . chr(62)), ('arguments' => do {
+                return scalar (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{arguments}->[0] );
@@ -243,7 +243,7 @@ package GLOBAL;
             };
             if ((scalar( @{$block} ) == 1)) {
                 ((my  $stmt) = $block->[0]);
-                if ((Main::isa($stmt, 'Apply') && ($stmt->code() eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)))) {
+                if ((Main::isa($stmt, 'Apply') && ($stmt->code() eq 'circumfix:<( )>'))) {
                     ((my  $args) = $stmt->arguments());
                     return scalar (Do->new(('block' => $args->[0]))->simplify())
                 };

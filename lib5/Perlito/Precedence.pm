@@ -65,7 +65,7 @@ package GLOBAL;
                 if (($s eq $tok)) {
                     ((my  $c1) = substr($str, (($pos + $l) - 1), 1));
                     ((my  $c2) = substr($str, ($pos + $l), 1));
-                    if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq chr(40)))))) {
+                    if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))) {
 
                     }
                     else {
@@ -89,7 +89,7 @@ package GLOBAL;
                 ($c02 = substr($str, $pos, 2))
             }
             else {
-                if (((($c02 eq chr(60) . chr(60))) || (($c02 eq chr(62) . chr(62))))) {
+                if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
                     ($hyper_left = $c02);
                     ($pos = ($pos + 2));
                     ($c02 = substr($str, $pos, 2))
@@ -99,7 +99,7 @@ package GLOBAL;
             if (exists($Op3->{$op3})) {
                 ((my  $c1) = substr($str, ($pos + 2), 1));
                 ((my  $c2) = substr($str, ($pos + 3), 1));
-                if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq chr(40)))))) {
+                if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))) {
 
                 }
                 else {
@@ -111,7 +111,7 @@ package GLOBAL;
                         ($pos = ($pos + 1))
                     }
                     else {
-                        if (((($c02 eq chr(60) . chr(60))) || (($c02 eq chr(62) . chr(62))))) {
+                        if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
                             ($hyper_right = $c02);
                             ($pos = ($pos + 2))
                         }
@@ -135,7 +135,7 @@ package GLOBAL;
             if (exists($Op2->{$op2})) {
                 ((my  $c1) = substr($str, ($pos + 1), 1));
                 ((my  $c2) = substr($str, ($pos + 2), 1));
-                if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq chr(40)))))) {
+                if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))) {
 
                 }
                 else {
@@ -147,7 +147,7 @@ package GLOBAL;
                         ($pos = ($pos + 1))
                     }
                     else {
-                        if (((($c02 eq chr(60) . chr(60))) || (($c02 eq chr(62) . chr(62))))) {
+                        if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
                             ($hyper_right = $c02);
                             ($pos = ($pos + 2))
                         }
@@ -170,7 +170,7 @@ package GLOBAL;
             ((my  $op1) = substr($str, $pos, 1));
             if (exists($Op1->{$op1})) {
                 ((my  $c2) = substr($str, ($pos + 1), 1));
-                if ((is_ident_middle($op1) && ((is_ident_middle($c2) || ($c2 eq chr(40)))))) {
+                if ((is_ident_middle($op1) && ((is_ident_middle($c2) || ($c2 eq '('))))) {
 
                 }
                 else {
@@ -182,7 +182,7 @@ package GLOBAL;
                         ($pos = ($pos + 1))
                     }
                     else {
-                        if (((($c02 eq chr(60) . chr(60))) || (($c02 eq chr(62) . chr(62))))) {
+                        if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
                             ($hyper_right = $c02);
                             ($pos = ($pos + 2))
                         }
@@ -235,12 +235,12 @@ package GLOBAL;
             }
         };
         ((my  $prec) = 100);
-        add_op('postfix', '.' . chr(40) . ' ' . chr(41), $prec, do {
+        add_op('postfix', '.( )', $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
-        add_op('postfix', '.' . chr(91) . ' ' . chr(93), $prec, do {
+        add_op('postfix', '.[ ]', $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
@@ -250,12 +250,12 @@ package GLOBAL;
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
-        add_op('postfix', chr(40) . ' ' . chr(41), $prec, do {
+        add_op('postfix', '( )', $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
 });
-        add_op('postfix', chr(91) . ' ' . chr(93), $prec, do {
+        add_op('postfix', '[ ]', $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'no_space_before'} = 1);
     $Hash_a
@@ -345,7 +345,7 @@ package GLOBAL;
 });
         add_op('prefix', chr(124), $prec);
         ($prec = ($prec - 1));
-        add_op('infix', chr(60) . chr(61) . chr(62), $prec);
+        add_op('infix', '<' . chr(61) . '>', $prec);
         add_op('infix', 'leg', $prec);
         add_op('infix', 'cmp', $prec);
         add_op('infix', 'does', $prec);
@@ -390,12 +390,12 @@ package GLOBAL;
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
-        add_op('infix', chr(60) . chr(61), $prec, do {
+        add_op('infix', '<' . chr(61), $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
-        add_op('infix', chr(62) . chr(61), $prec, do {
+        add_op('infix', '>' . chr(61), $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
@@ -410,12 +410,12 @@ package GLOBAL;
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
-        add_op('infix', chr(60), $prec, do {
+        add_op('infix', '<', $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
 });
-        add_op('infix', chr(62), $prec, do {
+        add_op('infix', '>', $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
     $Hash_a
@@ -496,7 +496,7 @@ package GLOBAL;
         ($prec = ($prec - 1));
         add_op('prefix', 'not', $prec);
         ($prec = ($prec - 1));
-        add_op('infix', chr(61) . chr(62), $prec);
+        add_op('infix', chr(61) . '>', $prec);
         ($prec = ($prec - 1));
         add_op('list', ',', $prec, do {
     (my  $Hash_a = bless {}, 'HASH');

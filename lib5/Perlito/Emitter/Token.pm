@@ -26,7 +26,7 @@ package GLOBAL;
                 ($str = chr(92) . chr(39))
             };
             if (($len)) {
-                (chr(40) . ' ' . chr(39) . $str . chr(39) . ' eq substr' . chr(40) . ' ' . chr(36) . 'str, ' . chr(36) . 'MATCH.to, ' . $len . chr(41) . ' ' . chr(38) . chr(38) . ' ' . chr(40) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . $len . ' + ' . chr(36) . 'MATCH.to ' . chr(41) . chr(41))
+                ('( ' . chr(39) . $str . chr(39) . ' eq substr( ' . chr(36) . 'str, ' . chr(36) . 'MATCH.to, ' . $len . ') ' . chr(38) . chr(38) . ' ( ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . $len . ' + ' . chr(36) . 'MATCH.to )' . ')')
             }
             else {
                 return scalar ('1')
@@ -51,15 +51,15 @@ package GLOBAL;
             };
             if (((($self->{quant} eq '+')) && (($self->{greedy} eq '')))) {
 $self->{term}->set_captures_to_array();
-                return scalar ((chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'my ' . chr(36) . 'count ' . chr(61) . ' 0' . chr(59) . ' ' . 'while ' . $self->{term}->emit_perl6() . ' ' . chr(38) . chr(38) . ' ' . chr(40) . chr(36) . 'last_match_null ' . chr(60) . ' 2' . chr(41) . ' ' . chr(123) . ' ' . 'if ' . chr(36) . 'last_pos ' . chr(61) . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(40) . chr(41) . ' ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' ' . chr(36) . 'last_match_null + 1' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . chr(36) . 'count ' . chr(61) . ' ' . chr(36) . 'count + 1' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(36) . 'count ' . chr(62) . ' 0' . chr(59) . ' ' . chr(125) . chr(41)))
+                return scalar (('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'my ' . chr(36) . 'count ' . chr(61) . ' 0' . chr(59) . ' ' . 'while ' . $self->{term}->emit_perl6() . ' ' . chr(38) . chr(38) . ' (' . chr(36) . 'last_match_null < 2) ' . chr(123) . ' ' . 'if ' . chr(36) . 'last_pos ' . chr(61) . chr(61) . ' ' . chr(36) . 'MATCH.to() ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' ' . chr(36) . 'last_match_null + 1' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . chr(36) . 'count ' . chr(61) . ' ' . chr(36) . 'count + 1' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(36) . 'count > 0' . chr(59) . ' ' . chr(125) . ')'))
             };
             if (((($self->{quant} eq '*')) && (($self->{greedy} eq '')))) {
 $self->{term}->set_captures_to_array();
-                return scalar ((chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'while ' . $self->{term}->emit_perl6() . ' ' . chr(38) . chr(38) . ' ' . chr(40) . chr(36) . 'last_match_null ' . chr(60) . ' 2' . chr(41) . ' ' . chr(123) . ' ' . 'if ' . chr(36) . 'last_pos ' . chr(61) . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(40) . chr(41) . ' ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' ' . chr(36) . 'last_match_null + 1' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . '1 ' . chr(125) . chr(41)))
+                return scalar (('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'while ' . $self->{term}->emit_perl6() . ' ' . chr(38) . chr(38) . ' (' . chr(36) . 'last_match_null < 2) ' . chr(123) . ' ' . 'if ' . chr(36) . 'last_pos ' . chr(61) . chr(61) . ' ' . chr(36) . 'MATCH.to() ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' ' . chr(36) . 'last_match_null + 1' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . '1 ' . chr(125) . ')'))
             };
             if (((($self->{quant} eq chr(63))) && (($self->{greedy} eq '')))) {
 $self->{term}->set_captures_to_array();
-                return scalar ((chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'if ' . chr(33) . chr(40) . 'do ' . chr(123) . $self->{term}->emit_perl6() . chr(125) . chr(41) . ' ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . chr(41)))
+                return scalar (('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'if ' . chr(33) . '(do ' . chr(123) . $self->{term}->emit_perl6() . chr(125) . ') ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . ')'))
             };
             warn(('Rul::Quantifier: ' . Main::perl($self, ) . (' not implemented')));
 $self->{term}->emit_perl6()
@@ -77,7 +77,7 @@ $self->{term}->set_captures_to_array()
         sub or_list { $_[0]->{or_list} };
         sub emit_perl6 {
             my $self = $_[0];
-            (chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'pos1 ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . chr(40) . 'do ' . chr(123) . ' ' . Main::join(([ map { $_->emit_perl6() } @{( $self->{or_list} )} ]), chr(125) . chr(41) . ' ' . chr(124) . chr(124) . ' ' . chr(40) . 'do ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'pos1' . chr(59) . ' ') . chr(125) . chr(41) . ' ' . chr(125) . chr(41))
+            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'pos1 ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' (do ' . chr(123) . ' ' . Main::join(([ map { $_->emit_perl6() } @{( $self->{or_list} )} ]), chr(125) . ') ' . chr(124) . chr(124) . ' (do ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'pos1' . chr(59) . ' ') . chr(125) . ') ' . chr(125) . ')')
         };
         sub set_captures_to_array {
             my $self = $_[0];
@@ -92,7 +92,7 @@ $self->{term}->set_captures_to_array()
         sub concat { $_[0]->{concat} };
         sub emit_perl6 {
             my $self = $_[0];
-            (chr(40) . Main::join(([ map { $_->emit_perl6() } @{( $self->{concat} )} ]), ' ' . chr(38) . chr(38) . ' ') . chr(41))
+            ('(' . Main::join(([ map { $_->emit_perl6() } @{( $self->{concat} )} ]), ' ' . chr(38) . chr(38) . ' ') . ')')
         };
         sub set_captures_to_array {
             my $self = $_[0];
@@ -115,13 +115,13 @@ $self->{term}->set_captures_to_array()
             }
             else {
                 if (($self->{captures} > 1)) {
-                    ($code = ('if ' . chr(36) . 'm2 ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'm2.to' . chr(59) . ' ' . 'if exists ' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(123) . ' ' . chr(40) . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . chr(41) . '.push' . chr(40) . ' ' . chr(36) . 'm2 ' . chr(41) . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' ' . chr(91) . ' ' . chr(36) . 'm2 ' . chr(93) . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . ' else ' . chr(123) . ' False ' . chr(125) . chr(59) . ' '))
+                    ($code = ('if ' . chr(36) . 'm2 ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'm2.to' . chr(59) . ' ' . 'if exists ' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(123) . ' ' . '(' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ').push( ' . chr(36) . 'm2 )' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' [ ' . chr(36) . 'm2 ]' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . ' else ' . chr(123) . ' False ' . chr(125) . chr(59) . ' '))
                 }
                 else {
                     ($code = 'if ' . chr(36) . 'm2 ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'm2.to' . chr(59) . ' 1 ' . chr(125) . ' else ' . chr(123) . ' False ' . chr(125) . chr(59) . ' ')
                 }
             };
-            (chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'm2 ' . chr(61) . ' ' . $meth . chr(40) . chr(36) . 'str, ' . chr(36) . 'MATCH.to' . chr(41) . chr(59) . ' ' . $code . chr(125) . chr(41))
+            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'm2 ' . chr(61) . ' ' . $meth . '(' . chr(36) . 'str, ' . chr(36) . 'MATCH.to)' . chr(59) . ' ' . $code . chr(125) . ')')
         };
         sub set_captures_to_array {
             my $self = $_[0];
@@ -174,7 +174,7 @@ $self->{term}->set_captures_to_array()
         sub new { shift; bless { @_ }, "Rul::Dot" }
         sub emit_perl6 {
             my $self = $_[0];
-            (chr(40) . ' ' . chr(39) . chr(39) . ' ne substr' . chr(40) . ' ' . chr(36) . 'str, ' . chr(36) . 'MATCH.to, 1 ' . chr(41) . ' ' . chr(38) . chr(38) . ' ' . chr(40) . chr(36) . 'MATCH.to ' . chr(61) . ' 1 + ' . chr(36) . 'MATCH.to' . chr(41) . chr(41))
+            ('( ' . chr(39) . chr(39) . ' ne substr( ' . chr(36) . 'str, ' . chr(36) . 'MATCH.to, 1 ) ' . chr(38) . chr(38) . ' (' . chr(36) . 'MATCH.to ' . chr(61) . ' 1 + ' . chr(36) . 'MATCH.to)' . ')')
         };
         sub set_captures_to_array {
             my $self = $_[0];
@@ -220,7 +220,7 @@ $self->{term}->set_captures_to_array()
         sub closure { $_[0]->{closure} };
         sub emit_perl6 {
             my $self = $_[0];
-            (chr(40) . chr(40) . 'do ' . chr(123) . ' ' . $self->{closure} . ' ' . chr(125) . chr(41) . ' ' . chr(124) . chr(124) . ' 1' . chr(41))
+            ('((do ' . chr(123) . ' ' . $self->{closure} . ' ' . chr(125) . ') ' . chr(124) . chr(124) . ' 1)')
         };
         sub set_captures_to_array {
             my $self = $_[0];
@@ -268,7 +268,7 @@ $self->{term}->set_captures_to_array()
         sub rule_exp { $_[0]->{rule_exp} };
         sub emit_perl6 {
             my $self = $_[0];
-            (chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'tmp ' . chr(61) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match.new' . chr(40) . ' ' . chr(39) . 'str' . chr(39) . ' ' . chr(61) . chr(62) . ' ' . chr(36) . 'str, ' . chr(39) . 'from' . chr(39) . ' ' . chr(61) . chr(62) . ' ' . chr(36) . 'tmp.to, ' . chr(39) . 'to' . chr(39) . ' ' . chr(61) . chr(62) . ' ' . chr(36) . 'tmp.to, ' . chr(39) . 'bool' . chr(39) . ' ' . chr(61) . chr(62) . ' 1  ' . chr(41) . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl6() . chr(59) . ' ' . chr(36) . 'tmp.bool ' . chr(61) . ' ' . chr(63) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' ' . chr(36) . 'tmp' . chr(59) . ' ' . chr(63) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125) . chr(41))
+            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'tmp ' . chr(61) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match.new( ' . chr(39) . 'str' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'str, ' . chr(39) . 'from' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'to' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'bool' . chr(39) . ' ' . chr(61) . '> 1  )' . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl6() . chr(59) . ' ' . chr(36) . 'tmp.bool ' . chr(61) . ' ' . chr(63) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' ' . chr(36) . 'tmp' . chr(59) . ' ' . chr(63) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125) . ')')
         };
         sub set_captures_to_array {
             my $self = $_[0];
@@ -283,7 +283,7 @@ $self->{term}->set_captures_to_array()
         sub rule_exp { $_[0]->{rule_exp} };
         sub emit_perl6 {
             my $self = $_[0];
-            (chr(40) . 'do ' . chr(123) . ' ' . 'my ' . chr(36) . 'tmp ' . chr(61) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match.new' . chr(40) . ' ' . chr(39) . 'str' . chr(39) . ' ' . chr(61) . chr(62) . ' ' . chr(36) . 'str, ' . chr(39) . 'from' . chr(39) . ' ' . chr(61) . chr(62) . ' ' . chr(36) . 'tmp.to, ' . chr(39) . 'to' . chr(39) . ' ' . chr(61) . chr(62) . ' ' . chr(36) . 'tmp.to, ' . chr(39) . 'bool' . chr(39) . ' ' . chr(61) . chr(62) . ' 1  ' . chr(41) . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl6() . chr(59) . ' ' . chr(36) . 'tmp.bool ' . chr(61) . ' ' . chr(33) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' ' . chr(36) . 'tmp' . chr(59) . ' ' . chr(63) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125) . chr(41))
+            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'tmp ' . chr(61) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match.new( ' . chr(39) . 'str' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'str, ' . chr(39) . 'from' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'to' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'bool' . chr(39) . ' ' . chr(61) . '> 1  )' . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl6() . chr(59) . ' ' . chr(36) . 'tmp.bool ' . chr(61) . ' ' . chr(33) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' ' . chr(36) . 'tmp' . chr(59) . ' ' . chr(63) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125) . ')')
         };
         sub set_captures_to_array {
             my $self = $_[0];

@@ -775,7 +775,7 @@ package GLOBAL;
 }) || (do {
     (($MATCH)->{to} = $pos1);
     ((1 && (((do {
-    ($MATCH->{capture} = ('postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62)))
+    ($MATCH->{capture} = ('postcircumfix:<( )>'))
 }) || 1))))
 }))
 })));
@@ -1441,7 +1441,7 @@ package GLOBAL;
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('c' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((chr(91) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+    (((((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('c' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('[' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $m2) = $grammar->digits($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());
@@ -1451,7 +1451,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((chr(93) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (chr($MATCH->{'digits'})))
 }) || 1))))
 })) || (do {
@@ -1644,7 +1644,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((chr(91) . chr(93) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && (((do {
+})) && ((('[]' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = ((${$MATCH->{'Perlito::Expression.operator'}})->[1]))
 }) || 1)))
 }) || (do {
@@ -1824,7 +1824,7 @@ package GLOBAL;
         ($MATCH->{capture} = (Val::Buf->new(('buf' => ''))))
     }
     else {
-        ($MATCH->{capture} = (Apply->new(('namespace' => ''), ('code' => 'list:' . chr(60) . chr(126) . chr(62)), ('arguments' => [ map { $_->capture() } @{( ($MATCH->{'double_quoted_buf'}) )} ]))))
+        ($MATCH->{capture} = (Apply->new(('namespace' => ''), ('code' => 'list:<' . chr(126) . '>'), ('arguments' => [ map { $_->capture() } @{( ($MATCH->{'double_quoted_buf'}) )} ]))))
     }
 }) || 1)))
 }) || (do {
@@ -2109,7 +2109,7 @@ package GLOBAL;
     else {
         0
     }
-}) && (((chr(40) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+}) && ((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());
@@ -2137,7 +2137,7 @@ package GLOBAL;
     else {
         0
     }
-})) && (((chr(41) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+})) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ($MATCH->{capture} = (${$MATCH->{'args_sig'}}))
 }) || 1)))
 }) || (do {
@@ -2379,7 +2379,7 @@ package GLOBAL;
         0
     }
 })) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
-    ((my  $source) = ($MATCH->{'opt_name'} . ' ' . chr(40) . ' ' . chr(36) . 'grammar: ' . chr(36) . 'str, ' . chr(36) . 'pos ' . chr(41) . ' ' . chr(123) . ' ' . 'my ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match.new' . chr(40) . ' str ' . chr(61) . chr(62) . ' ' . chr(36) . 'str, from ' . chr(61) . chr(62) . ' ' . chr(36) . 'pos, to ' . chr(61) . chr(62) . ' ' . chr(36) . 'pos, bool ' . chr(61) . chr(62) . ' 1 ' . chr(41) . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . chr(40) . ' ' . (${$MATCH->{'Perlito::Grammar::Regex.rule'}})->emit_perl6() . chr(41) . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(125)));
+    ((my  $source) = ($MATCH->{'opt_name'} . ' ( ' . chr(36) . 'grammar: ' . chr(36) . 'str, ' . chr(36) . 'pos ) ' . chr(123) . ' ' . 'my ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match.new( str ' . chr(61) . '> ' . chr(36) . 'str, from ' . chr(61) . '> ' . chr(36) . 'pos, to ' . chr(61) . '> ' . chr(36) . 'pos, bool ' . chr(61) . '> 1 )' . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ( ' . (${$MATCH->{'Perlito::Grammar::Regex.rule'}})->emit_perl6() . ')' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(125)));
     ((my  $ast) = Perlito::Grammar->method_def($source, 0));
     ($MATCH->{capture} = (${$ast}))
 }) || 1)))

@@ -55,7 +55,7 @@ package GLOBAL;
         sub value { $_[0]->{value} };
         sub perl {
             my $self = $_[0];
-            return scalar (($self->{key} . ' ' . chr(61) . chr(62) . ' ' . Main::perl($self->{value}, )))
+            return scalar (($self->{key} . ' ' . chr(61) . '> ' . Main::perl($self->{value}, )))
         }
     }
 
@@ -70,7 +70,7 @@ package GLOBAL;
         sub lisp_dump_object {
             my $class_name = $_[0];
             my $data = $_[1];
-            return scalar (($class_name . chr(40) . ' ' . Main::join((bless [ map { Main::perl( $_, , ) } @{( $data )} ], "ARRAY"), ', ') . ' ' . chr(41)))
+            return scalar (($class_name . '( ' . Main::join((bless [ map { Main::perl( $_, , ) } @{( $data )} ], "ARRAY"), ', ') . ' )'))
         }
     }
 

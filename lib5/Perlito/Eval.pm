@@ -196,7 +196,7 @@ $stmt->eval($env1)
                 };
                 if (($self->{twigil} eq '.')) {
                     warn(('Interpreter TODO: ' . chr(36) . '.' . $self->{name}));
-                    return scalar ((chr(36) . 'self-' . chr(62) . chr(123) . $self->{name} . chr(125)))
+                    return scalar ((chr(36) . 'self->' . chr(123) . $self->{name} . chr(125)))
                 };
                 if (($self->{name} eq chr(47))) {
                     warn('Interpreter TODO: ' . chr(36) . chr(47));
@@ -251,7 +251,7 @@ $stmt->eval($env1)
             if (($self->{hyper})) {
 
             };
-            warn(('Interpreter runtime error: method ' . chr(39)), $self->{method}, (chr(40) . chr(41) . chr(39) . ' not found'))
+            warn(('Interpreter runtime error: method ' . chr(39)), $self->{method}, ('()' . chr(39) . ' not found'))
         }
     }
 
@@ -275,7 +275,7 @@ $stmt->eval($env1)
                     return scalar ((($e->{$code})->($env, $self->{arguments})))
                 }
             };
-            warn(('Interpreter runtime error: subroutine ' . chr(39)), $code, (chr(40) . chr(41) . chr(39) . ' not found'))
+            warn(('Interpreter runtime error: subroutine ' . chr(39)), $code, ('()' . chr(39) . ' not found'))
         }
     }
 

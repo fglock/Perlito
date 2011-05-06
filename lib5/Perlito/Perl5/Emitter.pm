@@ -26,6 +26,24 @@ package GLOBAL;
             };
             return scalar ($s)
         };
+        ((my  $Hash_safe_char = bless {}, 'HASH') = do {
+    (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{'_'} = 1);
+    ($Hash_a->{','} = 1);
+    ($Hash_a->{'.'} = 1);
+    ($Hash_a->{':'} = 1);
+    ($Hash_a->{'-'} = 1);
+    ($Hash_a->{'+'} = 1);
+    ($Hash_a->{'*'} = 1);
+    ($Hash_a->{' '} = 1);
+    ($Hash_a->{'('} = 1);
+    ($Hash_a->{')'} = 1);
+    ($Hash_a->{'<'} = 1);
+    ($Hash_a->{'>'} = 1);
+    ($Hash_a->{'['} = 1);
+    ($Hash_a->{']'} = 1);
+    $Hash_a
+});
         sub escape_string {
             my $s = $_[0];
             (my  $List_out = bless [], 'ARRAY');
@@ -35,16 +53,16 @@ package GLOBAL;
             };
             for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
-                if ((((((((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_'))) || (($c eq ','))) || (($c eq '.'))) || (($c eq ':'))) || (($c eq '-'))) || (($c eq '+'))) || (($c eq '*'))) || (($c eq ' ')))) {
+                if (((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c}))) {
                     ($tmp = ($tmp . $c))
                 }
                 else {
                     if (($tmp ne '')) {
                         push( @{$List_out}, (chr(39) . $tmp . chr(39)) )
                     };
-                    push( @{$List_out}, ('chr' . chr(40) . do {
+                    push( @{$List_out}, ('chr(' . do {
     ord($c)
-} . chr(41)) );
+} . ')') );
                     ($tmp = '')
                 }
             };
@@ -78,7 +96,7 @@ $self->emit_perl5_indented(0)
         };
         sub emit_perl5_program {
             my $comp_units = $_[0];
-            ((my  $str) = ('' . ('use v5' . chr(59) . chr(10)) . ('use utf8' . chr(59) . chr(10)) . ('use strict' . chr(59) . chr(10)) . ('use warnings' . chr(59) . chr(10)) . ('no warnings ' . chr(40) . chr(39) . 'redefine' . chr(39) . ', ' . chr(39) . 'once' . chr(39) . ', ' . chr(39) . 'void' . chr(39) . ', ' . chr(39) . 'uninitialized' . chr(39) . ', ' . chr(39) . 'misc' . chr(39) . ', ' . chr(39) . 'recursion' . chr(39) . chr(41) . chr(59) . chr(10)) . ('use Perlito::Perl5::Runtime' . chr(59) . chr(10)) . ('use Perlito::Perl5::Prelude' . chr(59) . chr(10)) . ('our ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match-' . chr(62) . 'new' . chr(40) . chr(41) . chr(59) . chr(10))));
+            ((my  $str) = ('' . ('use v5' . chr(59) . chr(10)) . ('use utf8' . chr(59) . chr(10)) . ('use strict' . chr(59) . chr(10)) . ('use warnings' . chr(59) . chr(10)) . ('no warnings (' . chr(39) . 'redefine' . chr(39) . ', ' . chr(39) . 'once' . chr(39) . ', ' . chr(39) . 'void' . chr(39) . ', ' . chr(39) . 'uninitialized' . chr(39) . ', ' . chr(39) . 'misc' . chr(39) . ', ' . chr(39) . 'recursion' . chr(39) . ')' . chr(59) . chr(10)) . ('use Perlito::Perl5::Runtime' . chr(59) . chr(10)) . ('use Perlito::Perl5::Prelude' . chr(59) . chr(10)) . ('our ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match->new()' . chr(59) . chr(10))));
             for my $comp_unit ( @{(($comp_units))} ) {
                 ($str = ($str . $comp_unit->emit_perl5_indented(0)))
             };
@@ -215,7 +233,7 @@ $self->emit_perl5_indented(0)
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ($self->{obj}->emit_perl5_indented($level) . '-' . chr(62) . chr(91) . $self->{index_exp}->emit_perl5() . chr(93))
+            ($self->{obj}->emit_perl5_indented($level) . '->[' . $self->{index_exp}->emit_perl5() . ']')
         }
     }
 
@@ -232,7 +250,7 @@ $self->emit_perl5_indented(0)
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ($self->{obj}->emit_perl5_indented($level) . '-' . chr(62) . chr(123) . $self->{index_exp}->emit_perl5() . chr(125))
+            ($self->{obj}->emit_perl5_indented($level) . '->' . chr(123) . $self->{index_exp}->emit_perl5() . chr(125))
         }
     }
 
@@ -265,10 +283,10 @@ $self->emit_perl5_indented(0)
             }
             else {
                 if ((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS')))) {
-                    return scalar ((Perl5::tab($level) . chr(40) . chr(92) . chr(64) . 'ARGV' . chr(41)))
+                    return scalar ((Perl5::tab($level) . '(' . chr(92) . chr(64) . 'ARGV)'))
                 };
                 if (($self->{twigil} eq '.')) {
-                    return scalar ((Perl5::tab($level) . chr(36) . 'self-' . chr(62) . chr(123) . $self->{name} . chr(125)))
+                    return scalar ((Perl5::tab($level) . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125)))
                 };
                 if (($self->{name} eq chr(47))) {
                     return scalar ((Perl5::tab($level) . $table->{$self->{sigil}} . 'MATCH'))
@@ -337,37 +355,37 @@ $self->emit_perl5_indented(0)
             };
             if (exists($Hash_method_perl5->{$self->{method}})) {
                 if (($self->{hyper})) {
-                    return scalar ((Perl5::tab($level) . 'bless ' . chr(91) . ' map ' . chr(123) . ' ' . $Hash_method_perl5->{$self->{method}} . chr(40) . ' ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41) . ' ' . chr(125) . ' ' . chr(64) . chr(123) . chr(40) . ' ' . $invocant . ' ' . chr(41) . chr(125) . ' ' . chr(93) . ', ' . chr(34) . 'ARRAY' . chr(34)))
+                    return scalar ((Perl5::tab($level) . 'bless [ map ' . chr(123) . ' ' . $Hash_method_perl5->{$self->{method}} . '( ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ')' . ' ' . chr(125) . ' ' . chr(64) . chr(123) . '( ' . $invocant . ' )' . chr(125) . ' ], ' . chr(34) . 'ARRAY' . chr(34)))
                 }
                 else {
-                    return scalar ((Perl5::tab($level) . $Hash_method_perl5->{$self->{method}} . chr(40) . $invocant . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
+                    return scalar ((Perl5::tab($level) . $Hash_method_perl5->{$self->{method}} . '(' . $invocant . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ')'))
                 }
             };
             if (($self->{method} eq 'push')) {
-                return scalar ((Perl5::tab($level) . 'push' . chr(40) . ' ' . chr(64) . chr(123) . $invocant . chr(125) . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ' ' . chr(41)))
+                return scalar ((Perl5::tab($level) . 'push( ' . chr(64) . chr(123) . $invocant . chr(125) . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ' )'))
             };
             if (($self->{method} eq 'unshift')) {
-                return scalar ((Perl5::tab($level) . 'unshift' . chr(40) . ' ' . chr(64) . chr(123) . $invocant . chr(125) . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ' ' . chr(41)))
+                return scalar ((Perl5::tab($level) . 'unshift( ' . chr(64) . chr(123) . $invocant . chr(125) . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ' )'))
             };
             if (($self->{method} eq 'pop')) {
-                return scalar ((Perl5::tab($level) . 'pop' . chr(40) . ' ' . chr(64) . chr(123) . $invocant . chr(125) . ' ' . chr(41)))
+                return scalar ((Perl5::tab($level) . 'pop( ' . chr(64) . chr(123) . $invocant . chr(125) . ' )'))
             };
             if (($self->{method} eq 'shift')) {
-                return scalar ((Perl5::tab($level) . 'shift' . chr(40) . ' ' . chr(64) . chr(123) . $invocant . chr(125) . ' ' . chr(41)))
+                return scalar ((Perl5::tab($level) . 'shift( ' . chr(64) . chr(123) . $invocant . chr(125) . ' )'))
             };
             if (($self->{method} eq 'elems')) {
-                return scalar ((Perl5::tab($level) . 'scalar' . chr(40) . ' ' . chr(64) . chr(123) . $invocant . chr(125) . ' ' . chr(41)))
+                return scalar ((Perl5::tab($level) . 'scalar( ' . chr(64) . chr(123) . $invocant . chr(125) . ' )'))
             };
             ((my  $meth) = $self->{method});
-            if (($meth eq 'postcircumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62))) {
+            if (($meth eq 'postcircumfix:<( )>')) {
                 ($meth = '')
             };
-            ((my  $call) = ('-' . chr(62) . $meth . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41)));
+            ((my  $call) = ('->' . $meth . '(' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ')'));
             if (($self->{hyper})) {
-                if (!(((Main::isa($self->{invocant}, 'Apply') && ($self->{invocant}->code() eq 'prefix:' . chr(60) . chr(64) . chr(62)))))) {
-                    ($invocant = (chr(64) . chr(123) . chr(40) . ' ' . $invocant . ' ' . chr(41) . chr(125)))
+                if (!(((Main::isa($self->{invocant}, 'Apply') && ($self->{invocant}->code() eq 'prefix:<' . chr(64) . '>'))))) {
+                    ($invocant = (chr(64) . chr(123) . '( ' . $invocant . ' )' . chr(125)))
                 };
-                return scalar ((Perl5::tab($level) . chr(91) . ' map ' . chr(123) . ' ' . chr(36) . '_' . $call . ' ' . chr(125) . ' ' . $invocant . ' ' . chr(93)))
+                return scalar ((Perl5::tab($level) . '[ map ' . chr(123) . ' ' . chr(36) . '_' . $call . ' ' . chr(125) . ' ' . $invocant . ' ]'))
             }
             else {
                 ($invocant . $call)
@@ -393,37 +411,37 @@ $self->emit_perl5_indented(0)
     ($Hash_a->{'Int'} = '0+');
     ($Hash_a->{'Num'} = '0+');
     ($Hash_a->{'bool'} = chr(33) . chr(33));
-    ($Hash_a->{'prefix:' . chr(60) . chr(126) . chr(62)} = chr(34) . chr(34) . '.');
-    ($Hash_a->{'prefix:' . chr(60) . chr(33) . chr(62)} = chr(33));
-    ($Hash_a->{'prefix:' . chr(60) . chr(63) . chr(62)} = chr(33) . chr(33));
-    ($Hash_a->{'prefix:' . chr(60) . '++' . chr(62)} = '++');
-    ($Hash_a->{'prefix:' . chr(60) . '--' . chr(62)} = '--');
+    ($Hash_a->{'prefix:<' . chr(126) . '>'} = chr(34) . chr(34) . '.');
+    ($Hash_a->{'prefix:<' . chr(33) . '>'} = chr(33));
+    ($Hash_a->{'prefix:<' . chr(63) . '>'} = chr(33) . chr(33));
+    ($Hash_a->{'prefix:<++>'} = '++');
+    ($Hash_a->{'prefix:<-->'} = '--');
     $Hash_a
 });
         ((my  $Hash_op_infix_perl5 = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'list:' . chr(60) . chr(126) . chr(62)} = ' . ');
-    ($Hash_a->{'infix:' . chr(60) . '+' . chr(62)} = ' + ');
-    ($Hash_a->{'infix:' . chr(60) . '-' . chr(62)} = ' - ');
-    ($Hash_a->{'infix:' . chr(60) . '*' . chr(62)} = ' * ');
-    ($Hash_a->{'infix:' . chr(60) . chr(47) . chr(62)} = ' ' . chr(47) . ' ');
-    ($Hash_a->{'infix:' . chr(60) . chr(62) . chr(62)} = ' ' . chr(62) . ' ');
-    ($Hash_a->{'infix:' . chr(60) . chr(60) . chr(62)} = ' ' . chr(60) . ' ');
-    ($Hash_a->{'infix:' . chr(60) . chr(62) . chr(61) . chr(62)} = ' ' . chr(62) . chr(61) . ' ');
-    ($Hash_a->{'infix:' . chr(60) . chr(60) . chr(61) . chr(62)} = ' ' . chr(60) . chr(61) . ' ');
-    ($Hash_a->{'infix:' . chr(60) . 'x' . chr(62)} = ' x ');
-    ($Hash_a->{'infix:' . chr(60) . chr(38) . chr(38) . chr(62)} = ' ' . chr(38) . chr(38) . ' ');
-    ($Hash_a->{'infix:' . chr(60) . chr(124) . chr(124) . chr(62)} = ' ' . chr(124) . chr(124) . ' ');
-    ($Hash_a->{'infix:' . chr(60) . 'and' . chr(62)} = ' and ');
-    ($Hash_a->{'infix:' . chr(60) . 'or' . chr(62)} = ' or ');
-    ($Hash_a->{'infix:' . chr(60) . chr(47) . chr(47) . chr(62)} = ' ' . chr(47) . chr(47) . ' ');
-    ($Hash_a->{'infix:' . chr(60) . 'eq' . chr(62)} = ' eq ');
-    ($Hash_a->{'infix:' . chr(60) . 'ne' . chr(62)} = ' ne ');
-    ($Hash_a->{'infix:' . chr(60) . 'le' . chr(62)} = ' le ');
-    ($Hash_a->{'infix:' . chr(60) . 'ge' . chr(62)} = ' ge ');
-    ($Hash_a->{'infix:' . chr(60) . chr(61) . chr(61) . chr(62)} = ' ' . chr(61) . chr(61) . ' ');
-    ($Hash_a->{'infix:' . chr(60) . chr(33) . chr(61) . chr(62)} = ' ' . chr(33) . chr(61) . ' ');
-    ($Hash_a->{'infix:' . chr(60) . chr(61) . chr(62) . chr(62)} = ' ' . chr(61) . chr(62) . ' ');
+    ($Hash_a->{'list:<' . chr(126) . '>'} = ' . ');
+    ($Hash_a->{'infix:<+>'} = ' + ');
+    ($Hash_a->{'infix:<->'} = ' - ');
+    ($Hash_a->{'infix:<*>'} = ' * ');
+    ($Hash_a->{'infix:<' . chr(47) . '>'} = ' ' . chr(47) . ' ');
+    ($Hash_a->{'infix:<>>'} = ' > ');
+    ($Hash_a->{'infix:<<>'} = ' < ');
+    ($Hash_a->{'infix:<>' . chr(61) . '>'} = ' >' . chr(61) . ' ');
+    ($Hash_a->{'infix:<<' . chr(61) . '>'} = ' <' . chr(61) . ' ');
+    ($Hash_a->{'infix:<x>'} = ' x ');
+    ($Hash_a->{'infix:<' . chr(38) . chr(38) . '>'} = ' ' . chr(38) . chr(38) . ' ');
+    ($Hash_a->{'infix:<' . chr(124) . chr(124) . '>'} = ' ' . chr(124) . chr(124) . ' ');
+    ($Hash_a->{'infix:<and>'} = ' and ');
+    ($Hash_a->{'infix:<or>'} = ' or ');
+    ($Hash_a->{'infix:<' . chr(47) . chr(47) . '>'} = ' ' . chr(47) . chr(47) . ' ');
+    ($Hash_a->{'infix:<eq>'} = ' eq ');
+    ($Hash_a->{'infix:<ne>'} = ' ne ');
+    ($Hash_a->{'infix:<le>'} = ' le ');
+    ($Hash_a->{'infix:<ge>'} = ' ge ');
+    ($Hash_a->{'infix:<' . chr(61) . chr(61) . '>'} = ' ' . chr(61) . chr(61) . ' ');
+    ($Hash_a->{'infix:<' . chr(33) . chr(61) . '>'} = ' ' . chr(33) . chr(61) . ' ');
+    ($Hash_a->{'infix:<' . chr(61) . '>>'} = ' ' . chr(61) . '> ');
     $Hash_a
 });
         sub emit_perl5 {
@@ -446,82 +464,82 @@ $self->emit_perl5_indented(0)
 
             }
             else {
-                return scalar ((Perl5::tab($level) . chr(40) . $self->{code}->emit_perl5() . chr(41) . '-' . chr(62) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
+                return scalar ((Perl5::tab($level) . '(' . $self->{code}->emit_perl5() . ')->(' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ')'))
             };
             if (exists($Hash_op_infix_perl5->{$code})) {
-                return scalar ((Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), $Hash_op_infix_perl5->{$code}) . chr(41)))
+                return scalar ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), $Hash_op_infix_perl5->{$code}) . ')'))
             };
             if (exists($Hash_op_prefix_perl5->{$code})) {
-                return scalar ((Perl5::tab($level) . $Hash_op_prefix_perl5->{$code} . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
+                return scalar ((Perl5::tab($level) . $Hash_op_prefix_perl5->{$code} . '(' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ')'))
             };
             if (($code eq 'self')) {
                 return scalar ((Perl5::tab($level) . chr(36) . 'self'))
             };
             if (($code eq 'Mu')) {
-                return scalar ((Perl5::tab($level) . 'undef' . chr(40) . chr(41)))
+                return scalar ((Perl5::tab($level) . 'undef()'))
             };
             if (($code eq 'make')) {
-                return scalar ((Perl5::tab($level) . chr(40) . chr(36) . 'MATCH-' . chr(62) . chr(123) . 'capture' . chr(125) . ' ' . chr(61) . ' ' . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41) . chr(41)))
+                return scalar ((Perl5::tab($level) . '(' . chr(36) . 'MATCH->' . chr(123) . 'capture' . chr(125) . ' ' . chr(61) . ' (' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . '))'))
             };
             if (($code eq 'array')) {
                 return scalar ((Perl5::tab($level) . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125)))
             };
             if (($code eq 'pop')) {
-                return scalar ((Perl5::tab($level) . 'pop' . chr(40) . ' ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125) . ' ' . chr(41)))
+                return scalar ((Perl5::tab($level) . 'pop( ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125) . ' )'))
             };
             if (($code eq 'push')) {
-                return scalar ((Perl5::tab($level) . 'push' . chr(40) . ' ' . chr(64) . chr(123) . ($self->{arguments}->[0])->emit_perl5() . chr(125) . ', ' . ($self->{arguments}->[1])->emit_perl5() . ' ' . chr(41)))
+                return scalar ((Perl5::tab($level) . 'push( ' . chr(64) . chr(123) . ($self->{arguments}->[0])->emit_perl5() . chr(125) . ', ' . ($self->{arguments}->[1])->emit_perl5() . ' )'))
             };
             if (($code eq 'shift')) {
-                return scalar ((Perl5::tab($level) . 'shift' . chr(40) . ' ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125) . ' ' . chr(41)))
+                return scalar ((Perl5::tab($level) . 'shift( ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125) . ' )'))
             };
             if (($code eq 'unshift')) {
-                return scalar ((Perl5::tab($level) . 'unshift' . chr(40) . ' ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125) . ' ' . chr(41)))
+                return scalar ((Perl5::tab($level) . 'unshift( ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125) . ' )'))
             };
-            if (($code eq 'prefix:' . chr(60) . chr(36) . chr(62))) {
+            if (($code eq 'prefix:<' . chr(36) . '>')) {
                 return scalar ((Perl5::tab($level) . chr(36) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125)))
             };
-            if (($code eq 'prefix:' . chr(60) . chr(64) . chr(62))) {
-                return scalar ((Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(41)))
+            if (($code eq 'prefix:<' . chr(64) . '>')) {
+                return scalar ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . ')'))
             };
-            if (($code eq 'prefix:' . chr(60) . chr(37) . chr(62))) {
+            if (($code eq 'prefix:<' . chr(37) . '>')) {
                 return scalar ((Perl5::tab($level) . chr(37) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(125)))
             };
-            if (($code eq 'postfix:' . chr(60) . '++' . chr(62))) {
-                return scalar ((Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(41) . '++'))
+            if (($code eq 'postfix:<++>')) {
+                return scalar ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . ')++'))
             };
-            if (($code eq 'postfix:' . chr(60) . '--' . chr(62))) {
-                return scalar ((Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . chr(41) . '--'))
+            if (($code eq 'postfix:<-->')) {
+                return scalar ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' ') . ')--'))
             };
-            if (($code eq 'infix:' . chr(60) . '..' . chr(62))) {
-                return scalar ((Perl5::tab($level) . chr(40) . 'bless ' . chr(91) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' .. ') . (chr(93) . ', ' . chr(39) . 'ARRAY' . chr(39) . chr(41))))
+            if (($code eq 'infix:<..>')) {
+                return scalar ((Perl5::tab($level) . '(bless [' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ' .. ') . ('], ' . chr(39) . 'ARRAY' . chr(39) . ')')))
             };
-            if (($code eq 'infix:' . chr(60) . chr(61) . chr(61) . chr(61) . chr(62))) {
-                return scalar ((Perl5::tab($level) . chr(40) . 'Main::id' . chr(40) . ($self->{arguments}->[0])->emit_perl5() . chr(41) . ' eq Main::id' . chr(40) . ($self->{arguments}->[1])->emit_perl5() . chr(41) . chr(41)))
+            if (($code eq 'infix:<' . chr(61) . chr(61) . chr(61) . '>')) {
+                return scalar ((Perl5::tab($level) . '(Main::id(' . ($self->{arguments}->[0])->emit_perl5() . ') eq Main::id(' . ($self->{arguments}->[1])->emit_perl5() . '))'))
             };
-            if (($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62))) {
-                return scalar ((Perl5::tab($level) . chr(40) . $self->{arguments}->[0]->emit_perl5() . ' ' . chr(63) . ' ' . $self->{arguments}->[1]->emit_perl5() . ' : ' . $self->{arguments}->[2]->emit_perl5() . chr(41)))
+            if (($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>')) {
+                return scalar ((Perl5::tab($level) . '(' . $self->{arguments}->[0]->emit_perl5() . ' ' . chr(63) . ' ' . $self->{arguments}->[1]->emit_perl5() . ' : ' . $self->{arguments}->[2]->emit_perl5() . ')'))
             };
-            if (($code eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62))) {
-                return scalar ((Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
+            if (($code eq 'circumfix:<( )>')) {
+                return scalar ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ')'))
             };
-            if (($code eq 'infix:' . chr(60) . chr(61) . chr(62))) {
+            if (($code eq 'infix:<' . chr(61) . '>')) {
                 return scalar ((Perl5::tab($level) . emit_perl5_bind($self->{arguments}->[0], $self->{arguments}->[1])))
             };
             if (($code eq 'return')) {
                 if (($self->{arguments} && (scalar( @{$self->{arguments}} ) == 1))) {
-                    return scalar ((Perl5::tab($level) . 'return scalar ' . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
+                    return scalar ((Perl5::tab($level) . 'return scalar (' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ')'))
                 };
-                return scalar ((Perl5::tab($level) . 'return ' . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
+                return scalar ((Perl5::tab($level) . 'return (' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ')'))
             };
-            (Perl5::tab($level) . $code . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41))
+            (Perl5::tab($level) . $code . '(' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . ')')
         };
         sub emit_perl5_bind {
             my $parameters = $_[0];
             my $arguments = $_[1];
             if (Main::isa($parameters, 'Call')) {
                 ((my  $a) = $parameters);
-                return scalar ((chr(40) . chr(40) . ($a->invocant())->emit_perl5() . chr(41) . '-' . chr(62) . chr(123) . $a->method() . chr(125) . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . chr(41)))
+                return scalar (('((' . ($a->invocant())->emit_perl5() . ')->' . chr(123) . $a->method() . chr(125) . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')'))
             };
             if (Main::isa($parameters, 'Lit::Array')) {
                 ((my  $a) = $parameters->array1());
@@ -573,7 +591,7 @@ $self->emit_perl5_indented(0)
 })))
                 }
             };
-            (chr(40) . $parameters->emit_perl5() . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . chr(41))
+            ('(' . $parameters->emit_perl5() . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')')
         }
     }
 
@@ -591,7 +609,7 @@ $self->emit_perl5_indented(0)
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
-            return scalar ((Perl5::tab($level) . 'if ' . chr(40) . $self->{cond}->emit_perl5() . (chr(41) . ' ' . chr(123) . chr(10)) . (($self->{body} ? (Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{otherwise} && scalar( @{$self->{otherwise}->stmts()} )) ? ((chr(10) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
+            return scalar ((Perl5::tab($level) . 'if (' . $self->{cond}->emit_perl5() . (') ' . chr(123) . chr(10)) . (($self->{body} ? (Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{otherwise} && scalar( @{$self->{otherwise}->stmts()} )) ? ((chr(10) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
         }
     }
 
@@ -612,14 +630,14 @@ $self->emit_perl5_indented(0)
             my $level = $_[1];
             ((my  $cond) = $self->{cond});
             if ((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64)))) {
-                ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
+                ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
 })))
             };
-            (Perl5::tab($level) . 'for ' . chr(40) . ' ' . (($self->{init} ? ($self->{init}->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($cond ? ($cond->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_perl5() . ' ') : ' ')) . chr(41) . ' ' . chr(123) . (chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
+            (Perl5::tab($level) . 'for ( ' . (($self->{init} ? ($self->{init}->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($cond ? ($cond->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_perl5() . ' ') : ' ')) . ') ' . chr(123) . (chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
         }
     }
 
@@ -649,7 +667,7 @@ $self->emit_perl5_indented(0)
             if ($self->{body}->sig()) {
                 ($sig = ('my ' . $self->{body}->sig()->emit_perl5() . ' '))
             };
-            return scalar ((Perl5::tab($level) . 'for ' . $sig . chr(40) . ' ' . chr(64) . chr(123) . $cond->emit_perl5() . chr(125) . ' ' . chr(41) . ' ' . chr(123) . (chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125))))
+            return scalar ((Perl5::tab($level) . 'for ' . $sig . '( ' . chr(64) . chr(123) . $cond->emit_perl5() . chr(125) . ' ) ' . chr(123) . (chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125))))
         }
     }
 
@@ -670,18 +688,18 @@ $self->emit_perl5_indented(0)
             ((my  $decl) = $self->{decl});
             ((my  $name) = $self->{var}->plain_name());
             if (($decl eq 'has')) {
-                return scalar ((Perl5::tab($level) . 'sub ' . $name . ' ' . chr(123) . ' ' . chr(36) . '_' . chr(91) . '0' . chr(93) . '-' . chr(62) . chr(123) . $name . chr(125) . ' ' . chr(125)))
+                return scalar ((Perl5::tab($level) . 'sub ' . $name . ' ' . chr(123) . ' ' . chr(36) . '_[0]->' . chr(123) . $name . chr(125) . ' ' . chr(125)))
             };
-            ((my  $str) = (chr(40) . $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_perl5()));
+            ((my  $str) = ('(' . $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_perl5()));
             if ((($self->{var})->sigil() eq chr(37))) {
-                ($str = ($str . ' ' . chr(61) . ' bless ' . chr(123) . chr(125) . ', ' . chr(39) . 'HASH' . chr(39) . chr(41)))
+                ($str = ($str . ' ' . chr(61) . ' bless ' . chr(123) . chr(125) . ', ' . chr(39) . 'HASH' . chr(39) . ')'))
             }
             else {
                 if ((($self->{var})->sigil() eq chr(64))) {
-                    ($str = ($str . ' ' . chr(61) . ' bless ' . chr(91) . chr(93) . ', ' . chr(39) . 'ARRAY' . chr(39) . chr(41)))
+                    ($str = ($str . ' ' . chr(61) . ' bless [], ' . chr(39) . 'ARRAY' . chr(39) . ')'))
                 }
                 else {
-                    ($str = ($str . chr(41)))
+                    ($str = ($str . ')'))
                 }
             };
             return scalar ((Perl5::tab($level) . $str))
@@ -726,10 +744,10 @@ $self->emit_perl5_indented(0)
             ((my  $str) = '');
             ((my  $i) = 1);
             for my $field ( @{($pos)} ) {
-                ($str = ($str . (Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_' . chr(91) . $i . chr(93) . chr(59) . (chr(10)))));
+                ($str = ($str . (Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_[' . $i . ']' . chr(59) . (chr(10)))));
                 ($i = ($i + 1))
             };
-            (Perl5::tab($level) . 'sub ' . $self->{name} . (' ' . chr(123) . chr(10)) . Perl5::tab(($level + 1)) . 'my ' . $invocant->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_' . chr(91) . '0' . chr(93) . chr(59) . (chr(10)) . $str . "".(Main::join(([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{block} )} ]), (chr(59) . chr(10)))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
+            (Perl5::tab($level) . 'sub ' . $self->{name} . (' ' . chr(123) . chr(10)) . Perl5::tab(($level + 1)) . 'my ' . $invocant->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_[0]' . chr(59) . (chr(10)) . $str . "".(Main::join(([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{block} )} ]), (chr(59) . chr(10)))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
         }
     }
 
@@ -752,7 +770,7 @@ $self->emit_perl5_indented(0)
             ((my  $str) = '');
             ((my  $i) = 0);
             for my $field ( @{($pos)} ) {
-                ($str = ($str . (Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_' . chr(91) . $i . chr(93) . chr(59) . (chr(10)))));
+                ($str = ($str . (Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_[' . $i . ']' . chr(59) . (chr(10)))));
                 ($i = ($i + 1))
             };
             (Perl5::tab($level) . 'sub ' . $self->{name} . (' ' . chr(123) . chr(10)) . $str . Main::join(([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{block} )} ]), (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
