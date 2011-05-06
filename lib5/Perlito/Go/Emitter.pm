@@ -101,19 +101,19 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $class_name) = Main::to_go_namespace($self->{name}));
             ((my  $str) = (chr(47) . chr(47) . ' instances of class ' . $self->{name} . (chr(10)) . 'type ' . $class_name . ' struct ' . chr(123) . (chr(10))));
-            for my $decl ( @{(([values( %{($self->{attributes})} )]))} ) {
+            for my $decl ( @{((Main::values(($self->{attributes}), )))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                     ($str = ($str . '  ' . 'v_' . ($decl->var())->name() . ' *Any' . chr(59) . (chr(10))))
                 }
             };
             ($str = ($str . chr(125) . (chr(10))));
             ($str = ($str . chr(47) . chr(47) . ' methods in class ' . $self->{name} . (chr(10)) . 'var Method_' . $class_name . ' struct ' . chr(123) . (chr(10))));
-            for my $decl ( @{(([values( %{($self->{methods})} )]))} ) {
+            for my $decl ( @{((Main::values(($self->{methods}), )))} ) {
                 if (Main::isa($decl, 'Method')) {
                     ($str = ($str . '  ' . 'f_' . $decl->name() . ' func ' . chr(40) . '*' . $class_name . ', Capture' . chr(41) . ' *Any' . chr(59) . (chr(10))))
                 }
             };
-            for my $decl ( @{(([values( %{($self->{attributes})} )]))} ) {
+            for my $decl ( @{((Main::values(($self->{attributes}), )))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                     ($str = ($str . '  ' . 'f_' . ($decl->var())->name() . ' func ' . chr(40) . '*' . $class_name . ', Capture' . chr(41) . ' *Any' . chr(59) . (chr(10))))
                 }
@@ -128,12 +128,12 @@ package GLOBAL;
             ($str = ($str . chr(125) . (chr(10))));
             ($str = ($str . 'var Run_' . $class_name . ' func ' . chr(40) . chr(41) . chr(59) . (chr(10))));
             ($str = ($str . chr(47) . chr(47) . ' method wrappers for ' . $self->{name} . (chr(10))));
-            for my $decl ( @{(([values( %{($self->{methods})} )]))} ) {
+            for my $decl ( @{((Main::values(($self->{methods}), )))} ) {
                 if (Main::isa($decl, 'Method')) {
                     ($str = ($str . 'func ' . chr(40) . 'v_self *' . $class_name . chr(41) . ' f_' . $decl->name() . ' ' . chr(40) . 'v Capture' . chr(41) . ' *Any ' . chr(123) . (chr(10)) . '  return Method_' . $class_name . '.f_' . $decl->name() . chr(40) . 'v_self, v' . chr(41) . chr(59) . (chr(10)) . chr(125) . (chr(10))))
                 }
             };
-            for my $decl ( @{(([values( %{($self->{attributes})} )]))} ) {
+            for my $decl ( @{((Main::values(($self->{attributes}), )))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                     ($str = ($str . 'func ' . chr(40) . 'v_self *' . $class_name . chr(41) . ' f_' . ($decl->var())->name() . ' ' . chr(40) . 'v Capture' . chr(41) . ' *Any ' . chr(123) . (chr(10)) . '  return Method_' . $class_name . '.f_' . ($decl->var())->name() . chr(40) . 'v_self, v' . chr(41) . chr(59) . (chr(10)) . chr(125) . (chr(10))))
                 }
@@ -144,7 +144,7 @@ package GLOBAL;
             if (!((($self->{methods})->{'perl'}))) {
                 ($str = ($str . 'func ' . chr(40) . 'v_self *' . $class_name . chr(41) . ' f_perl ' . chr(40) . 'v Capture' . chr(41) . ' *Any ' . chr(123) . ' ' . 'return toStr' . chr(40) . ' ' . chr(34) . '::' . $self->{name} . chr(40) . chr(34) . ' '));
                 ((my  $sep) = '');
-                for my $decl ( @{(([values( %{($self->{attributes})} )]))} ) {
+                for my $decl ( @{((Main::values(($self->{attributes}), )))} ) {
                     if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                         ($str = ($str . $sep . '+ ' . chr(34) . ($decl->var())->name() . ' ' . chr(61) . chr(62) . ' ' . chr(34) . '+ tostr' . chr(40) . chr(40) . '*' . chr(40) . '*v_self' . chr(41) . '.f_' . ($decl->var())->name() . chr(40) . 'Capture' . chr(123) . chr(125) . chr(41) . chr(41) . '.' . chr(40) . 'perl_er' . chr(41) . '.f_perl' . chr(40) . 'Capture' . chr(123) . chr(125) . chr(41) . chr(41) . ' '));
                         ($sep = '+ ' . chr(34) . ', ' . chr(34) . ' ')

@@ -70,7 +70,7 @@ package GLOBAL;
         sub lisp_dump_object {
             my $class_name = $_[0];
             my $data = $_[1];
-            return scalar (($class_name . chr(40) . ' ' . Main::join(([ map { Main::perl( $_, , ) } @{( $data )} ]), ', ') . ' ' . chr(41)))
+            return scalar (($class_name . chr(40) . ' ' . Main::join((bless [ map { Main::perl( $_, , ) } @{( $data )} ], "ARRAY"), ', ') . ' ' . chr(41)))
         }
     }
 

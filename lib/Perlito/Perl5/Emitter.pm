@@ -208,6 +208,21 @@ class Call {
     has $.hyper;
     has $.method;
     has @.arguments;
+
+    my %method_perl5 = (
+        'perl'   => 'Main::perl',
+        'id'     => 'Main::id',
+        'yaml'   => 'Main::yaml',
+        'say'    => 'Main::say',
+        'join'   => 'Main::join',
+        'split'  => 'Main::split',
+        'chars'  => 'Main::chars',
+        'isa'    => 'Main::isa',
+        'pairs'  => 'Main::pairs',
+        'keys'   => 'Main::keys',
+        'values' => 'Main::values',
+    );
+
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my $invocant = $.invocant.emit_perl5;
@@ -215,34 +230,16 @@ class Call {
             $invocant = '$self';
         }
 
-        if     ($.method eq 'values')
-            || ($.method eq 'keys')
-        { 
+        if exists( %method_perl5{ $.method } ) {
             if ($.hyper) {
-                die "not implemented";
+                return Perl5::tab($level)  
+                    ~ 'bless [ map { ' 
+                        ~ %method_perl5{ $.method } ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' ~ ' } @{( ' ~ $invocant ~ ' )' 
+                    ~ '} ], "ARRAY"';
             }
             else {
-                return Perl5::tab($level) ~ '[' ~ $.method ~ '( %{' ~ $invocant ~ '} )' ~ ']';
-            }
-        }
-
-        if     ($.method eq 'perl')
-            || ($.method eq 'id')
-            || ($.method eq 'yaml')
-            || ($.method eq 'say' )
-            || ($.method eq 'join')
-            || ($.method eq 'split')
-            || ($.method eq 'chars')
-            || ($.method eq 'isa')
-            || ($.method eq 'pairs')
-        { 
-            if ($.hyper) {
-                return Perl5::tab($level) ~ 
-                    '[ map { Main::' ~ $.method ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' ~ ' } @{( ' ~ $invocant ~ ' )} ]';
-            }
-            else {
-                return Perl5::tab($level) ~ 
-                    'Main::' ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
+                return Perl5::tab($level) 
+                    ~ %method_perl5{ $.method } ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
             }
         }
         if $.method eq 'push' { 

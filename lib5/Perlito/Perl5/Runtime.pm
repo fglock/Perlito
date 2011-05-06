@@ -44,10 +44,10 @@ $_ = Encode::decode('utf-8', $_)
     }
     
     sub keys   { 
-        CORE::keys %{$_[0]};
+        bless [ CORE::keys %{$_[0]} ], 'ARRAY';
     }
     sub values { 
-        CORE::values %{$_[0]};
+        bless [ CORE::values %{$_[0]} ], 'ARRAY';
     }
     sub pairs {
         bless [ map Pair->new( key => $_, value => $_[0]{$_} ),
@@ -204,6 +204,13 @@ package Main;
            )
     }
 
+    sub keys   { 
+        bless [ CORE::keys %{$_[0]} ], 'ARRAY';
+    }
+    sub values { 
+        bless [ CORE::values %{$_[0]} ], 'ARRAY';
+    }
+ 
     sub pairs {
         bless [
             map Pair->new( key => $_, value => $_[0]{$_} ),

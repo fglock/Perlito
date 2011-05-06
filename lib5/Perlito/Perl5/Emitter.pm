@@ -309,6 +309,21 @@ $self->emit_perl5_indented(0)
         sub hyper { $_[0]->{hyper} };
         sub method { $_[0]->{method} };
         sub arguments { $_[0]->{arguments} };
+        ((my  $Hash_method_perl5 = bless {}, 'HASH') = do {
+    (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{'perl'} = 'Main::perl');
+    ($Hash_a->{'id'} = 'Main::id');
+    ($Hash_a->{'yaml'} = 'Main::yaml');
+    ($Hash_a->{'say'} = 'Main::say');
+    ($Hash_a->{'join'} = 'Main::join');
+    ($Hash_a->{'split'} = 'Main::split');
+    ($Hash_a->{'chars'} = 'Main::chars');
+    ($Hash_a->{'isa'} = 'Main::isa');
+    ($Hash_a->{'pairs'} = 'Main::pairs');
+    ($Hash_a->{'keys'} = 'Main::keys');
+    ($Hash_a->{'values'} = 'Main::values');
+    $Hash_a
+});
         sub emit_perl5 {
             my $self = $_[0];
 $self->emit_perl5_indented(0)
@@ -320,20 +335,12 @@ $self->emit_perl5_indented(0)
             if (($invocant eq 'self')) {
                 ($invocant = chr(36) . 'self')
             };
-            if (((($self->{method} eq 'values')) || (($self->{method} eq 'keys')))) {
+            if (exists($Hash_method_perl5->{$self->{method}})) {
                 if (($self->{hyper})) {
-                    die(('not implemented'))
+                    return scalar ((Perl5::tab($level) . 'bless ' . chr(91) . ' map ' . chr(123) . ' ' . $Hash_method_perl5->{$self->{method}} . chr(40) . ' ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41) . ' ' . chr(125) . ' ' . chr(64) . chr(123) . chr(40) . ' ' . $invocant . ' ' . chr(41) . chr(125) . ' ' . chr(93) . ', ' . chr(34) . 'ARRAY' . chr(34)))
                 }
                 else {
-                    return scalar ((Perl5::tab($level) . chr(91) . $self->{method} . chr(40) . ' ' . chr(37) . chr(123) . $invocant . chr(125) . ' ' . chr(41) . chr(93)))
-                }
-            };
-            if ((((((((((($self->{method} eq 'perl')) || (($self->{method} eq 'id'))) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'split'))) || (($self->{method} eq 'chars'))) || (($self->{method} eq 'isa'))) || (($self->{method} eq 'pairs')))) {
-                if (($self->{hyper})) {
-                    return scalar ((Perl5::tab($level) . chr(91) . ' map ' . chr(123) . ' Main::' . $self->{method} . chr(40) . ' ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41) . ' ' . chr(125) . ' ' . chr(64) . chr(123) . chr(40) . ' ' . $invocant . ' ' . chr(41) . chr(125) . ' ' . chr(93)))
-                }
-                else {
-                    return scalar ((Perl5::tab($level) . 'Main::' . $self->{method} . chr(40) . $invocant . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
+                    return scalar ((Perl5::tab($level) . $Hash_method_perl5->{$self->{method}} . chr(40) . $invocant . ', ' . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
                 }
             };
             if (($self->{method} eq 'push')) {
