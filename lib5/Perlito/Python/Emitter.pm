@@ -546,6 +546,16 @@ $self->emit_python_indented(0)
         sub hyper { $_[0]->{hyper} };
         sub method { $_[0]->{method} };
         sub arguments { $_[0]->{arguments} };
+        ((my  $Hash_method_python = bless {}, 'HASH') = do {
+    (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{'id'} = 'id');
+    ($Hash_a->{'yaml'} = 'yaml');
+    ($Hash_a->{'join'} = 'join');
+    ($Hash_a->{'split'} = 'split');
+    ($Hash_a->{'isa'} = 'isa');
+    ($Hash_a->{'say'} = 'say');
+    $Hash_a
+});
         sub emit_python {
             my $self = $_[0];
 $self->emit_python_indented(0)
@@ -566,7 +576,7 @@ $self->emit_python_indented(0)
                 };
                 return scalar ((Python::tab($level) . '__builtin__.' . Main::to_go_namespace($self->{invocant}->name()) . chr(40) . Main::join($List_str, ', ') . chr(41)))
             };
-            if (((((((($self->{method} eq 'id')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'join'))) || (($self->{method} eq 'split'))) || (($self->{method} eq 'isa'))) || (($self->{method} eq 'say')))) {
+            if (exists($Hash_method_python->{$self->{method}})) {
                 if (($self->{hyper})) {
                     return scalar ((Python::tab($level) . 'f_map' . chr(40) . $invocant . ', lambda x: Main.' . $self->{method} . chr(40) . 'x, ' . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ', ') . chr(41) . chr(41)))
                 }

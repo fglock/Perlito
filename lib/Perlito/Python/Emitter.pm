@@ -447,6 +447,16 @@ class Call {
     has $.hyper;
     has $.method;
     has @.arguments;
+
+    my %method_python = (
+        'id'     => 'id',
+        'yaml'   => 'yaml',
+        'join'   => 'join',
+        'split'  => 'split',
+        'isa'    => 'isa',
+        'say'    => 'say',
+    );
+
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $invocant = $.invocant.emit_python;
@@ -465,20 +475,14 @@ class Call {
                 Python::tab($level) ~ '__builtin__.' ~ Main::to_go_namespace($.invocant.name) ~ '(' ~ @str.join(', ') ~ ')'
         }
 
-        if     ($.method eq 'id')
-            || ($.method eq 'yaml')
-            || ($.method eq 'join')
-            || ($.method eq 'split')
-            || ($.method eq 'isa')
-            || ($.method eq 'say')
-        { 
+        if exists( %method_python{ $.method } ) {
             if ($.hyper) {
                 return Python::tab($level) ~ 'f_map(' ~ $invocant ~ ', lambda x: Main.' ~ $.method ~ '(x, ' ~ (@.arguments.>>emit_python).join(', ') ~ '))';
             }
             else {
                 return Python::tab($level) ~ "f_" ~ $.method ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_python).join(', ') ~ ')';
             }
-        };
+        }
 
         my $meth = $.method;
         if $meth eq 'postcircumfix:<( )>' {
