@@ -493,16 +493,7 @@ $self->emit_perl5_indented(0)
                 return scalar ((Perl5::tab($level) . chr(40) . 'Main::id' . chr(40) . ($self->{arguments}->[0])->emit_perl5() . chr(41) . ' eq Main::id' . chr(40) . ($self->{arguments}->[1])->emit_perl5() . chr(41) . chr(41)))
             };
             if (($code eq 'ternary:' . chr(60) . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . chr(62))) {
-                ((my  $cond) = $self->{arguments}->[0]);
-                if ((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64)))) {
-                    ($cond = Apply->new(('code' => 'prefix:' . chr(60) . chr(64) . chr(62)), ('arguments' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $cond );
-    $List_a
-})))
-                };
-                return scalar ((Perl5::tab($level) . chr(40) . $cond->emit_perl5() . ' ' . chr(63) . ' ' . ($self->{arguments}->[1])->emit_perl5() . ' : ' . ($self->{arguments}->[2])->emit_perl5() . chr(41)))
+                return scalar ((Perl5::tab($level) . chr(40) . $self->{arguments}->[0]->emit_perl5() . ' ' . chr(63) . ' ' . $self->{arguments}->[1]->emit_perl5() . ' : ' . $self->{arguments}->[2]->emit_perl5() . chr(41)))
             };
             if (($code eq 'circumfix:' . chr(60) . chr(40) . ' ' . chr(41) . chr(62))) {
                 return scalar ((Perl5::tab($level) . chr(40) . Main::join(([ map { $_->emit_perl5() } @{( $self->{arguments} )} ]), ', ') . chr(41)))

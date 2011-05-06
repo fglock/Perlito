@@ -380,16 +380,11 @@ class Apply {
         }
 
         if $code eq 'ternary:<?? !!>' { 
-            my $cond = @.arguments[0];
-            if   $cond.isa( 'Var' ) 
-              && $cond.sigil eq '@' 
-            {
-                $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
-            }
-            return Perl5::tab($level) ~ '(' ~ $cond.emit_perl5() ~
-                 ' ? ' ~ (@.arguments[1]).emit_perl5() ~
-                 ' : ' ~ (@.arguments[2]).emit_perl5() ~
-                  ')' 
+            return Perl5::tab($level) 
+                ~  '('  ~ @.arguments[0].emit_perl5 
+                ~ ' ? ' ~ @.arguments[1].emit_perl5
+                ~ ' : ' ~ @.arguments[2].emit_perl5
+                ~  ')' 
         }
         
         if $code eq 'circumfix:<( )>' {

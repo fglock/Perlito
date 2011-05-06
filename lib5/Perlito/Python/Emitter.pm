@@ -840,8 +840,8 @@ $self->emit_python_indented(0)
         sub emit_python_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $has_body) = (($self->{body}) ? 1 : 0));
-            ((my  $has_otherwise) = (($self->{otherwise}) ? 1 : 0));
+            ((my  $has_body) = ($self->{body} ? 1 : 0));
+            ((my  $has_otherwise) = ($self->{otherwise} ? 1 : 0));
             ((my  $body_block) = Perlito::Python::LexicalBlock->new(('block' => $self->{body}->stmts())));
             if ($body_block->has_my_decl()) {
                 ($body_block = Do->new(('block' => $self->{body})))

@@ -472,7 +472,7 @@ $self->emit_javascript_indented(0)
                 if (($self->{hyper})) {
                     return scalar ((chr(40) . 'function ' . chr(40) . 'a_' . chr(41) . ' ' . chr(123) . ' ' . 'var out ' . chr(61) . ' ' . chr(91) . chr(93) . chr(59) . ' ' . 'if ' . chr(40) . ' a_ ' . chr(61) . chr(61) . ' null ' . chr(41) . ' ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for' . chr(40) . 'var i ' . chr(61) . ' 0' . chr(59) . ' i ' . chr(60) . ' a_.length' . chr(59) . ' i++' . chr(41) . ' ' . chr(123) . ' ' . 'out.push' . chr(40) . ' ' . Javascript::escape_function($self->{method}) . chr(40) . 'a_' . chr(91) . 'i' . chr(93) . chr(41) . ' ' . chr(41) . ' ' . chr(125) . ' return out' . chr(59) . ' ' . chr(125) . chr(41) . chr(40) . $invocant . chr(41)))
                 };
-                return scalar ((Javascript::escape_function($self->{method}) . chr(40) . $invocant . ((($self->{arguments}) ? (', ' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ')) : '')) . chr(41)))
+                return scalar ((Javascript::escape_function($self->{method}) . chr(40) . $invocant . (($self->{arguments} ? (', ' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ')) : '')) . chr(41)))
             };
             if (((((((($self->{method} eq 'join')) || (($self->{method} eq 'split'))) || (($self->{method} eq 'shift'))) || (($self->{method} eq 'unshift'))) || (($self->{method} eq 'push'))) || (($self->{method} eq 'pop')))) {
                 return scalar (($invocant . '.' . $self->{method} . chr(40) . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . chr(41)))
@@ -649,7 +649,7 @@ $self->emit_javascript_indented(0)
                 return scalar (emit_javascript_bind($self->{arguments}->[0], $self->{arguments}->[1]))
             };
             if (($code eq 'return')) {
-                return scalar ((Javascript::tab($level) . 'throw' . chr(40) . ((($self->{arguments}) ? $self->{arguments}->[0]->emit_javascript() : 'null')) . chr(41)))
+                return scalar ((Javascript::tab($level) . 'throw' . chr(40) . (($self->{arguments} ? $self->{arguments}->[0]->emit_javascript() : 'null')) . chr(41)))
             };
             if ($self->{namespace}) {
                 ($code = (Main::to_javascript_namespace($self->{namespace}) . '.' . Javascript::escape_function($code)))
