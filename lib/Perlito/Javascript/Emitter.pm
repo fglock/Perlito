@@ -364,6 +364,28 @@ class Call {
     has $.hyper;
     has $.method;
     has @.arguments;
+
+    my %method_js = (
+        'perl'   => 'perl',
+        'isa'    => 'isa',
+        'id'     => 'id',
+        'scalar' => 'scalar',
+        'keys'   => 'keys',
+        'values' => 'values',
+        'pairs'  => 'pairs',
+        'elems'  => 'elems',
+        'say'    => 'say',
+        'chars'  => 'chars',
+    );
+    my %method_native_js = (
+        'join'    => 'join',
+        'split'   => 'split',
+        'shift'   => 'shift',
+        'unshift' => 'unshift',
+        'push'    => 'push',
+        'pop'     => 'pop',
+    );
+
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $invocant = $.invocant.emit_javascript;
@@ -389,17 +411,7 @@ class Call {
                 ~ '})()'
         }
 
-        if     ($.method eq 'perl')
-            || ($.method eq 'isa')
-            || ($.method eq 'id')
-            || ($.method eq 'scalar')
-            || ($.method eq 'keys')
-            || ($.method eq 'values')
-            || ($.method eq 'pairs')
-            || ($.method eq 'elems')
-            || ($.method eq 'say' )
-            || ($.method eq 'chars')
-        { 
+        if exists( %method_js{ $.method } ) {
             if ($.hyper) {
                 return 
                     '(function (a_) { '
@@ -414,13 +426,8 @@ class Call {
                     ~ ( @.arguments ?? ', ' ~ (@.arguments.>>emit_javascript).join(', ') !! '' ) 
                 ~ ')';
         }
-        if    ($.method eq 'join') 
-           || ($.method eq 'split') 
-           || ($.method eq 'shift') 
-           || ($.method eq 'unshift') 
-           || ($.method eq 'push') 
-           || ($.method eq 'pop') 
-        {
+
+        if exists( %method_native_js{ $.method } ) {
             return $invocant ~ '.' ~ $.method ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
         }
 
@@ -447,6 +454,39 @@ class Apply {
     has $.code;
     has @.arguments;
     has $.namespace;
+
+    my %op_infix_js = (
+        'infix:<->'  => ' - ',
+        'infix:<*>'  => ' * ',
+        'infix:</>'  => ' / ',
+        'infix:<>>'  => ' > ',
+        'infix:<<>'  => ' < ',
+        'infix:<>=>' => ' >= ',
+        'infix:<<=>' => ' <= ',
+
+        'infix:<eq>' => ' == ',
+        'infix:<ne>' => ' != ',
+        'infix:<le>' => ' <= ',
+        'infix:<ge>' => ' >= ',
+
+        'infix:<==>' => ' == ',
+        'infix:<!=>' => ' != ',
+        'infix:<=>>' => ', ',
+    );
+
+    my %op_global_js = (
+        'index'   => 1,
+        'die'     => 1,
+        'shift'   => 1,
+        'unshift' => 1,
+        'push'    => 1,
+        'pop'     => 1,
+        'chr'     => 1,
+        'say'     => 1,
+        'print'   => 1,
+        'warn'    => 1,
+    );
+
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
 
@@ -460,6 +500,9 @@ class Apply {
         if $code.isa( 'Str' ) { }
         else {
             return Javascript::tab($level) ~ '(' ~ $.code.emit_javascript() ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+        }
+        if exists %op_infix_js{$code} {
+            return Javascript::tab($level) ~ '(' ~ (@.arguments.>>emit_javascript).join( %op_infix_js{$code} ) ~ ')'
         }
 
         if $code eq 'self'       { return Javascript::tab($level) ~ 'v_self' }
@@ -491,14 +534,6 @@ class Apply {
 
         if $code eq 'list:<~>'   { return '(' ~ Javascript::escape_function('string') ~ '(' ~ (@.arguments.>>emit_javascript()).join(  ') + ' ~ Javascript::escape_function('string') ~ '('  ) ~ '))' }
         if $code eq 'infix:<+>'  { return Javascript::escape_function('add') ~ '('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' }
-        if $code eq 'infix:<->'  { return '('  ~ (@.arguments.>>emit_javascript).join(' - ')   ~ ')' }
-        if $code eq 'infix:<*>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' * ')   ~ ')' }
-        if $code eq 'infix:</>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' / ')   ~ ')' }
-        if $code eq 'infix:<>>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' > ')   ~ ')' }
-        if $code eq 'infix:<<>'  { return '('  ~ (@.arguments.>>emit_javascript).join(' < ')   ~ ')' }
-        if $code eq 'infix:<>=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' }
-        if $code eq 'infix:<<=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' }
-        if $code eq 'infix:<=>>' { return '('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' }
 
         if $code eq 'infix:<..>' { 
             return '(function (a) { '  
@@ -530,13 +565,6 @@ class Apply {
                 ~ @.arguments[0].emit_javascript() ~ ', ' 
                 ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '; })' 
         }
-        if $code eq 'infix:<eq>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' }
-        if $code eq 'infix:<ne>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' }
-        if $code eq 'infix:<ge>' { return '('  ~ (@.arguments.>>emit_javascript).join(' >= ')  ~ ')' }
-        if $code eq 'infix:<le>' { return '('  ~ (@.arguments.>>emit_javascript).join(' <= ')  ~ ')' }
- 
-        if $code eq 'infix:<==>' { return '('  ~ (@.arguments.>>emit_javascript).join(' == ')  ~ ')' }
-        if $code eq 'infix:<!=>' { return '('  ~ (@.arguments.>>emit_javascript).join(' != ')  ~ ')' }
         if $code eq 'infix:<===>' {
             return '(' ~ Javascript::escape_function('id') ~ '(' ~ (@.arguments[0]).emit_javascript() ~ ') == ' ~ Javascript::escape_function('id') ~ '(' ~ (@.arguments[1]).emit_javascript() ~ '))'
         }
@@ -568,17 +596,7 @@ class Apply {
         if $.namespace {
             $code = Main::to_javascript_namespace($.namespace) ~ '.' ~ Javascript::escape_function( $code );
         }
-        elsif  ($code ne 'index') 
-            && ($code ne 'die') 
-            && ($code ne 'shift') 
-            && ($code ne 'unshift') 
-            && ($code ne 'push') 
-            && ($code ne 'pop') 
-            && ($code ne 'chr') 
-            && ($code ne 'say') 
-            && ($code ne 'print') 
-            && ($code ne 'warn') 
-        {
+        elsif !exists( %op_global_js{$code} ) {
             $code = 'v__NAMESPACE.' ~ Javascript::escape_function( $code );
         }
         else {

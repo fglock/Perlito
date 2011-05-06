@@ -1689,6 +1689,8 @@ if (typeof Call !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Call;
+  var Hash_method_js = {};
+  var Hash_method_native_js = {};
   // accessor invocant
   Call.v_invocant = null;
   Call.invocant = function () { return this.v_invocant; };
@@ -1753,7 +1755,7 @@ v_str.push((string('v_') + string(v_field.arguments()[0].buf()) + string(': ') +
             else { (function () {
                 null;
             })(); };
-            if ( bool(or(or(or(or(or(or(or(or(or(((v_self.v_method == 'perl')), function () { return ((v_self.v_method == 'isa')); }), function () { return ((v_self.v_method == 'id')); }), function () { return ((v_self.v_method == 'scalar')); }), function () { return ((v_self.v_method == 'keys')); }), function () { return ((v_self.v_method == 'values')); }), function () { return ((v_self.v_method == 'pairs')); }), function () { return ((v_self.v_method == 'elems')); }), function () { return ((v_self.v_method == 'say')); }), function () { return ((v_self.v_method == 'chars')); })) ) { (function () {
+            if ( bool((Hash_method_js).hasOwnProperty(v_self.v_method)) ) { (function () {
                 if ( bool((v_self.v_hyper)) ) { (function () {
                     throw((string(String.fromCharCode(40) + 'function ' + String.fromCharCode(40) + 'a_' + String.fromCharCode(41) + ' ' + String.fromCharCode(123) + ' ') + string('var out ' + String.fromCharCode(61) + ' ' + String.fromCharCode(91) + String.fromCharCode(93) + String.fromCharCode(59) + ' ') + string('if ' + String.fromCharCode(40) + ' a_ ' + String.fromCharCode(61) + String.fromCharCode(61) + ' null ' + String.fromCharCode(41) + ' ' + String.fromCharCode(123) + ' return out' + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('for' + String.fromCharCode(40) + 'var i ' + String.fromCharCode(61) + ' 0' + String.fromCharCode(59) + ' i ' + String.fromCharCode(60) + ' a_.length' + String.fromCharCode(59) + ' i++' + String.fromCharCode(41) + ' ' + String.fromCharCode(123) + ' ') + string('out.push' + String.fromCharCode(40) + ' ') + string(Javascript.escape_function(v_self.v_method)) + string(String.fromCharCode(40) + 'a_' + String.fromCharCode(91) + 'i' + String.fromCharCode(93) + String.fromCharCode(41) + ' ' + String.fromCharCode(41) + ' ' + String.fromCharCode(125) + ' return out' + String.fromCharCode(59)) + string(' ' + String.fromCharCode(125) + String.fromCharCode(41) + String.fromCharCode(40)) + string(v_invocant) + string(String.fromCharCode(41))));;
                 })(); }
@@ -1765,7 +1767,7 @@ v_str.push((string('v_') + string(v_field.arguments()[0].buf()) + string(': ') +
             else { (function () {
                 null;
             })(); };
-            if ( bool(or(or(or(or(or(((v_self.v_method == 'join')), function () { return ((v_self.v_method == 'split')); }), function () { return ((v_self.v_method == 'shift')); }), function () { return ((v_self.v_method == 'unshift')); }), function () { return ((v_self.v_method == 'push')); }), function () { return ((v_self.v_method == 'pop')); })) ) { (function () {
+            if ( bool((Hash_method_native_js).hasOwnProperty(v_self.v_method)) ) { (function () {
                 throw((string(v_invocant) + string('.') + string(v_self.v_method) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
             })(); }
             else { (function () {
@@ -1796,7 +1798,31 @@ v_str.push((string('v_') + string(v_field.arguments()[0].buf()) + string(': ') +
         }
   }
   Call.emit_javascript_indented;  // v8 bug workaround
-})()
+(Hash_method_js = (function () { 
+    var Hash_a = {};
+
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['perl']  = 'perl'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['isa']  = 'isa'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['id']  = 'id'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['scalar']  = 'scalar'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['keys']  = 'keys'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['values']  = 'values'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['pairs']  = 'pairs'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['elems']  = 'elems'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['say']  = 'say'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['chars']  = 'chars'); })();
+    return(Hash_a);
+})());(Hash_method_native_js = (function () { 
+    var Hash_a = {};
+
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['join']  = 'join'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['split']  = 'split'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['shift']  = 'shift'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['unshift']  = 'unshift'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['push']  = 'push'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['pop']  = 'pop'); })();
+    return(Hash_a);
+})());})()
 ;// class Apply
 if (typeof Apply !== 'object') {
   Apply = function() {};
@@ -1806,6 +1832,8 @@ if (typeof Apply !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Apply;
+  var Hash_op_infix_js = {};
+  var Hash_op_global_js = {};
   // accessor code
   Apply.v_code = null;
   Apply.code = function () { return this.v_code; };
@@ -1852,6 +1880,12 @@ if (typeof Apply !== 'object') {
             })(); }
             else { (function () {
                 throw((string(Javascript.tab(v_level)) + string(String.fromCharCode(40)) + string(v_self.v_code.emit_javascript()) + string(String.fromCharCode(41) + '-' + String.fromCharCode(62) + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
+            })(); };
+            if ( bool((Hash_op_infix_js).hasOwnProperty(v_code)) ) { (function () {
+                throw((string(Javascript.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join((function () { if (Hash_op_infix_js == null) { Hash_op_infix_js = {} }; return (Hash_op_infix_js[v_code] ); })())) + string(String.fromCharCode(41))));;
+            })(); }
+            else { (function () {
+                null;
             })(); };
             if ( bool((v_code == 'self')) ) { (function () {
                 throw((string(Javascript.tab(v_level)) + string('v_self')));;
@@ -1979,54 +2013,6 @@ if (typeof Apply !== 'object') {
             else { (function () {
                 null;
             })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + '-' + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' - ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + '*' + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' * ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(47) + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(47) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(62) + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(62) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(60) + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(60) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(62) + String.fromCharCode(61) + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(62) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(60) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(62) + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
             if ( bool((v_code == 'infix:' + String.fromCharCode(60) + '..' + String.fromCharCode(62))) ) { (function () {
                 throw((string(String.fromCharCode(40) + 'function ' + String.fromCharCode(40) + 'a' + String.fromCharCode(41) + ' ' + String.fromCharCode(123) + ' ') + string('for ' + String.fromCharCode(40) + 'var i' + String.fromCharCode(61)) + string(v_self.v_arguments[0].emit_javascript()) + string(', l' + String.fromCharCode(61)) + string(v_self.v_arguments[1].emit_javascript()) + string(String.fromCharCode(59) + ' ') + string('i' + String.fromCharCode(60) + String.fromCharCode(61) + 'l' + String.fromCharCode(59) + ' ++i' + String.fromCharCode(41)) + string(String.fromCharCode(123) + ' ') + string('a.push' + String.fromCharCode(40) + 'i' + String.fromCharCode(41) + ' ') + string(String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('return a ') + string(String.fromCharCode(125) + String.fromCharCode(41) + String.fromCharCode(40) + String.fromCharCode(91) + String.fromCharCode(93) + String.fromCharCode(41))));;
             })(); }
@@ -2047,42 +2033,6 @@ if (typeof Apply !== 'object') {
             })(); };
             if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(47) + String.fromCharCode(47) + String.fromCharCode(62))) ) { (function () {
                 throw((string(Javascript.escape_function('defined_or')) + string(String.fromCharCode(40)) + string(v_self.v_arguments[0].emit_javascript()) + string(', ') + string('function ' + String.fromCharCode(40) + String.fromCharCode(41) + ' ' + String.fromCharCode(123) + ' return ') + string(v_self.v_arguments[1].emit_javascript()) + string(String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'eq' + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(61) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'ne' + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(33) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'ge' + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(62) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'le' + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(60) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(61) + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(61) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(62))) ) { (function () {
-                throw((string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(33) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
             })(); }
             else { (function () {
                 null;
@@ -2135,7 +2085,7 @@ if (typeof Apply !== 'object') {
 (v_code = (string(Main.to_javascript_namespace(v_self.v_namespace)) + string('.') + string(Javascript.escape_function(v_code))));;
             })(); }
             else { (function () {
-                if ( bool(and(and(and(and(and(and(and(and(and(((v_code != 'index')), function () { return ((v_code != 'die')); }), function () { return ((v_code != 'shift')); }), function () { return ((v_code != 'unshift')); }), function () { return ((v_code != 'push')); }), function () { return ((v_code != 'pop')); }), function () { return ((v_code != 'chr')); }), function () { return ((v_code != 'say')); }), function () { return ((v_code != 'print')); }), function () { return ((v_code != 'warn')); })) ) { (function () {
+                if ( bool(( bool((Hash_op_global_js).hasOwnProperty(v_code)) ? false : true)) ) { (function () {
 (v_code = (string('v__NAMESPACE.') + string(Javascript.escape_function(v_code))));;
                 })(); }
                 else { (function () {
@@ -2310,7 +2260,39 @@ List_a.push(v_arguments);
         }
   }
   Apply.emit_javascript_bind;  // v8 bug workaround
-})()
+(Hash_op_infix_js = (function () { 
+    var Hash_a = {};
+
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + '-' + String.fromCharCode(62)]  = ' - '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + '*' + String.fromCharCode(62)]  = ' * '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(47) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(47) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(62) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(62) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(60) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(60) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(62) + String.fromCharCode(61) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(62) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(60) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'eq' + String.fromCharCode(62)]  = ' ' + String.fromCharCode(61) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'ne' + String.fromCharCode(62)]  = ' ' + String.fromCharCode(33) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'le' + String.fromCharCode(62)]  = ' ' + String.fromCharCode(60) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'ge' + String.fromCharCode(62)]  = ' ' + String.fromCharCode(62) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(61) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(61) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(33) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(62) + String.fromCharCode(62)]  = ', '); })();
+    return(Hash_a);
+})());(Hash_op_global_js = (function () { 
+    var Hash_a = {};
+
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['index']  = 1); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['die']  = 1); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['shift']  = 1); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['unshift']  = 1); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['push']  = 1); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['pop']  = 1); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['chr']  = 1); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['say']  = 1); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['print']  = 1); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['warn']  = 1); })();
+    return(Hash_a);
+})());})()
 ;// class If
 if (typeof If !== 'object') {
   If = function() {};
@@ -4369,6 +4351,7 @@ if (typeof Call !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Call;
+  var Hash_method_perl5 = {};
   // accessor invocant
   Call.v_invocant = null;
   Call.invocant = function () { return this.v_invocant; };
@@ -4414,23 +4397,12 @@ if (typeof Call !== 'object') {
             else { (function () {
                 null;
             })(); };
-            if ( bool(or(((v_self.v_method == 'values')), function () { return ((v_self.v_method == 'keys')); })) ) { (function () {
+            if ( bool((Hash_method_perl5).hasOwnProperty(v_self.v_method)) ) { (function () {
                 if ( bool((v_self.v_hyper)) ) { (function () {
-                    die((string('not implemented')));;
+                    throw((string(Perl5.tab(v_level)) + string('bless ' + String.fromCharCode(91) + ' map ' + String.fromCharCode(123) + ' ') + string((function () { if (Hash_method_perl5 == null) { Hash_method_perl5 = {} }; return (Hash_method_perl5[v_self.v_method] ); })()) + string(String.fromCharCode(40) + ' ' + String.fromCharCode(36) + '_, ') + string(', ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41)) + string(' ' + String.fromCharCode(125) + ' ' + String.fromCharCode(64) + String.fromCharCode(123) + String.fromCharCode(40) + ' ') + string(v_invocant) + string(' ' + String.fromCharCode(41)) + string(String.fromCharCode(125) + ' ' + String.fromCharCode(93) + ', ' + String.fromCharCode(34) + 'ARRAY' + String.fromCharCode(34))));;
                 })(); }
                 else { (function () {
-                    throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(91)) + string(v_self.v_method) + string(String.fromCharCode(40) + ' ' + String.fromCharCode(37) + String.fromCharCode(123)) + string(v_invocant) + string(String.fromCharCode(125) + ' ' + String.fromCharCode(41)) + string(String.fromCharCode(93))));;
-                })(); };;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool(or(or(or(or(or(or(or(or(((v_self.v_method == 'perl')), function () { return ((v_self.v_method == 'id')); }), function () { return ((v_self.v_method == 'yaml')); }), function () { return ((v_self.v_method == 'say')); }), function () { return ((v_self.v_method == 'join')); }), function () { return ((v_self.v_method == 'split')); }), function () { return ((v_self.v_method == 'chars')); }), function () { return ((v_self.v_method == 'isa')); }), function () { return ((v_self.v_method == 'pairs')); })) ) { (function () {
-                if ( bool((v_self.v_hyper)) ) { (function () {
-                    throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(91) + ' map ' + String.fromCharCode(123) + ' Main::') + string(v_self.v_method) + string(String.fromCharCode(40) + ' ' + String.fromCharCode(36) + '_, ') + string(', ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41)) + string(' ' + String.fromCharCode(125) + ' ' + String.fromCharCode(64) + String.fromCharCode(123) + String.fromCharCode(40) + ' ') + string(v_invocant) + string(' ' + String.fromCharCode(41) + String.fromCharCode(125) + ' ' + String.fromCharCode(93))));;
-                })(); }
-                else { (function () {
-                    throw((string(Perl5.tab(v_level)) + string('Main::') + string(v_self.v_method) + string(String.fromCharCode(40)) + string(v_invocant) + string(', ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
+                    throw((string(Perl5.tab(v_level)) + string((function () { if (Hash_method_perl5 == null) { Hash_method_perl5 = {} }; return (Hash_method_perl5[v_self.v_method] ); })()) + string(String.fromCharCode(40)) + string(v_invocant) + string(', ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
                 })(); };;
             })(); }
             else { (function () {
@@ -4497,7 +4469,22 @@ if (typeof Call !== 'object') {
         }
   }
   Call.emit_perl5_indented;  // v8 bug workaround
-})()
+(Hash_method_perl5 = (function () { 
+    var Hash_a = {};
+
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['perl']  = 'Main::perl'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['id']  = 'Main::id'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['yaml']  = 'Main::yaml'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['say']  = 'Main::say'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['join']  = 'Main::join'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['split']  = 'Main::split'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['chars']  = 'Main::chars'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['isa']  = 'Main::isa'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['pairs']  = 'Main::pairs'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['keys']  = 'Main::keys'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['values']  = 'Main::values'); })();
+    return(Hash_a);
+})());})()
 ;// class Apply
 if (typeof Apply !== 'object') {
   Apply = function() {};
@@ -4507,6 +4494,8 @@ if (typeof Apply !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Apply;
+  var Hash_op_prefix_perl5 = {};
+  var Hash_op_infix_perl5 = {};
   // accessor code
   Apply.v_code = null;
   Apply.code = function () { return this.v_code; };
@@ -4563,6 +4552,18 @@ if (typeof Apply !== 'object') {
             else { (function () {
                 throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(v_self.v_code.emit_perl5()) + string(String.fromCharCode(41) + '-' + String.fromCharCode(62) + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
             })(); };
+            if ( bool((Hash_op_infix_perl5).hasOwnProperty(v_code)) ) { (function () {
+                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join((function () { if (Hash_op_infix_perl5 == null) { Hash_op_infix_perl5 = {} }; return (Hash_op_infix_perl5[v_code] ); })())) + string(String.fromCharCode(41))));;
+            })(); }
+            else { (function () {
+                null;
+            })(); };
+            if ( bool((Hash_op_prefix_perl5).hasOwnProperty(v_code)) ) { (function () {
+                throw((string(Perl5.tab(v_level)) + string((function () { if (Hash_op_prefix_perl5 == null) { Hash_op_prefix_perl5 = {} }; return (Hash_op_prefix_perl5[v_code] ); })()) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
+            })(); }
+            else { (function () {
+                null;
+            })(); };
             if ( bool((v_code == 'self')) ) { (function () {
                 throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(36) + 'self')));;
             })(); }
@@ -4577,24 +4578,6 @@ if (typeof Apply !== 'object') {
             })(); };
             if ( bool((v_code == 'make')) ) { (function () {
                 throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40) + String.fromCharCode(36) + 'MATCH-' + String.fromCharCode(62) + String.fromCharCode(123) + 'capture' + String.fromCharCode(125) + ' ' + String.fromCharCode(61) + ' ' + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41) + String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'say')) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string('Main::say' + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'print')) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string('Main::print' + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'warn')) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string('warn' + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
             })(); }
             else { (function () {
                 null;
@@ -4629,42 +4612,6 @@ if (typeof Apply !== 'object') {
             else { (function () {
                 null;
             })(); };
-            if ( bool((v_code == 'Int')) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40) + '0+') + string((v_self.v_arguments[0]).emit_perl5()) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'Num')) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40) + '0+') + string((v_self.v_arguments[0]).emit_perl5()) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'bool')) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(33) + String.fromCharCode(33) + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'prefix:' + String.fromCharCode(60) + String.fromCharCode(126) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40) + String.fromCharCode(34) + String.fromCharCode(34) + ' . ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'prefix:' + String.fromCharCode(60) + String.fromCharCode(33) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(33) + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'prefix:' + String.fromCharCode(60) + String.fromCharCode(63) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(33) + String.fromCharCode(33) + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
             if ( bool((v_code == 'prefix:' + String.fromCharCode(60) + String.fromCharCode(36) + String.fromCharCode(62))) ) { (function () {
                 throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(36) + String.fromCharCode(123)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(String.fromCharCode(125))));;
             })(); }
@@ -4695,150 +4642,6 @@ if (typeof Apply !== 'object') {
             else { (function () {
                 null;
             })(); };
-            if ( bool((v_code == 'prefix:' + String.fromCharCode(60) + '++' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string('++' + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'prefix:' + String.fromCharCode(60) + '--' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string('--' + String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'list:' + String.fromCharCode(60) + String.fromCharCode(126) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string('') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' . ')) + string('')));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + '+' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' + ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + '-' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' - ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + '*' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' * ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(47) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(47) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(62) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(62) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(60) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(60) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(62) + String.fromCharCode(61) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(62) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(60) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'x' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' x ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(38) + String.fromCharCode(38) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(38) + String.fromCharCode(38) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(124) + String.fromCharCode(124) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(124) + String.fromCharCode(124) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'and' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' and ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'or' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' or ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(47) + String.fromCharCode(47) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(47) + String.fromCharCode(47) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'eq' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' eq ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'ne' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ne ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'le' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' le ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + 'ge' + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ge ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(61) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(61) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(33) + String.fromCharCode(61) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
-            if ( bool((v_code == 'infix:' + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(62) + String.fromCharCode(62))) ) { (function () {
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ' + String.fromCharCode(61) + String.fromCharCode(62) + ' ')) + string(String.fromCharCode(41))));;
-            })(); }
-            else { (function () {
-                null;
-            })(); };
             if ( bool((v_code == 'infix:' + String.fromCharCode(60) + '..' + String.fromCharCode(62))) ) { (function () {
                 throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40) + 'bless ' + String.fromCharCode(91)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' .. ')) + string((string(String.fromCharCode(93) + ', ' + String.fromCharCode(39) + 'ARRAY' + String.fromCharCode(39) + String.fromCharCode(41))))));;
             })(); }
@@ -4852,23 +4655,7 @@ if (typeof Apply !== 'object') {
                 null;
             })(); };
             if ( bool((v_code == 'ternary:' + String.fromCharCode(60) + String.fromCharCode(63) + String.fromCharCode(63) + ' ' + String.fromCharCode(33) + String.fromCharCode(33) + String.fromCharCode(62))) ) { (function () {
-                var v_cond = null;
-
-(v_cond = v_self.v_arguments[0]);
-                if ( bool(and(isa(v_cond, 'Var'), function () { return (v_cond.sigil() == String.fromCharCode(64)); })) ) { (function () {
-(v_cond = (function () { var tmp = {v_code: 'prefix:' + String.fromCharCode(60) + String.fromCharCode(64) + String.fromCharCode(62),v_arguments: (function () { 
-    var List_a = [];
-
-    var List_v = [];
-
-List_a.push(v_cond);
-    return(List_a);
-})()}; tmp.__proto__ = Apply; return tmp; })());;
-                })(); }
-                else { (function () {
-                    null;
-                })(); };
-                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(v_cond.emit_perl5()) + string(' ' + String.fromCharCode(63) + ' ') + string((v_self.v_arguments[1]).emit_perl5()) + string(' : ') + string((v_self.v_arguments[2]).emit_perl5()) + string(String.fromCharCode(41))));;
+                throw((string(Perl5.tab(v_level)) + string(String.fromCharCode(40)) + string(v_self.v_arguments[0].emit_perl5()) + string(' ' + String.fromCharCode(63) + ' ') + string(v_self.v_arguments[1].emit_perl5()) + string(' : ') + string(v_self.v_arguments[2].emit_perl5()) + string(String.fromCharCode(41))));;
             })(); }
             else { (function () {
                 null;
@@ -5010,7 +4797,51 @@ List_a.push(v_arguments);
         }
   }
   Apply.emit_perl5_bind;  // v8 bug workaround
-})()
+(Hash_op_prefix_perl5 = (function () { 
+    var Hash_a = {};
+
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['say']  = 'Main::say'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['print']  = 'Main::print'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['map']  = 'Main::map'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['grep']  = 'Main::grep'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['sort']  = 'Main::sort'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['warn']  = 'warn'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['Int']  = '0+'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['Num']  = '0+'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['bool']  = String.fromCharCode(33) + String.fromCharCode(33)); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['prefix:' + String.fromCharCode(60) + String.fromCharCode(126) + String.fromCharCode(62)]  = String.fromCharCode(34) + String.fromCharCode(34) + '.'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['prefix:' + String.fromCharCode(60) + String.fromCharCode(33) + String.fromCharCode(62)]  = String.fromCharCode(33)); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['prefix:' + String.fromCharCode(60) + String.fromCharCode(63) + String.fromCharCode(62)]  = String.fromCharCode(33) + String.fromCharCode(33)); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['prefix:' + String.fromCharCode(60) + '++' + String.fromCharCode(62)]  = '++'); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['prefix:' + String.fromCharCode(60) + '--' + String.fromCharCode(62)]  = '--'); })();
+    return(Hash_a);
+})());(Hash_op_infix_perl5 = (function () { 
+    var Hash_a = {};
+
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['list:' + String.fromCharCode(60) + String.fromCharCode(126) + String.fromCharCode(62)]  = ' . '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + '+' + String.fromCharCode(62)]  = ' + '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + '-' + String.fromCharCode(62)]  = ' - '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + '*' + String.fromCharCode(62)]  = ' * '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(47) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(47) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(62) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(62) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(60) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(60) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(62) + String.fromCharCode(61) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(62) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(60) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'x' + String.fromCharCode(62)]  = ' x '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(38) + String.fromCharCode(38) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(38) + String.fromCharCode(38) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(124) + String.fromCharCode(124) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(124) + String.fromCharCode(124) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'and' + String.fromCharCode(62)]  = ' and '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'or' + String.fromCharCode(62)]  = ' or '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(47) + String.fromCharCode(47) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(47) + String.fromCharCode(47) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'eq' + String.fromCharCode(62)]  = ' eq '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'ne' + String.fromCharCode(62)]  = ' ne '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'le' + String.fromCharCode(62)]  = ' le '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + 'ge' + String.fromCharCode(62)]  = ' ge '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(61) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(61) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(33) + String.fromCharCode(61) + ' '); })();
+(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:' + String.fromCharCode(60) + String.fromCharCode(61) + String.fromCharCode(62) + String.fromCharCode(62)]  = ' ' + String.fromCharCode(61) + String.fromCharCode(62) + ' '); })();
+    return(Hash_a);
+})());})()
 ;// class If
 if (typeof If !== 'object') {
   If = function() {};
