@@ -2,13 +2,7 @@ use v6;
 
 class Python {
     sub tab($level) { 
-        my $s = '';
-        my $count = $level;
-        while $count > 0 {
-            $s = $s ~ "    ";
-            $count = $count - 1; 
-        }
-        return $s;
+        "    " x $level
     }
 
     my %safe_char = (
@@ -589,6 +583,11 @@ class Apply {
         if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_python).join(' ')    ~ ')' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_python).join(' ')    ~ '}' };
+
+        if $code eq 'infix:<x>'  { 
+            return     '(unicode(' ~ @.arguments[0].emit_python() ~ ')'
+                ~ ' * mp6_to_num(' ~ @.arguments[1].emit_python() ~ '))' 
+        };
 
         if $code eq 'list:<~>'   { return '(unicode('  ~ (@.arguments.>>emit_python).join(') + unicode(')  ~ '))' };
         if $code eq 'infix:<+>'  { return '(mp6_to_num('  ~ (@.arguments.>>emit_python).join(') + mp6_to_num(')  ~ '))' };

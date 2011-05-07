@@ -472,6 +472,10 @@ chars = function(o) {
     return o.length;
 };
 
+str_replicate = function(o, num) {
+    return num ? Array(num + 1).join(o) : "";
+};
+
 // regex primitives
 if (typeof Perlito$Grammar !== 'object') {
     Perlito$Grammar = function() {};
@@ -688,15 +692,7 @@ if (typeof Javascript !== 'object') {
   // sub tab
   Javascript.tab = function (v_level) {
         try {
-            var v_s = null;
-
-            var v_count = null;
-
-(v_s = '');
-(v_count = v_level);
-            for ( ; bool((v_count > 0));  ) { (function () { (v_s = (string(v_s) + string((string('    ')))));
-(v_count = (v_count - 1));; })() };
-            throw(v_s);;
+            return(str_replicate((string('    ')), v_level));;
         }
         catch(err) {
             if ( err instanceof Error ) {
@@ -2016,6 +2012,12 @@ if (typeof Apply !== 'object') {
             })(); };
             if ( bool((v_code == 'prefix:<-->')) ) { (function () {
                 throw((string('--(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(')')));;
+            })(); }
+            else { (function () {
+                null;
+            })(); };
+            if ( bool((v_code == 'infix:<x>')) ) { (function () {
+                throw((string('str_replicate(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
             })(); }
             else { (function () {
                 null;
@@ -3472,7 +3474,7 @@ v_op_stack.unshift(v_token);;
 
 (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['assoc']  = 'right'); })();
     return(Hash_a);
-})());(v_prec = (v_prec - 1));        v__NAMESPACE.add_op('prefix', '+', v_prec);        v__NAMESPACE.add_op('prefix', '-', v_prec);        v__NAMESPACE.add_op('prefix', String.fromCharCode(36), v_prec);        v__NAMESPACE.add_op('prefix', String.fromCharCode(64), v_prec);        v__NAMESPACE.add_op('prefix', String.fromCharCode(37), v_prec);        v__NAMESPACE.add_op('prefix', String.fromCharCode(33), v_prec);        v__NAMESPACE.add_op('prefix', String.fromCharCode(63), v_prec);(v_prec = (v_prec - 1));        v__NAMESPACE.add_op('infix', '*', v_prec);        v__NAMESPACE.add_op('infix', String.fromCharCode(47), v_prec);(v_prec = (v_prec - 1));        v__NAMESPACE.add_op('infix', '+', v_prec);        v__NAMESPACE.add_op('infix', '-', v_prec);(v_prec = (v_prec - 1));        v__NAMESPACE.add_op('infix', String.fromCharCode(126), v_prec, (function () { 
+})());(v_prec = (v_prec - 1));        v__NAMESPACE.add_op('prefix', '+', v_prec);        v__NAMESPACE.add_op('prefix', '-', v_prec);        v__NAMESPACE.add_op('prefix', String.fromCharCode(36), v_prec);        v__NAMESPACE.add_op('prefix', String.fromCharCode(64), v_prec);        v__NAMESPACE.add_op('prefix', String.fromCharCode(37), v_prec);        v__NAMESPACE.add_op('prefix', String.fromCharCode(33), v_prec);        v__NAMESPACE.add_op('prefix', String.fromCharCode(63), v_prec);(v_prec = (v_prec - 1));        v__NAMESPACE.add_op('infix', '*', v_prec);        v__NAMESPACE.add_op('infix', String.fromCharCode(47), v_prec);(v_prec = (v_prec - 1));        v__NAMESPACE.add_op('infix', '+', v_prec);        v__NAMESPACE.add_op('infix', '-', v_prec);(v_prec = (v_prec - 1));        v__NAMESPACE.add_op('infix', 'x', v_prec);        v__NAMESPACE.add_op('infix', 'xx', v_prec);(v_prec = (v_prec - 1));        v__NAMESPACE.add_op('infix', String.fromCharCode(126), v_prec, (function () { 
     var Hash_a = {};
 
 (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['assoc']  = 'list'); })();
@@ -3637,15 +3639,7 @@ if (typeof Perl5 !== 'object') {
   // sub tab
   Perl5.tab = function (v_level) {
         try {
-            var v_s = null;
-
-            var v_count = null;
-
-(v_s = '');
-(v_count = v_level);
-            for ( ; bool((v_count > 0));  ) { (function () { (v_s = (string(v_s) + string((string('    ')))));
-(v_count = (v_count - 1));; })() };
-            throw(v_s);;
+            return(str_replicate((string('    ')), v_level));;
         }
         catch(err) {
             if ( err instanceof Error ) {

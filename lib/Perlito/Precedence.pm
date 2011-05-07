@@ -200,6 +200,9 @@ class Perlito::Precedence {
     add_op( 'infix',    '+',   $prec );
     add_op( 'infix',    '-',   $prec );
     $prec = $prec - 1;
+    add_op( 'infix',    'x',   $prec );
+    add_op( 'infix',    'xx',  $prec );
+    $prec = $prec - 1;
     add_op( 'infix',    '~',   $prec, { assoc => 'list' } );
     add_op( 'prefix',   '~',   $prec );
     $prec = $prec - 1;

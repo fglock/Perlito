@@ -2,13 +2,7 @@ use v6;
 
 class Perl5 {
     sub tab($level) {
-        my $s = '';
-        my $count = $level;
-        while $count > 0 {
-            $s ~= "    ";
-            $count = $count - 1;
-        }
-        return $s;
+        "    " x $level
     }
 
     my %safe_char = (

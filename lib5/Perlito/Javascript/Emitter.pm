@@ -18,13 +18,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Javascript" }
         sub tab {
             my $level = $_[0];
-            ((my  $s) = '');
-            ((my  $count) = $level);
-            for ( ; ($count > 0);  ) {
-                ($s = ($s . ('    ')));
-                ($count = ($count - 1))
-            };
-            return scalar ($s)
+            (('    ') x $level)
         };
         ((my  $Hash_safe_char = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
@@ -646,6 +640,9 @@ $self->emit_javascript_indented(0)
             };
             if (($code eq 'prefix:<-->')) {
                 return scalar (('--(' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . ')'))
+            };
+            if (($code eq 'infix:<x>')) {
+                return scalar (('str_replicate(' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ', ') . ')'))
             };
             if (($code eq 'list:<' . chr(126) . '>')) {
                 return scalar (('(' . Javascript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), (') + ' . Javascript::escape_function('string') . '(')) . '))'))

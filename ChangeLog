@@ -2,6 +2,7 @@ dev  2011-04-27
 - fixed unicode IO, added unicode tests
 - add some formatting to Perl5 and Javascript output
 - methods: map, grep
+- operators: x
 
 7.0  2011-04-20
 - supported backends: Perl 5, Python 2.6, Javascript

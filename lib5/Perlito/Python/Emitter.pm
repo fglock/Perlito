@@ -18,13 +18,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Python" }
         sub tab {
             my $level = $_[0];
-            ((my  $s) = '');
-            ((my  $count) = $level);
-            for ( ; ($count > 0);  ) {
-                ($s = ($s . ('    ')));
-                ($count = ($count - 1))
-            };
-            return scalar ($s)
+            (('    ') x $level)
         };
         ((my  $Hash_safe_char = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
@@ -705,6 +699,9 @@ $self->emit_python_indented(0)
             };
             if (($code eq 'prefix:<' . chr(37) . '>')) {
                 return scalar ((chr(37) . chr(123) . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ' ') . chr(125)))
+            };
+            if (($code eq 'infix:<x>')) {
+                return scalar (('(unicode(' . $self->{arguments}->[0]->emit_python() . ')' . ' * mp6_to_num(' . $self->{arguments}->[1]->emit_python() . '))'))
             };
             if (($code eq 'list:<' . chr(126) . '>')) {
                 return scalar (('(unicode(' . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ') + unicode(') . '))'))

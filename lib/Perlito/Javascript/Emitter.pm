@@ -2,13 +2,7 @@ use v6;
 
 class Javascript {
     sub tab($level) {
-        my $s = '';
-        my $count = $level;
-        while $count > 0 {
-            $s = $s ~ "    ";
-            $count = $count - 1;
-        }
-        return $s;
+        "    " x $level
     }
 
     my %safe_char = (
@@ -541,6 +535,8 @@ class Apply {
         if $code eq 'postfix:<-->' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')--' }
         if $code eq 'prefix:<++>'  { return '++(' ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')' }
         if $code eq 'prefix:<-->'  { return '--(' ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')' }
+
+        if $code eq 'infix:<x>'  { return 'str_replicate(' ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' }
 
         if $code eq 'list:<~>'   { return '(' ~ Javascript::escape_function('string') ~ '(' ~ (@.arguments.>>emit_javascript()).join(  ') + ' ~ Javascript::escape_function('string') ~ '('  ) ~ '))' }
         if $code eq 'infix:<+>'  { return Javascript::escape_function('add') ~ '('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' }
