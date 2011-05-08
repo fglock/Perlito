@@ -28,10 +28,9 @@ class Perlito::Precedence {
         ||  ($c eq '_')
     }
 
-    my $Op1;
-    my $Op2;
-    my $Op3;
+    my @Op;
     my $End_token;
+    my @Op_chars = (3,2,1);
     method op_parse ($str, $pos) {
         my $from = $pos;
         for @($End_token) -> $tok {
@@ -63,72 +62,31 @@ class Perlito::Precedence {
             $c02 = substr($str, $pos, 2);
         }
 
-        my $op3 = substr($str, $pos, 3);
-        if exists($Op3{$op3}) {
-            my $c1 = substr($str, $pos+2, 1);
-            my $c2 = substr($str, $pos+3, 1);
-            if is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ) {
-            }
-            else {
-                $pos = $pos + 3;
-                my $c01 = substr($str, $pos, 2);
-                my $c02 = substr($str, $pos, 3);
-                if ($c01 eq '«') || ($c01 eq '»') {
-                    $hyper_right = $c01;
-                    $pos = $pos + 1;
+        for @Op_chars -> $len {
+            my $op = substr($str, $pos, $len);
+            if exists(@Op[$len]{$op}) {
+                my $c1 = substr($str, $pos+$len-1, 1);
+                my $c2 = substr($str, $pos+$len, 1);
+                if is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ) {
                 }
-                elsif ($c02 eq '<<') || ($c02 eq '>>') {
-                    $hyper_right = $c02;
-                    $pos = $pos + 2;
+                else {
+                    $pos = $pos + $len;
+                    my $c01 = substr($str, $pos, 1);
+                    my $c02 = substr($str, $pos, 2);
+                    if ($c01 eq '«') || ($c01 eq '»') {
+                        $hyper_right = $c01;
+                        $pos = $pos + 1;
+                    }
+                    elsif ($c02 eq '<<') || ($c02 eq '>>') {
+                        $hyper_right = $c02;
+                        $pos = $pos + 2;
+                    }
+                    return Perlito::Match.new( 'str' => $str, 'from' => $from, 'to' => $pos, 'bool' => 1,
+                        capture => [ 'op', $op, { 'hyper_left' => $hyper_left, 'hyper_right' => $hyper_right } ] );
                 }
-                return Perlito::Match.new( 'str' => $str, 'from' => $from, 'to' => $pos, 'bool' => 1,
-                    capture => [ 'op', $op3, { 'hyper_left' => $hyper_left, 'hyper_right' => $hyper_right } ] );
-            }
-        }
- 
-        my $op2 = $c02;
-        if exists($Op2{$op2}) {
-            my $c1 = substr($str, $pos+1, 1);
-            my $c2 = substr($str, $pos+2, 1);
-            if is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ) {
-            }
-            else {
-                $pos = $pos + 2;
-                my $c01 = substr($str, $pos, 1);
-                my $c02 = substr($str, $pos, 2);
-                if ($c01 eq '«') || ($c01 eq '»') {
-                    $hyper_right = $c01;
-                    $pos = $pos + 1;
-                }
-                elsif ($c02 eq '<<') || ($c02 eq '>>') {
-                    $hyper_right = $c02;
-                    $pos = $pos + 2;
-                }
-                return Perlito::Match.new( 'str' => $str, 'from' => $from, 'to' => $pos, 'bool' => 1,
-                    capture => [ 'op', $op2, { 'hyper_left' => $hyper_left, 'hyper_right' => $hyper_right } ] );
             }
         }
-        my $op1 = substr($str, $pos, 1);
-        if exists($Op1{$op1}) {
-            my $c2 = substr($str, $pos+1, 1);
-            if is_ident_middle($op1) && ( is_ident_middle($c2) || $c2 eq '(' ) {
-            }
-            else {
-                $pos = $pos + 1;
-                my $c01 = substr($str, $pos, 1);
-                my $c02 = substr($str, $pos, 2);
-                if ($c01 eq '«') || ($c01 eq '»') {
-                    $hyper_right = $c01;
-                    $pos = $pos + 1;
-                }
-                elsif ($c02 eq '<<') || ($c02 eq '>>') {
-                    $hyper_right = $c02;
-                    $pos = $pos + 2;
-                }
-                return Perlito::Match.new( 'str' => $str, 'from' => $from, 'to' => $pos, 'bool' => 1,
-                    capture => ['op', $op1, { 'hyper_left' => $hyper_left, 'hyper_right' => $hyper_right } ] );
-            }
-        }
+
         return Perlito::Match.new( bool => 0 );
     }
 
@@ -141,15 +99,7 @@ class Perlito::Precedence {
         $Precedence{$name}        = $precedence;
         $Assoc{$assoc}{$name}     = 1;
         $Allow_space_before{$fixity}{$name} = $param{'no_space_before'} ?? False !! True;
-        if ($name.chars) == 1 {
-            $Op1{$name} = 1;
-        }
-        elsif ($name.chars) == 2 {
-            $Op2{$name} = 1;
-        }
-        elsif ($name.chars) == 3 {
-            $Op3{$name} = 1;
-        }
+        @Op[ $name.chars ]{$name} = 1;
     }
     
 

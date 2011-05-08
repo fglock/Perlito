@@ -50,10 +50,16 @@ package GLOBAL;
             my $c = $_[0];
             (((((($c ge 'a')) && (($c le 'z')))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_')))
         };
-        (my  $Op1);
-        (my  $Op2);
-        (my  $Op3);
+        (my  $List_Op = bless [], 'ARRAY');
         (my  $End_token);
+        ((my  $List_Op_chars = bless [], 'ARRAY') = do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 3 );
+    push( @{$List_a}, 2 );
+    push( @{$List_a}, 1 );
+    $List_a
+});
         sub op_parse {
             my $self = $_[0];
             my $str = $_[1];
@@ -95,32 +101,33 @@ package GLOBAL;
                     ($c02 = substr($str, $pos, 2))
                 }
             };
-            ((my  $op3) = substr($str, $pos, 3));
-            if (exists($Op3->{$op3})) {
-                ((my  $c1) = substr($str, ($pos + 2), 1));
-                ((my  $c2) = substr($str, ($pos + 3), 1));
-                if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))) {
+            for my $len ( @{$List_Op_chars} ) {
+                ((my  $op) = substr($str, $pos, $len));
+                if (exists($List_Op->[$len]->{$op})) {
+                    ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
+                    ((my  $c2) = substr($str, ($pos + $len), 1));
+                    if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))) {
 
-                }
-                else {
-                    ($pos = ($pos + 3));
-                    ((my  $c01) = substr($str, $pos, 2));
-                    ((my  $c02) = substr($str, $pos, 3));
-                    if (((($c01 eq chr(171))) || (($c01 eq chr(187))))) {
-                        ($hyper_right = $c01);
-                        ($pos = ($pos + 1))
                     }
                     else {
-                        if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
-                            ($hyper_right = $c02);
-                            ($pos = ($pos + 2))
+                        ($pos = ($pos + $len));
+                        ((my  $c01) = substr($str, $pos, 1));
+                        ((my  $c02) = substr($str, $pos, 2));
+                        if (((($c01 eq chr(171))) || (($c01 eq chr(187))))) {
+                            ($hyper_right = $c01);
+                            ($pos = ($pos + 1))
                         }
-                    };
-                    return scalar (Perlito::Match->new(('str' => $str), ('from' => $from), ('to' => $pos), ('bool' => 1), ('capture' => do {
+                        else {
+                            if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
+                                ($hyper_right = $c02);
+                                ($pos = ($pos + 2))
+                            }
+                        };
+                        return scalar (Perlito::Match->new(('str' => $str), ('from' => $from), ('to' => $pos), ('bool' => 1), ('capture' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'op' );
-    push( @{$List_a}, $op3 );
+    push( @{$List_a}, $op );
     push( @{$List_a}, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'hyper_left'} = $hyper_left);
@@ -129,77 +136,7 @@ package GLOBAL;
 } );
     $List_a
 })))
-                }
-            };
-            ((my  $op2) = $c02);
-            if (exists($Op2->{$op2})) {
-                ((my  $c1) = substr($str, ($pos + 1), 1));
-                ((my  $c2) = substr($str, ($pos + 2), 1));
-                if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))) {
-
-                }
-                else {
-                    ($pos = ($pos + 2));
-                    ((my  $c01) = substr($str, $pos, 1));
-                    ((my  $c02) = substr($str, $pos, 2));
-                    if (((($c01 eq chr(171))) || (($c01 eq chr(187))))) {
-                        ($hyper_right = $c01);
-                        ($pos = ($pos + 1))
                     }
-                    else {
-                        if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
-                            ($hyper_right = $c02);
-                            ($pos = ($pos + 2))
-                        }
-                    };
-                    return scalar (Perlito::Match->new(('str' => $str), ('from' => $from), ('to' => $pos), ('bool' => 1), ('capture' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, 'op' );
-    push( @{$List_a}, $op2 );
-    push( @{$List_a}, do {
-    (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'hyper_left'} = $hyper_left);
-    ($Hash_a->{'hyper_right'} = $hyper_right);
-    $Hash_a
-} );
-    $List_a
-})))
-                }
-            };
-            ((my  $op1) = substr($str, $pos, 1));
-            if (exists($Op1->{$op1})) {
-                ((my  $c2) = substr($str, ($pos + 1), 1));
-                if ((is_ident_middle($op1) && ((is_ident_middle($c2) || ($c2 eq '('))))) {
-
-                }
-                else {
-                    ($pos = ($pos + 1));
-                    ((my  $c01) = substr($str, $pos, 1));
-                    ((my  $c02) = substr($str, $pos, 2));
-                    if (((($c01 eq chr(171))) || (($c01 eq chr(187))))) {
-                        ($hyper_right = $c01);
-                        ($pos = ($pos + 1))
-                    }
-                    else {
-                        if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
-                            ($hyper_right = $c02);
-                            ($pos = ($pos + 2))
-                        }
-                    };
-                    return scalar (Perlito::Match->new(('str' => $str), ('from' => $from), ('to' => $pos), ('bool' => 1), ('capture' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, 'op' );
-    push( @{$List_a}, $op1 );
-    push( @{$List_a}, do {
-    (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'hyper_left'} = $hyper_left);
-    ($Hash_a->{'hyper_right'} = $hyper_right);
-    $Hash_a
-} );
-    $List_a
-})))
                 }
             };
             return scalar (Perlito::Match->new(('bool' => 0)))
@@ -220,19 +157,7 @@ package GLOBAL;
             ($Precedence->{$name} = $precedence);
             ($Assoc->{$assoc}->{$name} = 1);
             ($Allow_space_before->{$fixity}->{$name} = ($param->{'no_space_before'} ? 0 : 1));
-            if (((Main::chars($name, )) == 1)) {
-                ($Op1->{$name} = 1)
-            }
-            else {
-                if (((Main::chars($name, )) == 2)) {
-                    ($Op2->{$name} = 1)
-                }
-                else {
-                    if (((Main::chars($name, )) == 3)) {
-                        ($Op3->{$name} = 1)
-                    }
-                }
-            }
+            ($List_Op->[Main::chars($name, )]->{$name} = 1)
         };
         ((my  $prec) = 100);
         add_op('postfix', '.( )', $prec, do {
