@@ -23,7 +23,7 @@ class Main {
     my $execute     = 0;
     my $verbose     = 0;
     my $comp_units  = [];
-    my $perl6lib    = './lib';
+    my $perl6lib    = './src/lib';
     my $expand_use  = 1;
 
     if $verbose {

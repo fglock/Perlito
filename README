@@ -21,7 +21,7 @@ Web
 
 Source code
 
-    The source code for Perlito can be found in the 'lib' directory.
+    The source code for Perlito can be found in the 'src' directory.
     Perlito is written in Perl 6.
 
 USING PERLITO
@@ -42,12 +42,12 @@ Using the Javascript backend in the command line
 
     Creating a bootstrapped compiler:
 
-    # compile util/perlito.pl to Javascript, using perlito.pl:
+    # compile src/util/perlito.pl to Javascript, using perlito.pl:
     export PERL5LIB=lib5
-    perl perlito.pl -Cjs util/perlito.pl > perlito.js
+    perl perlito.pl -Cjs src/util/perlito.pl > perlito.js
 
     # testing the bootstrap with the v8 developer shell
-    d8 perlito.js -- -Cjs util/perlito.pl > perlito-new.js
+    d8 perlito.js -- -Cjs src/util/perlito.pl > perlito-new.js
 
 Using the Perl 5 backend
 
@@ -66,9 +66,9 @@ Using the Perl 5 backend
 
     Creating the bootstrapped compiler:
 
-    # compile util/perlito.pl using perlito.pl:
+    # compile src/util/perlito.pl using perlito.pl:
     export PERL5LIB=lib5
-    perl perlito.pl -Cperl5 util/perlito.pl > perlito-perl5.pl 
+    perl perlito.pl -Cperl5 src/util/perlito.pl > perlito-perl5.pl 
 
 Using the Python backend
 

@@ -41,7 +41,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-        ((my  $perl6lib) = '.' . chr(47) . 'lib');
+        ((my  $perl6lib) = '.' . chr(47) . 'src' . chr(47) . 'lib');
         ((my  $expand_use) = 1);
         if ($verbose) {
             warn((chr(47) . chr(47) . ' Perlito compiler'));
