@@ -151,16 +151,22 @@ token char_any_double_quote {
 }
 
 token double_quoted_unescape {
-    |  \\ n  
-        { make "\n" }
-    |  \\ t  
-        { make chr(9) }
-    |  \\ c \[ <digits> \]
-        { make chr( $<digits> ) }
-    |  \\ c <digits> 
-        { make chr( $<digits> ) }
-    |  \\ <char_any>  
-        { make ~$<char_any> }
+    |  \\
+        [  c 
+            [   \[ <digits> \]
+                { make chr( $<digits> ) }
+            |  <digits> 
+                { make chr( $<digits> ) }
+            ]
+        |  e  
+            { make chr(27) }
+        |  n  
+            { make "\n" }
+        |  t  
+            { make chr(9) }
+        |  <char_any>  
+            { make ~$<char_any> }
+        ]
     |  <char_any_double_quote> 
         { make ~$<char_any_double_quote> }
 }

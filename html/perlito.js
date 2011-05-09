@@ -12890,18 +12890,18 @@ if (typeof Perlito$Grammar !== 'object') {
     var v_pos1 = null;
 
 (v_pos1 = v_MATCH.to());
-    return(or(or(or(or(or(((function () { 
-    return(and(and((and((String.fromCharCode(92) == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return (and(('n' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })); }), function () { return (or(((function () { 
-    return((v_MATCH.v_capture = (string(String.fromCharCode(10)))));
-})()), function () { return 1; })); }));
-})()), function () { return ((function () { 
-(v_MATCH.v_to = v_pos1);
-    return((and(and((and((String.fromCharCode(92) == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return (and(('t' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })); }), function () { return (or(((function () { 
-    return((v_MATCH.v_capture = String.fromCharCode(num(9))));
-})()), function () { return 1; })); })));
-})()); }), function () { return ((function () { 
-(v_MATCH.v_to = v_pos1);
-    return((and(and(and(and(and((and((String.fromCharCode(92) == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return (and(('c' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })); }), function () { return (and(('[' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })); }), function () { return ((function () { 
+    return(or(((function () { 
+    return(and((and((String.fromCharCode(92) == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return ((function () { 
+    var v_pos1 = null;
+
+(v_pos1 = v_MATCH.to());
+    return(or(or(or(or(((function () { 
+    return(and((and(('c' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return ((function () { 
+    var v_pos1 = null;
+
+(v_pos1 = v_MATCH.to());
+    return(or(((function () { 
+    return(and(and(and((and(('[' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return ((function () { 
     var v_m2 = null;
 
 (v_m2 = v_grammar.digits(v_str, v_MATCH.to()));
@@ -12915,10 +12915,10 @@ if (typeof Perlito$Grammar !== 'object') {
     })(); };
 })()); }), function () { return (and((']' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })); }), function () { return (or(((function () { 
     return((v_MATCH.v_capture = String.fromCharCode(num((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH['digits'] ); })()))));
-})()), function () { return 1; })); })));
-})()); }), function () { return ((function () { 
+})()), function () { return 1; })); }));
+})()), function () { return ((function () { 
 (v_MATCH.v_to = v_pos1);
-    return((and(and(and((and((String.fromCharCode(92) == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return (and(('c' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })); }), function () { return ((function () { 
+    return((and(((function () { 
     var v_m2 = null;
 
 (v_m2 = v_grammar.digits(v_str, v_MATCH.to()));
@@ -12930,12 +12930,29 @@ if (typeof Perlito$Grammar !== 'object') {
     else { return (function () {
         return(false);
     })(); };
-})()); }), function () { return (or(((function () { 
+})()), function () { return (or(((function () { 
     return((v_MATCH.v_capture = String.fromCharCode(num((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH['digits'] ); })()))));
+})()), function () { return 1; })); })));
+})()); }));
+})()); }));
+})()), function () { return ((function () { 
+(v_MATCH.v_to = v_pos1);
+    return((and((and(('e' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return (or(((function () { 
+    return((v_MATCH.v_capture = String.fromCharCode(num(27))));
 })()), function () { return 1; })); })));
 })()); }), function () { return ((function () { 
 (v_MATCH.v_to = v_pos1);
-    return((and(and((and((String.fromCharCode(92) == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return ((function () { 
+    return((and((and(('n' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return (or(((function () { 
+    return((v_MATCH.v_capture = (string(String.fromCharCode(10)))));
+})()), function () { return 1; })); })));
+})()); }), function () { return ((function () { 
+(v_MATCH.v_to = v_pos1);
+    return((and((and(('t' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return (or(((function () { 
+    return((v_MATCH.v_capture = String.fromCharCode(num(9))));
+})()), function () { return 1; })); })));
+})()); }), function () { return ((function () { 
+(v_MATCH.v_to = v_pos1);
+    return((and(((function () { 
     var v_m2 = null;
 
 (v_m2 = v_grammar.char_any(v_str, v_MATCH.to()));
@@ -12947,10 +12964,12 @@ if (typeof Perlito$Grammar !== 'object') {
     else { return (function () {
         return(false);
     })(); };
-})()); }), function () { return (or(((function () { 
+})()), function () { return (or(((function () { 
     return((v_MATCH.v_capture = string((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH['char_any'] ); })())));
 })()), function () { return 1; })); })));
-})()); }), function () { return ((function () { 
+})()); }));
+})()); }));
+})()), function () { return ((function () { 
 (v_MATCH.v_to = v_pos1);
     return((and(((function () { 
     var v_m2 = null;
