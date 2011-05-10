@@ -79,7 +79,7 @@ package GLOBAL;
         sub handles_return_exception { $_[0]->{handles_return_exception} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -134,7 +134,7 @@ $self->emit_ruby_indented(0)
         };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -295,7 +295,7 @@ $self->emit_ruby_indented(0)
         sub body { $_[0]->{body} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -345,7 +345,7 @@ $self->emit_ruby_indented(0)
         sub bit { $_[0]->{bit} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -377,7 +377,7 @@ $self->emit_ruby_indented(0)
         sub buf { $_[0]->{buf} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -392,7 +392,7 @@ $self->emit_ruby_indented(0)
         sub new { shift; bless { @_ }, "Val::Undef" }
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -409,7 +409,7 @@ $self->emit_ruby_indented(0)
         sub fields { $_[0]->{fields} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -425,7 +425,7 @@ $self->emit_ruby_indented(0)
         sub array1 { $_[0]->{array1} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -442,7 +442,7 @@ $self->emit_ruby_indented(0)
         sub hash1 { $_[0]->{hash1} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -467,7 +467,7 @@ $self->emit_ruby_indented(0)
         sub fields { $_[0]->{fields} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -489,7 +489,7 @@ $self->emit_ruby_indented(0)
         sub index_exp { $_[0]->{index_exp} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -506,7 +506,7 @@ $self->emit_ruby_indented(0)
         sub index_exp { $_[0]->{index_exp} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -532,7 +532,7 @@ $self->emit_ruby_indented(0)
 });
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -556,7 +556,7 @@ $self->emit_ruby_indented(0)
         sub arguments { $_[0]->{arguments} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -581,7 +581,7 @@ $self->emit_ruby_indented(0)
         sub name { $_[0]->{name} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -600,7 +600,7 @@ $self->emit_ruby_indented(0)
         sub arguments { $_[0]->{arguments} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -806,7 +806,7 @@ $self->emit_ruby_indented(0)
         sub result { $_[0]->{result} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -824,7 +824,7 @@ $self->emit_ruby_indented(0)
         sub otherwise { $_[0]->{otherwise} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -865,7 +865,7 @@ $self->emit_ruby_indented(0)
         sub body { $_[0]->{body} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -895,7 +895,7 @@ $self->emit_ruby_indented(0)
         sub topic { $_[0]->{topic} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -914,7 +914,7 @@ $self->emit_ruby_indented(0)
         sub var { $_[0]->{var} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -962,7 +962,7 @@ $self->emit_ruby_indented(0)
         sub block { $_[0]->{block} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -1010,7 +1010,7 @@ $self->emit_ruby_indented(0)
         sub block { $_[0]->{block} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -1061,7 +1061,7 @@ $self->emit_ruby_indented(0)
         sub block { $_[0]->{block} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -1081,7 +1081,7 @@ $self->emit_ruby_indented(0)
         sub mod { $_[0]->{mod} };
         sub emit_ruby {
             my $self = $_[0];
-$self->emit_ruby_indented(0)
+            $self->emit_ruby_indented(0)
         };
         sub emit_ruby_indented {
             my $self = $_[0];

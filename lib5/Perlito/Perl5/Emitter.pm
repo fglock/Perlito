@@ -382,7 +382,7 @@ $self->emit_perl5_indented(0)
                 return scalar ((Perl5::tab($level) . '[ map ' . chr(123) . ' ' . chr(36) . '_' . $call . ' ' . chr(125) . ' ' . $invocant . ' ]'))
             }
             else {
-                ($invocant . $call)
+                (Perl5::tab($level) . $invocant . $call)
             }
         }
     }

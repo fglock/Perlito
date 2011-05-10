@@ -277,7 +277,7 @@ class Call {
             return Perl5::tab($level) ~ '[ map { $_' ~ $call ~ ' } ' ~ $invocant ~ ' ]';
         }
         else {
-            $invocant ~ $call;
+            Perl5::tab($level) ~ $invocant ~ $call;
         }
     }
 }
