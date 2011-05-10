@@ -552,32 +552,6 @@ package GLOBAL;
 
 ;
     {
-    package Bind;
-        sub new { shift; bless { @_ }, "Bind" }
-        sub parameters { $_[0]->{parameters} };
-        sub arguments { $_[0]->{arguments} };
-        sub emit_ruby {
-            my $self = $_[0];
-            $self->emit_ruby_indented(0)
-        };
-        sub emit_ruby_indented {
-            my $self = $_[0];
-            my $level = $_[1];
-            if (Main::isa($self->{parameters}, 'Index')) {
-                return scalar ((Ruby::tab($level) . ($self->{parameters}->obj())->emit_ruby() . '[' . ($self->{parameters}->index_exp())->emit_ruby() . '] ' . chr(61) . ' ' . $self->{arguments}->emit_ruby()))
-            };
-            if (Main::isa($self->{parameters}, 'Lookup')) {
-                return scalar ((Ruby::tab($level) . ($self->{parameters}->obj())->emit_ruby() . '[' . ($self->{parameters}->index_exp())->emit_ruby() . '] ' . chr(61) . ' ' . $self->{arguments}->emit_ruby()))
-            };
-            if (Main::isa($self->{parameters}, 'Call')) {
-                return scalar ((Ruby::tab($level) . ($self->{parameters}->invocant())->emit_ruby() . ('.v_') . $self->{parameters}->method() . (' ' . chr(61) . ' ') . $self->{arguments}->emit_ruby() . ''))
-            };
-            (Ruby::tab($level) . $self->{parameters}->emit_ruby() . ' ' . chr(61) . ' ' . $self->{arguments}->emit_ruby())
-        }
-    }
-
-;
-    {
     package Proto;
         sub new { shift; bless { @_ }, "Proto" }
         sub name { $_[0]->{name} };
@@ -769,6 +743,9 @@ package GLOBAL;
             if (($code eq 'circumfix:<( )>')) {
                 return scalar (('(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
             };
+            if (($code eq 'infix:<' . chr(61) . '>')) {
+                return scalar (emit_ruby_bind($self->{arguments}->[0], $self->{arguments}->[1]))
+            };
             if (($code eq 'substr')) {
                 return scalar ((Ruby::to_str(' + ', do {
     (my  $List_a = bless [], 'ARRAY');
@@ -779,6 +756,9 @@ package GLOBAL;
             };
             if (($code eq 'index')) {
                 return scalar (('(' . ($self->{arguments}->[0])->emit_ruby() . ').index(' . ($self->{arguments}->[1])->emit_ruby() . ')'))
+            };
+            if (($code eq 'defined')) {
+                return scalar (('(' . ($self->{arguments}->[0])->emit_ruby() . ' ' . chr(33) . chr(61) . ' nil)'))
             };
             if (($code eq 'shift')) {
                 return scalar ((($self->{arguments}->[0])->emit_ruby() . '.shift()'))
@@ -801,6 +781,20 @@ package GLOBAL;
             my $self = $_[0];
             my $level = $_[1];
             (Ruby::tab($level) . $self->emit_ruby())
+        };
+        sub emit_ruby_bind {
+            my $parameters = $_[0];
+            my $arguments = $_[1];
+            if (Main::isa($parameters, 'Index')) {
+                return scalar ((($parameters->obj())->emit_ruby() . '[' . ($parameters->index_exp())->emit_ruby() . '] ' . chr(61) . ' ' . $arguments->emit_ruby()))
+            };
+            if (Main::isa($parameters, 'Lookup')) {
+                return scalar ((($parameters->obj())->emit_ruby() . '[' . ($parameters->index_exp())->emit_ruby() . '] ' . chr(61) . ' ' . $arguments->emit_ruby()))
+            };
+            if (Main::isa($parameters, 'Call')) {
+                return scalar ((($parameters->invocant())->emit_ruby() . ('.v_') . $parameters->method() . (' ' . chr(61) . ' ') . $arguments->emit_ruby() . ''))
+            };
+            return scalar (($parameters->emit_ruby() . ' ' . chr(61) . ' ' . $arguments->emit_ruby()))
         }
     }
 

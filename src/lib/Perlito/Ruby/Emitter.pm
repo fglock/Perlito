@@ -422,33 +422,6 @@ class Var {
     };
 }
 
-class Bind {
-    has $.parameters;
-    has $.arguments;
-    method emit_ruby { self.emit_ruby_indented(0) }
-    method emit_ruby_indented( $level ) {
-        if $.parameters.isa( 'Index' ) {
-            return Ruby::tab($level)  
-                ~ ($.parameters.obj).emit_ruby ~ '['
-                    ~ ($.parameters.index_exp).emit_ruby ~ '] = '
-                    ~ $.arguments.emit_ruby;
-        }
-        if $.parameters.isa( 'Lookup' ) {
-            return Ruby::tab($level)  
-                ~ ($.parameters.obj).emit_ruby ~ '['
-                    ~ ($.parameters.index_exp).emit_ruby ~ '] = '
-                    ~ $.arguments.emit_ruby;
-        }
-        if $.parameters.isa( 'Call' ) {
-            # $var.attr = 3;
-            return Ruby::tab($level)  
-                ~ ($.parameters.invocant).emit_ruby ~ ".v_" ~ $.parameters.method ~ " = " ~ $.arguments.emit_ruby ~ "";
-        }
-        Ruby::tab($level)  
-            ~ $.parameters.emit_ruby ~ ' = ' ~ $.arguments.emit_ruby;
-    }
-}
-
 class Proto {
     has $.name;
     method emit_ruby { self.emit_ruby_indented(0) }
@@ -576,7 +549,10 @@ class Apply {
         if $code eq 'circumfix:<( )>' {
             return '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
         }
-        
+        if $code eq 'infix:<=>' {
+            return emit_ruby_bind( @.arguments[0], @.arguments[1] );
+        }
+
         if $code eq 'substr' { 
             return Ruby::to_str(' + ', [@.arguments[0]]) ~ '[' 
                     ~ (@.arguments[1]).emit_ruby ~ ', ' 
@@ -586,6 +562,7 @@ class Apply {
         if $code eq 'index' { 
             return '(' ~ (@.arguments[0]).emit_ruby ~ ').index(' ~ (@.arguments[1]).emit_ruby ~ ')' 
         } 
+        if $code eq 'defined' { return '(' ~ (@.arguments[0]).emit_ruby ~ ' != nil)' } 
         if $code eq 'shift'   { return (@.arguments[0]).emit_ruby ~ '.shift()' } 
         if $code eq 'pop'     { return (@.arguments[0]).emit_ruby ~ '.pop()'   } 
         if $code eq 'push'    { return (@.arguments[0]).emit_ruby ~ '.push('    ~ (@.arguments[1]).emit_ruby ~ ')' } 
@@ -598,6 +575,23 @@ class Apply {
     }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ self.emit_ruby 
+    }
+    sub emit_ruby_bind($parameters, $arguments) {
+        if $parameters.isa( 'Index' ) {
+            return    ($parameters.obj).emit_ruby ~ '['
+                    ~ ($parameters.index_exp).emit_ruby ~ '] = '
+                    ~ $arguments.emit_ruby;
+        }
+        if $parameters.isa( 'Lookup' ) {
+            return    ($parameters.obj).emit_ruby ~ '['
+                    ~ ($parameters.index_exp).emit_ruby ~ '] = '
+                    ~ $arguments.emit_ruby;
+        }
+        if $parameters.isa( 'Call' ) {
+            # $var.attr = 3;
+            return ($parameters.invocant).emit_ruby ~ ".v_" ~ $parameters.method ~ " = " ~ $arguments.emit_ruby ~ "";
+        }
+        return $parameters.emit_ruby ~ ' = ' ~ $arguments.emit_ruby;
     }
 }
 
