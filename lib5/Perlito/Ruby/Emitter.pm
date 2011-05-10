@@ -65,13 +65,7 @@ package GLOBAL;
         };
         sub tab {
             my $level = $_[0];
-            ((my  $s) = '');
-            ((my  $count) = $level);
-            for ( ; ($count > 0);  ) {
-                ($s = ($s . ('    ')));
-                ($count = ($count - 1))
-            };
-            return scalar ($s)
+            (('    ') x $level)
         }
     }
 
@@ -225,11 +219,6 @@ $self->emit_ruby_indented(0)
                 ($List_anon_block = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    $List_a
-} );
     $List_a
 });
                 ((my  $s2) = $stmt->emit_ruby_indented($level));
@@ -242,11 +231,6 @@ $self->emit_ruby_indented(0)
                 ($List_anon_block = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    $List_a
-} );
     $List_a
 });
                 (my  $s2);
@@ -321,7 +305,12 @@ $self->emit_ruby_indented(0)
             ((my  $name) = Main::to_go_namespace($self->{name}));
             for my $decl ( @{$self->{body}} ) {
                 if (Main::isa($decl, 'Use')) {
-                    push( @{$List_s}, (Ruby::tab($level) . ('require ' . chr(39)) . Main::to_go_namespace($decl->mod()) . ('.rb' . chr(39))) )
+                    if (($decl->mod() eq 'v6')) {
+
+                    }
+                    else {
+                        push( @{$List_s}, (Ruby::tab($level) . ('require ' . chr(39)) . Main::to_go_namespace($decl->mod()) . ('.rb' . chr(39))) )
+                    }
                 }
             };
             push( @{$List_s}, (Ruby::tab($level) . 'class C_' . $name) );

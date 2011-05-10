@@ -48,13 +48,7 @@ class Ruby {
         return '(' ~ @s.join($op) ~ ')'
     }
     sub tab($level) { 
-        my $s = '';
-        my $count = $level;
-        while $count > 0 {
-            $s = $s ~ "    ";
-            $count = $count - 1; 
-        }
-        return $s;
+        "    " x $level
     }
 }
 
@@ -189,7 +183,7 @@ class Perlito::Ruby::LexicalBlock {
         }
 
         for @($block) -> $stmt {
-            @anon_block = [];
+            @anon_block = ();
             my $s2 = $stmt.emit_ruby_indented($level);
             for @anon_block -> $stmt {
                 @s.push( $stmt.emit_ruby_indented( $level ) );
@@ -198,7 +192,7 @@ class Perlito::Ruby::LexicalBlock {
         }
 
         if $.needs_return && $last_statement {
-            @anon_block = [];
+            @anon_block = ();
             my $s2;
             if $last_statement.isa( 'If' ) {
                 my $cond            = $last_statement.cond;
@@ -269,6 +263,7 @@ class CompUnit {
         for @.body -> $decl {
             if $decl.isa('Use') {
                 push @s, Ruby::tab($level) ~ "require '" ~ Main::to_go_namespace($decl.mod) ~ ".rb'"
+                    unless $decl.mod eq 'v6';
             }
         }
 

@@ -79,6 +79,10 @@ Using the Python backend
     export PYTHONPATH=libpy
     python perlito.py -Cpython -e 'class Main { say "hello, World!" }' | python 
 
+Using the Ruby backend
+
+    export RUBYLIB=src/lib
+
 PRODUCING AST OUTPUT
 
     perl perlito.pl -Cast-perl6 -e 'class Main { say "hello, World!" }'
