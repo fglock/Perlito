@@ -237,8 +237,8 @@ package GLOBAL;
                 if (Main::isa($last_statement, 'If')) {
                     ((my  $cond) = $last_statement->cond());
                     ((my  $has_otherwise) = ($last_statement->otherwise() ? 1 : 0));
-                    ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => ($last_statement->body())), ('needs_return' => 1)));
-                    ((my  $otherwise_block) = Perlito::Ruby::LexicalBlock->new(('block' => ($last_statement->otherwise())), ('needs_return' => 1)));
+                    ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => ($last_statement->body()->stmts())), ('needs_return' => 1)));
+                    ((my  $otherwise_block) = Perlito::Ruby::LexicalBlock->new(('block' => ($last_statement->otherwise()->stmts())), ('needs_return' => 1)));
                     if ($body_block->has_my_decl()) {
                         ($body_block = Return->new(('result' => Do->new(('block' => ($last_statement->body()))))))
                     };
@@ -711,7 +711,7 @@ package GLOBAL;
             if (($code eq 'prefix:<' . chr(37) . '>')) {
                 return scalar ((chr(37) . chr(123) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . chr(125)))
             };
-            if (($code eq 'infix:<' . chr(126) . '>')) {
+            if (($code eq 'list:<' . chr(126) . '>')) {
                 return scalar (Ruby::to_str(' + ', $self->{arguments}))
             };
             if (($code eq 'infix:<+>')) {
@@ -831,8 +831,8 @@ package GLOBAL;
             my $level = $_[1];
             ((my  $has_body) = ($self->{body} ? 1 : 0));
             ((my  $has_otherwise) = ($self->{otherwise} ? 1 : 0));
-            ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body})));
-            ((my  $otherwise_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{otherwise})));
+            ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body}->stmts())));
+            ((my  $otherwise_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{otherwise}->stmts())));
             if ($body_block->has_my_decl()) {
                 ($body_block = Do->new(('block' => $self->{body})))
             };

@@ -198,9 +198,9 @@ class Perlito::Ruby::LexicalBlock {
                 my $cond            = $last_statement.cond;
                 my $has_otherwise   = $last_statement.otherwise ?? 1 !! 0;
                 my $body_block      = 
-                    Perlito::Ruby::LexicalBlock.new( block => ($last_statement.body), needs_return => 1 );
+                    Perlito::Ruby::LexicalBlock.new( block => ($last_statement.body.stmts), needs_return => 1 );
                 my $otherwise_block = 
-                    Perlito::Ruby::LexicalBlock.new( block => ($last_statement.otherwise), needs_return => 1 );
+                    Perlito::Ruby::LexicalBlock.new( block => ($last_statement.otherwise.stmts), needs_return => 1 );
 
                 if $body_block.has_my_decl() {
                     $body_block = Return.new( result => Do.new( block => ($last_statement.body) ) );
@@ -543,7 +543,7 @@ class Apply {
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_ruby).join(' ')    ~ ')' };
         if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_ruby).join(' ')    ~ '}' };
 
-        if $code eq 'infix:<~>'  { return Ruby::to_str(' + ', @.arguments) };
+        if $code eq 'list:<~>'   { return Ruby::to_str(' + ', @.arguments) };
         if $code eq 'infix:<+>'  { return Ruby::to_num(' + ', @.arguments) };
         if $code eq 'infix:<->'  { return Ruby::to_num(' - ', @.arguments) };
         if $code eq 'infix:<*>'  { return Ruby::to_num(' * ', @.arguments) };
@@ -612,8 +612,8 @@ class If {
     method emit_ruby_indented( $level ) {
         my $has_body = @.body ?? 1 !! 0;
         my $has_otherwise = @.otherwise ?? 1 !! 0;
-        my $body_block = Perlito::Ruby::LexicalBlock.new( block => @.body );
-        my $otherwise_block = Perlito::Ruby::LexicalBlock.new( block => @.otherwise );
+        my $body_block = Perlito::Ruby::LexicalBlock.new( block => @.body.stmts );
+        my $otherwise_block = Perlito::Ruby::LexicalBlock.new( block => @.otherwise.stmts );
 
         if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );

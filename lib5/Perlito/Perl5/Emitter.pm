@@ -45,7 +45,7 @@ package GLOBAL;
             if (($s eq '')) {
                 return scalar ((chr(39) . chr(39)))
             };
-            for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY')} ) {
+            for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY') || []} ) {
                 ((my  $c) = substr($s, $i, 1));
                 if (((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c}))) {
                     ($tmp = ($tmp . $c))
@@ -75,13 +75,13 @@ package GLOBAL;
         sub body { $_[0]->{body} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
             (my  $List_body = bless [], 'ARRAY');
-            for ( @{$self->{body}} ) {
+            for ( @{$self->{body} || []} ) {
                 if (defined($_)) {
                     push( @{$List_body}, $_ )
                 }
@@ -91,7 +91,7 @@ $self->emit_perl5_indented(0)
         sub emit_perl5_program {
             my $comp_units = $_[0];
             ((my  $str) = ('' . ('use v5' . chr(59) . chr(10)) . ('use utf8' . chr(59) . chr(10)) . ('use strict' . chr(59) . chr(10)) . ('use warnings' . chr(59) . chr(10)) . ('no warnings (' . chr(39) . 'redefine' . chr(39) . ', ' . chr(39) . 'once' . chr(39) . ', ' . chr(39) . 'void' . chr(39) . ', ' . chr(39) . 'uninitialized' . chr(39) . ', ' . chr(39) . 'misc' . chr(39) . ', ' . chr(39) . 'recursion' . chr(39) . ')' . chr(59) . chr(10)) . ('use Perlito::Perl5::Runtime' . chr(59) . chr(10)) . ('use Perlito::Perl5::Prelude' . chr(59) . chr(10)) . ('our ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match->new()' . chr(59) . chr(10))));
-            for my $comp_unit ( @{(($comp_units))} ) {
+            for my $comp_unit ( @{(($comp_units)) || []} ) {
                 ($str = ($str . $comp_unit->emit_perl5_indented(0)))
             };
             ($str = ($str . ('1' . chr(59) . chr(10))));
@@ -106,7 +106,7 @@ $self->emit_perl5_indented(0)
         sub int { $_[0]->{int} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -122,7 +122,7 @@ $self->emit_perl5_indented(0)
         sub bit { $_[0]->{bit} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -138,7 +138,7 @@ $self->emit_perl5_indented(0)
         sub num { $_[0]->{num} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -154,7 +154,7 @@ $self->emit_perl5_indented(0)
         sub buf { $_[0]->{buf} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -171,7 +171,7 @@ $self->emit_perl5_indented(0)
         sub stmts { $_[0]->{stmts} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -187,7 +187,7 @@ $self->emit_perl5_indented(0)
         sub array1 { $_[0]->{array1} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -204,7 +204,7 @@ $self->emit_perl5_indented(0)
         sub hash1 { $_[0]->{hash1} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -222,7 +222,7 @@ $self->emit_perl5_indented(0)
         sub index_exp { $_[0]->{index_exp} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -239,7 +239,7 @@ $self->emit_perl5_indented(0)
         sub index_exp { $_[0]->{index_exp} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -258,7 +258,7 @@ $self->emit_perl5_indented(0)
         sub name { $_[0]->{name} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -304,7 +304,7 @@ $self->emit_perl5_indented(0)
         sub name { $_[0]->{name} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -338,7 +338,7 @@ $self->emit_perl5_indented(0)
 });
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -440,7 +440,7 @@ $self->emit_perl5_indented(0)
 });
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -539,7 +539,7 @@ $self->emit_perl5_indented(0)
                 ((my  $a) = $parameters->array1());
                 ((my  $str) = 'do ' . chr(123) . ' ');
                 ((my  $i) = 0);
-                for my $var ( @{($a)} ) {
+                for my $var ( @{($a) || []} ) {
                     ($str = ($str . (' ' . emit_perl5_bind($var, Index->new(('obj' => $arguments), ('index_exp' => Val::Int->new(('int' => $i))))) . chr(59) . ' ')));
                     ($i = ($i + 1))
                 };
@@ -551,13 +551,13 @@ $self->emit_perl5_indented(0)
                 ((my  $str) = 'do ' . chr(123) . ' ');
                 ((my  $i) = 0);
                 (my  $arg);
-                for my $var ( @{($a)} ) {
+                for my $var ( @{($a) || []} ) {
                     ($arg = Apply->new(('code' => 'Mu'), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 })));
-                    for my $var2 ( @{($b)} ) {
+                    for my $var2 ( @{($b) || []} ) {
                         if ((($var2->[0])->buf() eq ($var->[0])->buf())) {
                             ($arg = $var2->[1])
                         }
@@ -598,7 +598,7 @@ $self->emit_perl5_indented(0)
         sub otherwise { $_[0]->{otherwise} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -617,7 +617,7 @@ $self->emit_perl5_indented(0)
         sub body { $_[0]->{body} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -643,7 +643,7 @@ $self->emit_perl5_indented(0)
         sub body { $_[0]->{body} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -674,7 +674,7 @@ $self->emit_perl5_indented(0)
         sub var { $_[0]->{var} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -709,7 +709,7 @@ $self->emit_perl5_indented(0)
         sub named { $_[0]->{named} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -727,7 +727,7 @@ $self->emit_perl5_indented(0)
         sub block { $_[0]->{block} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -737,7 +737,7 @@ $self->emit_perl5_indented(0)
             ((my  $pos) = $sig->positional());
             ((my  $str) = '');
             ((my  $i) = 1);
-            for my $field ( @{($pos)} ) {
+            for my $field ( @{($pos) || []} ) {
                 ($str = ($str . (Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_[' . $i . ']' . chr(59) . (chr(10)))));
                 ($i = ($i + 1))
             };
@@ -754,7 +754,7 @@ $self->emit_perl5_indented(0)
         sub block { $_[0]->{block} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -763,7 +763,7 @@ $self->emit_perl5_indented(0)
             ((my  $pos) = $sig->positional());
             ((my  $str) = '');
             ((my  $i) = 0);
-            for my $field ( @{($pos)} ) {
+            for my $field ( @{($pos) || []} ) {
                 ($str = ($str . (Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_[' . $i . ']' . chr(59) . (chr(10)))));
                 ($i = ($i + 1))
             };
@@ -778,7 +778,7 @@ $self->emit_perl5_indented(0)
         sub block { $_[0]->{block} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
@@ -795,7 +795,7 @@ $self->emit_perl5_indented(0)
         sub mod { $_[0]->{mod} };
         sub emit_perl5 {
             my $self = $_[0];
-$self->emit_perl5_indented(0)
+            $self->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
             my $self = $_[0];
