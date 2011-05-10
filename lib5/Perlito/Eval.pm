@@ -35,7 +35,7 @@ package GLOBAL;
     $List_a
 });
             for my $stmt ( @{$self->{body}} ) {
-$stmt->eval($env1)
+                $stmt->eval($env1)
             }
         }
     }
@@ -111,7 +111,7 @@ $stmt->eval($env1)
     $List_a
 });
             for my $stmt ( @{$self->{stmts}} ) {
-$stmt->eval($env1)
+                $stmt->eval($env1)
             }
         }
     }
@@ -305,7 +305,7 @@ $stmt->eval($env1)
     $List_a
 });
                 for my $stmt ( @{((($self->{body})->stmts()))} ) {
-$stmt->eval($env1)
+                    $stmt->eval($env1)
                 }
             }
             else {
@@ -323,7 +323,7 @@ $stmt->eval($env1)
     $List_a
 });
                 for my $stmt ( @{((($self->{otherwise})->stmts()))} ) {
-$stmt->eval($env1)
+                    $stmt->eval($env1)
                 }
             };
             return scalar (undef())
@@ -362,7 +362,7 @@ $stmt->eval($env1)
     $Hash_a
 });
                 for my $stmt ( @{((($self->{body})->stmts()))} ) {
-$stmt->eval($env1)
+                    $stmt->eval($env1)
                 }
             };
             return scalar (undef())
@@ -419,7 +419,7 @@ $stmt->eval($env1)
         };
         sub plain_name {
             my $self = $_[0];
-$self->{var}->plain_name()
+            $self->{var}->plain_name()
         }
     }
 
@@ -524,7 +524,7 @@ $self->{var}->plain_name()
     $List_a
 });
             for my $stmt ( @{$self->{block}} ) {
-$stmt->eval($env1)
+                $stmt->eval($env1)
             }
         }
     }

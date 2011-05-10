@@ -77,7 +77,7 @@ package GLOBAL;
         sub handles_return_exception { $_[0]->{handles_return_exception} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -139,7 +139,7 @@ $self->emit_python_indented(0)
         };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -288,7 +288,7 @@ $self->emit_python_indented(0)
         sub body { $_[0]->{body} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -395,7 +395,7 @@ $self->emit_python_indented(0)
         sub buf { $_[0]->{buf} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -412,7 +412,7 @@ $self->emit_python_indented(0)
         sub stmts { $_[0]->{stmts} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -440,7 +440,7 @@ $self->emit_python_indented(0)
         sub array1 { $_[0]->{array1} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -457,7 +457,7 @@ $self->emit_python_indented(0)
         sub hash1 { $_[0]->{hash1} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -475,7 +475,7 @@ $self->emit_python_indented(0)
         sub index_exp { $_[0]->{index_exp} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -492,7 +492,7 @@ $self->emit_python_indented(0)
         sub index_exp { $_[0]->{index_exp} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -518,7 +518,7 @@ $self->emit_python_indented(0)
 });
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -538,7 +538,7 @@ $self->emit_python_indented(0)
         sub name { $_[0]->{name} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -570,7 +570,7 @@ $self->emit_python_indented(0)
 });
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -860,7 +860,7 @@ $self->emit_python_indented(0)
         sub otherwise { $_[0]->{otherwise} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -893,7 +893,7 @@ $self->emit_python_indented(0)
         sub body { $_[0]->{body} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -917,7 +917,7 @@ $self->emit_python_indented(0)
         sub body { $_[0]->{body} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -955,7 +955,7 @@ $self->emit_python_indented(0)
         sub var { $_[0]->{var} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -1003,7 +1003,7 @@ $self->emit_python_indented(0)
         sub block { $_[0]->{block} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -1055,7 +1055,7 @@ $self->emit_python_indented(0)
         sub block { $_[0]->{block} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -1113,7 +1113,7 @@ $self->emit_python_indented(0)
         sub block { $_[0]->{block} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];
@@ -1139,7 +1139,7 @@ $self->emit_python_indented(0)
         sub mod { $_[0]->{mod} };
         sub emit_python {
             my $self = $_[0];
-$self->emit_python_indented(0)
+            $self->emit_python_indented(0)
         };
         sub emit_python_indented {
             my $self = $_[0];

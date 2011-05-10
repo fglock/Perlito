@@ -175,6 +175,7 @@ class Perlito::Ruby::LexicalBlock {
         }
         if $has_my_decl {
             push @s, Ruby::tab($level) ~ "Proc.new\{ |" ~ @my_decl.join(", ") ~ "|";
+            $level += 1;
         }
 
         my $last_statement;
@@ -240,6 +241,7 @@ class Perlito::Ruby::LexicalBlock {
         }
 
         if $has_my_decl {
+            $level -= 1;
             push @s, Ruby::tab($level) ~ "}.call(" ~ @my_init.join(", ") ~ ")";
         }
 
@@ -571,6 +573,9 @@ class Apply {
                     ~ (@.arguments[1]).emit_ruby ~ ' : ' 
                     ~ (@.arguments[2]).emit_ruby ~ ')'
         }
+        if $code eq 'circumfix:<( )>' {
+            return '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+        }
         
         if $code eq 'substr' { 
             return Ruby::to_str(' + ', [@.arguments[0]]) ~ '[' 
@@ -613,26 +618,21 @@ class If {
         my $has_body = @.body ?? 1 !! 0;
         my $has_otherwise = @.otherwise ?? 1 !! 0;
         my $body_block = Perlito::Ruby::LexicalBlock.new( block => @.body.stmts );
-        my $otherwise_block = Perlito::Ruby::LexicalBlock.new( block => @.otherwise.stmts );
-
         if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );
         }
-        if $has_otherwise && $otherwise_block.has_my_decl() {
-            $otherwise_block = Do.new( block => @.otherwise );
-        }
-
         my $s = Ruby::tab($level) ~   'if ' ~ Ruby::to_bool(' && ', [$.cond]) ~ "\n" 
             ~ $body_block.emit_ruby_indented( $level + 1 );
         if ( $has_otherwise ) {
-            $s = $s ~ "\n"
+            my $otherwise_block = Perlito::Ruby::LexicalBlock.new( block => @.otherwise.stmts );
+            if $otherwise_block.has_my_decl() {
+                $otherwise_block = Do.new( block => @.otherwise );
+            }
+            $s ~= "\n"
                 ~ Ruby::tab($level) ~ "else\n" 
-                    ~ $otherwise_block.emit_ruby_indented($level+1)
-                ~ "\n" ~ Ruby::tab($level) ~ "end" 
+                ~   $otherwise_block.emit_ruby_indented($level+1)
         }
-        else {
-            $s = $s ~ "\n" ~ Ruby::tab($level) ~ "end" 
-        }
+        $s ~= "\n" ~ Ruby::tab($level) ~ "end";
         return $s;
     }
 }

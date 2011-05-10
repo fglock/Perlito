@@ -45,7 +45,7 @@ package GLOBAL;
             if (($s eq '')) {
                 return scalar ((chr(39) . chr(39)))
             };
-            for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY') || []} ) {
+            for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
                 if (((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c}))) {
                     ($tmp = ($tmp . $c))
@@ -81,7 +81,7 @@ package GLOBAL;
             my $self = $_[0];
             my $level = $_[1];
             (my  $List_body = bless [], 'ARRAY');
-            for ( @{$self->{body} || []} ) {
+            for ( @{$self->{body}} ) {
                 if (defined($_)) {
                     push( @{$List_body}, $_ )
                 }
@@ -91,7 +91,7 @@ package GLOBAL;
         sub emit_perl5_program {
             my $comp_units = $_[0];
             ((my  $str) = ('' . ('use v5' . chr(59) . chr(10)) . ('use utf8' . chr(59) . chr(10)) . ('use strict' . chr(59) . chr(10)) . ('use warnings' . chr(59) . chr(10)) . ('no warnings (' . chr(39) . 'redefine' . chr(39) . ', ' . chr(39) . 'once' . chr(39) . ', ' . chr(39) . 'void' . chr(39) . ', ' . chr(39) . 'uninitialized' . chr(39) . ', ' . chr(39) . 'misc' . chr(39) . ', ' . chr(39) . 'recursion' . chr(39) . ')' . chr(59) . chr(10)) . ('use Perlito::Perl5::Runtime' . chr(59) . chr(10)) . ('use Perlito::Perl5::Prelude' . chr(59) . chr(10)) . ('our ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito::Match->new()' . chr(59) . chr(10))));
-            for my $comp_unit ( @{(($comp_units)) || []} ) {
+            for my $comp_unit ( @{(($comp_units))} ) {
                 ($str = ($str . $comp_unit->emit_perl5_indented(0)))
             };
             ($str = ($str . ('1' . chr(59) . chr(10))));
@@ -539,7 +539,7 @@ package GLOBAL;
                 ((my  $a) = $parameters->array1());
                 ((my  $str) = 'do ' . chr(123) . ' ');
                 ((my  $i) = 0);
-                for my $var ( @{($a) || []} ) {
+                for my $var ( @{($a)} ) {
                     ($str = ($str . (' ' . emit_perl5_bind($var, Index->new(('obj' => $arguments), ('index_exp' => Val::Int->new(('int' => $i))))) . chr(59) . ' ')));
                     ($i = ($i + 1))
                 };
@@ -551,13 +551,13 @@ package GLOBAL;
                 ((my  $str) = 'do ' . chr(123) . ' ');
                 ((my  $i) = 0);
                 (my  $arg);
-                for my $var ( @{($a) || []} ) {
+                for my $var ( @{($a)} ) {
                     ($arg = Apply->new(('code' => 'Mu'), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 })));
-                    for my $var2 ( @{($b) || []} ) {
+                    for my $var2 ( @{($b)} ) {
                         if ((($var2->[0])->buf() eq ($var->[0])->buf())) {
                             ($arg = $var2->[1])
                         }
@@ -737,7 +737,7 @@ package GLOBAL;
             ((my  $pos) = $sig->positional());
             ((my  $str) = '');
             ((my  $i) = 1);
-            for my $field ( @{($pos) || []} ) {
+            for my $field ( @{($pos)} ) {
                 ($str = ($str . (Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_[' . $i . ']' . chr(59) . (chr(10)))));
                 ($i = ($i + 1))
             };
@@ -763,7 +763,7 @@ package GLOBAL;
             ((my  $pos) = $sig->positional());
             ((my  $str) = '');
             ((my  $i) = 0);
-            for my $field ( @{($pos) || []} ) {
+            for my $field ( @{($pos)} ) {
                 ($str = ($str . (Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_[' . $i . ']' . chr(59) . (chr(10)))));
                 ($i = ($i + 1))
             };

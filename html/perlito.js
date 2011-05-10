@@ -4374,7 +4374,7 @@ if (typeof Call !== 'object') {
                 throw((string(Perl5.tab(v_level)) + string('[ map ' + String.fromCharCode(123) + ' ' + String.fromCharCode(36) + '_') + string(v_call) + string(' ' + String.fromCharCode(125) + ' ') + string(v_invocant) + string(' ]')));
             })(); }
             else { return (function () {
-                return((string(v_invocant) + string(v_call)));
+                return((string(Perl5.tab(v_level)) + string(v_invocant) + string(v_call)));
             })(); };;
         }
         catch(err) {

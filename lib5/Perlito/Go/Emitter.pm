@@ -846,7 +846,7 @@ package GLOBAL;
         sub var { $_[0]->{var} };
         sub emit_go {
             my $self = $_[0];
-$self->{var}->emit_go()
+            $self->{var}->emit_go()
         };
         sub emit_go_init {
             my $self = $_[0];

@@ -483,7 +483,7 @@ package GLOBAL;
                     if ((($Operator->{'postfix'}->{$token->[1]} && is_term($last)) && (($Allow_space_before->{'postfix'}->{$token->[1]} || !(($last_has_space)))))) {
                         ((my  $pr) = $Precedence->{$token->[1]});
                         for ( ; (scalar( @{$op_stack} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
-$reduce->($op_stack, $num_stack)
+                            $reduce->($op_stack, $num_stack)
                         };
                         if ((($token->[0]) ne 'postfix_or_term')) {
                             ($token->[0] = 'postfix')
@@ -493,7 +493,7 @@ $reduce->($op_stack, $num_stack)
                     else {
                         if ((((($token->[1] eq 'block')) && is_term($last)) && $last_has_space)) {
                             for ( ; scalar( @{$op_stack} );  ) {
-$reduce->($op_stack, $num_stack)
+                                $reduce->($op_stack, $num_stack)
                             };
                             push( @{$num_stack}, $token );
                             ($End_token = $last_end_token);
@@ -515,12 +515,12 @@ $reduce->($op_stack, $num_stack)
                                     ((my  $pr) = $Precedence->{$token->[1]});
                                     if ($Assoc->{'right'}->{$token->[1]}) {
                                         for ( ; (scalar( @{$op_stack} ) && (($pr < $Precedence->{($op_stack->[0])->[1]})));  ) {
-$reduce->($op_stack, $num_stack)
+                                            $reduce->($op_stack, $num_stack)
                                         }
                                     }
                                     else {
                                         for ( ; (scalar( @{$op_stack} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
-$reduce->($op_stack, $num_stack)
+                                            $reduce->($op_stack, $num_stack)
                                         }
                                     };
                                     if ($Operator->{'ternary'}->{$token->[1]}) {
@@ -552,7 +552,7 @@ $reduce->($op_stack, $num_stack)
                 die(('Unexpected end token: '), Main::perl($token, ))
             };
             for ( ; scalar( @{$op_stack} );  ) {
-$reduce->($op_stack, $num_stack)
+                $reduce->($op_stack, $num_stack)
             };
             ($End_token = $last_end_token);
             return scalar ($num_stack)

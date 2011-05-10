@@ -29,7 +29,7 @@ package GLOBAL;
         };
         sub Bool {
             my $self = $_[0];
-$self->{bool}->Bool()
+            $self->{bool}->Bool()
         };
         sub Str {
             my $self = $_[0];

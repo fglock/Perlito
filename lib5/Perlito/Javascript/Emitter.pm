@@ -88,7 +88,7 @@ package GLOBAL;
         sub top_level { $_[0]->{top_level} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -170,7 +170,7 @@ $self->emit_javascript_indented(0)
         sub body { $_[0]->{body} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -230,7 +230,7 @@ $self->emit_javascript_indented(0)
         sub int { $_[0]->{int} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -246,7 +246,7 @@ $self->emit_javascript_indented(0)
         sub bit { $_[0]->{bit} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -262,7 +262,7 @@ $self->emit_javascript_indented(0)
         sub num { $_[0]->{num} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -278,7 +278,7 @@ $self->emit_javascript_indented(0)
         sub buf { $_[0]->{buf} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -295,7 +295,7 @@ $self->emit_javascript_indented(0)
         sub stmts { $_[0]->{stmts} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -315,7 +315,7 @@ $self->emit_javascript_indented(0)
         sub array1 { $_[0]->{array1} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -332,7 +332,7 @@ $self->emit_javascript_indented(0)
         sub hash1 { $_[0]->{hash1} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -350,7 +350,7 @@ $self->emit_javascript_indented(0)
         sub index_exp { $_[0]->{index_exp} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -367,7 +367,7 @@ $self->emit_javascript_indented(0)
         sub index_exp { $_[0]->{index_exp} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -401,7 +401,7 @@ $self->emit_javascript_indented(0)
         sub name { $_[0]->{name} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -436,7 +436,7 @@ $self->emit_javascript_indented(0)
         sub name { $_[0]->{name} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -479,7 +479,7 @@ $self->emit_javascript_indented(0)
 });
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -565,7 +565,7 @@ $self->emit_javascript_indented(0)
 });
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -797,7 +797,7 @@ $self->emit_javascript_indented(0)
         sub otherwise { $_[0]->{otherwise} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -831,7 +831,7 @@ $self->emit_javascript_indented(0)
         sub body { $_[0]->{body} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -849,7 +849,7 @@ $self->emit_javascript_indented(0)
         sub body { $_[0]->{body} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -881,7 +881,7 @@ $self->emit_javascript_indented(0)
         sub var { $_[0]->{var} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -930,7 +930,7 @@ $self->emit_javascript_indented(0)
         sub block { $_[0]->{block} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -952,7 +952,7 @@ $self->emit_javascript_indented(0)
         sub block { $_[0]->{block} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -971,7 +971,7 @@ $self->emit_javascript_indented(0)
         sub block { $_[0]->{block} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];
@@ -988,7 +988,7 @@ $self->emit_javascript_indented(0)
         sub mod { $_[0]->{mod} };
         sub emit_javascript {
             my $self = $_[0];
-$self->emit_javascript_indented(0)
+            $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
             my $self = $_[0];

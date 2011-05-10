@@ -50,23 +50,23 @@ package GLOBAL;
                 return scalar ($self->{term}->emit_perl6())
             };
             if (((($self->{quant} eq '+')) && (($self->{greedy} eq '')))) {
-$self->{term}->set_captures_to_array();
+                $self->{term}->set_captures_to_array();
                 return scalar (('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'my ' . chr(36) . 'count ' . chr(61) . ' 0' . chr(59) . ' ' . 'while ' . $self->{term}->emit_perl6() . ' ' . chr(38) . chr(38) . ' (' . chr(36) . 'last_match_null < 2) ' . chr(123) . ' ' . 'if ' . chr(36) . 'last_pos ' . chr(61) . chr(61) . ' ' . chr(36) . 'MATCH.to() ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' ' . chr(36) . 'last_match_null + 1' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . chr(36) . 'count ' . chr(61) . ' ' . chr(36) . 'count + 1' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(36) . 'count > 0' . chr(59) . ' ' . chr(125) . ')'))
             };
             if (((($self->{quant} eq '*')) && (($self->{greedy} eq '')))) {
-$self->{term}->set_captures_to_array();
+                $self->{term}->set_captures_to_array();
                 return scalar (('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'while ' . $self->{term}->emit_perl6() . ' ' . chr(38) . chr(38) . ' (' . chr(36) . 'last_match_null < 2) ' . chr(123) . ' ' . 'if ' . chr(36) . 'last_pos ' . chr(61) . chr(61) . ' ' . chr(36) . 'MATCH.to() ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' ' . chr(36) . 'last_match_null + 1' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . '1 ' . chr(125) . ')'))
             };
             if (((($self->{quant} eq chr(63))) && (($self->{greedy} eq '')))) {
-$self->{term}->set_captures_to_array();
+                $self->{term}->set_captures_to_array();
                 return scalar (('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' ' . 'if ' . chr(33) . '(do ' . chr(123) . $self->{term}->emit_perl6() . chr(125) . ') ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . ')'))
             };
             warn(('Rul::Quantifier: ' . Main::perl($self, ) . (' not implemented')));
-$self->{term}->emit_perl6()
+            $self->{term}->emit_perl6()
         };
         sub set_captures_to_array {
             my $self = $_[0];
-$self->{term}->set_captures_to_array()
+            $self->{term}->set_captures_to_array()
         }
     }
 

@@ -209,7 +209,8 @@ package GLOBAL;
                 }
             };
             if ($has_my_decl) {
-                push( @{$List_s}, (Ruby::tab($level) . ('Proc.new' . chr(123) . ' ' . chr(124)) . Main::join($List_my_decl, (', ')) . (chr(124))) )
+                push( @{$List_s}, (Ruby::tab($level) . ('Proc.new' . chr(123) . ' ' . chr(124)) . Main::join($List_my_decl, (', ')) . (chr(124))) );
+                ($level = ($level + 1))
             };
             (my  $last_statement);
             if ($self->{needs_return}) {
@@ -278,6 +279,7 @@ package GLOBAL;
                 push( @{$List_s}, $s2 )
             };
             if ($has_my_decl) {
+                ($level = ($level - 1));
                 push( @{$List_s}, (Ruby::tab($level) . (chr(125) . '.call(') . Main::join($List_my_init, (', ')) . (')')) )
             };
             ($List_anon_block = $List_tmp);
@@ -764,6 +766,9 @@ package GLOBAL;
     $List_a
 }) . ' ' . chr(63) . ' ' . ($self->{arguments}->[1])->emit_ruby() . ' : ' . ($self->{arguments}->[2])->emit_ruby() . ')'))
             };
+            if (($code eq 'circumfix:<( )>')) {
+                return scalar (('(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
+            };
             if (($code eq 'substr')) {
                 return scalar ((Ruby::to_str(' + ', do {
     (my  $List_a = bless [], 'ARRAY');
@@ -832,12 +837,8 @@ package GLOBAL;
             ((my  $has_body) = ($self->{body} ? 1 : 0));
             ((my  $has_otherwise) = ($self->{otherwise} ? 1 : 0));
             ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body}->stmts())));
-            ((my  $otherwise_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{otherwise}->stmts())));
             if ($body_block->has_my_decl()) {
                 ($body_block = Do->new(('block' => $self->{body})))
-            };
-            if (($has_otherwise && $otherwise_block->has_my_decl())) {
-                ($otherwise_block = Do->new(('block' => $self->{otherwise})))
             };
             ((my  $s) = (Ruby::tab($level) . 'if ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
     (my  $List_a = bless [], 'ARRAY');
@@ -846,11 +847,13 @@ package GLOBAL;
     $List_a
 }) . (chr(10)) . $body_block->emit_ruby_indented(($level + 1))));
             if (($has_otherwise)) {
-                ($s = ($s . (chr(10)) . Ruby::tab($level) . ('else' . chr(10)) . $otherwise_block->emit_ruby_indented(($level + 1)) . (chr(10)) . Ruby::tab($level) . ('end')))
-            }
-            else {
-                ($s = ($s . (chr(10)) . Ruby::tab($level) . ('end')))
+                ((my  $otherwise_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{otherwise}->stmts())));
+                if ($otherwise_block->has_my_decl()) {
+                    ($otherwise_block = Do->new(('block' => $self->{otherwise})))
+                };
+                ($s = ($s . (chr(10) . Ruby::tab($level) . ('else' . chr(10)) . $otherwise_block->emit_ruby_indented(($level + 1)))))
             };
+            ($s = ($s . (chr(10) . Ruby::tab($level) . ('end'))));
             return scalar ($s)
         }
     }
