@@ -1,0 +1,44 @@
+--- #YAML:1.0
+name:               v6
+version:            0.043
+abstract:           A Perl 6 implementation
+author:
+    - Flávio S. Glock <fglock@gmail.com>
+license:            perl
+distribution_type:  module
+configure_requires:
+    ExtUtils::MakeMaker:  0
+build_requires:
+    ExtUtils::MakeMaker:  0
+requires:
+    Encode:              0
+    Filter::Util::Call:  0
+    FindBin:             0
+    Term::ReadLine:      0
+no_index:
+    directory:
+      - t
+      - inc
+    namespace:
+      - Lit
+      - Val
+    package:
+      - Apply
+      - Bind
+      - CompUnit
+      - Decl
+      - For
+      - If
+      - Index
+      - Lookup
+      - Method
+      - Pair
+      - Sig
+      - Sub
+      - Use
+      - While
+generated_by:       ExtUtils::MakeMaker version 6.56
+meta-spec:
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4
+

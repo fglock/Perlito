@@ -146,12 +146,12 @@ package ARRAY;
 package HASH;
 
     use overload (
-        bool     => sub { scalar(keys %{$_[0]}) },
+        bool     => sub { scalar(CORE::keys %{$_[0]}) },
         '""'     => \&Str,
     );
 
     sub Str {
-        join( "\n", map { $_ . "\t" . Main::Str($_[0]{$_}) } keys %{$_[0]} )
+        join( "\n", map { $_ . "\t" . Main::Str($_[0]{$_}) } CORE::keys %{$_[0]} )
     }
 
 package Main;
@@ -234,7 +234,7 @@ package Main;
             $Main::_seen{$key}++;
             return '[' . join( ", ", map { perl($_) } @$o ) . ']' 
                 if ref($o) eq 'ARRAY';
-            return '{' . join( ", ", map { perl($_) . ' => ' . perl($o->{$_}) } sort {$a cmp $b} keys(%$o) ) . '}' 
+            return '{' . join( ", ", map { perl($_) . ' => ' . perl($o->{$_}) } sort {$a cmp $b} CORE::keys(%$o) ) . '}' 
                 if ref($o) eq 'HASH';
             return 'sub { ... }'
                 if ref($o) eq 'CODE';

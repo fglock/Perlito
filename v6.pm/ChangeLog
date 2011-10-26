@@ -1,3 +1,7 @@
+0.043  2011-10-26
+- fixed META.yml (thanks Aevar)
+- fix warnings in the runtime for Perl 5.12
+
 0.042  2011-04-28
 - cosmetic changes (generated code is a bit more readable)
 
