@@ -1,5 +1,4 @@
 ChangeLog
-hello_world.pl
 lib/Perlito/Clojure/Emitter.pm
 lib/Perlito/Emitter/Token.pm
 lib/Perlito/Eval.pm
