@@ -1,5 +1,5 @@
 package v6;
-$v6::VERSION = '0.043';
+$v6::VERSION = '0.044';
 use strict;
 
 sub import {

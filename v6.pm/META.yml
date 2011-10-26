@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               v6
-version:            0.043
+version:            0.044
 abstract:           A Perl 6 implementation
 author:
     - Flávio S. Glock <fglock@gmail.com>
@@ -15,6 +15,9 @@ requires:
     Filter::Util::Call:  0
     FindBin:             0
     Term::ReadLine:      0
+provides:
+    v6:
+      file: lib/v6.pm
 no_index:
     directory:
       - t

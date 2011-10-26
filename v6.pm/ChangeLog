@@ -1,3 +1,6 @@
+0.044  2011-10-26
+- fixed META.yml
+
 0.043  2011-10-26
 - fixed META.yml (thanks Aevar)
 - fix warnings in the runtime for Perl 5.12
