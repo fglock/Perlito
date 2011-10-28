@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               v6
-version:            0.044
+version:            0.045
 abstract:           A Perl 6 implementation
 author:
     - Flávio S. Glock <fglock@gmail.com>
@@ -17,31 +17,30 @@ requires:
     Term::ReadLine:      0
 provides:
     v6:
-      file: lib/v6.pm
+        file:  lib/v6.pm
 no_index:
     directory:
-      - t
-      - inc
+        - t
+        - inc
     namespace:
-      - Lit
-      - Val
+        - Lit
+        - Val
     package:
-      - Apply
-      - Bind
-      - CompUnit
-      - Decl
-      - For
-      - If
-      - Index
-      - Lookup
-      - Method
-      - Pair
-      - Sig
-      - Sub
-      - Use
-      - While
+        - Apply
+        - Bind
+        - CompUnit
+        - Decl
+        - For
+        - If
+        - Index
+        - Lookup
+        - Method
+        - Pair
+        - Sig
+        - Sub
+        - Use
+        - While
 generated_by:       ExtUtils::MakeMaker version 6.56
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html
     version:  1.4
-

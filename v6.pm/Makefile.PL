@@ -18,6 +18,31 @@ WriteMakefile(
         'FindBin'           => 0,
         'Encode'            => 0,
     },
+    META_MERGE => {
+        provides => {
+            v6 => { file => 'lib/v6.pm' }
+        },
+        no_index => {
+            namespace => [ 'Lit', 'Val' ],
+            package   => [qw(
+                Apply
+                Bind
+                CompUnit
+                Decl
+                For
+                If
+                Index
+                Lookup
+                Method
+                Pair
+                Sig
+                Sub
+                Use
+                While
+            )],
+        },
+    },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'v6-*' },
 );
+
