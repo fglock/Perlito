@@ -32,6 +32,12 @@ class PerlitoObject {
         System.out.println("error!");
     }
 }
+class PerlitoClosure extends PerlitoObject {
+    public PerlitoObject apply() {
+        System.out.println("error!");
+        return new PerlitoInt(0);
+    }
+}
 class PerlitoInt extends PerlitoObject {
     private int i;
     public PerlitoInt(int i) {
