@@ -14,24 +14,8 @@ class PerlitoObject {
         return 0.0;
     }
     public PerlitoObject add(PerlitoObject s) {
-        System.out.println("error - .add!");
-
-        if (s.is_num()) {
-            return ((PerlitoNum)s).add(this);
-        }
-        if (s.is_string()) {
-            // num or int?
-            return ((PerlitoNum)s).add(this);
-        }
-        if (s.is_int()) {
-            return ((PerlitoNum)s).add(this);
-        }
-        // XXX - what is the default?
-        return new PerlitoInt( this.to_int() + s.to_int() );
+        return this.to_num_or_int().add(s);
     }
-    // public PerlitoNum add(PerlitoObject s) {
-    //     return new PerlitoNum( this.to_num() + s.to_num() );
-    // }
     public boolean is_int() {
         return false;
     }
@@ -40,6 +24,9 @@ class PerlitoObject {
     }
     public boolean is_string() {
         return false;
+    }
+    public PerlitoObject to_num_or_int() {
+        return new PerlitoInt(0);
     }
     public void the_int_method() {
         System.out.println("error!");
@@ -67,11 +54,13 @@ class PerlitoInt extends PerlitoObject {
     }
     public PerlitoObject add(PerlitoObject s) {
         System.out.println("Int.add Object!");
-        return new PerlitoInt( this.to_int() + s.to_int() );
+        if (s.is_int()) {
+            return new PerlitoInt( this.to_int() + s.to_int() );
+        }
+        return s.to_num_or_int().add(this);
     }
-    public PerlitoObject add(PerlitoInt s) {
-        System.out.println("Int.add Int!");
-        return new PerlitoInt( this.to_int() + s.to_int() );
+    public PerlitoObject to_num_or_int() {
+        return this;
     }
 }
 class PerlitoNum extends PerlitoObject {
@@ -93,6 +82,9 @@ class PerlitoNum extends PerlitoObject {
     }
     public boolean is_num() {
         return true;
+    }
+    public PerlitoObject to_num_or_int() {
+        return this;
     }
 }
 class PerlitoString extends PerlitoObject {
@@ -129,9 +121,6 @@ class PerlitoString extends PerlitoObject {
             return new PerlitoInt(0);
         }
         return new PerlitoInt(i);
-    } 
-    public PerlitoObject add(PerlitoObject s) {
-        return this.to_num_or_int().add(s);
     } 
 }
 class HelloWorldApp {
