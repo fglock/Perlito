@@ -40,6 +40,10 @@ class PerlitoObject {
     }
 }
 class PerlitoClosure extends PerlitoObject {
+    public PerlitoObject env;
+    public PerlitoClosure(PerlitoObject env) {
+        this.env = env;
+    }
     public PerlitoObject apply() {
         System.out.println("error!");
         return new PerlitoInt(0);
@@ -181,16 +185,6 @@ class PerlitoString extends PerlitoObject {
         }
     } 
 }
-class MyClosure extends PerlitoClosure {
-    private PerlitoObject my_var;
-    public MyClosure(PerlitoObject my_var) {
-        this.my_var = my_var;
-    }
-    public PerlitoObject apply() {
-        System.out.println("called MyClosure with " + this.my_var.to_string());
-        return new PerlitoInt(0);
-    }
-}
 class HelloWorldApp {
     public static void main(String[] args) {
 
@@ -213,7 +207,12 @@ class HelloWorldApp {
         System.out.println(t.to_string());
         System.out.println(f.to_string());
 
-        PerlitoClosure c = new MyClosure(s);
+        PerlitoClosure c = new PerlitoClosure(s) {
+                public PerlitoObject apply() {
+                    System.out.println("called MyClosure with " + this.env.to_string());
+                    return new PerlitoInt(0);
+                }
+            };
         c.apply();
     }
 }
