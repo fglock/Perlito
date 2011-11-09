@@ -181,6 +181,16 @@ class PerlitoString extends PerlitoObject {
         }
     } 
 }
+class MyClosure extends PerlitoClosure {
+    private PerlitoObject my_var;
+    public MyClosure(PerlitoObject my_var) {
+        this.my_var = my_var;
+    }
+    public PerlitoObject apply() {
+        System.out.println("called MyClosure with " + this.my_var.to_string());
+        return new PerlitoInt(0);
+    }
+}
 class HelloWorldApp {
     public static void main(String[] args) {
 
@@ -202,6 +212,9 @@ class HelloWorldApp {
         System.out.println(x.to_string());
         System.out.println(t.to_string());
         System.out.println(f.to_string());
+
+        PerlitoClosure c = new MyClosure(s);
+        c.apply();
     }
 }
 
