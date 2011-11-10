@@ -4,34 +4,36 @@ rm -rf lib5-new
 
 mkdir lib5-new
 mkdir lib5-new/Perlito
-mkdir lib5-new/Perlito/Grammar
+mkdir lib5-new/Perlito/Clojure
 mkdir lib5-new/Perlito/Emitter
+mkdir lib5-new/Perlito/Go
+mkdir lib5-new/Perlito/Grammar
+mkdir lib5-new/Perlito/Java
 mkdir lib5-new/Perlito/Javascript
 mkdir lib5-new/Perlito/Lisp
-mkdir lib5-new/Perlito/Perl5
-mkdir lib5-new/Perlito/Go
 mkdir lib5-new/Perlito/Parrot
+mkdir lib5-new/Perlito/Perl5
 mkdir lib5-new/Perlito/Python
-mkdir lib5-new/Perlito/Ruby
-mkdir lib5-new/Perlito/Clojure
 mkdir lib5-new/Perlito/Rakudo
+mkdir lib5-new/Perlito/Ruby
 
 cp src/lib/Perlito/Perl5/Runtime.pm lib5-new/Perlito/Perl5/Runtime.pm
 
 perl perlito.pl -Cperl5 src/lib/Perlito/Test.pm            > lib5-new/Perlito/Test.pm
 
+perl perlito.pl -Cperl5 src/lib/Perlito/Emitter/Token.pm   > lib5-new/Perlito/Emitter/Token.pm
+perl perlito.pl -Cperl5 src/lib/Perlito/Eval.pm            > lib5-new/Perlito/Eval.pm
+perl perlito.pl -Cperl5 src/lib/Perlito/Expression.pm      > lib5-new/Perlito/Expression.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Grammar.pm         > lib5-new/Perlito/Grammar.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Grammar/Control.pm > lib5-new/Perlito/Grammar/Control.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Grammar/Regex.pm   > lib5-new/Perlito/Grammar/Regex.pm
-perl perlito.pl -Cperl5 src/lib/Perlito/Emitter/Token.pm   > lib5-new/Perlito/Emitter/Token.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Macro.pm           > lib5-new/Perlito/Macro.pm
-perl perlito.pl -Cperl5 src/lib/Perlito/Expression.pm      > lib5-new/Perlito/Expression.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Precedence.pm      > lib5-new/Perlito/Precedence.pm
-perl perlito.pl -Cperl5 src/lib/Perlito/Eval.pm            > lib5-new/Perlito/Eval.pm
 
+perl perlito.pl -Cperl5 src/lib/Perlito/Go/Emitter.pm      > lib5-new/Perlito/Go/Emitter.pm
+perl perlito.pl -Cperl5 src/lib/Perlito/Java/Emitter.pm    > lib5-new/Perlito/Java/Emitter.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Javascript/Emitter.pm > lib5-new/Perlito/Javascript/Emitter.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Lisp/Emitter.pm    > lib5-new/Perlito/Lisp/Emitter.pm
-perl perlito.pl -Cperl5 src/lib/Perlito/Go/Emitter.pm      > lib5-new/Perlito/Go/Emitter.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Parrot/Emitter.pm  > lib5-new/Perlito/Parrot/Emitter.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Python/Emitter.pm  > lib5-new/Perlito/Python/Emitter.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Ruby/Emitter.pm    > lib5-new/Perlito/Ruby/Emitter.pm

@@ -76,7 +76,7 @@ class CompUnit {
     has %.methods;
     has @.body;
     method emit_java {
-        my $class_name = Main::to_java_namespace($.name);
+        my $class_name = Main::to_go_namespace($.name);
         my $str =
               '// instances of class ' ~ $.name ~ "\n"
             ~ 'type ' ~ $class_name ~ ' struct {' ~ "\n";
@@ -370,11 +370,11 @@ class CompUnit {
             ~ "func main () \{\n"
             ~ "  Init_Perlito__Match();\n";
         for @($comp_units) -> $comp_unit {
-            $str = $str ~ "  Init_" ~ Main::to_java_namespace( $comp_unit.name ) ~ "();\n"
+            $str = $str ~ "  Init_" ~ Main::to_go_namespace( $comp_unit.name ) ~ "();\n"
         }
         $str = $str ~ "  Init_Prelude();\n";
         for @($comp_units) -> $comp_unit {
-            $str = $str ~ "  Run_" ~ Main::to_java_namespace( $comp_unit.name ) ~ "();\n"
+            $str = $str ~ "  Run_" ~ Main::to_go_namespace( $comp_unit.name ) ~ "();\n"
         }
         $str = $str ~ '}' ~ "\n";
         return $str;
@@ -383,24 +383,24 @@ class CompUnit {
 
 class Val::Int {
     has $.int;
-    method emit_java { 'toInt(' ~ $.int ~ ')' }
+    method emit_java { 'new PerlitoInt(' ~ $.int ~ ')' }
 }
 
 class Val::Bit {
     has $.bit;
     method emit_java { 
-        $.bit ?? 'b_true()' !! 'b_false()'
+        $.bit ?? 'new PerlitoBool(true)' !! 'new PerlitoBool(false)'
     }
 }
 
 class Val::Num {
     has $.num;
-    method emit_java { 'toNum(' ~ $.num ~ ')' }
+    method emit_java { 'new PerlitoNum(' ~ $.num ~ ')' }
 }
 
 class Val::Buf {
     has $.buf;
-    method emit_java { 'toStr("' ~ $.buf ~ '")' }
+    method emit_java { 'new PerlitoString("' ~ $.buf ~ '")' }
 }
 
 class Val::Undef {
@@ -452,7 +452,7 @@ class Lit::Object {
                 ~ '*m.v_' ~ ($field[0]).buf ~ ' = *' ~ ($field[1]).emit_java ~ '; ' ~ "\n";
         }; 
           'func() *Any { ' ~ "\n"
-        ~ '  var m = new(' ~ Main::to_java_namespace($.class) ~ '); ' ~ "\n"
+        ~ '  var m = new(' ~ Main::to_go_namespace($.class) ~ '); ' ~ "\n"
         ~ '  ' ~ $str ~ "\n"
         ~ '  var m1 Any = m; ' ~ "\n"
         ~ '  return &m1; ' ~ "\n"
@@ -497,7 +497,7 @@ class Var {
         };
         my $ns = '';
         if $.namespace {
-            $ns = Main::to_java_namespace($.namespace) ~ '.';
+            $ns = Main::to_go_namespace($.namespace) ~ '.';
         }
            ( $.twigil eq '.' )
         ?? ( '(*v_self).(' ~ $.name ~ '_er).f_' ~ $.name ~ '(Capture{})' )
@@ -605,7 +605,7 @@ class Bind {
 class Proto {
     has $.name;
     method emit_java {
-        Main::to_java_namespace($.name)        
+        Main::to_go_namespace($.name)        
     }
 }
 
@@ -695,13 +695,13 @@ class Apply {
                                                 ~ '    }()'
                                     }
 
-        if $code eq 'say'           { return 'f_print( Capture{ p : []*Any{ '    
-                                                ~ (@.arguments.>>emit_java).join(', ') 
-                                                ~ ', toStr("\n") } } )'
+        if $code eq 'say'           { return 'System.out.println( '    
+                                                ~ (@.arguments.>>emit_java).join('.to_string() + ') 
+                                                ~ '.to_string() )'
                                     }
-        if $code eq 'print'         { return 'f_print( Capture{ p : []*Any{ '  
-                                                ~ (@.arguments.>>emit_java).join(', ') 
-                                                ~ ' } } )' 
+        if $code eq 'print'         { return 'System.out.print( '  
+                                                ~ (@.arguments.>>emit_java).join('.to_string() ') 
+                                                ~ '.to_string() )' 
                                     }
         if $code eq 'warn'          { return 'f_print_stderr( Capture{ p : []*Any{ '   
                                                 ~ (@.arguments.>>emit_java).join(', ') 
@@ -843,7 +843,7 @@ class Apply {
         
         $code = 'f_' ~ $.code;
         if $.namespace {
-            $code = 'Namespace_' ~ Main::to_java_namespace($.namespace) ~ '.' ~ $code;
+            $code = 'Namespace_' ~ Main::to_go_namespace($.namespace) ~ '.' ~ $code;
         }
         else {
             $code = 'this_namespace.' ~ $code;
