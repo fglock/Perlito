@@ -1,10 +1,17 @@
-dev  2011-10-26
-- fixed META.yml for CPAN distribution (thanks Aevar)
+dev  2011-11-10
+- new experimental backend: Java
+- fixed META.yml for "v6.pm" CPAN distribution (thanks Aevar)
 - fixed unicode IO, added unicode tests
 - add some formatting to Perl5 and Javascript output
 - methods: map, grep
 - operators: x
 - source code moved to src/ directory
+
+  Regressions:
+
+- removed '-B' command line flag (since 7.0)
+- backends pending upgrade to the new AST: Go, Common Lisp, Ruby 1.9, Eval (since 7.0)
+- backends not supported in this version: Parrot, Rakudo, Clojure (since 7.0)
 
 7.0  2011-04-20
 - supported backends: Perl 5, Python 2.6, Javascript
