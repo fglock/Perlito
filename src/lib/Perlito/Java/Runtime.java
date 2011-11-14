@@ -44,7 +44,7 @@ class PerlitoClosure extends PerlitoObject {
     public PerlitoClosure(PerlitoObject env) {
         this.env = env;
     }
-    public PerlitoObject apply() {
+    public PerlitoObject apply(PerlitoObject param) {
         System.out.println("error!");
         return new PerlitoInt(0);
     }
