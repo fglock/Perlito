@@ -597,7 +597,7 @@ package GLOBAL;
                 return scalar ((Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( $self->{arguments} )} ]), ' ') . ' ' . chr(33) . chr(61) . ' null)'))
             };
             if (($code eq 'substr')) {
-                return scalar (('(' . ($self->{arguments}->[0])->emit_javascript() . ' ' . chr(124) . chr(124) . ' ' . chr(34) . chr(34) . ').substr(' . ($self->{arguments}->[1])->emit_javascript() . ', ' . ($self->{arguments}->[2])->emit_javascript() . ')'))
+                return scalar (('(' . ($self->{arguments}->[0])->emit_javascript() . ' ' . chr(124) . chr(124) . ' ' . chr(34) . chr(34) . ').substr(' . ($self->{arguments}->[1])->emit_javascript() . ((defined($self->{arguments}->[2]) ? (', ' . ($self->{arguments}->[2])->emit_javascript()) : '')) . ')'))
             };
             if (($code eq 'chr')) {
                 return scalar (('String.fromCharCode(' . Javascript::escape_function('num') . '(' . ($self->{arguments}->[0])->emit_javascript() . '))'))

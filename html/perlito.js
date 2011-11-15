@@ -51,29 +51,6 @@ if (typeof Main !== 'object') {
 }
 
 (function() {
-    Main.lisp_escape_string = function(s) {
-        var o = s;
-        o = o.replace(/\\/g, "\\\\");
-        o = o.replace(/"/g, "\\\"");
-        return o;
-    };
-    Main.to_javascript_namespace = function(s) {
-        var o = s;
-        o = o.replace(/::/g, "$");
-        return o;
-    };
-    Main.to_lisp_namespace = function(s) {
-        var o = s;
-        o = o.replace(/[$@%]/, "");
-        o = o.replace(/::/g, "-");
-        return "mp-" + o;
-    };
-    Main.to_go_namespace = function(s) {
-        var o = s;
-        o = o.replace(/[$@%]/, "");
-        o = o.replace(/::/g, "__");
-        return o;
-    };
     Main._dump = function(o) {
         var out = [];
         for (var i in o) {
@@ -1927,7 +1904,7 @@ if (typeof Apply !== 'object') {
                 null;
             })(); };
             if ( bool((v_code == 'substr')) ) { (function () {
-                throw((string('(') + string((v_self.v_arguments[0]).emit_javascript()) + string(' ' + String.fromCharCode(124) + String.fromCharCode(124) + ' ' + String.fromCharCode(34) + String.fromCharCode(34) + ').substr(') + string((v_self.v_arguments[1]).emit_javascript()) + string(', ') + string((v_self.v_arguments[2]).emit_javascript()) + string(')')));;
+                throw((string('(') + string((v_self.v_arguments[0]).emit_javascript()) + string(' ' + String.fromCharCode(124) + String.fromCharCode(124) + ' ' + String.fromCharCode(34) + String.fromCharCode(34) + ').substr(') + string((v_self.v_arguments[1]).emit_javascript()) + string((( bool((v_self.v_arguments[2] != null)) ? (string(', ') + string((v_self.v_arguments[2]).emit_javascript())) : ''))) + string(')')));;
             })(); }
             else { (function () {
                 null;
@@ -15450,6 +15427,109 @@ List_a.push(v_self.v_block);
   }
   Do.simplify;  // v8 bug workaround
 })()
+;// class Main
+if (typeof Main !== 'object') {
+  Main = function() {};
+  Main = new Main;
+  Main.isa = function (s) { return s == 'Main'; };
+  Main.perl = function () { return 'Main.new(' + Main._dump(this) + ')'; };
+}
+(function () {
+  var v__NAMESPACE = Main;
+  // sub _replace
+  Main._replace = function (v_s, v_old, v_new) {
+        try {
+            var v_p = null;
+
+(v_p = index(v_s, v_old));
+            return(( bool((v_p >= 0)) ? (string((v_s || "").substr(0, v_p)) + string(v_new) + string(v__NAMESPACE._replace((v_s || "").substr(add(v_p, v__NAMESPACE.length(v_old))), v_old, v_new))) : v_s));;
+        }
+        catch(err) {
+            if ( err instanceof Error ) {
+                throw(err);
+            }
+            else {
+                return(err);
+            }
+        }
+  }
+  Main._replace;  // v8 bug workaround
+  // sub to_lisp_identifier
+  Main.to_lisp_identifier = function (v_ident) {
+        try {
+            throw((string('sv-') + string(v_ident)));;
+        }
+        catch(err) {
+            if ( err instanceof Error ) {
+                throw(err);
+            }
+            else {
+                return(err);
+            }
+        }
+  }
+  Main.to_lisp_identifier;  // v8 bug workaround
+  // sub lisp_escape_string
+  Main.lisp_escape_string = function (v_s) {
+        try {
+            return(v__NAMESPACE._replace(v_s, (string(String.fromCharCode(92))), (string(String.fromCharCode(92)) + string(String.fromCharCode(92)))));;
+        }
+        catch(err) {
+            if ( err instanceof Error ) {
+                throw(err);
+            }
+            else {
+                return(err);
+            }
+        }
+  }
+  Main.lisp_escape_string;  // v8 bug workaround
+  // sub to_javascript_namespace
+  Main.to_javascript_namespace = function (v_s) {
+        try {
+            return(v__NAMESPACE._replace(v_s, (string('::')), String.fromCharCode(36)));;
+        }
+        catch(err) {
+            if ( err instanceof Error ) {
+                throw(err);
+            }
+            else {
+                return(err);
+            }
+        }
+  }
+  Main.to_javascript_namespace;  // v8 bug workaround
+  // sub to_lisp_namespace
+  Main.to_lisp_namespace = function (v_s) {
+        try {
+            return(v__NAMESPACE._replace(v_s, (string('::')), (string('-'))));;
+        }
+        catch(err) {
+            if ( err instanceof Error ) {
+                throw(err);
+            }
+            else {
+                return(err);
+            }
+        }
+  }
+  Main.to_lisp_namespace;  // v8 bug workaround
+  // sub to_go_namespace
+  Main.to_go_namespace = function (v_s) {
+        try {
+            return(v__NAMESPACE._replace(v_s, (string('::')), (string('__'))));;
+        }
+        catch(err) {
+            if ( err instanceof Error ) {
+                throw(err);
+            }
+            else {
+                return(err);
+            }
+        }
+  }
+  Main.to_go_namespace;  // v8 bug workaround
+})()
 ;// class Perlito
 if (typeof Perlito !== 'object') {
   Perlito = function() {};
@@ -15485,5 +15565,6 @@ if (typeof Perlito !== 'object') {
 ;        // use Perlito::Precedence
 ;        // use Perlito::Expression
 ;        // use Perlito::Macro
+;        // use Perlito::Runtime
 ;})()
 ;})()

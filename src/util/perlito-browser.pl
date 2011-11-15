@@ -9,6 +9,7 @@ class Perlito {
     use Perlito::Precedence;   
     use Perlito::Expression;   
     use Perlito::Macro;   
+    use Perlito::Runtime;
 
     sub compile_p6_to_js ($s) {
         my $ast = Perlito::Grammar.exp_stmts($s, 0);

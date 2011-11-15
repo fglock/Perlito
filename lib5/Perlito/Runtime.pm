@@ -18,7 +18,7 @@ package GLOBAL;
             my $old = $_[1];
             my $new = $_[2];
             ((my  $p) = index($s, $old));
-            (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + length($old))), $old, $new)) : $s)
+            (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + Main::chars($old, ))), $old, $new)) : $s)
         };
         sub to_lisp_identifier {
             my $ident = $_[0];

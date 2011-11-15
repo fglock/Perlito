@@ -514,9 +514,10 @@ class Apply {
         if $code eq 'make'       { return Javascript::tab($level) ~ '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' }
         if $code eq 'defined'    { return Javascript::tab($level) ~ '('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ' != null)' }
         if $code eq 'substr' { 
-            return '(' ~ (@.arguments[0]).emit_javascript() ~
-                 ' || "").substr(' ~ (@.arguments[1]).emit_javascript() ~
-                 ', ' ~ (@.arguments[2]).emit_javascript() ~ ')' 
+            return '(' ~ (@.arguments[0]).emit_javascript() 
+                 ~ ' || "").substr(' ~ (@.arguments[1]).emit_javascript() 
+                 ~ ( defined(@.arguments[2]) ?? ', ' ~ (@.arguments[2]).emit_javascript() !! '' )
+                 ~ ')' 
         }
 
         if $code eq 'chr'        { return 'String.fromCharCode(' ~ Javascript::escape_function('num') ~ '(' ~ (@.arguments[0]).emit_javascript() ~ '))' }
