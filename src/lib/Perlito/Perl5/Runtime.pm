@@ -291,43 +291,6 @@ package Main;
         $_[0] ? 1 : 0
     }
 
-    # Lisp emitter
-    sub to_lisp_identifier {
-        my $s = $_[0];
-        my $sigil;
-        ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
-        return 'sv-' . $s;
-    }
-    sub to_lisp_namespace {
-        my $s = $_[0];
-        my $sigil;
-        ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
-        $s =~ s/::/-/g;
-        return 'mp-' . $s;
-    }
-    sub lisp_escape_string {
-        my $s = $_[0];
-        $s =~ s/\\/\\\\/g;
-        $s =~ s/"/\\"/g;
-        return $s;
-    }
-    # Javascript emitter
-    sub to_javascript_namespace {
-        my $s = $_[0];
-        my $sigil;
-        ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
-        $s =~ s/::/\$/g;
-        return $s;
-    }
-    # Go emitter
-    sub to_go_namespace {
-        my $s = $_[0];
-        my $sigil;
-        ( $sigil, $s ) = $s =~ /^([$@%]?)(.*)$/;
-        $s =~ s/::/__/g;
-        return $s;
-    }
-
 1;
 
 __END__

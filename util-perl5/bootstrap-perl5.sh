@@ -40,6 +40,7 @@ perl perlito.pl -Cperl5 src/lib/Perlito/Ruby/Emitter.pm    > lib5-new/Perlito/Ru
 
 perl perlito.pl -Cperl5 src/lib/Perlito/Perl5/Emitter.pm   > lib5-new/Perlito/Perl5/Emitter.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Perl5/Prelude.pm   > lib5-new/Perlito/Perl5/Prelude.pm
+perl perlito.pl -Cperl5 src/lib/Perlito/Runtime.pm         > lib5-new/Perlito/Runtime.pm
 
 perl perlito.pl -Cperl5 src/util/perlito.pl                > ./perlito-new.pl
 

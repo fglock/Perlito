@@ -7,6 +7,10 @@ class Main {
         !! $s
     }
 
+    sub to_lisp_identifier ( $ident ) {
+        return 'sv-' ~ $ident;
+    }
+
     method lisp_escape_string($s) {
         _replace($s, "\\", "\\\\");
     }
