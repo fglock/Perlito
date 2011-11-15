@@ -16,6 +16,7 @@ class Main {
     use Perlito::Precedence;
     use Perlito::Python::Emitter;
     use Perlito::Ruby::Emitter;
+    use Perlito::Runtime;
 
     my $_V6_COMPILER_NAME    = 'Perlito';
     my $_V6_COMPILER_VERSION = '7.0';
