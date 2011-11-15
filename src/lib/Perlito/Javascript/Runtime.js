@@ -50,29 +50,6 @@ if (typeof Main !== 'object') {
 }
 
 (function() {
-    Main.lisp_escape_string = function(s) {
-        var o = s;
-        o = o.replace(/\\/g, "\\\\");
-        o = o.replace(/"/g, "\\\"");
-        return o;
-    };
-    Main.to_javascript_namespace = function(s) {
-        var o = s;
-        o = o.replace(/::/g, "$");
-        return o;
-    };
-    Main.to_lisp_namespace = function(s) {
-        var o = s;
-        o = o.replace(/[$@%]/, "");
-        o = o.replace(/::/g, "-");
-        return "mp-" + o;
-    };
-    Main.to_go_namespace = function(s) {
-        var o = s;
-        o = o.replace(/[$@%]/, "");
-        o = o.replace(/::/g, "__");
-        return o;
-    };
     Main._dump = function(o) {
         var out = [];
         for (var i in o) {

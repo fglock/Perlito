@@ -48,20 +48,10 @@ class IO {
 
 class Main {
 
-    sub to_lisp_identifier ( $ident ) {
-        return 'sv-' ~ $ident;
-    }
     sub lisp_dump_object ( $class_name, $data ) {
         return $class_name ~ '( ' ~ ($data.>>perl).join(', ') ~ ' )';
     }
 
-    # Note: These methods are just stubs.
-    #       The actual methods are implemented in Runtime.go
-
-    sub to_go_namespace          { die "TODO" }
-    sub to_javascript_namespace  { die "TODO" }
-    sub to_lisp_namespace        { die "TODO" }
-    sub lisp_escape_string       { die "TODO" }
 }
 
 =begin

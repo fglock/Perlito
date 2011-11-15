@@ -204,22 +204,3 @@ class IO
     end
 end
 
-class C_Main
-    def f_lisp_escape_string(s)
-        o = s.gsub( "\\", "\\\\\\");
-        o = o.gsub( '"',  "\\\\\"");
-        return o;
-    end
-    def f_to_javascript_namespace(s)
-        o = s.gsub( "::", "$");
-        return o;
-    end
-    def f_to_lisp_namespace(s)
-        o = s.gsub( "::", "-");
-        return "mp-" + o;
-    end
-    def f_to_go_namespace(s)
-        o = s.gsub( "::", "__");
-        return o
-    end
-end

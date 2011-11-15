@@ -11,19 +11,19 @@ class Main {
         return 'sv-' ~ $ident;
     }
 
-    method lisp_escape_string($s) {
+    sub lisp_escape_string($s) {
         _replace($s, "\\", "\\\\");
     }
 
-    method to_javascript_namespace($s) {
+    sub to_javascript_namespace($s) {
         _replace($s, "::", '$');
     }
 
-    method to_lisp_namespace($s) {
+    sub to_lisp_namespace($s) {
         _replace($s, "::", "-");
     }
 
-    method to_go_namespace($s) {
+    sub to_go_namespace($s) {
         _replace($s, "::", "__");
     }
 

@@ -890,69 +890,6 @@ func Init_Prelude() {
 		return &m
 	}
 
-	Namespace_Main.f_lisp_escape_string = func(v Capture) *Any {
-		var s string = tostr(v.p[0])
-		var s1 string = ""
-		for i := 0; i < len(s); i++ {
-			switch {
-			case s[i] == '\\':
-				s1 += "\\\\"
-			case s[i] == '"':
-				s1 += "\\\""
-			default:
-				s1 += s[i : i+1]
-			}
-		}
-		return toStr(s1)
-	}
-
-	Namespace_Main.f_to_lisp_namespace = func(v Capture) *Any {
-		var s string = tostr(v.p[0])
-		var s1 string = ""
-		for i := 0; i < len(s); i++ {
-			switch {
-			case s[i] == ':':
-				s1 += "-"
-				i1 := i + 1
-				if i1 < len(s) && s[i1] == ':' {
-					i = i1
-				}
-			default:
-				s1 += s[i : i+1]
-			}
-		}
-		return toStr("mp-" + s1)
-	}
-	Namespace_Main.f_to_go_namespace = func(v Capture) *Any {
-		var s string = tostr(v.p[0])
-		var s1 string = ""
-		for i := 0; i < len(s); i++ {
-			switch {
-			case s[i] == ':':
-				s1 += "_"
-			default:
-				s1 += s[i : i+1]
-			}
-		}
-		return toStr(s1)
-	}
-	Namespace_Main.f_to_javascript_namespace = func(v Capture) *Any {
-		var s string = tostr(v.p[0])
-		var s1 string = ""
-		for i := 0; i < len(s); i++ {
-			switch {
-			case s[i] == ':':
-				s1 += "$"
-				i1 := i + 1
-				if i1 < len(s) && s[i1] == ':' {
-					i = i1
-				}
-			default:
-				s1 += s[i : i+1]
-			}
-		}
-		return toStr(s1)
-	}
 	Namespace_IO.f_slurp = func(cap Capture) *Any {
 		var filename = tostr(cap.p[0])
 		s, error := ioutil.ReadFile(filename)

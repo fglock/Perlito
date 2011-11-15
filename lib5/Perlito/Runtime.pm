@@ -25,23 +25,19 @@ package GLOBAL;
             return scalar (('sv-' . $ident))
         };
         sub lisp_escape_string {
-            my $self = $_[0];
-            my $s = $_[1];
+            my $s = $_[0];
             _replace($s, (chr(92)), (chr(92) . chr(92)))
         };
         sub to_javascript_namespace {
-            my $self = $_[0];
-            my $s = $_[1];
+            my $s = $_[0];
             _replace($s, ('::'), chr(36))
         };
         sub to_lisp_namespace {
-            my $self = $_[0];
-            my $s = $_[1];
+            my $s = $_[0];
             _replace($s, ('::'), ('-'))
         };
         sub to_go_namespace {
-            my $self = $_[0];
-            my $s = $_[1];
+            my $s = $_[0];
             _replace($s, ('::'), ('__'))
         }
     }

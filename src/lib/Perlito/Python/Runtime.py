@@ -572,19 +572,6 @@ class Main:
         return 1
     def f_isa(v_self, name):
         return name == 'Main'
-    def f_lisp_escape_string(self, s):
-        o = s.replace( "\\", "\\\\");
-        o = o.replace( '"', "\\\"");
-        return o;
-    def f_to_javascript_namespace(self, s):
-        o = s.replace( "::", "$");
-        return o;
-    def f_to_lisp_namespace(self, s):
-        o = s.replace( "::", "-");
-        return "mp-" + o;
-    def f_to_go_namespace(self, s):
-        o = s.replace( "::", "__");
-        return o
 Main_proto = Main()
 __builtin__.Main = Main
 __builtin__.Main_proto = Main_proto
