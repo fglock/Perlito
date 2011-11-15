@@ -18,6 +18,7 @@ perl perlito.pl -Cpython src/lib/Perlito/Grammar/Control.pm > libpy/Perlito__Gra
 perl perlito.pl -Cpython src/lib/Perlito/Grammar/Regex.pm   > libpy/Perlito__Grammar__Regex.py
 perl perlito.pl -Cpython src/lib/Perlito/Emitter/Token.pm   > libpy/Perlito__Emitter__Token.py
 perl perlito.pl -Cpython src/lib/Perlito/Eval.pm            > libpy/Perlito__Eval.py
+perl perlito.pl -Cpython src/lib/Perlito/Runtime.pm         > libpy/Perlito__Runtime.py
 
 perl perlito.pl -Cpython src/lib/Perlito/Javascript/Emitter.pm > libpy/Perlito__Javascript__Emitter.py
 perl perlito.pl -Cpython src/lib/Perlito/Lisp/Emitter.pm    > libpy/Perlito__Lisp__Emitter.py
@@ -26,6 +27,7 @@ perl perlito.pl -Cpython src/lib/Perlito/Go/Emitter.pm      > libpy/Perlito__Go_
 perl perlito.pl -Cpython src/lib/Perlito/Parrot/Emitter.pm  > libpy/Perlito__Parrot__Emitter.py
 perl perlito.pl -Cpython src/lib/Perlito/Python/Emitter.pm  > libpy/Perlito__Python__Emitter.py
 perl perlito.pl -Cpython src/lib/Perlito/Ruby/Emitter.pm    > libpy/Perlito__Ruby__Emitter.py
+perl perlito.pl -Cpython src/lib/Perlito/Java/Emitter.pm    > libpy/Perlito__Java__Emitter.py
 
 perl perlito.pl -Cpython src/util/perlito.pl                    > ./perlito.py
 

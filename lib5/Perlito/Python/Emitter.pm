@@ -793,7 +793,7 @@ package GLOBAL;
                 return scalar (('raise mp6_Return(' . Main::join(([ map { $_->emit_python() } @{( $self->{arguments} )} ]), ', ') . ')'))
             };
             if (($code eq 'substr')) {
-                return scalar ((($self->{arguments}->[0])->emit_python() . '[' . 'mp6_to_num(' . ($self->{arguments}->[1])->emit_python() . ')' . ':' . 'mp6_to_num(' . ($self->{arguments}->[1])->emit_python() . ') ' . '+ mp6_to_num(' . ($self->{arguments}->[2])->emit_python() . ')' . ']'))
+                return scalar ((($self->{arguments}->[0])->emit_python() . '[' . 'mp6_to_num(' . ($self->{arguments}->[1])->emit_python() . ')' . ':' . ((defined($self->{arguments}->[2]) ? ('mp6_to_num(' . ($self->{arguments}->[1])->emit_python() . ') ' . '+ mp6_to_num(' . ($self->{arguments}->[2])->emit_python() . ')') : '')) . ']'))
             };
             if (($code eq 'index')) {
                 return scalar (('mp6_index(' . ($self->{arguments}->[0])->emit_python() . ', ' . ($self->{arguments}->[1])->emit_python() . ')'))

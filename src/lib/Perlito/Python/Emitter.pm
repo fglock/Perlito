@@ -659,8 +659,11 @@ class Apply {
             return (@.arguments[0]).emit_python() ~ '[' 
                     ~ 'mp6_to_num(' ~ (@.arguments[1]).emit_python() ~ ')' 
                 ~ ':' 
-                      ~ 'mp6_to_num(' ~ (@.arguments[1]).emit_python() ~ ') ' 
-                    ~ '+ mp6_to_num(' ~ (@.arguments[2]).emit_python() ~ ')'
+                    ~ ( defined(@.arguments[2])
+                      ??     'mp6_to_num(' ~ (@.arguments[1]).emit_python() ~ ') ' 
+                         ~ '+ mp6_to_num(' ~ (@.arguments[2]).emit_python() ~ ')'
+                      !! ''
+                      )
                 ~ ']' 
         } 
         if $code eq 'index' { 
