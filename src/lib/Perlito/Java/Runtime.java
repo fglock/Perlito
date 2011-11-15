@@ -185,4 +185,18 @@ class PerlitoString extends PerlitoObject {
         }
     } 
 }
+class PerlitoHash extends PerlitoObject {
+    private java.util.HashMap h;
+    public PerlitoHash() {
+        this.h = new java.util.HashMap();
+    }
+    // h.put("this", "x");
+}
+class PerlitoArray extends PerlitoObject {
+    private java.util.ArrayList a;
+    public PerlitoArray() {
+        this.a = new java.util.ArrayList();
+    }
+    // a.set(10, "x");
+}
 
