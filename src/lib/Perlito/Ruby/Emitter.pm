@@ -515,6 +515,7 @@ class Apply {
         if $code eq 'say'        { return 'puts'  ~ Ruby::to_str(' + ', @.arguments) } 
         if $code eq 'print'      { return 'print' ~ Ruby::to_str(' + ', @.arguments) }
         if $code eq 'warn'       { return '$stdout.puts('  ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
+        if $code eq 'return'     { return 'return('  ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
 
         if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_ruby).join(' ')      ~ ']' };
 

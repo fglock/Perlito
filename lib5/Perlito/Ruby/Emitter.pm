@@ -678,6 +678,9 @@ package GLOBAL;
             if (($code eq 'warn')) {
                 return scalar ((chr(36) . 'stdout.puts(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
             };
+            if (($code eq 'return')) {
+                return scalar (('return(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
+            };
             if (($code eq 'array')) {
                 return scalar (('[' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . ']'))
             };
