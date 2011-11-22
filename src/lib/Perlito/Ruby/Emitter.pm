@@ -327,6 +327,17 @@ class Val::Object {
     }
 }
 
+class Lit::Block {
+    has $.sig;
+    has @.stmts;
+    method emit_ruby { self.emit_ruby_indented(0) }
+    method emit_ruby_indented( $level ) {
+        # a block is an anonymous sub
+        my $sub = Sub.new( name => '', sig => $.sig, block => @.stmts );
+        $sub.emit_ruby_indented( $level );
+    }
+}
+
 class Lit::Array {
     has @.array1;
     method emit_ruby { self.emit_ruby_indented(0) }
@@ -782,9 +793,10 @@ class Do {
     has @.block;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
+        my $block = self.simplify.block;
         my @s;
         push @s, Ruby::tab($level)   ~ "Proc.new\{ || ";
-        push @s,    (Perlito::Ruby::LexicalBlock.new( block => @.block, needs_return => 0 )).emit_ruby_indented($level+1);
+        push @s,    (Perlito::Ruby::LexicalBlock.new( block => $block, needs_return => 0 )).emit_ruby_indented($level+1);
         push @s, Ruby::tab($level)   ~ "}.call()";
         return @s.join("\n");
     }

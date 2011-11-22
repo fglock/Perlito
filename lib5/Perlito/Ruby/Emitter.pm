@@ -422,6 +422,24 @@ package GLOBAL;
 
 ;
     {
+    package Lit::Block;
+        sub new { shift; bless { @_ }, "Lit::Block" }
+        sub sig { $_[0]->{sig} };
+        sub stmts { $_[0]->{stmts} };
+        sub emit_ruby {
+            my $self = $_[0];
+            $self->emit_ruby_indented(0)
+        };
+        sub emit_ruby_indented {
+            my $self = $_[0];
+            my $level = $_[1];
+            ((my  $sub) = Sub->new(('name' => ''), ('sig' => $self->{sig}), ('block' => $self->{stmts})));
+            $sub->emit_ruby_indented($level)
+        }
+    }
+
+;
+    {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub array1 { $_[0]->{array1} };
@@ -1063,9 +1081,10 @@ package GLOBAL;
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
+            ((my  $block) = $self->simplify()->block());
             (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, (Ruby::tab($level) . ('Proc.new' . chr(123) . ' ' . chr(124) . chr(124) . ' ')) );
-            push( @{$List_s}, (Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 0)))->emit_ruby_indented(($level + 1)) );
+            push( @{$List_s}, (Perlito::Ruby::LexicalBlock->new(('block' => $block), ('needs_return' => 0)))->emit_ruby_indented(($level + 1)) );
             push( @{$List_s}, (Ruby::tab($level) . (chr(125) . '.call()')) );
             return scalar (Main::join($List_s, (chr(10))))
         }
