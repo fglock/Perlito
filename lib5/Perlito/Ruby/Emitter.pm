@@ -815,6 +815,24 @@ package GLOBAL;
             if (Main::isa($parameters, 'Call')) {
                 return scalar ((($parameters->invocant())->emit_ruby() . ('.v_') . $parameters->method() . (' ' . chr(61) . ' ') . $arguments->emit_ruby() . ''))
             };
+            if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64))))) {
+                ($arguments = Lit::Array->new(('array1' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, $arguments );
+    $List_a
+})))
+            }
+            else {
+                if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37))))) {
+                    ($arguments = Lit::Hash->new(('hash1' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, $arguments );
+    $List_a
+})))
+                }
+            };
             return scalar (($parameters->emit_ruby() . ' ' . chr(61) . ' ' . $arguments->emit_ruby()))
         }
     }
@@ -910,7 +928,6 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "For" }
         sub cond { $_[0]->{cond} };
         sub body { $_[0]->{body} };
-        sub topic { $_[0]->{topic} };
         sub emit_ruby {
             my $self = $_[0];
             $self->emit_ruby_indented(0)
@@ -918,8 +935,12 @@ package GLOBAL;
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body})));
-            (Ruby::tab($level) . 'for ' . $self->{topic}->emit_ruby_name() . (' in ') . $self->{cond}->emit_ruby() . (chr(10)) . $body_block->emit_ruby_indented(($level + 1)) . (chr(10)) . Ruby::tab($level) . 'end')
+            ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body}->stmts())));
+            (my  $topic);
+            if ($self->{body}->sig()) {
+                ($topic = $self->{body}->sig()->emit_ruby_name())
+            };
+            (Ruby::tab($level) . 'for ' . $topic . (' in ') . $self->{cond}->emit_ruby() . (chr(10)) . $body_block->emit_ruby_indented(($level + 1)) . (chr(10)) . Ruby::tab($level) . 'end')
         }
     }
 

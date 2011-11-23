@@ -603,6 +603,16 @@ class Apply {
             # $var.attr = 3;
             return ($parameters.invocant).emit_ruby ~ ".v_" ~ $parameters.method ~ " = " ~ $arguments.emit_ruby ~ "";
         }
+        if      $parameters.isa( 'Var' ) && $parameters.sigil eq '@'
+            ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '@'
+        {
+            $arguments = Lit::Array.new( array1 => [$arguments] );
+        }
+        elsif   $parameters.isa( 'Var' ) && $parameters.sigil eq '%'
+            ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '%'
+        {
+            $arguments = Lit::Hash.new( hash1 => [$arguments] );
+        }
         return $parameters.emit_ruby ~ ' = ' ~ $arguments.emit_ruby;
     }
 }
@@ -670,11 +680,14 @@ class While {
 class For {
     has $.cond;
     has @.body;
-    has @.topic;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        my $body_block = Perlito::Ruby::LexicalBlock.new( block => @.body );
-        Ruby::tab($level) ~   'for ' ~ $.topic.emit_ruby_name ~ " in " ~ $.cond.emit_ruby ~ "\n"
+        my $body_block = Perlito::Ruby::LexicalBlock.new( block => @.body.stmts );
+        my $topic;
+        if $.body.sig() {
+            $topic = $.body.sig.emit_ruby_name();
+        }
+        Ruby::tab($level) ~   'for ' ~ $topic ~ " in " ~ $.cond.emit_ruby ~ "\n"
                 ~ $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
         ~ Ruby::tab($level) ~   'end'
     }
