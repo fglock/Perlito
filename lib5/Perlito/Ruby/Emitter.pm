@@ -729,6 +729,12 @@ package GLOBAL;
             if (($code eq 'infix:<' . chr(124) . chr(124) . '>')) {
                 return scalar (Ruby::to_bool(' ' . chr(124) . chr(124) . ' ', $self->{arguments}))
             };
+            if (($code eq 'infix:<and>')) {
+                return scalar (Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', $self->{arguments}))
+            };
+            if (($code eq 'infix:<or>')) {
+                return scalar (Ruby::to_bool(' ' . chr(124) . chr(124) . ' ', $self->{arguments}))
+            };
             if (($code eq 'infix:<eq>')) {
                 return scalar (Ruby::to_str(' ' . chr(61) . chr(61) . ' ', $self->{arguments}))
             };
@@ -746,6 +752,9 @@ package GLOBAL;
             };
             if (($code eq 'infix:<>>')) {
                 return scalar (Ruby::to_num(' > ', $self->{arguments}))
+            };
+            if (($code eq 'infix:<..>')) {
+                return scalar (('(' . $self->{arguments}->[0]->emit_javascript() . '..' . $self->{arguments}->[1]->emit_javascript() . ')'))
             };
             if (($code eq 'exists')) {
                 ((my  $arg) = $self->{arguments}->[0]);

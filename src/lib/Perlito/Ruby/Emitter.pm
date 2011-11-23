@@ -538,6 +538,8 @@ class Apply {
         
         if $code eq 'infix:<&&>' { return Ruby::to_bool(' && ', @.arguments) }
         if $code eq 'infix:<||>' { return Ruby::to_bool(' || ', @.arguments) } 
+        if $code eq 'infix:<and>' { return Ruby::to_bool(' && ', @.arguments) }
+        if $code eq 'infix:<or>' { return Ruby::to_bool(' || ', @.arguments) } 
         if $code eq 'infix:<eq>' { return Ruby::to_str(' == ', @.arguments) };
         if $code eq 'infix:<ne>' { return Ruby::to_str(' != ', @.arguments) };
  
@@ -545,6 +547,10 @@ class Apply {
         if $code eq 'infix:<!=>' { return Ruby::to_num(' != ', @.arguments) };
         if $code eq 'infix:<<>'  { return Ruby::to_num(' < ', @.arguments)  };
         if $code eq 'infix:<>>'  { return Ruby::to_num(' > ', @.arguments)  };
+
+        if $code eq 'infix:<..>' {
+            return '(' ~ @.arguments[0].emit_javascript() ~ '..' ~ @.arguments[1].emit_javascript() ~ ')'
+        }
 
         if $code eq 'exists'     {
             my $arg = @.arguments[0];
