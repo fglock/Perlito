@@ -625,7 +625,10 @@ package GLOBAL;
                 return scalar ((Ruby::tab($level) . $invocant . '.' . $meth . '(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
             };
             if (($meth eq 'chars')) {
-                return scalar ((Ruby::tab($level) . '' . $invocant . ('.length')))
+                return scalar ((Ruby::tab($level) . $invocant . ('.length')))
+            };
+            if (($meth eq 'elems')) {
+                return scalar ((Ruby::tab($level) . $invocant . ('.length')))
             };
             ((my  $call) = ('f_' . $meth . '(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'));
             if (($self->{hyper})) {
@@ -754,7 +757,7 @@ package GLOBAL;
                 return scalar (Ruby::to_num(' > ', $self->{arguments}))
             };
             if (($code eq 'infix:<..>')) {
-                return scalar (('(' . $self->{arguments}->[0]->emit_javascript() . '..' . $self->{arguments}->[1]->emit_javascript() . ')'))
+                return scalar (('(' . $self->{arguments}->[0]->emit_ruby() . '..' . $self->{arguments}->[1]->emit_ruby() . ')'))
             };
             if (($code eq 'exists')) {
                 ((my  $arg) = $self->{arguments}->[0]);
@@ -801,6 +804,9 @@ package GLOBAL;
             };
             if (($code eq 'unshift')) {
                 return scalar ((($self->{arguments}->[0])->emit_ruby() . '.unshift(' . ($self->{arguments}->[1])->emit_ruby() . ')'))
+            };
+            if (($code eq 'elems')) {
+                return scalar ((($self->{arguments}->[0])->emit_ruby() . '.length()'))
             };
             if ($self->{namespace}) {
                 return scalar ((chr(36) . Main::to_go_namespace($self->{namespace}) . '.f_' . $self->{code} . '(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))

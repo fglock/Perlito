@@ -478,7 +478,10 @@ class Call {
             return Ruby::tab($level) ~ $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
         }
         if $meth eq 'chars' {
-            return Ruby::tab($level) ~ "" ~ $invocant ~ ".length";
+            return Ruby::tab($level) ~ $invocant ~ ".length";
+        }
+        if $meth eq 'elems' {
+            return Ruby::tab($level) ~ $invocant ~ ".length";
         }
         
         my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
@@ -549,7 +552,7 @@ class Apply {
         if $code eq 'infix:<>>'  { return Ruby::to_num(' > ', @.arguments)  };
 
         if $code eq 'infix:<..>' {
-            return '(' ~ @.arguments[0].emit_javascript() ~ '..' ~ @.arguments[1].emit_javascript() ~ ')'
+            return '(' ~ @.arguments[0].emit_ruby() ~ '..' ~ @.arguments[1].emit_ruby() ~ ')'
         }
 
         if $code eq 'exists'     {
@@ -585,6 +588,7 @@ class Apply {
         if $code eq 'pop'     { return (@.arguments[0]).emit_ruby ~ '.pop()'   } 
         if $code eq 'push'    { return (@.arguments[0]).emit_ruby ~ '.push('    ~ (@.arguments[1]).emit_ruby ~ ')' } 
         if $code eq 'unshift' { return (@.arguments[0]).emit_ruby ~ '.unshift(' ~ (@.arguments[1]).emit_ruby ~ ')' } 
+        if $code eq 'elems'   { return (@.arguments[0]).emit_ruby ~ '.length()' } 
 
         if $.namespace {
             return '$' ~ Main::to_go_namespace($.namespace) ~ '.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
