@@ -72,7 +72,7 @@ package GLOBAL;
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
         sub name { $_[0]->{name} };
-        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
+        sub body { $_[0]->{body} };
         sub emit_perl5 {
             my $self = $_[0];
             $self->emit_perl5_indented(0)
@@ -168,7 +168,7 @@ package GLOBAL;
     package Lit::Block;
         sub new { shift; bless { @_ }, "Lit::Block" }
         sub sig { $_[0]->{sig} };
-        sub stmts { $_[0]->{stmts} ||= bless([], 'ARRAY') };
+        sub stmts { $_[0]->{stmts} };
         sub emit_perl5 {
             my $self = $_[0];
             $self->emit_perl5_indented(0)
@@ -184,7 +184,7 @@ package GLOBAL;
     {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
-        sub array1 { $_[0]->{array1} ||= bless([], 'ARRAY') };
+        sub array1 { $_[0]->{array1} };
         sub emit_perl5 {
             my $self = $_[0];
             $self->emit_perl5_indented(0)
@@ -201,7 +201,7 @@ package GLOBAL;
     {
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub hash1 { $_[0]->{hash1} ||= bless([], 'ARRAY') };
+        sub hash1 { $_[0]->{hash1} };
         sub emit_perl5 {
             my $self = $_[0];
             $self->emit_perl5_indented(0)
@@ -320,7 +320,7 @@ package GLOBAL;
         sub invocant { $_[0]->{invocant} };
         sub hyper { $_[0]->{hyper} };
         sub method { $_[0]->{method} };
-        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
+        sub arguments { $_[0]->{arguments} };
         ((my  $Hash_method_perl5 = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'perl'} = 'Main::perl');
@@ -392,7 +392,7 @@ package GLOBAL;
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
         sub code { $_[0]->{code} };
-        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
+        sub arguments { $_[0]->{arguments} };
         sub namespace { $_[0]->{namespace} };
         ((my  $Hash_op_prefix_perl5 = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
@@ -682,17 +682,7 @@ package GLOBAL;
             ((my  $decl) = $self->{decl});
             ((my  $name) = $self->{var}->plain_name());
             if (($decl eq 'has')) {
-                if ((($self->{var})->sigil() eq chr(37))) {
-                    return scalar ((Perl5::tab($level) . 'sub ' . $name . ' ' . chr(123) . ' ' . chr(36) . '_[0]->' . chr(123) . $name . chr(125) . ' ' . chr(124) . chr(124) . chr(61) . ' bless(' . chr(123) . chr(125) . ', ' . chr(39) . 'HASH' . chr(39) . ') ' . chr(125)))
-                }
-                else {
-                    if ((($self->{var})->sigil() eq chr(64))) {
-                        return scalar ((Perl5::tab($level) . 'sub ' . $name . ' ' . chr(123) . ' ' . chr(36) . '_[0]->' . chr(123) . $name . chr(125) . ' ' . chr(124) . chr(124) . chr(61) . ' bless([], ' . chr(39) . 'ARRAY' . chr(39) . ') ' . chr(125)))
-                    }
-                    else {
-                        return scalar ((Perl5::tab($level) . 'sub ' . $name . ' ' . chr(123) . ' ' . chr(36) . '_[0]->' . chr(123) . $name . chr(125) . ' ' . chr(125)))
-                    }
-                }
+                return scalar ((Perl5::tab($level) . 'sub ' . $name . ' ' . chr(123) . ' ' . chr(36) . '_[0]->' . chr(123) . $name . chr(125) . ' ' . chr(125)))
             };
             ((my  $str) = ('(' . $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_perl5()));
             if ((($self->{var})->sigil() eq chr(37))) {
@@ -734,7 +724,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Method" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
+        sub block { $_[0]->{block} };
         sub emit_perl5 {
             my $self = $_[0];
             $self->emit_perl5_indented(0)
@@ -761,7 +751,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Sub" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
+        sub block { $_[0]->{block} };
         sub emit_perl5 {
             my $self = $_[0];
             $self->emit_perl5_indented(0)

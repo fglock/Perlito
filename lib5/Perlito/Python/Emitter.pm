@@ -73,7 +73,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Perlito::Python::AnonSub" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
+        sub block { $_[0]->{block} };
         sub handles_return_exception { $_[0]->{handles_return_exception} };
         sub emit_python {
             my $self = $_[0];
@@ -112,7 +112,7 @@ package GLOBAL;
     {
     package Perlito::Python::LexicalBlock;
         sub new { shift; bless { @_ }, "Perlito::Python::LexicalBlock" }
-        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
+        sub block { $_[0]->{block} };
         sub needs_return { $_[0]->{needs_return} };
         sub top_level { $_[0]->{top_level} };
         (my  $ident);
@@ -283,9 +283,9 @@ package GLOBAL;
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
         sub name { $_[0]->{name} };
-        sub attributes { $_[0]->{attributes} ||= bless({}, 'HASH') };
-        sub methods { $_[0]->{methods} ||= bless({}, 'HASH') };
-        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
+        sub attributes { $_[0]->{attributes} };
+        sub methods { $_[0]->{methods} };
+        sub body { $_[0]->{body} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -409,7 +409,7 @@ package GLOBAL;
     package Lit::Block;
         sub new { shift; bless { @_ }, "Lit::Block" }
         sub sig { $_[0]->{sig} };
-        sub stmts { $_[0]->{stmts} ||= bless([], 'ARRAY') };
+        sub stmts { $_[0]->{stmts} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -437,7 +437,7 @@ package GLOBAL;
     {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
-        sub array1 { $_[0]->{array1} ||= bless([], 'ARRAY') };
+        sub array1 { $_[0]->{array1} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -454,7 +454,7 @@ package GLOBAL;
     {
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub hash1 { $_[0]->{hash1} ||= bless([], 'ARRAY') };
+        sub hash1 { $_[0]->{hash1} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -557,7 +557,7 @@ package GLOBAL;
         sub invocant { $_[0]->{invocant} };
         sub hyper { $_[0]->{hyper} };
         sub method { $_[0]->{method} };
-        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
+        sub arguments { $_[0]->{arguments} };
         ((my  $Hash_method_python = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'id'} = 'id');
@@ -621,7 +621,7 @@ package GLOBAL;
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
         sub code { $_[0]->{code} };
-        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
+        sub arguments { $_[0]->{arguments} };
         sub emit_python_indented {
             my $self = $_[0];
             my $level = $_[1];
@@ -856,8 +856,8 @@ package GLOBAL;
     package If;
         sub new { shift; bless { @_ }, "If" }
         sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
-        sub otherwise { $_[0]->{otherwise} ||= bless([], 'ARRAY') };
+        sub body { $_[0]->{body} };
+        sub otherwise { $_[0]->{otherwise} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -890,7 +890,7 @@ package GLOBAL;
         sub init { $_[0]->{init} };
         sub cond { $_[0]->{cond} };
         sub continue { $_[0]->{continue} };
-        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
+        sub body { $_[0]->{body} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -914,7 +914,7 @@ package GLOBAL;
     package For;
         sub new { shift; bless { @_ }, "For" }
         sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
+        sub body { $_[0]->{body} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -1000,7 +1000,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Method" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
+        sub block { $_[0]->{block} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -1052,7 +1052,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Sub" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
+        sub block { $_[0]->{block} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
