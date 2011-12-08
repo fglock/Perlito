@@ -77,11 +77,11 @@ package GLOBAL;
         sub or_list { $_[0]->{or_list} };
         sub emit_perl6 {
             my $self = $_[0];
-            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'pos1 ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' (do ' . chr(123) . ' ' . Main::join(([ map { $_->emit_perl6() } @{( $self->{or_list} )} ]), chr(125) . ') ' . chr(124) . chr(124) . ' (do ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'pos1' . chr(59) . ' ') . chr(125) . ') ' . chr(125) . ')')
+            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'pos1 ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' (do ' . chr(123) . ' ' . Main::join(([ map { $_->emit_perl6() } @{( (defined $self->{or_list} ? $self->{or_list} : ($self->{or_list} ||= bless([], 'ARRAY'))) )} ]), chr(125) . ') ' . chr(124) . chr(124) . ' (do ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'pos1' . chr(59) . ' ') . chr(125) . ') ' . chr(125) . ')')
         };
         sub set_captures_to_array {
             my $self = $_[0];
-            [ map { $_->set_captures_to_array() } @{( $self->{or_list} )} ]
+            [ map { $_->set_captures_to_array() } @{( (defined $self->{or_list} ? $self->{or_list} : ($self->{or_list} ||= bless([], 'ARRAY'))) )} ]
         }
     }
 
@@ -92,11 +92,11 @@ package GLOBAL;
         sub concat { $_[0]->{concat} };
         sub emit_perl6 {
             my $self = $_[0];
-            ('(' . Main::join(([ map { $_->emit_perl6() } @{( $self->{concat} )} ]), ' ' . chr(38) . chr(38) . ' ') . ')')
+            ('(' . Main::join(([ map { $_->emit_perl6() } @{( (defined $self->{concat} ? $self->{concat} : ($self->{concat} ||= bless([], 'ARRAY'))) )} ]), ' ' . chr(38) . chr(38) . ' ') . ')')
         };
         sub set_captures_to_array {
             my $self = $_[0];
-            [ map { $_->set_captures_to_array() } @{( $self->{concat} )} ]
+            [ map { $_->set_captures_to_array() } @{( (defined $self->{concat} ? $self->{concat} : ($self->{concat} ||= bless([], 'ARRAY'))) )} ]
         }
     }
 

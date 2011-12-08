@@ -21,7 +21,7 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $needs_interpolation) = 0);
             (my  $List_items = bless [], 'ARRAY');
-            for my $item ( @{$self->{array1}} ) {
+            for my $item ( @{(defined $self->{array1} ? $self->{array1} : ($self->{array1} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>'))))) {
                     for my $arg ( @{(($item->arguments()))} ) {
                         push( @{$List_items}, $arg )
@@ -114,7 +114,7 @@ package GLOBAL;
         sub expand_interpolation {
             my $self = $_[0];
             (my  $List_items = bless [], 'ARRAY');
-            for my $item ( @{$self->{hash1}} ) {
+            for my $item ( @{(defined $self->{hash1} ? $self->{hash1} : ($self->{hash1} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>'))))) {
                     for my $arg ( @{(($item->arguments()))} ) {
                         push( @{$List_items}, $arg )
@@ -214,8 +214,8 @@ package GLOBAL;
                 return scalar (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{arguments}->[0] );
-    push( @{$List_a}, Apply->new(('code' => $Hash_op->{$code}), ('arguments' => $self->{arguments})) );
+    push( @{$List_a}, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0] );
+    push( @{$List_a}, Apply->new(('code' => $Hash_op->{$code}), ('arguments' => (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))) );
     $List_a
 })))
             };

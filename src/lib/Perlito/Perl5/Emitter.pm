@@ -183,7 +183,21 @@ class Var {
                 return Perl5::tab($level) ~ '(\\@ARGV)'
             }
             if $.twigil eq '.' {
-                return Perl5::tab($level) ~ '$self->{' ~ $.name ~ '}' 
+                if $.sigil eq '%' {
+                    return Perl5::tab($level) ~ '('
+                        ~ 'defined $self->{' ~ $.name ~ '} '
+                        ~ '? $self->{' ~ $.name ~ '} '
+                        ~ ': ($self->{' ~ $.name ~ "} = bless(\{}, 'HASH')))"
+                }
+                elsif $.sigil eq '@' {
+                    return Perl5::tab($level) ~ '('
+                        ~ 'defined $self->{' ~ $.name ~ '} '
+                        ~ '? $self->{' ~ $.name ~ '} '
+                        ~ ': ($self->{' ~ $.name ~ "} ||= bless([], 'ARRAY')))"
+                }
+                else {
+                    return Perl5::tab($level) ~ '$self->{' ~ $.name ~ '}' 
+                }
             }
             if $.name eq '/' {
                 return Perl5::tab($level) ~ $table{$.sigil} ~ 'MATCH' 

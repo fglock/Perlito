@@ -20,12 +20,12 @@ package GLOBAL;
         sub emit_lisp {
             my $self = $_[0];
             (my  $List_block = bless [], 'ARRAY');
-            for ( @{$self->{block}} ) {
+            for ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
                 if (defined($_)) {
                     push( @{$List_block}, $_ )
                 }
             };
-            if (!(($self->{block}))) {
+            if (!(((defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))))) {
                 return scalar ('nil')
             };
             ((my  $str) = '');
@@ -33,7 +33,7 @@ package GLOBAL;
             ((my  $my_decl) = '');
             ((my  $my_ignore) = '');
             (my  $Hash_decl_seen = bless {}, 'HASH');
-            for my $decl ( @{$self->{block}} ) {
+            for my $decl ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) {
                     ((my  $var_name) = ($decl->var())->emit_lisp());
                     if (!(($Hash_decl_seen->{$var_name}))) {
@@ -59,7 +59,7 @@ package GLOBAL;
             else {
                 ($str = ($str . '(progn '))
             };
-            for my $decl ( @{$self->{block}} ) {
+            for my $decl ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
                 if ((!(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))))) {
                     ($str = ($str . ($decl)->emit_lisp()))
                 }
@@ -84,7 +84,7 @@ package GLOBAL;
             ((my  $my_decl) = '');
             ((my  $my_ignore) = '');
             (my  $Hash_decl_seen = bless {}, 'HASH');
-            for my $decl ( @{$self->{body}} ) {
+            for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) {
                     ((my  $var_name) = ($decl->var())->emit_lisp());
                     if (!(($Hash_decl_seen->{$var_name}))) {
@@ -108,7 +108,7 @@ package GLOBAL;
                 ($str = ($str . '(let (' . $my_decl . (')' . chr(10)) . $my_ignore))
             };
             ((my  $dumper) = '');
-            for my $decl ( @{$self->{body}} ) {
+            for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                     ((my  $accessor_name) = ($decl->var())->name());
                     ($dumper = ($dumper . '(let ((m (make-instance ' . chr(39) . 'mp-Pair))) ' . '(setf (sv-key m) ' . chr(34) . Main::lisp_escape_string($accessor_name) . chr(34) . ') ' . '(setf (sv-value m) (' . Main::to_lisp_identifier($accessor_name) . ' self)) m) '))
@@ -152,7 +152,7 @@ package GLOBAL;
                 ($str = ($str . '(defmethod sv-perl ((self ' . $class_name . '))' . (chr(10)) . '  (mp-Main-sv-lisp_dump_object ' . chr(34) . Main::lisp_escape_string($self->{name}) . chr(34) . ' (list ' . $dumper . ')))' . (chr(10)) . (chr(10))))
             };
             ($str = ($str . '(defun run-' . $class_name . ' ()' . (chr(10))));
-            for my $decl ( @{$self->{body}} ) {
+            for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if ((((!(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))))) && (!((Main::isa($decl, 'Method'))))) && (!((Main::isa($decl, 'Sub')))))) {
                     ($str = ($str . ($decl)->emit_lisp() . (chr(10))))
                 }
@@ -307,7 +307,7 @@ package GLOBAL;
         sub fields { $_[0]->{fields} };
         sub emit_lisp {
             my $self = $_[0];
-            ('bless(' . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . ')')
+            ('bless(' . Main::perl((defined $self->{fields} ? $self->{fields} : ($self->{fields} = bless({}, 'HASH'))), ) . ', ' . Main::perl($self->{class}, ) . ')')
         }
     }
 
@@ -350,8 +350,8 @@ package GLOBAL;
         sub fields { $_[0]->{fields} };
         sub emit_lisp {
             my $self = $_[0];
-            if ($self->{fields}) {
-                ((my  $fields) = $self->{fields});
+            if ((defined $self->{fields} ? $self->{fields} : ($self->{fields} ||= bless([], 'ARRAY')))) {
+                ((my  $fields) = (defined $self->{fields} ? $self->{fields} : ($self->{fields} ||= bless([], 'ARRAY'))));
                 ((my  $str) = '');
                 for my $field ( @{($fields)} ) {
                     ($str = ($str . '(setf (' . Main::to_lisp_identifier(($field->[0])->buf()) . ' m) ' . ($field->[1])->emit_lisp() . ')'))
@@ -465,16 +465,16 @@ package GLOBAL;
         sub arguments { $_[0]->{arguments} };
         sub emit_lisp {
             my $self = $_[0];
-            ((my  $arguments) = Main::join(([ map { $_->emit_lisp() } @{( $self->{arguments} )} ]), ' '));
+            ((my  $arguments) = Main::join(([ map { $_->emit_lisp() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' '));
             ((my  $invocant) = $self->{invocant}->emit_lisp());
             if (($invocant eq '(proto-mp-self)')) {
                 ($invocant = 'sv-self')
             };
             if (($self->{method} eq 'isa')) {
-                if (((($self->{arguments}->[0])->buf()) eq 'Str')) {
+                if (((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->buf()) eq 'Str')) {
                     return scalar (('(typep ' . $invocant . ' ' . chr(39) . 'string)'))
                 };
-                return scalar (('(typep ' . $invocant . ' ' . chr(39) . Main::to_lisp_namespace(($self->{arguments}->[0])->buf()) . ')'))
+                return scalar (('(typep ' . $invocant . ' ' . chr(39) . Main::to_lisp_namespace(((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->buf()) . ')'))
             };
             if (($self->{method} eq 'chars')) {
                 if (($self->{hyper})) {
@@ -520,14 +520,14 @@ package GLOBAL;
             };
             ((my  $code) = ($ns . $self->{code}));
             if (($code eq 'infix:<' . chr(126) . '>')) {
-                return scalar (('(concatenate ' . chr(39) . 'string (sv-string ' . ($self->{arguments}->[0])->emit_lisp() . ') (sv-string ' . ($self->{arguments}->[1])->emit_lisp() . '))'))
+                return scalar (('(concatenate ' . chr(39) . 'string (sv-string ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_lisp() . ') (sv-string ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_lisp() . '))'))
             };
             if (($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>')) {
-                return scalar (('(if (sv-bool ' . ($self->{arguments}->[0])->emit_lisp() . ') ' . ($self->{arguments}->[1])->emit_lisp() . ' ' . ($self->{arguments}->[2])->emit_lisp() . ')'))
+                return scalar (('(if (sv-bool ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_lisp() . ') ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_lisp() . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_lisp() . ')'))
             };
             ((my  $args) = '');
-            if ($self->{arguments}) {
-                ($args = Main::join(([ map { $_->emit_lisp() } @{( $self->{arguments} )} ]), ' '))
+            if ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))) {
+                ($args = Main::join(([ map { $_->emit_lisp() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' '))
             };
             if (($code eq 'self')) {
                 return scalar ('sv-self')
@@ -560,7 +560,7 @@ package GLOBAL;
                 return scalar ($args)
             };
             if (($code eq 'exists')) {
-                ((my  $arg) = $self->{arguments}->[0]);
+                ((my  $arg) = (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]);
                 if (Main::isa($arg, 'Lookup')) {
                     return scalar (('(nth-value 1 ' . $arg->emit_lisp() . ')'))
                 }
@@ -673,7 +673,7 @@ package GLOBAL;
         sub emit_lisp {
             my $self = $_[0];
             ((my  $cond) = $self->{cond});
-            ((my  $block) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{body})));
+            ((my  $block) = Perlito::Lisp::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))))));
             if ((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64)))) {
                 ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -696,7 +696,7 @@ package GLOBAL;
         sub body { $_[0]->{body} };
         sub emit_lisp {
             my $self = $_[0];
-            ((my  $List_body = bless [], 'ARRAY') = $self->{body});
+            ((my  $List_body = bless [], 'ARRAY') = (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))));
             if ($self->{continue}) {
                 push( @{$List_body}, $self->{continue} )
             };
@@ -770,7 +770,7 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $sig) = $self->{sig});
             ((my  $pos) = $sig->positional());
-            ((my  $block) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{block})));
+            ((my  $block) = Perlito::Lisp::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY'))))));
             (my  $str);
             if (($pos)) {
                 for my $field ( @{($pos)} ) {
@@ -796,7 +796,7 @@ package GLOBAL;
         sub block { $_[0]->{block} };
         sub emit_lisp {
             my $self = $_[0];
-            ((my  $block) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{block})));
+            ((my  $block) = Perlito::Lisp::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY'))))));
             return scalar ($block->emit_lisp())
         }
     }

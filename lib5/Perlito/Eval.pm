@@ -34,7 +34,7 @@ package GLOBAL;
     };
     $List_a
 });
-            for my $stmt ( @{$self->{body}} ) {
+            for my $stmt ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 $stmt->eval($env1)
             }
         }
@@ -110,7 +110,7 @@ package GLOBAL;
     };
     $List_a
 });
-            for my $stmt ( @{$self->{stmts}} ) {
+            for my $stmt ( @{(defined $self->{stmts} ? $self->{stmts} : ($self->{stmts} ||= bless([], 'ARRAY')))} ) {
                 $stmt->eval($env1)
             }
         }
@@ -125,7 +125,7 @@ package GLOBAL;
             my $self = $_[0];
             my $env = $_[1];
             (my  $List_a = bless [], 'ARRAY');
-            for my $v ( @{$self->{array1}} ) {
+            for my $v ( @{(defined $self->{array1} ? $self->{array1} : ($self->{array1} ||= bless([], 'ARRAY')))} ) {
                 push( @{$List_a}, $v->eval($env) )
             };
             return scalar ($List_a)
@@ -141,7 +141,7 @@ package GLOBAL;
             my $self = $_[0];
             my $env = $_[1];
             (my  $Hash_h = bless {}, 'HASH');
-            for my $field ( @{$self->{hash1}} ) {
+            for my $field ( @{(defined $self->{hash1} ? $self->{hash1} : ($self->{hash1} ||= bless([], 'ARRAY')))} ) {
                 ((my  $pair) = $field->arguments());
                 ($Hash_h->{($pair->[0])->eval($env)} = ($pair->[1])->eval($env))
             };
@@ -272,7 +272,7 @@ package GLOBAL;
             ((my  $code) = ($ns . $self->{code}));
             for my $e ( @{(($env))} ) {
                 if (exists($e->{$code})) {
-                    return scalar ((($e->{$code})->($env, $self->{arguments})))
+                    return scalar ((($e->{$code})->($env, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))))
                 }
             };
             warn(('Interpreter runtime error: subroutine ' . chr(39)), $code, ('()' . chr(39) . ' not found'))
@@ -490,7 +490,7 @@ package GLOBAL;
     $List_a
 });
     (my  $r);
-    for my $stmt ( @{$self->{block}} ) {
+    for my $stmt ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
         ($r = $stmt->eval($env1))
     };
     return scalar ($r)
@@ -523,7 +523,7 @@ package GLOBAL;
     };
     $List_a
 });
-            for my $stmt ( @{$self->{block}} ) {
+            for my $stmt ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
                 $stmt->eval($env1)
             }
         }

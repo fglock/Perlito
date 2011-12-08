@@ -19,13 +19,13 @@ package GLOBAL;
         sub block { $_[0]->{block} };
         sub emit_clojure {
             my $self = $_[0];
-            if (!(($self->{block}))) {
+            if (!(((defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))))) {
                 return scalar ('nil')
             };
             ((my  $str) = '');
             ((my  $has_my_decl) = 0);
             ((my  $my_decl) = '');
-            for my $decl ( @{$self->{block}} ) {
+            for my $decl ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) {
                     ($has_my_decl = 1);
                     ($my_decl = ($my_decl . '(' . ($decl->var())->emit_clojure() . ' (sv-undef))'))
@@ -41,7 +41,7 @@ package GLOBAL;
             else {
                 ($str = ($str . '(do '))
             };
-            for my $decl ( @{$self->{block}} ) {
+            for my $decl ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
                 if ((!(((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))))) {
                     ($str = ($str . ($decl)->emit_clojure()))
                 }
@@ -65,7 +65,7 @@ package GLOBAL;
             ($str = ($str . '(defpackage ' . $class_name . (chr(10)) . '  (:use common-lisp mp-Main))' . (chr(10)) . chr(59) . chr(59) . ' (in-package ' . $class_name . ')' . (chr(10))));
             ((my  $has_my_decl) = 0);
             ((my  $my_decl) = '');
-            for my $decl ( @{$self->{body}} ) {
+            for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) {
                     ($has_my_decl = 1);
                     ($my_decl = ($my_decl . '(' . ($decl->var())->emit_clojure() . ' (sv-undef))'))
@@ -80,7 +80,7 @@ package GLOBAL;
             };
             ($str = ($str . '(if (not (ignore-errors (find-class ' . chr(39) . $class_name . ')))' . chr(10) . '  (defclass ' . $class_name . ' () ()))' . chr(10) . chr(10) . '(let (x) ' . chr(10) . '  (setq x (make-instance ' . chr(39) . $class_name . '))' . chr(10) . '  (defun proto-' . $class_name . ' () x))' . chr(10)));
             ((my  $dumper) = '');
-            for my $decl ( @{$self->{body}} ) {
+            for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                     ((my  $accessor_name) = ($decl->var())->name());
                     ($dumper = ($dumper . '(let ((m (make-instance ' . chr(39) . 'mp-Pair))) ' . '(setf (sv-key m) ' . chr(34) . Main::lisp_escape_string($accessor_name) . chr(34) . ') ' . '(setf (sv-value m) (' . Main::to_lisp_identifier($accessor_name) . ' self)) m) '));
@@ -108,7 +108,7 @@ package GLOBAL;
             if (($self->{name} ne 'Pair')) {
                 ($str = ($str . '(defmethod sv-perl ((self ' . $class_name . '))' . (chr(10)) . '  (mp-Main::sv-lisp_dump_object ' . chr(34) . '::' . Main::lisp_escape_string($self->{name}) . chr(34) . ' (list ' . $dumper . ')))' . (chr(10)) . (chr(10))))
             };
-            for my $decl ( @{$self->{body}} ) {
+            for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if ((((!(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my')))))))) && (!((Main::isa($decl, 'Method'))))) && (!((Main::isa($decl, 'Sub')))))) {
                     ($str = ($str . ($decl)->emit_clojure() . (chr(10))))
                 }
@@ -182,7 +182,7 @@ package GLOBAL;
         sub fields { $_[0]->{fields} };
         sub emit_clojure {
             my $self = $_[0];
-            ('bless(' . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . ')')
+            ('bless(' . Main::perl((defined $self->{fields} ? $self->{fields} : ($self->{fields} = bless({}, 'HASH'))), ) . ', ' . Main::perl($self->{class}, ) . ')')
         }
     }
 
@@ -225,8 +225,8 @@ package GLOBAL;
         sub fields { $_[0]->{fields} };
         sub emit_clojure {
             my $self = $_[0];
-            if ($self->{fields}) {
-                ((my  $fields) = $self->{fields});
+            if ((defined $self->{fields} ? $self->{fields} : ($self->{fields} ||= bless([], 'ARRAY')))) {
+                ((my  $fields) = (defined $self->{fields} ? $self->{fields} : ($self->{fields} ||= bless([], 'ARRAY'))));
                 ((my  $str) = '');
                 for my $field ( @{($fields)} ) {
                     ($str = ($str . '(setf (' . Main::to_lisp_identifier(($field->[0])->buf()) . ' m) ' . ($field->[1])->emit_clojure() . ')'))
@@ -341,8 +341,8 @@ package GLOBAL;
         sub emit_clojure {
             my $self = $_[0];
             ((my  $arguments) = '');
-            if ($self->{arguments}) {
-                ($arguments = Main::join(([ map { $_->emit_clojure() } @{( $self->{arguments} )} ]), ' '))
+            if ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))) {
+                ($arguments = Main::join(([ map { $_->emit_clojure() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' '))
             };
             ((my  $invocant) = $self->{invocant}->emit_clojure());
             if (($invocant eq 'self')) {
@@ -357,10 +357,10 @@ package GLOBAL;
                 }
             };
             if (($self->{method} eq 'isa')) {
-                if (((($self->{arguments}->[0])->buf()) eq 'Str')) {
+                if (((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->buf()) eq 'Str')) {
                     return scalar (('(typep ' . $invocant . ' ' . chr(39) . 'string)'))
                 };
-                return scalar (('(typep ' . $invocant . ' ' . chr(39) . Main::to_lisp_namespace(($self->{arguments}->[0])->buf()) . ')'))
+                return scalar (('(typep ' . $invocant . ' ' . chr(39) . Main::to_lisp_namespace(((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->buf()) . ')'))
             };
             if (($self->{method} eq 'chars')) {
                 if (($self->{hyper})) {
@@ -406,8 +406,8 @@ package GLOBAL;
             };
             ((my  $code) = ($ns . $self->{code}));
             ((my  $args) = '');
-            if ($self->{arguments}) {
-                ($args = Main::join(([ map { $_->emit_clojure() } @{( $self->{arguments} )} ]), ' '))
+            if ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))) {
+                ($args = Main::join(([ map { $_->emit_clojure() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' '))
             };
             if (($code eq 'self')) {
                 return scalar ('sv-self')
@@ -428,7 +428,7 @@ package GLOBAL;
                 return scalar (('(mp-Main::sv-print (list ' . $args . '))'))
             };
             if (($code eq 'infix:<' . chr(126) . '>')) {
-                return scalar (('(concatenate ' . chr(39) . 'string (sv-string ' . ($self->{arguments}->[0])->emit_clojure() . ') (sv-string ' . ($self->{arguments}->[1])->emit_clojure() . '))'))
+                return scalar (('(concatenate ' . chr(39) . 'string (sv-string ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_clojure() . ') (sv-string ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_clojure() . '))'))
             };
             if (($code eq 'warn')) {
                 return scalar (('(write-line (format nil ' . chr(34) . chr(126) . chr(123) . chr(126) . 'a' . chr(126) . chr(125) . chr(34) . ' (list ' . $args . ')) *error-output*)'))
@@ -485,7 +485,7 @@ package GLOBAL;
                 return scalar (('(not (eql ' . $args . '))'))
             };
             if (($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>')) {
-                return scalar (('(if (sv-bool ' . ($self->{arguments}->[0])->emit_clojure() . ') ' . ($self->{arguments}->[1])->emit_clojure() . ' ' . ($self->{arguments}->[2])->emit_clojure() . ')'))
+                return scalar (('(if (sv-bool ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_clojure() . ') ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_clojure() . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_clojure() . ')'))
             };
             return scalar (('(' . $ns . Main::to_lisp_identifier($self->{code}) . ' ' . $args . ')'))
         }
@@ -511,8 +511,8 @@ package GLOBAL;
         sub otherwise { $_[0]->{otherwise} };
         sub emit_clojure {
             my $self = $_[0];
-            ((my  $block1) = Perlito::Clojure::LexicalBlock->new(('block' => $self->{body})));
-            ((my  $block2) = Perlito::Clojure::LexicalBlock->new(('block' => $self->{otherwise})));
+            ((my  $block1) = Perlito::Clojure::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))))));
+            ((my  $block2) = Perlito::Clojure::LexicalBlock->new(('block' => (defined $self->{otherwise} ? $self->{otherwise} : ($self->{otherwise} ||= bless([], 'ARRAY'))))));
             ('(if (sv-bool ' . $self->{cond}->emit_clojure() . ') ' . $block1->emit_clojure() . ' ' . $block2->emit_clojure() . ')')
         }
     }
@@ -527,7 +527,7 @@ package GLOBAL;
         sub emit_clojure {
             my $self = $_[0];
             ((my  $cond) = $self->{cond});
-            ((my  $block) = Perlito::Clojure::LexicalBlock->new(('block' => $self->{body})));
+            ((my  $block) = Perlito::Clojure::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))))));
             if ((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64)))) {
                 ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -592,7 +592,7 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $sig) = $self->{sig});
             ((my  $pos) = $sig->positional());
-            ((my  $block) = Perlito::Clojure::LexicalBlock->new(('block' => $self->{block})));
+            ((my  $block) = Perlito::Clojure::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY'))))));
             (my  $str);
             if (($pos)) {
                 for my $field ( @{($pos)} ) {
@@ -618,7 +618,7 @@ package GLOBAL;
         sub block { $_[0]->{block} };
         sub emit_clojure {
             my $self = $_[0];
-            ((my  $block) = Perlito::Clojure::LexicalBlock->new(('block' => $self->{block})));
+            ((my  $block) = Perlito::Clojure::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY'))))));
             return scalar ($block->emit_clojure())
         }
     }

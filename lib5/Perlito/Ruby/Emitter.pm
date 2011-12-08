@@ -94,7 +94,7 @@ package GLOBAL;
             for my $field ( @{($pos)} ) {
                 push( @{$args}, $field->emit_ruby_name() )
             };
-            ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
+            ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1)));
             (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, (Ruby::tab($level) . (($self->{name} ? (('f_' . $self->{name} . (' ' . chr(61) . ' '))) : '')) . ('lambda' . chr(123) . ' ' . chr(124)) . Main::join($args, (', ')) . (chr(124) . ' ')) );
             push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) );
@@ -122,7 +122,7 @@ package GLOBAL;
         };
         sub has_my_decl {
             my $self = $_[0];
-            for my $decl ( @{$self->{block}} ) {
+            for my $decl ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) {
                     return scalar (1)
                 };
@@ -139,8 +139,8 @@ package GLOBAL;
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            if (!(($self->{block}))) {
-                push( @{$self->{block}}, Val::Undef->new() )
+            if (!(((defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))))) {
+                push( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))}, Val::Undef->new() )
             };
             (my  $List_s = bless [], 'ARRAY');
             (my  $List_tmp = bless [], 'ARRAY');
@@ -157,7 +157,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-            for my $decl ( @{$self->{block}} ) {
+            for my $decl ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                     push( @{$has_decl}, $decl )
                 }
@@ -303,9 +303,9 @@ package GLOBAL;
             my $self = $_[0];
             my $level = $_[1];
             (my  $List_s = bless [], 'ARRAY');
-            ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body})));
+            ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))))));
             ((my  $name) = Main::to_go_namespace($self->{name}));
-            for my $decl ( @{$self->{body}} ) {
+            for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if (Main::isa($decl, 'Use')) {
                     if (($decl->mod() eq 'v6')) {
 
@@ -416,7 +416,7 @@ package GLOBAL;
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            (Ruby::tab($level) . $self->{class}->emit_ruby() . '(' . $self->{fields}->emit_ruby() . ')')
+            (Ruby::tab($level) . $self->{class}->emit_ruby() . '(' . (defined $self->{fields} ? $self->{fields} : ($self->{fields} = bless({}, 'HASH')))->emit_ruby() . ')')
         }
     }
 
@@ -433,7 +433,7 @@ package GLOBAL;
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $sub) = Sub->new(('name' => ''), ('sig' => $self->{sig}), ('block' => $self->{stmts})));
+            ((my  $sub) = Sub->new(('name' => ''), ('sig' => $self->{sig}), ('block' => (defined $self->{stmts} ? $self->{stmts} : ($self->{stmts} ||= bless([], 'ARRAY'))))));
             $sub->emit_ruby_indented($level)
         }
     }
@@ -492,7 +492,7 @@ package GLOBAL;
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $fields) = $self->{fields});
+            ((my  $fields) = (defined $self->{fields} ? $self->{fields} : ($self->{fields} ||= bless([], 'ARRAY'))));
             (my  $List_str = bless [], 'ARRAY');
             for my $field ( @{($fields)} ) {
                 push( @{$List_str}, ('o.v_' . ($field->[0])->buf() . chr(61) . ($field->[1])->emit_ruby() . (chr(59) . ' ')) )
@@ -602,14 +602,14 @@ package GLOBAL;
             ((my  $invocant) = $self->{invocant}->emit_ruby());
             if (((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'isa')))) {
                 if (($self->{hyper})) {
-                    return scalar (($invocant . ('.map ' . chr(123) . chr(124) . 'x' . chr(124) . ' x.') . $self->{method} . ('(') . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . (')' . chr(125))))
+                    return scalar (($invocant . ('.map ' . chr(123) . chr(124) . 'x' . chr(124) . ' x.') . $self->{method} . ('(') . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . (')' . chr(125))))
                 }
                 else {
                     return scalar (('mp6_' . $self->{method} . '(' . Main::join(([ map { $_->emit_ruby() } @{( do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{invocant} );
-    ($List_v = $self->{arguments});
+    ($List_v = (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
@@ -619,10 +619,10 @@ package GLOBAL;
             };
             ((my  $meth) = $self->{method});
             if (($meth eq 'postcircumfix:<( )>')) {
-                return scalar ((Ruby::tab($level) . $invocant . '.call(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
+                return scalar ((Ruby::tab($level) . $invocant . '.call(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (((((((($meth eq 'values')) || (($meth eq 'keys'))) || (($meth eq 'push'))) || (($meth eq 'shift'))) || (($meth eq 'concat'))) || (($meth eq 'join')))) {
-                return scalar ((Ruby::tab($level) . $invocant . '.' . $meth . '(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
+                return scalar ((Ruby::tab($level) . $invocant . '.' . $meth . '(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (($meth eq 'chars')) {
                 return scalar ((Ruby::tab($level) . $invocant . ('.length')))
@@ -630,7 +630,7 @@ package GLOBAL;
             if (($meth eq 'elems')) {
                 return scalar ((Ruby::tab($level) . $invocant . ('.length')))
             };
-            ((my  $call) = ('f_' . $meth . '(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'));
+            ((my  $call) = ('f_' . $meth . '(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'));
             if (($self->{hyper})) {
                 (Ruby::tab($level) . $invocant . ('.map ' . chr(123) . chr(124) . 'x' . chr(124) . ' x.') . $call . (chr(125)))
             }
@@ -658,13 +658,13 @@ package GLOBAL;
 
             }
             else {
-                return scalar (('(' . $self->{code}->emit_ruby() . ').(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
+                return scalar (('(' . $self->{code}->emit_ruby() . ').(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (($code eq 'self')) {
                 return scalar ('self')
             };
             if (($code eq 'make')) {
-                return scalar (('v_MATCH.v_capture ' . chr(61) . ' ' . ($self->{arguments}->[0])->emit_ruby() . ''))
+                return scalar (('v_MATCH.v_capture ' . chr(61) . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . ''))
             };
             if (($code eq 'False')) {
                 return scalar ('false')
@@ -673,94 +673,94 @@ package GLOBAL;
                 return scalar ('true')
             };
             if (($code eq 'say')) {
-                return scalar (('puts' . Ruby::to_str(' + ', $self->{arguments})))
+                return scalar (('puts' . Ruby::to_str(' + ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))))
             };
             if (($code eq 'print')) {
-                return scalar (('print' . Ruby::to_str(' + ', $self->{arguments})))
+                return scalar (('print' . Ruby::to_str(' + ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))))
             };
             if (($code eq 'warn')) {
-                return scalar ((chr(36) . 'stdout.puts(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
+                return scalar ((chr(36) . 'stdout.puts(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (($code eq 'return')) {
-                return scalar (('return(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
+                return scalar (('return(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (($code eq 'array')) {
-                return scalar (('[' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . ']'))
+                return scalar (('[' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ']'))
             };
             if (($code eq 'Int')) {
-                return scalar (('(' . ($self->{arguments}->[0])->emit_ruby() . ').to_i'))
+                return scalar (('(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . ').to_i'))
             };
             if (($code eq 'Num')) {
-                return scalar (('(' . ($self->{arguments}->[0])->emit_ruby() . ').to_f'))
+                return scalar (('(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . ').to_f'))
             };
             if (($code eq 'prefix:<' . chr(126) . '>')) {
-                return scalar (Ruby::to_str(' + ', $self->{arguments}))
+                return scalar (Ruby::to_str(' + ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'prefix:<' . chr(33) . '>')) {
-                return scalar ((chr(33) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', $self->{arguments})))
+                return scalar ((chr(33) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))))
             };
             if (($code eq 'prefix:<' . chr(63) . '>')) {
-                return scalar ((chr(33) . '(' . chr(33) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', $self->{arguments}) . ')'))
+                return scalar ((chr(33) . '(' . chr(33) . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))) . ')'))
             };
             if (($code eq 'prefix:<' . chr(36) . '>')) {
-                return scalar (('mp6_to_scalar(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . ')'))
+                return scalar (('mp6_to_scalar(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
             };
             if (($code eq 'prefix:<' . chr(64) . '>')) {
-                return scalar (('(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . ')'))
+                return scalar (('(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
             };
             if (($code eq 'prefix:<' . chr(37) . '>')) {
-                return scalar ((chr(37) . chr(123) . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ' ') . chr(125)))
+                return scalar ((chr(37) . chr(123) . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125)))
             };
             if (($code eq 'list:<' . chr(126) . '>')) {
-                return scalar (Ruby::to_str(' + ', $self->{arguments}))
+                return scalar (Ruby::to_str(' + ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<+>')) {
-                return scalar (Ruby::to_num(' + ', $self->{arguments}))
+                return scalar (Ruby::to_num(' + ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<->')) {
-                return scalar (Ruby::to_num(' - ', $self->{arguments}))
+                return scalar (Ruby::to_num(' - ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<*>')) {
-                return scalar (Ruby::to_num(' * ', $self->{arguments}))
+                return scalar (Ruby::to_num(' * ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<' . chr(47) . '>')) {
-                return scalar (Ruby::to_num(' ' . chr(47) . ' ', $self->{arguments}))
+                return scalar (Ruby::to_num(' ' . chr(47) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<' . chr(38) . chr(38) . '>')) {
-                return scalar (Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', $self->{arguments}))
+                return scalar (Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<' . chr(124) . chr(124) . '>')) {
-                return scalar (Ruby::to_bool(' ' . chr(124) . chr(124) . ' ', $self->{arguments}))
+                return scalar (Ruby::to_bool(' ' . chr(124) . chr(124) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<and>')) {
-                return scalar (Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', $self->{arguments}))
+                return scalar (Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<or>')) {
-                return scalar (Ruby::to_bool(' ' . chr(124) . chr(124) . ' ', $self->{arguments}))
+                return scalar (Ruby::to_bool(' ' . chr(124) . chr(124) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<eq>')) {
-                return scalar (Ruby::to_str(' ' . chr(61) . chr(61) . ' ', $self->{arguments}))
+                return scalar (Ruby::to_str(' ' . chr(61) . chr(61) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<ne>')) {
-                return scalar (Ruby::to_str(' ' . chr(33) . chr(61) . ' ', $self->{arguments}))
+                return scalar (Ruby::to_str(' ' . chr(33) . chr(61) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<' . chr(61) . chr(61) . '>')) {
-                return scalar (Ruby::to_num(' ' . chr(61) . chr(61) . ' ', $self->{arguments}))
+                return scalar (Ruby::to_num(' ' . chr(61) . chr(61) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<' . chr(33) . chr(61) . '>')) {
-                return scalar (Ruby::to_num(' ' . chr(33) . chr(61) . ' ', $self->{arguments}))
+                return scalar (Ruby::to_num(' ' . chr(33) . chr(61) . ' ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<<>')) {
-                return scalar (Ruby::to_num(' < ', $self->{arguments}))
+                return scalar (Ruby::to_num(' < ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<>>')) {
-                return scalar (Ruby::to_num(' > ', $self->{arguments}))
+                return scalar (Ruby::to_num(' > ', (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))))
             };
             if (($code eq 'infix:<..>')) {
-                return scalar (('(' . $self->{arguments}->[0]->emit_ruby() . '..' . $self->{arguments}->[1]->emit_ruby() . ')'))
+                return scalar (('(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_ruby() . '..' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_ruby() . ')'))
             };
             if (($code eq 'exists')) {
-                ((my  $arg) = $self->{arguments}->[0]);
+                ((my  $arg) = (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]);
                 if (Main::isa($arg, 'Lookup')) {
                     return scalar (('(' . ($arg->obj())->emit_ruby() . ').has_key' . chr(63) . '(' . ($arg->index_exp())->emit_ruby() . ')'))
                 }
@@ -769,49 +769,49 @@ package GLOBAL;
                 return scalar (('(' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{arguments}->[0] );
+    push( @{$List_a}, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0] );
     $List_a
-}) . ' ' . chr(63) . ' ' . ($self->{arguments}->[1])->emit_ruby() . ' : ' . ($self->{arguments}->[2])->emit_ruby() . ')'))
+}) . ' ' . chr(63) . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_ruby() . ' : ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_ruby() . ')'))
             };
             if (($code eq 'circumfix:<( )>')) {
-                return scalar (('(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
+                return scalar (('(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (($code eq 'infix:<' . chr(61) . '>')) {
-                return scalar (emit_ruby_bind($self->{arguments}->[0], $self->{arguments}->[1]))
+                return scalar (emit_ruby_bind((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0], (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]))
             };
             if (($code eq 'substr')) {
                 return scalar ((Ruby::to_str(' + ', do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{arguments}->[0] );
+    push( @{$List_a}, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0] );
     $List_a
-}) . '[' . ($self->{arguments}->[1])->emit_ruby() . ', ' . ($self->{arguments}->[2])->emit_ruby() . ']'))
+}) . '[' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_ruby() . ', ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_ruby() . ']'))
             };
             if (($code eq 'index')) {
-                return scalar (('(' . ($self->{arguments}->[0])->emit_ruby() . ').index(' . ($self->{arguments}->[1])->emit_ruby() . ')'))
+                return scalar (('(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . ').index(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_ruby() . ')'))
             };
             if (($code eq 'defined')) {
-                return scalar (('(' . ($self->{arguments}->[0])->emit_ruby() . ' ' . chr(33) . chr(61) . ' nil)'))
+                return scalar (('(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . ' ' . chr(33) . chr(61) . ' nil)'))
             };
             if (($code eq 'shift')) {
-                return scalar ((($self->{arguments}->[0])->emit_ruby() . '.shift()'))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . '.shift()'))
             };
             if (($code eq 'pop')) {
-                return scalar ((($self->{arguments}->[0])->emit_ruby() . '.pop()'))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . '.pop()'))
             };
             if (($code eq 'push')) {
-                return scalar ((($self->{arguments}->[0])->emit_ruby() . '.push(' . ($self->{arguments}->[1])->emit_ruby() . ')'))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . '.push(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_ruby() . ')'))
             };
             if (($code eq 'unshift')) {
-                return scalar ((($self->{arguments}->[0])->emit_ruby() . '.unshift(' . ($self->{arguments}->[1])->emit_ruby() . ')'))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . '.unshift(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_ruby() . ')'))
             };
             if (($code eq 'elems')) {
-                return scalar ((($self->{arguments}->[0])->emit_ruby() . '.length()'))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . '.length()'))
             };
             if ($self->{namespace}) {
-                return scalar ((chr(36) . Main::to_go_namespace($self->{namespace}) . '.f_' . $self->{code} . '(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')'))
+                return scalar ((chr(36) . Main::to_go_namespace($self->{namespace}) . '.f_' . $self->{code} . '(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
-            ('namespace.f_' . $self->{code} . '(' . Main::join(([ map { $_->emit_ruby() } @{( $self->{arguments} )} ]), ', ') . ')')
+            ('namespace.f_' . $self->{code} . '(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')')
         };
         sub emit_ruby_indented {
             my $self = $_[0];
@@ -882,11 +882,11 @@ package GLOBAL;
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $has_body) = ($self->{body} ? 1 : 0));
-            ((my  $has_otherwise) = ($self->{otherwise} ? 1 : 0));
-            ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body}->stmts())));
+            ((my  $has_body) = ((defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))) ? 1 : 0));
+            ((my  $has_otherwise) = ((defined $self->{otherwise} ? $self->{otherwise} : ($self->{otherwise} ||= bless([], 'ARRAY'))) ? 1 : 0));
+            ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->stmts())));
             if ($body_block->has_my_decl()) {
-                ($body_block = Do->new(('block' => $self->{body})))
+                ($body_block = Do->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))))))
             };
             ((my  $s) = (Ruby::tab($level) . 'if ' . Ruby::to_bool(' ' . chr(38) . chr(38) . ' ', do {
     (my  $List_a = bless [], 'ARRAY');
@@ -895,9 +895,9 @@ package GLOBAL;
     $List_a
 }) . (chr(10)) . $body_block->emit_ruby_indented(($level + 1))));
             if (($has_otherwise)) {
-                ((my  $otherwise_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{otherwise}->stmts())));
+                ((my  $otherwise_block) = Perlito::Ruby::LexicalBlock->new(('block' => (defined $self->{otherwise} ? $self->{otherwise} : ($self->{otherwise} ||= bless([], 'ARRAY')))->stmts())));
                 if ($otherwise_block->has_my_decl()) {
-                    ($otherwise_block = Do->new(('block' => $self->{otherwise})))
+                    ($otherwise_block = Do->new(('block' => (defined $self->{otherwise} ? $self->{otherwise} : ($self->{otherwise} ||= bless([], 'ARRAY'))))))
                 };
                 ($s = ($s . (chr(10) . Ruby::tab($level) . ('else' . chr(10)) . $otherwise_block->emit_ruby_indented(($level + 1)))))
             };
@@ -921,9 +921,9 @@ package GLOBAL;
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body})));
+            ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))))));
             if ($body_block->has_my_decl()) {
-                ($body_block = Do->new(('block' => $self->{body})))
+                ($body_block = Do->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))))))
             };
             if (($self->{init} && $self->{continue})) {
                 die(('not implemented (While)'))
@@ -950,7 +950,7 @@ package GLOBAL;
         sub emit_ruby_indented {
             my $self = $_[0];
             my $level = $_[1];
-            ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{body}->stmts())));
+            ((my  $body_block) = Perlito::Ruby::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->stmts())));
             (my  $topic);
             if ($self->{body}->sig()) {
                 ($topic = $self->{body}->sig()->emit_ruby_name())
@@ -1045,7 +1045,7 @@ package GLOBAL;
                 push( @{$default_args}, ($arg . chr(61) . 'nil') );
                 push( @{$meth_args}, ($arg . chr(61) . 'nil') )
             };
-            ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
+            ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1)));
             (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, (Ruby::tab($level) . 'send( :define_method, ' . chr(34) . 'f_' . $self->{name} . chr(34) . '.to_sym, lambda' . chr(92) . chr(123) . ' ' . chr(124) . Main::join($default_args, (', ')) . chr(124)) );
             push( @{$List_s}, (Ruby::tab(($level + 1)) . $invocant->emit_ruby_name() . (' ' . chr(61) . ' self')) );
@@ -1071,7 +1071,7 @@ package GLOBAL;
             my $level = $_[1];
             ((my  $label) = ('_anon_' . Perlito::Ruby::LexicalBlock::get_ident_ruby()));
             if ((($self->{name} eq ''))) {
-                Perlito::Ruby::LexicalBlock::push_stmt_ruby(Perlito::Ruby::AnonSub->new(('name' => $label), ('block' => $self->{block}), ('sig' => $self->{sig}), ('handles_return_exception' => 1)));
+                Perlito::Ruby::LexicalBlock::push_stmt_ruby(Perlito::Ruby::AnonSub->new(('name' => $label), ('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('sig' => $self->{sig}), ('handles_return_exception' => 1)));
                 return scalar ((Ruby::tab($level) . 'f_' . $label))
             };
             ((my  $sig) = $self->{sig});
@@ -1098,7 +1098,7 @@ package GLOBAL;
                 push( @{$default_args}, ($arg . chr(61) . 'nil') );
                 push( @{$meth_args}, ($arg . chr(61) . 'nil') )
             };
-            ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)));
+            ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1)));
             ((my  $label2) = ('_anon_' . Perlito::Ruby::LexicalBlock::get_ident_ruby()));
             (my  $List_s = bless [], 'ARRAY');
             push( @{$List_s}, (Ruby::tab($level) . 'send( :define_method, ' . chr(34) . 'f_' . $self->{name} . chr(34) . '.to_sym, lambda' . chr(123) . ' ' . chr(124) . Main::join($default_args, (', ')) . chr(124)) );

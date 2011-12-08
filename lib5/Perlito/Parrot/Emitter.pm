@@ -22,7 +22,7 @@ package GLOBAL;
         sub body { $_[0]->{body} };
         sub emit_parrot {
             my $self = $_[0];
-            ((my  $a) = $self->{body});
+            ((my  $a) = (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))));
             (my  $item);
             ((my  $s) = ('.namespace [ ' . chr(34) . $self->{name} . chr(34) . ' ] ' . (chr(10)) . '.sub _ :main :anon' . (chr(10)) . '.end' . (chr(10)) . (chr(10)) . '.sub ' . chr(34) . '_class_vars_' . chr(34) . ' :anon' . (chr(10))));
             for my $item ( @{($a)} ) {
@@ -132,7 +132,7 @@ package GLOBAL;
         sub array1 { $_[0]->{array1} };
         sub emit_parrot {
             my $self = $_[0];
-            ((my  $a) = $self->{array1});
+            ((my  $a) = (defined $self->{array1} ? $self->{array1} : ($self->{array1} ||= bless([], 'ARRAY'))));
             (my  $item);
             ((my  $s) = ('  save ' . chr(36) . 'P1' . (chr(10)) . '  ' . chr(36) . 'P1 ' . chr(61) . ' new .ResizablePMCArray' . (chr(10))));
             for my $item ( @{($a)} ) {
@@ -151,7 +151,7 @@ package GLOBAL;
         sub hash1 { $_[0]->{hash1} };
         sub emit_parrot {
             my $self = $_[0];
-            ((my  $a) = $self->{hash1});
+            ((my  $a) = (defined $self->{hash1} ? $self->{hash1} : ($self->{hash1} ||= bless([], 'ARRAY'))));
             (my  $item);
             ((my  $s) = ('  save ' . chr(36) . 'P1' . (chr(10)) . '  save ' . chr(36) . 'P2' . (chr(10)) . '  ' . chr(36) . 'P1 ' . chr(61) . ' new .Hash' . (chr(10))));
             for my $item ( @{($a)} ) {
@@ -183,7 +183,7 @@ package GLOBAL;
         sub fields { $_[0]->{fields} };
         sub emit_parrot {
             my $self = $_[0];
-            ((my  $fields) = $self->{fields});
+            ((my  $fields) = (defined $self->{fields} ? $self->{fields} : ($self->{fields} ||= bless([], 'ARRAY'))));
             ((my  $str) = '');
             ($str = ('  save ' . chr(36) . 'P1' . (chr(10)) . '  save ' . chr(36) . 'S2' . (chr(10)) . '  ' . chr(36) . 'P1 ' . chr(61) . ' new ' . chr(34) . $self->{class} . chr(34) . (chr(10))));
             for my $field ( @{($fields)} ) {
@@ -354,21 +354,21 @@ package GLOBAL;
             my $self = $_[0];
             if (((((($self->{method} eq 'perl')) || (($self->{method} eq 'yaml'))) || (($self->{method} eq 'say'))) || (($self->{method} eq 'join')))) {
                 if (($self->{hyper})) {
-                    return scalar (('[ map ' . chr(123) . ' Main::' . $self->{method} . '( ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), '') . ')' . ' ' . chr(125) . ' ' . chr(64) . chr(123) . ' ' . $self->{invocant}->emit_parrot() . ' ' . chr(125) . ' ]'))
+                    return scalar (('[ map ' . chr(123) . ' Main::' . $self->{method} . '( ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), '') . ')' . ' ' . chr(125) . ' ' . chr(64) . chr(123) . ' ' . $self->{invocant}->emit_parrot() . ' ' . chr(125) . ' ]'))
                 }
                 else {
-                    return scalar (('Main::' . $self->{method} . '(' . $self->{invocant}->emit_parrot() . ', ' . Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), '') . ')'))
+                    return scalar (('Main::' . $self->{method} . '(' . $self->{invocant}->emit_parrot() . ', ' . Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), '') . ')'))
                 }
             };
             ((my  $meth) = $self->{method});
             if (($meth eq 'postcircumfix:<( )>')) {
                 ($meth = '')
             };
-            ((my  $call) = ('->' . $meth . '(' . Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), '') . ')'));
+            ((my  $call) = ('->' . $meth . '(' . Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), '') . ')'));
             if (($self->{hyper})) {
                 return scalar (('[ map ' . chr(123) . ' ' . chr(36) . '_' . $call . ' ' . chr(125) . ' ' . chr(64) . chr(123) . ' ' . $self->{invocant}->emit_parrot() . ' ' . chr(125) . ' ]'))
             };
-            ((my  $List_args = bless [], 'ARRAY') = $self->{arguments});
+            ((my  $List_args = bless [], 'ARRAY') = (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))));
             ((my  $str) = '');
             ((my  $ii) = 10);
             for my $arg ( @{$List_args} ) {
@@ -410,19 +410,19 @@ package GLOBAL;
                 return scalar (('  ' . chr(36) . 'P0 ' . chr(61) . ' new .Exception' . (chr(10)) . '  ' . chr(36) . 'P0[' . chr(34) . '_message' . chr(34) . '] ' . chr(61) . ' ' . chr(34) . 'something broke' . chr(34) . (chr(10)) . '  throw ' . chr(36) . 'P0' . (chr(10))))
             };
             if (($code eq 'say')) {
-                return scalar ((Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), ('  print ' . chr(36) . 'P0' . (chr(10)))) . '  print ' . chr(36) . 'P0' . (chr(10)) . '  print ' . chr(34) . chr(92) . 'n' . chr(34) . (chr(10))))
+                return scalar ((Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ('  print ' . chr(36) . 'P0' . (chr(10)))) . '  print ' . chr(36) . 'P0' . (chr(10)) . '  print ' . chr(34) . chr(92) . 'n' . chr(34) . (chr(10))))
             };
             if (($code eq 'print')) {
-                return scalar ((Main::join(([ map { $_->emit_parrot() } @{( $self->{arguments} )} ]), ('  print ' . chr(36) . 'P0' . (chr(10)))) . '  print ' . chr(36) . 'P0' . (chr(10))))
+                return scalar ((Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ('  print ' . chr(36) . 'P0' . (chr(10)))) . '  print ' . chr(36) . 'P0' . (chr(10))))
             };
             if (($code eq 'array')) {
                 return scalar (('  ' . chr(35) . ' TODO - array() is no-op' . (chr(10))))
             };
             if (($code eq 'prefix:<' . chr(126) . '>')) {
-                return scalar ((($self->{arguments}->[0])->emit_parrot() . '  ' . chr(36) . 'S0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'S0' . (chr(10))))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_parrot() . '  ' . chr(36) . 'S0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'S0' . (chr(10))))
             };
             if (($code eq 'prefix:<' . chr(33) . '>')) {
-                return scalar ((If->new(('cond' => $self->{arguments}->[0]), ('body' => do {
+                return scalar ((If->new(('cond' => (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]), ('body' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Val::Bit->new(('bit' => 0)) );
@@ -435,7 +435,7 @@ package GLOBAL;
 })))->emit_parrot())
             };
             if (($code eq 'prefix:<' . chr(63) . '>')) {
-                return scalar ((If->new(('cond' => $self->{arguments}->[0]), ('body' => do {
+                return scalar ((If->new(('cond' => (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]), ('body' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Val::Bit->new(('bit' => 1)) );
@@ -457,19 +457,19 @@ package GLOBAL;
                 return scalar (('  ' . chr(35) . ' TODO - prefix:<' . chr(37) . '> is no-op' . (chr(10))))
             };
             if (($code eq 'infix:<' . chr(126) . '>')) {
-                return scalar ((($self->{arguments}->[0])->emit_parrot() . '  ' . chr(36) . 'S0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  save ' . chr(36) . 'S0' . (chr(10)) . ($self->{arguments}->[1])->emit_parrot() . '  ' . chr(36) . 'S1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'S0' . (chr(10)) . '  ' . chr(36) . 'S0 ' . chr(61) . ' concat ' . chr(36) . 'S0, ' . chr(36) . 'S1' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'S0' . (chr(10))))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_parrot() . '  ' . chr(36) . 'S0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  save ' . chr(36) . 'S0' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_parrot() . '  ' . chr(36) . 'S1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'S0' . (chr(10)) . '  ' . chr(36) . 'S0 ' . chr(61) . ' concat ' . chr(36) . 'S0, ' . chr(36) . 'S1' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'S0' . (chr(10))))
             };
             if (($code eq 'infix:<+>')) {
-                return scalar (('  save ' . chr(36) . 'P1' . (chr(10)) . ($self->{arguments}->[0])->emit_parrot() . '  ' . chr(36) . 'P1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . ($self->{arguments}->[1])->emit_parrot() . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'P1 + ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10))))
+                return scalar (('  save ' . chr(36) . 'P1' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_parrot() . '  ' . chr(36) . 'P1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_parrot() . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'P1 + ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10))))
             };
             if (($code eq 'infix:<->')) {
-                return scalar (('  save ' . chr(36) . 'P1' . (chr(10)) . ($self->{arguments}->[0])->emit_parrot() . '  ' . chr(36) . 'P1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . ($self->{arguments}->[1])->emit_parrot() . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'P1 - ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10))))
+                return scalar (('  save ' . chr(36) . 'P1' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_parrot() . '  ' . chr(36) . 'P1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_parrot() . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'P1 - ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10))))
             };
             if (($code eq 'infix:<' . chr(38) . chr(38) . '>')) {
-                return scalar ((If->new(('cond' => $self->{arguments}->[0]), ('body' => do {
+                return scalar ((If->new(('cond' => (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]), ('body' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{arguments}->[1] );
+    push( @{$List_a}, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1] );
     $List_a
 }), ('otherwise' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -478,57 +478,57 @@ package GLOBAL;
 })))->emit_parrot())
             };
             if (($code eq 'infix:<' . chr(124) . chr(124) . '>')) {
-                return scalar ((If->new(('cond' => $self->{arguments}->[0]), ('body' => do {
+                return scalar ((If->new(('cond' => (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]), ('body' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 }), ('otherwise' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{arguments}->[1] );
+    push( @{$List_a}, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1] );
     $List_a
 })))->emit_parrot())
             };
             if (($code eq 'infix:<eq>')) {
                 ($label = ($label + 1));
                 ((my  $id) = $label);
-                return scalar ((($self->{arguments}->[0])->emit_parrot() . '  ' . chr(36) . 'S0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  save ' . chr(36) . 'S0' . (chr(10)) . ($self->{arguments}->[1])->emit_parrot() . '  ' . chr(36) . 'S1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'S0' . (chr(10)) . '  if ' . chr(36) . 'S0 ' . chr(61) . chr(61) . ' ' . chr(36) . 'S1 goto eq' . $id . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 0' . (chr(10)) . '  goto eq_end' . $id . (chr(10)) . 'eq' . $id . ':' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 1' . (chr(10)) . 'eq_end' . $id . ':' . (chr(10))))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_parrot() . '  ' . chr(36) . 'S0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  save ' . chr(36) . 'S0' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_parrot() . '  ' . chr(36) . 'S1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'S0' . (chr(10)) . '  if ' . chr(36) . 'S0 ' . chr(61) . chr(61) . ' ' . chr(36) . 'S1 goto eq' . $id . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 0' . (chr(10)) . '  goto eq_end' . $id . (chr(10)) . 'eq' . $id . ':' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 1' . (chr(10)) . 'eq_end' . $id . ':' . (chr(10))))
             };
             if (($code eq 'infix:<ne>')) {
                 ($label = ($label + 1));
                 ((my  $id) = $label);
-                return scalar ((($self->{arguments}->[0])->emit_parrot() . '  ' . chr(36) . 'S0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  save ' . chr(36) . 'S0' . (chr(10)) . ($self->{arguments}->[1])->emit_parrot() . '  ' . chr(36) . 'S1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'S0' . (chr(10)) . '  if ' . chr(36) . 'S0 ' . chr(61) . chr(61) . ' ' . chr(36) . 'S1 goto eq' . $id . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 1' . (chr(10)) . '  goto eq_end' . $id . (chr(10)) . 'eq' . $id . ':' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 0' . (chr(10)) . 'eq_end' . $id . ':' . (chr(10))))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_parrot() . '  ' . chr(36) . 'S0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  save ' . chr(36) . 'S0' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_parrot() . '  ' . chr(36) . 'S1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'S0' . (chr(10)) . '  if ' . chr(36) . 'S0 ' . chr(61) . chr(61) . ' ' . chr(36) . 'S1 goto eq' . $id . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 1' . (chr(10)) . '  goto eq_end' . $id . (chr(10)) . 'eq' . $id . ':' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 0' . (chr(10)) . 'eq_end' . $id . ':' . (chr(10))))
             };
             if (($code eq 'infix:<' . chr(61) . chr(61) . '>')) {
                 ($label = ($label + 1));
                 ((my  $id) = $label);
-                return scalar (('  save ' . chr(36) . 'P1' . (chr(10)) . ($self->{arguments}->[0])->emit_parrot() . '  ' . chr(36) . 'P1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . ($self->{arguments}->[1])->emit_parrot() . '  if ' . chr(36) . 'P0 ' . chr(61) . chr(61) . ' ' . chr(36) . 'P1 goto eq' . $id . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 0' . (chr(10)) . '  goto eq_end' . $id . (chr(10)) . 'eq' . $id . ':' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 1' . (chr(10)) . 'eq_end' . $id . ':' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10))))
+                return scalar (('  save ' . chr(36) . 'P1' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_parrot() . '  ' . chr(36) . 'P1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_parrot() . '  if ' . chr(36) . 'P0 ' . chr(61) . chr(61) . ' ' . chr(36) . 'P1 goto eq' . $id . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 0' . (chr(10)) . '  goto eq_end' . $id . (chr(10)) . 'eq' . $id . ':' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 1' . (chr(10)) . 'eq_end' . $id . ':' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10))))
             };
             if (($code eq 'infix:<' . chr(33) . chr(61) . '>')) {
                 ($label = ($label + 1));
                 ((my  $id) = $label);
-                return scalar (('  save ' . chr(36) . 'P1' . (chr(10)) . ($self->{arguments}->[0])->emit_parrot() . '  ' . chr(36) . 'P1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . ($self->{arguments}->[1])->emit_parrot() . '  if ' . chr(36) . 'P0 ' . chr(61) . chr(61) . ' ' . chr(36) . 'P1 goto eq' . $id . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 1' . (chr(10)) . '  goto eq_end' . $id . (chr(10)) . 'eq' . $id . ':' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 0' . (chr(10)) . 'eq_end' . $id . ':' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10))))
+                return scalar (('  save ' . chr(36) . 'P1' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_parrot() . '  ' . chr(36) . 'P1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_parrot() . '  if ' . chr(36) . 'P0 ' . chr(61) . chr(61) . ' ' . chr(36) . 'P1 goto eq' . $id . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 1' . (chr(10)) . '  goto eq_end' . $id . (chr(10)) . 'eq' . $id . ':' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' 0' . (chr(10)) . 'eq_end' . $id . ':' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10))))
             };
             if (($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>')) {
-                return scalar ((If->new(('cond' => $self->{arguments}->[0]), ('body' => do {
+                return scalar ((If->new(('cond' => (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]), ('body' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{arguments}->[1] );
+    push( @{$List_a}, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1] );
     $List_a
 }), ('otherwise' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{arguments}->[2] );
+    push( @{$List_a}, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2] );
     $List_a
 })))->emit_parrot())
             };
             if (($code eq 'defined')) {
-                return scalar ((($self->{arguments}->[0])->emit_parrot() . '  ' . chr(36) . 'I0 ' . chr(61) . ' defined ' . chr(36) . 'P0' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'I0' . (chr(10))))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_parrot() . '  ' . chr(36) . 'I0 ' . chr(61) . ' defined ' . chr(36) . 'P0' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'I0' . (chr(10))))
             };
             if (($code eq 'substr')) {
-                return scalar ((($self->{arguments}->[0])->emit_parrot() . '  ' . chr(36) . 'S0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  save ' . chr(36) . 'S0' . (chr(10)) . ($self->{arguments}->[1])->emit_parrot() . '  ' . chr(36) . 'I0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  save ' . chr(36) . 'I0' . (chr(10)) . ($self->{arguments}->[2])->emit_parrot() . '  ' . chr(36) . 'I1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'I0' . (chr(10)) . '  restore ' . chr(36) . 'S0' . (chr(10)) . '  ' . chr(36) . 'S0 ' . chr(61) . ' substr ' . chr(36) . 'S0, ' . chr(36) . 'I0, ' . chr(36) . 'I1' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'S0' . (chr(10))))
+                return scalar ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_parrot() . '  ' . chr(36) . 'S0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  save ' . chr(36) . 'S0' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_parrot() . '  ' . chr(36) . 'I0 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  save ' . chr(36) . 'I0' . (chr(10)) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_parrot() . '  ' . chr(36) . 'I1 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . '  restore ' . chr(36) . 'I0' . (chr(10)) . '  restore ' . chr(36) . 'S0' . (chr(10)) . '  ' . chr(36) . 'S0 ' . chr(61) . ' substr ' . chr(36) . 'S0, ' . chr(36) . 'I0, ' . chr(36) . 'I1' . (chr(10)) . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'S0' . (chr(10))))
             };
-            ((my  $List_args = bless [], 'ARRAY') = $self->{arguments});
+            ((my  $List_args = bless [], 'ARRAY') = (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))));
             ((my  $str) = '');
             ((my  $ii) = 10);
             (my  $arg);
@@ -580,7 +580,7 @@ package GLOBAL;
             my $self = $_[0];
             ($label = ($label + 1));
             ((my  $id) = $label);
-            return scalar (($self->{cond}->emit_parrot() . '  unless ' . chr(36) . 'P0 goto ifelse' . $id . (chr(10)) . Main::join(([ map { $_->emit_parrot() } @{( $self->{body} )} ]), '') . '  goto ifend' . $id . (chr(10)) . 'ifelse' . $id . ':' . (chr(10)) . Main::join(([ map { $_->emit_parrot() } @{( $self->{otherwise} )} ]), '') . 'ifend' . $id . ':' . (chr(10))))
+            return scalar (($self->{cond}->emit_parrot() . '  unless ' . chr(36) . 'P0 goto ifelse' . $id . (chr(10)) . Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))) )} ]), '') . '  goto ifend' . $id . (chr(10)) . 'ifelse' . $id . ':' . (chr(10)) . Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{otherwise} ? $self->{otherwise} : ($self->{otherwise} ||= bless([], 'ARRAY'))) )} ]), '') . 'ifend' . $id . ':' . (chr(10))))
         }
     }
 
@@ -605,7 +605,7 @@ package GLOBAL;
     $List_a
 })))
             };
-            return scalar (('' . $cond->emit_parrot() . '  save ' . chr(36) . 'P1' . (chr(10)) . '  save ' . chr(36) . 'P2' . (chr(10)) . '  ' . chr(36) . 'P1 ' . chr(61) . ' new .Iterator, ' . chr(36) . 'P0' . (chr(10)) . ' test_iter' . $id . ':' . (chr(10)) . '  unless ' . chr(36) . 'P1 goto iter_done' . $id . (chr(10)) . '  ' . chr(36) . 'P2 ' . chr(61) . ' shift ' . chr(36) . 'P1' . (chr(10)) . '  store_lex ' . chr(39) . $self->{topic}->full_name() . chr(39) . ', ' . chr(36) . 'P2' . (chr(10)) . Main::join(([ map { $_->emit_parrot() } @{( $self->{body} )} ]), '') . '  goto test_iter' . $id . (chr(10)) . ' iter_done' . $id . ':' . (chr(10)) . '  restore ' . chr(36) . 'P2' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10)) . ''))
+            return scalar (('' . $cond->emit_parrot() . '  save ' . chr(36) . 'P1' . (chr(10)) . '  save ' . chr(36) . 'P2' . (chr(10)) . '  ' . chr(36) . 'P1 ' . chr(61) . ' new .Iterator, ' . chr(36) . 'P0' . (chr(10)) . ' test_iter' . $id . ':' . (chr(10)) . '  unless ' . chr(36) . 'P1 goto iter_done' . $id . (chr(10)) . '  ' . chr(36) . 'P2 ' . chr(61) . ' shift ' . chr(36) . 'P1' . (chr(10)) . '  store_lex ' . chr(39) . $self->{topic}->full_name() . chr(39) . ', ' . chr(36) . 'P2' . (chr(10)) . Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY'))) )} ]), '') . '  goto test_iter' . $id . (chr(10)) . ' iter_done' . $id . ':' . (chr(10)) . '  restore ' . chr(36) . 'P2' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10)) . ''))
         }
     }
 
@@ -656,7 +656,7 @@ package GLOBAL;
                 ($str = ($str . '  ' . chr(36) . 'P0 ' . chr(61) . ' params[' . $i . ']' . (chr(10)) . '  .lex ' . chr(39) . $field->full_name() . chr(39) . ', ' . chr(36) . 'P0' . (chr(10))));
                 ($i = ($i + 1))
             };
-            return scalar (('.sub ' . chr(34) . $self->{name} . chr(34) . ' :method :outer(' . chr(34) . '_class_vars_' . chr(34) . ')' . (chr(10)) . '  .param pmc params  :slurpy' . (chr(10)) . '  .lex ' . chr(39) . $invocant->full_name() . chr(39) . ', self' . (chr(10)) . $str . Main::join(([ map { $_->emit_parrot() } @{( $self->{block} )} ]), '') . '.end' . (chr(10)) . (chr(10))))
+            return scalar (('.sub ' . chr(34) . $self->{name} . chr(34) . ' :method :outer(' . chr(34) . '_class_vars_' . chr(34) . ')' . (chr(10)) . '  .param pmc params  :slurpy' . (chr(10)) . '  .lex ' . chr(39) . $invocant->full_name() . chr(39) . ', self' . (chr(10)) . $str . Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY'))) )} ]), '') . '.end' . (chr(10)) . (chr(10))))
         }
     }
 
@@ -679,7 +679,7 @@ package GLOBAL;
                 ($str = ($str . '  ' . chr(36) . 'P0 ' . chr(61) . ' params[' . $i . ']' . (chr(10)) . '  .lex ' . chr(39) . $field->full_name() . chr(39) . ', ' . chr(36) . 'P0' . (chr(10))));
                 ($i = ($i + 1))
             };
-            return scalar (('.sub ' . chr(34) . $self->{name} . chr(34) . ' :outer(' . chr(34) . '_class_vars_' . chr(34) . ')' . (chr(10)) . '  .param pmc params  :slurpy' . (chr(10)) . $str . Main::join(([ map { $_->emit_parrot() } @{( $self->{block} )} ]), '') . '.end' . (chr(10)) . (chr(10))))
+            return scalar (('.sub ' . chr(34) . $self->{name} . chr(34) . ' :outer(' . chr(34) . '_class_vars_' . chr(34) . ')' . (chr(10)) . '  .param pmc params  :slurpy' . (chr(10)) . $str . Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY'))) )} ]), '') . '.end' . (chr(10)) . (chr(10))))
         }
     }
 
@@ -690,7 +690,7 @@ package GLOBAL;
         sub block { $_[0]->{block} };
         sub emit_parrot {
             my $self = $_[0];
-            Main::join(([ map { $_->emit_parrot() } @{( $self->{block} )} ]), '')
+            Main::join(([ map { $_->emit_parrot() } @{( (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY'))) )} ]), '')
         }
     }
 
