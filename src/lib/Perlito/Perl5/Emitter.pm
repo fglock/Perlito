@@ -545,7 +545,15 @@ class Decl {
         my $decl = $.decl;
         my $name = $.var.plain_name;
         if $decl eq 'has' {
-            return Perl5::tab($level) ~ 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} }';
+            if ($.var).sigil eq '%' {
+                return Perl5::tab($level) ~ 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} ||= bless({}, \'HASH\') }';
+            }
+            elsif ($.var).sigil eq '@' {
+                return Perl5::tab($level) ~ 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} ||= bless([], \'ARRAY\') }';
+            }
+            else {
+                return Perl5::tab($level) ~ 'sub ' ~ $name ~ ' { $_[0]->{' ~ $name ~ '} }';
+            }
         }
         my $str = 
             '(' ~ $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit_perl5();

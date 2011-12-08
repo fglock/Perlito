@@ -74,7 +74,7 @@ package GLOBAL;
     {
     package Rul::Or;
         sub new { shift; bless { @_ }, "Rul::Or" }
-        sub or_list { $_[0]->{or_list} };
+        sub or_list { $_[0]->{or_list} ||= bless([], 'ARRAY') };
         sub emit_perl6 {
             my $self = $_[0];
             ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'pos1 ' . chr(61) . ' ' . chr(36) . 'MATCH.to' . chr(59) . ' (do ' . chr(123) . ' ' . Main::join(([ map { $_->emit_perl6() } @{( $self->{or_list} )} ]), chr(125) . ') ' . chr(124) . chr(124) . ' (do ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'pos1' . chr(59) . ' ') . chr(125) . ') ' . chr(125) . ')')
@@ -89,7 +89,7 @@ package GLOBAL;
     {
     package Rul::Concat;
         sub new { shift; bless { @_ }, "Rul::Concat" }
-        sub concat { $_[0]->{concat} };
+        sub concat { $_[0]->{concat} ||= bless([], 'ARRAY') };
         sub emit_perl6 {
             my $self = $_[0];
             ('(' . Main::join(([ map { $_->emit_perl6() } @{( $self->{concat} )} ]), ' ' . chr(38) . chr(38) . ' ') . ')')

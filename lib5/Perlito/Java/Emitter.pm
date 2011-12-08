@@ -16,7 +16,7 @@ package GLOBAL;
     {
     package Perlito::Java::LexicalBlock;
         sub new { shift; bless { @_ }, "Perlito::Java::LexicalBlock" }
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub needs_return { $_[0]->{needs_return} };
         sub top_level { $_[0]->{top_level} };
         sub emit_java {
@@ -94,9 +94,9 @@ package GLOBAL;
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
         sub name { $_[0]->{name} };
-        sub attributes { $_[0]->{attributes} };
-        sub methods { $_[0]->{methods} };
-        sub body { $_[0]->{body} };
+        sub attributes { $_[0]->{attributes} ||= bless({}, 'HASH') };
+        sub methods { $_[0]->{methods} ||= bless({}, 'HASH') };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             ((my  $class_name) = Main::to_go_namespace($self->{name}));
@@ -352,7 +352,7 @@ package GLOBAL;
     package Val::Object;
         sub new { shift; bless { @_ }, "Val::Object" }
         sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
+        sub fields { $_[0]->{fields} ||= bless({}, 'HASH') };
         sub emit_java {
             my $self = $_[0];
             die('Val::Object - not used yet')
@@ -363,7 +363,7 @@ package GLOBAL;
     {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
-        sub array1 { $_[0]->{array1} };
+        sub array1 { $_[0]->{array1} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             ((my  $ast) = $self->expand_interpolation());
@@ -375,7 +375,7 @@ package GLOBAL;
     {
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub hash1 { $_[0]->{hash1} };
+        sub hash1 { $_[0]->{hash1} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             ((my  $ast) = $self->expand_interpolation());
@@ -395,7 +395,7 @@ package GLOBAL;
     package Lit::Object;
         sub new { shift; bless { @_ }, "Lit::Object" }
         sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
+        sub fields { $_[0]->{fields} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             ((my  $fields) = $self->{fields});
@@ -545,7 +545,7 @@ package GLOBAL;
         sub invocant { $_[0]->{invocant} };
         sub hyper { $_[0]->{hyper} };
         sub method { $_[0]->{method} };
-        sub arguments { $_[0]->{arguments} };
+        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             ((my  $invocant) = $self->{invocant}->emit_java());
@@ -588,7 +588,7 @@ package GLOBAL;
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
         sub code { $_[0]->{code} };
-        sub arguments { $_[0]->{arguments} };
+        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
         sub namespace { $_[0]->{namespace} };
         sub emit_java {
             my $self = $_[0];
@@ -764,8 +764,8 @@ package GLOBAL;
     package If;
         sub new { shift; bless { @_ }, "If" }
         sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} };
-        sub otherwise { $_[0]->{otherwise} };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
+        sub otherwise { $_[0]->{otherwise} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             ((my  $cond) = $self->{cond});
@@ -794,8 +794,8 @@ package GLOBAL;
     package For;
         sub new { shift; bless { @_ }, "For" }
         sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} };
-        sub topic { $_[0]->{topic} };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
+        sub topic { $_[0]->{topic} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             ('func (a_ *Any) ' . chr(123) . ' ' . (chr(10)) . '  var i ' . chr(61) . ' (*(*a_).(array_er).f_array(Capture' . chr(123) . chr(125) . ')).(*Array)' . chr(59) . ' ' . (chr(10)) . '  for pos :' . chr(61) . ' 0' . chr(59) . ' pos <' . chr(61) . ' i.n' . chr(59) . ' pos++ ' . chr(123) . ' ' . (chr(10)) . '    func (' . $self->{topic}->emit_java() . ' *Any) ' . chr(123) . ' ' . (chr(10)) . '      ' . (Perlito::Java::LexicalBlock->new(('block' => $self->{body}), ('needs_return' => 0)))->emit_java() . (chr(10)) . '    ' . chr(125) . '(i.v[pos]) ' . (chr(10)) . '  ' . chr(125) . ' ' . (chr(10)) . chr(125) . '(' . $self->{cond}->emit_java() . ')')
@@ -806,8 +806,8 @@ package GLOBAL;
     {
     package When;
         sub new { shift; bless { @_ }, "When" }
-        sub parameters { $_[0]->{parameters} };
-        sub body { $_[0]->{body} };
+        sub parameters { $_[0]->{parameters} ||= bless([], 'ARRAY') };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             die(('TODO - When'))
@@ -821,7 +821,7 @@ package GLOBAL;
         sub init { $_[0]->{init} };
         sub cond { $_[0]->{cond} };
         sub continue { $_[0]->{continue} };
-        sub body { $_[0]->{body} };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             ((my  $cond) = $self->{cond});
@@ -903,7 +903,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Method" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             ((my  $invocant) = ($self->{sig})->invocant());
@@ -917,7 +917,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Sub" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             if (($self->{name} eq '')) {
@@ -931,7 +931,7 @@ package GLOBAL;
     {
     package Do;
         sub new { shift; bless { @_ }, "Do" }
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub emit_java {
             my $self = $_[0];
             ('(func () *Any ' . chr(123) . ' ' . (Perlito::Java::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1)))->emit_java() . chr(59) . ' return u_undef() ' . chr(125) . ')()')

@@ -17,9 +17,9 @@ package GLOBAL;
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
         sub name { $_[0]->{name} };
-        sub attributes { $_[0]->{attributes} };
-        sub methods { $_[0]->{methods} };
-        sub body { $_[0]->{body} };
+        sub attributes { $_[0]->{attributes} ||= bless({}, 'HASH') };
+        sub methods { $_[0]->{methods} ||= bless({}, 'HASH') };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             (chr(35) . ' class ' . $self->{name} . (chr(59) . ' ') . (chr(10)) . Main::join(([ map { $_->emit() } @{( $self->{body} )} ]), (chr(59) . ' ')) . (chr(10)))
@@ -85,7 +85,7 @@ package GLOBAL;
     package Val::Object;
         sub new { shift; bless { @_ }, "Val::Object" }
         sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
+        sub fields { $_[0]->{fields} ||= bless({}, 'HASH') };
         sub emit {
             my $self = $_[0];
             ('bless(' . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . ')')
@@ -96,7 +96,7 @@ package GLOBAL;
     {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
-        sub array1 { $_[0]->{array1} };
+        sub array1 { $_[0]->{array1} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             ('[' . Main::join(([ map { $_->emit() } @{( $self->{array1} )} ]), ', ') . ']')
@@ -107,7 +107,7 @@ package GLOBAL;
     {
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub hash1 { $_[0]->{hash1} };
+        sub hash1 { $_[0]->{hash1} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             ((my  $fields) = $self->{hash1});
@@ -131,7 +131,7 @@ package GLOBAL;
     package Lit::Object;
         sub new { shift; bless { @_ }, "Lit::Object" }
         sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
+        sub fields { $_[0]->{fields} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             ((my  $fields) = $self->{fields});
@@ -266,7 +266,7 @@ package GLOBAL;
         sub invocant { $_[0]->{invocant} };
         sub hyper { $_[0]->{hyper} };
         sub method { $_[0]->{method} };
-        sub arguments { $_[0]->{arguments} };
+        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             ((my  $invocant) = $self->{invocant}->emit());
@@ -300,7 +300,7 @@ package GLOBAL;
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
         sub code { $_[0]->{code} };
-        sub arguments { $_[0]->{arguments} };
+        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             ((my  $code) = $self->{code});
@@ -390,8 +390,8 @@ package GLOBAL;
     package If;
         sub new { shift; bless { @_ }, "If" }
         sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} };
-        sub otherwise { $_[0]->{otherwise} };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
+        sub otherwise { $_[0]->{otherwise} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             ('do ' . chr(123) . ' if (' . $self->{cond}->emit() . ') ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{body} )} ]), chr(59)) . ' ' . chr(125) . ' else ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{otherwise} )} ]), chr(59)) . ' ' . chr(125) . ' ' . chr(125))
@@ -403,8 +403,8 @@ package GLOBAL;
     package For;
         sub new { shift; bless { @_ }, "For" }
         sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} };
-        sub topic { $_[0]->{topic} };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
+        sub topic { $_[0]->{topic} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             ((my  $cond) = $self->{cond});
@@ -452,7 +452,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Method" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             ((my  $sig) = $self->{sig});
@@ -473,7 +473,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Sub" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             ((my  $sig) = $self->{sig});
@@ -494,7 +494,7 @@ package GLOBAL;
     {
     package Do;
         sub new { shift; bless { @_ }, "Do" }
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub emit {
             my $self = $_[0];
             ('do ' . chr(123) . ' ' . Main::join(([ map { $_->emit() } @{( $self->{block} )} ]), chr(59) . ' ') . ' ' . chr(125))

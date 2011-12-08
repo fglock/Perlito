@@ -21,8 +21,8 @@ package GLOBAL;
         sub str { $_[0]->{str} };
         sub bool { $_[0]->{bool} };
         sub capture { $_[0]->{capture} };
-        sub hash { $_[0]->{hash} };
-        sub array { $_[0]->{array} };
+        sub hash { $_[0]->{hash} ||= bless({}, 'HASH') };
+        sub array { $_[0]->{array} ||= bless([], 'ARRAY') };
         sub perl {
             my $self = $_[0];
             return scalar (('Match.new(' . ('from ' . chr(61) . '> ') . Main::perl($self->{from}, ) . (', to ' . chr(61) . '> ') . Main::perl($self->{to}, ) . (', bool ' . chr(61) . '> ') . Main::perl(($self->{bool}->bool()), ) . (', capture ' . chr(61) . '> ') . Main::perl($self->{capture}, ) . (', hash ' . chr(61) . '> ') . Main::perl($self->{hash}, ) . (', array ' . chr(61) . '> ') . Main::perl($self->{array}, ) . (')')))

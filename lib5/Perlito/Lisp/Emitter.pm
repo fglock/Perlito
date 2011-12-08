@@ -16,7 +16,7 @@ package GLOBAL;
     {
     package Perlito::Lisp::LexicalBlock;
         sub new { shift; bless { @_ }, "Perlito::Lisp::LexicalBlock" }
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
             (my  $List_block = bless [], 'ARRAY');
@@ -73,9 +73,9 @@ package GLOBAL;
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
         sub name { $_[0]->{name} };
-        sub attributes { $_[0]->{attributes} };
-        sub methods { $_[0]->{methods} };
-        sub body { $_[0]->{body} };
+        sub attributes { $_[0]->{attributes} ||= bless({}, 'HASH') };
+        sub methods { $_[0]->{methods} ||= bless({}, 'HASH') };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
             ((my  $class_name) = Main::to_lisp_namespace($self->{name}));
@@ -304,7 +304,7 @@ package GLOBAL;
     package Val::Object;
         sub new { shift; bless { @_ }, "Val::Object" }
         sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
+        sub fields { $_[0]->{fields} ||= bless({}, 'HASH') };
         sub emit_lisp {
             my $self = $_[0];
             ('bless(' . Main::perl($self->{fields}, ) . ', ' . Main::perl($self->{class}, ) . ')')
@@ -315,7 +315,7 @@ package GLOBAL;
     {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
-        sub array1 { $_[0]->{array1} };
+        sub array1 { $_[0]->{array1} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
             ((my  $ast) = $self->expand_interpolation());
@@ -327,7 +327,7 @@ package GLOBAL;
     {
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub hash1 { $_[0]->{hash1} };
+        sub hash1 { $_[0]->{hash1} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
             ((my  $ast) = $self->expand_interpolation());
@@ -347,7 +347,7 @@ package GLOBAL;
     package Lit::Object;
         sub new { shift; bless { @_ }, "Lit::Object" }
         sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
+        sub fields { $_[0]->{fields} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
             if ($self->{fields}) {
@@ -462,7 +462,7 @@ package GLOBAL;
         sub invocant { $_[0]->{invocant} };
         sub hyper { $_[0]->{hyper} };
         sub method { $_[0]->{method} };
-        sub arguments { $_[0]->{arguments} };
+        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
             ((my  $arguments) = Main::join(([ map { $_->emit_lisp() } @{( $self->{arguments} )} ]), ' '));
@@ -510,7 +510,7 @@ package GLOBAL;
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
         sub code { $_[0]->{code} };
-        sub arguments { $_[0]->{arguments} };
+        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
         sub namespace { $_[0]->{namespace} };
         sub emit_lisp {
             my $self = $_[0];
@@ -668,8 +668,8 @@ package GLOBAL;
     package For;
         sub new { shift; bless { @_ }, "For" }
         sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} };
-        sub topic { $_[0]->{topic} };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
+        sub topic { $_[0]->{topic} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
             ((my  $cond) = $self->{cond});
@@ -693,7 +693,7 @@ package GLOBAL;
         sub init { $_[0]->{init} };
         sub cond { $_[0]->{cond} };
         sub continue { $_[0]->{continue} };
-        sub body { $_[0]->{body} };
+        sub body { $_[0]->{body} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
             ((my  $List_body = bless [], 'ARRAY') = $self->{body});
@@ -752,7 +752,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Method" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
 
@@ -765,7 +765,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Sub" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
             ((my  $sig) = $self->{sig});
@@ -793,7 +793,7 @@ package GLOBAL;
     {
     package Do;
         sub new { shift; bless { @_ }, "Do" }
-        sub block { $_[0]->{block} };
+        sub block { $_[0]->{block} ||= bless([], 'ARRAY') };
         sub emit_lisp {
             my $self = $_[0];
             ((my  $block) = Perlito::Lisp::LexicalBlock->new(('block' => $self->{block})));
