@@ -839,7 +839,7 @@ class Decl {
 
 class Sig {
     method emit_go {
-        ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
+        ''
     }
     method emit_go_bind {
         my $str = '';

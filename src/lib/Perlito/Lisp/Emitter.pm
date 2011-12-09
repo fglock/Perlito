@@ -591,12 +591,6 @@ class Decl {
     }
 }
 
-class Sig {
-    method emit_lisp {
-        ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
-    };
-}
-
 class Method {
     method emit_lisp {
         # unused

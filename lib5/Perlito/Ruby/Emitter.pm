@@ -899,16 +899,6 @@ package GLOBAL;
 
 ;
     {
-    package Sig;
-        sub new { shift; bless { @_ }, "Sig" }
-        sub emit_ruby {
-            my $self = $_[0];
-            ' print ' . chr(39) . 'Signature - TODO' . chr(39) . chr(59) . ' die ' . chr(39) . 'Signature - TODO' . chr(39) . chr(59) . ' '
-        }
-    }
-
-;
-    {
     package Method;
         sub new { shift; bless { @_ }, "Method" }
         sub emit_ruby {

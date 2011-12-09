@@ -384,17 +384,6 @@ package GLOBAL;
 
 ;
     {
-    package Sig;
-        sub new { shift; bless { @_ }, "Sig" }
-        sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
-            warn(('Interpreter TODO: Sig'))
-        }
-    }
-
-;
-    {
     package Method;
         sub new { shift; bless { @_ }, "Method" }
         sub eval {

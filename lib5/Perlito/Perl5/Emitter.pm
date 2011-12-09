@@ -520,38 +520,6 @@ package GLOBAL;
                 ((my  $a) = $parameters);
                 return scalar (('((' . ($a->invocant())->emit_perl5() . ')->' . chr(123) . $a->method() . chr(125) . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')'))
             };
-            if (Main::isa($parameters, 'Lit::Array')) {
-                ((my  $a) = $parameters->array1());
-                ((my  $str) = 'do ' . chr(123) . ' ');
-                ((my  $i) = 0);
-                for my $var ( @{($a)} ) {
-                    ($str = ($str . (' ' . emit_perl5_bind($var, Index->new(('obj' => $arguments), ('index_exp' => Val::Int->new(('int' => $i))))) . chr(59) . ' ')));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $parameters->emit_perl5() . ' ' . chr(125)))
-            };
-            if (Main::isa($parameters, 'Lit::Hash')) {
-                ((my  $a) = $parameters->hash1());
-                ((my  $b) = $arguments->hash1());
-                ((my  $str) = 'do ' . chr(123) . ' ');
-                ((my  $i) = 0);
-                (my  $arg);
-                for my $var ( @{($a)} ) {
-                    ($arg = Apply->new(('code' => 'Mu'), ('arguments' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    $List_a
-})));
-                    for my $var2 ( @{($b)} ) {
-                        if ((($var2->[0])->buf() eq ($var->[0])->buf())) {
-                            ($arg = $var2->[1])
-                        }
-                    };
-                    ($str = ($str . (' ' . emit_perl5_bind($var->[1], $arg) . chr(59) . ' ')));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $parameters->emit_perl5() . ' ' . chr(125)))
-            };
             if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64))))) {
                 ($arguments = Lit::Array->new(('array1' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -670,21 +638,6 @@ package GLOBAL;
                 }
             };
             return scalar ((Perl5::tab($level) . $str))
-        }
-    }
-
-;
-    {
-    package Sig;
-        sub new { shift; bless { @_ }, "Sig" }
-        sub emit_perl5 {
-            my $self = $_[0];
-            $self->emit_perl5_indented(0)
-        };
-        sub emit_perl5_indented {
-            my $self = $_[0];
-            my $level = $_[1];
-            ' print ' . chr(39) . 'Signature - TODO' . chr(39) . chr(59) . ' die ' . chr(39) . 'Signature - TODO' . chr(39) . chr(59) . ' '
         }
     }
 

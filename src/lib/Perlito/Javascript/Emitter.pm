@@ -588,65 +588,7 @@ class Apply {
         Javascript::tab($level) ~ $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
     }
 
-    # TODO - this would be called from emit_javascript_bind()
-    # sub emit_javascript_autovivify ($var) {
-    #     if $var.isa('Lookup') {
-    #         my $var1 = $var.obj;
-    #         my $var1_js = $var1.emit_javascript;
-    #         $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = {} }; ';
-    #         $var_js = $var1_js ~ '[' ~ $var.index_exp.emit_javascript() ~ ']'
-    #     }
-    #     elsif $var.isa('Index') {
-    #         my $var1 = $var.obj;
-    #         my $var1_js = $var1.emit_javascript;
-    #         $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = [] }; ';
-    #         $var_js = $var1_js ~ '[' ~ $var.index_exp.emit_javascript() ~ ']'
-    #     }
-    #     else {
-    #         $var_js = $var.emit_javascript;
-    #     }
-    # }
-
     sub emit_javascript_bind ($parameters, $arguments) {
-        if $parameters.isa( 'Lit::Array' ) {
-            
-            #  [$a, [$b, $c]] = [1, [2, 3]]
-            
-            my $a = $parameters.array1;
-            my $str = 'do { ';
-            my $i = 0;
-            for @$a -> $var { 
-                $str = $str ~ ' ' 
-                    ~ emit_javascript_bind($var, Index.new(
-                        obj    => $arguments,
-                        index_exp  => Val::Int.new( int => $i )
-                    )) 
-                    ~ '; ';
-                $i = $i + 1;
-            }
-            return $str ~ $parameters.emit_javascript() ~ ' }';
-        }
-        if $parameters.isa( 'Lit::Hash' ) {
-
-            #  {:$a, :$b} = { a => 1, b => [2, 3]}
-
-            my $a = $parameters.hash1;
-            my $b = $arguments.hash1;
-            my $str = 'do { ';
-            my $i = 0;
-            my $arg;
-            for @$a -> $var {
-                $arg = Apply.new(code => 'Mu');
-                for @$b -> $var2 {
-                    if ($var2[0]).buf eq ($var[0]).buf() {
-                        $arg = $var2[1];
-                    }
-                }
-                $str = $str ~ ' ' ~ emit_javascript_bind($var[1], $arg) ~ '; ';
-                $i = $i + 1;
-            }
-            return $str ~ $parameters.emit_javascript() ~ ' }';
-        }
         if $parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return '(' ~ ($parameters.invocant).emit_javascript() ~ '.v_' ~ $parameters.method() ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
@@ -788,10 +730,6 @@ class Decl {
             die "not implemented: Decl '" ~ $.decl ~ "'";
         }
     }
-}
-
-class Sig {
-    1
 }
 
 class Method {

@@ -666,12 +666,6 @@ class Decl {
     }
 }
 
-class Sig {
-    method emit_parrot {
-        ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
-    };
-}
-
 class Method {
     method emit_parrot {
         my $sig = $.sig;

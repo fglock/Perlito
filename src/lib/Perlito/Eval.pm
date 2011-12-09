@@ -202,12 +202,6 @@ class Decl {
     }
 }
 
-class Sig {
-    method eval ($env) {
-        warn "Interpreter TODO: Sig";
-    };
-}
-
 class Method {
     method eval ($env) {
         warn "Interpreter TODO: Method";

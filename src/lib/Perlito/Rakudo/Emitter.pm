@@ -1,10 +1,8 @@
 use v6;
 
 class CompUnit {
-    has $.name;
     has %.attributes;
     has %.methods;
-    has @.body;
     method emit {
         '# class ' ~ $.name ~ "; " ~ "\n" ~
         (@.body.>>emit).join( "; " ) ~ "\n";
@@ -12,34 +10,28 @@ class CompUnit {
 }
 
 class Val::Int {
-    has $.int;
     method emit { $.int }
 }
 
 class Val::Bit {
-    has $.bit;
     method emit { $.bit }
 }
 
 class Val::Num {
-    has $.num;
     method emit { $.num }
 }
 
 class Val::Buf {
-    has $.buf;
     method emit { '\'' ~ $.buf ~ '\'' }
 }
 
 class Lit::Array {
-    has @.array1;
     method emit {
         '[' ~ (@.array1.>>emit).join(', ') ~ ']';
     }
 }
 
 class Lit::Hash {
-    has @.hash1;
     method emit {
         my $fields = @.hash1;
         my $str = '';
@@ -51,31 +43,20 @@ class Lit::Hash {
 }
 
 class Index {
-    has $.obj;
-    has $.index_exp;
     method emit {
         $.obj.emit ~ '.[' ~ $.index_exp.emit ~ ']';
     }
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
     method emit {
         $.obj.emit ~ '.{' ~ $.index_exp.emit ~ '}';
     }
 }
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.name;
     method emit {
         # Normalize the sigil here into $
-        # $x    => $x
-        # @x    => $List_x
-        # %x    => $Hash_x
-        # &x    => $Code_x
         my $table = {
             '$' => '$',
             '@' => '$List_',
@@ -100,18 +81,12 @@ class Bind {
 }
 
 class Proto {
-    has $.name;
     method emit {
         ~$.name        
     }
 }
 
 class Call {
-    has $.invocant;
-    has $.hyper;
-    has $.method;
-    has @.arguments;
-    #has $.hyper;
     method emit {
         my $invocant = $.invocant.emit;
         if $invocant eq 'self' {
@@ -151,8 +126,6 @@ class Call {
 }
 
 class Apply {
-    has $.code;
-    has @.arguments;
     method emit {
         
         my $code = $.code;
@@ -202,25 +175,18 @@ class Apply {
 }
 
 class Return {
-    has $.result;
     method emit {
         return 'return(' ~ $.result.emit ~ ')';
     }
 }
 
 class If {
-    has $.cond;
-    has @.body;
-    has @.otherwise;
     method emit {
         'do { if (' ~ $.cond.emit ~ ') { ' ~ (@.body.>>emit).join(';') ~ ' } else { ' ~ (@.otherwise.>>emit).join(';') ~ ' } }';
     }
 }
 
 class For {
-    has $.cond;
-    has @.body;
-    has @.topic;
     method emit {
         my $cond = $.cond;
         if   $cond.isa( 'Var' ) 
@@ -233,27 +199,12 @@ class For {
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
     method emit {
         return $.decl ~ ' ' ~ $.type ~ ' ' ~ $.var.emit;
     }
 }
 
-class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
-    method emit {
-        ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
-    };
-}
-
 class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit {
         # TODO - signature binding
         my $sig = $.sig;
@@ -276,9 +227,6 @@ class Method {
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit {
         # TODO - signature binding
         my $sig = $.sig;
@@ -305,7 +253,6 @@ class Sub {
 }
 
 class Do {
-    has @.block;
     method emit {
         'do { ' ~ 
           (@.block.>>emit).join('; ') ~ 
@@ -314,7 +261,6 @@ class Do {
 }
 
 class Use {
-    has $.mod;
     method emit {
         'use ' ~ $.mod
     }

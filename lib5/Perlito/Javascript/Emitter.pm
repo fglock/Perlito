@@ -674,34 +674,6 @@ package GLOBAL;
         sub emit_javascript_bind {
             my $parameters = $_[0];
             my $arguments = $_[1];
-            if (Main::isa($parameters, 'Lit::Array')) {
-                ((my  $a) = $parameters->array1());
-                ((my  $str) = 'do ' . chr(123) . ' ');
-                ((my  $i) = 0);
-                for my $var ( @{($a)} ) {
-                    ($str = ($str . ' ' . emit_javascript_bind($var, Index->new(('obj' => $arguments), ('index_exp' => Val::Int->new(('int' => $i))))) . chr(59) . ' '));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $parameters->emit_javascript() . ' ' . chr(125)))
-            };
-            if (Main::isa($parameters, 'Lit::Hash')) {
-                ((my  $a) = $parameters->hash1());
-                ((my  $b) = $arguments->hash1());
-                ((my  $str) = 'do ' . chr(123) . ' ');
-                ((my  $i) = 0);
-                (my  $arg);
-                for my $var ( @{($a)} ) {
-                    ($arg = Apply->new(('code' => 'Mu')));
-                    for my $var2 ( @{($b)} ) {
-                        if ((($var2->[0])->buf() eq ($var->[0])->buf())) {
-                            ($arg = $var2->[1])
-                        }
-                    };
-                    ($str = ($str . ' ' . emit_javascript_bind($var->[1], $arg) . chr(59) . ' '));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $parameters->emit_javascript() . ' ' . chr(125)))
-            };
             if (Main::isa($parameters, 'Call')) {
                 return scalar (('(' . ($parameters->invocant())->emit_javascript() . '.v_' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
             };
@@ -873,13 +845,6 @@ package GLOBAL;
                 die(('not implemented: Decl ' . chr(39) . $self->{decl} . (chr(39))))
             }
         }
-    }
-
-;
-    {
-    package Sig;
-        sub new { shift; bless { @_ }, "Sig" }
-        1
     }
 
 ;

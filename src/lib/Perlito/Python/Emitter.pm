@@ -782,12 +782,6 @@ class Decl {
     }
 }
 
-class Sig {
-    method emit_python {
-        ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
-    };
-}
-
 class Method {
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {

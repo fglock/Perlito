@@ -417,12 +417,6 @@ class Decl {
     }
 }
 
-class Sig {
-    method emit_clojure {
-        ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
-    };
-}
-
 class Method {
     method emit_clojure {
         # unused

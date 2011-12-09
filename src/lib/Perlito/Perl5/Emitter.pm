@@ -147,11 +147,7 @@ class Lookup {
 class Var {
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
-        # Normalize the sigil here into $
-        # $x    => $x
-        # @x    => $List_x
-        # %x    => $Hash_x
-        # &x    => $Code_x
+        # Normalize the sigil
         my $table = {
             '$' => '$',
             '@' => '$List_',
@@ -399,53 +395,9 @@ class Apply {
 
     sub emit_perl5_bind ($parameters, $arguments) {
         if $parameters.isa( 'Call' ) {
-
             # $obj.a = 3
-
             my $a = $parameters;
             return '((' ~ ($a.invocant).emit_perl5() ~ ')->{' ~ $a.method() ~ '} = ' ~ $arguments.emit_perl5() ~ ')';
-        }
-
-        if $parameters.isa( 'Lit::Array' ) {
-            
-            #  [$a, [$b, $c]] = [1, [2, 3]]
-            
-            my $a = $parameters.array1;
-            my $str = 'do { ';
-            my $i = 0;
-            for @$a -> $var { 
-                $str ~= ' ' 
-                    ~ emit_perl5_bind( $var, 
-                            Index.new(
-                                obj    => $arguments,
-                                index_exp  => Val::Int.new( int => $i )
-                            )
-                        ) 
-                    ~ '; ';
-                $i = $i + 1;
-            }
-            return $str ~ $parameters.emit_perl5() ~ ' }';
-        }
-        if $parameters.isa( 'Lit::Hash' ) {
-
-            #  {:$a, :$b} = { a => 1, b => [2, 3]}
-
-            my $a = $parameters.hash1;
-            my $b = $arguments.hash1;
-            my $str = 'do { ';
-            my $i = 0;
-            my $arg;
-            for @$a -> $var {
-                $arg = Apply.new(code => 'Mu', arguments => []);
-                for @$b -> $var2 {
-                    if ($var2[0]).buf eq ($var[0]).buf() {
-                        $arg = $var2[1];
-                    }
-                }
-                $str ~= ' ' ~ emit_perl5_bind( $var[1], $arg ) ~ '; ';
-                $i = $i + 1;
-            }
-            return $str ~ $parameters.emit_perl5() ~ ' }';
         }
         if      $parameters.isa( 'Var' ) && $parameters.sigil eq '@' 
             ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '@' 
@@ -537,13 +489,6 @@ class Decl {
             $str ~= ')';
         }
         return Perl5::tab($level) ~ $str;
-    }
-}
-
-class Sig {
-    method emit_perl5 { self.emit_perl5_indented(0) }
-    method emit_perl5_indented( $level ) {
-        ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     }
 }
 

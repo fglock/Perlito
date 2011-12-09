@@ -656,12 +656,6 @@ class Decl {
     }
 }
 
-class Sig {
-    method emit_ruby {
-        ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
-    };
-}
-
 class Method {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {

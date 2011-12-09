@@ -745,7 +745,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Sig" }
         sub emit_go {
             my $self = $_[0];
-            ' print ' . chr(39) . 'Signature - TODO' . chr(39) . chr(59) . ' die ' . chr(39) . 'Signature - TODO' . chr(39) . chr(59) . ' '
+            ''
         };
         sub emit_go_bind {
             my $self = $_[0];
