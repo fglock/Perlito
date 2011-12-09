@@ -542,6 +542,13 @@ class Apply {
     }
     sub emit_ruby_bind($parameters, $arguments) {
         if $parameters.isa( 'Index' ) {
+            if      $parameters.obj.isa( 'Var' ) && $parameters.obj.sigil eq '@'
+                ||  $parameters.obj.isa( 'Decl' ) && $parameters.obj.var.sigil eq '@'
+            {
+                return      ($parameters.obj).emit_ruby ~ '['
+                    ~       ($parameters.index_exp).emit_ruby ~ '] = '
+                    ~       $arguments.emit_ruby
+            }
             return    '('
                     ~   $parameters.obj.emit_ruby() ~ ' '
                     ~ '? '
