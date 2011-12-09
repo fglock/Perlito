@@ -17,7 +17,7 @@ package GLOBAL;
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
         sub name { $_[0]->{name} };
-        sub body { $_[0]->{body} ||= bless([], 'ARRAY') }
+        sub body { $_[0]->{body} }
     }
 
 ;
@@ -53,21 +53,21 @@ package GLOBAL;
     package Lit::Block;
         sub new { shift; bless { @_ }, "Lit::Block" }
         sub sig { $_[0]->{sig} };
-        sub stmts { $_[0]->{stmts} ||= bless([], 'ARRAY') }
+        sub stmts { $_[0]->{stmts} }
     }
 
 ;
     {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
-        sub array1 { $_[0]->{array1} ||= bless([], 'ARRAY') }
+        sub array1 { $_[0]->{array1} }
     }
 
 ;
     {
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub hash1 { $_[0]->{hash1} ||= bless([], 'ARRAY') }
+        sub hash1 { $_[0]->{hash1} }
     }
 
 ;
@@ -110,7 +110,7 @@ package GLOBAL;
         sub invocant { $_[0]->{invocant} };
         sub hyper { $_[0]->{hyper} };
         sub method { $_[0]->{method} };
-        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') }
+        sub arguments { $_[0]->{arguments} }
     }
 
 ;
@@ -118,7 +118,7 @@ package GLOBAL;
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
         sub code { $_[0]->{code} };
-        sub arguments { $_[0]->{arguments} ||= bless([], 'ARRAY') };
+        sub arguments { $_[0]->{arguments} };
         sub namespace { $_[0]->{namespace} }
     }
 
@@ -173,7 +173,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Method" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} ||= bless([], 'ARRAY') }
+        sub block { $_[0]->{block} }
     }
 
 ;
@@ -182,7 +182,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Sub" }
         sub name { $_[0]->{name} };
         sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} ||= bless([], 'ARRAY') }
+        sub block { $_[0]->{block} }
     }
 
 ;

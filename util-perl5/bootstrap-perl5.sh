@@ -1,3 +1,4 @@
+set -x
 export PERL5LIB=./lib5
 
 rm -rf lib5-new
