@@ -11,6 +11,7 @@ cp src/lib/Perlito/Ruby/Runtime.rb librb-new/Perlito/Ruby/Runtime.rb
 
 ruby1.9 perlito.rb -Cruby src/lib/Perlito/Test.pm            > librb-new/Perlito__Test.rb
 
+ruby1.9 perlito.rb -Cruby src/lib/Perlito/AST.pm             > librb-new/Perlito__AST.rb
 ruby1.9 perlito.rb -Cruby src/lib/Perlito/Grammar.pm         > librb-new/Perlito__Grammar.rb
 ruby1.9 perlito.rb -Cruby src/lib/Perlito/Grammar/Control.pm > librb-new/Perlito__Grammar__Control.rb
 ruby1.9 perlito.rb -Cruby src/lib/Perlito/Grammar/Regex.pm   > librb-new/Perlito__Grammar__Regex.rb

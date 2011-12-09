@@ -1,5 +1,7 @@
 use v6;
 
+use Perlito::AST;
+
 class Ruby {
     sub to_str ($op, $args) {
         my @s;
@@ -251,10 +253,8 @@ class Perlito::Ruby::LexicalBlock {
 }
 
 class CompUnit {
-    has $.name;
     has %.attributes;
     has %.methods;
-    has @.body;
 
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
@@ -279,7 +279,6 @@ class CompUnit {
 }
 
 class Val::Int {
-    has $.int;
     method emit_ruby { $.int }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ $.int 
@@ -287,7 +286,6 @@ class Val::Int {
 }
 
 class Val::Bit {
-    has $.bit;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ ( $.bit ?? 'true' !! 'false' )
@@ -295,7 +293,6 @@ class Val::Bit {
 }
 
 class Val::Num {
-    has $.num;
     method emit_ruby { $.num }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ $.num 
@@ -303,7 +300,6 @@ class Val::Num {
 }
 
 class Val::Buf {
-    has $.buf;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ '"' ~ $.buf ~ '"' 
@@ -317,19 +313,7 @@ class Val::Undef {
     }
 }
 
-class Val::Object {
-    has $.class;
-    has %.fields;
-    method emit_ruby { self.emit_ruby_indented(0) }
-    method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ 
-            $.class.emit_ruby ~ '(' ~ %.fields.emit_ruby ~ ')';
-    }
-}
-
 class Lit::Block {
-    has $.sig;
-    has @.stmts;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         # a block is an anonymous sub
@@ -339,7 +323,6 @@ class Lit::Block {
 }
 
 class Lit::Array {
-    has @.array1;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $ast = self.expand_interpolation;
@@ -348,7 +331,6 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash1;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $ast = self.expand_interpolation;
@@ -356,30 +338,7 @@ class Lit::Hash {
     }
 }
 
-class Lit::Code {
-    # XXX
-    1;
-}
-
-class Lit::Object {
-    has $.class;
-    has @.fields;
-    method emit_ruby { self.emit_ruby_indented(0) }
-    method emit_ruby_indented( $level ) {
-        my $fields = @.fields;
-        my @str;
-        for @$fields -> $field { 
-            push @str, "o.v_" ~ ($field[0]).buf ~ '=' ~ ($field[1]).emit_ruby ~ "; ";
-        }
-        Ruby::tab($level) ~ "Proc.new \{ |o| "
-            ~ @str.join(' ')
-            ~ "o }.call(C_" ~ Main::to_go_namespace($.class) ~ ".new)";
-    }
-}
-
 class Index {
-    has $.obj;
-    has $.index_exp;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 
@@ -388,8 +347,6 @@ class Index {
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 
@@ -398,9 +355,6 @@ class Lookup {
 }
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.name;
     my $table = {
         '$' => 'v_',
         '@' => 'list_',
@@ -434,7 +388,6 @@ class Var {
 }
 
 class Proto {
-    has $.name;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ '$' ~ Main::to_go_namespace($.name) 
@@ -442,11 +395,6 @@ class Proto {
 }
 
 class Call {
-    has $.invocant;
-    has $.hyper;
-    has $.method;
-    has @.arguments;
-    #has $.hyper;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $invocant = $.invocant.emit_ruby;
@@ -496,8 +444,6 @@ class Call {
 }
 
 class Apply {
-    has $.code;
-    has @.arguments;
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 
             self.emit_ruby
@@ -628,7 +574,6 @@ class Apply {
 }
 
 class Return {
-    has $.result;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ 'return ' ~ $.result.emit_ruby ~ '';
@@ -636,9 +581,6 @@ class Return {
 }
 
 class If {
-    has $.cond;
-    has @.body;
-    has @.otherwise;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $has_body = @.body ?? 1 !! 0;
@@ -664,10 +606,6 @@ class If {
 }
 
 class While {
-    has $.init;
-    has $.cond;
-    has $.continue;
-    has @.body;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $body_block = Perlito::Ruby::LexicalBlock.new( block => @.body );
@@ -688,8 +626,6 @@ class While {
 }
 
 class For {
-    has $.cond;
-    has @.body;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $body_block = Perlito::Ruby::LexicalBlock.new( block => @.body.stmts );
@@ -704,9 +640,6 @@ class For {
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $decl = $.decl;
@@ -731,18 +664,12 @@ class Decl {
 }
 
 class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
     method emit_ruby {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
 }
 
 class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $sig = $.sig;
@@ -770,9 +697,6 @@ class Method {
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $label = "_anon_" ~ Perlito::Ruby::LexicalBlock::get_ident_ruby;
@@ -814,7 +738,6 @@ class Sub {
 }
 
 class Do {
-    has @.block;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my $block = self.simplify.block;
@@ -827,7 +750,6 @@ class Do {
 }
 
 class Use {
-    has $.mod;
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         # Ruby::tab($level) ~ 'from ' ~ Main::to_go_namespace($.mod) ~ ' import *'

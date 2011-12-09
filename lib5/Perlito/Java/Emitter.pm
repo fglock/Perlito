@@ -349,18 +349,6 @@ package GLOBAL;
 
 ;
     {
-    package Val::Object;
-        sub new { shift; bless { @_ }, "Val::Object" }
-        sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
-        sub emit_java {
-            my $self = $_[0];
-            die('Val::Object - not used yet')
-        }
-    }
-
-;
-    {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub array1 { $_[0]->{array1} };
@@ -380,30 +368,6 @@ package GLOBAL;
             my $self = $_[0];
             ((my  $ast) = $self->expand_interpolation());
             return scalar ($ast->emit_java())
-        }
-    }
-
-;
-    {
-    package Lit::Code;
-        sub new { shift; bless { @_ }, "Lit::Code" }
-
-    }
-
-;
-    {
-    package Lit::Object;
-        sub new { shift; bless { @_ }, "Lit::Object" }
-        sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
-        sub emit_java {
-            my $self = $_[0];
-            ((my  $fields) = (defined $self->{fields} ? $self->{fields} : ($self->{fields} ||= bless([], 'ARRAY'))));
-            ((my  $str) = '');
-            for my $field ( @{($fields)} ) {
-                ($str = ($str . 'if m.v_' . ($field->[0])->buf() . ' ' . chr(61) . chr(61) . ' nil ' . chr(123) . (chr(10)) . 'var p Any' . chr(59) . ' ' . (chr(10)) . 'm.v_' . ($field->[0])->buf() . ' ' . chr(61) . ' ' . chr(38) . 'p' . chr(59) . ' ' . (chr(10)) . chr(125) . (chr(10)) . '*m.v_' . ($field->[0])->buf() . ' ' . chr(61) . ' *' . ($field->[1])->emit_java() . chr(59) . ' ' . (chr(10))))
-            };
-            ('func() *Any ' . chr(123) . ' ' . (chr(10)) . '  var m ' . chr(61) . ' new(' . Main::to_go_namespace($self->{class}) . ')' . chr(59) . ' ' . (chr(10)) . '  ' . $str . (chr(10)) . '  var m1 Any ' . chr(61) . ' m' . chr(59) . ' ' . (chr(10)) . '  return ' . chr(38) . 'm1' . chr(59) . ' ' . (chr(10)) . chr(125) . '()')
         }
     }
 
@@ -497,24 +461,6 @@ package GLOBAL;
                         }
                     };
                     ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
-                    ($str = ($str . ' ' . $bind->emit_java() . chr(59) . ' '));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $self->{parameters}->emit_java() . ' ' . chr(125)))
-            };
-            if (Main::isa($self->{parameters}, 'Lit::Object')) {
-                ((my  $class) = $self->{parameters}->class());
-                ((my  $a) = $self->{parameters}->fields());
-                ((my  $b) = $self->{arguments});
-                ((my  $str) = 'do ' . chr(123) . ' ');
-                ((my  $i) = 0);
-                (my  $arg);
-                for my $var ( @{($a)} ) {
-                    ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    $List_a
-}), ('hyper' => 0)))));
                     ($str = ($str . ' ' . $bind->emit_java() . chr(59) . ' '));
                     ($i = ($i + 1))
                 };

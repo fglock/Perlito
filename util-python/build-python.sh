@@ -8,6 +8,7 @@ touch libpy/__init__.py
 
 cp src/lib/Perlito/Python/Runtime.py libpy/Perlito__Python__Runtime.py
 
+perl perlito.pl -Cpython src/lib/Perlito/AST.pm             > libpy/Perlito__AST.py
 perl perlito.pl -Cpython src/lib/Perlito/Python/Prelude.pm  > libpy/Perlito__Python__Prelude.py
 perl perlito.pl -Cpython src/lib/Perlito/Precedence.pm      > libpy/Perlito__Precedence.py
 perl perlito.pl -Cpython src/lib/Perlito/Expression.pm      > libpy/Perlito__Expression.py

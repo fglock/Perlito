@@ -13,6 +13,7 @@ package GLOBAL;
 
     # use v6 
 ;
+    use Perlito::AST;
     {
     package Python;
         sub new { shift; bless { @_ }, "Python" }
@@ -282,10 +283,8 @@ package GLOBAL;
     {
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
-        sub name { $_[0]->{name} };
         sub attributes { $_[0]->{attributes} };
         sub methods { $_[0]->{methods} };
-        sub body { $_[0]->{body} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -344,7 +343,6 @@ package GLOBAL;
     {
     package Val::Int;
         sub new { shift; bless { @_ }, "Val::Int" }
-        sub int { $_[0]->{int} };
         sub emit_python {
             my $self = $_[0];
             $self->{int}
@@ -360,7 +358,6 @@ package GLOBAL;
     {
     package Val::Bit;
         sub new { shift; bless { @_ }, "Val::Bit" }
-        sub bit { $_[0]->{bit} };
         sub emit_python {
             my $self = $_[0];
             $self->{bit}
@@ -376,7 +373,6 @@ package GLOBAL;
     {
     package Val::Num;
         sub new { shift; bless { @_ }, "Val::Num" }
-        sub num { $_[0]->{num} };
         sub emit_python {
             my $self = $_[0];
             $self->{num}
@@ -392,7 +388,6 @@ package GLOBAL;
     {
     package Val::Buf;
         sub new { shift; bless { @_ }, "Val::Buf" }
-        sub buf { $_[0]->{buf} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -408,8 +403,6 @@ package GLOBAL;
     {
     package Lit::Block;
         sub new { shift; bless { @_ }, "Lit::Block" }
-        sub sig { $_[0]->{sig} };
-        sub stmts { $_[0]->{stmts} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -437,7 +430,6 @@ package GLOBAL;
     {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
-        sub array1 { $_[0]->{array1} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -454,7 +446,6 @@ package GLOBAL;
     {
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub hash1 { $_[0]->{hash1} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -471,8 +462,6 @@ package GLOBAL;
     {
     package Index;
         sub new { shift; bless { @_ }, "Index" }
-        sub obj { $_[0]->{obj} };
-        sub index_exp { $_[0]->{index_exp} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -488,8 +477,6 @@ package GLOBAL;
     {
     package Lookup;
         sub new { shift; bless { @_ }, "Lookup" }
-        sub obj { $_[0]->{obj} };
-        sub index_exp { $_[0]->{index_exp} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -505,9 +492,6 @@ package GLOBAL;
     {
     package Var;
         sub new { shift; bless { @_ }, "Var" }
-        sub sigil { $_[0]->{sigil} };
-        sub twigil { $_[0]->{twigil} };
-        sub name { $_[0]->{name} };
         ((my  $table) = do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = 'v_');
@@ -535,7 +519,6 @@ package GLOBAL;
     {
     package Proto;
         sub new { shift; bless { @_ }, "Proto" }
-        sub name { $_[0]->{name} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -554,10 +537,6 @@ package GLOBAL;
     {
     package Call;
         sub new { shift; bless { @_ }, "Call" }
-        sub invocant { $_[0]->{invocant} };
-        sub hyper { $_[0]->{hyper} };
-        sub method { $_[0]->{method} };
-        sub arguments { $_[0]->{arguments} };
         ((my  $Hash_method_python = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'id'} = 'id');
@@ -620,8 +599,6 @@ package GLOBAL;
     {
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
-        sub code { $_[0]->{code} };
-        sub arguments { $_[0]->{arguments} };
         sub emit_python_indented {
             my $self = $_[0];
             my $level = $_[1];
@@ -855,9 +832,6 @@ package GLOBAL;
     {
     package If;
         sub new { shift; bless { @_ }, "If" }
-        sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} };
-        sub otherwise { $_[0]->{otherwise} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -887,10 +861,6 @@ package GLOBAL;
     {
     package While;
         sub new { shift; bless { @_ }, "While" }
-        sub init { $_[0]->{init} };
-        sub cond { $_[0]->{cond} };
-        sub continue { $_[0]->{continue} };
-        sub body { $_[0]->{body} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -913,8 +883,6 @@ package GLOBAL;
     {
     package For;
         sub new { shift; bless { @_ }, "For" }
-        sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -950,9 +918,6 @@ package GLOBAL;
     {
     package Decl;
         sub new { shift; bless { @_ }, "Decl" }
-        sub decl { $_[0]->{decl} };
-        sub type { $_[0]->{type} };
-        sub var { $_[0]->{var} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -985,9 +950,6 @@ package GLOBAL;
     {
     package Sig;
         sub new { shift; bless { @_ }, "Sig" }
-        sub invocant { $_[0]->{invocant} };
-        sub positional { $_[0]->{positional} };
-        sub named { $_[0]->{named} };
         sub emit_python {
             my $self = $_[0];
             ' print ' . chr(39) . 'Signature - TODO' . chr(39) . chr(59) . ' die ' . chr(39) . 'Signature - TODO' . chr(39) . chr(59) . ' '
@@ -998,9 +960,6 @@ package GLOBAL;
     {
     package Method;
         sub new { shift; bless { @_ }, "Method" }
-        sub name { $_[0]->{name} };
-        sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -1050,9 +1009,6 @@ package GLOBAL;
     {
     package Sub;
         sub new { shift; bless { @_ }, "Sub" }
-        sub name { $_[0]->{name} };
-        sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -1110,7 +1066,6 @@ package GLOBAL;
     {
     package Do;
         sub new { shift; bless { @_ }, "Do" }
-        sub block { $_[0]->{block} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)
@@ -1136,7 +1091,6 @@ package GLOBAL;
     {
     package Use;
         sub new { shift; bless { @_ }, "Use" }
-        sub mod { $_[0]->{mod} };
         sub emit_python {
             my $self = $_[0];
             $self->emit_python_indented(0)

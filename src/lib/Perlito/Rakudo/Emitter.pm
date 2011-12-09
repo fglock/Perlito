@@ -35,14 +35,6 @@ class Val::Undef {
     method emit { '(undef)' }
 }
 
-class Val::Object {
-    has $.class;
-    has %.fields;
-    method emit {
-        'bless(' ~ %.fields.perl ~ ', ' ~ $.class.perl ~ ')';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit {
@@ -59,26 +51,6 @@ class Lit::Hash {
             $str = $str ~ ($field[0]).emit ~ ' => ' ~ ($field[1]).emit ~ ',';
         }; 
         '{ ' ~ $str ~ ' }';
-    }
-}
-
-class Lit::Code {
-    # XXX
-    1;
-}
-
-class Lit::Object {
-    has $.class;
-    has @.fields;
-    method emit {
-        # $.class ~ '.new( ' ~ @.fields.>>emit.join(', ') ~ ' )';
-        my $fields = @.fields;
-        my $str = '';
-        # say @fields.map(sub { $_[0].emit ~ ' => ' ~ $_[1].emit}).join(', ') ~ ')';
-        for @$fields -> $field { 
-            $str = $str ~ ($field[0]).emit ~ ' => ' ~ ($field[1]).emit ~ ',';
-        }; 
-        $.class ~ '.new( ' ~ $str ~ ' )';
     }
 }
 
@@ -175,27 +147,6 @@ class Bind {
             return $str ~ $.parameters.emit ~ ' }';
         };
 
-        if $.parameters.isa( 'Lit::Object' ) {
-
-            #  Obj.new(:$a, :$b) = $obj
-
-            my $class = $.parameters.class;
-            my $a     = $.parameters.fields;
-            my $b     = $.arguments;
-            my $str   = 'do { ';
-            my $i     = 0;
-            my $arg;
-            for @$a -> $var {
-                my $bind = Bind.new( 
-                    parameters => $var[1], 
-                    arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
-                );
-                $str = $str ~ ' ' ~ $bind.emit ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit ~ ' }';
-        };
-    
         $.parameters.emit ~ ' = ' ~ $.arguments.emit;
     }
 }

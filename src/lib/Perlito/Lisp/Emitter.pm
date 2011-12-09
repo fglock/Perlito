@@ -330,14 +330,6 @@ class Val::Undef {
     method emit_lisp { '(sv-undef)' }
 }
 
-class Val::Object {
-    has $.class;
-    has %.fields;
-    method emit_lisp {
-        'bless(' ~ %.fields.perl ~ ', ' ~ $.class.perl ~ ')';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit_lisp {
@@ -351,27 +343,6 @@ class Lit::Hash {
     method emit_lisp {
         my $ast = self.expand_interpolation;
         return $ast.emit_lisp;
-    }
-}
-
-class Lit::Code {
-}
-
-class Lit::Object {
-    has $.class;
-    has @.fields;
-    method emit_lisp {
-        if @.fields {
-            my $fields = @.fields;
-            my $str = '';
-            for @$fields -> $field { 
-                $str = $str ~ '(setf (' ~ Main::to_lisp_identifier(($field[0]).buf) ~ ' m) ' ~ ($field[1]).emit_lisp() ~ ')';
-            }; 
-            '(let ((m (make-instance \'' ~ Main::to_lisp_namespace($.class) ~ '))) ' ~ $str ~ ' m)'
-        }
-        else {
-            return '(make-instance \'' ~ Main::to_lisp_namespace($.class) ~ ')'
-        }
     }
 }
 
@@ -423,27 +394,6 @@ class Bind {
     has $.parameters;
     has $.arguments;
     method emit_lisp {
-        if $.parameters.isa( 'Lit::Object' ) {
-
-            #  Obj.new(:$a, :$b) = $obj
-
-            my $class = $.parameters.class;
-            my $a     = $.parameters.fields;
-            my $b     = $.arguments;
-            my $str   = 'do { ';
-            my $i     = 0;
-            my $arg;
-            for @$a -> $var {
-                my $bind = Bind.new( 
-                    parameters => $var[1], 
-                    arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
-                );
-                $str = $str ~ ' ' ~ $bind.emit_lisp() ~ ' ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_lisp() ~ ' }';
-        };
-    
         if $.parameters.isa( 'Decl' ) && ( $.parameters.decl eq 'my' ) {
             return '(setf ' ~ ($.parameters.var).emit_lisp() ~ ' ' ~ $.arguments.emit_lisp() ~ ')';
         }

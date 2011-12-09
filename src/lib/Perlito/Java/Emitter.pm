@@ -407,14 +407,6 @@ class Val::Undef {
     method emit_java { 'u_undef()' }
 }
 
-class Val::Object {
-    has $.class;
-    has %.fields;
-    method emit_java {
-        die 'Val::Object - not used yet';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit_java {
@@ -428,35 +420,6 @@ class Lit::Hash {
     method emit_java {
         my $ast = self.expand_interpolation;
         return $ast.emit_java;
-    }
-}
-
-class Lit::Code {
-    # XXX
-}
-
-class Lit::Object {
-    has $.class;
-    has @.fields;
-    method emit_java {
-        my $fields = @.fields;
-        my $str = '';
-        for @$fields -> $field { 
-            $str = $str 
-
-                ~ 'if m.v_' ~ ($field[0]).buf ~ ' == nil {' ~ "\n"
-                ~     'var p Any; ' ~ "\n"
-                ~     'm.v_' ~ ($field[0]).buf ~ ' = &p; ' ~ "\n"
-                ~ '}' ~ "\n"
-
-                ~ '*m.v_' ~ ($field[0]).buf ~ ' = *' ~ ($field[1]).emit_java ~ '; ' ~ "\n";
-        }; 
-          'func() *Any { ' ~ "\n"
-        ~ '  var m = new(' ~ Main::to_go_namespace($.class) ~ '); ' ~ "\n"
-        ~ '  ' ~ $str ~ "\n"
-        ~ '  var m1 Any = m; ' ~ "\n"
-        ~ '  return &m1; ' ~ "\n"
-        ~ '}()';
     }
 }
 
@@ -567,27 +530,6 @@ class Bind {
             return $str ~ $.parameters.emit_java ~ ' }';
         };
 
-        if $.parameters.isa( 'Lit::Object' ) {
-
-            #  Obj.new(:$a, :$b) = $obj
-
-            my $class = $.parameters.class;
-            my $a     = $.parameters.fields;
-            my $b     = $.arguments;
-            my $str   = 'do { ';
-            my $i     = 0;
-            my $arg;
-            for @$a -> $var {
-                my $bind = Bind.new( 
-                    parameters => $var[1], 
-                    arguments  => Call.new( invocant => $b, method => ($var[0]).buf, arguments => [ ], hyper => 0 )
-                );
-                $str = $str ~ ' ' ~ $bind.emit_java ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_java ~ ' }';
-        };
-    
         if $.parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return 

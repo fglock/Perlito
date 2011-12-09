@@ -136,15 +136,6 @@ class Val::Undef {
     }
 }
 
-class Val::Object {
-    has $.class;
-    has %.fields;
-    method emit_parrot {
-        die 'Val::Object - not used yet';
-        # 'bless(' ~ %.fields.perl ~ ', ' ~ $.class.perl ~ ')';
-    }
-}
-
 class Lit::Array {
     has @.array1;
     method emit_parrot {
@@ -187,38 +178,6 @@ class Lit::Hash {
             '  restore $P2' ~ "\n" ~
             '  restore $P1' ~ "\n";
         return $s;
-    }
-}
-
-class Lit::Code {
-    method emit_parrot {
-        die 'Lit::Code - not used yet';
-    }
-}
-
-class Lit::Object {
-    has $.class;
-    has @.fields;
-    method emit_parrot {
-        # Type.new( value => 42 )
-        my $fields = @.fields;
-        my $str = '';        
-        $str = 
-            '  save $P1' ~ "\n" ~
-            '  save $S2' ~ "\n" ~
-            '  $P1 = new ' ~ '"' ~ $.class ~ '"' ~ "\n";
-        for @$fields -> $field {
-            $str = $str ~ 
-                ($field[0]).emit_parrot ~ 
-                '  $S2 = $P0'    ~ "\n" ~
-                ($field[1]).emit_parrot ~ 
-                '  setattribute $P1, $S2, $P0' ~ "\n";
-        };
-        $str = $str ~ 
-            '  $P0 = $P1'   ~ "\n" ~
-            '  restore $S2' ~ "\n" ~
-            '  restore $P1' ~ "\n";
-        $str;
     }
 }
 
@@ -340,28 +299,6 @@ class Bind {
                 my $bind = Bind.new( parameters => $var[1], arguments => $arg );
                 $str = $str ~ $bind.emit_parrot;
                 $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_parrot;
-        };
-        if $.parameters.isa( 'Lit::Object' ) {
-
-            #  Obj.new(:$a, :$b) = $obj
-
-            my $class = $.parameters.class;
-            my $a     = $.parameters.fields;
-            my $b     = $.arguments;
-            my $str   = '';
-            for @$a -> $var {
-                my $bind = Bind.new( 
-                    parameters => $var[1], 
-                    arguments  => Call.new( 
-                        invocant  => $b, 
-                        method    => ($var[0]).buf, 
-                        arguments => [ ], 
-                        hyper     => 0 
-                    )
-                );
-                $str = $str ~ $bind.emit_parrot;
             };
             return $str ~ $.parameters.emit_parrot;
         };

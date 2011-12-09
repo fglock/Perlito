@@ -1,5 +1,7 @@
 use v6;
 
+use Perlito::AST;
+
 class Python {
     sub tab($level) { 
         "    " x $level
@@ -249,10 +251,8 @@ class Perlito::Python::LexicalBlock {
 }
 
 class CompUnit {
-    has $.name;
     has %.attributes;
     has %.methods;
-    has @.body;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my @s;
@@ -309,7 +309,6 @@ class CompUnit {
 }
 
 class Val::Int {
-    has $.int;
     method emit_python { $.int }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ $.int 
@@ -317,7 +316,6 @@ class Val::Int {
 }
 
 class Val::Bit {
-    has $.bit;
     method emit_python { $.bit }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ $.bit 
@@ -325,7 +323,6 @@ class Val::Bit {
 }
 
 class Val::Num {
-    has $.num;
     method emit_python { $.num }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ $.num 
@@ -333,7 +330,6 @@ class Val::Num {
 }
 
 class Val::Buf {
-    has $.buf;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ Python::escape_string($.buf) 
@@ -341,8 +337,6 @@ class Val::Buf {
 }
 
 class Lit::Block {
-    has $.sig;
-    has @.stmts;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
@@ -364,7 +358,6 @@ class Lit::Block {
 }
 
 class Lit::Array {
-    has @.array1;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $ast = self.expand_interpolation;
@@ -373,7 +366,6 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash1;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $ast = self.expand_interpolation;
@@ -382,8 +374,6 @@ class Lit::Hash {
 }
 
 class Index {
-    has $.obj;
-    has $.index_exp;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
@@ -392,8 +382,6 @@ class Index {
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
@@ -402,9 +390,6 @@ class Lookup {
 }
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.name;
     my $table = {
         '$' => 'v_',
         '@' => 'List_',
@@ -435,7 +420,6 @@ class Var {
 }
 
 class Proto {
-    has $.name;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         if $.name eq 'self' {
@@ -447,10 +431,6 @@ class Proto {
 }
 
 class Call {
-    has $.invocant;
-    has $.hyper;
-    has $.method;
-    has @.arguments;
 
     my %method_python = (
         'id'     => 'id',
@@ -514,8 +494,6 @@ class Call {
 }
 
 class Apply {
-    has $.code;
-    has @.arguments;
     method emit_python_indented( $level ) {
         Python::tab($level) ~ 
             self.emit_python
@@ -706,9 +684,6 @@ class Apply {
 }
 
 class If {
-    has $.cond;
-    has @.body;
-    has @.otherwise;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $has_body = @.body ?? 1 !! 0;
@@ -733,10 +708,6 @@ class If {
 }
 
 class While {
-    has $.init;
-    has $.cond;
-    has $.continue;
-    has @.body;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $body_block = Perlito::Python::LexicalBlock.new( block => @.body.stmts );
@@ -757,8 +728,6 @@ class While {
 }
 
 class For {
-    has $.cond;
-    has @.body;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $body_block = Perlito::Python::LexicalBlock.new( block => @.body.stmts );
@@ -790,9 +759,6 @@ class For {
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $decl = $.decl;
@@ -817,18 +783,12 @@ class Decl {
 }
 
 class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
     method emit_python {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
 }
 
 class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $sig = $.sig;
@@ -860,9 +820,6 @@ class Method {
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
@@ -913,7 +870,6 @@ class Sub {
 }
 
 class Do {
-    has $.block;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my $label = "_anon_" ~ Perlito::Python::LexicalBlock::get_ident_python;
@@ -933,7 +889,6 @@ class Do {
 }
 
 class Use {
-    has $.mod;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         # Python::tab($level) ~ 'from ' ~ Main::to_go_namespace($.mod) ~ ' import *'

@@ -115,18 +115,6 @@ package GLOBAL;
 
 ;
     {
-    package Val::Object;
-        sub new { shift; bless { @_ }, "Val::Object" }
-        sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
-        sub emit_parrot {
-            my $self = $_[0];
-            die('Val::Object - not used yet')
-        }
-    }
-
-;
-    {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub array1 { $_[0]->{array1} };
@@ -162,35 +150,6 @@ package GLOBAL;
             };
             ((my  $s) = ($s . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'P1' . (chr(10)) . '  restore ' . chr(36) . 'P2' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10))));
             return scalar ($s)
-        }
-    }
-
-;
-    {
-    package Lit::Code;
-        sub new { shift; bless { @_ }, "Lit::Code" }
-        sub emit_parrot {
-            my $self = $_[0];
-            die('Lit::Code - not used yet')
-        }
-    }
-
-;
-    {
-    package Lit::Object;
-        sub new { shift; bless { @_ }, "Lit::Object" }
-        sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
-        sub emit_parrot {
-            my $self = $_[0];
-            ((my  $fields) = (defined $self->{fields} ? $self->{fields} : ($self->{fields} ||= bless([], 'ARRAY'))));
-            ((my  $str) = '');
-            ($str = ('  save ' . chr(36) . 'P1' . (chr(10)) . '  save ' . chr(36) . 'S2' . (chr(10)) . '  ' . chr(36) . 'P1 ' . chr(61) . ' new ' . chr(34) . $self->{class} . chr(34) . (chr(10))));
-            for my $field ( @{($fields)} ) {
-                ($str = ($str . ($field->[0])->emit_parrot() . '  ' . chr(36) . 'S2 ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10)) . ($field->[1])->emit_parrot() . '  setattribute ' . chr(36) . 'P1, ' . chr(36) . 'S2, ' . chr(36) . 'P0' . (chr(10))))
-            };
-            ($str = ($str . '  ' . chr(36) . 'P0 ' . chr(61) . ' ' . chr(36) . 'P1' . (chr(10)) . '  restore ' . chr(36) . 'S2' . (chr(10)) . '  restore ' . chr(36) . 'P1' . (chr(10))));
-            $str
         }
     }
 
@@ -291,21 +250,6 @@ package GLOBAL;
                     ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
                     ($str = ($str . $bind->emit_parrot()));
                     ($i = ($i + 1))
-                };
-                return scalar (($str . $self->{parameters}->emit_parrot()))
-            };
-            if (Main::isa($self->{parameters}, 'Lit::Object')) {
-                ((my  $class) = $self->{parameters}->class());
-                ((my  $a) = $self->{parameters}->fields());
-                ((my  $b) = $self->{arguments});
-                ((my  $str) = '');
-                for my $var ( @{($a)} ) {
-                    ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    $List_a
-}), ('hyper' => 0)))));
-                    ($str = ($str . $bind->emit_parrot()))
                 };
                 return scalar (($str . $self->{parameters}->emit_parrot()))
             };

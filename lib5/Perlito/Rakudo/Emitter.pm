@@ -82,18 +82,6 @@ package GLOBAL;
 
 ;
     {
-    package Val::Object;
-        sub new { shift; bless { @_ }, "Val::Object" }
-        sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
-        sub emit {
-            my $self = $_[0];
-            ('bless(' . Main::perl((defined $self->{fields} ? $self->{fields} : ($self->{fields} = bless({}, 'HASH'))), ) . ', ' . Main::perl($self->{class}, ) . ')')
-        }
-    }
-
-;
-    {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub array1 { $_[0]->{array1} };
@@ -116,30 +104,6 @@ package GLOBAL;
                 ($str = ($str . ($field->[0])->emit() . ' ' . chr(61) . '> ' . ($field->[1])->emit() . ','))
             };
             (chr(123) . ' ' . $str . ' ' . chr(125))
-        }
-    }
-
-;
-    {
-    package Lit::Code;
-        sub new { shift; bless { @_ }, "Lit::Code" }
-        1
-    }
-
-;
-    {
-    package Lit::Object;
-        sub new { shift; bless { @_ }, "Lit::Object" }
-        sub class { $_[0]->{class} };
-        sub fields { $_[0]->{fields} };
-        sub emit {
-            my $self = $_[0];
-            ((my  $fields) = (defined $self->{fields} ? $self->{fields} : ($self->{fields} ||= bless([], 'ARRAY'))));
-            ((my  $str) = '');
-            for my $field ( @{($fields)} ) {
-                ($str = ($str . ($field->[0])->emit() . ' ' . chr(61) . '> ' . ($field->[1])->emit() . ','))
-            };
-            ($self->{class} . '.new( ' . $str . ' )')
         }
     }
 
@@ -221,24 +185,6 @@ package GLOBAL;
                         }
                     };
                     ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
-                    ($str = ($str . ' ' . $bind->emit() . chr(59) . ' '));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $self->{parameters}->emit() . ' ' . chr(125)))
-            };
-            if (Main::isa($self->{parameters}, 'Lit::Object')) {
-                ((my  $class) = $self->{parameters}->class());
-                ((my  $a) = $self->{parameters}->fields());
-                ((my  $b) = $self->{arguments});
-                ((my  $str) = 'do ' . chr(123) . ' ');
-                ((my  $i) = 0);
-                (my  $arg);
-                for my $var ( @{($a)} ) {
-                    ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => Call->new(('invocant' => $b), ('method' => ($var->[0])->buf()), ('arguments' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    $List_a
-}), ('hyper' => 0)))));
                     ($str = ($str . ' ' . $bind->emit() . chr(59) . ' '));
                     ($i = ($i + 1))
                 };
