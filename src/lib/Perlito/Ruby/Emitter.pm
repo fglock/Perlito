@@ -695,7 +695,7 @@ class Method {
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level)   ~  'send( :define_method, "f_' ~ $.name ~ '".to_sym, lambda\{ |' ~ $default_args.join(", ") ~ '|';
+        push @s, Ruby::tab($level)   ~  'send( :define_method, "f_' ~ $.name ~ '".to_sym, lambda{ |' ~ $default_args.join(", ") ~ '|';
         push @s, Ruby::tab($level+1) ~      $invocant.emit_ruby_name ~ " = self";
         push @s,    $block.emit_ruby_indented($level + 1);
         push @s, Ruby::tab($level)   ~  "} )";

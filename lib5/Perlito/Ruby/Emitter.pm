@@ -940,7 +940,7 @@ package GLOBAL;
             };
             ((my  $block) = Perlito::Ruby::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1)));
             (my  $List_s = bless [], 'ARRAY');
-            push( @{$List_s}, (Ruby::tab($level) . 'send( :define_method, ' . chr(34) . 'f_' . $self->{name} . chr(34) . '.to_sym, lambda' . chr(92) . chr(123) . ' ' . chr(124) . Main::join($default_args, (', ')) . chr(124)) );
+            push( @{$List_s}, (Ruby::tab($level) . 'send( :define_method, ' . chr(34) . 'f_' . $self->{name} . chr(34) . '.to_sym, lambda' . chr(123) . ' ' . chr(124) . Main::join($default_args, (', ')) . chr(124)) );
             push( @{$List_s}, (Ruby::tab(($level + 1)) . $invocant->emit_ruby_name() . (' ' . chr(61) . ' self')) );
             push( @{$List_s}, $block->emit_ruby_indented(($level + 1)) );
             push( @{$List_s}, (Ruby::tab($level) . (chr(125) . ' )')) );

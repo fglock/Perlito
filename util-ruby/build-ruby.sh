@@ -11,6 +11,7 @@ cp src/lib/Perlito/Ruby/Runtime.rb librb/Perlito/Ruby/Runtime.rb
 
 perl perlito.pl -Cruby src/lib/Perlito/Test.pm            > librb/Perlito/Test.rb
 
+perl perlito.pl -Cruby src/lib/Perlito/AST.pm             > librb/Perlito__AST.rb
 perl perlito.pl -Cruby src/lib/Perlito/Grammar.pm         > librb/Perlito__Grammar.rb
 perl perlito.pl -Cruby src/lib/Perlito/Grammar/Control.pm > librb/Perlito__Grammar__Control.rb
 perl perlito.pl -Cruby src/lib/Perlito/Grammar/Regex.pm   > librb/Perlito__Grammar__Regex.rb
@@ -24,6 +25,7 @@ perl perlito.pl -Cruby src/lib/Perlito/Go/Emitter.pm      > librb/Perlito__Go__E
 perl perlito.pl -Cruby src/lib/Perlito/Parrot/Emitter.pm  > librb/Perlito__Parrot__Emitter.rb
 perl perlito.pl -Cruby src/lib/Perlito/Python/Emitter.pm  > librb/Perlito__Python__Emitter.rb
 perl perlito.pl -Cruby src/lib/Perlito/Ruby/Emitter.pm    > librb/Perlito__Ruby__Emitter.rb
+perl perlito.pl -Cruby src/lib/Perlito/Ruby/Prelude.pm    > librb/Perlito__Ruby__Prelude.rb
 
 perl perlito.pl -Cruby src/util/perlito.pl                      > ./perlito.rb
 

@@ -25,6 +25,7 @@ ruby1.9 perlito.rb -Cruby src/lib/Perlito/Go/Emitter.pm      > librb-new/Perlito
 ruby1.9 perlito.rb -Cruby src/lib/Perlito/Parrot/Emitter.pm  > librb-new/Perlito__Parrot__Emitter.rb
 ruby1.9 perlito.rb -Cruby src/lib/Perlito/Python/Emitter.pm  > librb-new/Perlito__Python__Emitter.rb
 ruby1.9 perlito.rb -Cruby src/lib/Perlito/Ruby/Emitter.pm    > librb-new/Perlito__Ruby__Emitter.rb
+ruby1.9 perlito.rb -Cruby src/lib/Perlito/Ruby/Prelude.pm    > librb-new/Perlito__Ruby__Prelude.rb
 
 ruby1.9 perlito.rb -Cruby src/util/perlito.pl                      > ./perlito-new.rb
 
