@@ -1,10 +1,8 @@
 use v6;
 
 class CompUnit {
-    has $.name;
     has %.attributes;
     has %.methods;
-    has @.body;
     method emit_parrot {
         my $a = @.body;
         my $item;
@@ -99,7 +97,6 @@ class CompUnit {
 
 
 class Val::Int {
-    has $.int;
     method emit_parrot {
         '  $P0 = new .Integer' ~ "\n" ~
         '  $P0 = ' ~ $.int ~ "\n"
@@ -107,7 +104,6 @@ class Val::Int {
 }
 
 class Val::Bit {
-    has $.bit;
     method emit_parrot {
         '  $P0 = new "Integer"' ~ "\n" ~
         '  $P0 = ' ~ $.bit ~ "\n"
@@ -115,7 +111,6 @@ class Val::Bit {
 }
 
 class Val::Num {
-    has $.num;
     method emit_parrot {
         '  $P0 = new "Float"' ~ "\n" ~
         '  $P0 = ' ~ $.num ~ "\n"
@@ -123,7 +118,6 @@ class Val::Num {
 }
 
 class Val::Buf {
-    has $.buf;
     method emit_parrot {
         '  $P0 = new "String"' ~ "\n" ~
         '  $P0 = ' ~ '"' ~ $.buf ~ '"' ~ "\n"
@@ -137,7 +131,6 @@ class Val::Undef {
 }
 
 class Lit::Array {
-    has @.array1;
     method emit_parrot {
         my $a = @.array1;
         my $item;
@@ -157,7 +150,6 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash1;
     method emit_parrot {
         my $a = @.hash1;
         my $item;
@@ -182,8 +174,6 @@ class Lit::Hash {
 }
 
 class Index {
-    has $.obj;
-    has $.index_exp;
     method emit_parrot {
         my $s = 
             '  save $P1'  ~ "\n";
@@ -200,8 +190,6 @@ class Index {
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
     method emit_parrot {
         my $s = 
             '  save $P1'  ~ "\n";
@@ -225,9 +213,6 @@ class Lookup {
 # parameters - parrot subroutine parameters - fixed by storing into lexicals
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.name;
     method emit_parrot {
            ( $.twigil eq '.' )
         ?? ( 
@@ -353,18 +338,12 @@ class Bind {
 }
 
 class Proto {
-    has $.name;
     method emit_parrot {
         '  $P0 = ' ~ $.name ~ "\n"
     }
 }
 
 class Call {
-    has $.invocant;
-    has $.hyper;
-    has $.method;
-    has @.arguments;
-    #has $.hyper;
     method emit_parrot {
         if     ($.method eq 'perl')
             || ($.method eq 'yaml')
@@ -429,8 +408,6 @@ class Call {
 }
 
 class Apply {
-    has $.code;
-    has @.arguments;
     my $label = 100;
     method emit_parrot {
 
@@ -667,7 +644,6 @@ class Apply {
 }
 
 class Return {
-    has $.result;
     method emit_parrot {
         $.result.emit_parrot ~ 
         '  .return( $P0 )' ~ "\n";
@@ -675,9 +651,6 @@ class Return {
 }
 
 class If {
-    has $.cond;
-    has @.body;
-    has @.otherwise;
     my $label = 100;
     method emit_parrot {
         $label = $label + 1;
@@ -694,9 +667,6 @@ class If {
 }
 
 class For {
-    has $.cond;
-    has @.body;
-    has @.topic;
     my $label = 100;
     method emit_parrot {
         my $cond = $.cond;
@@ -727,9 +697,6 @@ class For {
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
     method emit_parrot {
         my $decl = $.decl;
         my $name = $.var.name;
@@ -743,18 +710,12 @@ class Decl {
 }
 
 class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
     method emit_parrot {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
 }
 
 class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_parrot {
         my $sig = $.sig;
         my $invocant = $sig.invocant;
@@ -780,9 +741,6 @@ class Method {
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_parrot {
         my $sig = $.sig;
         my $invocant = $sig.invocant;
@@ -807,7 +765,6 @@ class Sub {
 }
 
 class Do {
-    has @.block;
     method emit_parrot {
         # TODO - create a new lexical pad
         (@.block.>>emit_parrot).join('') 
@@ -815,7 +772,6 @@ class Do {
 }
 
 class Use {
-    has $.mod;
     method emit_parrot {
         '  .include ' ~ '"' ~ $.mod ~ '"' ~ "\n"
     }

@@ -71,10 +71,8 @@ class Perlito::Go::LexicalBlock {
 }
 
 class CompUnit {
-    has $.name;
     has %.attributes;
     has %.methods;
-    has @.body;
     method emit_go {
         my $class_name = Main::to_go_namespace($.name);
         my $str =
@@ -382,24 +380,20 @@ class CompUnit {
 }
 
 class Val::Int {
-    has $.int;
     method emit_go { 'toInt(' ~ $.int ~ ')' }
 }
 
 class Val::Bit {
-    has $.bit;
     method emit_go { 
         $.bit ?? 'b_true()' !! 'b_false()'
     }
 }
 
 class Val::Num {
-    has $.num;
     method emit_go { 'toNum(' ~ $.num ~ ')' }
 }
 
 class Val::Buf {
-    has $.buf;
     method emit_go { 'toStr("' ~ $.buf ~ '")' }
 }
 
@@ -408,7 +402,6 @@ class Val::Undef {
 }
 
 class Lit::Array {
-    has @.array1;
     method emit_go {
         my $ast = self.expand_interpolation;
         return $ast.emit_go;
@@ -416,7 +409,6 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash1;
     method emit_go {
         my $ast = self.expand_interpolation;
         return $ast.emit_go;
@@ -424,8 +416,6 @@ class Lit::Hash {
 }
 
 class Index {
-    has $.obj;
-    has $.index_exp;
     method emit_go {
         '(*(*' ~ $.obj.emit_go ~ ').(array_er).f_array(Capture{}))' 
         ~ '.(index_er).f_index( Capture{ p : []*Any{ ' ~ $.index_exp.emit_go ~ ' }} )';
@@ -433,8 +423,6 @@ class Index {
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
     method emit_go {
         '(*(*' ~ $.obj.emit_go ~ ').(hash_er).f_hash(Capture{}))' 
         ~ '.(lookup_er).f_lookup( Capture{ p : []*Any{ ' ~ $.index_exp.emit_go ~ ' }} )';
@@ -442,10 +430,6 @@ class Lookup {
 }
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.namespace;
-    has $.name;
     method emit_go {
         # Normalize the sigil here into $
         # $x    => $x
@@ -545,18 +529,12 @@ class Bind {
 }
 
 class Proto {
-    has $.name;
     method emit_go {
         Main::to_go_namespace($.name)        
     }
 }
 
 class Call {
-    has $.invocant;
-    has $.hyper;
-    has $.method;
-    has @.arguments;
-    #has $.hyper;
     method emit_go {
         my $invocant = $.invocant.emit_go;
         if ($.invocant).isa( 'Proto' ) {
@@ -608,9 +586,6 @@ class Call {
 }
 
 class Apply {
-    has $.code;
-    has @.arguments;
-    has $.namespace;
     method emit_go {
         my $code = $.code;
 
@@ -795,7 +770,6 @@ class Apply {
 }
 
 class Return {
-    has $.result;
     method emit_go {
         if ($.result).isa( 'Bind' ) {
             my $tmp = ($.result).parameters;
@@ -828,9 +802,6 @@ class Return {
 }
 
 class If {
-    has $.cond;
-    has @.body;
-    has @.otherwise;
     method emit_go {
         my $cond = $.cond;
 
@@ -859,9 +830,6 @@ class If {
 }
 
 class For {
-    has $.cond;
-    has @.body;
-    has @.topic;
     method emit_go {
           'func (a_ *Any) { ' ~ "\n"
         ~ '  var i = (*(*a_).(array_er).f_array(Capture{})).(*Array); ' ~ "\n"
@@ -875,16 +843,10 @@ class For {
 }
 
 class When {
-    has @.parameters;
-    has @.body;
     method emit_go { die "TODO - When" }
 }
 
 class While {
-    has $.init;
-    has $.cond;
-    has $.continue;
-    has @.body;
     method emit_go { 
         my $cond = $.cond;
         if   $cond.isa( 'Var' )
@@ -903,9 +865,6 @@ class While {
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
     method emit_go {
         $.var.emit_go;
     }
@@ -932,9 +891,6 @@ class Decl {
 }
 
 class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
     method emit_go {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     }
@@ -956,9 +912,6 @@ class Sig {
 }
 
 class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_go {
         my $invocant = ($.sig).invocant; 
         'func ' ~ $.name ~ '(v Capture) *Any { ' 
@@ -972,9 +925,6 @@ class Method {
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_go {
         if $.name eq '' { 
             return
@@ -999,7 +949,6 @@ class Sub {
 }
 
 class Do {
-    has @.block;
     method emit_go {
         '(func () *Any { ' 
           ~ (Perlito::Go::LexicalBlock.new( block => @.block, needs_return => 1 )).emit_go 
@@ -1009,7 +958,6 @@ class Do {
 }
 
 class Use {
-    has $.mod;
     method emit_go {
         '// use ' ~ $.mod ~ "\n"
     }

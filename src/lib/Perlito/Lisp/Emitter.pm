@@ -56,10 +56,8 @@ class Perlito::Lisp::LexicalBlock {
 
 
 class CompUnit {
-    has $.name;
     has %.attributes;
     has %.methods;
-    has @.body;
     method emit_lisp {
 
         my $class_name = Main::to_lisp_namespace($.name);
@@ -305,24 +303,20 @@ new-slots))
 }
 
 class Val::Int {
-    has $.int;
     method emit_lisp { $.int }
 }
 
 class Val::Bit {
-    has $.bit;
     method emit_lisp { 
         $.bit ?? 'T' !! 'nil'
     }
 }
 
 class Val::Num {
-    has $.num;
     method emit_lisp { $.num }
 }
 
 class Val::Buf {
-    has $.buf;
     method emit_lisp { '"' ~ Main::lisp_escape_string($.buf) ~ '"' }
 }
 
@@ -331,7 +325,6 @@ class Val::Undef {
 }
 
 class Lit::Array {
-    has @.array1;
     method emit_lisp {
         my $ast = self.expand_interpolation;
         return $ast.emit_lisp;
@@ -339,7 +332,6 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash1;
     method emit_lisp {
         my $ast = self.expand_interpolation;
         return $ast.emit_lisp;
@@ -347,26 +339,18 @@ class Lit::Hash {
 }
 
 class Index {
-    has $.obj;
-    has $.index_exp;
     method emit_lisp {
         return '(mp-Main::sv-array-index ' ~ $.obj.emit_lisp() ~ ' ' ~ $.index_exp.emit_lisp() ~ ')';
     }
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
     method emit_lisp {
         return '(mp-Main::sv-hash-lookup ' ~ $.index_exp.emit_lisp() ~ ' ' ~ $.obj.emit_lisp() ~ ')';
     }
 }
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.namespace;
-    has $.name;
     method emit_lisp {
         # Normalize the sigil here into $
         # $x    => $x
@@ -402,17 +386,12 @@ class Bind {
 }
 
 class Proto {
-    has $.name;
     method emit_lisp {
         '(proto-' ~ Main::to_lisp_namespace($.name) ~ ')'
     }
 }
 
 class Call {
-    has $.invocant;
-    has $.hyper;
-    has $.method;
-    has @.arguments;
     method emit_lisp {
 
         my $arguments = (@.arguments.>>emit_lisp).join(' ');
@@ -468,9 +447,6 @@ class Call {
 }
 
 class Apply {
-    has $.code;
-    has @.arguments;
-    has $.namespace;
     method emit_lisp {
         my $ns = '';
         if $.namespace {
@@ -541,16 +517,12 @@ class Apply {
 }
 
 class Return {
-    has $.result;
     method emit_lisp {
         return '(return-from mp6-function ' ~ $.result.emit_lisp() ~ ')';
     }
 }
 
 class If {
-    has $.cond;
-    has $.body;
-    has $.otherwise;
     method emit_lisp {
         my $block1 = Perlito::Lisp::LexicalBlock.new( block => $.body.stmts );
         if $.otherwise {
@@ -564,9 +536,6 @@ class If {
 }
 
 class For {
-    has $.cond;
-    has @.body;
-    has @.topic;
     method emit_lisp {
         my $cond = $.cond;
         my $block = Perlito::Lisp::LexicalBlock.new( block => @.body );
@@ -588,10 +557,6 @@ class For {
 }
 
 class While {
-    has $.init;
-    has $.cond;
-    has $.continue;
-    has @.body;
     method emit_lisp { 
         my @body = @.body;
         if $.continue {
@@ -606,9 +571,6 @@ class While {
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
     method emit_lisp {
         my $decl = $.decl;
         my $name = $.var.name;
@@ -634,27 +596,18 @@ class Decl {
 }
 
 class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
     method emit_lisp {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
 }
 
 class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_lisp {
         # unused
     }
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_lisp {
         my $sig = $.sig;
         my $pos = $sig.positional;
@@ -685,7 +638,6 @@ class Sub {
 }
 
 class Do {
-    has @.block;
     method emit_lisp {
         my $block = Perlito::Lisp::LexicalBlock.new( block => @.block );
         return $block.emit_lisp;
@@ -693,7 +645,6 @@ class Do {
 }
 
 class Use {
-    has $.mod;
     method emit_lisp {
         "\n"
         ~ ';; use ' ~ Main::to_lisp_namespace($.mod) ~ "\n"

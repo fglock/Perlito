@@ -43,10 +43,8 @@ class Perlito::Clojure::LexicalBlock {
 
 
 class CompUnit {
-    has $.name;
     has %.attributes;
     has %.methods;
-    has @.body;
     method emit_clojure {
 
         my $class_name = Main::to_lisp_namespace($.name);
@@ -175,22 +173,18 @@ new-slots))
 }
 
 class Val::Int {
-    has $.int;
     method emit_clojure { $.int }
 }
 
 class Val::Bit {
-    has $.bit;
     method emit_clojure { $.bit }
 }
 
 class Val::Num {
-    has $.num;
     method emit_clojure { $.num }
 }
 
 class Val::Buf {
-    has $.buf;
     method emit_clojure { '"' ~ Main::lisp_escape_string($.buf) ~ '"' }
 }
 
@@ -199,7 +193,6 @@ class Val::Undef {
 }
 
 class Lit::Array {
-    has @.array1;
     method emit_clojure {
         my $ast = self.expand_interpolation;
         return $ast.emit_clojure;
@@ -207,7 +200,6 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash1;
     method emit_clojure {
         my $ast = self.expand_interpolation;
         return $ast.emit_clojure;
@@ -215,16 +207,12 @@ class Lit::Hash {
 }
 
 class Index {
-    has $.obj;
-    has $.index_exp;
     method emit_clojure {
         return '(elt ' ~ $.obj.emit_clojure() ~ ' ' ~ $.index_exp.emit_clojure() ~ ')';
     }
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
     method emit_clojure {
         if $.obj.isa( 'Var' ) {
             if ($.obj.name eq 'MATCH') || ($.obj.name eq '/') {
@@ -236,10 +224,6 @@ class Lookup {
 }
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.namespace;
-    has $.name;
     method emit_clojure {
         # Normalize the sigil here into $
         # $x    => $x
@@ -260,8 +244,6 @@ class Var {
 }
 
 class Bind {
-    has $.parameters;
-    has $.arguments;
     method emit_clojure {
         if $.parameters.isa( 'Decl' ) && ( $.parameters.decl eq 'my' ) {
             return '(setf ' ~ ($.parameters.var).emit_clojure() ~ ' ' ~ $.arguments.emit_clojure() ~ ')';
@@ -271,17 +253,12 @@ class Bind {
 }
 
 class Proto {
-    has $.name;
     method emit_clojure {
         '(proto-' ~ Main::to_lisp_namespace($.name) ~ ')'
     }
 }
 
 class Call {
-    has $.invocant;
-    has $.hyper;
-    has $.method;
-    has @.arguments;
     method emit_clojure {
 
         my $arguments = '';
@@ -350,9 +327,6 @@ class Call {
 }
 
 class Apply {
-    has $.code;
-    has @.arguments;
-    has $.namespace;
     method emit_clojure {
         my $ns = '';
         if $.namespace {
@@ -407,16 +381,12 @@ class Apply {
 }
 
 class Return {
-    has $.result;
     method emit_clojure {
         return '(return-from mp6-function ' ~ $.result.emit_clojure() ~ ')';
     }
 }
 
 class If {
-    has $.cond;
-    has @.body;
-    has @.otherwise;
     method emit_clojure {
         my $block1 = Perlito::Clojure::LexicalBlock.new( block => @.body );
         my $block2 = Perlito::Clojure::LexicalBlock.new( block => @.otherwise );
@@ -425,9 +395,6 @@ class If {
 }
 
 class For {
-    has $.cond;
-    has @.body;
-    has @.topic;
     method emit_clojure {
         my $cond = $.cond;
         my $block = Perlito::Clojure::LexicalBlock.new( block => @.body );
@@ -441,9 +408,6 @@ class For {
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
     method emit_clojure {
         my $decl = $.decl;
         my $name = $.var.name;
@@ -458,27 +422,18 @@ class Decl {
 }
 
 class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
     method emit_clojure {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
     };
 }
 
 class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_clojure {
         # unused
     }
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_clojure {
         my $sig = $.sig;
         my $pos = $sig.positional;
@@ -509,7 +464,6 @@ class Sub {
 }
 
 class Do {
-    has @.block;
     method emit_clojure {
         my $block = Perlito::Clojure::LexicalBlock.new( block => @.block );
         return $block.emit_clojure;
@@ -517,7 +471,6 @@ class Do {
 }
 
 class Use {
-    has $.mod;
     method emit_clojure {
         "\n"
         ~ ';; use ' ~ Main::to_lisp_namespace($.mod) ~ "\n"
