@@ -741,7 +741,7 @@ package GLOBAL;
             my $parameters = $_[0];
             my $arguments = $_[1];
             if (Main::isa($parameters, 'Index')) {
-                return scalar ((($parameters->obj())->emit_ruby() . '[' . ($parameters->index_exp())->emit_ruby() . '] ' . chr(61) . ' ' . $arguments->emit_ruby()))
+                return scalar (('(' . $parameters->obj()->emit_ruby() . ' ' . chr(63) . ' ' . ($parameters->obj())->emit_ruby() . '[' . ($parameters->index_exp())->emit_ruby() . '] ' . chr(61) . ' ' . $arguments->emit_ruby() . ' ' . ': Proc.new' . chr(123) . chr(124) . chr(124) . ' ' . ($parameters->obj())->emit_ruby() . ' ' . chr(61) . ' []' . chr(59) . ($parameters->obj())->emit_ruby() . '[' . ($parameters->index_exp())->emit_ruby() . '] ' . chr(61) . ' ' . $arguments->emit_ruby() . ' ' . chr(125) . '.call() ' . ')'))
             };
             if (Main::isa($parameters, 'Lookup')) {
                 return scalar ((($parameters->obj())->emit_ruby() . '[' . ($parameters->index_exp())->emit_ruby() . '] ' . chr(61) . ' ' . $arguments->emit_ruby()))

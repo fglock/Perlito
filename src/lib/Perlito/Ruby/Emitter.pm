@@ -541,9 +541,19 @@ class Apply {
     }
     sub emit_ruby_bind($parameters, $arguments) {
         if $parameters.isa( 'Index' ) {
-            return    ($parameters.obj).emit_ruby ~ '['
-                    ~ ($parameters.index_exp).emit_ruby ~ '] = '
-                    ~ $arguments.emit_ruby;
+            return    '('
+                    ~   $parameters.obj.emit_ruby() ~ ' '
+                    ~ '? '
+                    ~   ($parameters.obj).emit_ruby ~ '['
+                    ~   ($parameters.index_exp).emit_ruby ~ '] = '
+                    ~   $arguments.emit_ruby ~ ' '
+                    ~ ': Proc.new{|| '
+                    ~       ($parameters.obj).emit_ruby ~ ' = [];'
+                    ~       ($parameters.obj).emit_ruby ~ '['
+                    ~       ($parameters.index_exp).emit_ruby ~ '] = '
+                    ~       $arguments.emit_ruby
+                    ~   ' }.call() '
+                    ~ ')';
         }
         if $parameters.isa( 'Lookup' ) {
             return    ($parameters.obj).emit_ruby ~ '['
