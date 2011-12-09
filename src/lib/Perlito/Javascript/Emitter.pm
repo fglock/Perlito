@@ -1,5 +1,7 @@
 use v6;
 
+use Perlito::AST;
+
 class Javascript {
     sub tab($level) {
         "    " x $level
@@ -145,10 +147,8 @@ class Perlito::Javascript::LexicalBlock {
 }
 
 class CompUnit {
-    has $.name;
     has %.attributes;
     has %.methods;
-    has @.body;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $class_name = Main::to_javascript_namespace($.name);
@@ -230,32 +230,26 @@ class CompUnit {
 }
 
 class Val::Int {
-    has $.int;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) { Javascript::tab($level) ~ $.int }
 }
 
 class Val::Bit {
-    has $.bit;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) { Javascript::tab($level) ~ ($.bit ?? 'true' !! 'false') }
 }
 
 class Val::Num {
-    has $.num;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) { Javascript::tab($level) ~ $.num }
 }
 
 class Val::Buf {
-    has $.buf;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) { Javascript::tab($level) ~ Javascript::escape_string($.buf) }
 }
 
 class Lit::Block {
-    has $.sig;
-    has @.stmts;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $sig = 'v__';
@@ -270,7 +264,6 @@ class Lit::Block {
 }
 
 class Lit::Array {
-    has @.array1;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $ast = self.expand_interpolation;
@@ -279,7 +272,6 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash1;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $ast = self.expand_interpolation;
@@ -288,8 +280,6 @@ class Lit::Hash {
 }
 
 class Index {
-    has $.obj;
-    has $.index_exp;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         Javascript::tab($level) ~ $.obj.emit_javascript() ~ '[' ~ $.index_exp.emit_javascript() ~ ']';
@@ -297,8 +287,6 @@ class Index {
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         # my $var = $.obj.emit_javascript;
@@ -324,10 +312,6 @@ class Lookup {
 }
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.namespace;
-    has $.name;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $table = {
@@ -356,7 +340,6 @@ class Var {
 }
 
 class Proto {
-    has $.name;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         Javascript::tab($level) ~ Main::to_javascript_namespace($.name)        
@@ -364,10 +347,6 @@ class Proto {
 }
 
 class Call {
-    has $.invocant;
-    has $.hyper;
-    has $.method;
-    has @.arguments;
 
     my %method_js = (
         'perl'   => 'perl',
@@ -455,9 +434,6 @@ class Call {
 }
 
 class Apply {
-    has $.code;
-    has @.arguments;
-    has $.namespace;
 
     my %op_infix_js = (
         'infix:<->'  => ' - ',
@@ -726,9 +702,6 @@ class Apply {
 }
 
 class If {
-    has $.cond;
-    has $.body;
-    has $.otherwise;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $cond = $.cond;
@@ -757,10 +730,6 @@ class If {
 
 
 class While {
-    has $.init;
-    has $.cond;
-    has $.continue;
-    has @.body;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $body      = Perlito::Javascript::LexicalBlock.new( block => @.body.stmts, needs_return => 0 );
@@ -776,8 +745,6 @@ class While {
 }
 
 class For {
-    has $.cond;
-    has @.body;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $cond = $.cond;
@@ -798,9 +765,6 @@ class For {
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         Javascript::tab($level) ~ $.var.emit_javascript;
@@ -827,15 +791,10 @@ class Decl {
 }
 
 class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
+    1
 }
 
 class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $sig = $.sig;
@@ -849,9 +808,6 @@ class Method {
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $sig = $.sig;
@@ -864,7 +820,6 @@ class Sub {
 }
 
 class Do {
-    has @.block;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $block = self.simplify.block;
@@ -876,7 +831,6 @@ class Do {
 }
 
 class Use {
-    has $.mod;
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         Javascript::tab($level) ~ '// use ' ~ $.mod ~ "\n"

@@ -1,4 +1,5 @@
 ChangeLog
+lib/Perlito/AST.pm
 lib/Perlito/Clojure/Emitter.pm
 lib/Perlito/Emitter/Token.pm
 lib/Perlito/Eval.pm

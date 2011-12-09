@@ -1,5 +1,7 @@
 use v6;
 
+use Perlito::AST;
+
 class Perl5 {
     sub tab($level) {
         "    " x $level
@@ -48,8 +50,6 @@ class Perl5 {
 }
 
 class CompUnit {
-    has $.name;
-    has @.body;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my @body;
@@ -84,25 +84,21 @@ class CompUnit {
 }
 
 class Val::Int {
-    has $.int;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) { Perl5::tab($level) ~ $.int }
 }
 
 class Val::Bit {
-    has $.bit;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) { Perl5::tab($level) ~ $.bit }
 }
 
 class Val::Num {
-    has $.num;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) { Perl5::tab($level) ~ $.num }
 }
 
 class Val::Buf {
-    has $.buf;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) { 
         Perl5::tab($level) ~ Perl5::escape_string($.buf) 
@@ -110,8 +106,6 @@ class Val::Buf {
 }
 
 class Lit::Block {
-    has $.sig;
-    has @.stmts;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
           Perl5::tab($level) ~ "sub \{\n" 
@@ -121,7 +115,6 @@ class Lit::Block {
 }
 
 class Lit::Array {
-    has @.array1;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my $ast = self.expand_interpolation;
@@ -130,7 +123,6 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash1;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my $ast = self.expand_interpolation;
@@ -139,8 +131,6 @@ class Lit::Hash {
 }
 
 class Index {
-    has $.obj;
-    has $.index_exp;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         $.obj.emit_perl5_indented($level) ~ '->[' ~ $.index_exp.emit_perl5() ~ ']';
@@ -148,8 +138,6 @@ class Index {
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         $.obj.emit_perl5_indented($level) ~ '->{' ~ $.index_exp.emit_perl5() ~ '}';
@@ -157,10 +145,6 @@ class Lookup {
 }
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.namespace;
-    has $.name;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         # Normalize the sigil here into $
@@ -214,7 +198,6 @@ class Var {
 }
 
 class Proto {
-    has $.name;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         Perl5::tab($level) ~ $.name        
@@ -222,10 +205,6 @@ class Proto {
 }
 
 class Call {
-    has $.invocant;
-    has $.hyper;
-    has $.method;
-    has @.arguments;
 
     my %method_perl5 = (
         'perl'   => 'Main::perl',
@@ -297,9 +276,6 @@ class Call {
 }
 
 class Apply {
-    has $.code;
-    has @.arguments;
-    has $.namespace;
 
     my %op_prefix_perl5 = (
         say     => 'Main::say',
@@ -486,9 +462,6 @@ class Apply {
 }
 
 class If {
-    has $.cond;
-    has $.body;
-    has $.otherwise;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         return Perl5::tab($level) ~ 'if (' ~ $.cond.emit_perl5() ~ ") \{\n" 
@@ -509,10 +482,6 @@ class If {
 }
 
 class While {
-    has $.init;
-    has $.cond;
-    has $.continue;
-    has $.body;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my $cond = $.cond;
@@ -532,8 +501,6 @@ class While {
 }
 
 class For {
-    has $.cond;
-    has $.body;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my $cond = $.cond;
@@ -551,9 +518,6 @@ class For {
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my $decl = $.decl;
@@ -577,9 +541,6 @@ class Decl {
 }
 
 class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         ' print \'Signature - TODO\'; die \'Signature - TODO\'; '
@@ -587,9 +548,6 @@ class Sig {
 }
 
 class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my $sig = $.sig;
@@ -612,9 +570,6 @@ class Method {
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has @.block;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my $sig = $.sig;
@@ -633,7 +588,6 @@ class Sub {
 }
 
 class Do {
-    has $.block;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my $block = self.simplify.block;
@@ -644,7 +598,6 @@ class Do {
 }
 
 class Use {
-    has $.mod;
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         if $.mod eq 'v6' {

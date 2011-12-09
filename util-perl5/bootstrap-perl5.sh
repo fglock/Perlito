@@ -21,6 +21,7 @@ cp src/lib/Perlito/Perl5/Runtime.pm lib5-new/Perlito/Perl5/Runtime.pm
 
 perl perlito.pl -Cperl5 src/lib/Perlito/Test.pm            > lib5-new/Perlito/Test.pm
 
+perl perlito.pl -Cperl5 src/lib/Perlito/AST.pm             > lib5-new/Perlito/AST.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Emitter/Token.pm   > lib5-new/Perlito/Emitter/Token.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Eval.pm            > lib5-new/Perlito/Eval.pm
 perl perlito.pl -Cperl5 src/lib/Perlito/Expression.pm      > lib5-new/Perlito/Expression.pm
