@@ -413,6 +413,7 @@ class Call {
             || ( $meth eq 'keys' )
             || ( $meth eq 'push' )
             || ( $meth eq 'shift' )
+            || ( $meth eq 'unshift' )
             || ( $meth eq 'concat' )
             || ( $meth eq 'join')
         {

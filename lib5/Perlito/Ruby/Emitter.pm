@@ -539,7 +539,7 @@ package GLOBAL;
             if (($meth eq 'postcircumfix:<( )>')) {
                 return scalar ((Ruby::tab($level) . $invocant . '.call(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
-            if (((((((($meth eq 'values')) || (($meth eq 'keys'))) || (($meth eq 'push'))) || (($meth eq 'shift'))) || (($meth eq 'concat'))) || (($meth eq 'join')))) {
+            if ((((((((($meth eq 'values')) || (($meth eq 'keys'))) || (($meth eq 'push'))) || (($meth eq 'shift'))) || (($meth eq 'unshift'))) || (($meth eq 'concat'))) || (($meth eq 'join')))) {
                 return scalar ((Ruby::tab($level) . $invocant . '.' . $meth . '(' . Main::join(([ map { $_->emit_ruby() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (($meth eq 'chars')) {
