@@ -285,16 +285,6 @@ package GLOBAL;
 
 ;
     {
-    package Val::Undef;
-        sub new { shift; bless { @_ }, "Val::Undef" }
-        sub emit_lisp {
-            my $self = $_[0];
-            '(sv-undef)'
-        }
-    }
-
-;
-    {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub emit_lisp {

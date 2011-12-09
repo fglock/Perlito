@@ -188,10 +188,6 @@ class Val::Buf {
     method emit_clojure { '"' ~ Main::lisp_escape_string($.buf) ~ '"' }
 }
 
-class Val::Undef {
-    method emit_clojure { '(sv-undef)' }
-}
-
 class Lit::Array {
     method emit_clojure {
         my $ast = self.expand_interpolation;

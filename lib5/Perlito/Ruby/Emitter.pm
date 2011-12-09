@@ -141,7 +141,7 @@ package GLOBAL;
             my $self = $_[0];
             my $level = $_[1];
             if (!(((defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))))) {
-                push( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))}, Val::Undef->new() )
+                push( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))}, Apply->new(('code' => 'Mu')) )
             };
             (my  $List_s = bless [], 'ARRAY');
             (my  $List_tmp = bless [], 'ARRAY');
@@ -380,21 +380,6 @@ package GLOBAL;
             my $self = $_[0];
             my $level = $_[1];
             (Ruby::tab($level) . chr(34) . $self->{buf} . chr(34))
-        }
-    }
-
-;
-    {
-    package Val::Undef;
-        sub new { shift; bless { @_ }, "Val::Undef" }
-        sub emit_ruby {
-            my $self = $_[0];
-            $self->emit_ruby_indented(0)
-        };
-        sub emit_ruby_indented {
-            my $self = $_[0];
-            my $level = $_[1];
-            (Ruby::tab($level) . 'nil')
         }
     }
 

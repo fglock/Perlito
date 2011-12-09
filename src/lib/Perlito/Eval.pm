@@ -1,8 +1,6 @@
 use v6;
 
 class CompUnit {
-    has $.name;
-    has @.body;
     method eval ($env) {
         my $env1 = [ {}, @$env ];
         for @.body -> $stmt {
@@ -12,28 +10,22 @@ class CompUnit {
 }
 
 class Val::Int {
-    has $.int;
     method eval ($env) { Int( $.int ) }
 }
 
 class Val::Bit {
-    has $.bit;
     method eval ($env) { $.bit }
 }
 
 class Val::Num {
-    has $.num;
     method eval ($env) { Num( $.num ) }
 }
 
 class Val::Buf {
-    has $.buf;
     method eval ($env) { $.buf }
 }
 
 class Lit::Block {
-    has $.sig;
-    has @.stmts;
     method eval ($env) {
         my $env1 = [ {}, @$env ];
         for @.stmts -> $stmt {
@@ -43,7 +35,6 @@ class Lit::Block {
 }
 
 class Lit::Array {
-    has @.array1;
     method eval ($env) {
         my @a;
         for @.array1 -> $v {
@@ -54,7 +45,6 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash1;
     method eval ($env) {
         my %h;
         for @.hash1 -> $field { 
@@ -66,26 +56,18 @@ class Lit::Hash {
 }
 
 class Index {
-    has $.obj;
-    has $.index_exp;
     method eval ($env) {
         ( $.obj.eval($env) )[ $.index_exp.eval($env) ];
     }
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
     method eval ($env) {
         ( $.obj.eval($env) ){ $.index_exp.eval($env) };
     }
 }
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.namespace;
-    has $.name;
     method eval ($env) {
         my $ns = '';
         if $.namespace {
@@ -122,17 +104,12 @@ class Var {
 }
 
 class Proto {
-    has $.name;
     method eval ($env) {
         ~$.name        
     }
 }
 
 class Call {
-    has $.invocant;
-    has $.hyper;
-    has $.method;
-    has @.arguments;
     method eval ($env) {
         warn "Interpreter TODO: Call";
         my $invocant = $.invocant.eval($env);
@@ -150,9 +127,6 @@ class Call {
 }
 
 class Apply {
-    has $.code;
-    has @.arguments;
-    has $.namespace;
     method eval ($env) {
         my $ns = '';
         if $.namespace {
@@ -170,9 +144,6 @@ class Apply {
 }
 
 class If {
-    has $.cond;
-    has $.body;
-    has $.otherwise;
     method eval ($env) {
         my $cond = $.cond;
         if $cond.eval($env) { 
@@ -192,9 +163,6 @@ class If {
 }
 
 class For {
-    has $.cond;
-    has $.body;
-    has $.topic;
     method eval ($env) {
         my $cond = $.cond;
         my $topic_name = (($.body).sig).plain_name;
@@ -210,23 +178,14 @@ class For {
 }
 
 class When {
-    has @.parameters;
-    has @.body;
     method eval ($env) { die "TODO - When" }
 }
 
 class While {
-    has $.init;
-    has $.cond;
-    has $.continue;
-    has @.body;
     method eval ($env) { die "TODO - While" }
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
     method eval ($env) {
         my $decl = $.decl;
         my $name = $.var.plain_name;
@@ -244,18 +203,12 @@ class Decl {
 }
 
 class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
     method eval ($env) {
         warn "Interpreter TODO: Sig";
     };
 }
 
 class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
     method eval ($env) {
         warn "Interpreter TODO: Method";
         my $sig = $.sig;
@@ -268,9 +221,6 @@ class Method {
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has @.block;
     method eval ($env) {
         my @param_name;
         for @( $.sig.positional ) -> $field { 
@@ -300,7 +250,6 @@ class Sub {
 }
 
 class Do {
-    has @.block;
     method eval ($env) {
         my $env1 = [ {}, @$env ];
         for @.block -> $stmt {
@@ -310,7 +259,6 @@ class Do {
 }
 
 class Use {
-    has $.mod;
     method eval ($env) {
         warn "Interpreter TODO: Use";
         'use ' ~ $.mod

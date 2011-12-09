@@ -124,12 +124,6 @@ class Val::Buf {
     }
 }
 
-class Val::Undef {
-    method emit_parrot {
-        '  $P0 = new .Undef' ~ "\n"
-    }
-}
-
 class Lit::Array {
     method emit_parrot {
         my $a = @.array1;
@@ -250,43 +244,6 @@ class Bind {
     has $.parameters;
     has $.arguments;
     method emit_parrot {
-        if $.parameters.isa( 'Lit::Array' ) {
-
-            #  [$a, [$b, $c]] = [1, [2, 3]]
-
-            my $a = $.parameters.array1;
-            my $b = $.arguments.array1;
-            my $str = '';
-            my $i = 0;
-            for @$a -> $var {
-                my $bind = Bind.new( parameters => $var, arguments => ($b[$i]) );
-                $str = $str ~ $bind.emit_parrot;
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_parrot;
-        };
-        if $.parameters.isa( 'Lit::Hash' ) {
-
-            #  {:$a, :$b} = { a => 1, b => [2, 3]}
-
-            my $a = $.parameters.hash;
-            my $b = $.arguments.hash;
-            my $str = '';
-            my $i = 0;
-            my $arg;
-            for @$a -> $var {
-                $arg = Val::Undef.new();
-                for @$b -> $var2 {
-                    if ($var2[0]).buf eq ($var[0]).buf() {
-                        $arg = $var2[1];
-                    }
-                };
-                my $bind = Bind.new( parameters => $var[1], arguments => $arg );
-                $str = $str ~ $bind.emit_parrot;
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_parrot;
-        };
         if $.parameters.isa( 'Var' ) {
             return
                 $.arguments.emit_parrot ~

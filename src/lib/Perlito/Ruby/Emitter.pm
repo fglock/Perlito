@@ -111,7 +111,7 @@ class Perlito::Ruby::LexicalBlock {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         if !(@.block) {
-            push @.block, Val::Undef.new();
+            push @.block, Apply.new( code => 'Mu' );
         }
 
         my @s;
@@ -303,13 +303,6 @@ class Val::Buf {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ '"' ~ $.buf ~ '"' 
-    }
-}
-
-class Val::Undef {
-    method emit_ruby { self.emit_ruby_indented(0) }
-    method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ 'nil'
     }
 }
 

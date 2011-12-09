@@ -320,10 +320,6 @@ class Val::Buf {
     method emit_lisp { '"' ~ Main::lisp_escape_string($.buf) ~ '"' }
 }
 
-class Val::Undef {
-    method emit_lisp { '(sv-undef)' }
-}
-
 class Lit::Array {
     method emit_lisp {
         my $ast = self.expand_interpolation;

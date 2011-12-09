@@ -333,16 +333,6 @@ package GLOBAL;
 
 ;
     {
-    package Val::Undef;
-        sub new { shift; bless { @_ }, "Val::Undef" }
-        sub emit_go {
-            my $self = $_[0];
-            'u_undef()'
-        }
-    }
-
-;
-    {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub emit_go {
@@ -420,36 +410,6 @@ package GLOBAL;
         sub arguments { $_[0]->{arguments} };
         sub emit_go {
             my $self = $_[0];
-            if (Main::isa($self->{parameters}, 'Lit::Array')) {
-                ((my  $a) = $self->{parameters}->array1());
-                ((my  $str) = ('func () *Any ' . chr(123) . ' ' . 'List_tmp :' . chr(61) . ' ' . $self->{arguments}->emit_go() . chr(59) . ' '));
-                ((my  $i) = 0);
-                for my $var ( @{($a)} ) {
-                    ((my  $bind) = Bind->new(('parameters' => $var), ('arguments' => Index->new(('obj' => Var->new(('sigil' => chr(64)), ('twigil' => ''), ('namespace' => ''), ('name' => 'tmp'))), ('index_exp' => Val::Int->new(('int' => $i)))))));
-                    ($str = ($str . ' ' . $bind->emit_go() . chr(59) . ' '));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . ' return List_tmp ' . chr(125) . '()'))
-            };
-            if (Main::isa($self->{parameters}, 'Lit::Hash')) {
-                ((my  $a) = $self->{parameters}->hash1());
-                ((my  $b) = $self->{arguments}->hash1());
-                ((my  $str) = 'do ' . chr(123) . ' ');
-                ((my  $i) = 0);
-                (my  $arg);
-                for my $var ( @{($a)} ) {
-                    ($arg = Val::Undef->new());
-                    for my $var2 ( @{($b)} ) {
-                        if ((($var2->[0])->buf() eq ($var->[0])->buf())) {
-                            ($arg = $var2->[1])
-                        }
-                    };
-                    ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
-                    ($str = ($str . ' ' . $bind->emit_go() . chr(59) . ' '));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $self->{parameters}->emit_go() . ' ' . chr(125)))
-            };
             if (Main::isa($self->{parameters}, 'Call')) {
                 return scalar (('func () *Any ' . chr(123) . ' ' . 'var tmp ' . chr(61) . ' ' . Call::emit_go_call($self->{parameters}->invocant(), $self->{parameters}->method()) . chr(59) . ' ' . '*tmp ' . chr(61) . ' *( ' . $self->{arguments}->emit_go() . ' )' . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . '()'))
             };

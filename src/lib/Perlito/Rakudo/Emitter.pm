@@ -31,10 +31,6 @@ class Val::Buf {
     method emit { '\'' ~ $.buf ~ '\'' }
 }
 
-class Val::Undef {
-    method emit { '(undef)' }
-}
-
 class Lit::Array {
     has @.array1;
     method emit {
@@ -99,54 +95,6 @@ class Bind {
     has $.parameters;
     has $.arguments;
     method emit {
-        if $.parameters.isa( 'Lit::Array' ) {
-            
-            #  [$a, [$b, $c]] = [1, [2, 3]]
-            
-            my $a = $.parameters.array;
-            #my $b = $.arguments.array;
-            my $str = 'do { ';
-            my $i = 0;
-            for @$a -> $var { 
-                my $bind = Bind.new( 
-                    parameters => $var, 
-                    # arguments => ($b[$i]) );
-                    arguments  => Index.new(
-                        obj    => $.arguments,
-                        index_exp  => Val::Int.new( int => $i )
-                    )
-                );
-                $str = $str ~ ' ' ~ $bind.emit ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit ~ ' }';
-        };
-        if $.parameters.isa( 'Lit::Hash' ) {
-
-            #  {:$a, :$b} = { a => 1, b => [2, 3]}
-
-            my $a = $.parameters.hash;
-            my $b = $.arguments.hash;
-            my $str = 'do { ';
-            my $i = 0;
-            my $arg;
-            for @$a -> $var {
-
-                $arg = Val::Undef.new();
-                for @$b -> $var2 {
-                    #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
-                    if ($var2[0]).buf eq ($var[0]).buf() {
-                        $arg = $var2[1];
-                    }
-                };
-
-                my $bind = Bind.new( parameters => $var[1], arguments => $arg );
-                $str = $str ~ ' ' ~ $bind.emit ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit ~ ' }';
-        };
-
         $.parameters.emit ~ ' = ' ~ $.arguments.emit;
     }
 }

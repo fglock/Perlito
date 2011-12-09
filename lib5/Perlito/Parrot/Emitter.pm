@@ -99,16 +99,6 @@ package GLOBAL;
 
 ;
     {
-    package Val::Undef;
-        sub new { shift; bless { @_ }, "Val::Undef" }
-        sub emit_parrot {
-            my $self = $_[0];
-            ('  ' . chr(36) . 'P0 ' . chr(61) . ' new .Undef' . (chr(10)))
-        }
-    }
-
-;
-    {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub emit_parrot {
@@ -207,37 +197,6 @@ package GLOBAL;
         sub arguments { $_[0]->{arguments} };
         sub emit_parrot {
             my $self = $_[0];
-            if (Main::isa($self->{parameters}, 'Lit::Array')) {
-                ((my  $a) = $self->{parameters}->array1());
-                ((my  $b) = $self->{arguments}->array1());
-                ((my  $str) = '');
-                ((my  $i) = 0);
-                for my $var ( @{($a)} ) {
-                    ((my  $bind) = Bind->new(('parameters' => $var), ('arguments' => ($b->[$i]))));
-                    ($str = ($str . $bind->emit_parrot()));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $self->{parameters}->emit_parrot()))
-            };
-            if (Main::isa($self->{parameters}, 'Lit::Hash')) {
-                ((my  $a) = $self->{parameters}->hash());
-                ((my  $b) = $self->{arguments}->hash());
-                ((my  $str) = '');
-                ((my  $i) = 0);
-                (my  $arg);
-                for my $var ( @{($a)} ) {
-                    ($arg = Val::Undef->new());
-                    for my $var2 ( @{($b)} ) {
-                        if ((($var2->[0])->buf() eq ($var->[0])->buf())) {
-                            ($arg = $var2->[1])
-                        }
-                    };
-                    ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
-                    ($str = ($str . $bind->emit_parrot()));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $self->{parameters}->emit_parrot()))
-            };
             if (Main::isa($self->{parameters}, 'Var')) {
                 return scalar (($self->{arguments}->emit_parrot() . '  ' . $self->{parameters}->full_name() . ' ' . chr(61) . ' ' . chr(36) . 'P0' . (chr(10))))
             };

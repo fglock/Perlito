@@ -397,10 +397,6 @@ class Val::Buf {
     method emit_java { 'new PerlitoString("' ~ $.buf ~ '")' }
 }
 
-class Val::Undef {
-    method emit_java { 'u_undef()' }
-}
-
 class Lit::Array {
     method emit_java {
         my $ast = self.expand_interpolation;
@@ -465,55 +461,6 @@ class Bind {
     has $.parameters;
     has $.arguments;
     method emit_java {
-        if $.parameters.isa( 'Lit::Array' ) {
-            
-            #  [$a, [$b, $c]] = [1, [2, 3]]
-            
-            my $a = $.parameters.array1;
-            #my $b = $.arguments.array1;
-            my $str = 
-                'func () *Any { '
-                    ~ 'List_tmp := ' ~ $.arguments.emit_java ~ '; ';
-            my $i = 0;
-            for @$a -> $var { 
-                my $bind = Bind.new( 
-                    parameters => $var, 
-                    arguments  => Index.new(
-                        obj        => Var.new( sigil => '@', twigil => '', namespace => '', name => 'tmp' ),
-                        index_exp  => Val::Int.new( int => $i )
-                    )
-                );
-                $str = $str ~ ' ' ~ $bind.emit_java ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ ' return List_tmp }()';
-        };
-        if $.parameters.isa( 'Lit::Hash' ) {
-
-            #  {:$a, :$b} = { a => 1, b => [2, 3]}
-
-            my $a = $.parameters.hash1;
-            my $b = $.arguments.hash1;
-            my $str = 'do { ';
-            my $i = 0;
-            my $arg;
-            for @$a -> $var {
-
-                $arg = Val::Undef.new();
-                for @$b -> $var2 {
-                    #say "COMPARE ", ($var2[0]).buf, ' eq ', ($var[0]).buf;
-                    if ($var2[0]).buf eq ($var[0]).buf() {
-                        $arg = $var2[1];
-                    }
-                };
-
-                my $bind = Bind.new( parameters => $var[1], arguments => $arg );
-                $str = $str ~ ' ' ~ $bind.emit_java ~ '; ';
-                $i = $i + 1;
-            };
-            return $str ~ $.parameters.emit_java ~ ' }';
-        };
-
         if $.parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return 

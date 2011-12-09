@@ -16,8 +16,6 @@ package GLOBAL;
     {
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
-        sub name { $_[0]->{name} };
-        sub body { $_[0]->{body} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -44,7 +42,6 @@ package GLOBAL;
     {
     package Val::Int;
         sub new { shift; bless { @_ }, "Val::Int" }
-        sub int { $_[0]->{int} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -56,7 +53,6 @@ package GLOBAL;
     {
     package Val::Bit;
         sub new { shift; bless { @_ }, "Val::Bit" }
-        sub bit { $_[0]->{bit} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -68,7 +64,6 @@ package GLOBAL;
     {
     package Val::Num;
         sub new { shift; bless { @_ }, "Val::Num" }
-        sub num { $_[0]->{num} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -80,7 +75,6 @@ package GLOBAL;
     {
     package Val::Buf;
         sub new { shift; bless { @_ }, "Val::Buf" }
-        sub buf { $_[0]->{buf} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -92,8 +86,6 @@ package GLOBAL;
     {
     package Lit::Block;
         sub new { shift; bless { @_ }, "Lit::Block" }
-        sub sig { $_[0]->{sig} };
-        sub stmts { $_[0]->{stmts} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -120,7 +112,6 @@ package GLOBAL;
     {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
-        sub array1 { $_[0]->{array1} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -136,7 +127,6 @@ package GLOBAL;
     {
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub hash1 { $_[0]->{hash1} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -153,8 +143,6 @@ package GLOBAL;
     {
     package Index;
         sub new { shift; bless { @_ }, "Index" }
-        sub obj { $_[0]->{obj} };
-        sub index_exp { $_[0]->{index_exp} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -166,8 +154,6 @@ package GLOBAL;
     {
     package Lookup;
         sub new { shift; bless { @_ }, "Lookup" }
-        sub obj { $_[0]->{obj} };
-        sub index_exp { $_[0]->{index_exp} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -179,10 +165,6 @@ package GLOBAL;
     {
     package Var;
         sub new { shift; bless { @_ }, "Var" }
-        sub sigil { $_[0]->{sigil} };
-        sub twigil { $_[0]->{twigil} };
-        sub namespace { $_[0]->{namespace} };
-        sub name { $_[0]->{name} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -224,7 +206,6 @@ package GLOBAL;
     {
     package Proto;
         sub new { shift; bless { @_ }, "Proto" }
-        sub name { $_[0]->{name} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -236,10 +217,6 @@ package GLOBAL;
     {
     package Call;
         sub new { shift; bless { @_ }, "Call" }
-        sub invocant { $_[0]->{invocant} };
-        sub hyper { $_[0]->{hyper} };
-        sub method { $_[0]->{method} };
-        sub arguments { $_[0]->{arguments} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -259,9 +236,6 @@ package GLOBAL;
     {
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
-        sub code { $_[0]->{code} };
-        sub arguments { $_[0]->{arguments} };
-        sub namespace { $_[0]->{namespace} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -283,9 +257,6 @@ package GLOBAL;
     {
     package If;
         sub new { shift; bless { @_ }, "If" }
-        sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} };
-        sub otherwise { $_[0]->{otherwise} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -334,9 +305,6 @@ package GLOBAL;
     {
     package For;
         sub new { shift; bless { @_ }, "For" }
-        sub cond { $_[0]->{cond} };
-        sub body { $_[0]->{body} };
-        sub topic { $_[0]->{topic} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -373,8 +341,6 @@ package GLOBAL;
     {
     package When;
         sub new { shift; bless { @_ }, "When" }
-        sub parameters { $_[0]->{parameters} };
-        sub body { $_[0]->{body} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -386,10 +352,6 @@ package GLOBAL;
     {
     package While;
         sub new { shift; bless { @_ }, "While" }
-        sub init { $_[0]->{init} };
-        sub cond { $_[0]->{cond} };
-        sub continue { $_[0]->{continue} };
-        sub body { $_[0]->{body} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -401,9 +363,6 @@ package GLOBAL;
     {
     package Decl;
         sub new { shift; bless { @_ }, "Decl" }
-        sub decl { $_[0]->{decl} };
-        sub type { $_[0]->{type} };
-        sub var { $_[0]->{var} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -427,9 +386,6 @@ package GLOBAL;
     {
     package Sig;
         sub new { shift; bless { @_ }, "Sig" }
-        sub invocant { $_[0]->{invocant} };
-        sub positional { $_[0]->{positional} };
-        sub named { $_[0]->{named} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -441,9 +397,6 @@ package GLOBAL;
     {
     package Method;
         sub new { shift; bless { @_ }, "Method" }
-        sub name { $_[0]->{name} };
-        sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -459,9 +412,6 @@ package GLOBAL;
     {
     package Sub;
         sub new { shift; bless { @_ }, "Sub" }
-        sub name { $_[0]->{name} };
-        sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -506,7 +456,6 @@ package GLOBAL;
     {
     package Do;
         sub new { shift; bless { @_ }, "Do" }
-        sub block { $_[0]->{block} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
@@ -533,7 +482,6 @@ package GLOBAL;
     {
     package Use;
         sub new { shift; bless { @_ }, "Use" }
-        sub mod { $_[0]->{mod} };
         sub eval {
             my $self = $_[0];
             my $env = $_[1];

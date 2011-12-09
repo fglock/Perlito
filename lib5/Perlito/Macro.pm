@@ -16,7 +16,6 @@ package GLOBAL;
     {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
-        sub array1 { $_[0]->{array1} };
         sub expand_interpolation {
             my $self = $_[0];
             ((my  $needs_interpolation) = 0);
@@ -110,7 +109,6 @@ package GLOBAL;
     {
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub hash1 { $_[0]->{hash1} };
         sub expand_interpolation {
             my $self = $_[0];
             (my  $List_items = bless [], 'ARRAY');

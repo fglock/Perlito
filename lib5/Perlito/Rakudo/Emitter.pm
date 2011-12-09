@@ -72,16 +72,6 @@ package GLOBAL;
 
 ;
     {
-    package Val::Undef;
-        sub new { shift; bless { @_ }, "Val::Undef" }
-        sub emit {
-            my $self = $_[0];
-            '(undef)'
-        }
-    }
-
-;
-    {
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub array1 { $_[0]->{array1} };
@@ -160,36 +150,6 @@ package GLOBAL;
         sub arguments { $_[0]->{arguments} };
         sub emit {
             my $self = $_[0];
-            if (Main::isa($self->{parameters}, 'Lit::Array')) {
-                ((my  $a) = $self->{parameters}->array());
-                ((my  $str) = 'do ' . chr(123) . ' ');
-                ((my  $i) = 0);
-                for my $var ( @{($a)} ) {
-                    ((my  $bind) = Bind->new(('parameters' => $var), ('arguments' => Index->new(('obj' => $self->{arguments}), ('index_exp' => Val::Int->new(('int' => $i)))))));
-                    ($str = ($str . ' ' . $bind->emit() . chr(59) . ' '));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $self->{parameters}->emit() . ' ' . chr(125)))
-            };
-            if (Main::isa($self->{parameters}, 'Lit::Hash')) {
-                ((my  $a) = $self->{parameters}->hash());
-                ((my  $b) = $self->{arguments}->hash());
-                ((my  $str) = 'do ' . chr(123) . ' ');
-                ((my  $i) = 0);
-                (my  $arg);
-                for my $var ( @{($a)} ) {
-                    ($arg = Val::Undef->new());
-                    for my $var2 ( @{($b)} ) {
-                        if ((($var2->[0])->buf() eq ($var->[0])->buf())) {
-                            ($arg = $var2->[1])
-                        }
-                    };
-                    ((my  $bind) = Bind->new(('parameters' => $var->[1]), ('arguments' => $arg)));
-                    ($str = ($str . ' ' . $bind->emit() . chr(59) . ' '));
-                    ($i = ($i + 1))
-                };
-                return scalar (($str . $self->{parameters}->emit() . ' ' . chr(125)))
-            };
             ($self->{parameters}->emit() . ' ' . chr(61) . ' ' . $self->{arguments}->emit())
         }
     }

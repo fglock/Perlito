@@ -1,7 +1,6 @@
 use v6;
 
 class Lit::Array {
-    has @.array1;
     method expand_interpolation {
         my $needs_interpolation = 0;
         my @items;
@@ -88,7 +87,6 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    has @.hash1;
     method expand_interpolation {
         my @items;
         for @.hash1 -> $item {
