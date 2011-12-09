@@ -579,6 +579,9 @@ package GLOBAL;
             if (($code eq 'self')) {
                 return scalar ('self')
             };
+            if (($code eq 'Mu')) {
+                return scalar ('nil')
+            };
             if (($code eq 'make')) {
                 return scalar (('v_MATCH.v_capture ' . chr(61) . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_ruby() . ''))
             };

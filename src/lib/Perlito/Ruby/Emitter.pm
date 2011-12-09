@@ -450,6 +450,8 @@ class Apply {
         };
 
         if $code eq 'self'       { return 'self' };
+        if $code eq 'Mu'         { return 'nil' }
+
         if $code eq 'make'       { return "v_MATCH.v_capture = " ~ (@.arguments[0]).emit_ruby ~ '' }
         if $code eq 'False'      { return 'false' };
         if $code eq 'True'       { return 'true' };
