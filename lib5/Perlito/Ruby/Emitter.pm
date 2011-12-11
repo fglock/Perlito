@@ -127,7 +127,7 @@ package GLOBAL;
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) {
                     return scalar (1)
                 };
-                if (((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my')))) {
+                if ((((Main::isa($decl, 'Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')) && Main::isa($decl->arguments()->[0], 'Decl')) && ($decl->arguments()->[0]->decl() eq 'my'))) {
                     return scalar (1)
                 }
             };
@@ -161,14 +161,12 @@ package GLOBAL;
             for my $decl ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                     push( @{$has_decl}, $decl )
+                };
+                if ((((Main::isa($decl, 'Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')) && Main::isa($decl->arguments()->[0], 'Decl')) && ($decl->arguments()->[0]->decl() eq 'has'))) {
+                    push( @{$has_decl}, $decl )
                 }
                 else {
-                    if (((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'has')))) {
-                        push( @{$has_decl}, $decl )
-                    }
-                    else {
-                        push( @{$block}, $decl )
-                    }
+                    push( @{$block}, $decl )
                 }
             };
             if ((($has_decl))) {
@@ -179,10 +177,10 @@ package GLOBAL;
                         push( @{$List_s}, (Ruby::tab(($level + 1)) . 'return self.v_' . ($decl->var())->name()) );
                         push( @{$List_s}, (Ruby::tab($level) . ('end')) )
                     };
-                    if (((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'has')))) {
-                        push( @{$List_s}, (Ruby::tab($level) . 'attr_accessor :v_' . (($decl->parameters())->var())->name()) );
-                        push( @{$List_s}, (Ruby::tab($level) . 'def f_' . (($decl->parameters())->var())->name() . '()') );
-                        push( @{$List_s}, (Ruby::tab(($level + 1)) . 'return self.v_' . (($decl->parameters())->var())->name()) );
+                    if ((((Main::isa($decl, 'Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')) && Main::isa($decl->arguments()->[0], 'Decl')) && ($decl->arguments()->[0]->decl() eq 'has'))) {
+                        push( @{$List_s}, (Ruby::tab($level) . 'attr_accessor :v_' . (($decl->arguments()->[0])->var())->name()) );
+                        push( @{$List_s}, (Ruby::tab($level) . 'def f_' . (($decl->arguments()->[0])->var())->name() . '()') );
+                        push( @{$List_s}, (Ruby::tab(($level + 1)) . 'return self.v_' . (($decl->arguments()->[0])->var())->name()) );
                         push( @{$List_s}, (Ruby::tab($level) . ('end')) )
                     }
                 }
@@ -200,12 +198,12 @@ package GLOBAL;
                         ($Hash_my_seen->{($decl->var())->name()} = 1)
                     }
                 };
-                if (((Main::isa($decl, 'Bind') && Main::isa(($decl->parameters()), 'Decl')) && ((($decl->parameters())->decl() eq 'my')))) {
-                    if (!(($Hash_my_seen->{(($decl->parameters())->var())->name()}))) {
-                        push( @{$List_my_decl}, (($decl->parameters())->var())->emit_ruby_name() );
-                        push( @{$List_my_init}, ($decl->parameters())->emit_ruby_init() );
+                if ((((Main::isa($decl, 'Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')) && Main::isa($decl->arguments()->[0], 'Decl')) && ($decl->arguments()->[0]->decl() eq 'my'))) {
+                    if (!(($Hash_my_seen->{(($decl->arguments()->[0])->var())->name()}))) {
+                        push( @{$List_my_decl}, (($decl->arguments()->[0])->var())->emit_ruby_name() );
+                        push( @{$List_my_init}, ($decl->arguments()->[0])->emit_ruby_init() );
                         ($has_my_decl = 1);
-                        ($Hash_my_seen->{(($decl->parameters())->var())->name()} = 1)
+                        ($Hash_my_seen->{(($decl->arguments()->[0])->var())->name()} = 1)
                     }
                 }
             };

@@ -101,13 +101,14 @@ class Perlito::Ruby::LexicalBlock {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 return 1;
             }
-            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
+            if     $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>'
+                && $decl.arguments[0].isa( 'Decl' ) && $decl.arguments[0].decl eq 'my'
+            {
                 return 1;
             }
         }
         return 0;
     }
-
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         if !(@.block) {
@@ -126,7 +127,9 @@ class Perlito::Ruby::LexicalBlock {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 push $has_decl, $decl;
             }
-            elsif $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
+            if     $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>'
+                && $decl.arguments[0].isa( 'Decl' ) && $decl.arguments[0].decl eq 'has'
+            {
                 push $has_decl, $decl;
             }
             else {
@@ -143,10 +146,12 @@ class Perlito::Ruby::LexicalBlock {
                     push @s, Ruby::tab($level+1) ~ 'return self.v_' ~ ($decl.var).name;
                     push @s, Ruby::tab($level) ~ "end";
                 }
-                if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'has' ) {
-                    push @s, Ruby::tab($level) ~ 'attr_accessor :v_' ~ (($decl.parameters).var).name;
-                    push @s, Ruby::tab($level) ~ 'def f_' ~ (($decl.parameters).var).name ~ '()';
-                    push @s, Ruby::tab($level+1) ~ 'return self.v_' ~ (($decl.parameters).var).name;
+                if     $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>'
+                    && $decl.arguments[0].isa( 'Decl' ) && $decl.arguments[0].decl eq 'has'
+                {
+                    push @s, Ruby::tab($level) ~ 'attr_accessor :v_' ~ (($decl.arguments[0]).var).name;
+                    push @s, Ruby::tab($level) ~ 'def f_' ~ (($decl.arguments[0]).var).name ~ '()';
+                    push @s, Ruby::tab($level+1) ~ 'return self.v_' ~ (($decl.arguments[0]).var).name;
                     push @s, Ruby::tab($level) ~ "end";
                 }
             }
@@ -166,12 +171,14 @@ class Perlito::Ruby::LexicalBlock {
                     %my_seen{ ($decl.var).name } = 1;
                 }
             }
-            if $decl.isa( 'Bind' ) && ($decl.parameters).isa( 'Decl' ) && ( ($decl.parameters).decl eq 'my' ) {
-                if !( %my_seen{ (($decl.parameters).var).name } ) {
-                    push @my_decl, (($decl.parameters).var).emit_ruby_name;
-                    push @my_init, ($decl.parameters).emit_ruby_init;
+            if     $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>'
+                && $decl.arguments[0].isa( 'Decl' ) && $decl.arguments[0].decl eq 'my'
+            {
+                if !( %my_seen{ (($decl.arguments[0]).var).name } ) {
+                    push @my_decl, (($decl.arguments[0]).var).emit_ruby_name;
+                    push @my_init, ($decl.arguments[0]).emit_ruby_init;
                     $has_my_decl = 1;
-                    %my_seen{ (($decl.parameters).var).name } = 1;
+                    %my_seen{ (($decl.arguments[0]).var).name } = 1;
                 }
             }
         }
