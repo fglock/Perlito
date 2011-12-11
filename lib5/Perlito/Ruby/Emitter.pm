@@ -866,6 +866,9 @@ package GLOBAL;
             (my  $topic);
             if ($self->{body}->sig()) {
                 ($topic = $self->{body}->sig()->emit_ruby_name())
+            }
+            else {
+                ($topic = 'v__')
             };
             (Ruby::tab($level) . 'for ' . $topic . (' in ') . $self->{cond}->emit_ruby() . (chr(10)) . $body_block->emit_ruby_indented(($level + 1)) . (chr(10)) . Ruby::tab($level) . 'end')
         }

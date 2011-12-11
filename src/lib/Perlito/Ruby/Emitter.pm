@@ -646,6 +646,9 @@ class For {
         if $.body.sig() {
             $topic = $.body.sig.emit_ruby_name();
         }
+        else {
+            $topic = 'v__'
+        }
         Ruby::tab($level) ~   'for ' ~ $topic ~ " in " ~ $.cond.emit_ruby ~ "\n"
                 ~ $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
         ~ Ruby::tab($level) ~   'end'
