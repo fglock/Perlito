@@ -23,6 +23,39 @@ end
 $Main = C_Main.new()
 
 
+class C_Pair
+    $Pair = C_Pair.new()
+    namespace = $Pair
+    attr_accessor :v_key
+    def f_key()
+        return self.v_key
+    end
+    attr_accessor :v_value
+    def f_value()
+        return self.v_value
+    end
+
+
+    send( :define_method, "f_perl".to_sym, lambda{ ||
+        v_self = self
+        return(((self.v_key).to_s + " => " + (mp6_perl(self.v_value)).to_s))
+    } )
+end
+
+class Hash
+    def f_pairs ()
+        out = []
+        for i in self.keys()
+            p = C_Pair.new()
+            p.v_key = i
+            p.v_value = self[i]
+            out.push(p)
+        end
+        return out;
+    end
+end
+
+
 def mp6_to_num (v)
     if v.class == String
         if v.index(".")

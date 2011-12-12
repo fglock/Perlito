@@ -11,16 +11,6 @@ class Perlito::Match {
     }
 }
 
-class Pair {
-    has $.key;
-    has $.value;
-
-    method perl {
-        return $.key ~ ' => ' ~ $.value.perl;
-    }
-
-}
-
 =begin
 
 =head1 NAME 
