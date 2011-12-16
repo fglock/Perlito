@@ -268,7 +268,7 @@ package GLOBAL;
         sub rule_exp { $_[0]->{rule_exp} };
         sub emit_perl6 {
             my $self = $_[0];
-            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'tmp ' . chr(61) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match.new( ' . chr(39) . 'str' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'str, ' . chr(39) . 'from' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'to' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'bool' . chr(39) . ' ' . chr(61) . '> 1  )' . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl6() . chr(59) . ' ' . chr(36) . 'tmp.bool ' . chr(61) . ' ' . chr(63) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' ' . chr(36) . 'tmp' . chr(59) . ' ' . chr(63) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125) . ')')
+            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'tmp ' . chr(61) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match.new( ' . chr(39) . 'str' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'str, ' . chr(39) . 'from' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'to' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'bool' . chr(39) . ' ' . chr(61) . '> 1  )' . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl6() . chr(59) . ' ' . chr(36) . 'tmp.bool ' . chr(61) . ' ' . chr(36) . 'MATCH ' . chr(63) . ' 1 : 0' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' ' . chr(36) . 'tmp' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(63) . ' 1 : 0' . chr(59) . ' ' . chr(125) . ')')
         };
         sub set_captures_to_array {
             my $self = $_[0];
@@ -283,7 +283,7 @@ package GLOBAL;
         sub rule_exp { $_[0]->{rule_exp} };
         sub emit_perl6 {
             my $self = $_[0];
-            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'tmp ' . chr(61) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match.new( ' . chr(39) . 'str' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'str, ' . chr(39) . 'from' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'to' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'bool' . chr(39) . ' ' . chr(61) . '> 1  )' . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl6() . chr(59) . ' ' . chr(36) . 'tmp.bool ' . chr(61) . ' ' . chr(33) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' ' . chr(36) . 'tmp' . chr(59) . ' ' . chr(63) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125) . ')')
+            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'tmp ' . chr(61) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match.new( ' . chr(39) . 'str' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'str, ' . chr(39) . 'from' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'to' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp.to, ' . chr(39) . 'bool' . chr(39) . ' ' . chr(61) . '> 1  )' . chr(59) . ' ' . chr(36) . 'MATCH.bool ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl6() . chr(59) . ' ' . chr(36) . 'tmp.bool ' . chr(61) . ' ' . chr(33) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' ' . chr(36) . 'tmp' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(63) . ' 1 : 0' . chr(59) . ' ' . chr(125) . ')')
         };
         sub set_captures_to_array {
             my $self = $_[0];

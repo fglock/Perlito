@@ -98,7 +98,7 @@ class Perlito5::Precedence {
         $Operator{$fixity}{$name} = 1;
         $Precedence{$name}        = $precedence;
         $Assoc{$assoc}{$name}     = 1;
-        $Allow_space_before{$fixity}{$name} = $param{'no_space_before'} ?? False !! True;
+        $Allow_space_before{$fixity}{$name} = $param{'no_space_before'} ? False : True;
         @Op[ $name.chars ]{$name} = 1;
     }
 

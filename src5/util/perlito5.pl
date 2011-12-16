@@ -1,39 +1,39 @@
-use v6;
+use v5;
 
-class Main {
-    use Perlito5::Emitter::Token;
-    use Perlito5::Expression;
-    use Perlito5::Go::Emitter;
-    use Perlito5::Grammar::Control;
-    use Perlito5::Grammar::Regex;
-    use Perlito5::Grammar;
-    use Perlito5::Java::Emitter;
-    use Perlito5::Javascript::Emitter;
-    use Perlito5::Lisp::Emitter;
-    use Perlito5::Macro;
-    use Perlito5::Parrot::Emitter;
-    use Perlito5::Perl5::Emitter;
-    use Perlito5::Precedence;
-    use Perlito5::Python::Emitter;
-    use Perlito5::Ruby::Emitter;
-    use Perlito5::Runtime;
+package Main;
+use Perlito5::Emitter::Token;
+use Perlito5::Expression;
+use Perlito5::Go::Emitter;
+use Perlito5::Grammar::Control;
+use Perlito5::Grammar::Regex;
+use Perlito5::Grammar;
+use Perlito5::Java::Emitter;
+use Perlito5::Javascript::Emitter;
+use Perlito5::Lisp::Emitter;
+use Perlito5::Macro;
+use Perlito5::Parrot::Emitter;
+use Perlito5::Perl5::Emitter;
+use Perlito5::Precedence;
+use Perlito5::Python::Emitter;
+use Perlito5::Ruby::Emitter;
+use Perlito5::Runtime;
 
-    my $_V6_COMPILER_NAME    = 'Perlito5';
-    my $_V6_COMPILER_VERSION = '7.0';
-    my $source      = '';
-    my $backend     = '';
-    my $execute     = 0;
-    my $verbose     = 0;
-    my $comp_units  = [];
-    my $perl6lib    = './src5/lib';
-    my $expand_use  = 1;
+my $_V6_COMPILER_NAME    = 'Perlito5';
+my $_V6_COMPILER_VERSION = '7.0';
+my $source      = '';
+my $backend     = '';
+my $execute     = 0;
+my $verbose     = 0;
+my $comp_units  = [];
+my $perl6lib    = './src5/lib';
+my $expand_use  = 1;
 
-    if $verbose {
-        warn "// Perlito5 compiler";
-        warn "// ARGS: ", @*ARGS.perl;
-    }
+if $verbose {
+    warn "// Perlito5 compiler";
+    warn "// ARGS: ", @*ARGS.perl;
+}
 
-    my %module_seen;
+my %module_seen;
 
 token module_name {
     <Perlito5::Grammar.ident>
@@ -268,7 +268,6 @@ perlito5 [switches] [programfile]
             print CompUnit::emit_java_program( $comp_units );
         }
     }
-}
 
 =begin
 

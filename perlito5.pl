@@ -10,9 +10,7 @@ our $MATCH = Perlito5::Match->new();
 {
 package GLOBAL;
     sub new { shift; bless { @_ }, "GLOBAL" }
-
-    # use v6 
-;
+    use v5;
     {
     package Main;
         sub new { shift; bless { @_ }, "Main" }

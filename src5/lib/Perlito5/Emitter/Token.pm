@@ -127,8 +127,8 @@ class Rul::Subrule {
     has $.captures;
     method emit_perl6 {
         my $meth = ( 1 + index( $.metasyntax, '.' ) )
-            ?? $.metasyntax
-            !! ( '$grammar.' ~ $.metasyntax );
+            ? $.metasyntax
+            : ( '$grammar.' ~ $.metasyntax );
 
         my $code;
         if $.captures == 1 {
@@ -263,9 +263,9 @@ class Rul::Before {
             '$MATCH.bool = ' ~
                 $.rule_exp.emit_perl6() ~
             '; ' ~
-            '$tmp.bool = ?$MATCH; ' ~
+            '$tmp.bool = $MATCH ? 1 : 0; ' ~
             '$MATCH = $tmp; ' ~
-            '?$MATCH; ' ~
+            '$MATCH ? 1 : 0; ' ~
         '})'
     }
     method set_captures_to_array { }
@@ -282,7 +282,7 @@ class Rul::NotBefore {
             '; ' ~
             '$tmp.bool = !$MATCH; ' ~
             '$MATCH = $tmp; ' ~
-            '?$MATCH; ' ~
+            '$MATCH ? 1 : 0; ' ~
         '})'
     }
     method set_captures_to_array { }
