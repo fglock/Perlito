@@ -7,7 +7,6 @@ mkdir lib5-new
 mkdir lib5-new/Perlito5
 mkdir lib5-new/Perlito5/Emitter
 mkdir lib5-new/Perlito5/Grammar
-mkdir lib5-new/Perlito5/Java
 mkdir lib5-new/Perlito5/Javascript
 mkdir lib5-new/Perlito5/Perl5
 mkdir lib5-new/Perlito5/Python
@@ -27,7 +26,6 @@ perl perlito5.pl -Cperl5 src5/lib/Perlito5/Grammar/Regex.pm   > lib5-new/Perlito
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Macro.pm           > lib5-new/Perlito5/Macro.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Precedence.pm      > lib5-new/Perlito5/Precedence.pm
 
-perl perlito5.pl -Cperl5 src5/lib/Perlito5/Java/Emitter.pm    > lib5-new/Perlito5/Java/Emitter.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Javascript/Emitter.pm > lib5-new/Perlito5/Javascript/Emitter.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Python/Emitter.pm  > lib5-new/Perlito5/Python/Emitter.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Ruby/Emitter.pm    > lib5-new/Perlito5/Ruby/Emitter.pm

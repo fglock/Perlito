@@ -19,7 +19,6 @@ package GLOBAL;
         use Perlito5::Grammar::Control;
         use Perlito5::Grammar::Regex;
         use Perlito5::Grammar;
-        use Perlito5::Java::Emitter;
         use Perlito5::Javascript::Emitter;
         use Perlito5::Macro;
         use Perlito5::Perl5::Emitter;
