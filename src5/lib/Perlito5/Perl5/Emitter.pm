@@ -33,7 +33,7 @@ class Perl5 {
             if     (($c ge 'a') && ($c le 'z'))
                 || (($c ge 'A') && ($c le 'Z'))
                 || (($c ge '0') && ($c le '9'))
-                || exists( %safe_char{$c} )
+                || exists( $safe_char{$c} )
             {
                 $tmp = $tmp ~ $c;
             }
@@ -242,16 +242,16 @@ class Call {
             $invocant = '$self';
         }
 
-        if exists( %method_perl5{ $.method } ) {
+        if exists( $method_perl5{ $.method } ) {
             if ($.hyper) {
                 return Perl5::tab($level)
                     ~ 'bless [ map { '
-                        ~ %method_perl5{ $.method } ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' ~ ' } @{( ' ~ $invocant ~ ' )'
+                        ~ $method_perl5{ $.method } ~ '( $_, ' ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')' ~ ' } @{( ' ~ $invocant ~ ' )'
                     ~ '} ], "ARRAY"';
             }
             else {
                 return Perl5::tab($level)
-                    ~ %method_perl5{ $.method } ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
+                    ~ $method_perl5{ $.method } ~ '(' ~ $invocant ~ ', ' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
             }
         }
         if $.method eq 'push' {
@@ -362,11 +362,11 @@ class Apply {
             return Perl5::tab($level) ~ '(' ~ $.code.emit_perl5() ~ ')->(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
         }
 
-        if exists %op_infix_perl5{$code} {
-            return Perl5::tab($level) ~ '(' ~ (@.arguments.>>emit_perl5).join( %op_infix_perl5{$code} ) ~ ')'
+        if exists $op_infix_perl5{$code} {
+            return Perl5::tab($level) ~ '(' ~ (@.arguments.>>emit_perl5).join( $op_infix_perl5{$code} ) ~ ')'
         }
-        if exists %op_prefix_perl5{$code} {
-            return Perl5::tab($level) ~ %op_prefix_perl5{$code} ~ '('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')'
+        if exists $op_prefix_perl5{$code} {
+            return Perl5::tab($level) ~ $op_prefix_perl5{$code} ~ '('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')'
         }
 
         if $code eq 'self'       { return Perl5::tab($level) ~ '$self' }
