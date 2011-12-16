@@ -111,11 +111,11 @@ package GLOBAL;
             ((my  $meth) = (((1 + index($self->{metasyntax}, '.'))) ? $self->{metasyntax} : ((chr(36) . 'grammar.' . $self->{metasyntax}))));
             (my  $code);
             if (($self->{captures} == 1)) {
-                ($code = ('if ' . chr(36) . 'm2 ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'm2.to' . chr(59) . ' ' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' ' . chr(36) . 'm2' . chr(59) . ' 1 ' . chr(125) . ' else ' . chr(123) . ' False ' . chr(125) . chr(59) . ' '))
+                ($code = ('if ' . chr(36) . 'm2 ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'm2.to' . chr(59) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' ' . chr(36) . 'm2' . chr(59) . ' 1 ' . chr(125) . ' else ' . chr(123) . ' False ' . chr(125) . chr(59) . ' '))
             }
             else {
                 if (($self->{captures} > 1)) {
-                    ($code = ('if ' . chr(36) . 'm2 ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'm2.to' . chr(59) . ' ' . 'if exists ' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(123) . ' ' . '(' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ').push( ' . chr(36) . 'm2 )' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'MATCH' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' [ ' . chr(36) . 'm2 ]' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . ' else ' . chr(123) . ' False ' . chr(125) . chr(59) . ' '))
+                    ($code = ('if ' . chr(36) . 'm2 ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'm2.to' . chr(59) . ' ' . 'if exists ' . chr(36) . 'MATCH->' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(123) . ' ' . '(' . chr(36) . 'MATCH->' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ').push( ' . chr(36) . 'm2 )' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' [ ' . chr(36) . 'm2 ]' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . ' else ' . chr(123) . ' False ' . chr(125) . chr(59) . ' '))
                 }
                 else {
                     ($code = 'if ' . chr(36) . 'm2 ' . chr(123) . ' ' . chr(36) . 'MATCH.to ' . chr(61) . ' ' . chr(36) . 'm2.to' . chr(59) . ' 1 ' . chr(125) . ' else ' . chr(123) . ' False ' . chr(125) . chr(59) . ' ')

@@ -132,17 +132,17 @@ class Rul::Subrule {
 
         my $code;
         if $.captures == 1 {
-            $code = 'if $m2 { $MATCH.to = $m2.to; $MATCH{\'' ~ $.metasyntax ~ '\'} = $m2; 1 } else { False }; '
+            $code = 'if $m2 { $MATCH.to = $m2.to; $MATCH->{\'' ~ $.metasyntax ~ '\'} = $m2; 1 } else { False }; '
         }
         elsif $.captures > 1 {
             # TODO: capture level > 2
             $code = 'if $m2 { '
                     ~   '$MATCH.to = $m2.to; '
-                    ~   'if exists $MATCH{\'' ~ $.metasyntax ~ '\'} { '
-                    ~       '($MATCH{\'' ~ $.metasyntax ~ '\'}).push( $m2 ); '
+                    ~   'if exists $MATCH->{\'' ~ $.metasyntax ~ '\'} { '
+                    ~       '($MATCH->{\'' ~ $.metasyntax ~ '\'}).push( $m2 ); '
                     ~   '} '
                     ~   'else { '
-                    ~       '$MATCH{\'' ~ $.metasyntax ~ '\'} = [ $m2 ]; '
+                    ~       '$MATCH->{\'' ~ $.metasyntax ~ '\'} = [ $m2 ]; '
                     ~   '}; '
                     ~   '1 '
                     ~ '} else { False }; '
