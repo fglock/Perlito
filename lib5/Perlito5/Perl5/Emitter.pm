@@ -358,6 +358,12 @@ package GLOBAL;
             if (($self->{method} eq 'elems')) {
                 return scalar ((Perl5::tab($level) . 'scalar( ' . chr(64) . chr(123) . $invocant . chr(125) . ' )'))
             };
+            if ((($self->{method} eq 'postcircumfix:<[ ]>'))) {
+                return scalar ((Perl5::tab($level) . $invocant . '->[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_perl5() . ']'))
+            };
+            if ((($self->{method} eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
+                return scalar ((Perl5::tab($level) . $invocant . '->' . chr(123) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_perl5() . chr(125)))
+            };
             ((my  $meth) = $self->{method});
             if (($meth eq 'postcircumfix:<( )>')) {
                 ($meth = '')

@@ -251,6 +251,13 @@ class Call {
             return Perl5::tab($level) ~ 'scalar( @{' ~ $invocant ~ '} )'
         }
 
+        if ( $.method eq 'postcircumfix:<[ ]>' ) {
+            return Perl5::tab($level) ~ $invocant ~ '->[' ~ @.arguments.emit_perl5() ~ ']'
+        }
+        if ( $.method eq 'postcircumfix:<{ }>' ) {
+            return Perl5::tab($level) ~ $invocant ~ '->{' ~ @.arguments.emit_perl5() ~ '}'
+        }
+
         my $meth = $.method;
         if  $meth eq 'postcircumfix:<( )>'  {
              $meth = '';
