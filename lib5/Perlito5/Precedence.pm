@@ -360,6 +360,7 @@ package GLOBAL;
         add_op('infix', chr(47) . chr(47), $prec);
         ($prec = ($prec - 1));
         add_op('ternary', chr(63) . chr(63) . ' ' . chr(33) . chr(33), $prec);
+        add_op('ternary', chr(63) . ' :', $prec);
         ($prec = ($prec - 1));
         add_op('infix', chr(61), $prec, do {
     (my  $Hash_a = bless {}, 'HASH');

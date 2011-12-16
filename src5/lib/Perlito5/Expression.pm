@@ -387,7 +387,10 @@ class Perlito5::Expression {
         | 'do' <.Perlito5::Grammar.ws> <statement_parse>
                     { make [ 'term', Do.new( block => $$<statement_parse> ) ] }
 
-        | '??' <ternary_parse> '!!'                     { make [ 'op',          '?? !!', $$<ternary_parse>  ] }
+        | '??' <ternary_parse> '!!'
+                    { make [ 'op',          '?? !!', $$<ternary_parse>  ] }
+        | '?'  <ternary5_parse> ':'
+                    { make [ 'op',          '?? !!', $$<ternary5_parse>  ] }
         | <Perlito5::Grammar.var_ident>                { make [ 'term', $$<Perlito5::Grammar.var_ident>   ] }
         | '$<' <capture_name> '>'
             { make [ 'term', Lookup.new(
@@ -520,7 +523,7 @@ class Perlito5::Expression {
             return $v;
         };
         my $prec = Perlito5::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
-            end_token => [ 'and', 'or', '!!', ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
+            end_token => [ 'and', 'or', ':', '!!', ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
         my $res = $prec.precedence_parse;
         # say "# list_lexer return: ", $res.perl;
         if $res.elems == 0 {
@@ -583,6 +586,9 @@ class Perlito5::Expression {
 
     method ternary_parse ($str, $pos) {
         return self.circumfix_parse($str, $pos, ['!!']);
+    }
+    method ternary5_parse ($str, $pos) {
+        return self.circumfix_parse($str, $pos, [':']);
     }
     method curly_parse ($str, $pos) {
         return self.circumfix_parse($str, $pos, ['}']);
