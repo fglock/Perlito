@@ -38,7 +38,7 @@ class Perlito5::Expression {
             # say "#  more statements -- not hash";
             return $o
         }
-        my $stmt = $stmts[0];
+        my $stmt = $stmts->[0];
         if !($stmt.isa('Apply')) {
             # say "#  not Apply -- not hash";
             return $o
@@ -69,87 +69,87 @@ class Perlito5::Expression {
         my $v = $num_stack.pop;
         if $v.isa('Array') {
             # say "# ** processing term ", $v.perl;
-            if $v[1] eq 'methcall_no_params' {
-                # say "#   Call ", ($v[2]).perl;
-                $v = Call.new( invocant => Mu, method => $v[2], hyper => $v[3] );
+            if $v->[1] eq 'methcall_no_params' {
+                # say "#   Call ", ($v->[2]).perl;
+                $v = Call.new( invocant => Mu, method => $v->[2], hyper => $v->[3] );
                 # say "#     ", $v.perl;
                 return $v;
             }
-            if $v[1] eq 'funcall_no_params' {
-                # say "#   Apply ", ($v[2]).perl;
-                $v = Apply.new( code => $v[3], namespace => $v[2] );
+            if $v->[1] eq 'funcall_no_params' {
+                # say "#   Apply ", ($v->[2]).perl;
+                $v = Apply.new( code => $v->[3], namespace => $v->[2] );
                 # say "#     ", $v.perl;
                 return $v;
             }
-            if $v[1] eq 'methcall' {
-                # say "#   Call ", ($v[2]).perl;
-                if ($v[3])<end_block> {
+            if $v->[1] eq 'methcall' {
+                # say "#   Call ", ($v->[2]).perl;
+                if ($v->[3])<end_block> {
                     # say "# pop_term: found end_block in Call";
-                    $num_stack.unshift( ($v[3])<end_block> );
+                    $num_stack.unshift( ($v->[3])<end_block> );
                 }
-                my $param_list = expand_list( ($v[3])<exp> );
-                $v = Call.new( invocant => Mu, method => $v[2], arguments => $param_list, hyper => $v[4] );
+                my $param_list = expand_list( ($v->[3])<exp> );
+                $v = Call.new( invocant => Mu, method => $v->[2], arguments => $param_list, hyper => $v->[4] );
                 # say "#     ", $v.perl;
                 return $v;
             }
-            if $v[1] eq 'funcall' {
-                # say "#   Apply ", ($v[2]).perl;
-                if ($v[4])<end_block> {
+            if $v->[1] eq 'funcall' {
+                # say "#   Apply ", ($v->[2]).perl;
+                if ($v->[4])<end_block> {
                     # say "# pop_term: found end_block in Apply";
-                    $num_stack.unshift( ($v[4])<end_block> );
+                    $num_stack.unshift( ($v->[4])<end_block> );
                 }
-                my $param_list = expand_list( ($v[4])<exp> );
-                $v = Apply.new( code => $v[3], arguments => $param_list, namespace => $v[2] );
+                my $param_list = expand_list( ($v->[4])<exp> );
+                $v = Apply.new( code => $v->[3], arguments => $param_list, namespace => $v->[2] );
                 # say "#     ", $v.perl;
                 return $v;
             }
-            if $v[1] eq '( )' {
-                # say "#   Plain parentheses ", ($v[2]).perl;
-                my $param_list = expand_list($v[2]);
+            if $v->[1] eq '( )' {
+                # say "#   Plain parentheses ", ($v->[2]).perl;
+                my $param_list = expand_list($v->[2]);
                 $v = Apply.new( code => 'circumfix:<( )>', arguments => $param_list, namespace => '' );
                 # say "#     ", $v.perl;
                 return $v;
             }
-            if $v[1] eq '[ ]' {
-                # say "#   Array ", ($v[2]).perl;
-                my $param_list = expand_list($v[2]);
+            if $v->[1] eq '[ ]' {
+                # say "#   Array ", ($v->[2]).perl;
+                my $param_list = expand_list($v->[2]);
                 $v = Lit::Array.new( array1 => $param_list );
                 # say "#     ", $v.perl;
                 return $v;
             }
-            if $v[1] eq 'block' {
-                # say "#   Block, Hash, or Pair ", ($v[2]).perl;
-                $v = Lit::Block.new( stmts => $v[2], sig => $v[3] );
+            if $v->[1] eq 'block' {
+                # say "#   Block, Hash, or Pair ", ($v->[2]).perl;
+                $v = Lit::Block.new( stmts => $v->[2], sig => $v->[3] );
                 $v = block_or_hash($v);
-                # TODO: $v = Lit::Hash.new( hash1 => $v[2] );
+                # TODO: $v = Lit::Hash.new( hash1 => $v->[2] );
                 return $v;
             }
-            if $v[1] eq '.( )' {
-                # say "#   Params ", ($v[2]).perl;
+            if $v->[1] eq '.( )' {
+                # say "#   Params ", ($v->[2]).perl;
                 # say "#     v:     ", $v.perl;
-                $v = Call.new( invocant => Mu, method => 'postcircumfix:<( )>', arguments => $v[2], hyper => 0 );
+                $v = Call.new( invocant => Mu, method => 'postcircumfix:<( )>', arguments => $v->[2], hyper => 0 );
                 return $v;
             }
-            if $v[1] eq '.[ ]' {
-                # say "#   Index ", ($v[2]).perl;
-                $v = Index.new( obj => Mu, index_exp => $v[2] );
+            if $v->[1] eq '.[ ]' {
+                # say "#   Index ", ($v->[2]).perl;
+                $v = Index.new( obj => Mu, index_exp => $v->[2] );
                 # say "#     ", $v.perl;
                 return $v;
             }
-            if $v[1] eq '.{ }' {
-                # say "#   Lookup ", ($v[2]).perl;
-                $v = Lookup.new( obj => Mu, index_exp => $v[2] );
+            if $v->[1] eq '.{ }' {
+                # say "#   Lookup ", ($v->[2]).perl;
+                $v = Lookup.new( obj => Mu, index_exp => $v->[2] );
                 # say "#     ", $v.perl;
                 return $v;
             }
-            if ($v[1]).isa('Array') && ((($v[1]).elems) == 2) {
+            if ($v->[1]).isa('Array') && ((($v->[1]).elems) == 2) {
                 # say "#   old style Pair ", $v.perl;
                 #   old style Pair - wrap it into a subroutine for now
-                $v = Apply.new( code => 'pair', arguments => $v[1], namespace => '' );
+                $v = Apply.new( code => 'pair', arguments => $v->[1], namespace => '' );
                 # say "#     ", $v.perl;
                 return $v;
             }
-            return $v[1];
+            return $v->[1];
         }
         return $v;
     }
@@ -159,32 +159,32 @@ class Perlito5::Expression {
         # say "# ** reduce_postfix ", $op.perl;
         # say "#      value: ", $value.perl;
         # say "#      v:     ", $v.perl;
-        if $v[1] eq 'methcall_no_params' {
-            # say "#   Call ", ($v[2]).perl;
-            $v = Call.new( invocant => $value, method => $v[2], hyper => $v[3] );
+        if $v->[1] eq 'methcall_no_params' {
+            # say "#   Call ", ($v->[2]).perl;
+            $v = Call.new( invocant => $value, method => $v->[2], hyper => $v->[3] );
             return $v;
         }
-        if $v[1] eq 'funcall_no_params' {
+        if $v->[1] eq 'funcall_no_params' {
             die "unexpected function call";
-            # say "#   Apply ", ($v[2]).perl;
+            # say "#   Apply ", ($v->[2]).perl;
             push $v, $value;
             return $v;
         }
-        if $v[1] eq 'methcall' {
-            # say "#   Call ", ($v[2]).perl;
-            my $param_list = expand_list(($v[3])<exp>);
-            $v = Call.new( invocant => $value, method => $v[2], arguments => $param_list, hyper => $v[4] );
+        if $v->[1] eq 'methcall' {
+            # say "#   Call ", ($v->[2]).perl;
+            my $param_list = expand_list(($v->[3])<exp>);
+            $v = Call.new( invocant => $value, method => $v->[2], arguments => $param_list, hyper => $v->[4] );
             return $v;
         }
-        if $v[1] eq 'funcall' {
+        if $v->[1] eq 'funcall' {
             die "unexpected function call";
-            # say "#   Apply ", ($v[2]).perl;
+            # say "#   Apply ", ($v->[2]).perl;
             push $v, $value;
             return $v;
         }
-        if $v[1] eq '( )' {
-            # say "#   Params ", ($v[2]).perl;
-            my $param_list = expand_list($v[2]);
+        if $v->[1] eq '( )' {
+            # say "#   Params ", ($v->[2]).perl;
+            my $param_list = expand_list($v->[2]);
             if $value.isa('Apply') && !(defined($value.arguments)) {
                 $value.arguments = $param_list;
                 return $value;
@@ -196,28 +196,28 @@ class Perlito5::Expression {
             $v = Call.new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list, hyper => 0 );
             return $v;
         }
-        if $v[1] eq '[ ]' {
-            # say "#   Index ", ($v[2]).perl;
-            $v = Index.new( obj => $value, index_exp => $v[2] );
+        if $v->[1] eq '[ ]' {
+            # say "#   Index ", ($v->[2]).perl;
+            $v = Index.new( obj => $value, index_exp => $v->[2] );
             # say "#     ", $v.perl;
             return $v;
         }
-        if $v[1] eq 'block' {
-            # say "#   Lookup (was Block)", ($v[2]).perl;
-            $v = Lookup.new( obj => $value, index_exp => ($v[2])[0] );
+        if $v->[1] eq 'block' {
+            # say "#   Lookup (was Block)", ($v->[2]).perl;
+            $v = Lookup.new( obj => $value, index_exp => ($v->[2])[0] );
             return $v;
         }
-        if $v[1] eq '.( )' {
-            my $param_list = expand_list($v[2]);
+        if $v->[1] eq '.( )' {
+            my $param_list = expand_list($v->[2]);
             $v = Call.new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list, hyper => 0 );
             return $v;
         }
-        if $v[1] eq '.[ ]' {
-            $v = Call.new( invocant => $value, method => 'postcircumfix:<[ ]>', arguments => $v[2], hyper => 0 );
+        if $v->[1] eq '.[ ]' {
+            $v = Call.new( invocant => $value, method => 'postcircumfix:<[ ]>', arguments => $v->[2], hyper => 0 );
             return $v;
         }
-        if $v[1] eq '.{ }' {
-            $v = Call.new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v[2], hyper => 0 );
+        if $v->[1] eq '.{ }' {
+            $v = Call.new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v->[2], hyper => 0 );
             return $v;
         }
         push $op, $value;
@@ -229,30 +229,30 @@ class Perlito5::Expression {
         # say "# reduce_to_ast ";
         # say "#     last_op: ", $last_op.perl;
         # say "#   num_stack: ", $num_stack;
-        if $last_op[0] eq 'prefix' {
+        if $last_op->[0] eq 'prefix' {
             push $num_stack,
                 Apply.new(
                     namespace => '',
-                    code      => 'prefix:<' ~ $last_op[1] ~ '>',
+                    code      => 'prefix:<' ~ $last_op->[1] ~ '>',
                     arguments => [ pop_term($num_stack) ],
                   );
         }
-        elsif $last_op[0] eq 'postfix' {
+        elsif $last_op->[0] eq 'postfix' {
             push $num_stack,
                 Apply.new(
                     namespace => '',
-                    code      => 'postfix:<' ~ $last_op[1] ~ '>',
+                    code      => 'postfix:<' ~ $last_op->[1] ~ '>',
                     arguments => [ pop_term($num_stack) ],
                   );
         }
-        elsif $last_op[0] eq 'postfix_or_term' {
+        elsif $last_op->[0] eq 'postfix_or_term' {
             $num_stack.push( reduce_postfix( $last_op, pop_term($num_stack) ) );
         }
-        elsif Perlito5::Precedence::is_assoc_type('list', $last_op[1]) {
+        elsif Perlito5::Precedence::is_assoc_type('list', $last_op->[1]) {
             my $arg;
             if $num_stack.elems < 2 {
                 my $v2 = pop_term($num_stack);
-                if ($v2.isa('Apply')) && ($v2.code eq ('list:<' ~ $last_op[1] ~ '>')) {
+                if ($v2.isa('Apply')) && ($v2.code eq ('list:<' ~ $last_op->[1] ~ '>')) {
                     ($v2.arguments).push( Mu );
                     $num_stack.push( $v2 );
                 }
@@ -260,7 +260,7 @@ class Perlito5::Expression {
                     push $num_stack,
                         Apply.new(
                             namespace => '',
-                            code      => 'list:<' ~ $last_op[1] ~ '>',
+                            code      => 'list:<' ~ $last_op->[1] ~ '>',
                             arguments => [ $v2, Mu ],
                           );
                 }
@@ -270,44 +270,44 @@ class Perlito5::Expression {
                 my $v2 = pop_term($num_stack);
                 $arg = [ pop_term($num_stack), $v2 ];
             }
-            if     (($arg[0]).isa('Apply'))
-                && ($last_op[0] eq 'infix')
-                && (($arg[0]).code eq ('list:<' ~ $last_op[1] ~ '>'))
+            if     (($arg->[0]).isa('Apply'))
+                && ($last_op->[0] eq 'infix')
+                && (($arg->[0]).code eq ('list:<' ~ $last_op->[1] ~ '>'))
             {
                 push $num_stack,
                     Apply.new(
                         namespace => '',
-                        code      => ($arg[0]).code,
-                        arguments => [ @( ($arg[0]).arguments ), $arg[1] ],
+                        code      => ($arg->[0]).code,
+                        arguments => [ @( ($arg->[0]).arguments ), $arg->[1] ],
                       );
                 return;
             }
             push $num_stack,
                 Apply.new(
                     namespace => '',
-                    code      => 'list:<' ~ $last_op[1] ~ '>',
+                    code      => 'list:<' ~ $last_op->[1] ~ '>',
                     arguments => $arg,
                   );
         }
-        elsif Perlito5::Precedence::is_assoc_type('chain', $last_op[1]) {
+        elsif Perlito5::Precedence::is_assoc_type('chain', $last_op->[1]) {
             if $num_stack.elems < 2 {
-                die("Missing value after operator " ~ $last_op[1]);
+                die("Missing value after operator " ~ $last_op->[1]);
             }
             my $v2 = pop_term($num_stack);
             my $arg = [ pop_term($num_stack), $v2 ];
             # say "# assoc chain: ", $arg.perl;
 
             # TODO - create a special AST node for assoc chain?
-            # if ($arg[0]).isa('Apply')
-            #     && Perlito5::Precedence::is_assoc_type('chain', ($arg[1]){op} )
+            # if ($arg->[0]).isa('Apply')
+            #     && Perlito5::Precedence::is_assoc_type('chain', ($arg->[1]){op} )
             # {
             #     push $num_stack,
             #         Apply.new(
             #             namespace => '',
-            #             code      => 'infix:<' ~ $last_op[1] ~ '>',
+            #             code      => 'infix:<' ~ $last_op->[1] ~ '>',
             #             arguments => {
-            #                 val   => [ $arg[0] ],
-            #                 chain => $arg[1]
+            #                 val   => [ $arg->[0] ],
+            #                 chain => $arg->[1]
             #             }
             #         );
             #     return;
@@ -315,11 +315,11 @@ class Perlito5::Expression {
             push $num_stack,
                     Apply.new(
                         namespace => '',
-                        code      => 'infix:<' ~ $last_op[1] ~ '>',
+                        code      => 'infix:<' ~ $last_op->[1] ~ '>',
                         arguments => $arg
                     );
         }
-        elsif $last_op[0] eq 'ternary' {
+        elsif $last_op->[0] eq 'ternary' {
             if ( $num_stack.elems < 2 ) {
                 die "Missing value after ternary operator";
             }
@@ -327,19 +327,19 @@ class Perlito5::Expression {
             push $num_stack,
                 Apply.new(
                     namespace => '',
-                    code      => 'ternary:<' ~ $last_op[1] ~ '>',
-                    arguments => [ pop_term($num_stack), $last_op[2], $v2 ],
+                    code      => 'ternary:<' ~ $last_op->[1] ~ '>',
+                    arguments => [ pop_term($num_stack), $last_op->[2], $v2 ],
                   );
         }
         else {
             if ( $num_stack.elems < 2 ) {
-                die("missing value after operator '" ~ $last_op[1] ~ "'");
+                die("missing value after operator '" ~ $last_op->[1] ~ "'");
             }
             my $v2 = pop_term($num_stack);
             push $num_stack,
                 Apply.new(
                     namespace => '',
-                    code      => 'infix:<' ~ $last_op[1] ~ '>',
+                    code      => 'infix:<' ~ $last_op->[1] ~ '>',
                     arguments => [ pop_term($num_stack), $v2 ],
                   );
         }
@@ -502,11 +502,11 @@ class Perlito5::Expression {
             if $lexer_stack.elems() {
                 $v = $lexer_stack.pop;
                 if  $is_first_token
-                    && ($v[0] eq 'op')
-                    && !(Perlito5::Precedence::is_fixity_type('prefix', $v[1]))
+                    && ($v->[0] eq 'op')
+                    && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
                 {
-                    # say "# finishing list - first token is: ", $v[1];
-                    $v[0] = 'end';
+                    # say "# finishing list - first token is: ", $v->[1];
+                    $v->[0] = 'end';
                 }
             }
             else {
@@ -517,13 +517,13 @@ class Perlito5::Expression {
                 }
                 $v = $$m;
                 if  $is_first_token
-                    && ($v[0] eq 'op')
-                    && !(Perlito5::Precedence::is_fixity_type('prefix', $v[1]))
+                    && ($v->[0] eq 'op')
+                    && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
                 {
-                    # say "# finishing list - first token is: ", $v[1];
-                    $v[0] = 'end';
+                    # say "# finishing list - first token is: ", $v->[1];
+                    $v->[0] = 'end';
                 }
-                if $v[0] ne 'end' {
+                if $v->[0] ne 'end' {
                     $last_pos = $m.to;
                 }
             }
@@ -531,7 +531,7 @@ class Perlito5::Expression {
 
             # say "# list_lexer " ~ $v.perl;
 
-            if (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block')
+            if (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block')
                 && $last_token_was_space
             {
                 if self.has_newline_after($str, $last_pos) {
@@ -545,7 +545,7 @@ class Perlito5::Expression {
                     $lexer_stack.push( [ 'end', '*end*' ] );
                 }
             }
-            $last_token_was_space = ($v[0] eq 'space');
+            $last_token_was_space = ($v->[0] eq 'space');
             $is_first_token = False;
 
             return $v;
@@ -566,13 +566,13 @@ class Perlito5::Expression {
         my $block;
         if $res.elems > 1 {
             $block = $res.pop; # pop_term($res);
-            $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
+            $block = Lit::Block.new( stmts => $block->[2], sig => $block->[3] );
             # say "# list exp terminated with a block: ", $block.perl;
         }
         my $result = pop_term($res);
         if $res.elems > 0 {
             $block = $res.pop; # pop_term($res);
-            $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
+            $block = Lit::Block.new( stmts => $block->[2], sig => $block->[3] );
             # say "# list exp terminated with a block (2): ", $block.perl;
         }
         return Perlito5::Match.new(
@@ -593,7 +593,7 @@ class Perlito5::Expression {
                 die "Expected closing delimiter: ", @($delimiter), ' near ', $last_pos;
             }
             my $v = $$m;
-            if $v[0] ne 'end' {
+            if $v->[0] ne 'end' {
                 $last_pos = $m.to;
             }
             # say "# circumfix_lexer " ~ $v.perl;
@@ -646,17 +646,17 @@ class Perlito5::Expression {
                     return [ 'end', '*end*' ];
                 }
                 $v = $$m;
-                if $v[0] ne 'end' {
+                if $v->[0] ne 'end' {
                     $last_pos = $m.to;
                 }
             }
             # say "# exp_lexer got " ~ $v.perl;
 
-            if     ( (($v[0]) eq 'postfix_or_term') && (($v[1]) eq 'block') )
-                || ( (($v[0]) eq 'term') && (($v[1]).isa('Sub')) )
-                || ( (($v[0]) eq 'term') && (($v[1]).isa('Method')) )
-                || ( (($v[0]) eq 'term') && (($v[1]).isa('Do')) )
-                || ( (($v[0]) eq 'term') && (($v[1]).isa('CompUnit')) )
+            if     ( (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block') )
+                || ( (($v->[0]) eq 'term') && (($v->[1]).isa('Sub')) )
+                || ( (($v->[0]) eq 'term') && (($v->[1]).isa('Method')) )
+                || ( (($v->[0]) eq 'term') && (($v->[1]).isa('Do')) )
+                || ( (($v->[0]) eq 'term') && (($v->[1]).isa('CompUnit')) )
             {
                 # a block followed by newline terminates the expression
                 if self.has_newline_after($str, $last_pos) {
@@ -679,14 +679,14 @@ class Perlito5::Expression {
         my $block;
         if $res.elems > 1 {
             $block = $res.pop; # pop_term($res);
-            $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
+            $block = Lit::Block.new( stmts => $block->[2], sig => $block->[3] );
             # say "# exp terminated with a block: ", $block.perl;
         }
         my $result = pop_term($res);
         if $res.elems > 0 {
             $block = $res.pop; # pop_term($res);
             if !($block.isa('Lit::Block')) {
-                $block = Lit::Block.new( stmts => $block[2], sig => $block[3] );
+                $block = Lit::Block.new( stmts => $block->[2], sig => $block->[3] );
             }
             # say "# exp terminated with a block (2): ", $block.perl;
         }

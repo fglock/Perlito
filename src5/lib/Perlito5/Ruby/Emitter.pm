@@ -370,8 +370,8 @@ class Var {
                ( $.twigil eq '.' )
             ?? ( 'self.v_' ~ $.name ~ '' )
             !!  (    ( $.name eq '/' )
-                ??   ( $table{$.sigil} ~ 'MATCH' )
-                !!   ( $table{$.sigil} ~ $.name ~ '' )
+                ??   ( $table->{$.sigil} ~ 'MATCH' )
+                !!   ( $table->{$.sigil} ~ $.name ~ '' )
                 )
             )
     };
@@ -380,8 +380,8 @@ class Var {
                ( $.twigil eq '.' )
             ?? ( 'self.v_' ~ $.name )
             !!  (    ( $.name eq '/' )
-                ??   ( $table{$.sigil} ~ 'MATCH' )
-                !!   ( $table{$.sigil} ~ $.name )
+                ??   ( $table->{$.sigil} ~ 'MATCH' )
+                !!   ( $table->{$.sigil} ~ $.name )
                 )
             )
     };

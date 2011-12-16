@@ -49,7 +49,7 @@ class Lit::Hash {
         my %h;
         for @.hash1 -> $field {
             my $pair = $field.arguments;
-            %h{ ($pair[0]).eval($env) } = ($pair[1]).eval($env);
+            %h{ ($pair->[0]).eval($env) } = ($pair->[1]).eval($env);
         };
         return %h;
     }
@@ -89,8 +89,8 @@ class Var {
 
         my $name = $.sigil ~ $ns ~ $.name;
         for @($env) -> $e {
-            if exists( $e{ $name } ) {
-                return $e{ $name };
+            if exists( $e->{ $name } ) {
+                return $e->{ $name };
             }
         }
         warn "Interpreter runtime error: variable '", $name, "' not found";
@@ -135,8 +135,8 @@ class Apply {
         my $code = $ns ~ $.code;
         # warn "Apply ", $env.perl, " code: '", $code, "'";
         for @($env) -> $e {
-            if exists( $e{ $code } ) {
-                return (($e{ $code }).( $env, @.arguments ));
+            if exists( $e->{ $code } ) {
+                return (($e->{ $code }).( $env, @.arguments ));
             }
         }
         warn "Interpreter runtime error: subroutine '", $code, "()' not found";
@@ -168,7 +168,7 @@ class For {
         my $topic_name = (($.body).sig).plain_name;
         my $env1 = [ {}, @$env ];
         for @( $cond.eval($env) ) -> $topic {
-            $env1[0] = { $topic_name => $topic };
+            $env1->[0] = { $topic_name => $topic };
             for @(($.body).stmts) -> $stmt {
                 $stmt.eval($env1);
             }
@@ -192,8 +192,8 @@ class Decl {
         if $decl eq 'has' {
             warn "Interpreter TODO: has";
         }
-        if !( exists ($env[0]){ $name } ) {
-            ($env[0]){ $name } = Mu;
+        if !( exists ($env->[0]){ $name } ) {
+            ($env->[0]){ $name } = Mu;
         }
         return Mu;
     }
@@ -226,7 +226,7 @@ class Sub {
                     my $n = 0;
                     %context{'@_'} = $args;
                     for @param_name -> $name {
-                        %context{$name} = ($args[$n]).eval($env);
+                        %context{$name} = ($args->[$n]).eval($env);
                         $n = $n + 1;
                     }
                     my $env1 = [ %context, @$env ];
@@ -237,7 +237,7 @@ class Sub {
                     return $r;
                 };
         if $.name {
-            ($env[0]){$.name} = $sub;
+            ($env->[0]){$.name} = $sub;
         }
         return $sub;
     }

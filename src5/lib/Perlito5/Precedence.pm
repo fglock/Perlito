@@ -11,15 +11,15 @@ class Perlito5::Precedence {
     my $Allow_space_before = {};
 
     sub is_assoc_type ($assoc_type, $op_name) {
-        return $Assoc{$assoc_type}{$op_name}
+        return $Assoc->{$assoc_type}{$op_name}
     }
 
     sub is_fixity_type ($fixity_type, $op_name) {
-        return $Operator{$fixity_type}{$op_name}
+        return $Operator->{$fixity_type}{$op_name}
     }
 
     sub is_term ($token) {
-        ($token[0] eq 'term') || ($token[0] eq 'postfix_or_term')
+        ($token->[0] eq 'term') || ($token->[0] eq 'postfix_or_term')
     }
 
     sub is_ident_middle ($c) {
@@ -94,11 +94,11 @@ class Perlito5::Precedence {
         if !(defined($param)) {
             $param = {}
         }
-        my $assoc = $param{'assoc'} || 'left';
-        $Operator{$fixity}{$name} = 1;
-        $Precedence{$name}        = $precedence;
-        $Assoc{$assoc}{$name}     = 1;
-        $Allow_space_before{$fixity}{$name} = $param{'no_space_before'} ? False : True;
+        my $assoc = $param->{'assoc'} || 'left';
+        $Operator->{$fixity}{$name} = 1;
+        $Precedence->{$name}        = $precedence;
+        $Assoc->{$assoc}{$name}     = 1;
+        $Allow_space_before->{$fixity}{$name} = $param->{'no_space_before'} ? False : True;
         @Op[ $name.chars ]{$name} = 1;
     }
 
@@ -237,35 +237,35 @@ class Perlito5::Precedence {
         my $last_has_space = False;
         my $token     = $get_token.();
         # say "# precedence get_token: (0) ", $token.perl;
-        if ($token[0]) eq 'space' {
+        if ($token->[0]) eq 'space' {
             $token = $get_token.()
         }
-        while (defined($token)) && ($token[0] ne 'end') {
+        while (defined($token)) && ($token->[0] ne 'end') {
             # say "# precedence      last: (1) ", $last.perl;
             # say "# precedence get_token: (1) ", $token.perl;
-            if ($token[1] eq ',') && ( ($last[1] eq '*start*') || ($last[1] eq ',') ) {
+            if ($token->[1] eq ',') && ( ($last->[1] eq '*start*') || ($last->[1] eq ',') ) {
                 # allow (,,,)
                 $num_stack.push( ['term', Mu] );
             }
-            if $Operator{'prefix'}{$token[1]} && ( ($last[1] eq '*start*') || !(is_term($last)) ) {
-                $token[0] = 'prefix';
+            if $Operator->{'prefix'}{$token->[1]} && ( ($last->[1] eq '*start*') || !(is_term($last)) ) {
+                $token->[0] = 'prefix';
                 $op_stack.unshift($token);
             }
-            elsif $Operator{'postfix'}{$token[1]} && is_term($last)
-                && (  $Allow_space_before{'postfix'}{$token[1]}
+            elsif $Operator->{'postfix'}{$token->[1]} && is_term($last)
+                && (  $Allow_space_before->{'postfix'}{$token->[1]}
                    || !($last_has_space)
                    )
             {
-                my $pr = $Precedence{$token[1]};
-                while $op_stack.elems && ($pr <= $Precedence{ ($op_stack[0])[1] }) {
+                my $pr = $Precedence->{$token->[1]};
+                while $op_stack.elems && ($pr <= $Precedence->{ ($op_stack->[0])[1] }) {
                     $reduce.($op_stack, $num_stack);
                 }
-                if ($token[0]) ne 'postfix_or_term' {
-                    $token[0] = 'postfix';
+                if ($token->[0]) ne 'postfix_or_term' {
+                    $token->[0] = 'postfix';
                 }
                 $op_stack.unshift($token);
             }
-            elsif ($token[1] eq 'block') && is_term($last) && $last_has_space {
+            elsif ($token->[1] eq 'block') && is_term($last) && $last_has_space {
                 # a block in this position terminates the current expression
                 # say "# there is a block after the expression: ", $token.perl;
                 while $op_stack.elems() {
@@ -286,36 +286,36 @@ class Perlito5::Precedence {
                     say "#      space: ", $last_has_space;
                     die "Value tokens must be separated by an operator";
                 }
-                $token[0] = 'term';
+                $token->[0] = 'term';
                 $num_stack.push($token);
             }
-            elsif $Precedence{$token[1]} {
-                my $pr = $Precedence{$token[1]};
-                if $Assoc{'right'}{$token[1]} {
-                    while $op_stack.elems && ( $pr < $Precedence{ ($op_stack[0])[1] } ) {
+            elsif $Precedence->{$token->[1]} {
+                my $pr = $Precedence->{$token->[1]};
+                if $Assoc->{'right'}{$token->[1]} {
+                    while $op_stack.elems && ( $pr < $Precedence->{ ($op_stack->[0])[1] } ) {
                         $reduce.($op_stack, $num_stack);
                     }
                 }
                 else {
-                    while $op_stack.elems && ( $pr <= $Precedence{ ($op_stack[0])[1] } ) {
+                    while $op_stack.elems && ( $pr <= $Precedence->{ ($op_stack->[0])[1] } ) {
                         $reduce.($op_stack, $num_stack);
                     }
                 }
-                if $Operator{'ternary'}{$token[1]} {
-                    $token[0] = 'ternary';
+                if $Operator->{'ternary'}{$token->[1]} {
+                    $token->[0] = 'ternary';
                 }
                 else {
-                    $token[0] = 'infix';
+                    $token->[0] = 'infix';
                 }
                 $op_stack.unshift($token);
             }
             else {
-                die "Unknown token: '", $token[1], "'";
+                die "Unknown token: '", $token->[1], "'";
             }
             $last = $token;
             $token = $get_token.();
             # say "# precedence get_token: (2) ", $token.perl;
-            if $token[0] eq 'space' {
+            if $token->[0] eq 'space' {
                 $token = $get_token.();
                 $last_has_space = True;
             }
@@ -323,7 +323,7 @@ class Perlito5::Precedence {
                 $last_has_space = False;
             }
         }
-        if defined($token) && ($token[0] ne 'end') {
+        if defined($token) && ($token->[0] ne 'end') {
             die "Unexpected end token: ",$token.perl;
         }
         while $op_stack.elems() {

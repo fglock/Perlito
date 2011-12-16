@@ -402,8 +402,8 @@ class Var {
                ( $.twigil eq '.' )
             ?? ( 'v_self.v_' ~ $.name ~ '' )
             !!  (    ( $.name eq '/' )
-                ??   ( $table{$.sigil} ~ 'MATCH' )
-                !!   ( $table{$.sigil} ~ $.name ~ '' )
+                ??   ( $table->{$.sigil} ~ 'MATCH' )
+                !!   ( $table->{$.sigil} ~ $.name ~ '' )
                 )
             )
     };
@@ -412,8 +412,8 @@ class Var {
                ( $.twigil eq '.' )
             ?? ( 'v_self.v_' ~ $.name )
             !!  (    ( $.name eq '/' )
-                ??   ( $table{$.sigil} ~ 'MATCH' )
-                !!   ( $table{$.sigil} ~ $.name )
+                ??   ( $table->{$.sigil} ~ 'MATCH' )
+                !!   ( $table->{$.sigil} ~ $.name )
                 )
             )
     };
@@ -510,27 +510,27 @@ class Apply {
         # check that expressions don't overflow the Python parser stack
         if (@.arguments[0]).isa('Apply') {
             my $args2 = @.arguments[0].arguments;
-            if ($args2[0]).isa('Apply')
-               && (  $args2[0].code eq 'infix:<or>'
-                  || $args2[0].code eq 'infix:<||>' )
+            if ($args2->[0]).isa('Apply')
+               && (  $args2->[0].code eq 'infix:<or>'
+                  || $args2->[0].code eq 'infix:<||>' )
             {
-                $args2[0] = Do.new( block => $args2[0] );
+                $args2->[0] = Do.new( block => $args2->[0] );
             }
         }
         if (@.arguments[0]).isa('Apply') {
             my $args2 = @.arguments[0].arguments;
-            if ($args2[1]).isa('Apply')
-               && $args2[1].code ne 'infix:<=>>'
+            if ($args2->[1]).isa('Apply')
+               && $args2->[1].code ne 'infix:<=>>'
             {
-                $args2[1] = Do.new( block => $args2[1] );
+                $args2->[1] = Do.new( block => $args2->[1] );
             }
         }
         if (@.arguments[1]).isa('Apply') {
             my $args2 = @.arguments[1].arguments;
-            if ($args2[1]).isa('Apply')
-               && $args2[1].code ne 'infix:<=>>'
+            if ($args2->[1]).isa('Apply')
+               && $args2->[1].code ne 'infix:<=>>'
             {
-                $args2[1] = Do.new( block => $args2[1] );
+                $args2->[1] = Do.new( block => $args2->[1] );
             }
         }
 

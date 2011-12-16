@@ -179,7 +179,7 @@ class Rul::Var {
             '%' => '$Hash_',
             '&' => '$Code_',
         };
-        $table{$.sigil} ~ $.name
+        $table->{$.sigil} ~ $.name
     }
 }
 

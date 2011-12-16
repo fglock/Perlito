@@ -180,10 +180,10 @@ class Var {
                 }
             }
             if $.name eq '/' {
-                return Perl5::tab($level) ~ $table{$.sigil} ~ 'MATCH'
+                return Perl5::tab($level) ~ $table->{$.sigil} ~ 'MATCH'
             }
         }
-        return Perl5::tab($level) ~ $table{$.sigil} ~ $ns ~ $.name
+        return Perl5::tab($level) ~ $table->{$.sigil} ~ $ns ~ $.name
     }
     method plain_name {
         if $.namespace {

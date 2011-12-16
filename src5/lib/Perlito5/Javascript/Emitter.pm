@@ -326,11 +326,11 @@ class Var {
             $ns = Main::to_javascript_namespace($.namespace) ~ '.';
         }
            ( $.twigil eq '.' )
-        ?? ( 'v_self.v_' ~ $.name ~ '' )
-        !!  (    ( $.name eq '/' )
-            ??   ( $table{$.sigil} ~ 'MATCH' )
-            !!   ( $table{$.sigil} ~ $ns ~ $.name )
-            )
+        ?  ( 'v_self.v_' ~ $.name ~ '' )
+        :  (    ( $.name eq '/' )
+           ?    ( $table->{$.sigil} ~ 'MATCH' )
+           :    ( $table->{$.sigil} ~ $ns ~ $.name )
+           )
     }
     method plain_name {
         if $.namespace {
