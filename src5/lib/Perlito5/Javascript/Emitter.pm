@@ -210,7 +210,8 @@ class CompUnit {
             }
         }
         for @.body -> $decl {
-            if    (!( $decl.isa( 'Decl' ) && (( $decl.decl eq 'has' ) || ( $decl.decl eq 'my' )) ))
+            if    defined( $decl )
+               && (!( $decl.isa( 'Decl' ) && (( $decl.decl eq 'has' ) || ( $decl.decl eq 'my' )) ))
                && (!( $decl.isa( 'Method')))
                && (!( $decl.isa( 'Sub')))
             {
