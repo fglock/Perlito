@@ -114,7 +114,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
 }))
 }) && (($last_match_null < 2)));  ) {
@@ -197,7 +197,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
 }))
 }) && (($last_match_null < 2)));  ) {
@@ -245,7 +245,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
 }))
 }) && (($last_match_null < 2)));  ) {
@@ -350,7 +350,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))))
 }))
 }) && (($last_match_null < 2)));  ) {
@@ -1021,7 +1021,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $m2) = $grammar->any($str, $MATCH->to()));
     if ($m2) {

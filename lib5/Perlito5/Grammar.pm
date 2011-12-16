@@ -79,7 +79,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })
 })));
@@ -112,7 +112,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
@@ -221,9 +221,9 @@ package GLOBAL;
     (('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = !!($MATCH));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 })) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
@@ -248,9 +248,9 @@ package GLOBAL;
     (('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = !!($MATCH));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }))
 })
 }) && (($last_match_null < 2)));  ) {
@@ -1256,7 +1256,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
@@ -1280,7 +1280,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })
 }) && (($last_match_null < 2)));  ) {
@@ -1418,7 +1418,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
@@ -1454,7 +1454,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })
 }) && (($last_match_null < 2)));  ) {
@@ -1587,9 +1587,9 @@ package GLOBAL;
     ((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = !!($MATCH));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $pos1) = $MATCH->to());
     ((do {
@@ -1620,9 +1620,9 @@ package GLOBAL;
 }))
 })
 }));
-    (($tmp)->{bool} = !!($MATCH));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $m2) = Perlito5::Expression->operator($str, $MATCH->to()));
     if ($m2) {
@@ -1664,9 +1664,9 @@ package GLOBAL;
     ((chr(64) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = !!($MATCH));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $pos1) = $MATCH->to());
     ((do {
@@ -1697,9 +1697,9 @@ package GLOBAL;
 }))
 })
 }));
-    (($tmp)->{bool} = !!($MATCH));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $m2) = Perlito5::Expression->operator($str, $MATCH->to()));
     if ($m2) {
@@ -1741,9 +1741,9 @@ package GLOBAL;
     ((chr(37) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = !!($MATCH));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $pos1) = $MATCH->to());
     ((do {
@@ -1774,9 +1774,9 @@ package GLOBAL;
 }))
 })
 }));
-    (($tmp)->{bool} = !!($MATCH));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $m2) = Perlito5::Expression->operator($str, $MATCH->to()));
     if ($m2) {

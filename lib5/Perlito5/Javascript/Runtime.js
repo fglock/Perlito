@@ -65,21 +65,21 @@ if (typeof Main !== 'object') {
     };
 })();
 
-if (typeof Perlito$Match !== 'object') {
-    Perlito$Match = function() {};
-    Perlito$Match = new Perlito$Match;
-    Perlito$Match.isa = function(s) {
+if (typeof Perlito5$Match !== 'object') {
+    Perlito5$Match = function() {};
+    Perlito5$Match = new Perlito5$Match;
+    Perlito5$Match.isa = function(s) {
         return s == 'Perlito::Match';
     };
-    Perlito$Match.perl = function() {
+    Perlito5$Match.perl = function() {
         return 'Perlito::Match.new(' + Main._dump(this) + ')';
     };
 }
 
 v_MATCH = {};
-v_MATCH.__proto__ = Perlito$Match;
+v_MATCH.__proto__ = Perlito5$Match;
 
-Perlito$Match.hash = function() {
+Perlito5$Match.hash = function() {
     return this;
 };
 
@@ -453,41 +453,41 @@ str_replicate = function(o, num) {
 };
 
 // regex primitives
-if (typeof Perlito$Grammar !== 'object') {
-    Perlito$Grammar = function() {};
-    Perlito$Grammar = new Perlito$Grammar;
+if (typeof Perlito5$Grammar !== 'object') {
+    Perlito5$Grammar = function() {};
+    Perlito5$Grammar = new Perlito5$Grammar;
 }
 
-Perlito$Grammar.word = function(v_str, v_pos) {
+Perlito5$Grammar.word = function(v_str, v_pos) {
     var tmp = {
         v_str: v_str,
         v_from: v_pos,
         v_to: v_pos + 1,
         v_bool: v_str.substr(v_pos, 1).match(/\w/) != null
     };
-    tmp.__proto__ = Perlito$Match;
+    tmp.__proto__ = Perlito5$Match;
     return tmp;
 };
 
-Perlito$Grammar.digit = function(v_str, v_pos) {
+Perlito5$Grammar.digit = function(v_str, v_pos) {
     var tmp = {
         v_str: v_str,
         v_from: v_pos,
         v_to: v_pos + 1,
         v_bool: v_str.substr(v_pos, 1).match(/\d/) != null
     };
-    tmp.__proto__ = Perlito$Match;
+    tmp.__proto__ = Perlito5$Match;
     return tmp;
 };
 
-Perlito$Grammar.space = function(v_str, v_pos) {
+Perlito5$Grammar.space = function(v_str, v_pos) {
     var tmp = {
         v_str: v_str,
         v_from: v_pos,
         v_to: v_pos + 1,
         v_bool: v_str.substr(v_pos, 1).match(/\s/) != null
     };
-    tmp.__proto__ = Perlito$Match;
+    tmp.__proto__ = Perlito5$Match;
     return tmp;
 };
 

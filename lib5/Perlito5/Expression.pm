@@ -907,9 +907,9 @@ package GLOBAL;
 }) && (((chr(61) . '>' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))))
 })
 }));
-    (($tmp)->{bool} = !!($MATCH));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 })) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -945,7 +945,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 })) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -981,7 +981,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 })) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1017,7 +1017,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 })) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1053,7 +1053,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 })) && (((do {
     ($MATCH->{capture} = (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1438,9 +1438,9 @@ package GLOBAL;
     (('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
 })
 }));
-    (($tmp)->{bool} = !!($MATCH));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && (((do {
     ((my  $namespace) = "".($MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}));
     ((my  $name) = "".($MATCH->{'Perlito5::Grammar.ident'}));
@@ -1639,7 +1639,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 })) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })
 })));
@@ -2214,7 +2214,7 @@ package GLOBAL;
 }));
     (($tmp)->{bool} = !($MATCH));
     ($MATCH = $tmp);
-    !!($MATCH)
+    ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $m2) = $grammar->statement_parse($str, $MATCH->to()));
     if ($m2) {
