@@ -181,7 +181,7 @@ package GLOBAL;
         else {
             if ((((((\@ARGV)->[0] eq '-h')) || (((\@ARGV)->[0] eq '--help'))) || (($backend eq '')))) {
                 ($backend = '');
-                Main::say($_V6_COMPILER_NAME, (' '), $_V6_COMPILER_VERSION, (chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Ctarget        target backend: js, perl5, python, ruby, ast-perl6, java' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10)));
+                Main::say($_V6_COMPILER_NAME, (' '), $_V6_COMPILER_VERSION, (chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Ctarget        target backend: js, perl5, python, ruby, ast-perl6' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10)));
                 shift( @{(\@ARGV)} )
             }
         };
