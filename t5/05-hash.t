@@ -3,25 +3,25 @@ use v5;
 say '1..9';
 my %a;
 say 'ok 1 - create hash';
-%a{'abc'} = 3;
+$a{'abc'} = 3;
 say 'ok 2 - set element';
-if %a{'abc'} != 3 {
+if $a{'abc'} != 3 {
     print 'not '
 }
-say 'ok 3 - fetch element # ', %a{'abc'};
+say 'ok 3 - fetch element # ', $a{'abc'};
 
-%a{123} = 456;
+$a{123} = 456;
 say '# values: ', %a.values;
 say '# keys:   ', %a.keys;
 
 my %a1 = (a => 2); 
-if %a1{'a'} ne 2 {
+if $a1{'a'} ne 2 {
     print 'not '
 }
 say "ok 4 - assign list to hash # {%a1.perl}";
 
 my %b1 = %a1; 
-if %b1{'a'} ne 2 {
+if $b1{'a'} ne 2 {
     print 'not '
 }
 say "ok 5 - assign hash to hash # {%b1.perl}";

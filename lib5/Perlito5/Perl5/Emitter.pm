@@ -216,6 +216,10 @@ package GLOBAL;
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
+            if (((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))))) {
+                ((my  $v) = Var->new(('sigil' => chr(64)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
+                return scalar (($v->emit_perl5_indented($level) . '->[' . $self->{index_exp}->emit_perl5() . ']'))
+            };
             ($self->{obj}->emit_perl5_indented($level) . '->[' . $self->{index_exp}->emit_perl5() . ']')
         }
     }
@@ -231,6 +235,10 @@ package GLOBAL;
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
+            if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne chr(47))))) {
+                ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
+                return scalar (($v->emit_perl5_indented($level) . '->' . chr(123) . $self->{index_exp}->emit_perl5() . chr(125)))
+            };
             ($self->{obj}->emit_perl5_indented($level) . '->' . chr(123) . $self->{index_exp}->emit_perl5() . chr(125))
         }
     }

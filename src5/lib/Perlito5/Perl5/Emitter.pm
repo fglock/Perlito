@@ -133,6 +133,15 @@ class Lit::Hash {
 class Index {
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
+
+        if (  $.obj.isa('Var')
+           && $.obj.sigil eq '$'
+           )
+        {
+            my $v = Var.new( sigil => '@', twigil => $.obj.twigil, namespace => $.obj.namespace, name => $.obj.name );
+            return $v.emit_perl5_indented($level) ~ '->[' ~ $.index_exp.emit_perl5() ~ ']';
+        }
+
         $.obj.emit_perl5_indented($level) ~ '->[' ~ $.index_exp.emit_perl5() ~ ']';
     }
 }
@@ -140,6 +149,16 @@ class Index {
 class Lookup {
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
+
+        if (  $.obj.isa('Var')
+           && $.obj.sigil eq '$'
+           && $.obj.name ne '/'  # XXX $/ is the Perl6 match object
+           )
+        {
+            my $v = Var.new( sigil => '%', twigil => $.obj.twigil, namespace => $.obj.namespace, name => $.obj.name );
+            return $v.emit_perl5_indented($level) ~ '->{' ~ $.index_exp.emit_perl5() ~ '}';
+        }
+
         $.obj.emit_perl5_indented($level) ~ '->{' ~ $.index_exp.emit_perl5() ~ '}';
     }
 }
