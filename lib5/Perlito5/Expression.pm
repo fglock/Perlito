@@ -412,7 +412,7 @@ package GLOBAL;
             ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
-    ((((((((((((((((((((((((((((((((do {
+    ((((((((((((((((((((((((((((((((((((do {
     (((((('.(' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->paren_parse($str, $MATCH->to()));
     if ($m2) {
@@ -458,6 +458,72 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     ((((((('.' . chr(123) eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    ((my  $m2) = $grammar->curly_parse($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'curly_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+    ($MATCH->{capture} = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'postfix_or_term' );
+    push( @{$List_a}, 'block' );
+    push( @{$List_a}, ${$MATCH->{'curly_parse'}} );
+    $List_a
+}))
+}) || 1))))
+})) || (do {
+    (($MATCH)->{to} = $pos1);
+    ((((((('->(' eq substr($str, $MATCH->to(), 3)) && ((($MATCH)->{to} = (3 + $MATCH->to()))))) && (do {
+    ((my  $m2) = $grammar->paren_parse($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'paren_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+    ($MATCH->{capture} = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'postfix_or_term' );
+    push( @{$List_a}, '.( )' );
+    push( @{$List_a}, ${$MATCH->{'paren_parse'}} );
+    $List_a
+}))
+}) || 1))))
+})) || (do {
+    (($MATCH)->{to} = $pos1);
+    ((((((('->[' eq substr($str, $MATCH->to(), 3)) && ((($MATCH)->{to} = (3 + $MATCH->to()))))) && (do {
+    ((my  $m2) = $grammar->square_parse($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'square_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+    ($MATCH->{capture} = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'postfix_or_term' );
+    push( @{$List_a}, '.[ ]' );
+    push( @{$List_a}, ${$MATCH->{'square_parse'}} );
+    $List_a
+}))
+}) || 1))))
+})) || (do {
+    (($MATCH)->{to} = $pos1);
+    ((((((('->' . chr(123) eq substr($str, $MATCH->to(), 3)) && ((($MATCH)->{to} = (3 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->curly_parse($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());
@@ -1267,6 +1333,113 @@ package GLOBAL;
 })) || (do {
     (($MATCH)->{to} = $pos1);
     ((((((('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((my  $m2) = $grammar->hyper_op($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'hyper_op'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (do {
+    ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'Perlito5::Grammar.ident'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (do {
+    ((my  $pos1) = $MATCH->to());
+    (((do {
+    ((((((':' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        1
+    }
+    else {
+        0
+    }
+}))) {
+        (($MATCH)->{to} = $last_pos)
+    };
+    1
+})) && (do {
+    ((my  $m2) = $grammar->list_parse($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'list_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((do {
+    ($MATCH->{capture} = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'postfix_or_term' );
+    push( @{$List_a}, 'methcall' );
+    push( @{$List_a}, "".($MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ${$MATCH->{'list_parse'}} );
+    push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
+    $List_a
+}))
+}) || 1)))
+}) || (do {
+    (($MATCH)->{to} = $pos1);
+    ((((((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
+    ((my  $m2) = $grammar->paren_parse($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'paren_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+    ($MATCH->{capture} = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'postfix_or_term' );
+    push( @{$List_a}, 'methcall' );
+    push( @{$List_a}, "".($MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, do {
+    (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{'end_block'} = undef());
+    ($Hash_a->{'exp'} = ${$MATCH->{'paren_parse'}});
+    ($Hash_a->{'terminated'} = 0);
+    $Hash_a
+} );
+    push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
+    $List_a
+}))
+}) || 1))))
+})) || (do {
+    (($MATCH)->{to} = $pos1);
+    ((((do {
+    ($MATCH->{capture} = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'postfix_or_term' );
+    push( @{$List_a}, 'methcall_no_params' );
+    push( @{$List_a}, "".($MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
+    $List_a
+}))
+}) || 1)))
+}))
+})))
+})) || (do {
+    (($MATCH)->{to} = $pos1);
+    ((((((('->' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->hyper_op($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());

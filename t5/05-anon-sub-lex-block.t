@@ -1,11 +1,11 @@
-use v6;
+use v5;
 
-class Main {
+package Main;
     say '1..3';
     my $a = sub () { 
             do { 5 }
         };
-    if $a.() != 5 {
+    if $a->() != 5 {
         print 'not '
     }
     say 'ok 1 - do inside function';
@@ -14,7 +14,7 @@ class Main {
             return do { 5 };
             4;
         };
-    if $a.() != 5 {
+    if ($a->() != 5) {
         print 'not '
     }
     say 'ok 2 - do inside function';
@@ -23,8 +23,8 @@ class Main {
             do { return 5 };
             4;
         };
-    if $a.() != 5 {
+    if ($a->() != 5) {
         print 'not '
     }
     say 'ok 3 - do inside function';
-}
+
