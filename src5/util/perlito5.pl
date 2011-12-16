@@ -126,7 +126,7 @@ perlito5 [switches] [programfile]
     -h --help
     -v --verbose
     -V --version
-    -Ctarget        target backend: js, perl5, python, ruby, ast-perl6, java
+    -Ctarget        target backend: js, perl5, python, ruby, ast-perl6
     --expand_use --noexpand_use
                     expand 'use' statements at compile time
     -e program      one line of program (omit programfile)
