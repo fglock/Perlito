@@ -69,6 +69,17 @@ token grammar {
     }
 }
 
+token package_body {
+    <full_ident> <.ws>?
+        <exp_stmts_no_package>
+    {
+        make CompUnit.new(
+            name        => $$<full_ident>,
+            body        => $$<exp_stmts_no_package>,
+        )
+    }
+}
+
 token declarator {
      'my' | 'state' | 'has'
 }
@@ -227,6 +238,11 @@ token val_int {
 token exp_stmts {
     <Perlito5::Expression.delimited_statement>*
     { make $<Perlito5::Expression.delimited_statement>.>>capture }
+}
+
+token exp_stmts_no_package {
+    <Perlito5::Expression.delimited_statement_no_package>*
+    { make $<Perlito5::Expression.delimited_statement_no_package>.>>capture }
 }
 
 token opt_name {  <ident>?  }

@@ -545,7 +545,9 @@ class Do {
 class Use {
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
-        if $.mod eq 'v6' {
+        if     $.mod eq 'v6' 
+            || $.mod eq 'feature'
+        {
             return "\n"
                 ~ Perl5::tab($level) ~ "# use $.mod \n"
         }

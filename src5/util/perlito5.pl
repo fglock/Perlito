@@ -49,7 +49,9 @@ sub modulename_to_filename ($s) {
 sub expand_use($stmt) {
     my $module_name = $stmt.mod;
     return
-        if $module_name eq 'v6';
+        if $module_name eq 'v6'
+        || $module_name eq 'v5'
+        || $module_name eq 'feature';
     if !(%module_seen{$module_name}) {
         %module_seen{$module_name} = 1;
         # say "  now use: ", $module_name;

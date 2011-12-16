@@ -715,7 +715,7 @@ package GLOBAL;
         sub emit_perl5_indented {
             my $self = $_[0];
             my $level = $_[1];
-            if (($self->{mod} eq 'v6')) {
+            if ((($self->{mod} eq 'v6') || ($self->{mod} eq 'feature'))) {
                 return scalar ((chr(10) . Perl5::tab($level) . (chr(35) . ' use ' . $self->{mod} . ' ' . chr(10))))
             };
             (Perl5::tab($level) . 'use ' . $self->{mod})

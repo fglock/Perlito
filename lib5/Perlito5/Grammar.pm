@@ -652,6 +652,57 @@ package GLOBAL;
 })));
             $MATCH
         };
+        sub package_body {
+            my $grammar = $_[0];
+            my $str = $_[1];
+            my $pos = $_[2];
+            (my  $MATCH);
+            ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+            (($MATCH)->{bool} = ((do {
+    ((my  $pos1) = $MATCH->to());
+    (do {
+    ((((do {
+    ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'full_ident'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}) && (do {
+    ((my  $last_pos) = $MATCH->to());
+    if (!((do {
+    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        1
+    }
+    else {
+        0
+    }
+}))) {
+        (($MATCH)->{to} = $last_pos)
+    };
+    1
+})) && (do {
+    ((my  $m2) = $grammar->exp_stmts_no_package($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'exp_stmts_no_package'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((do {
+    ($MATCH->{capture} = (CompUnit->new(('name' => ${$MATCH->{'full_ident'}}), ('body' => ${$MATCH->{'exp_stmts_no_package'}}))))
+}) || 1)))
+})
+})));
+            $MATCH
+        };
         sub declarator {
             my $grammar = $_[0];
             my $str = $_[1];
@@ -1984,6 +2035,56 @@ package GLOBAL;
     1
 }) && (((do {
     ($MATCH->{capture} = ([ map { $_->capture() } @{( $MATCH->{'Perlito5::Expression.delimited_statement'} )} ]))
+}) || 1)))
+})
+})));
+            $MATCH
+        };
+        sub exp_stmts_no_package {
+            my $grammar = $_[0];
+            my $str = $_[1];
+            my $pos = $_[2];
+            (my  $MATCH);
+            ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+            (($MATCH)->{bool} = ((do {
+    ((my  $pos1) = $MATCH->to());
+    (do {
+    ((do {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->to());
+    for ( ; ((do {
+    ((my  $m2) = Perlito5::Expression->delimited_statement_no_package($str, $MATCH->to()));
+    if ($m2) {
+        (($MATCH)->{to} = $m2->to());
+        if (exists($MATCH->{'Perlito5::Expression.delimited_statement_no_package'})) {
+            push( @{($MATCH->{'Perlito5::Expression.delimited_statement_no_package'})}, $m2 )
+        }
+        else {
+            ($MATCH->{'Perlito5::Expression.delimited_statement_no_package'} = do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, $m2 );
+    $List_a
+})
+        };
+        1
+    }
+    else {
+        0
+    }
+}) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->to())) {
+            ($last_match_null = ($last_match_null + 1))
+        }
+        else {
+            ($last_match_null = 0)
+        };
+        ($last_pos = $MATCH->to())
+    };
+    (($MATCH)->{to} = $last_pos);
+    1
+}) && (((do {
+    ($MATCH->{capture} = ([ map { $_->capture() } @{( $MATCH->{'Perlito5::Expression.delimited_statement_no_package'} )} ]))
 }) || 1)))
 })
 })));

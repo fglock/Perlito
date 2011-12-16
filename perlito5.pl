@@ -118,7 +118,7 @@ package GLOBAL;
         sub expand_use {
             my $stmt = $_[0];
             ((my  $module_name) = $stmt->mod());
-            if (($module_name eq 'v6')) {
+            if (((($module_name eq 'v6') || ($module_name eq 'v5')) || ($module_name eq 'feature'))) {
                 return ()
             };
             if (!(($Hash_module_seen->{$module_name}))) {

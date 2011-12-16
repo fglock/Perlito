@@ -403,8 +403,10 @@ class Perlito5::Expression {
         | 'not'   <!before [ <.Perlito5::Grammar.word> | '(' ] > { make [ 'op',    'not'                   ] }
         | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
             { make [ 'term', Use.new( mod => $$<Perlito5::Grammar.full_ident> ) ] }
-        | [ 'package' | 'class' | 'grammar' | 'role' ] <.Perlito5::Grammar.ws> <Perlito5::Grammar.grammar>
+        | [ 'class' | 'grammar' | 'role' ] <.Perlito5::Grammar.ws> <Perlito5::Grammar.grammar>
             { make [ 'term', $$<Perlito5::Grammar.grammar> ] }
+        | 'package' <.Perlito5::Grammar.ws> <Perlito5::Grammar.package_body>
+            { make [ 'term', $$<Perlito5::Grammar.package_body> ] }
         | <Perlito5::Grammar.declarator> <.Perlito5::Grammar.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
             { make [ 'term', Decl.new( decl => $$<Perlito5::Grammar.declarator>, type => $$<Perlito5::Grammar.opt_type>, var => $$<Perlito5::Grammar.var_ident> ) ] }
         | '.' <hyper_op> <Perlito5::Grammar.ident>
@@ -680,6 +682,15 @@ class Perlito5::Expression {
         <.Perlito5::Grammar.ws>?
         [ ';' <.Perlito5::Grammar.ws>?
         | <statement_parse> ';'? <.Perlito5::Grammar.ws>?
+            { make $$<statement_parse> }
+        ]
+    }
+
+    token delimited_statement_no_package {
+        <.Perlito5::Grammar.ws>?
+        [ ';' <.Perlito5::Grammar.ws>?
+        | <!before 'package' <.Perlito5::Grammar.ws> >
+          <statement_parse> ';'? <.Perlito5::Grammar.ws>?
             { make $$<statement_parse> }
         ]
     }
