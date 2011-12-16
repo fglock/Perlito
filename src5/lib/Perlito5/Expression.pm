@@ -365,9 +365,9 @@ class Perlito5::Expression {
         | '.[' <square_parse>  ']'                      { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
         | '.{' <curly_parse>   '}'                      { make [ 'postfix_or_term',  'block', $$<curly_parse>   ] }
 
-        | '->(' <paren_parse>   ')'                      { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
-        | '->[' <square_parse>  ']'                      { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
-        | '->{' <curly_parse>   '}'                      { make [ 'postfix_or_term',  'block', $$<curly_parse>   ] }
+        | '->(' <paren_parse>   ')'                     { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
+        | '->[' <square_parse>  ']'                     { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
+        | '->{' <curly_parse>   '}'                     { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
         | [ '.<' | '<' ] <Perlito5::Grammar.ident> '>'   { make [ 'postfix_or_term',  'block', [Val::Buf.new('buf' => $$<Perlito5::Grammar.ident>)] ] }

@@ -402,6 +402,15 @@ class Apply {
 
     sub emit_perl5_bind ($parameters, $arguments) {
         if $parameters.isa( 'Call' ) {
+
+            # $a->[3] = 4
+            if  (  $parameters.method eq 'postcircumfix:<{ }>'
+                || $parameters.method eq 'postcircumfix:<[ ]>'
+                )
+            {
+                return '(' ~ $parameters.emit_perl5() ~ ' = ' ~ $arguments.emit_perl5() ~ ')';
+            }
+
             # $obj.a = 3
             my $a = $parameters;
             return '((' ~ ($a.invocant).emit_perl5() ~ ')->{' ~ $a.method() ~ '} = ' ~ $arguments.emit_perl5() ~ ')';

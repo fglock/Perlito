@@ -538,7 +538,7 @@ package GLOBAL;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
-    push( @{$List_a}, 'block' );
+    push( @{$List_a}, '.' . chr(123) . ' ' . chr(125) );
     push( @{$List_a}, ${$MATCH->{'curly_parse'}} );
     $List_a
 }))
