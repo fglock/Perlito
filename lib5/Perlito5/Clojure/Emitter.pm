@@ -76,7 +76,7 @@ package GLOBAL;
             if ($has_my_decl) {
                 ($str = ($str . '(let (' . $my_decl . ')' . (chr(10))))
             };
-            ($str = ($str . '(if (not (ignore-errors (find-class ' . chr(39) . $class_name . ')))' . chr(10) . '  (defclass ' . $class_name . ' () ()))' . chr(10) . chr(10) . '(let (x) ' . chr(10) . '  (setq x (make-instance ' . chr(39) . $class_name . '))' . chr(10) . '  (defun proto-' . $class_name . ' () x))' . chr(10)));
+            ($str = ($str . '(if (not (ignore-errors (find-class ' . chr(39) . $class_name . ')))' . chr(10) . '  (defclass ' . $class_name . ' () ()))' . chr(10) . chr(10) . '(let (x)' . chr(10) . '  (setq x (make-instance ' . chr(39) . $class_name . '))' . chr(10) . '  (defun proto-' . $class_name . ' () x))' . chr(10)));
             ((my  $dumper) = '');
             for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {

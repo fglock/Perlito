@@ -4,18 +4,18 @@
 ;; Author: Flavio Soibelmann Glock <fglock@gmail.com>
 ;;
 ;; Copyright 2009, 2011 by Flavio Soibelmann Glock and others.
-;; 
+;;
 ;; This program is free software; you can redistribute it and/or modify it
 ;; under the same terms as Perl itself.
-;; 
+;;
 ;; See <http://www.perl.com/perl/misc/Artistic.html>
 
 (defpackage mp-Main
   (:use common-lisp)
-  (:export 
-        #:sv-eq #:sv-bool #:sv-substr #:sv-say #:sv-print #:sv-index 
+  (:export
+        #:sv-eq #:sv-bool #:sv-substr #:sv-say #:sv-print #:sv-index
         #:sv-and #:sv-or #:sv-perl #:sv-scalar #:sv-string #:sv-undef
-        #:sv-defined #:sv-array-index #:sv-hash-lookup #:sv-add 
+        #:sv-defined #:sv-array-index #:sv-hash-lookup #:sv-add
         #:sv-true ))
 (in-package mp-Main)
 
@@ -24,10 +24,10 @@
 (defun init-argv ()
   (progn
     (setf COMMON-LISP-USER::*posix-argv* (cdr COMMON-LISP-USER::*posix-argv*))
-    (setf *mp6-args* (make-array 
-                                (length COMMON-LISP-USER::*posix-argv*) 
-                                :adjustable 1 
-                                :fill-pointer t 
+    (setf *mp6-args* (make-array
+                                (length COMMON-LISP-USER::*posix-argv*)
+                                :adjustable 1
+                                :fill-pointer t
                                 :initial-contents COMMON-LISP-USER::*posix-argv*))))
 
 ;; predeclarations
@@ -41,7 +41,7 @@
 (if (not (ignore-errors (find-method '(setf sv-str)  () ())))
   (defgeneric (setf sv-str)  (x v)))
 (if (not (ignore-errors (find-method 'sv-string () ())))
-  (defgeneric sv-string (x) 
+  (defgeneric sv-string (x)
       (:documentation "stringify values")))
 (if (not (ignore-errors (find-method 'sv-join () ())))
   (defgeneric sv-join (l &optional delim)
@@ -88,21 +88,21 @@
   (defgeneric sv-substr (x s c)
       (:documentation "substring")))
 (defmethod sv-substr ((s mp-Undef) start count) "")
-(defmethod sv-substr (s start count) 
+(defmethod sv-substr (s start count)
   (let ((l1 (length s)) (l2 (+ start count)))
   (or (ignore-errors (subseq s start (if (> l2 l1) l1 l2)))
       "")))
 
-(defun sv-index (s substr &optional start) 
+(defun sv-index (s substr &optional start)
   (declare (ignorable start))    ;; TODO
-  (let ((l1 (search substr s))) 
+  (let ((l1 (search substr s)))
     (if l1 l1 -1)))
 
 (defmacro sv-array-index (sv-array sv-ix)
-  `(aref 
+  `(aref
     (progn
       (loop for i from (length ,sv-array) to ,sv-ix do (vector-push-extend (sv-undef) ,sv-array))
-      ,sv-array) 
+      ,sv-array)
     ,sv-ix))
 
 (defmacro sv-hash-lookup (key h)
@@ -178,8 +178,8 @@
       (:documentation "data dumper")))
 (defmethod sv-perl (x)          (format nil "~A" x))
 (defmethod sv-perl ((x string)) (format nil "~{~a~}" (list "'" (sv-perl_escape_string x) "'")))
-(defmethod sv-perl ((x vector)) (format nil "~{~a~}" (list 
-        "[ " 
+(defmethod sv-perl ((x vector)) (format nil "~{~a~}" (list
+        "[ "
         (sv-join (map 'vector #'(lambda (c) (sv-perl c)) x))
         " ]" )))
 (defmethod sv-perl ((x mp-Undef)) "undef")
@@ -187,7 +187,7 @@
    (format nil "~{~a~}" (list
         "{ "
         (let ((l (make-array 0 :adjustable 1 :fill-pointer t)))
-            (maphash #'(lambda (key val) (vector-push-extend (format nil "~A => ~A" (sv-perl key) (sv-perl val)) l)) x)    
+            (maphash #'(lambda (key val) (vector-push-extend (format nil "~A => ~A" (sv-perl key) (sv-perl val)) l)) x)
             (sv-join l ", " ))
         " }" )))
 
@@ -197,10 +197,10 @@
       (:documentation "hash values")))
 (defmethod sv-values ((x hash-table))
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
-    (maphash #'(lambda (key val) 
+    (maphash #'(lambda (key val)
                   (declare (ignorable key))
-                  (sv-push tmp val)) 
-             x) 
+                  (sv-push tmp val))
+             x)
     tmp ))
 
 (if (not (ignore-errors (find-method 'sv-keys () ())))
@@ -208,25 +208,25 @@
       (:documentation "hash keys")))
 (defmethod sv-keys ((x hash-table))
   (let ((tmp (make-array 0 :adjustable 1 :fill-pointer t)))
-    (maphash #'(lambda (key val) 
+    (maphash #'(lambda (key val)
                   (declare (ignorable val))
-                  (sv-push tmp key)) 
-             x) 
+                  (sv-push tmp key))
+             x)
     tmp ))
 
-(defmethod sv-push (a x) 
-  (progn 
+(defmethod sv-push (a x)
+  (progn
     (vector-push-extend x a)
     x))
 
 (if (not (ignore-errors (find-method 'sv-unshift () ())))
   (defgeneric sv-unshift (self x)
       (:documentation "unshift")))
-(defmethod sv-unshift (a x) 
+(defmethod sv-unshift (a x)
   (let ((l (length a)))
     (vector-push-extend 0 a)
-    (loop for i from 1 to l 
-          do (setf (aref a (+ (- l i) 1)) 
+    (loop for i from 1 to l
+          do (setf (aref a (+ (- l i) 1))
                    (aref a (- l i))))
     (setf (aref a 0) x)
     x))
@@ -234,12 +234,12 @@
 (if (not (ignore-errors (find-method 'sv-shift () ())))
   (defgeneric sv-shift (self)
       (:documentation "shift")))
-(defmethod sv-shift (a) 
+(defmethod sv-shift (a)
     (if (eql (length a) 0)
-        (sv-Undef)   
+        (sv-Undef)
         (let (x)
           (setf x (aref a 0))
-          (loop for i from 0 to (- (length a) 2) 
+          (loop for i from 0 to (- (length a) 2)
               do (setf (aref a i) (aref a (+ i 1))))
           (vector-pop a)
           x)))
@@ -249,7 +249,7 @@
       (:documentation "pop")))
 (defmethod sv-pop (a)
     (if (eql (length a) 0)
-        (sv-Undef)   
+        (sv-Undef)
         (vector-pop a)))
 
 (if (not (ignore-errors (find-method 'sv-scalar () ())))
@@ -271,9 +271,9 @@
       (:documentation "a method")))
 (defmethod sv-space ((sv-grammar mp-Perlito-Grammar) &optional sv-str sv-pos)
     (if (ignore-errors (or (char= (aref sv-str sv-pos) #\Space) (char= (aref sv-str sv-pos) #\Tab)))
-         (let ((m (make-instance 'mp-Perlito-Match))) 
+         (let ((m (make-instance 'mp-Perlito-Match)))
             (setf (sv-str m) sv-str)(setf (sv-from m) sv-pos)(setf (sv-to m) (+ sv-pos 1))(setf (sv-bool m) 1) m)
-         (let ((m (make-instance 'mp-Perlito-Match))) 
+         (let ((m (make-instance 'mp-Perlito-Match)))
             (setf (sv-bool m) nil) m)))
 
 ;; token <digit>
@@ -282,9 +282,9 @@
       (:documentation "a method")))
 (defmethod sv-digit ((sv-grammar mp-Perlito-Grammar) &optional sv-str sv-pos)
     (if (ignore-errors (digit-char-p (aref sv-str sv-pos)))
-         (let ((m (make-instance 'mp-Perlito-Match))) 
+         (let ((m (make-instance 'mp-Perlito-Match)))
             (setf (sv-str m) sv-str)(setf (sv-from m) sv-pos)(setf (sv-to m) (+ sv-pos 1))(setf (sv-bool m) 1) m)
-         (let ((m (make-instance 'mp-Perlito-Match))) 
+         (let ((m (make-instance 'mp-Perlito-Match)))
             (setf (sv-bool m) nil) m)))
 
 ;; token <word>
@@ -293,9 +293,9 @@
       (:documentation "a method")))
 (defmethod sv-word ((sv-grammar mp-Perlito-Grammar) &optional sv-str sv-pos)
     (if (ignore-errors (or (alphanumericp (aref sv-str sv-pos)) (char= (aref sv-str sv-pos) #\_)))
-         (let ((m (make-instance 'mp-Perlito-Match))) 
+         (let ((m (make-instance 'mp-Perlito-Match)))
             (setf (sv-str m) sv-str)(setf (sv-from m) sv-pos)(setf (sv-to m) (+ sv-pos 1))(setf (sv-bool m) 1) m)
-         (let ((m (make-instance 'mp-Perlito-Match))) 
+         (let ((m (make-instance 'mp-Perlito-Match)))
             (setf (sv-bool m) nil) m)))
 
 ;; token <is_newline>
@@ -308,58 +308,58 @@
     (if (ignore-errors (char= (aref sv-str sv-pos) #\Return))
          (progn (setf sv-pos (+ sv-pos 1))
                 (if (ignore-errors (char= (aref sv-str sv-pos) #\Newline)) (setf sv-pos (+ sv-pos 1)))
-                (let ((m (make-instance 'mp-Perlito-Match))) 
+                (let ((m (make-instance 'mp-Perlito-Match)))
                     (setf (sv-str m) sv-str)(setf (sv-from m) from)(setf (sv-to m) sv-pos)(setf (sv-bool m) 1) m))
          (if (ignore-errors (char= (aref sv-str sv-pos) #\Newline))
               (progn (setf sv-pos (+ sv-pos 1))
                      (if (ignore-errors (char= (aref sv-str sv-pos) #\Return)) (setf sv-pos (+ sv-pos 1)))
-                     (let ((m (make-instance 'mp-Perlito-Match))) 
+                     (let ((m (make-instance 'mp-Perlito-Match)))
                          (setf (sv-str m) sv-str)(setf (sv-from m) from)(setf (sv-to m) sv-pos)(setf (sv-bool m) 1) m))
-              (let ((m (make-instance 'mp-Perlito-Match))) 
+              (let ((m (make-instance 'mp-Perlito-Match)))
                  (setf (sv-bool m) nil) m)))))
 
 
 ;; Match objects
 
 (if (not (ignore-errors (find-class 'mp-Perlito-Match)))
-  (defclass mp-Perlito-Match () 
+  (defclass mp-Perlito-Match ()
     (hash array)))
 
 (defvar sv-MATCH (make-instance 'mp-Perlito-Match))
 
-(defmethod sv-hash ((m mp-Perlito-Match)) 
-  (or 
+(defmethod sv-hash ((m mp-Perlito-Match))
+  (or
     (ignore-errors (slot-value m 'hash))
     (setf (slot-value m 'hash) (make-hash-table :test 'equal))))
 
-(defmethod sv-array ((m mp-Perlito-Match)) 
-  (or 
+(defmethod sv-array ((m mp-Perlito-Match))
+  (or
     (ignore-errors (slot-value m 'array))
     (setf (slot-value m 'array) (make-array 0 :adjustable 1))))
     ;; (setf (slot-value m 'array) (list (sv-undef) (sv-undef) (sv-undef)))))
 
 ;; compiler utils
 
-;; function replace-substring pasted from: 
+;; function replace-substring pasted from:
 ;;   http://web.mit.edu/maxima_v5.13.0/src/maxima-5.13.0/configure.lisp
-(defun replace-substring (in-string old new) 
+(defun replace-substring (in-string old new)
   (let ((result ""))
     (do ((begin 0)
-     (end (search old in-string) 
+     (end (search old in-string)
           (search old in-string :start2 begin)))
     ((>= begin (length in-string)) 'done)
       (if end
-      (progn (setf result (concatenate 'string result 
+      (progn (setf result (concatenate 'string result
                        (subseq in-string begin end)
                        new))
          (setf begin (+ end (length old))))
-      (progn (setf result (concatenate 'string result 
+      (progn (setf result (concatenate 'string result
                        (subseq in-string begin
                            (length in-string))))
          (setf begin (length in-string)))))
     result))
 
-(defmethod sv-join ((l string) &optional (delim "")) 
+(defmethod sv-join ((l string) &optional (delim ""))
   (declare (ignorable delim))
   l)
 (defmethod sv-join ((v vector) &optional (delim ""))
@@ -368,7 +368,7 @@
         (if (> (length v) 0)
           (progn
             (format s "~A" (sv-string (aref v 0)))
-            (loop for i from 1 to (- (length v) 1) 
+            (loop for i from 1 to (- (length v) 1)
               do (format s "~A~A" delim (aref v i))))
           ""))))
 

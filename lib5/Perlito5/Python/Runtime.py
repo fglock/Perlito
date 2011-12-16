@@ -31,11 +31,11 @@ if recursion < 2000:
 __all__ = ['mp6_to_num', 'mp6_to_scalar', 'mp6_to_bool', 'f_isa',
            'mp6_and', 'mp6_or', 'mp6_defined_or',
            'f_join', 'mp6_index', 'f_id', 'f_split',
-           'mp6_Mu', 
+           'mp6_Mu',
            'mp6_Array', 'mp6_Hash', 'mp6_Scalar',
-           'mp6_Return', 
+           'mp6_Return',
            'Perlito__Match',
-           'Perlito__Grammar', 'Perlito__Grammar_proto', 
+           'Perlito__Grammar', 'Perlito__Grammar_proto',
            'Main', 'Main_proto',
            'IO', 'IO_proto']
 
@@ -70,7 +70,7 @@ def f_map(v, f):
     try:
         return v.f_map(f)
     except AttributeError:
-        return mp6_Array([]) 
+        return mp6_Array([])
 __builtin__.f_map = f_map
 
 def f_chr(n):
@@ -88,7 +88,7 @@ def mp6_to_scalar(v):
         return v
 
 def mp6_to_bool(o):
-    try: 
+    try:
         return o.f_bool()
     except AttributeError:
         if type(o) == type(False):
@@ -159,7 +159,7 @@ def mp6_index(s, s2):
     except ValueError:
         return -1
 
-def mp6_to_num(s): 
+def mp6_to_num(s):
     try:
         c = coerce(s, 0);
         return c[0]
@@ -279,7 +279,7 @@ class mp6_Array:
         return mp6_Array(result)
     def f_say(self):
         f_say(self)
- 
+
 class mp6_Hash:
     def __init__(self, l):
         self.l = l
@@ -292,7 +292,7 @@ class mp6_Hash:
     def __iter__(self):
         return self.l.__iter__()
     def __getitem__(self, k):
-        return self.l.__getitem__(k) 
+        return self.l.__getitem__(k)
     def f_perl(self, last_seen={}):
         seen = last_seen.copy()
         o = self.l
@@ -364,7 +364,7 @@ class mp6_Mu:
     def __index__(self):
         return 0
     def __getitem__(self, k):
-        return self 
+        return self
     def __iter__(self):
         return [].__iter__()
     def f_perl(self, seen={}):
@@ -496,7 +496,7 @@ class Perlito__Match:
         return self.__dict__[k]
     def __unicode__(self):
         if mp6_to_bool(self.v_bool):
-            if not(f_isa(self.v_capture,'Mu')): 
+            if not(f_isa(self.v_capture,'Mu')):
                 return unicode(self.v_capture)
             return self.v_str[self.v_from:self.v_to]
         return u''
@@ -517,7 +517,7 @@ class Perlito__Match:
         return self.v_m.f_lookup(k)
     def f_scalar(self):
         if mp6_to_bool(self.v_bool):
-            if not(f_isa(self.v_capture,'Mu')): 
+            if not(f_isa(self.v_capture,'Mu')):
                 return self.v_capture
             return self.v_str[self.v_from:self.v_to]
         return self.v_capture
@@ -534,8 +534,8 @@ __builtin__.Perlito__Match = Perlito__Match
 __builtin__.Perlito__Match_proto = Perlito__Match_proto
 
 
-try:        
-    type(Perlito__Grammar)  
+try:
+    type(Perlito__Grammar)
 except NameError:
     class Perlito__Grammar:
         def __init__(self, **arg):

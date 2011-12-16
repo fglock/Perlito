@@ -9,11 +9,11 @@ $_ = Encode::decode('utf-8', $_)
 
 {
     package Perlito5::Match;
-    
+
     use strict;
     use warnings;
     no warnings 'recursion';
-    
+
     use overload (
         '@{}'    => \&array,
         bool     => \&bool,
@@ -22,31 +22,31 @@ $_ = Encode::decode('utf-8', $_)
         '0+'     => \&flat,
         'eq'     => sub { "$_[0]" eq "$_[1]" },
     );
-    
+
     sub new {
         my ($class, %data) = @_;
         return bless \%data, $class;
     }
-    
+
     sub from { $_[0]{from} }
     sub to   { $_[0]{to} }
     sub bool { $_[0]{bool} }
     sub capture { $_[0]{capture} }
-    
-    sub array {    
+
+    sub array {
         my $v = $_[0];
-             $v->{match} 
+             $v->{match}
         || ( $v->{match} = [] )
     }
-    
-    sub hash  {   
+
+    sub hash  {
         $_[0]
     }
-    
-    sub keys   { 
+
+    sub keys   {
         bless [ CORE::keys %{$_[0]} ], 'ARRAY';
     }
-    sub values { 
+    sub values {
         bless [ CORE::values %{$_[0]} ], 'ARRAY';
     }
     sub pairs {
@@ -54,7 +54,7 @@ $_ = Encode::decode('utf-8', $_)
             CORE::keys %{$_[0]}
         ], 'ARRAY';
     }
-    
+
     sub flat {
         my $obj = $_[0];
         my $cap = $obj->{capture};
@@ -65,21 +65,21 @@ $_ = Encode::decode('utf-8', $_)
         return '' if $_[0]->from > length( $obj->{str} );
         return substr( $obj->{str}, $_[0]->from, $_[0]->to - $_[0]->from );
     }
-    
+
     sub str {
         "" . $_[0]->flat;
     }
-    
+
     sub scalar {
         return \( $_[0]->flat );
     }
-    
+
 }
 
 package Perlito5::Grammar;
-    sub space { 
-        # my $grammar = $_[0]; 
-        my $str = $_[1]; my $pos = $_[2]; 
+    sub space {
+        # my $grammar = $_[0];
+        my $str = $_[1]; my $pos = $_[2];
         my $MATCH = bless { str => $str, from => $pos, to => $pos }, 'Perlito5::Match';
         $MATCH->{bool} = (
             substr($str, $MATCH->{to}) =~ m/^([[:space:]])/
@@ -88,9 +88,9 @@ package Perlito5::Grammar;
         );
         $MATCH;
     }
-    sub digit { 
-        # my $grammar = $_[0]; 
-        my $str = $_[1]; my $pos = $_[2]; 
+    sub digit {
+        # my $grammar = $_[0];
+        my $str = $_[1]; my $pos = $_[2];
         my $MATCH = bless { str => $str, from => $pos, to => $pos }, 'Perlito5::Match';
         $MATCH->{bool} = (
             substr($str, $MATCH->{to}) =~ m/^([[:digit:]])/
@@ -100,9 +100,9 @@ package Perlito5::Grammar;
         $MATCH;
     }
 
-    sub word { 
-        # my $grammar = $_[0]; 
-        my $str = $_[1]; my $pos = $_[2]; 
+    sub word {
+        # my $grammar = $_[0];
+        my $str = $_[1]; my $pos = $_[2];
         my $MATCH = bless { str => $str, from => $pos, to => $pos }, 'Perlito5::Match';
         $MATCH->{bool} = (
             substr($str, $MATCH->{to}) =~ m/^([[:word:]])/
@@ -133,10 +133,10 @@ package ARRAY;
 
     sub map  { bless [ CORE::map(  $_[1]($_), @{$_[0]} ) ], 'ARRAY' }
     sub grep { bless [ CORE::grep( $_[1]($_), @{$_[0]} ) ], 'ARRAY' }
-    sub sort { 
-          $_[1] 
-        ? bless [ CORE::sort( $_[1]($_), @{$_[0]} ) ], 'ARRAY' 
-        : bless [ CORE::sort( @{$_[0]} ) ], 'ARRAY' 
+    sub sort {
+          $_[1]
+        ? bless [ CORE::sort( $_[1]($_), @{$_[0]} ) ], 'ARRAY'
+        : bless [ CORE::sort( @{$_[0]} ) ], 'ARRAY'
     }
 
     sub Str {
@@ -158,9 +158,9 @@ package Main;
 
     sub map  { bless [ CORE::map(  $_[0]($_), @{$_[1]} ) ], 'ARRAY' }
     sub grep { bless [ CORE::grep( $_[0]($_), @{$_[1]} ) ], 'ARRAY' }
-    sub sort { 
+    sub sort {
           $_[1]
-        ? bless [ CORE::sort( $_[0]($_), @{$_[1]} ) ], 'ARRAY' 
+        ? bless [ CORE::sort( $_[0]($_), @{$_[1]} ) ], 'ARRAY'
         : bless [ CORE::sort( @{$_[0]} ) ], 'ARRAY'
     }
 
@@ -174,7 +174,7 @@ package Main;
         }
         return $_[0];
     }
-    sub print { 
+    sub print {
         local $_;
         for (@_) {
             if ( ref($_) ) {
@@ -182,44 +182,44 @@ package Main;
                 next;
             }
             CORE::print $_
-        } 
+        }
         return 1;
     }
     sub say   { Main::print( @_, "\n" ) }
     sub chars { length( $_[0] ) }
-    sub isa { 
+    sub isa {
         my $ref = ref($_[0]);
-           (  $ref eq 'ARRAY' 
+           (  $ref eq 'ARRAY'
            && $_[1] eq 'Array'
            )
-        || (  $ref eq 'HASH' 
+        || (  $ref eq 'HASH'
            && $_[1] eq 'Hash'
            )
-        || (  $ref eq '' 
+        || (  $ref eq ''
            && $_[1] eq 'Str'
            )
         || $ref eq $_[1]
-        || (  ref( $_[1] ) 
-           && $ref eq ref( $_[1] ) 
+        || (  ref( $_[1] )
+           && $ref eq ref( $_[1] )
            )
     }
 
-    sub keys   { 
+    sub keys   {
         bless [ CORE::keys %{$_[0]} ], 'ARRAY';
     }
-    sub values { 
+    sub values {
         bless [ CORE::values %{$_[0]} ], 'ARRAY';
     }
- 
+
     sub pairs {
         bless [
             map Pair->new( key => $_, value => $_[0]{$_} ),
                 CORE::keys %{$_[0]}
         ], 'ARRAY';
     }
- 
+
     sub id {
-           Scalar::Util::refaddr($_[0]) 
+           Scalar::Util::refaddr($_[0])
         || "_id_" . $_[0]
     }
 
@@ -232,9 +232,9 @@ package Main;
             my $key = "$o";
             return "'!!! Recursive structure !!!' at $key" if ($Main::_seen{$key} || 0) > 3;
             $Main::_seen{$key}++;
-            return '[' . join( ", ", map { perl($_) } @$o ) . ']' 
+            return '[' . join( ", ", map { perl($_) } @$o ) . ']'
                 if ref($o) eq 'ARRAY';
-            return '{' . join( ", ", map { perl($_) . ' => ' . perl($o->{$_}) } sort {$a cmp $b} CORE::keys(%$o) ) . '}' 
+            return '{' . join( ", ", map { perl($_) . ' => ' . perl($o->{$_}) } sort {$a cmp $b} CORE::keys(%$o) ) . '}'
                 if ref($o) eq 'HASH';
             return 'sub { ... }'
                 if ref($o) eq 'CODE';
@@ -253,7 +253,7 @@ package Main;
             . join( ", ", map { Main::perl($_) . ' => ' . Main::perl($o->{$_}) } sort {$a cmp $b} CORE::keys(%$o) )
             . ")";
     }
-    
+
     sub yaml {
         my $can = UNIVERSAL::can($_[0] => 'yaml');
         if ($can) {
@@ -264,7 +264,7 @@ package Main;
             YAML::Syck::Dump($_[0]);
         }
     }
-      
+
     sub join {
         return '' unless defined $_[0];
         my $can = UNIVERSAL::can($_[0] => 'join');
@@ -287,7 +287,7 @@ package Main;
         }
     }
 
-    sub bool { 
+    sub bool {
         $_[0] ? 1 : 0
     }
 
@@ -297,7 +297,7 @@ __END__
 
 =pod
 
-=head1 NAME 
+=head1 NAME
 
 Perlito5::Perl5::Runtime
 
