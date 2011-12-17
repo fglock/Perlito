@@ -283,6 +283,15 @@ class Lit::Hash {
 class Index {
     method emit_javascript { self.emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
+
+        if (  $.obj.isa('Var')
+           && $.obj.sigil eq '$'
+           )
+        {
+            my $v = Var.new( sigil => '@', twigil => $.obj.twigil, namespace => $.obj.namespace, name => $.obj.name );
+            return $v.emit_javascript_indented($level) ~ '[' ~ $.index_exp.emit_javascript() ~ ']';
+        }
+
         Javascript::tab($level) ~ $.obj.emit_javascript() ~ '[' ~ $.index_exp.emit_javascript() ~ ']';
     }
 }
@@ -292,6 +301,15 @@ class Lookup {
     method emit_javascript_indented( $level ) {
         # my $var = $.obj.emit_javascript;
         # return $var ~ '[' ~ $.index_exp.emit_javascript() ~ ']'
+
+        if (  $.obj.isa('Var')
+           && $.obj.sigil eq '$'
+           && $.obj.name ne '/'  # XXX $/ is the Perl6 match object
+           )
+        {
+            my $v = Var.new( sigil => '%', twigil => $.obj.twigil, namespace => $.obj.namespace, name => $.obj.name );
+            return $v.emit_javascript_indented($level) ~ '->{' ~ $.index_exp.emit_javascript() ~ '}';
+        }
 
         my $str = '';
         my $var = $.obj;
@@ -591,6 +609,15 @@ class Apply {
 
     sub emit_javascript_bind ($parameters, $arguments) {
         if $parameters.isa( 'Call' ) {
+
+            # $a->[3] = 4
+            if  (  $parameters.method eq 'postcircumfix:<{ }>'
+                || $parameters.method eq 'postcircumfix:<[ ]>'
+                )
+            {
+                return '(' ~ $parameters.emit_javascript() ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
+            }
+
             # $var.attr = 3;
             return '(' ~ ($parameters.invocant).emit_javascript() ~ '.v_' ~ $parameters.method() ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
         }

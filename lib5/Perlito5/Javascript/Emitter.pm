@@ -344,6 +344,10 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
+            if (((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))))) {
+                ((my  $v) = Var->new(('sigil' => chr(64)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
+                return scalar (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
+            };
             (Javascript::tab($level) . $self->{obj}->emit_javascript() . '[' . $self->{index_exp}->emit_javascript() . ']')
         }
     }
@@ -359,6 +363,10 @@ package GLOBAL;
         sub emit_javascript_indented {
             my $self = $_[0];
             my $level = $_[1];
+            if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne chr(47))))) {
+                ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
+                return scalar (($v->emit_javascript_indented($level) . '->' . chr(123) . $self->{index_exp}->emit_javascript() . chr(125)))
+            };
             ((my  $str) = '');
             ((my  $var) = $self->{obj});
             (my  $var_js);
@@ -675,6 +683,9 @@ package GLOBAL;
             my $parameters = $_[0];
             my $arguments = $_[1];
             if (Main::isa($parameters, 'Call')) {
+                if (((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>') || ($parameters->method() eq 'postcircumfix:<[ ]>')))) {
+                    return scalar (('(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
+                };
                 return scalar (('(' . ($parameters->invocant())->emit_javascript() . '.v_' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
             };
             if (Main::isa($parameters, 'Lookup')) {
