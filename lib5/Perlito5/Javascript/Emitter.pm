@@ -689,7 +689,15 @@ package GLOBAL;
             my $parameters = $_[0];
             my $arguments = $_[1];
             if (Main::isa($parameters, 'Call')) {
-                if (((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>') || ($parameters->method() eq 'postcircumfix:<[ ]>')))) {
+                if ((($parameters->method() eq 'postcircumfix:<[ ]>'))) {
+                    ((my  $str) = '');
+                    ((my  $var_js) = $parameters->invocant()->emit_javascript());
+                    ($str = ($str . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '));
+                    ((my  $index_js) = $parameters->arguments()->emit_javascript());
+                    ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
+                    return scalar (('(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+                };
+                if ((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
                     return scalar (('(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
                 };
                 return scalar (('(' . ($parameters->invocant())->emit_javascript() . '.v_' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))

@@ -619,10 +619,17 @@ class Apply {
         if $parameters.isa( 'Call' ) {
 
             # $a->[3] = 4
-            if  (  $parameters.method eq 'postcircumfix:<{ }>'
-                || $parameters.method eq 'postcircumfix:<[ ]>'
-                )
-            {
+            if  (  $parameters.method eq 'postcircumfix:<[ ]>' ) {
+                my $str = '';
+                my $var_js = $parameters.invocant.emit_javascript;
+                $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = [] }; ';
+                my $index_js = $parameters.arguments.emit_javascript;
+                $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ ' = ' ~ $arguments.emit_javascript() ~ '); ';
+                return '(function () { ' ~ $str ~ '})()';
+            }
+ 
+            # $a->{x} = 4
+            if  (  $parameters.method eq 'postcircumfix:<{ }>' ) {
                 return '(' ~ $parameters.emit_javascript() ~ ' = ' ~ $arguments.emit_javascript() ~ ')';
             }
 
