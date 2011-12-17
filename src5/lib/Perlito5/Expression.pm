@@ -372,14 +372,14 @@ class Perlito5::Expression {
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
         | [ '.<' | '<' ] <Perlito5::Grammar.ident> '>'   { make [ 'postfix_or_term',  'block', [Val::Buf.new('buf' => $$<Perlito5::Grammar.ident>)] ] }
 
-        | '->' <.Perlito5::Grammar.ws>? <list_parse>
-                    {
-                        my $block = ($$<list_parse>)<end_block>;
-                        if $block.sig() {
-                            die "Signature error in block"
-                        }
-                        make [ 'postfix_or_term', 'block', $block.stmts, ($$<list_parse>)<exp> ]
-                    }
+        ## | '->' <.Perlito5::Grammar.ws>? <list_parse>
+        ##             {
+        ##                 my $block = ($$<list_parse>)<end_block>;
+        ##                 if $block.sig() {
+        ##                     die "Signature error in block"
+        ##                 }
+        ##                 make [ 'postfix_or_term', 'block', $block.stmts, ($$<list_parse>)<exp> ]
+        ##             }
         | '{'  <.Perlito5::Grammar.ws>?
                <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.ws>? '}'
                     { make [ 'postfix_or_term', 'block', $$<Perlito5::Grammar.exp_stmts> ] }

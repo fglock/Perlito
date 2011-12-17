@@ -412,7 +412,7 @@ package GLOBAL;
             ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
-    ((((((((((((((((((((((((((((((((((((do {
+    (((((((((((((((((((((((((((((((((((do {
     (((((('.(' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->paren_parse($str, $MATCH->to()));
     if ($m2) {
@@ -619,48 +619,6 @@ package GLOBAL;
     push( @{$List_a}, Val::Buf->new(('buf' => ${$MATCH->{'Perlito5::Grammar.ident'}})) );
     $List_a
 } );
-    $List_a
-}))
-}) || 1))))
-})) || (do {
-    (($MATCH)->{to} = $pos1);
-    ((((((('->' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
-    ((my  $last_pos) = $MATCH->to());
-    if (!((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->to()));
-    if ($m2) {
-        (($MATCH)->{to} = $m2->to());
-        1
-    }
-    else {
-        0
-    }
-}))) {
-        (($MATCH)->{to} = $last_pos)
-    };
-    1
-})) && (do {
-    ((my  $m2) = $grammar->list_parse($str, $MATCH->to()));
-    if ($m2) {
-        (($MATCH)->{to} = $m2->to());
-        ($MATCH->{'list_parse'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && (((do {
-    ((my  $block) = (${$MATCH->{'list_parse'}})->{'end_block'});
-    if ($block->sig()) {
-        die(('Signature error in block'))
-    };
-    ($MATCH->{capture} = (do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, 'postfix_or_term' );
-    push( @{$List_a}, 'block' );
-    push( @{$List_a}, $block->stmts() );
-    push( @{$List_a}, (${$MATCH->{'list_parse'}})->{'exp'} );
     $List_a
 }))
 }) || 1))))
