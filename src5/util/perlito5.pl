@@ -74,7 +74,7 @@ sub expand_use($stmt) {
 }
 
 sub add_comp_unit (@parse) {
-    for @parse -> $comp_unit {
+    for my $comp_unit (@parse) {
         if $expand_use && $comp_unit.isa('Use') {
             expand_use($comp_unit);
         }
@@ -82,7 +82,7 @@ sub add_comp_unit (@parse) {
             if $verbose {
                 warn "parsed comp_unit: '", $comp_unit.name, "'";
             }
-            for @( $comp_unit.body ) -> $stmt {
+            for my $stmt (@( $comp_unit.body )) {
                 if $expand_use && $stmt.isa('Use') {
                     expand_use($stmt);
                 }
@@ -210,7 +210,7 @@ perlito5 [switches] [programfile]
             say "import __builtin__";
             say "__all__ = []";
             say "";
-            for @($comp_units) -> $c {
+            for my $c (@($comp_units)) {
                 say $c.emit_python;
             }
         }
@@ -220,7 +220,7 @@ perlito5 [switches] [programfile]
             say "require 'Perlito5/Ruby/Runtime.rb'";
             say "require 'Perlito__Ruby__Prelude.rb'";
             say "";
-            for @($comp_units) -> $c {
+            for my $c (@($comp_units)) {
                 say $c.emit_ruby;
             }
         }

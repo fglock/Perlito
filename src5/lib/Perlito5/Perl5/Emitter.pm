@@ -28,7 +28,7 @@ class Perl5 {
         my @out;
         my $tmp = '';
         return "''" if $s eq '';
-        for 0 .. $s.chars() - 1 -> $i {
+        for my $i (0 .. $s.chars() - 1) {
             my $c = substr($s, $i, 1);
             if     (($c ge 'a') && ($c le 'z'))
                 || (($c ge 'A') && ($c le 'Z'))
@@ -53,7 +53,7 @@ class CompUnit {
     method emit_perl5 { self.emit_perl5_indented(0) }
     method emit_perl5_indented( $level ) {
         my @body;
-        for @.body {
+        for (@.body) {
             if defined($_) {
                 push @body, $_
             }
@@ -75,7 +75,7 @@ class CompUnit {
             ~ "use Perlito5::Perl5::Runtime;\n"
             ~ "use Perlito5::Perl5::Prelude;\n"
             ~ "our \$MATCH = Perlito5::Match->new();\n";
-        for @($comp_units) -> $comp_unit {
+        for my $comp_unit (@($comp_units)) {
             $str ~= $comp_unit.emit_perl5_indented(0)
         }
         $str ~= "1;\n";
@@ -536,7 +536,7 @@ class Method {
         my $str = '';
 
         my $i = 1;
-        for @$pos -> $field {
+        for my $field (@$pos) {
             $str ~= Perl5::tab( $level + 1 ) ~ 'my ' ~ $field.emit_perl5() ~ ' = $_[' ~ $i ~ '];' ~ "\n";
             $i = $i + 1;
         }
@@ -556,7 +556,7 @@ class Sub {
         my $pos = $sig.positional;
         my $str = '';
         my $i = 0;
-        for @$pos -> $field {
+        for my $field (@$pos) {
             $str ~= Perl5::tab( $level + 1 ) ~ 'my ' ~ $field.emit_perl5() ~ ' = $_[' ~ $i ~ '];' ~ "\n";
             $i = $i + 1;
         }
