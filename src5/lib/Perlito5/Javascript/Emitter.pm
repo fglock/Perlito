@@ -237,7 +237,7 @@ class Val::Int {
 
 class Val::Bit {
     method emit_javascript { self.emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) { Javascript::tab($level) ~ ($.bit ?? 'true' !! 'false') }
+    method emit_javascript_indented( $level ) { Javascript::tab($level) ~ ($.bit ? 'true' : 'false') }
 }
 
 class Val::Num {
@@ -425,7 +425,7 @@ class Call {
             }
             return Javascript::escape_function( $.method ) ~ '('
                     ~ $invocant
-                    ~ ( @.arguments ?? ', ' ~ (@.arguments.>>emit_javascript).join(', ') !! '' )
+                    ~ ( @.arguments ? ', ' ~ (@.arguments.>>emit_javascript).join(', ') : '' )
                 ~ ')';
         }
 
@@ -519,7 +519,7 @@ class Apply {
         if $code eq 'substr' {
             return '(' ~ (@.arguments[0]).emit_javascript()
                  ~ ' || "").substr(' ~ (@.arguments[1]).emit_javascript()
-                 ~ ( defined(@.arguments[2]) ?? ', ' ~ (@.arguments[2]).emit_javascript() !! '' )
+                 ~ ( defined(@.arguments[2]) ? ', ' ~ (@.arguments[2]).emit_javascript() : '' )
                  ~ ')'
         }
 
@@ -602,7 +602,7 @@ class Apply {
         }
         if $code eq 'return' {
             return Javascript::tab($level) ~ 'throw('
-                ~   (@.arguments ?? @.arguments[0].emit_javascript() !! 'null')
+                ~   (@.arguments ? @.arguments[0].emit_javascript() : 'null')
                 ~ ')'
         }
 
@@ -740,9 +740,9 @@ class While {
         my $body      = Perlito5::Javascript::LexicalBlock.new( block => @.body.stmts, needs_return => 0 );
         return
            Javascript::tab($level) ~ 'for ( '
-        ~  ( $.init     ?? $.init.emit_javascript()             ~ '; '  !! '; ' )
-        ~  ( $.cond     ?? Javascript::escape_function('bool') ~ '(' ~ $.cond.emit_javascript() ~ '); ' !! '; ' )
-        ~  ( $.continue ?? $.continue.emit_javascript()         ~ ' '   !! ' '  )
+        ~  ( $.init     ? $.init.emit_javascript()             ~ '; '  : '; ' )
+        ~  ( $.cond     ? Javascript::escape_function('bool') ~ '(' ~ $.cond.emit_javascript() ~ '); ' : '; ' )
+        ~  ( $.continue ? $.continue.emit_javascript()         ~ ' '   : ' '  )
         ~  ') { '
             ~ '(function () { ' ~ $body.emit_javascript_indented( $level + 1 )      ~ ' })()'
         ~ ' }'

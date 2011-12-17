@@ -3,8 +3,8 @@ class Main {
     sub _replace($s, $old, $new) {
         my $p = index($s, $old);
         $p >= 0
-        ?? substr( $s, 0, $p ) ~ $new ~ _replace( substr( $s, $p + $old.chars ), $old, $new )
-        !! $s
+        ? substr( $s, 0, $p ) ~ $new ~ _replace( substr( $s, $p + $old.chars ), $old, $new )
+        : $s
     }
 
     sub to_lisp_identifier ( $ident ) {

@@ -195,7 +195,7 @@ class Perlito5::Python::LexicalBlock {
             my $s2;
             if $last_statement.isa( 'If' ) {
                 my $cond            = $last_statement.cond;
-                my $has_otherwise   = $last_statement.otherwise ?? 1 !! 0;
+                my $has_otherwise   = $last_statement.otherwise ? 1 : 0;
 
                 $s2 = Python::tab($level) ~ 'if mp6_to_bool(' ~ $cond.emit_python() ~ "):\n";
 
@@ -400,20 +400,20 @@ class Var {
     method emit_python_indented( $level ) {
         return Python::tab($level) ~ (
                ( $.twigil eq '.' )
-            ?? ( 'v_self.v_' ~ $.name ~ '' )
-            !!  (    ( $.name eq '/' )
-                ??   ( $table->{$.sigil} ~ 'MATCH' )
-                !!   ( $table->{$.sigil} ~ $.name ~ '' )
+            ? ( 'v_self.v_' ~ $.name ~ '' )
+            :  (    ( $.name eq '/' )
+                ?   ( $table->{$.sigil} ~ 'MATCH' )
+                :   ( $table->{$.sigil} ~ $.name ~ '' )
                 )
             )
     };
     method emit_python_name {
         return (
                ( $.twigil eq '.' )
-            ?? ( 'v_self.v_' ~ $.name )
-            !!  (    ( $.name eq '/' )
-                ??   ( $table->{$.sigil} ~ 'MATCH' )
-                !!   ( $table->{$.sigil} ~ $.name )
+            ? ( 'v_self.v_' ~ $.name )
+            :  (    ( $.name eq '/' )
+                ?   ( $table->{$.sigil} ~ 'MATCH' )
+                :   ( $table->{$.sigil} ~ $.name )
                 )
             )
     };
@@ -638,9 +638,9 @@ class Apply {
                     ~ 'mp6_to_num(' ~ (@.arguments[1]).emit_python() ~ ')'
                 ~ ':'
                     ~ ( defined(@.arguments[2])
-                      ??     'mp6_to_num(' ~ (@.arguments[1]).emit_python() ~ ') '
+                      ?     'mp6_to_num(' ~ (@.arguments[1]).emit_python() ~ ') '
                          ~ '+ mp6_to_num(' ~ (@.arguments[2]).emit_python() ~ ')'
-                      !! ''
+                      : ''
                       )
                 ~ ']'
         }
@@ -686,8 +686,8 @@ class Apply {
 class If {
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        my $has_body = @.body ?? 1 !! 0;
-        my $has_otherwise = @.otherwise ?? 1 !! 0;
+        my $has_body = @.body ? 1 : 0;
+        my $has_otherwise = @.otherwise ? 1 : 0;
         my $body_block = Perlito5::Python::LexicalBlock.new( block => @.body.stmts );
         if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );
@@ -717,9 +717,9 @@ class While {
         if $.init && $.continue {
             die "not implemented (While)"
             #    'for ( '
-            # ~  ( $.init     ?? $.init.emit_             ~ '; '  !! '; ' )
-            # ~  ( $.cond     ?? 'f_bool(' ~ $.cond.emit_ ~ '); ' !! '; ' )
-            # ~  ( $.continue ?? $.continue.emit_         ~ ' '   !! ' '  )
+            # ~  ( $.init     ? $.init.emit_             ~ '; '  : '; ' )
+            # ~  ( $.cond     ? 'f_bool(' ~ $.cond.emit_ ~ '); ' : '; ' )
+            # ~  ( $.continue ? $.continue.emit_         ~ ' '   : ' '  )
         }
         Python::tab($level)
             ~ 'while mp6_to_bool(' ~ $.cond.emit_python() ~ "):\n"
@@ -765,8 +765,8 @@ class Decl {
         my $name = $.var.name;
         Python::tab($level)
             ~ ( ( $decl eq 'has' )
-            ?? ( '' )
-            !! $.var.emit_python );
+            ? ( '' )
+            : $.var.emit_python );
     }
     method emit_python_init {
         if ($.var).sigil eq '%' {

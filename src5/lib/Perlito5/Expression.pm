@@ -372,14 +372,6 @@ class Perlito5::Expression {
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
         | [ '.<' | '<' ] <Perlito5::Grammar.ident> '>'   { make [ 'postfix_or_term',  'block', [Val::Buf.new('buf' => $$<Perlito5::Grammar.ident>)] ] }
 
-        ## | '->' <.Perlito5::Grammar.ws>? <list_parse>
-        ##             {
-        ##                 my $block = ($$<list_parse>)<end_block>;
-        ##                 if $block.sig() {
-        ##                     die "Signature error in block"
-        ##                 }
-        ##                 make [ 'postfix_or_term', 'block', $block.stmts, ($$<list_parse>)<exp> ]
-        ##             }
         | '{'  <.Perlito5::Grammar.ws>?
                <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.ws>? '}'
                     { make [ 'postfix_or_term', 'block', $$<Perlito5::Grammar.exp_stmts> ] }
@@ -391,10 +383,6 @@ class Perlito5::Expression {
                     { make [ 'term', $$<Perlito5::Grammar.token>       ] }
         | 'do' <.Perlito5::Grammar.ws> <statement_parse>
                     { make [ 'term', Do.new( block => $$<statement_parse> ) ] }
-
-        # XXX Perl6
-        | '??' <ternary_parse> '!!'
-                    { make [ 'op',          '?? !!', $$<ternary_parse>  ] }
 
         | '?'  <ternary5_parse> ':'
                     { make [ 'op',          '?? !!', $$<ternary5_parse>  ] }
@@ -551,7 +539,7 @@ class Perlito5::Expression {
             return $v;
         };
         my $prec = Perlito5::Precedence.new(get_token => $get_token, reduce => $reduce_to_ast,
-            end_token => [ 'and', 'or', ':', '!!', ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
+            end_token => [ 'and', 'or', ':', ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
         my $res = $prec.precedence_parse;
         # say "# list_lexer return: ", $res.perl;
         if $res.elems == 0 {
@@ -612,9 +600,6 @@ class Perlito5::Expression {
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
     }
 
-    method ternary_parse ($str, $pos) {
-        return self.circumfix_parse($str, $pos, ['!!']);
-    }
     method ternary5_parse ($str, $pos) {
         return self.circumfix_parse($str, $pos, [':']);
     }

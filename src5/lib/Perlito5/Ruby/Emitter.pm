@@ -72,7 +72,7 @@ class Perlito5::Ruby::AnonSub {
                 needs_return => 1 );
         my @s;
         push @s, Ruby::tab($level)
-            ~ ( $.name ?? ("f_" ~ $.name ~ " = ") !! "" )
+            ~ ( $.name ? ("f_" ~ $.name ~ " = ") : "" )
             ~ "lambda\{ |" ~ $args.join(", ") ~ "| ";
 
         push @s,    $block.emit_ruby_indented($level + 1);
@@ -206,7 +206,7 @@ class Perlito5::Ruby::LexicalBlock {
             my $s2;
             if $last_statement.isa( 'If' ) {
                 my $cond            = $last_statement.cond;
-                my $has_otherwise   = $last_statement.otherwise ?? 1 !! 0;
+                my $has_otherwise   = $last_statement.otherwise ? 1 : 0;
                 my $body_block      =
                     Perlito5::Ruby::LexicalBlock.new( block => ($last_statement.body.stmts), needs_return => 1 );
                 my $otherwise_block =
@@ -295,7 +295,7 @@ class Val::Int {
 class Val::Bit {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ ( $.bit ?? 'true' !! 'false' )
+        Ruby::tab($level) ~ ( $.bit ? 'true' : 'false' )
     }
 }
 
@@ -368,20 +368,20 @@ class Var {
         }
         return Ruby::tab($level) ~ (
                ( $.twigil eq '.' )
-            ?? ( 'self.v_' ~ $.name ~ '' )
-            !!  (    ( $.name eq '/' )
-                ??   ( $table->{$.sigil} ~ 'MATCH' )
-                !!   ( $table->{$.sigil} ~ $.name ~ '' )
+            ? ( 'self.v_' ~ $.name ~ '' )
+            :  (    ( $.name eq '/' )
+                ?   ( $table->{$.sigil} ~ 'MATCH' )
+                :   ( $table->{$.sigil} ~ $.name ~ '' )
                 )
             )
     };
     method emit_ruby_name {
         return (
                ( $.twigil eq '.' )
-            ?? ( 'self.v_' ~ $.name )
-            !!  (    ( $.name eq '/' )
-                ??   ( $table->{$.sigil} ~ 'MATCH' )
-                !!   ( $table->{$.sigil} ~ $.name )
+            ? ( 'self.v_' ~ $.name )
+            :  (    ( $.name eq '/' )
+                ?   ( $table->{$.sigil} ~ 'MATCH' )
+                :   ( $table->{$.sigil} ~ $.name )
                 )
             )
     };
@@ -603,8 +603,8 @@ class Return {
 class If {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        my $has_body = @.body ?? 1 !! 0;
-        my $has_otherwise = @.otherwise ?? 1 !! 0;
+        my $has_body = @.body ? 1 : 0;
+        my $has_otherwise = @.otherwise ? 1 : 0;
         my $body_block = Perlito5::Ruby::LexicalBlock.new( block => @.body.stmts );
         if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );
@@ -635,9 +635,9 @@ class While {
         if $.init && $.continue {
             die "not implemented (While)"
             #    'for ( '
-            # ~  ( $.init     ?? $.init.emit_             ~ '; '  !! '; ' )
-            # ~  ( $.cond     ?? 'f_bool(' ~ $.cond.emit_ ~ '); ' !! '; ' )
-            # ~  ( $.continue ?? $.continue.emit_         ~ ' '   !! ' '  )
+            # ~  ( $.init     ? $.init.emit_             ~ '; '  : '; ' )
+            # ~  ( $.cond     ? 'f_bool(' ~ $.cond.emit_ ~ '); ' : '; ' )
+            # ~  ( $.continue ? $.continue.emit_         ~ ' '   : ' '  )
         }
         Ruby::tab($level) ~ 'while ' ~ Ruby::to_bool(' && ', [$.cond]) ~ "\n"
                 ~ $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
@@ -669,8 +669,8 @@ class Decl {
         my $name = $.var.name;
         Ruby::tab($level)
             ~ ( ( $decl eq 'has' )
-            ?? ( '' )
-            !! $.var.emit_ruby );
+            ? ( '' )
+            : $.var.emit_ruby );
     }
     method emit_ruby_init {
         if ($.var).sigil eq '%' {

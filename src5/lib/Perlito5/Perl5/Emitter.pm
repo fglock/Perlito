@@ -453,17 +453,17 @@ class If {
     method emit_perl5_indented( $level ) {
         return Perl5::tab($level) ~ 'if (' ~ $.cond.emit_perl5() ~ ") \{\n"
              ~  ($.body
-                ?? $.body.stmts.>>emit_perl5_indented( $level + 1 ).join(";\n") ~ "\n"
-                !! ''
+                ? $.body.stmts.>>emit_perl5_indented( $level + 1 ).join(";\n") ~ "\n"
+                : ''
                 )
              ~ Perl5::tab($level) ~ "}"
              ~  ($.otherwise && $.otherwise.stmts.elems()
-                ??  ( "\n"
+                ?  ( "\n"
                     ~ Perl5::tab($level) ~ "else \{\n"
                     ~   $.otherwise.stmts.>>emit_perl5_indented( $level + 1 ).join(";\n") ~ "\n"
                     ~ Perl5::tab($level) ~ "}"
                     )
-                !! ''
+                : ''
                 );
     }
 }
@@ -478,9 +478,9 @@ class While {
             $cond = Apply.new( code => 'prefix:<@>', arguments => [ $cond ] );
         }
            Perl5::tab($level) ~ 'for ( '
-        ~  ( $.init     ?? $.init.emit_perl5()           ~ '; ' !! '; ' )
-        ~  ( $cond      ?? $cond.emit_perl5()            ~ '; ' !! '; ' )
-        ~  ( $.continue ?? $.continue.emit_perl5()       ~ ' '  !! ' '  )
+        ~  ( $.init     ? $.init.emit_perl5()           ~ '; ' : '; ' )
+        ~  ( $cond      ? $cond.emit_perl5()            ~ '; ' : '; ' )
+        ~  ( $.continue ? $.continue.emit_perl5()       ~ ' '  : ' '  )
         ~  ') {' ~ "\n"
         ~       $.body.stmts.>>emit_perl5_indented( $level + 1 ).join(";\n") ~ "\n"
         ~ Perl5::tab($level) ~ "}"
