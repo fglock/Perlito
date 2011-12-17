@@ -658,6 +658,9 @@ package GLOBAL;
                 ((my  $arg) = (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]);
                 if (Main::isa($arg, 'Lookup')) {
                     return scalar (('(' . ($arg->obj())->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
+                };
+                if (((Main::isa($arg, 'Call') && ($arg->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>')))) {
+                    return scalar (('(' . $arg->invocant()->emit_javascript() . ').hasOwnProperty(' . $arg->arguments()->emit_javascript() . ')'))
                 }
             };
             if (($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>')) {

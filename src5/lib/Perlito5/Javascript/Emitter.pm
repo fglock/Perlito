@@ -584,6 +584,9 @@ class Apply {
             if $arg.isa( 'Lookup' ) {
                 return '(' ~ ($arg.obj).emit_javascript() ~ ').hasOwnProperty(' ~ ($arg.index_exp).emit_javascript() ~ ')';
             }
+            if ( $arg.isa( 'Call' ) && $arg.method eq 'postcircumfix:<{ }>' ) {
+                return '(' ~ $arg.invocant.emit_javascript() ~ ').hasOwnProperty(' ~ $arg.arguments.emit_javascript() ~ ')';
+            }
         }
         if $code eq 'ternary:<?? !!>' {
             return '( ' ~ Javascript::escape_function('bool') ~ '(' ~ (@.arguments[0]).emit_javascript() ~ ')'
