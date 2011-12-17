@@ -5,7 +5,7 @@ use Perlito5::AST;
 class Ruby {
     sub to_str ($op, $args) {
         my @s;
-        for @($args) -> $cond {
+        for my $cond ( @($args) ) {
             if $cond.isa( 'Val::Buf' ) {
                 push @s, $cond.emit_ruby;
             }
@@ -17,7 +17,7 @@ class Ruby {
     }
     sub to_num ($op, $args) {
         my @s;
-        for @($args) -> $cond {
+        for my $cond ( @($args) ) {
             if ($cond.isa( 'Val::Int' )) || ($cond.isa( 'Val::Num' )) {
                 push @s, $cond.emit_ruby;
             }
@@ -29,7 +29,7 @@ class Ruby {
     }
     sub to_bool ($op, $args) {
         my @s;
-        for @($args) -> $cond {
+        for my $cond ( @($args) ) {
             if     ($cond.isa( 'Val::Int' ))
                 || ($cond.isa( 'Val::Num' ))
             {
@@ -64,7 +64,7 @@ class Perlito5::Ruby::AnonSub {
         my $sig = $.sig;
         my $pos = $sig.positional;
         my $args = [];
-        for @$pos -> $field {
+        for my $field ( @$pos ) {
             $args.push( $field.emit_ruby_name );
         };
         my $block = Perlito5::Ruby::LexicalBlock.new(
@@ -97,7 +97,7 @@ class Perlito5::Ruby::LexicalBlock {
         return $ident;
     }
     method has_my_decl {
-        for @.block -> $decl {
+        for my $decl ( @.block ) {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 return 1;
             }
@@ -117,13 +117,13 @@ class Perlito5::Ruby::LexicalBlock {
 
         my @s;
         my @tmp;
-        for @anon_block -> $stmt {
+        for my $stmt ( @anon_block ) {
             @tmp.push( $stmt );
         }
 
         my $has_decl = [];
         my $block = [];
-        for @.block -> $decl {
+        for my $decl ( @.block ) {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 push $has_decl, $decl;
             }
@@ -139,7 +139,7 @@ class Perlito5::Ruby::LexicalBlock {
         if @($has_decl) {
 
             # create accessors
-            for @($has_decl) -> $decl {
+            for my $decl ( @($has_decl) ) {
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                     push @s, Ruby::tab($level) ~ 'attr_accessor :v_' ~ ($decl.var).name;
                     push @s, Ruby::tab($level) ~ 'def f_' ~ ($decl.var).name ~ '()';
@@ -162,7 +162,7 @@ class Perlito5::Ruby::LexicalBlock {
         my @my_decl;
         my @my_init;
         my %my_seen;
-        for @($block) -> $decl {
+        for my $decl ( @($block) ) {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 if !( %my_seen{ ($decl.var).name } ) {
                     push @my_decl, ($decl.var).emit_ruby_name;
@@ -192,10 +192,10 @@ class Perlito5::Ruby::LexicalBlock {
             $last_statement = pop $block;
         }
 
-        for @($block) -> $stmt {
+        for my $stmt ( @($block) ) {
             @anon_block = ();
             my $s2 = $stmt.emit_ruby_indented($level);
-            for @anon_block -> $stmt {
+            for my $stmt ( @anon_block ) {
                 @s.push( $stmt.emit_ruby_indented( $level ) );
             }
             push @s, $s2;
@@ -243,7 +243,7 @@ class Perlito5::Ruby::LexicalBlock {
                 $s2 = Ruby::tab($level) ~ "return " ~ $last_statement.emit_ruby;
             }
 
-            for @anon_block -> $stmt {
+            for my $stmt ( @anon_block ) {
                 @s.push( $stmt.emit_ruby_indented( $level ) );
             }
             @s.push( $s2 );
@@ -269,7 +269,7 @@ class CompUnit {
         my $block = Perlito5::Ruby::LexicalBlock.new( block => @.body );
         my $name = Main::to_go_namespace($.name);
 
-        for @.body -> $decl {
+        for my $decl ( @.body ) {
             if $decl.isa('Use') {
                 push @s, Ruby::tab($level) ~ "require '" ~ Main::to_go_namespace($decl.mod) ~ ".rb'"
                     unless $decl.mod eq 'v6';
@@ -695,7 +695,7 @@ class Method {
         my $args = [];
         my $default_args = [];
         my $meth_args = [];
-        for @$pos -> $field {
+        for my $field ( @$pos ) {
             my $arg = $field.emit_ruby_name;
             $args.push( $arg );
             $default_args.push( $arg ~ '=nil' );
@@ -736,7 +736,7 @@ class Sub {
         my $args = [];
         my $default_args = [];
         my $meth_args = [ 'self' ];
-        for @$pos -> $field {
+        for my $field ( @$pos ) {
             my $arg = $field.emit_ruby_name;
             $args.push( $arg );
             $default_args.push( $arg ~ '=nil' );

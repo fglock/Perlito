@@ -33,7 +33,7 @@ class Perlito5::Precedence {
     my @Op_chars = (3,2,1);
     method op_parse ($str, $pos) {
         my $from = $pos;
-        for @($End_token) -> $tok {
+        for my $tok ( @($End_token) ) {
             my $l = $tok.chars;
             my $s = substr($str, $pos, $l);
             if $s eq $tok {
@@ -62,7 +62,7 @@ class Perlito5::Precedence {
             $c02 = substr($str, $pos, 2);
         }
 
-        for @Op_chars -> $len {
+        for my $len ( @Op_chars ) {
             my $op = substr($str, $pos, $len);
             if exists(@Op[$len]{$op}) {
                 my $c1 = substr($str, $pos+$len-1, 1);

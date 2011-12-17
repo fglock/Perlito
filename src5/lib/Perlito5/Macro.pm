@@ -4,9 +4,9 @@ class Lit::Array {
     method expand_interpolation {
         my $needs_interpolation = 0;
         my @items;
-        for @.array1 -> $item {
+        for my $item ( @.array1 ) {
             if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
-                for @($item.arguments) -> $arg {
+                for my $arg ( @($item.arguments) ) {
                     @items.push($arg);
                 }
             }
@@ -14,7 +14,7 @@ class Lit::Array {
                 @items.push($item);
             }
         }
-        for @items -> $item {
+        for my $item ( @items ) {
             if      $item.isa( 'Var' )   && $item.sigil eq '@'
                 ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
             {
@@ -25,7 +25,7 @@ class Lit::Array {
             return @items[0];
         }
         my @s;
-        for @items -> $item {
+        for my $item ( @items ) {
             if      $item.isa( 'Var' )   && $item.sigil eq '@'
                 ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
             {
@@ -89,9 +89,9 @@ class Lit::Array {
 class Lit::Hash {
     method expand_interpolation {
         my @items;
-        for @.hash1 -> $item {
+        for my $item ( @.hash1 ) {
             if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
-                for @($item.arguments) -> $arg {
+                for my $arg ( @($item.arguments) ) {
                     @items.push($arg);
                 }
             }
@@ -100,7 +100,7 @@ class Lit::Hash {
             }
         }
         my @s;
-        for @items -> $item {
+        for my $item ( @items ) {
             if $item.isa('Apply') && $item.code eq 'infix:<=>>' {
                 push @s,
                     Apply.new(

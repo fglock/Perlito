@@ -28,7 +28,7 @@ class Python {
         my @out;
         my $tmp = '';
         return "u''" if $s eq '';
-        for 0 .. $s.chars() - 1 -> $i {
+        for my $i (0 .. $s.chars() - 1) {
             my $c = substr($s, $i, 1);
             if     (($c ge 'a') && ($c le 'z'))
                 || (($c ge 'A') && ($c le 'Z'))
@@ -59,7 +59,7 @@ class Perlito5::Python::AnonSub {
         my $sig = $.sig;
         my $pos = $sig.positional;
         my $args = [];
-        for @$pos -> $field {
+        for my $field ( @$pos ) {
             $args.push( $field.emit_python_name );
         };
         my $block = Perlito5::Python::LexicalBlock.new(
@@ -96,7 +96,7 @@ class Perlito5::Python::LexicalBlock {
         return $ident;
     }
     method has_my_decl {
-        for @.block -> $decl {
+        for my $decl ( @.block ) {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 return 1;
             }
@@ -124,13 +124,13 @@ class Perlito5::Python::LexicalBlock {
 
         my @s;
         my @tmp;
-        for @anon_block -> $stmt {
+        for my $stmt ( @anon_block ) {
             @tmp.push( $stmt );
         }
 
         my $has_decl = [];
         my $block = [];
-        for @block -> $decl {
+        for my $decl ( @block ) {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 push $has_decl, $decl;
             }
@@ -146,7 +146,7 @@ class Perlito5::Python::LexicalBlock {
         if @($has_decl) {
 
             # create accessors
-            for @($has_decl) -> $decl {
+            for my $decl ( @($has_decl) ) {
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                     my $label = "_anon_" ~ Perlito5::Python::LexicalBlock::get_ident_python;
                     push @s, Python::tab($level) ~ 'def f_' ~ $label ~ '(v_self):';
@@ -165,7 +165,7 @@ class Perlito5::Python::LexicalBlock {
 
         }
 
-        for @($block) -> $decl {
+        for my $decl ( @($block) ) {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 push @s, Python::tab($level) ~ ($decl.var).emit_python_name() ~ ' = ' ~ $decl.emit_python_init() ~ '';
             }
@@ -181,10 +181,10 @@ class Perlito5::Python::LexicalBlock {
             $last_statement = pop @($block);
         }
 
-        for @($block) -> $stmt {
+        for my $stmt ( @($block) ) {
             @anon_block = ();
             my $s2 = $stmt.emit_python_indented($level);
-            for @anon_block -> $stmt {
+            for my $stmt ( @anon_block ) {
                 @s.push( $stmt.emit_python_indented( $level ) );
             }
             push @s, $s2;
@@ -239,7 +239,7 @@ class Perlito5::Python::LexicalBlock {
                 $s2 = Python::tab($level) ~ "return " ~ $last_statement.emit_python;
             }
 
-            for @anon_block -> $stmt {
+            for my $stmt ( @anon_block ) {
                 @s.push( $stmt.emit_python_indented( $level ) );
             }
             @s.push( $s2 );
@@ -260,7 +260,7 @@ class CompUnit {
         my $label = "_anon_" ~ Perlito5::Python::LexicalBlock::get_ident_python;
         my $name = Main::to_go_namespace($.name);
 
-        for @.body -> $decl {
+        for my $decl ( @.body ) {
             if $decl.isa('Use') {
                 if $decl.mod ne 'v6' {
                     push @s, Python::tab($level) ~ 'import ' ~ Main::to_go_namespace($decl.mod)
@@ -447,7 +447,7 @@ class Call {
 
         if $.method eq 'new' {
             my @str;
-            for @.arguments -> $field {
+            for my $field ( @.arguments ) {
                 if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
                     @str.push( 'v_' ~ $field.arguments[0].buf() ~ '=' ~ $field.arguments[1].emit_python() );
                 }
@@ -792,7 +792,7 @@ class Method {
         my $default_args = [];
         my $meth_args = [];
         $meth_args.push( $invocant.emit_python_name );
-        for @$pos -> $field {
+        for my $field ( @$pos ) {
             my $arg = $field.emit_python_name;
             $args.push( $arg );
             $default_args.push( $arg ~ '=mp6_Scalar()' );
@@ -836,7 +836,7 @@ class Sub {
         my $args = [];
         my $default_args = [];
         my $meth_args = [ 'self' ];
-        for @$pos -> $field {
+        for my $field ( @$pos ) {
             my $arg = $field.emit_python_name;
             $args.push( $arg );
             $default_args.push( $arg ~ '=mp6_Scalar()' );

@@ -8,7 +8,7 @@ class Perlito5::Expression {
         # say "# expand_list: ", $param_list.perl;
         if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
             my $args = [];
-            for @($param_list.arguments) -> $v {
+            for my $v ( @($param_list.arguments) ) {
                 if defined($v) {
                     $args.push($v);
                 }
@@ -53,7 +53,7 @@ class Perlito5::Expression {
             return $o
         }
         # the argument is a list -- check that it contains a pair
-        for @($stmt.arguments) -> $item {
+        for my $item ( @($stmt.arguments) ) {
             # say "#  item: ", $item.perl;
             if $item.isa('Apply') && ($item.code) eq 'infix:<=>>' {
                 # argument is a pair

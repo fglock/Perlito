@@ -28,7 +28,7 @@ class Javascript {
         my @out;
         my $tmp = '';
         return "''" if $s eq '';
-        for 0 .. $s.chars() - 1 -> $i {
+        for my $i (0 .. $s.chars() - 1) {
             my $c = substr($s, $i, 1);
             if     (($c ge 'a') && ($c le 'z'))
                 || (($c ge 'A') && ($c le 'Z'))
@@ -91,7 +91,7 @@ class Perlito5::Javascript::LexicalBlock {
             return Javascript::tab($level) ~ 'null;';
         }
         my @str;
-        for @block -> $decl {
+        for my $decl ( @block ) {
             if $decl.isa( 'Decl' ) && $decl.decl eq 'my' {
                 @str.push: Javascript::tab($level) ~ $decl.emit_javascript_init;
             }
@@ -106,7 +106,7 @@ class Perlito5::Javascript::LexicalBlock {
         if $.needs_return {
             $last_statement = pop @block;
         }
-        for @block -> $decl {
+        for my $decl ( @block ) {
             if !( $decl.isa( 'Decl' ) && $decl.decl eq 'my' ) {
                 @str.push: $decl.emit_javascript_indented($level) ~ ';';
             }
@@ -163,7 +163,7 @@ class CompUnit {
             ~ '(function () {' ~ "\n"
             ~ '  var v__NAMESPACE = ' ~ $class_name ~ ';' ~ "\n";
 
-        for @.body -> $decl {
+        for my $decl ( @.body ) {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'my' ) {
                 $str = $str ~ '  ' ~ $decl.emit_javascript_init;
             }
@@ -174,7 +174,7 @@ class CompUnit {
                 }
             }
         }
-        for @.body -> $decl {
+        for my $decl ( @.body ) {
             if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
                 $str = $str
               ~ '  // accessor ' ~ $decl.var.name() ~ "\n"
@@ -209,7 +209,7 @@ class CompUnit {
               ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function( $decl.name() ) ~ ';  // v8 bug workaround' ~ "\n";
             }
         }
-        for @.body -> $decl {
+        for my $decl ( @.body ) {
             if    defined( $decl )
                && (!( $decl.isa( 'Decl' ) && (( $decl.decl eq 'has' ) || ( $decl.decl eq 'my' )) ))
                && (!( $decl.isa( 'Method')))
@@ -223,7 +223,7 @@ class CompUnit {
     }
     sub emit_javascript_program( $comp_units ) {
         my $str = '';
-        for @($comp_units) -> $comp_unit {
+        for my $comp_unit ( @($comp_units) ) {
             $str = $str ~ $comp_unit.emit_javascript()
         }
         return $str;
@@ -397,7 +397,7 @@ class Call {
 
         if $.method eq 'new' {
             my $str = [];
-            for @.arguments -> $field {
+            for my $field ( @.arguments ) {
                 if $field.isa('Apply') && $field.code eq 'infix:<=>>' {
                     $str.push( 'v_' ~ $field.arguments[0].buf() ~ ': ' ~ $field.arguments[1].emit_javascript() );
                 }

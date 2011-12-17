@@ -1,7 +1,7 @@
 set -x
 export PERL5LIB=./lib5
 
-rm -rf lib5-new
+rm -rf lib5-new/Perlito
 
 mkdir lib5-new
 mkdir lib5-new/Perlito
@@ -66,9 +66,9 @@ perl perlito.pl -Cperl5 src/lib/Perlito/Rakudo/Emitter.pm   > lib5-new/Perlito/R
 
 # clean up
 
-rm -rf lib5-old/
-mv lib5 lib5-old
-mv lib5-new lib5
+rm -rf lib5-old/Perlito
+mv lib5/Perlito lib5-old/Perlito
+mv lib5-new/Perlito lib5/Perlito
 
 rm perlito-old.pl
 mv perlito.pl perlito-old.pl
