@@ -84,14 +84,31 @@ token when {
 }
 
 token for {
-    for <.ws> <exp>
-    {
-        my $body = ($$<exp>){'end_block'};
-        if !(defined($body)) {
-            die "Missing code block in 'when'";
+    for <.ws> 
+    [
+        my <.ws> <Perlito5::Grammar.var_ident> <.opt_ws> 
+            '(' <Perlito5::Expression.paren_parse>   ')' <.opt_ws>
+            '{' <.opt_ws>
+                <Perlito5::Grammar.exp_stmts>
+                <.opt_ws>
+            '}'
+        {
+            make For.new( 
+                    cond  => $$<Perlito5::Expression.paren_parse>, 
+                    topic => Mu(), 
+                    body  => Lit::Block.new( stmts => $$<Perlito5::Grammar.exp_stmts>, sig => $$<Perlito5::Grammar.var_ident> )
+                 )
         }
-        make For.new( cond => ($$<exp>){'exp'}, topic => Mu(), body => $body )
-    }
+    |
+        <exp>
+        {
+            my $body = ($$<exp>){'end_block'};
+            if !(defined($body)) {
+                die "Missing code block in 'when'";
+            }
+            make For.new( cond => ($$<exp>){'exp'}, topic => Mu(), body => $body )
+        }
+    ]
 }
 
 token while {
