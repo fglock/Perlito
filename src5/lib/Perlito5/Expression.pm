@@ -352,7 +352,7 @@ class Perlito5::Expression {
     #                 Var.new( sigil => ~$$<var_sigil>, twigil => '', name => $$<ident> ) ]
 
     token capture_name {
-        <Perlito5::Grammar.full_ident> [ \. <Perlito5::Grammar.ident> ]?
+        <Perlito5::Grammar.full_ident> [ [ '.' | '->' ] <Perlito5::Grammar.ident> ]?
     }
 
     token hyper_op {
@@ -408,8 +408,7 @@ class Perlito5::Expression {
         | <Perlito5::Grammar.declarator> <.Perlito5::Grammar.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
             { make [ 'term', Decl.new( decl => $$<Perlito5::Grammar.declarator>, type => $$<Perlito5::Grammar.opt_type>, var => $$<Perlito5::Grammar.var_ident> ) ] }
 
-        # XXX Perl6
-        | '.' <hyper_op> <Perlito5::Grammar.ident>
+        | [ '.' | '->' ] <hyper_op> <Perlito5::Grammar.ident>
           [ ':' <.Perlito5::Grammar.ws>? <list_parse>
             { make [ 'postfix_or_term', 'methcall',           ~$<Perlito5::Grammar.ident>, $$<list_parse>, $$<hyper_op>  ] }
           | '(' <paren_parse> ')'
@@ -425,31 +424,13 @@ class Perlito5::Expression {
             }
           | { make [ 'postfix_or_term', 'methcall_no_params', ~$<Perlito5::Grammar.ident>, $$<hyper_op>                  ] }
           ]
-
-        | '->' <hyper_op> <Perlito5::Grammar.ident>
-          [ ':' <.Perlito5::Grammar.ws>? <list_parse>
-            { make [ 'postfix_or_term', 'methcall',           ~$<Perlito5::Grammar.ident>, $$<list_parse>, $$<hyper_op>  ] }
-          | '(' <paren_parse> ')'
-            { make [ 'postfix_or_term',
-                     'methcall',
-                     ~$<Perlito5::Grammar.ident>,
-                     { end_block => Mu,
-                       exp       => $$<paren_parse>,
-                       terminated => 0,
-                     },
-                     $$<hyper_op>
-                   ]
-            }
-          | { make [ 'postfix_or_term', 'methcall_no_params', ~$<Perlito5::Grammar.ident>, $$<hyper_op>                  ] }
-          ]
-
 
         | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
           [ <.Perlito5::Grammar.ws> <list_parse>
             { make [ 'postfix_or_term', 'funcall',
                      ~$<Perlito5::Grammar.optional_namespace_before_ident>,
                      ~$<Perlito5::Grammar.ident>, $$<list_parse>  ] }
-          | <before '.'>
+          | <before [ '.' | '->' ] >
             { my $namespace = ~$<Perlito5::Grammar.optional_namespace_before_ident>;
               my $name      = ~$<Perlito5::Grammar.ident>;
               if $namespace {

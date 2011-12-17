@@ -101,6 +101,9 @@ package GLOBAL;
                     ($c02 = substr($str, $pos, 2))
                 }
             };
+            if ((substr($str, $pos, 2) eq '->')) {
+                return scalar (Perlito5::Match->new(('bool' => 0)))
+            };
             for my $len ( @{$List_Op_chars} ) {
                 ((my  $op) = substr($str, $pos, $len));
                 if (exists($List_Op->[$len]->{$op})) {
@@ -250,7 +253,6 @@ package GLOBAL;
         add_op('infix', '-', $prec);
         ($prec = ($prec - 1));
         add_op('infix', 'x', $prec);
-        add_op('infix', 'xx', $prec);
         ($prec = ($prec - 1));
         add_op('infix', chr(126), $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
@@ -279,15 +281,7 @@ package GLOBAL;
         add_op('infix', 'does', $prec);
         add_op('infix', 'but', $prec);
         add_op('infix', '..', $prec);
-        add_op('infix', chr(94) . '..', $prec);
-        add_op('infix', '..' . chr(94), $prec);
-        add_op('infix', chr(94) . '..' . chr(94), $prec);
         ($prec = ($prec - 1));
-        add_op('infix', chr(61) . chr(61) . chr(61), $prec, do {
-    (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'assoc'} = 'chain');
-    $Hash_a
-});
         add_op('infix', 'ne', $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'chain');
@@ -363,11 +357,6 @@ package GLOBAL;
         add_op('ternary', chr(63) . ' :', $prec);
         ($prec = ($prec - 1));
         add_op('infix', chr(61), $prec, do {
-    (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'assoc'} = 'right');
-    $Hash_a
-});
-        add_op('infix', ':' . chr(61), $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
