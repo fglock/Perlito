@@ -308,7 +308,7 @@ class Lookup {
            )
         {
             my $v = Var.new( sigil => '%', twigil => $.obj.twigil, namespace => $.obj.namespace, name => $.obj.name );
-            return $v.emit_javascript_indented($level) ~ '->{' ~ $.index_exp.emit_javascript() ~ '}';
+            return $v.emit_javascript_indented($level) ~ '[' ~ $.index_exp.emit_javascript() ~ ']';
         }
 
         my $str = '';
@@ -445,6 +445,14 @@ class Call {
                         ~ 'return out;'
                     ~ ' })(' ~ $invocant ~ ')'
         }
+
+        if ( $.method eq 'postcircumfix:<[ ]>' ) {
+            return Javascript::tab($level) ~ $invocant ~ '[' ~ @.arguments.emit_javascript() ~ ']'
+        }
+        if ( $.method eq 'postcircumfix:<{ }>' ) {
+            return Javascript::tab($level) ~ $invocant ~ '[' ~ @.arguments.emit_javascript() ~ ']'
+        }
+
         if  $meth eq 'postcircumfix:<( )>'  {
             return '(' ~ $invocant ~ ')(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
         }
@@ -624,6 +632,15 @@ class Apply {
         if $parameters.isa( 'Lookup' ) {
             my $str = '';
             my $var = $parameters.obj;
+
+            if (  $var.isa('Var')
+               && $var.sigil eq '$'
+               && $var.name ne '/'  # XXX $/ is the Perl6 match object
+               )
+            {
+                $var = Var.new( sigil => '%', twigil => $var.twigil, namespace => $var.namespace, name => $var.name );
+            }
+
             my $var_js;
             if $var.isa('Lookup') {
                 my $var1 = $var.obj;
@@ -642,6 +659,14 @@ class Apply {
         if $parameters.isa( 'Index' ) {
             my $str = '';
             my $var = $parameters.obj;
+
+            if (  $var.isa('Var')
+               && $var.sigil eq '$'
+               )
+            {
+                $var = Var.new( sigil => '@', twigil => $var.twigil, namespace => $var.namespace, name => $var.name );
+            }
+
             my $var_js;
             if $var.isa('Index') {
                 my $var1 = $var.obj;

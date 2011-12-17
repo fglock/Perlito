@@ -365,7 +365,7 @@ package GLOBAL;
             my $level = $_[1];
             if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne chr(47))))) {
                 ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
-                return scalar (($v->emit_javascript_indented($level) . '->' . chr(123) . $self->{index_exp}->emit_javascript() . chr(125)))
+                return scalar (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
             };
             ((my  $str) = '');
             ((my  $var) = $self->{obj});
@@ -502,6 +502,12 @@ package GLOBAL;
             ((my  $meth) = $self->{method});
             if (($self->{hyper})) {
                 return scalar (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( a_[i].' . Javascript::escape_function($meth) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ') ) ' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
+            };
+            if ((($self->{method} eq 'postcircumfix:<[ ]>'))) {
+                return scalar ((Javascript::tab($level) . $invocant . '[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_javascript() . ']'))
+            };
+            if ((($self->{method} eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
+                return scalar ((Javascript::tab($level) . $invocant . '[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_javascript() . ']'))
             };
             if (($meth eq 'postcircumfix:<( )>')) {
                 return scalar (('(' . $invocant . ')(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
@@ -691,6 +697,9 @@ package GLOBAL;
             if (Main::isa($parameters, 'Lookup')) {
                 ((my  $str) = '');
                 ((my  $var) = $parameters->obj());
+                if ((((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))) && ($var->name() ne chr(47))))) {
+                    ($var = Var->new(('sigil' => chr(37)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
+                };
                 (my  $var_js);
                 if (Main::isa($var, 'Lookup')) {
                     ((my  $var1) = $var->obj());
@@ -709,6 +718,9 @@ package GLOBAL;
             if (Main::isa($parameters, 'Index')) {
                 ((my  $str) = '');
                 ((my  $var) = $parameters->obj());
+                if (((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
+                    ($var = Var->new(('sigil' => chr(64)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
+                };
                 (my  $var_js);
                 if (Main::isa($var, 'Index')) {
                     ((my  $var1) = $var->obj());
