@@ -774,7 +774,7 @@ package GLOBAL;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
-            if ((($self->{mod} eq 'v6') || ($self->{mod} eq 'feature'))) {
+            if (((($self->{mod} eq 'v6') || ($self->{mod} eq 'strict')) || ($self->{mod} eq 'feature'))) {
                 return scalar ((chr(10) . Perl5::tab($level) . (chr(35) . ' use ' . $self->{mod} . ' ' . chr(10))))
             };
             (Perl5::tab($level) . 'use ' . $self->{mod})

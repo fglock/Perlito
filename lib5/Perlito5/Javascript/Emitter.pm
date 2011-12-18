@@ -655,9 +655,6 @@ package GLOBAL;
             if (($code eq 'infix:<' . chr(47) . chr(47) . '>')) {
                 return scalar ((Javascript::escape_function('defined_or') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
             };
-            if (($code eq 'infix:<' . chr(61) . chr(61) . chr(61) . '>')) {
-                return scalar (('(' . Javascript::escape_function('id') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ') ' . chr(61) . chr(61) . ' ' . Javascript::escape_function('id') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . '))'))
-            };
             if (($code eq 'exists')) {
                 ((my  $arg) = (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]);
                 if (Main::isa($arg, 'Lookup')) {
@@ -678,6 +675,9 @@ package GLOBAL;
             };
             if (($code eq 'return')) {
                 return scalar ((Javascript::tab($level) . 'throw(' . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() : 'null')) . ')'))
+            };
+            if (($code eq 'bless')) {
+                return scalar (('(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . '.__proto__ ' . chr(61) . ' eval(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . '))'))
             };
             if ($self->{namespace}) {
                 ($code = (Main::to_javascript_namespace($self->{namespace}) . '.' . Javascript::escape_function($code)))

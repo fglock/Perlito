@@ -576,9 +576,6 @@ class Apply {
                 ~ @.arguments[0].emit_javascript() ~ ', '
                 ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '; })'
         }
-        if $code eq 'infix:<===>' {
-            return '(' ~ Javascript::escape_function('id') ~ '(' ~ (@.arguments[0]).emit_javascript() ~ ') == ' ~ Javascript::escape_function('id') ~ '(' ~ (@.arguments[1]).emit_javascript() ~ '))'
-        }
 
         if $code eq 'exists'     {
             my $arg = @.arguments[0];
@@ -605,6 +602,9 @@ class Apply {
             return Javascript::tab($level) ~ 'throw('
                 ~   (@.arguments ? @.arguments[0].emit_javascript() : 'null')
                 ~ ')'
+        }
+        if $code eq 'bless' {
+            return '(' ~ @.arguments[0]->emit_javascript() ~ '.__proto__ = eval(' ~ @.arguments[1]->emit_javascript() ~ '))';
         }
 
         if $.namespace {
