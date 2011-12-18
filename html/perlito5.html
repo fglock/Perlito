@@ -9,8 +9,8 @@
 
         <p>Source program:</p>
 		<textarea id="source" cols="70" rows="10">
-
 use v5;
+use strict;
 use feature 'say';
 
 package Main;
@@ -18,6 +18,17 @@ package Main;
 say "hello, World!";
 
 say "goodbye $_" for 1 .. 3;
+
+sub fact {
+    $_[0] <= 1
+    ? $_[0]
+    : $_[0] * fact( $_[0] - 1 )
+}
+
+for my $v ( 1 .. 5 ) {
+    say "fact $v = ", fact($v);
+}
+
 </textarea><br/>
 		<input type="button" value="Execute" onclick="execute()"/>
 

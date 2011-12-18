@@ -43,7 +43,7 @@
         say ( (@($b)) ? "" : "not " ), "ok 21";
     }
 
-    say ( Main.new()  ? "" : "not " ), "ok 22 - object";
+    say ( Main->new()  ? "" : "not " ), "ok 22 - object";
 
     say ( Mu ? "not " : "" ), "ok 23 - Mu";
 
@@ -64,11 +64,11 @@
 
     my $h = {}; 
     say ( $h ? "not " : "" ), "ok 32 - hash in scalar";
-    $h{'x'} = 0;
+    $h->{'x'} = 0;
     say ( $h ? "" : "not " ), "ok 33";
 
     my %h; 
     say ( %h ? "not " : "" ), "ok 34 - hash";
-    %h{'x'} = 0;
+    $h{'x'} = 0;
     say ( %h ? "" : "not " ), "ok 35";
 

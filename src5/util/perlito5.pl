@@ -47,6 +47,7 @@ sub expand_use($stmt) {
     return
         if $module_name eq 'v6'
         || $module_name eq 'v5'
+        || $module_name eq 'strict'
         || $module_name eq 'feature';
     if !(%module_seen{$module_name}) {
         %module_seen{$module_name} = 1;
