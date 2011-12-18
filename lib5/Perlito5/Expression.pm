@@ -17,6 +17,7 @@ package GLOBAL;
         use Perlito5::Grammar;
         use Perlito5::Perl5::Emitter;
         sub expand_list {
+            my $List__ = bless \@_, "ARRAY";
             my $param_list = $_[0];
             if (((Main::isa($param_list, 'Apply')) && ((($param_list->code()) eq 'list:<,>')))) {
                 ((my  $args) = do {
@@ -50,6 +51,7 @@ package GLOBAL;
             }
         };
         sub block_or_hash {
+            my $List__ = bless \@_, "ARRAY";
             my $o = $_[0];
             if (defined($o->sig())) {
                 return scalar ($o)
@@ -88,6 +90,7 @@ package GLOBAL;
             return scalar ($o)
         };
         sub pop_term {
+            my $List__ = bless \@_, "ARRAY";
             my $num_stack = $_[0];
             ((my  $v) = pop( @{$num_stack} ));
             if (Main::isa($v, 'Array')) {
@@ -151,6 +154,7 @@ package GLOBAL;
             return scalar ($v)
         };
         sub reduce_postfix {
+            my $List__ = bless \@_, "ARRAY";
             my $op = $_[0];
             my $value = $_[1];
             ((my  $v) = $op);
@@ -211,6 +215,7 @@ package GLOBAL;
             return scalar ($op)
         };
         ((my  $reduce_to_ast) = sub  {
+    my $List__ = bless \@_, "ARRAY";
     my $op_stack = $_[0];
     my $num_stack = $_[1];
     ((my  $last_op) = shift( @{$op_stack} ));
@@ -1684,6 +1689,7 @@ package GLOBAL;
             ((my  $terminated) = 0);
             ((my  $last_token_was_space) = 1);
             ((my  $get_token) = sub  {
+    my $List__ = bless \@_, "ARRAY";
     (my  $v);
     if (scalar( @{$lexer_stack} )) {
         ($v = pop( @{$lexer_stack} ));
@@ -1794,6 +1800,7 @@ package GLOBAL;
             (my  $expr);
             ((my  $last_pos) = $pos);
             ((my  $get_token) = sub  {
+    my $List__ = bless \@_, "ARRAY";
     ((my  $m) = $self->operator($str, $last_pos));
     if (!($m)) {
         die(('Expected closing delimiter: '), (($delimiter)), ' near ', $last_pos)
@@ -1869,6 +1876,7 @@ package GLOBAL;
 });
             ((my  $terminated) = 0);
             ((my  $get_token) = sub  {
+    my $List__ = bless \@_, "ARRAY";
     (my  $v);
     if (scalar( @{$lexer_stack} )) {
         ($v = pop( @{$lexer_stack} ))

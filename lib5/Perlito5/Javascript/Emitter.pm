@@ -18,6 +18,7 @@ package GLOBAL;
     package Javascript;
         sub new { shift; bless { @_ }, "Javascript" }
         sub tab {
+            my $List__ = bless \@_, "ARRAY";
             my $level = $_[0];
             (('    ') x $level)
         };
@@ -40,6 +41,7 @@ package GLOBAL;
     $Hash_a
 });
         sub escape_string {
+            my $List__ = bless \@_, "ARRAY";
             my $s = $_[0];
             (my  $List_out = bless [], 'ARRAY');
             ((my  $tmp) = '');
@@ -72,6 +74,7 @@ package GLOBAL;
     $Hash_a
 });
         sub escape_function {
+            my $List__ = bless \@_, "ARRAY";
             my $s = $_[0];
             if (exists($Hash_reserved->{$s})) {
                 return scalar (('f_' . $s))
@@ -202,7 +205,7 @@ package GLOBAL;
                     ((my  $sig) = $decl->sig());
                     ((my  $pos) = $sig->positional());
                     ((my  $block) = Perlito5::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
-                    ($str = ($str . '  ' . chr(47) . chr(47) . ' sub ' . $decl->name() . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function (' . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . ') ' . chr(123) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . (chr(10)) . '  ' . chr(125) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . (chr(10))))
+                    ($str = ($str . '  ' . chr(47) . chr(47) . ' sub ' . $decl->name() . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function (' . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . ') ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . (chr(10)) . '  ' . chr(125) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . (chr(10))))
                 }
             };
             for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
@@ -213,6 +216,7 @@ package GLOBAL;
             ($str = ($str . chr(125) . ')()' . (chr(10))))
         };
         sub emit_javascript_program {
+            my $List__ = bless \@_, "ARRAY";
             my $comp_units = $_[0];
             ((my  $str) = '');
             for my $comp_unit ( @{(($comp_units))} ) {
@@ -689,6 +693,7 @@ package GLOBAL;
             (Javascript::tab($level) . $code . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')')
         };
         sub emit_javascript_bind {
+            my $List__ = bless \@_, "ARRAY";
             my $parameters = $_[0];
             my $arguments = $_[1];
             if (Main::isa($parameters, 'Call')) {
@@ -914,7 +919,7 @@ package GLOBAL;
             ((my  $sig) = $self->{sig});
             ((my  $pos) = $sig->positional());
             ((my  $str) = Main::join([ map { $_->emit_javascript() } @{( $pos )} ], ', '));
-            (Javascript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') ' . chr(123) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125))
+            (Javascript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125))
         }
     }
 

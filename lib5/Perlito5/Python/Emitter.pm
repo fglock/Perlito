@@ -18,6 +18,7 @@ package GLOBAL;
     package Python;
         sub new { shift; bless { @_ }, "Python" }
         sub tab {
+            my $List__ = bless \@_, "ARRAY";
             my $level = $_[0];
             (('    ') x $level)
         };
@@ -40,6 +41,7 @@ package GLOBAL;
     $Hash_a
 });
         sub escape_string {
+            my $List__ = bless \@_, "ARRAY";
             my $s = $_[0];
             (my  $List_out = bless [], 'ARRAY');
             ((my  $tmp) = '');
@@ -119,10 +121,12 @@ package GLOBAL;
         (my  $ident);
         (my  $List_anon_block = bless [], 'ARRAY');
         sub push_stmt_python {
+            my $List__ = bless \@_, "ARRAY";
             my $block = $_[0];
             push( @{$List_anon_block}, $block )
         };
         sub get_ident_python {
+            my $List__ = bless \@_, "ARRAY";
             ($ident = ($ident + 1));
             return scalar ($ident)
         };
@@ -801,6 +805,7 @@ package GLOBAL;
             (Python::tab($level) . $self->emit_python())
         };
         sub emit_python_bind {
+            my $List__ = bless \@_, "ARRAY";
             my $parameters = $_[0];
             my $arguments = $_[1];
             if (Main::isa($parameters, 'Call')) {

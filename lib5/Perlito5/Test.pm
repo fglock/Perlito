@@ -19,12 +19,14 @@ package GLOBAL;
         (my  $num_of_tests_planned);
         (my  $testing_started);
         sub plan {
+            my $List__ = bless \@_, "ARRAY";
             my $number_of_tests = $_[0];
             ($testing_started = 1);
             ($num_of_tests_planned = $number_of_tests);
             Main::say(('1..' . $number_of_tests))
         };
         sub ok {
+            my $List__ = bless \@_, "ARRAY";
             my $cond = $_[0];
             my $desc = $_[1];
             my $todo = $_[2];
@@ -32,6 +34,7 @@ package GLOBAL;
             Perlito5::Test::proclaim($cond, ('ok' . chr(33) . ' ' . $desc), $todo, $depends)
         };
         sub is {
+            my $List__ = bless \@_, "ARRAY";
             my $got = $_[0];
             my $expected = $_[1];
             my $desc = $_[2];
@@ -41,6 +44,7 @@ package GLOBAL;
             Perlito5::Test::proclaim($test, ('is' . chr(33) . ' ' . $desc), $todo, $got, $expected, $depends)
         };
         sub is_deeply {
+            my $List__ = bless \@_, "ARRAY";
             my $got = $_[0];
             my $expected = $_[1];
             my $desc = $_[2];
@@ -52,6 +56,7 @@ package GLOBAL;
             Perlito5::Test::proclaim($test, ('is deeply' . chr(33) . ' ' . $desc), $todo, $got_perl, $expected_perl, $depends)
         };
         sub isnt {
+            my $List__ = bless \@_, "ARRAY";
             my $got = $_[0];
             my $expected = $_[1];
             my $desc = $_[2];
@@ -65,6 +70,7 @@ package GLOBAL;
 })
         };
         sub cmp_ok {
+            my $List__ = bless \@_, "ARRAY";
             my $got = $_[0];
             my $Code_compare_func = $_[1];
             my $expected = $_[2];
@@ -74,45 +80,57 @@ package GLOBAL;
             Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::cmp_ok not implemented'))
         };
         sub like {
+            my $List__ = bless \@_, "ARRAY";
             Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::like not implemented'))
         };
         sub unlike {
+            my $List__ = bless \@_, "ARRAY";
             Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::unlike not implemented'))
         };
         sub eval_dies_ok {
+            my $List__ = bless \@_, "ARRAY";
             Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::eval_dies_ok not implemented'))
         };
         sub isa_ok {
+            my $List__ = bless \@_, "ARRAY";
             Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::isa_ok not implemented'))
         };
         sub use_ok {
+            my $List__ = bless \@_, "ARRAY";
             Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::use_ok not implemented'))
         };
         sub throws_ok {
+            my $List__ = bless \@_, "ARRAY";
             Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::throws_ok not implemented'))
         };
         sub dies_ok {
+            my $List__ = bless \@_, "ARRAY";
             Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::dies_ok not implemented'))
         };
         sub lives_ok {
+            my $List__ = bless \@_, "ARRAY";
             Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::lives_ok not implemented'))
         };
         sub skip {
+            my $List__ = bless \@_, "ARRAY";
             my $reason = $_[0];
             my $depends = $_[1];
             Perlito5::Test::proclaim(1, '', ('skip ' . $reason), $depends)
         };
         sub pass {
+            my $List__ = bless \@_, "ARRAY";
             my $desc = $_[0];
             Perlito5::Test::proclaim(1, ('pass' . chr(33) . ' ' . $desc))
         };
         sub flunk {
+            my $List__ = bless \@_, "ARRAY";
             my $desc = $_[0];
             my $todo = $_[1];
             my $depends = $_[2];
             Perlito5::Test::proclaim(0, ('flunk' . chr(33) . ' ' . $desc), $todo, $depends)
         };
         sub proclaim {
+            my $List__ = bless \@_, "ARRAY";
             my $cond = $_[0];
             my $desc = $_[1];
             my $todo = $_[2];
@@ -132,6 +150,7 @@ package GLOBAL;
             return scalar ($cond)
         };
         sub report_failure {
+            my $List__ = bless \@_, "ARRAY";
             my $todo = $_[0];
             my $got = $_[1];
             my $expected = $_[2];
@@ -139,6 +158,7 @@ package GLOBAL;
             Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::report_failure not implemented'))
         };
         sub test_ends {
+            my $List__ = bless \@_, "ARRAY";
             if ((!($testing_started))) {
                 return ()
             };

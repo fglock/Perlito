@@ -204,6 +204,7 @@ class CompUnit {
               ~ '  // sub ' ~ $decl->name() ~ "\n"
               ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function( $decl->name() )
                     ~ ' = function (' ~ ($pos.>>emit_javascript).join(', ') ~ ') {' ~ "\n"
+              ~ Javascript::tab($level + 1) ~ 'var List__ = Array.prototype.slice.call(arguments);' ~ "\n"
               ~         $block->emit_javascript_indented( $level + 1 ) ~ "\n"
               ~ '  }' ~ "\n"
               ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function( $decl->name() ) ~ ';  // v8 bug workaround' ~ "\n";
@@ -815,6 +816,7 @@ class Sub {
         my $pos = $sig->positional;
         my $str = $pos.>>emit_javascript->join(', ');
           Javascript::tab($level) ~ 'function ' ~ $.name ~ '(' ~ $str ~ ') {' ~ "\n"
+        ~ Javascript::tab($level + 1) ~ 'var List__ = Array.prototype.slice.call(arguments);' ~ "\n"
         ~   (Perlito5::Javascript::LexicalBlock->new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript_indented( $level + 1 ) ~ "\n"
         ~ Javascript::tab($level) ~ '}'
     }

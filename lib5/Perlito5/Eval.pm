@@ -409,6 +409,7 @@ package GLOBAL;
                 push( @{$List_param_name}, $field->plain_name() )
             };
             ((my  $sub) = sub  {
+    my $List__ = bless \@_, "ARRAY";
     my $env = $_[0];
     my $args = $_[1];
     (my  $Hash_context = bless {}, 'HASH');

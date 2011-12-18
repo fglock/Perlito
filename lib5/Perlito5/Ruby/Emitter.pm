@@ -18,6 +18,7 @@ package GLOBAL;
     package Ruby;
         sub new { shift; bless { @_ }, "Ruby" }
         sub to_str {
+            my $List__ = bless \@_, "ARRAY";
             my $op = $_[0];
             my $args = $_[1];
             (my  $List_s = bless [], 'ARRAY');
@@ -32,6 +33,7 @@ package GLOBAL;
             return scalar (('(' . Main::join($List_s, $op) . ')'))
         };
         sub to_num {
+            my $List__ = bless \@_, "ARRAY";
             my $op = $_[0];
             my $args = $_[1];
             (my  $List_s = bless [], 'ARRAY');
@@ -46,6 +48,7 @@ package GLOBAL;
             return scalar (('(' . Main::join($List_s, $op) . ')'))
         };
         sub to_bool {
+            my $List__ = bless \@_, "ARRAY";
             my $op = $_[0];
             my $args = $_[1];
             (my  $List_s = bless [], 'ARRAY');
@@ -65,6 +68,7 @@ package GLOBAL;
             return scalar (('(' . Main::join($List_s, $op) . ')'))
         };
         sub tab {
+            my $List__ = bless \@_, "ARRAY";
             my $level = $_[0];
             (('    ') x $level)
         }
@@ -114,10 +118,12 @@ package GLOBAL;
         (my  $ident);
         (my  $List_anon_block = bless [], 'ARRAY');
         sub push_stmt_ruby {
+            my $List__ = bless \@_, "ARRAY";
             my $block = $_[0];
             push( @{$List_anon_block}, $block )
         };
         sub get_ident_ruby {
+            my $List__ = bless \@_, "ARRAY";
             ($ident = ($ident + 1));
             return scalar ($ident)
         };
@@ -736,6 +742,7 @@ package GLOBAL;
             (Ruby::tab($level) . $self->emit_ruby())
         };
         sub emit_ruby_bind {
+            my $List__ = bless \@_, "ARRAY";
             my $parameters = $_[0];
             my $arguments = $_[1];
             if (Main::isa($parameters, 'Index')) {

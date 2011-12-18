@@ -33,20 +33,24 @@ package GLOBAL;
     $Hash_a
 });
         sub is_assoc_type {
+            my $List__ = bless \@_, "ARRAY";
             my $assoc_type = $_[0];
             my $op_name = $_[1];
             return scalar ($Assoc->{$assoc_type}->{$op_name})
         };
         sub is_fixity_type {
+            my $List__ = bless \@_, "ARRAY";
             my $fixity_type = $_[0];
             my $op_name = $_[1];
             return scalar ($Operator->{$fixity_type}->{$op_name})
         };
         sub is_term {
+            my $List__ = bless \@_, "ARRAY";
             my $token = $_[0];
             ((($token->[0] eq 'term')) || (($token->[0] eq 'postfix_or_term')))
         };
         sub is_ident_middle {
+            my $List__ = bless \@_, "ARRAY";
             my $c = $_[0];
             (((((($c ge 'a')) && (($c le 'z')))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_')))
         };
@@ -145,6 +149,7 @@ package GLOBAL;
             return scalar (Perlito5::Match->new(('bool' => 0)))
         };
         sub add_op {
+            my $List__ = bless \@_, "ARRAY";
             my $fixity = $_[0];
             my $name = $_[1];
             my $precedence = $_[2];

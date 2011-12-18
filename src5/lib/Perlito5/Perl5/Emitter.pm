@@ -388,9 +388,6 @@ class Apply {
         if $code eq 'postfix:<-->' { return Perl5::tab($level) ~ '('   ~ (@.arguments.>>emit_perl5).join(' ')  ~ ')--' }
 
         if $code eq 'infix:<..>' { return Perl5::tab($level) ~ '(bless ['  ~ (@.arguments.>>emit_perl5).join(' .. ')  ~ "], 'ARRAY')" }
-        if $code eq 'infix:<===>' {
-            return Perl5::tab($level) ~ '(Main::id(' ~ (@.arguments[0]).emit_perl5() ~ ') eq Main::id(' ~ (@.arguments[1]).emit_perl5() ~ '))'
-        }
 
         if $code eq 'ternary:<?? !!>' {
             return Perl5::tab($level)
@@ -561,6 +558,7 @@ class Sub {
             $i = $i + 1;
         }
           Perl5::tab($level) ~ 'sub ' ~ $.name ~ " \{\n"
+        ~ Perl5::tab( $level + 1 ) ~ 'my $List__ = bless \\@_, "ARRAY";' ~ "\n"
         ~   $str
         ~   (@.block.>>emit_perl5_indented( $level + 1 )).join(";\n") ~ "\n"
         ~ Perl5::tab($level) ~ "}"
