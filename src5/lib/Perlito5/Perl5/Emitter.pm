@@ -50,8 +50,13 @@ class Perl5 {
 }
 
 class CompUnit {
-    method emit_perl5 { self->emit_perl5_indented(0) }
-    method emit_perl5_indented( $level ) {
+    sub emit_perl5 {
+        $_[0]->emit_perl5_indented(0)
+    }
+    sub emit_perl5_indented {
+        my $self = $_[0];
+        my $level = $_[1];
+
         my @body;
         for (@.body) {
             if defined($_) {
@@ -65,7 +70,9 @@ class CompUnit {
         ~ Perl5::tab($level)    ~ "}\n"
         ~ "\n"
     }
-    sub emit_perl5_program( $comp_units ) {
+    sub emit_perl5_program {
+        my $comp_units = $_[0];
+
         my $str = ''
             ~ "use v5;\n"
             ~ "use utf8;\n"

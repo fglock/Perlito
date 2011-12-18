@@ -75,12 +75,13 @@ package GLOBAL;
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
         sub emit_perl5 {
-            my $self = $_[0];
-            $self->emit_perl5_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_perl5_indented(0)
         };
         sub emit_perl5_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $level) = $List__->[1]);
             (my  $List_body = bless [], 'ARRAY');
             for ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
                 if (defined($_)) {
@@ -91,7 +92,7 @@ package GLOBAL;
         };
         sub emit_perl5_program {
             my $List__ = bless \@_, "ARRAY";
-            my $comp_units = $_[0];
+            ((my  $comp_units) = $List__->[0]);
             ((my  $str) = ('' . ('use v5' . chr(59) . chr(10)) . ('use utf8' . chr(59) . chr(10)) . ('use strict' . chr(59) . chr(10)) . ('use warnings' . chr(59) . chr(10)) . ('no warnings (' . chr(39) . 'redefine' . chr(39) . ', ' . chr(39) . 'once' . chr(39) . ', ' . chr(39) . 'void' . chr(39) . ', ' . chr(39) . 'uninitialized' . chr(39) . ', ' . chr(39) . 'misc' . chr(39) . ', ' . chr(39) . 'recursion' . chr(39) . ')' . chr(59) . chr(10)) . ('use Perlito5::Perl5::Runtime' . chr(59) . chr(10)) . ('use Perlito5::Perl5::Prelude' . chr(59) . chr(10)) . ('our ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new()' . chr(59) . chr(10))));
             for my $comp_unit ( @{(($comp_units))} ) {
                 ($str = ($str . $comp_unit->emit_perl5_indented(0)))
