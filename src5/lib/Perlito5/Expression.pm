@@ -403,23 +403,16 @@ class Perlito5::Expression {
             { make [ 'term', Use.new( mod => $$<Perlito5::Grammar.full_ident> ) ] }
 
           # XXX Perl6
-        | [ 'class' | 'grammar' | 'role' ] <.Perlito5::Grammar.ws> <Perlito5::Grammar.grammar>
+        | 'class' <.Perlito5::Grammar.ws> <Perlito5::Grammar.grammar>
             { make [ 'term', $$<Perlito5::Grammar.grammar> ] }
 
-        | 'package' 
-            [
-                # XXX Perl6-ish
-                <.Perlito5::Grammar.ws> <Perlito5::Grammar.grammar>
-                { make [ 'term', $$<Perlito5::Grammar.grammar> ] }
-            |
-                <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
-                { make [ 'term',
-                         Apply->new(
-                            code => 'package', arguments => [], namespace => $$<Perlito5::Grammar.full_ident> 
-                         )
-                       ]
-                }
-            ]
+        | 'package' <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
+            { make [ 'term',
+                     Apply->new(
+                        code => 'package', arguments => [], namespace => $$<Perlito5::Grammar.full_ident> 
+                     )
+                   ]
+            }
 
         | <Perlito5::Grammar.declarator> <.Perlito5::Grammar.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
             { make [ 'term', Decl.new( decl => $$<Perlito5::Grammar.declarator>, type => $$<Perlito5::Grammar.opt_type>, var => $$<Perlito5::Grammar.var_ident> ) ] }

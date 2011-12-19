@@ -1151,18 +1151,7 @@ package GLOBAL;
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    (((((do {
-    ((my  $pos1) = $MATCH->to());
-    (((do {
-    (('class' eq substr($str, $MATCH->to(), 5)) && ((($MATCH)->{to} = (5 + $MATCH->to()))))
-}) || (do {
-    (($MATCH)->{to} = $pos1);
-    (((('grammar' eq substr($str, $MATCH->to(), 7)) && ((($MATCH)->{to} = (7 + $MATCH->to()))))))
-})) || (do {
-    (($MATCH)->{to} = $pos1);
-    (((('role' eq substr($str, $MATCH->to(), 4)) && ((($MATCH)->{to} = (4 + $MATCH->to()))))))
-}))
-}) && (do {
+    ((((((('class' eq substr($str, $MATCH->to(), 5)) && ((($MATCH)->{to} = (5 + $MATCH->to()))))) && (do {
     ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());
@@ -1192,10 +1181,7 @@ package GLOBAL;
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
-    ((((('package' eq substr($str, $MATCH->to(), 7)) && ((($MATCH)->{to} = (7 + $MATCH->to()))))) && (do {
-    ((my  $pos1) = $MATCH->to());
-    ((do {
-    (((do {
+    ((((((('package' eq substr($str, $MATCH->to(), 7)) && ((($MATCH)->{to} = (7 + $MATCH->to()))))) && (do {
     ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());
@@ -1204,37 +1190,7 @@ package GLOBAL;
     else {
         0
     }
-}) && (do {
-    ((my  $m2) = Perlito5::Grammar->grammar($str, $MATCH->to()));
-    if ($m2) {
-        (($MATCH)->{to} = $m2->to());
-        ($MATCH->{'Perlito5::Grammar.grammar'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && (((do {
-    ($MATCH->{capture} = (do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, 'term' );
-    push( @{$List_a}, ${$MATCH->{'Perlito5::Grammar.grammar'}} );
-    $List_a
-}))
-}) || 1)))
-}) || (do {
-    (($MATCH)->{to} = $pos1);
-    ((((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->to()));
-    if ($m2) {
-        (($MATCH)->{to} = $m2->to());
-        1
-    }
-    else {
-        0
-    }
-}) && (do {
+})) && (do {
     ((my  $m2) = Perlito5::Grammar->full_ident($str, $MATCH->to()));
     if ($m2) {
         (($MATCH)->{to} = $m2->to());
@@ -1257,8 +1213,6 @@ package GLOBAL;
     $List_a
 }))
 }) || 1))))
-}))
-})))
 })) || (do {
     (($MATCH)->{to} = $pos1);
     (((((((do {
