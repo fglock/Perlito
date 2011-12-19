@@ -355,6 +355,15 @@ class Lookup {
         my $var_js;
         if $var->isa('Lookup') {
             my $var1 = $var->obj;
+
+            if (  $var1->isa('Var')
+               && $var1->sigil eq '$'
+               && $var1->name ne '/'  # XXX $/ is the Perl6 match object
+               )
+            {
+                $var1 = Var->new( sigil => '%', twigil => $var1->twigil, namespace => $var1->namespace, name => $var1->name );
+            }
+ 
             my $var1_js = $var1.emit_javascript;
             $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = {} }; ';
             $var_js = $var1_js ~ '[' ~ $var->index_exp->emit_javascript() ~ ']'
@@ -708,6 +717,15 @@ class Apply {
             my $var_js;
             if $var->isa('Lookup') {
                 my $var1 = $var->obj;
+
+                if (  $var1->isa('Var')
+                   && $var1->sigil eq '$'
+                   && $var1->name ne '/'  # XXX $/ is the Perl6 match object
+                   )
+                {
+                    $var1 = Var->new( sigil => '%', twigil => $var1->twigil, namespace => $var1->namespace, name => $var1->name );
+                }
+
                 my $var1_js = $var1.emit_javascript;
                 $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = {} }; ';
                 $var_js = $var1_js ~ '[' ~ $var->index_exp->emit_javascript() ~ ']'
@@ -734,6 +752,14 @@ class Apply {
             my $var_js;
             if $var->isa('Index') {
                 my $var1 = $var->obj;
+
+                if (  $var1->isa('Var')
+                   && $var1->sigil eq '$'
+                   )
+                {
+                    $var1 = Var->new( sigil => '@', twigil => $var1->twigil, namespace => $var1->namespace, name => $var1->name );
+                }
+
                 my $var1_js = $var1.emit_javascript;
                 $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = [] }; ';
                 $var_js = $var1_js ~ '[' ~ $var->index_exp->emit_javascript() ~ ']'

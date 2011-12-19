@@ -395,6 +395,9 @@ package GLOBAL;
             (my  $var_js);
             if (Main::isa($var, 'Lookup')) {
                 ((my  $var1) = $var->obj());
+                if ((((Main::isa($var1, 'Var') && ($var1->sigil() eq chr(36))) && ($var1->name() ne chr(47))))) {
+                    ($var1 = Var->new(('sigil' => chr(37)), ('twigil' => $var1->twigil()), ('namespace' => $var1->namespace()), ('name' => $var1->name())))
+                };
                 ((my  $var1_js) = $var1->emit_javascript());
                 ($str = ($str . 'if (' . $var1_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var1_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '));
                 ($var_js = ($var1_js . '[' . $var->index_exp()->emit_javascript() . ']'))
@@ -750,6 +753,9 @@ package GLOBAL;
                 (my  $var_js);
                 if (Main::isa($var, 'Lookup')) {
                     ((my  $var1) = $var->obj());
+                    if ((((Main::isa($var1, 'Var') && ($var1->sigil() eq chr(36))) && ($var1->name() ne chr(47))))) {
+                        ($var1 = Var->new(('sigil' => chr(37)), ('twigil' => $var1->twigil()), ('namespace' => $var1->namespace()), ('name' => $var1->name())))
+                    };
                     ((my  $var1_js) = $var1->emit_javascript());
                     ($str = ($str . 'if (' . $var1_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var1_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '));
                     ($var_js = ($var1_js . '[' . $var->index_exp()->emit_javascript() . ']'))
@@ -771,6 +777,9 @@ package GLOBAL;
                 (my  $var_js);
                 if (Main::isa($var, 'Index')) {
                     ((my  $var1) = $var->obj());
+                    if (((Main::isa($var1, 'Var') && ($var1->sigil() eq chr(36))))) {
+                        ($var1 = Var->new(('sigil' => chr(64)), ('twigil' => $var1->twigil()), ('namespace' => $var1->namespace()), ('name' => $var1->name())))
+                    };
                     ((my  $var1_js) = $var1->emit_javascript());
                     ($str = ($str . 'if (' . $var1_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var1_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '));
                     ($var_js = ($var1_js . '[' . $var->index_exp()->emit_javascript() . ']'))

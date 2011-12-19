@@ -1,3 +1,5 @@
+use feature 'say';
+use strict;
 
 say '1..6';
 my @a;
