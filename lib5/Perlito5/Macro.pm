@@ -194,7 +194,7 @@ package GLOBAL;
     push( @{$List_a}, Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')) );
     push( @{$List_a}, Val::Int->new(('int' => 1)) );
     $List_a
-}), ('code' => 'infix:<+>'), ('namespace' => ''))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')))) );
+}), ('code' => 'infix:<+>'), ('namespace' => ''))), ('obj' => Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')))) );
     $List_a
 }), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
     push( @{$List_a}, Apply->new(('arguments' => do {

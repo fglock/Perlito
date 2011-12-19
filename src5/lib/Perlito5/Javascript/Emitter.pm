@@ -134,6 +134,7 @@ class Perlito5::Javascript::LexicalBlock {
             }
             elsif  $last_statement->isa( 'Apply' ) && $last_statement->code eq 'return'
                 || $last_statement->isa( 'For' )
+                || $last_statement->isa( 'While' )
             {
                 # Return, For - no changes for now
                 @str->push: $last_statement->emit_javascript_indented($level)
@@ -565,6 +566,11 @@ class Apply {
         if $code eq 'prefix:<$>' { return Javascript::escape_function('scalar') ~ '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' }
         if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' };  # .' ~ Javascript::escape_function('array') ~ '()' }
         if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').' ~ Javascript::escape_function('hash') ~ '()' }
+
+        if $code eq 'prefix:<\\>' { 
+            # XXX currently a no-op
+            return (@.arguments.>>emit_javascript).join(' ') 
+        }
 
         if $code eq 'postfix:<++>' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')++' }
         if $code eq 'postfix:<-->' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')--' }

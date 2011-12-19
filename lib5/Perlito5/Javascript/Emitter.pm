@@ -152,7 +152,7 @@ package GLOBAL;
                     }
                 }
                 else {
-                    if (((Main::isa($last_statement, 'Apply') && ($last_statement->code() eq 'return')) || Main::isa($last_statement, 'For'))) {
+                    if ((((Main::isa($last_statement, 'Apply') && ($last_statement->code() eq 'return')) || Main::isa($last_statement, 'For')) || Main::isa($last_statement, 'While'))) {
                         push( @{$List_str}, $last_statement->emit_javascript_indented($level) )
                     }
                     else {
@@ -641,6 +641,9 @@ package GLOBAL;
             };
             if (($code eq 'prefix:<' . chr(37) . '>')) {
                 return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ').' . Javascript::escape_function('hash') . '()'))
+            };
+            if (($code eq 'prefix:<' . chr(92) . '>')) {
+                return scalar (Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' '))
             };
             if (($code eq 'postfix:<++>')) {
                 return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')++'))

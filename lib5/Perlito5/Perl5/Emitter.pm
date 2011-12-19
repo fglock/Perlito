@@ -515,10 +515,16 @@ package GLOBAL;
                 return scalar ((Perl5::tab($level) . 'push( ' . chr(64) . chr(123) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_perl5() . chr(125) . ', ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_perl5() . ' )'))
             };
             if (($code eq 'shift')) {
-                return scalar ((Perl5::tab($level) . 'shift( ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125) . ' )'))
+                if (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))) {
+                    return scalar ((Perl5::tab($level) . 'shift( ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125) . ' )'))
+                };
+                return scalar ('shift()')
             };
             if (($code eq 'unshift')) {
                 return scalar ((Perl5::tab($level) . 'unshift( ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125) . ' )'))
+            };
+            if (($code eq 'prefix:<' . chr(92) . '>')) {
+                return scalar ((Perl5::tab($level) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ')))
             };
             if (($code eq 'prefix:<' . chr(36) . '>')) {
                 return scalar ((Perl5::tab($level) . chr(36) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125)))

@@ -181,7 +181,16 @@ class Lit::Hash {
                                     'body' => Lit::Block->new(
                                         'sig'   => Mu,
                                         'stmts' => [
-                                            Apply->new( 'arguments' => [ Lookup->new( 'index_exp' => Index->new( 'index_exp' => Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), 'obj' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), 'obj' => Var->new( 'name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), Index->new( 'index_exp' => Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Val::Int->new( 'int' => 1 ) ], 'code' => 'infix:<+>', 'namespace' => '' ), 'obj' => Var->new( 'name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ) ], 'code' => 'infix:<=>', 'namespace' => '' ),
+                                            Apply->new( 
+                                                'arguments' => [ 
+                                                    Lookup->new( 
+                                                        'index_exp' => Index->new( 'index_exp' => Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), 'obj' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), 
+                                                        'obj' => Var->new( 'name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), 
+                                                    Index->new( 'index_exp' => Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Val::Int->new( 'int' => 1 ) ], 'code' => 'infix:<+>', 'namespace' => '' ), 'obj' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ) 
+                                                ], 
+                                                'code' => 'infix:<=>', 
+                                                'namespace' => '' 
+                                            ),
                                             Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Val::Int->new( 'int' => 2 ) ], 'code' => 'infix:<+>', 'namespace' => '' ) ], 'code' => 'infix:<=>', 'namespace' => '' )
                                         ]
                                     ),
