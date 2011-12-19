@@ -137,17 +137,17 @@ if (typeof warn !== 'function') {
     };
 }
 
-bless = function(o, class) {
+bless = function(o, class_name) {
     try {
-        o.__proto__ = eval(class);
+        o.__proto__ = eval(class_name);
     }
     catch(err) {
         eval( ''
-            + 'if (typeof ('+class+') !== "object") { '
-            +   class+' = function() {}; '
-            +   class+' = new '+class+'; '
+            + 'if (typeof ('+class_name+') !== "object") { '
+            +   class_name+' = function() {}; '
+            +   class_name+' = new '+class_name+'; '
             + '}; '
-            + 'o.__proto__ = class; '
+            + 'o.__proto__ = class_name; '
         );
     }
     return o;
