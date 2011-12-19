@@ -163,7 +163,72 @@ package GLOBAL;
 }), ('code' => 'prefix:<' . chr(64) . '>'), ('namespace' => ''))), ('topic' => undef())) )
                     }
                     else {
-                        die('Error in hash composer: ', Main::perl($item, ))
+                        if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(64) . '>')))) {
+                            push( @{$List_s}, Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Apply->new(('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')))) );
+    push( @{$List_a}, Val::Int->new(('int' => 0)) );
+    $List_a
+}), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
+    push( @{$List_a}, Apply->new(('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')))) );
+    push( @{$List_a}, $item );
+    $List_a
+}), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
+    push( @{$List_a}, While->new(('body' => Lit::Block->new(('sig' => undef()), ('stmts' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Apply->new(('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Lookup->new(('index_exp' => Index->new(('index_exp' => Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('obj' => Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')))) );
+    push( @{$List_a}, Index->new(('index_exp' => Apply->new(('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')) );
+    push( @{$List_a}, Val::Int->new(('int' => 1)) );
+    $List_a
+}), ('code' => 'infix:<+>'), ('namespace' => ''))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')))) );
+    $List_a
+}), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
+    push( @{$List_a}, Apply->new(('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')) );
+    push( @{$List_a}, Apply->new(('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')) );
+    push( @{$List_a}, Val::Int->new(('int' => 2)) );
+    $List_a
+}), ('code' => 'infix:<+>'), ('namespace' => '')) );
+    $List_a
+}), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
+    $List_a
+}))), ('cond' => Apply->new(('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Apply->new(('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')) );
+    push( @{$List_a}, Call->new(('hyper' => ''), ('invocant' => Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => ''))), ('method' => 'elems')) );
+    $List_a
+}), ('code' => 'infix:<<>'), ('namespace' => '')) );
+    $List_a
+}), ('code' => 'circumfix:<( )>'), ('namespace' => '')))) );
+    $List_a
+})))) )
+                        }
+                        else {
+                            die('Error in hash composer: ', Main::perl($item, ))
+                        }
                     }
                 }
             };

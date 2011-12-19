@@ -153,6 +153,45 @@ class Lit::Hash {
                         'topic' => Mu
                     );
             }
+            elsif   $item.isa( 'Var' )   && $item.sigil eq '@'
+                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<@>'
+            {
+
+                # do {
+                #     my $_i = 0;
+                #     my @_a = @{ expr };
+                #     while ( $_i < scalar(@_a) ) { $a{ $_a[$_i] } = $a[ $_i + 1 ]; $_i = $_i + 2 }
+                #   }
+
+                push @s,
+                    Do->new(
+                        'block' => Lit::Block->new(
+                            'sig'   => Mu,
+                            'stmts' => [
+                                Apply->new( 'arguments' => [ Decl->new( 'decl' => 'my', 'type' => '', 'var' => Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), Val::Int->new( 'int' => 0 ) ], 'code' => 'infix:<=>', 'namespace' => '' ),
+                                Apply->new( 
+                                    'arguments' => [ 
+                                        Decl->new( 'decl' => 'my', 'type' => '', 'var' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' ) ), 
+                                        $item
+                                    ], 
+                                    'code' => 'infix:<=>', 
+                                    'namespace' => '' 
+                                ),
+                                While->new(
+                                    'body' => Lit::Block->new(
+                                        'sig'   => Mu,
+                                        'stmts' => [
+                                            Apply->new( 'arguments' => [ Lookup->new( 'index_exp' => Index->new( 'index_exp' => Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), 'obj' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), 'obj' => Var->new( 'name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), Index->new( 'index_exp' => Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Val::Int->new( 'int' => 1 ) ], 'code' => 'infix:<+>', 'namespace' => '' ), 'obj' => Var->new( 'name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ) ], 'code' => 'infix:<=>', 'namespace' => '' ),
+                                            Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Val::Int->new( 'int' => 2 ) ], 'code' => 'infix:<+>', 'namespace' => '' ) ], 'code' => 'infix:<=>', 'namespace' => '' )
+                                        ]
+                                    ),
+                                    'cond' => Apply->new( 'arguments' => [ Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Call->new( 'hyper' => '', 'invocant' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' ), 'method' => 'elems' ) ], 'code' => 'infix:<<>', 'namespace' => '' ) ], 'code' => 'circumfix:<( )>', 'namespace' => '' )
+                                )
+                            ]
+                        )
+                    );
+
+            }
             else {
                 die 'Error in hash composer: ', $item.perl;
             }
