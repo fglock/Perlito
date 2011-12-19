@@ -188,7 +188,7 @@ class CompUnit {
             ~ '  ' ~ $class_name ~ ' = function() {};' ~ "\n"
             ~ '  ' ~ $class_name ~ ' = new ' ~ $class_name ~ ';' ~ "\n"
             ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function('isa') ~ ' = function (s) { return s == \'' ~ $.name ~ '\'; };' ~ "\n"
-            ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function('perl') ~ ' = function () { return \'' ~ $.name ~ '.new(\' + Main._dump(this) + \')\'; };' ~ "\n"
+            ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function('perl') ~ ' = function () { return \'' ~ $.name ~ '->new(\' + Main._dump(this) + \')\'; };' ~ "\n"
             ~ '}' ~ "\n"
             ~ '(function () {' ~ "\n"
             ~ '  var v__NAMESPACE = ' ~ $class_name ~ ';' ~ "\n";

@@ -72,7 +72,7 @@ if (typeof Perlito5$Match !== 'object') {
         return s == 'Perlito::Match';
     };
     Perlito5$Match.perl = function() {
-        return 'Perlito::Match.new(' + Main._dump(this) + ')';
+        return 'Perlito::Match->new(' + Main._dump(this) + ')';
     };
 }
 
