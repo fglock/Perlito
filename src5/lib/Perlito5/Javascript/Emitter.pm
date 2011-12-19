@@ -520,6 +520,7 @@ class Apply {
         'pop'     => 1,
         'chr'     => 1,
         'say'     => 1,
+        'bless'   => 1,
         'print'   => 1,
         'warn'    => 1,
     );
@@ -631,9 +632,6 @@ class Apply {
             return Javascript::tab($level) ~ 'throw('
                 ~   (@.arguments ? @.arguments[0].emit_javascript() : 'null')
                 ~ ')'
-        }
-        if $code eq 'bless' {
-            return '(' ~ @.arguments[0]->emit_javascript() ~ '.__proto__ = eval(' ~ @.arguments[1]->emit_javascript() ~ '))';
         }
 
         if $.namespace {

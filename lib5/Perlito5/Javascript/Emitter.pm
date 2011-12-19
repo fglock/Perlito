@@ -571,6 +571,7 @@ package GLOBAL;
     ($Hash_a->{'pop'} = 1);
     ($Hash_a->{'chr'} = 1);
     ($Hash_a->{'say'} = 1);
+    ($Hash_a->{'bless'} = 1);
     ($Hash_a->{'print'} = 1);
     ($Hash_a->{'warn'} = 1);
     $Hash_a
@@ -694,9 +695,6 @@ package GLOBAL;
             };
             if (($code eq 'return')) {
                 return scalar ((Javascript::tab($level) . 'throw(' . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() : 'null')) . ')'))
-            };
-            if (($code eq 'bless')) {
-                return scalar (('(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . '.__proto__ ' . chr(61) . ' eval(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . '))'))
             };
             if ($self->{namespace}) {
                 ($code = (Main::to_javascript_namespace($self->{namespace}) . '.' . Javascript::escape_function($code)))

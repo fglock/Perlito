@@ -137,6 +137,22 @@ if (typeof warn !== 'function') {
     };
 }
 
+bless = function(o, class) {
+    try {
+        o.__proto__ = eval(class);
+    }
+    catch(err) {
+        eval( ''
+            + 'if (typeof ('+class+') !== "object") { '
+            +   class+' = function() {}; '
+            +   class+' = new '+class+'; '
+            + '}; '
+            + 'o.__proto__ = class; '
+        );
+    }
+    return o;
+};
+
 chr = function(o) {
     return String.fromCharCode(num(o));
 };
