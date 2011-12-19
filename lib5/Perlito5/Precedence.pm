@@ -243,6 +243,7 @@ package GLOBAL;
     $Hash_a
 });
         ($prec = ($prec - 1));
+        add_op('prefix', chr(92), $prec);
         add_op('prefix', '+', $prec);
         add_op('prefix', '-', $prec);
         add_op('prefix', chr(36), $prec);

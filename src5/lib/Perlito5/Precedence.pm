@@ -139,6 +139,7 @@ class Perlito5::Precedence {
     $prec = $prec - 1;
     add_op( 'infix',    '**',  $prec, { assoc => 'right' } );
     $prec = $prec - 1;
+    add_op( 'prefix',   '\\',  $prec );
     add_op( 'prefix',   '+',   $prec );
     add_op( 'prefix',   '-',   $prec );
     add_op( 'prefix',   '$',   $prec );
