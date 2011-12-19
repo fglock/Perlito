@@ -168,18 +168,37 @@ package GLOBAL;
     {
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
-        sub attributes { $_[0]->{attributes} };
-        sub methods { $_[0]->{methods} };
         sub emit_javascript {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             $self->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $level) = $List__->[1]);
+            (my  $List_body = bless [], 'ARRAY');
+            ((my  $i) = 0);
+            for ( ; (($i <= scalar( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} )));  ) {
+                ((my  $stmt) = (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->[$i]);
+                if (((Main::isa($stmt, 'Apply') && ($stmt->code() eq 'package')))) {
+                    ((my  $name) = $stmt->namespace());
+                    (my  $List_stmts = bless [], 'ARRAY');
+                    ($i)++;
+                    for ( ; ((($i <= scalar( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} )) && !(((Main::isa((defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->[$i], 'Apply') && ((defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->[$i]->code() eq 'package'))))));  ) {
+                        push( @{$List_stmts}, (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->[$i] );
+                        ($i)++
+                    };
+                    push( @{$List_body}, CompUnit->new(('name' => $name), ('body' => $List_stmts)) )
+                }
+                else {
+                    push( @{$List_body}, $stmt );
+                    ($i)++
+                }
+            };
             ((my  $class_name) = Main::to_javascript_namespace($self->{name}));
             ((my  $str) = (chr(47) . chr(47) . ' class ' . $self->{name} . (chr(10)) . 'if (typeof ' . $class_name . ' ' . chr(33) . chr(61) . chr(61) . ' ' . chr(39) . 'object' . chr(39) . ') ' . chr(123) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' function() ' . chr(123) . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' new ' . $class_name . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function('isa') . ' ' . chr(61) . ' function (s) ' . chr(123) . ' return s ' . chr(61) . chr(61) . ' ' . chr(39) . $self->{name} . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function('perl') . ' ' . chr(61) . ' function () ' . chr(123) . ' return ' . chr(39) . $self->{name} . '.new(' . chr(39) . ' + Main._dump(this) + ' . chr(39) . ')' . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . chr(125) . (chr(10)) . '(function () ' . chr(123) . (chr(10)) . '  var v__NAMESPACE ' . chr(61) . ' ' . $class_name . chr(59) . (chr(10))));
-            for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
+            for my $decl ( @{$List_body} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my')))) {
                     ($str = ($str . '  ' . $decl->emit_javascript_init()))
                 };
@@ -190,7 +209,7 @@ package GLOBAL;
                     }
                 }
             };
-            for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
+            for my $decl ( @{$List_body} ) {
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                     ($str = ($str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . (chr(10)) . '  ' . $class_name . '.v_' . $decl->var()->name() . ' ' . chr(61) . ' null' . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->var()->name()) . ' ' . chr(61) . ' function () ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . (chr(10))))
                 };
@@ -208,7 +227,7 @@ package GLOBAL;
                     ($str = ($str . '  ' . chr(47) . chr(47) . ' sub ' . $decl->name() . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function (' . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . ') ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . (chr(10)) . '  ' . chr(125) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . (chr(10))))
                 }
             };
-            for my $decl ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
+            for my $decl ( @{$List_body} ) {
                 if ((((defined($decl) && (!(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my'))))))))) && (!((Main::isa($decl, 'Method'))))) && (!((Main::isa($decl, 'Sub')))))) {
                     ($str = ($str . ($decl)->emit_javascript_indented(($level + 1)) . chr(59)))
                 }

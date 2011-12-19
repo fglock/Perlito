@@ -147,8 +147,39 @@ class Perlito5::Javascript::LexicalBlock {
 }
 
 class CompUnit {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { 
+        my $self = $_[0];
+        $self->emit_javascript_indented(0) 
+    }
+    sub emit_javascript_indented {
+        my $self = $_[0];
+        my $level = $_[1];
+
+        # process 'package' statements
+        my @body;
+        my $i = 0;
+        while ( $i <= @.body.elems ) {
+            my $stmt = @.body->[$i];
+            if ( $stmt->isa( 'Apply' ) && $stmt->code eq 'package' ) {
+                # found an inner package
+                my $name = $stmt->namespace;
+                my @stmts;
+                $i++;
+                while (  $i <= @.body.elems 
+                      && !( @.body->[$i]->isa( 'Apply' ) && @.body->[$i]->code eq 'package' )
+                      )
+                {
+                    push @stmts, @.body->[$i];
+                    $i++;
+                }
+                push @body, CompUnit->new( name => $name, body => @stmts );
+            }
+            else {
+                push @body, $stmt;
+                $i++;
+            }
+        }
+
         my $class_name = Main::to_javascript_namespace($.name);
         my $str =
               '// class ' ~ $.name ~ "\n"
@@ -161,7 +192,7 @@ class CompUnit {
             ~ '(function () {' ~ "\n"
             ~ '  var v__NAMESPACE = ' ~ $class_name ~ ';' ~ "\n";
 
-        for my $decl ( @.body ) {
+        for my $decl ( @body ) {
             if $decl->isa( 'Decl' ) && ( $decl->decl eq 'my' ) {
                 $str = $str ~ '  ' ~ $decl->emit_javascript_init;
             }
@@ -172,7 +203,7 @@ class CompUnit {
                 }
             }
         }
-        for my $decl ( @.body ) {
+        for my $decl ( @body ) {
             if $decl->isa( 'Decl' ) && ( $decl->decl eq 'has' ) {
                 $str = $str
               ~ '  // accessor ' ~ $decl->var->name() ~ "\n"
@@ -208,7 +239,7 @@ class CompUnit {
               ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function( $decl->name() ) ~ ';  // v8 bug workaround' ~ "\n";
             }
         }
-        for my $decl ( @.body ) {
+        for my $decl ( @body ) {
             if    defined( $decl )
                && (!( $decl->isa( 'Decl' ) && (( $decl->decl eq 'has' ) || ( $decl->decl eq 'my' )) ))
                && (!( $decl->isa( 'Method')))

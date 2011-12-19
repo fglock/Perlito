@@ -296,8 +296,6 @@ package GLOBAL;
     {
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
-        sub attributes { $_[0]->{attributes} };
-        sub methods { $_[0]->{methods} };
         sub emit_ruby {
             my $self = $_[0];
             $self->emit_ruby_indented(0)
