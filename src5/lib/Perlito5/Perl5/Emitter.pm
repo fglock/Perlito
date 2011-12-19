@@ -441,6 +441,7 @@ class Apply {
             return Perl5::tab($level) ~ $op_prefix_perl5{$code} ~ '('   ~ (@.arguments.>>emit_perl5).join(', ') ~ ')'
         }
 
+        if $.code eq 'package'   { return Perl5::tab($level) ~ 'package ' ~ $.namespace }
         if $code eq 'self'       { return Perl5::tab($level) ~ '$self' }
         if $code eq 'Mu'         { return Perl5::tab($level) ~ 'undef()' }
 

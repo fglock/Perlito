@@ -493,6 +493,9 @@ package GLOBAL;
             if (exists($Hash_op_prefix_perl5->{$code})) {
                 return scalar ((Perl5::tab($level) . $Hash_op_prefix_perl5->{$code} . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
+            if (($self->{code} eq 'package')) {
+                return scalar ((Perl5::tab($level) . 'package ' . $self->{namespace}))
+            };
             if (($code eq 'self')) {
                 return scalar ((Perl5::tab($level) . chr(36) . 'self'))
             };
