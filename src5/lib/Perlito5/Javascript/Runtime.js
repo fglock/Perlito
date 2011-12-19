@@ -26,6 +26,12 @@ if (typeof arguments === 'object') {
     List_ARGS = arguments;
 }
 
+// call context - method or subroutine
+if (typeof CallSub !== 'object') {
+    CallSubClass = function() {};
+    CallSub = new CallSubClass;
+}
+
 // class IO
 if (typeof IO !== 'object') {
     IO = function() {};
@@ -86,9 +92,10 @@ Perlito5$Match.hash = function() {
 if (typeof f_print !== 'function') {
     var buf = "";
     f_print = function() {
+        var List__ = Array.prototype.slice.call(arguments);
         var i;
-        for (i = 0; i < f_print.arguments.length; i++) {
-            var s = string(f_print.arguments[i]);
+        for (i = 0; i < List__.length; i++) {
+            var s = string(List__[i]);
             if (s.substr(s.length - 2, 2) == "\n") {
                 print(buf + s.substr(0, s.length - 2));
                 buf = "";
@@ -107,9 +114,10 @@ if (typeof f_print !== 'function') {
 
 if (typeof say !== 'function') {
     say = function() {
+        var List__ = Array.prototype.slice.call(arguments);
         var i;
-        for (i = 0; i < say.arguments.length; i++) {
-            f_print(say.arguments[i]);
+        for (i = 0; i < List__.length; i++) {
+            f_print(List__[i]);
         }
         return f_print("\n");
     };
@@ -128,10 +136,18 @@ if (typeof die !== 'function') {
 
 if (typeof warn !== 'function') {
     warn = function() {
+        var List__ = Array.prototype.slice.call(arguments);
+        if (List__[0] instanceof CallSubClass) {
+            List__.shift()
+        }
+        else {
+            List__.unshift(this)
+        }
+
         var i;
         var s = '';
-        for (i = 0; i < warn.arguments.length; i++) {
-            s = s + warn.arguments[i];
+        for (i = 0; i < List__.length; i++) {
+            s = s + List__[i];
         }
         f_print("Warning: " + s + "\n");
     };

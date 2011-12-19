@@ -13,7 +13,8 @@ class Perlito5::Test {
 
 ### FUNCTIONS
 
-  sub plan ($number_of_tests) {
+  sub plan {
+    my $number_of_tests = shift;
     $testing_started      = 1;
     $num_of_tests_planned = $number_of_tests;
 
@@ -21,7 +22,11 @@ class Perlito5::Test {
   }
 
 
-  sub ok ($cond, $desc, $todo, $depends) {
+  sub ok {
+    my $cond = shift;
+    my $desc = shift;
+    my $todo = shift;
+    my $depends = shift;
     Perlito5::Test::proclaim($cond, 'ok! ' ~ $desc, $todo, $depends);
   }
 

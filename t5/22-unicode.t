@@ -1,9 +1,6 @@
+use Perlito5::Test;
 
-use Perlito::Test;
-
-Perlito::Test::plan 1;
-
-
+Perlito5::Test::plan 1;
 
 my $s1 = "a≤b"; 
 my $s2 = "a\c[8804]b";

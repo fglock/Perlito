@@ -16,7 +16,7 @@ package Main;
     say '1..3';
     say 'ok 1 - load ok';
 
-    my $other = Other->new( a => 2 );
+    my $other = Other->new( 'a' => 2 );
     $other->subr();
 
     $other->{'a'} = 3;

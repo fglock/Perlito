@@ -234,7 +234,15 @@ class CompUnit {
               ~ '  // sub ' ~ $decl->name() ~ "\n"
               ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function( $decl->name() )
                     ~ ' = function (' ~ ($pos.>>emit_javascript).join(', ') ~ ') {' ~ "\n"
+                # create @_
               ~ Javascript::tab($level + 1) ~ 'var List__ = Array.prototype.slice.call(arguments);' ~ "\n"
+              ~ Javascript::tab($level + 1) ~ 'if (List__[0] instanceof CallSubClass) {' ~ "\n"
+              ~ Javascript::tab($level + 2) ~   'List__.shift()' ~ "\n"
+              ~ Javascript::tab($level + 1) ~ '}' ~ "\n"
+              ~ Javascript::tab($level + 1) ~ 'else {' ~ "\n"
+              ~ Javascript::tab($level + 2) ~   'List__.unshift(this)' ~ "\n"
+              ~ Javascript::tab($level + 1) ~ '}' ~ "\n"
+
               ~         $block->emit_javascript_indented( $level + 1 ) ~ "\n"
               ~ '  }' ~ "\n"
               ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function( $decl->name() ) ~ ';  // v8 bug workaround' ~ "\n";
@@ -430,7 +438,7 @@ class Call {
             my $str = [];
             for my $field ( @.arguments ) {
                 if $field->isa('Apply') && $field->code eq 'infix:<=>>' {
-                    $str->push( 'v_' ~ $field->arguments[0].buf() ~ ': ' ~ $field->arguments[1].emit_javascript() );
+                    $str->push( $field->arguments[0].buf() ~ ': ' ~ $field->arguments[1].emit_javascript() );
                 }
                 else {
                     die 'Error in constructor, field: ', $field->perl;
@@ -515,7 +523,6 @@ class Apply {
     my %op_global_js = (
         'index'   => 1,
         'die'     => 1,
-        'shift'   => 1,
         'unshift' => 1,
         'push'    => 1,
         'pop'     => 1,
@@ -553,6 +560,13 @@ class Apply {
                  ~ ' || "").substr(' ~ (@.arguments[1]).emit_javascript()
                  ~ ( defined(@.arguments[2]) ? ', ' ~ (@.arguments[2]).emit_javascript() : '' )
                  ~ ')'
+        }
+
+        if $code eq 'shift'      {
+            if ( @.arguments ) {
+                return 'shift(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')'
+            }
+            return 'shift(List__)'
         }
 
         if $code eq 'chr'        { return 'String.fromCharCode(' ~ Javascript::escape_function('num') ~ '(' ~ (@.arguments[0]).emit_javascript() ~ '))' }
@@ -648,8 +662,9 @@ class Apply {
         }
         else {
             $code = Javascript::escape_function( $.code );
+            return Javascript::tab($level) ~ $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
         }
-        Javascript::tab($level) ~ $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+        Javascript::tab($level) ~ $code ~ '(CallSub, ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
     }
 
     sub emit_javascript_bind ($parameters, $arguments) {
@@ -667,7 +682,12 @@ class Apply {
  
             # $a->{x} = 4
             if  (  $parameters->method eq 'postcircumfix:<{ }>' ) {
-                return '(' ~ $parameters->emit_javascript() ~ ' = ' ~ $arguments->emit_javascript() ~ ')';
+                my $str = '';
+                my $var_js = $parameters->invocant->emit_javascript;
+                $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+                my $index_js = $parameters->arguments->emit_javascript;
+                $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ ' = ' ~ $arguments->emit_javascript() ~ '); ';
+                return '(function () { ' ~ $str ~ '})()';
             }
 
             # $var->attr = 3;
@@ -850,6 +870,12 @@ class Sub {
         my $str = $pos.>>emit_javascript->join(', ');
           Javascript::tab($level) ~ 'function ' ~ $.name ~ '(' ~ $str ~ ') {' ~ "\n"
         ~ Javascript::tab($level + 1) ~ 'var List__ = Array.prototype.slice.call(arguments);' ~ "\n"
+        ~ Javascript::tab($level + 1) ~ 'if (List__[0] instanceof CallSubClass) {' ~ "\n"
+        ~ Javascript::tab($level + 2) ~   'List__.shift()' ~ "\n"
+        ~ Javascript::tab($level + 1) ~ '}' ~ "\n"
+        ~ Javascript::tab($level + 1) ~ 'else {' ~ "\n"
+        ~ Javascript::tab($level + 2) ~   'List__.unshift(this)' ~ "\n"
+        ~ Javascript::tab($level + 1) ~ '}' ~ "\n"
         ~   (Perlito5::Javascript::LexicalBlock->new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript_indented( $level + 1 ) ~ "\n"
         ~ Javascript::tab($level) ~ '}'
     }

@@ -1,8 +1,4 @@
-use v6;
+use Perlito5::Test;
 
-class Main {
-    use Perlito::Test;
-
-    Perlito::Test::plan 1;
-    Perlito::Test::ok( 1==1, "Perlito::Test works");
-}
+Perlito5::Test::plan 1;
+Perlito5::Test::ok( 1==1, "Perlito::Test works");
