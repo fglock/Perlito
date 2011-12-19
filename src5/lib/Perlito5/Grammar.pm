@@ -1,6 +1,4 @@
-use v6;
-
-grammar Perlito5::Grammar {
+package Perlito5::Grammar;
 
 use Perlito5::Expression;
 use Perlito5::Grammar::Regex;
@@ -323,8 +321,6 @@ token token {
         # say 'Intermediate ast: ', $$ast.perl;
         make $$ast;
     }
-}
-
 }
 
 =begin

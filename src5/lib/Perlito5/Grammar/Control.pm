@@ -1,7 +1,4 @@
-
-use v6;
-
-grammar Perlito5::Grammar {
+package Perlito5::Grammar;
 
 token unless {
     unless <.ws> <exp>
@@ -141,8 +138,6 @@ token loop {
             die "'loop' with parameters is not implemented";
         }
     }
-}
-
 }
 
 =begin

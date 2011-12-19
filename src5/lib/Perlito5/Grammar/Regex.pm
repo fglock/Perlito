@@ -1,7 +1,4 @@
-
-use v6;
-
-grammar Perlito5::Grammar::Regex {
+package Perlito5::Grammar::Regex;
 
 my %rule_terms;
 
@@ -327,8 +324,6 @@ token rule {
         # say 'found Rule';
         make Rul::Or.new( or_list => $$<or_list_exp> )
     }
-}
-
 }
 
 =begin

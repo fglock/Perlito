@@ -10,19 +10,14 @@ our $MATCH = Perlito5::Match->new();
 {
 package GLOBAL;
     sub new { shift; bless { @_ }, "GLOBAL" }
-
-    # use v6 
-;
-    {
     package Perlito5::Grammar;
-        sub new { shift; bless { @_ }, "Perlito5::Grammar" }
-        sub unless {
-            my $grammar = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
-            (my  $MATCH);
-            ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+    sub unless {
+        my $grammar = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+        (my  $MATCH);
+        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((((((((((('u' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
@@ -57,15 +52,15 @@ package GLOBAL;
 }) || 1)))
 })
 })));
-            $MATCH
-        };
-        sub if {
-            my $grammar = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
-            (my  $MATCH);
-            ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub if {
+        my $grammar = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+        (my  $MATCH);
+        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((((((('i' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('f' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
@@ -173,15 +168,15 @@ package GLOBAL;
 }))
 })
 })));
-            $MATCH
-        };
-        sub when {
-            my $grammar = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
-            (my  $MATCH);
-            ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub when {
+        my $grammar = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+        (my  $MATCH);
+        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((((((((('w' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('h' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
@@ -212,15 +207,15 @@ package GLOBAL;
 }) || 1)))
 })
 })));
-            $MATCH
-        };
-        sub for {
-            my $grammar = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
-            (my  $MATCH);
-            ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub for {
+        my $grammar = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+        (my  $MATCH);
+        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((((((('f' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('r' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
@@ -336,15 +331,15 @@ package GLOBAL;
 }))
 })
 })));
-            $MATCH
-        };
-        sub while {
-            my $grammar = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
-            (my  $MATCH);
-            ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub while {
+        my $grammar = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+        (my  $MATCH);
+        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     (((((((((('w' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('h' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('i' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
@@ -375,15 +370,15 @@ package GLOBAL;
 }) || 1)))
 })
 })));
-            $MATCH
-        };
-        sub loop {
-            my $grammar = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
-            (my  $MATCH);
-            ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub loop {
+        my $grammar = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+        (my  $MATCH);
+        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((((((((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('p' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
@@ -422,11 +417,8 @@ package GLOBAL;
 }) || 1)))
 })
 })));
-            $MATCH
-        }
+        $MATCH
     }
-
-
 }
 
 1;
