@@ -251,8 +251,6 @@ class Perlito5::Python::LexicalBlock {
 }
 
 class CompUnit {
-    has %.attributes;
-    has %.methods;
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
         my @s;

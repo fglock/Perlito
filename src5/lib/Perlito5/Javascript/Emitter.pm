@@ -147,8 +147,6 @@ class Perlito5::Javascript::LexicalBlock {
 }
 
 class CompUnit {
-    has %.attributes;
-    has %.methods;
     method emit_javascript { self->emit_javascript_indented(0) }
     method emit_javascript_indented( $level ) {
         my $class_name = Main::to_javascript_namespace($.name);

@@ -260,9 +260,6 @@ class Perlito5::Ruby::LexicalBlock {
 }
 
 class CompUnit {
-    has %.attributes;
-    has %.methods;
-
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         my @s;
