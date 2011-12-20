@@ -13,10 +13,10 @@ class Main {
 
     my $b;
     say 'ok 4 - create scalar';
-    $b{'abc'}{'def'} = 3;
+    $b->{'abc'}{'def'} = 3;
     say 'ok 5 - set element';
-    if $b{'abc'}{'def'} != 3 {
+    if $b->{'abc'}{'def'} != 3 {
         print 'not '
     }
-    say 'ok 6 - fetch element # ', $b{'abc'}{'def'};
+    say 'ok 6 - fetch element # ', $b->{'abc'}{'def'};
 }

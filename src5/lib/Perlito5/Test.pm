@@ -58,35 +58,35 @@ class Perlito5::Test {
   }
 
 
-  sub like () {
+  sub like {
     say "### Perlito5::Test::like not implemented";
   }
 
-  sub unlike () {
+  sub unlike {
     say "### Perlito5::Test::unlike not implemented";
   }
 
-  sub eval_dies_ok () {
+  sub eval_dies_ok {
     say "### Perlito5::Test::eval_dies_ok not implemented";
   }
 
-  sub isa_ok () {
+  sub isa_ok {
     say "### Perlito5::Test::isa_ok not implemented";
   }
 
-  sub use_ok () {
+  sub use_ok {
     say "### Perlito5::Test::use_ok not implemented";
   }
 
-  sub throws_ok () {
+  sub throws_ok {
     say "### Perlito5::Test::throws_ok not implemented";
   }
 
-  sub dies_ok () {
+  sub dies_ok {
     say "### Perlito5::Test::dies_ok not implemented";
   }
 
-  sub lives_ok () {
+  sub lives_ok {
     say "### Perlito5::Test::lives_ok not implemented";
   }
 
@@ -107,7 +107,15 @@ class Perlito5::Test {
 
 ## 'private' subs
 
-  sub proclaim ($cond, $desc, $todo, $got, $expected, $depends, $negate) {
+  sub proclaim {
+    $cond = shift;
+    $desc = shift;
+    $todo = shift;
+    $got = shift;
+    $expected = shift;
+    $depends = shift;
+    $negate = shift;
+
     $testing_started  = 1;
     $num_of_tests_run = $num_of_tests_run + 1;
 
