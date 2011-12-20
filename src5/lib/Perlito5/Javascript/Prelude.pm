@@ -44,11 +44,13 @@ class Pair {
 
 class Main {
 
-    sub to_lisp_identifier ( $ident ) {
-        return 'sv-' ~ $ident;
+    sub to_lisp_identifier {
+        return 'sv-' ~ $_[0];
     }
 
-    sub lisp_dump_object ( $class_name, $data ) {
+    sub lisp_dump_object {
+        my $class_name = shift;
+        my $data = shift;
         return $class_name ~ '( ' ~ ($data.>>perl).join(', ') ~ ' )';
     }
 

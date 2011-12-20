@@ -157,7 +157,9 @@ class Perlito5::Expression {
         return $v;
     }
 
-    sub reduce_postfix ($op, $value) {
+    sub reduce_postfix {
+        my $op = shift;
+        my $value = shift;
         my $v = $op;
         # say "# ** reduce_postfix ", $op.perl;
         # say "#      value: ", $value.perl;

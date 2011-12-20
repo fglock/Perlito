@@ -49,7 +49,8 @@ class Ruby {
         }
         return '(' ~ @s.join($op) ~ ')'
     }
-    sub tab($level) {
+    sub tab {
+        my $level = shift;
         "    " x $level
     }
 }
@@ -89,7 +90,8 @@ class Perlito5::Ruby::LexicalBlock {
 
     my $ident;
     my @anon_block;
-    sub push_stmt_ruby($block) {
+    sub push_stmt_ruby {
+        my $block = shift;
         push @anon_block, $block;
     }
     sub get_ident_ruby {

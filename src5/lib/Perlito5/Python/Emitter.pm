@@ -3,7 +3,8 @@ use v6;
 use Perlito5::AST;
 
 class Python {
-    sub tab($level) {
+    sub tab {
+        my $level = shift;
         "    " x $level
     }
 
@@ -24,7 +25,8 @@ class Python {
         ']' => 1,
     );
 
-    sub escape_string($s) {
+    sub escape_string {
+        my $s = shift;
         my @out;
         my $tmp = '';
         return "u''" if $s eq '';
@@ -88,7 +90,8 @@ class Perlito5::Python::LexicalBlock {
 
     my $ident;
     my @anon_block;
-    sub push_stmt_python($block) {
+    sub push_stmt_python {
+        my $block = shift;
         push @anon_block, $block;
     }
     sub get_ident_python {

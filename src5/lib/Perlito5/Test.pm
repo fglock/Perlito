@@ -96,7 +96,8 @@ class Perlito5::Test {
     Perlito5::Test::proclaim(1, '', "skip " ~ $reason, $depends);
   }
 
-  sub pass ($desc) {
+  sub pass {
+    my $desc = shift;
     Perlito5::Test::proclaim(1, 'pass! ' ~ $desc);
   }
 

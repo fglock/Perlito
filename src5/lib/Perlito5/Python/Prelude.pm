@@ -2,7 +2,8 @@ use v6;
 
 class Main {
 
-    sub to_lisp_identifier ( $ident ) {
+    sub to_lisp_identifier {
+        my $ident = shift;
         return 'sv-' ~ $ident;
     }
 

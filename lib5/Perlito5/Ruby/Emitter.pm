@@ -69,7 +69,7 @@ package GLOBAL;
         };
         sub tab {
             my $List__ = bless \@_, "ARRAY";
-            my $level = $_[0];
+            ((my  $level) = shift());
             (('    ') x $level)
         }
     }
@@ -119,7 +119,7 @@ package GLOBAL;
         (my  $List_anon_block = bless [], 'ARRAY');
         sub push_stmt_ruby {
             my $List__ = bless \@_, "ARRAY";
-            my $block = $_[0];
+            ((my  $block) = shift());
             push( @{$List_anon_block}, $block )
         };
         sub get_ident_ruby {

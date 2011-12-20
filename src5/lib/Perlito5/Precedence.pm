@@ -10,19 +10,25 @@ class Perlito5::Precedence {
     my $Assoc = {};         # right, left, list
     my $Allow_space_before = {};
 
-    sub is_assoc_type ($assoc_type, $op_name) {
+    sub is_assoc_type {
+        my $assoc_type = shift;
+        my $op_name = shift;
         return $Assoc->{$assoc_type}{$op_name}
     }
 
-    sub is_fixity_type ($fixity_type, $op_name) {
+    sub is_fixity_type {
+        my $fixity_type = shift;
+        my $op_name = shift;
         return $Operator->{$fixity_type}{$op_name}
     }
 
-    sub is_term ($token) {
+    sub is_term {
+        my $token = shift;
         ($token->[0] eq 'term') || ($token->[0] eq 'postfix_or_term')
     }
 
-    sub is_ident_middle ($c) {
+    sub is_ident_middle {
+        my $c = shift;
            (($c ge 'a') && ($c le 'z'))
         || (($c ge '0') && ($c le '9'))
         ||  ($c eq '_')
@@ -93,7 +99,12 @@ class Perlito5::Precedence {
         return Perlito5::Match->new( bool => 0 );
     }
 
-    sub add_op ( $fixity, $name, $precedence, $param ) {
+    sub add_op {
+        my $fixity = shift;
+        my $name = shift;
+        my $precedence = shift;
+        my $param = shift;
+ 
         if !(defined($param)) {
             $param = {}
         }

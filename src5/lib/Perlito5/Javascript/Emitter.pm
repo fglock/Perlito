@@ -333,7 +333,8 @@ class CompUnit {
         $str = $str ~ '}'
             ~ ')()' ~ "\n";
     }
-    sub emit_javascript_program( $comp_units ) {
+    sub emit_javascript_program {
+        my $comp_units = shift;
         my $str = '';
         for my $comp_unit ( @($comp_units) ) {
             $str = $str ~ $comp_unit->emit_javascript()

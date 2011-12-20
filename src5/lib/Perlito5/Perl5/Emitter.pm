@@ -3,7 +3,8 @@ use v5;
 use Perlito5::AST;
 
 class Perl5 {
-    sub tab($level) {
+    sub tab {
+        my $level = shift;
         "    " x $level
     }
 
@@ -24,7 +25,8 @@ class Perl5 {
         ']' => 1,
     );
 
-    sub escape_string($s) {
+    sub escape_string {
+        my $s = shift;
         my @out;
         my $tmp = '';
         return "''" if $s eq '';
@@ -498,7 +500,10 @@ class Apply {
         Perl5::tab($level) ~ $code ~ '(' ~ (@.arguments.>>emit_perl5).join(', ') ~ ')';
     }
 
-    sub emit_perl5_bind ($parameters, $arguments) {
+    sub emit_perl5_bind {
+        my $parameters = shift;
+        my $arguments = shift;
+
         if $parameters->isa( 'Call' ) {
 
             # $a->[3] = 4

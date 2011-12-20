@@ -119,7 +119,7 @@ package GLOBAL;
         };
         sub pass {
             my $List__ = bless \@_, "ARRAY";
-            my $desc = $_[0];
+            ((my  $desc) = shift());
             Perlito5::Test::proclaim(1, ('pass' . chr(33) . ' ' . $desc))
         };
         sub flunk {

@@ -19,7 +19,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Python" }
         sub tab {
             my $List__ = bless \@_, "ARRAY";
-            my $level = $_[0];
+            ((my  $level) = shift());
             (('    ') x $level)
         };
         ((my  $Hash_safe_char = bless {}, 'HASH') = do {
@@ -42,7 +42,7 @@ package GLOBAL;
 });
         sub escape_string {
             my $List__ = bless \@_, "ARRAY";
-            my $s = $_[0];
+            ((my  $s) = shift());
             (my  $List_out = bless [], 'ARRAY');
             ((my  $tmp) = '');
             if (($s eq '')) {
@@ -122,7 +122,7 @@ package GLOBAL;
         (my  $List_anon_block = bless [], 'ARRAY');
         sub push_stmt_python {
             my $List__ = bless \@_, "ARRAY";
-            my $block = $_[0];
+            ((my  $block) = shift());
             push( @{$List_anon_block}, $block )
         };
         sub get_ident_python {

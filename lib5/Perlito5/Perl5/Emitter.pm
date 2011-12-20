@@ -17,7 +17,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Perl5" }
         sub tab {
             my $List__ = bless \@_, "ARRAY";
-            my $level = $_[0];
+            ((my  $level) = shift());
             (('    ') x $level)
         };
         ((my  $Hash_safe_char = bless {}, 'HASH') = do {
@@ -40,7 +40,7 @@ package GLOBAL;
 });
         sub escape_string {
             my $List__ = bless \@_, "ARRAY";
-            my $s = $_[0];
+            ((my  $s) = shift());
             (my  $List_out = bless [], 'ARRAY');
             ((my  $tmp) = '');
             if (($s eq '')) {
@@ -563,8 +563,8 @@ package GLOBAL;
         };
         sub emit_perl5_bind {
             my $List__ = bless \@_, "ARRAY";
-            my $parameters = $_[0];
-            my $arguments = $_[1];
+            ((my  $parameters) = shift());
+            ((my  $arguments) = shift());
             if (Main::isa($parameters, 'Call')) {
                 if (((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>') || ($parameters->method() eq 'postcircumfix:<[ ]>')))) {
                     return scalar (('(' . $parameters->emit_perl5() . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')'))

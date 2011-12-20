@@ -293,7 +293,7 @@ package GLOBAL;
         };
         sub emit_javascript_program {
             my $List__ = bless \@_, "ARRAY";
-            my $comp_units = $_[0];
+            ((my  $comp_units) = shift());
             ((my  $str) = '');
             for my $comp_unit ( @{(($comp_units))} ) {
                 ($str = ($str . $comp_unit->emit_javascript()))

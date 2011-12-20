@@ -155,8 +155,8 @@ package GLOBAL;
         };
         sub reduce_postfix {
             my $List__ = bless \@_, "ARRAY";
-            my $op = $_[0];
-            my $value = $_[1];
+            ((my  $op) = shift());
+            ((my  $value) = shift());
             ((my  $v) = $op);
             if (($v->[1] eq 'methcall_no_params')) {
                 ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('hyper' => $v->[3])));
