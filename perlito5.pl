@@ -104,13 +104,13 @@ package GLOBAL;
     };
     sub modulename_to_filename {
         my $List__ = bless \@_, "ARRAY";
-        my $s = $_[0];
+        ((my  $s) = shift());
         ((my  $ident) = Main->module_name($s, 0));
         return scalar (Main::join((${$ident}), (chr(47))))
     };
     sub expand_use {
         my $List__ = bless \@_, "ARRAY";
-        my $stmt = $_[0];
+        ((my  $stmt) = shift());
         ((my  $module_name) = $stmt->mod());
         if ((((($module_name eq 'v6') || ($module_name eq 'v5')) || ($module_name eq 'strict')) || ($module_name eq 'feature'))) {
             return ()
@@ -134,8 +134,8 @@ package GLOBAL;
     };
     sub add_comp_unit {
         my $List__ = bless \@_, "ARRAY";
-        my $List_parse = $_[0];
-        for my $comp_unit ( @{$List_parse} ) {
+        ((my  $parse) = shift());
+        for my $comp_unit ( @{($parse)} ) {
             if (($expand_use && Main::isa($comp_unit, 'Use'))) {
                 expand_use($comp_unit)
             }

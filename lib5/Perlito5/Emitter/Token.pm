@@ -18,7 +18,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Rul" }
         sub constant {
             my $List__ = bless \@_, "ARRAY";
-            my $str = $_[0];
+            ((my  $str) = shift());
             ((my  $len) = Main::chars($str, ));
             if (($str eq chr(92))) {
                 ($str = chr(92) . chr(92))

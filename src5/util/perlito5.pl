@@ -37,12 +37,14 @@ token module_name {
     |   ''                  { make [ ~$<Perlito5::Grammar.ident> ] }
     ]
 }
-sub modulename_to_filename ($s) {
+sub modulename_to_filename {
+    my $s = shift;
     my $ident = Main.module_name( $s, 0 );
     return ($$ident).join("/");
 }
 
-sub expand_use($stmt) {
+sub expand_use {
+    my $stmt = shift;
     my $module_name = $stmt.mod;
     return
         if $module_name eq 'v6'
@@ -74,8 +76,9 @@ sub expand_use($stmt) {
     }
 }
 
-sub add_comp_unit (@parse) {
-    for my $comp_unit (@parse) {
+sub add_comp_unit {
+    my $parse = shift;
+    for my $comp_unit (@$parse) {
         if $expand_use && $comp_unit.isa('Use') {
             expand_use($comp_unit);
         }

@@ -5,7 +5,8 @@ use v6;
 
 class Rul {
 
-    sub constant ( $str ) {
+    sub constant {
+            my $str = shift;
             my $len = $str.chars;
             if $str eq '\\' {
                 $str = '\\\\';

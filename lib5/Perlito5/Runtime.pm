@@ -15,35 +15,34 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Main" }
         sub _replace {
             my $List__ = bless \@_, "ARRAY";
-            my $s = $_[0];
-            my $old = $_[1];
-            my $new = $_[2];
+            ((my  $s) = shift());
+            ((my  $old) = shift());
+            ((my  $new) = shift());
             ((my  $p) = index($s, $old));
             (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + Main::chars($old, ))), $old, $new)) : $s)
         };
         sub to_lisp_identifier {
             my $List__ = bless \@_, "ARRAY";
-            my $ident = $_[0];
-            return scalar (('sv-' . $ident))
+            return scalar (('sv-' . $List__->[0]))
         };
         sub lisp_escape_string {
             my $List__ = bless \@_, "ARRAY";
-            my $s = $_[0];
+            ((my  $s) = shift());
             _replace($s, (chr(92)), (chr(92) . chr(92)))
         };
         sub to_javascript_namespace {
             my $List__ = bless \@_, "ARRAY";
-            my $s = $_[0];
+            ((my  $s) = shift());
             _replace($s, ('::'), chr(36))
         };
         sub to_lisp_namespace {
             my $List__ = bless \@_, "ARRAY";
-            my $s = $_[0];
+            ((my  $s) = shift());
             _replace($s, ('::'), ('-'))
         };
         sub to_go_namespace {
             my $List__ = bless \@_, "ARRAY";
-            my $s = $_[0];
+            ((my  $s) = shift());
             _replace($s, ('::'), ('__'))
         }
     }

@@ -19,7 +19,7 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Javascript" }
         sub tab {
             my $List__ = bless \@_, "ARRAY";
-            my $level = $_[0];
+            ((my  $level) = shift());
             (('    ') x $level)
         };
         ((my  $Hash_safe_char = bless {}, 'HASH') = do {
@@ -42,7 +42,7 @@ package GLOBAL;
 });
         sub escape_string {
             my $List__ = bless \@_, "ARRAY";
-            my $s = $_[0];
+            ((my  $s) = shift());
             (my  $List_out = bless [], 'ARRAY');
             ((my  $tmp) = '');
             if (($s eq '')) {
@@ -75,7 +75,7 @@ package GLOBAL;
 });
         sub escape_function {
             my $List__ = bless \@_, "ARRAY";
-            my $s = $_[0];
+            ((my  $s) = shift());
             if (exists($Hash_reserved->{$s})) {
                 return scalar (('f_' . $s))
             };
@@ -762,8 +762,8 @@ package GLOBAL;
         };
         sub emit_javascript_bind {
             my $List__ = bless \@_, "ARRAY";
-            my $parameters = $_[0];
-            my $arguments = $_[1];
+            ((my  $parameters) = shift());
+            ((my  $arguments) = shift());
             if (Main::isa($parameters, 'Call')) {
                 if ((($parameters->method() eq 'postcircumfix:<[ ]>'))) {
                     ((my  $str) = '');

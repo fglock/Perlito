@@ -11,7 +11,8 @@ class Perlito5 {
     use Perlito5::Macro;
     use Perlito5::Runtime;
 
-    sub compile_p5_to_js ($s) {
+    sub compile_p5_to_js {
+        my $s = shift;
         my $ast = Perlito5::Grammar.exp_stmts($s, 0);
         CompUnit.new( name => 'GLOBAL', body => $$ast ).emit_javascript()
     }

@@ -4,7 +4,8 @@ class Perlito5::Expression {
     use Perlito5::Grammar;
     use Perlito5::Perl5::Emitter;
 
-    sub expand_list ($param_list) {
+    sub expand_list {
+        my $param_list = shift;
         # say "# expand_list: ", $param_list.perl;
         if ($param_list.isa('Apply')) && (($param_list.code) eq 'list:<,>') {
             my $args = [];
@@ -23,7 +24,8 @@ class Perlito5::Expression {
         }
     }
 
-    sub block_or_hash ($o) {
+    sub block_or_hash {
+        my $o = shift;
         # say "# block_or_hash? ", $o.perl;
         if defined($o.sig) {
             # say "#  has sig -- not a block";
@@ -65,7 +67,8 @@ class Perlito5::Expression {
         return $o;
     }
 
-    sub pop_term ($num_stack) {
+    sub pop_term {
+        my $num_stack = shift;
         my $v = $num_stack.pop;
         if $v.isa('Array') {
             # say "# ** processing term ", $v.perl;

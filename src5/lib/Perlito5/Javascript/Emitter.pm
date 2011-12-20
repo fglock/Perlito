@@ -3,7 +3,8 @@ use v6;
 use Perlito5::AST;
 
 class Javascript {
-    sub tab($level) {
+    sub tab {
+        my $level = shift;
         "    " x $level
     }
 
@@ -24,7 +25,8 @@ class Javascript {
         ']' => 1,
     );
 
-    sub escape_string($s) {
+    sub escape_string {
+        my $s = shift;
         my @out;
         my $tmp = '';
         return "''" if $s eq '';
@@ -51,7 +53,8 @@ class Javascript {
         print => 1,
     );
 
-    sub escape_function ($s) {
+    sub escape_function {
+        my $s = shift;
         return 'f_' ~ $s if exists %reserved{$s};
         return $s;
     }
@@ -747,7 +750,9 @@ class Apply {
         Javascript::tab($level) ~ $code ~ '(CallSub, ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
     }
 
-    sub emit_javascript_bind ($parameters, $arguments) {
+    sub emit_javascript_bind {
+        my $parameters = shift;
+        my $arguments = shift;
         if $parameters->isa( 'Call' ) {
 
             # $a->[3] = 4

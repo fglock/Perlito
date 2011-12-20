@@ -18,7 +18,7 @@ package GLOBAL;
         use Perlito5::Perl5::Emitter;
         sub expand_list {
             my $List__ = bless \@_, "ARRAY";
-            my $param_list = $_[0];
+            ((my  $param_list) = shift());
             if (((Main::isa($param_list, 'Apply')) && ((($param_list->code()) eq 'list:<,>')))) {
                 ((my  $args) = do {
     (my  $List_a = bless [], 'ARRAY');
@@ -52,7 +52,7 @@ package GLOBAL;
         };
         sub block_or_hash {
             my $List__ = bless \@_, "ARRAY";
-            my $o = $_[0];
+            ((my  $o) = shift());
             if (defined($o->sig())) {
                 return scalar ($o)
             };
@@ -91,7 +91,7 @@ package GLOBAL;
         };
         sub pop_term {
             my $List__ = bless \@_, "ARRAY";
-            my $num_stack = $_[0];
+            ((my  $num_stack) = shift());
             ((my  $v) = pop( @{$num_stack} ));
             if (Main::isa($v, 'Array')) {
                 if (($v->[1] eq 'methcall_no_params')) {
