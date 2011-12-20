@@ -80,6 +80,63 @@ package GLOBAL;
                 return scalar (('f_' . $s))
             };
             return scalar ($s)
+        };
+        sub autovivify {
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $ast) = shift());
+            ((my  $type) = shift());
+            if ((Main::isa($ast, 'Var'))) {
+                if ((((($type eq 'HASH') && ($ast->sigil() eq chr(36))) && ($ast->name() ne chr(47))))) {
+                    ($ast = Var->new(('sigil' => chr(37)), ('twigil' => $ast->twigil()), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
+                    ((my  $var_js) = $ast->emit_javascript());
+                    return scalar (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                }
+                else {
+                    if (((($type eq 'ARRAY') && ($ast->sigil() eq chr(36))))) {
+                        ($ast = Var->new(('sigil' => chr(64)), ('twigil' => $ast->twigil()), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
+                        ((my  $var_js) = $ast->emit_javascript());
+                        return scalar (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                    }
+                    else {
+                        if ((((($type eq 'HASHREF') && ($ast->sigil() eq chr(36))) && ($ast->name() ne chr(47))))) {
+                            ((my  $var_js) = $ast->emit_javascript());
+                            return scalar (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                        }
+                        else {
+                            if (((($type eq 'ARRAYREF') && ($ast->sigil() eq chr(36))))) {
+                                ((my  $var_js) = $ast->emit_javascript());
+                                return scalar (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                if (Main::isa($ast, 'Call')) {
+                    ((my  $var_js) = $ast->emit_javascript());
+                    if ((($ast->method() eq 'postcircumfix:<[ ]>'))) {
+                        return scalar ((autovivify($ast->invocant(), 'ARRAYREF') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                    }
+                    else {
+                        if ((($ast->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
+                            return scalar ((autovivify($ast->invocant(), 'HASHREF') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                        }
+                    }
+                }
+                else {
+                    if (Main::isa($ast, 'Index')) {
+                        ((my  $var_js) = $ast->emit_javascript());
+                        return scalar ((autovivify($ast->obj(), 'ARRAY') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                    }
+                    else {
+                        if (Main::isa($ast, 'Lookup')) {
+                            ((my  $var_js) = $ast->emit_javascript());
+                            return scalar ((autovivify($ast->obj(), 'HASH') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                        }
+                    }
+                }
+            };
+            return scalar ('')
         }
     }
 
@@ -390,25 +447,7 @@ package GLOBAL;
                 ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
                 return scalar (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
             };
-            ((my  $str) = '');
-            ((my  $var) = $self->{obj});
-            (my  $var_js);
-            if (Main::isa($var, 'Lookup')) {
-                ((my  $var1) = $var->obj());
-                if ((((Main::isa($var1, 'Var') && ($var1->sigil() eq chr(36))) && ($var1->name() ne chr(47))))) {
-                    ($var1 = Var->new(('sigil' => chr(37)), ('twigil' => $var1->twigil()), ('namespace' => $var1->namespace()), ('name' => $var1->name())))
-                };
-                ((my  $var1_js) = $var1->emit_javascript());
-                ($str = ($str . 'if (' . $var1_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var1_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '));
-                ($var_js = ($var1_js . '[' . $var->index_exp()->emit_javascript() . ']'))
-            }
-            else {
-                ($var_js = $var->emit_javascript())
-            };
-            ($str = ($str . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '));
-            ((my  $index_js) = $self->{index_exp}->emit_javascript());
-            ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ')' . chr(59) . ' '));
-            return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+            return scalar (($self->{obj}->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
         }
     }
 
@@ -729,7 +768,7 @@ package GLOBAL;
                 if ((($parameters->method() eq 'postcircumfix:<[ ]>'))) {
                     ((my  $str) = '');
                     ((my  $var_js) = $parameters->invocant()->emit_javascript());
-                    ($str = ($str . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '));
+                    ($str = ($str . Javascript::autovivify($parameters, 'ARRAYREF')));
                     ((my  $index_js) = $parameters->arguments()->emit_javascript());
                     ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                     return scalar (('(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
@@ -737,7 +776,7 @@ package GLOBAL;
                 if ((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
                     ((my  $str) = '');
                     ((my  $var_js) = $parameters->invocant()->emit_javascript());
-                    ($str = ($str . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '));
+                    ($str = ($str . Javascript::autovivify($parameters, 'HASHREF')));
                     ((my  $index_js) = $parameters->arguments()->emit_javascript());
                     ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                     return scalar (('(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
@@ -750,20 +789,8 @@ package GLOBAL;
                 if ((((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))) && ($var->name() ne chr(47))))) {
                     ($var = Var->new(('sigil' => chr(37)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
                 };
-                (my  $var_js);
-                if (Main::isa($var, 'Lookup')) {
-                    ((my  $var1) = $var->obj());
-                    if ((((Main::isa($var1, 'Var') && ($var1->sigil() eq chr(36))) && ($var1->name() ne chr(47))))) {
-                        ($var1 = Var->new(('sigil' => chr(37)), ('twigil' => $var1->twigil()), ('namespace' => $var1->namespace()), ('name' => $var1->name())))
-                    };
-                    ((my  $var1_js) = $var1->emit_javascript());
-                    ($str = ($str . 'if (' . $var1_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var1_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '));
-                    ($var_js = ($var1_js . '[' . $var->index_exp()->emit_javascript() . ']'))
-                }
-                else {
-                    ($var_js = $var->emit_javascript())
-                };
-                ($str = ($str . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '));
+                ((my  $var_js) = $var->emit_javascript());
+                ($str = ($str . Javascript::autovivify($parameters, 'HASH')));
                 ((my  $index_js) = $parameters->index_exp()->emit_javascript());
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                 return scalar (('(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
@@ -774,20 +801,8 @@ package GLOBAL;
                 if (((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
                     ($var = Var->new(('sigil' => chr(64)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
                 };
-                (my  $var_js);
-                if (Main::isa($var, 'Index')) {
-                    ((my  $var1) = $var->obj());
-                    if (((Main::isa($var1, 'Var') && ($var1->sigil() eq chr(36))))) {
-                        ($var1 = Var->new(('sigil' => chr(64)), ('twigil' => $var1->twigil()), ('namespace' => $var1->namespace()), ('name' => $var1->name())))
-                    };
-                    ((my  $var1_js) = $var1->emit_javascript());
-                    ($str = ($str . 'if (' . $var1_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var1_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '));
-                    ($var_js = ($var1_js . '[' . $var->index_exp()->emit_javascript() . ']'))
-                }
-                else {
-                    ($var_js = $var->emit_javascript())
-                };
-                ($str = ($str . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '));
+                ((my  $var_js) = $var->emit_javascript());
+                ($str = ($str . Javascript::autovivify($parameters, 'ARRAY')));
                 ((my  $index_js) = $parameters->index_exp()->emit_javascript());
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                 return scalar (('(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))

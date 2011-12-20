@@ -56,6 +56,76 @@ class Javascript {
         return $s;
     }
 
+    sub autovivify {
+        my $ast = shift;
+        my $type = shift;
+
+        if (  $ast->isa('Var') ) {
+            if (  $type eq 'HASH'
+               && $ast->sigil eq '$'
+               && $ast->name ne '/'  # XXX $/ is the Perl6 match object
+               )
+            {
+                # $a in the expression $a{'x'}
+                $ast = Var->new( sigil => '%', twigil => $ast->twigil, namespace => $ast->namespace, name => $ast->name );
+                my $var_js = $ast->emit_javascript;
+                return 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+            }
+            elsif ( $type eq 'ARRAY'
+               && $ast->sigil eq '$'
+               )
+            {
+                # $a in the expression $a[3]
+                $ast = Var->new( sigil => '@', twigil => $ast->twigil, namespace => $ast->namespace, name => $ast->name );
+                my $var_js = $ast->emit_javascript;
+                return 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = [] }; ';
+            }
+            elsif (  $type eq 'HASHREF'
+               && $ast->sigil eq '$'
+               && $ast->name ne '/'  # XXX $/ is the Perl6 match object
+               )
+            {
+                # $a in the expression $a->{'x'}
+                my $var_js = $ast->emit_javascript;
+                return 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+            }
+            elsif ( $type eq 'ARRAYREF'
+               && $ast->sigil eq '$'
+               )
+            {
+                # $a in the expression $a->[3]
+                my $var_js = $ast->emit_javascript;
+                return 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = [] }; ';
+            }
+        }
+        elsif $ast->isa( 'Call' ) {
+            my $var_js = $ast->emit_javascript;
+            if  (  $ast->method eq 'postcircumfix:<[ ]>' ) {
+                # $a->[3]
+                return autovivify( $ast->invocant, 'ARRAYREF' )
+                 ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = [] }; ';
+            }
+            elsif  (  $ast->method eq 'postcircumfix:<{ }>' ) {
+                # $a->{x}
+                return autovivify( $ast->invocant, 'HASHREF' )
+                 ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+            }
+        }
+        elsif $ast->isa( 'Index' ) {
+            my $var_js = $ast.emit_javascript;
+            # $a[3][4]
+            return autovivify( $ast->obj, 'ARRAY' )
+                 ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = [] }; ';
+        }
+        elsif $ast->isa( 'Lookup' ) {
+            my $var_js = $ast.emit_javascript;
+            # $a{'x'}{'y'}
+            return autovivify( $ast->obj, 'HASH' )
+                 ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+        }
+        return '';
+    }
+
 }
 
 class Perlito5::Javascript::LexicalBlock {
@@ -349,32 +419,33 @@ class Lookup {
             my $v = Var->new( sigil => '%', twigil => $.obj->twigil, namespace => $.obj->namespace, name => $.obj->name );
             return $v->emit_javascript_indented($level) ~ '[' ~ $.index_exp->emit_javascript() ~ ']';
         }
+        return $.obj->emit_javascript_indented($level) ~ '[' ~ $.index_exp->emit_javascript() ~ ']';
 
-        my $str = '';
-        my $var = $.obj;
-        my $var_js;
-        if $var->isa('Lookup') {
-            my $var1 = $var->obj;
+        ## my $str = '';
+        ## my $var = $.obj;
+        ## my $var_js;
+        ## if $var->isa('Lookup') {
+        ##     my $var1 = $var->obj;
 
-            if (  $var1->isa('Var')
-               && $var1->sigil eq '$'
-               && $var1->name ne '/'  # XXX $/ is the Perl6 match object
-               )
-            {
-                $var1 = Var->new( sigil => '%', twigil => $var1->twigil, namespace => $var1->namespace, name => $var1->name );
-            }
+        ##     if (  $var1->isa('Var')
+        ##        && $var1->sigil eq '$'
+        ##        && $var1->name ne '/'  # XXX $/ is the Perl6 match object
+        ##        )
+        ##     {
+        ##         $var1 = Var->new( sigil => '%', twigil => $var1->twigil, namespace => $var1->namespace, name => $var1->name );
+        ##     }
  
-            my $var1_js = $var1.emit_javascript;
-            $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = {} }; ';
-            $var_js = $var1_js ~ '[' ~ $var->index_exp->emit_javascript() ~ ']'
-        }
-        else {
-            $var_js = $var->emit_javascript;
-        }
-        $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
-        my $index_js = $.index_exp->emit_javascript;
-        $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ '); ';
-        return Javascript::tab($level) ~ '(function () { ' ~ $str ~ '})()';
+        ##     my $var1_js = $var1.emit_javascript;
+        ##     $str = $str ~ Javascript::autovivify( $var1 );
+        ##     $var_js = $var1_js ~ '[' ~ $var->index_exp->emit_javascript() ~ ']'
+        ## }
+        ## else {
+        ##     $var_js = $var->emit_javascript;
+        ## }
+        ## $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+        ## my $index_js = $.index_exp->emit_javascript;
+        ## $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ '); ';
+        ## return Javascript::tab($level) ~ '(function () { ' ~ $str ~ '})()';
     }
 }
 
@@ -683,7 +754,7 @@ class Apply {
             if  (  $parameters->method eq 'postcircumfix:<[ ]>' ) {
                 my $str = '';
                 my $var_js = $parameters->invocant->emit_javascript;
-                $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = [] }; ';
+                $str = $str ~ Javascript::autovivify( $parameters, 'ARRAYREF' );
                 my $index_js = $parameters->arguments->emit_javascript;
                 $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ ' = ' ~ $arguments->emit_javascript() ~ '); ';
                 return '(function () { ' ~ $str ~ '})()';
@@ -693,7 +764,7 @@ class Apply {
             if  (  $parameters->method eq 'postcircumfix:<{ }>' ) {
                 my $str = '';
                 my $var_js = $parameters->invocant->emit_javascript;
-                $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+                $str = $str ~ Javascript::autovivify( $parameters, 'HASHREF' );
                 my $index_js = $parameters->arguments->emit_javascript;
                 $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ ' = ' ~ $arguments->emit_javascript() ~ '); ';
                 return '(function () { ' ~ $str ~ '})()';
@@ -714,26 +785,8 @@ class Apply {
                 $var = Var->new( sigil => '%', twigil => $var->twigil, namespace => $var->namespace, name => $var->name );
             }
 
-            my $var_js;
-            if $var->isa('Lookup') {
-                my $var1 = $var->obj;
-
-                if (  $var1->isa('Var')
-                   && $var1->sigil eq '$'
-                   && $var1->name ne '/'  # XXX $/ is the Perl6 match object
-                   )
-                {
-                    $var1 = Var->new( sigil => '%', twigil => $var1->twigil, namespace => $var1->namespace, name => $var1->name );
-                }
-
-                my $var1_js = $var1.emit_javascript;
-                $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = {} }; ';
-                $var_js = $var1_js ~ '[' ~ $var->index_exp->emit_javascript() ~ ']'
-            }
-            else {
-                $var_js = $var->emit_javascript;
-            }
-            $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
+            my $var_js = $var->emit_javascript;
+            $str = $str ~ Javascript::autovivify( $parameters, 'HASH' );
             my $index_js = $parameters->index_exp->emit_javascript;
             $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ ' = ' ~ $arguments->emit_javascript() ~ '); ';
             return '(function () { ' ~ $str ~ '})()';
@@ -749,25 +802,8 @@ class Apply {
                 $var = Var->new( sigil => '@', twigil => $var->twigil, namespace => $var->namespace, name => $var->name );
             }
 
-            my $var_js;
-            if $var->isa('Index') {
-                my $var1 = $var->obj;
-
-                if (  $var1->isa('Var')
-                   && $var1->sigil eq '$'
-                   )
-                {
-                    $var1 = Var->new( sigil => '@', twigil => $var1->twigil, namespace => $var1->namespace, name => $var1->name );
-                }
-
-                my $var1_js = $var1.emit_javascript;
-                $str = $str ~ 'if (' ~ $var1_js ~ ' == null) { ' ~ $var1_js ~ ' = [] }; ';
-                $var_js = $var1_js ~ '[' ~ $var->index_exp->emit_javascript() ~ ']'
-            }
-            else {
-                $var_js = $var->emit_javascript;
-            }
-            $str = $str ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = [] }; ';
+            my $var_js = $var->emit_javascript;
+            $str = $str ~ Javascript::autovivify( $parameters, 'ARRAY' );
             my $index_js = $parameters->index_exp->emit_javascript;
             $str = $str ~ 'return (' ~ $var_js ~ '[' ~ $index_js ~ '] ' ~ ' = ' ~ $arguments->emit_javascript() ~ '); ';
             return '(function () { ' ~ $str ~ '})()';
