@@ -20,17 +20,17 @@ package GLOBAL;
         (my  $testing_started);
         sub plan {
             my $List__ = bless \@_, "ARRAY";
-            my $number_of_tests = $_[0];
+            ((my  $number_of_tests) = shift());
             ($testing_started = 1);
             ($num_of_tests_planned = $number_of_tests);
             Main::say(('1..' . $number_of_tests))
         };
         sub ok {
             my $List__ = bless \@_, "ARRAY";
-            my $cond = $_[0];
-            my $desc = $_[1];
-            my $todo = $_[2];
-            my $depends = $_[3];
+            ((my  $cond) = shift());
+            ((my  $desc) = shift());
+            ((my  $todo) = shift());
+            ((my  $depends) = shift());
             Perlito5::Test::proclaim($cond, ('ok' . chr(33) . ' ' . $desc), $todo, $depends)
         };
         sub is {
@@ -131,13 +131,13 @@ package GLOBAL;
         };
         sub proclaim {
             my $List__ = bless \@_, "ARRAY";
-            my $cond = $_[0];
-            my $desc = $_[1];
-            my $todo = $_[2];
-            my $got = $_[3];
-            my $expected = $_[4];
-            my $depends = $_[5];
-            my $negate = $_[6];
+            ((my  $cond) = shift());
+            ((my  $desc) = shift());
+            ((my  $todo) = shift());
+            ((my  $got) = shift());
+            ((my  $expected) = shift());
+            ((my  $depends) = shift());
+            ((my  $negate) = shift());
             ($testing_started = 1);
             ($num_of_tests_run = ($num_of_tests_run + 1));
             if (($cond)) {

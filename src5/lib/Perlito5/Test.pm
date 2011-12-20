@@ -108,13 +108,13 @@ class Perlito5::Test {
 ## 'private' subs
 
   sub proclaim {
-    $cond = shift;
-    $desc = shift;
-    $todo = shift;
-    $got = shift;
-    $expected = shift;
-    $depends = shift;
-    $negate = shift;
+    my $cond = shift;
+    my $desc = shift;
+    my $todo = shift;
+    my $got = shift;
+    my $expected = shift;
+    my $depends = shift;
+    my $negate = shift;
 
     $testing_started  = 1;
     $num_of_tests_run = $num_of_tests_run + 1;
