@@ -804,8 +804,8 @@ package GLOBAL;
         };
         sub emit_python_bind {
             my $List__ = bless \@_, "ARRAY";
-            my $parameters = $_[0];
-            my $arguments = $_[1];
+            ((my  $parameters) = shift());
+            ((my  $arguments) = shift());
             if (Main::isa($parameters, 'Call')) {
                 return scalar ((($parameters->invocant())->emit_python() . ('.f__setattr__(' . chr(39) . 'v_') . $parameters->method() . (chr(39) . ', ') . $arguments->emit_python() . (')')))
             };

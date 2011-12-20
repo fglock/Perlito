@@ -3,7 +3,10 @@ use v6;
 use Perlito5::AST;
 
 class Ruby {
-    sub to_str ($op, $args) {
+    sub to_str {
+        my $op = shift;
+        my $args = shift;
+
         my @s;
         for my $cond ( @($args) ) {
             if $cond.isa( 'Val::Buf' ) {
@@ -15,7 +18,10 @@ class Ruby {
         }
         return '(' ~ @s.join($op) ~ ')'
     }
-    sub to_num ($op, $args) {
+    sub to_num {
+        my $op = shift;
+        my $args = shift;
+
         my @s;
         for my $cond ( @($args) ) {
             if ($cond.isa( 'Val::Int' )) || ($cond.isa( 'Val::Num' )) {
@@ -27,7 +33,10 @@ class Ruby {
         }
         return '(' ~ @s.join($op) ~ ')'
     }
-    sub to_bool ($op, $args) {
+    sub to_bool {
+        my $op = shift;
+        my $args = shift;
+
         my @s;
         for my $cond ( @($args) ) {
             if     ($cond.isa( 'Val::Int' ))
@@ -546,7 +555,10 @@ class Apply {
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~ self.emit_ruby
     }
-    sub emit_ruby_bind($parameters, $arguments) {
+    sub emit_ruby_bind {
+        my $parameters = shift;
+        my $arguments = shift;
+
         if $parameters.isa( 'Index' ) {
             if      $parameters.obj.isa( 'Var' ) && $parameters.obj.sigil eq '@'
                 ||  $parameters.obj.isa( 'Decl' ) && $parameters.obj.var.sigil eq '@'

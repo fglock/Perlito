@@ -19,8 +19,8 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Ruby" }
         sub to_str {
             my $List__ = bless \@_, "ARRAY";
-            my $op = $_[0];
-            my $args = $_[1];
+            ((my  $op) = shift());
+            ((my  $args) = shift());
             (my  $List_s = bless [], 'ARRAY');
             for my $cond ( @{(($args))} ) {
                 if (Main::isa($cond, 'Val::Buf')) {
@@ -34,8 +34,8 @@ package GLOBAL;
         };
         sub to_num {
             my $List__ = bless \@_, "ARRAY";
-            my $op = $_[0];
-            my $args = $_[1];
+            ((my  $op) = shift());
+            ((my  $args) = shift());
             (my  $List_s = bless [], 'ARRAY');
             for my $cond ( @{(($args))} ) {
                 if (((Main::isa($cond, 'Val::Int')) || (Main::isa($cond, 'Val::Num')))) {
@@ -49,8 +49,8 @@ package GLOBAL;
         };
         sub to_bool {
             my $List__ = bless \@_, "ARRAY";
-            my $op = $_[0];
-            my $args = $_[1];
+            ((my  $op) = shift());
+            ((my  $args) = shift());
             (my  $List_s = bless [], 'ARRAY');
             for my $cond ( @{(($args))} ) {
                 if (((Main::isa($cond, 'Val::Int')) || (Main::isa($cond, 'Val::Num')))) {
@@ -741,8 +741,8 @@ package GLOBAL;
         };
         sub emit_ruby_bind {
             my $List__ = bless \@_, "ARRAY";
-            my $parameters = $_[0];
-            my $arguments = $_[1];
+            ((my  $parameters) = shift());
+            ((my  $arguments) = shift());
             if (Main::isa($parameters, 'Index')) {
                 if (((Main::isa($parameters->obj(), 'Var') && ($parameters->obj()->sigil() eq chr(64))) || (Main::isa($parameters->obj(), 'Decl') && ($parameters->obj()->var()->sigil() eq chr(64))))) {
                     return scalar ((($parameters->obj())->emit_ruby() . '[' . ($parameters->index_exp())->emit_ruby() . '] ' . chr(61) . ' ' . $arguments->emit_ruby()))

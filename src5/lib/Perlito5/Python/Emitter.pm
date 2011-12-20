@@ -662,7 +662,10 @@ class Apply {
     method emit_python_indented( $level ) {
         Python::tab($level) ~ self.emit_python
     }
-    sub emit_python_bind ($parameters, $arguments) {
+    sub emit_python_bind {
+        my $parameters = shift;
+        my $arguments = shift;
+
         if $parameters.isa( 'Call' ) {
             # $var.attr = 3;
             return

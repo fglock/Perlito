@@ -1,4 +1,10 @@
 
+package Main;
+
+sub new {
+    bless {}, 'Main';
+}
+
     say '1..35';
     
     say ( 0     ? "not " : "" ), "ok 1 - integer";
