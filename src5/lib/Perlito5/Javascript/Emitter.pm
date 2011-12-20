@@ -518,11 +518,12 @@ class Call {
             $invocant = 'v_self';
         }
 
+        # XXX Perl6
         if $.method eq 'new' {
             my $str = [];
             for my $field ( @.arguments ) {
                 if $field->isa('Apply') && $field->code eq 'infix:<=>>' {
-                    $str->push( $field->arguments[0].buf() ~ ': ' ~ $field->arguments[1].emit_javascript() );
+                    $str->push( 'v_' ~ $field->arguments[0].buf() ~ ': ' ~ $field->arguments[1].emit_javascript() );
                 }
                 else {
                     die 'Error in constructor, field: ', $field->perl;
@@ -601,7 +602,6 @@ class Apply {
 
         'infix:<==>' => ' == ',
         'infix:<!=>' => ' != ',
-        'infix:<=>>' => ', ',
     );
 
     my %op_global_js = (
@@ -630,6 +630,9 @@ class Apply {
         if $code->isa( 'Str' ) { }
         else {
             return Javascript::tab($level) ~ '(' ~ $.code->emit_javascript() ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+        }
+        if $code eq 'infix:<=>>' {
+            return Javascript::tab($level) ~ (@.arguments.>>emit_javascript).join( ', ' )
         }
         if exists %op_infix_js{$code} {
             return Javascript::tab($level) ~ '(' ~ (@.arguments.>>emit_javascript).join( %op_infix_js{$code} ) ~ ')'

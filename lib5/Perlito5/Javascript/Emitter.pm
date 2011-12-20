@@ -547,7 +547,7 @@ package GLOBAL;
 });
                 for my $field ( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ) {
                     if ((Main::isa($field, 'Apply') && ($field->code() eq 'infix:<' . chr(61) . '>>'))) {
-                        push( @{$str}, ($field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
+                        push( @{$str}, ('v_' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
                     }
                     else {
                         die('Error in constructor, field: ', Main::perl($field, ))
@@ -600,7 +600,6 @@ package GLOBAL;
     ($Hash_a->{'infix:<ge>'} = ' >' . chr(61) . ' ');
     ($Hash_a->{'infix:<' . chr(61) . chr(61) . '>'} = ' ' . chr(61) . chr(61) . ' ');
     ($Hash_a->{'infix:<' . chr(33) . chr(61) . '>'} = ' ' . chr(33) . chr(61) . ' ');
-    ($Hash_a->{'infix:<' . chr(61) . '>>'} = ', ');
     $Hash_a
 });
         ((my  $Hash_op_global_js = bless {}, 'HASH') = do {
@@ -634,6 +633,9 @@ package GLOBAL;
             }
             else {
                 return scalar ((Javascript::tab($level) . '(' . $self->{code}->emit_javascript() . ')->(' . Main::join(([ map { $_->emit() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+            };
+            if (($code eq 'infix:<' . chr(61) . '>>')) {
+                return scalar ((Javascript::tab($level) . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ')))
             };
             if (exists($Hash_op_infix_js->{$code})) {
                 return scalar ((Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), $Hash_op_infix_js->{$code}) . ')'))

@@ -470,7 +470,12 @@ unshift = function(o, v) {
 };
 
 index = function(o, s) {
-    return o.indexOf(s);
+    try {
+        return o.indexOf(s);
+    }
+    catch(err) {
+        return -1;
+    }
 };
 
 chars = function(o) {
