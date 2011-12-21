@@ -721,7 +721,15 @@ class Apply {
         if $code eq 'exists'     {
             my $arg = @.arguments[0];
             if $arg->isa( 'Lookup' ) {
-                return '(' . ($arg->obj)->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp)->emit_javascript() . ')';
+                my $v = $arg->obj;
+                if (  $v->isa('Var')
+                   && $v->sigil eq '$'
+                   && $v->name ne '/'  # XXX $/ is the Perl6 match object
+                   )
+                {
+                    $v = Var->new( sigil => '%', twigil => $v->twigil, namespace => $v->namespace, name => $v->name );
+                }
+                return '(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp)->emit_javascript() . ')';
             }
             if ( $arg->isa( 'Call' ) && $arg->method eq 'postcircumfix:<{ }>' ) {
                 return '(' . $arg->invocant->emit_javascript() . ').hasOwnProperty(' . $arg->arguments->emit_javascript() . ')';

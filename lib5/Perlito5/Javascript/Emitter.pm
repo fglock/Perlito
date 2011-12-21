@@ -740,7 +740,11 @@ package GLOBAL;
             if (($code eq 'exists')) {
                 ((my  $arg) = (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]);
                 if (Main::isa($arg, 'Lookup')) {
-                    return scalar (('(' . ($arg->obj())->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
+                    ((my  $v) = $arg->obj());
+                    if ((((Main::isa($v, 'Var') && ($v->sigil() eq chr(36))) && ($v->name() ne chr(47))))) {
+                        ($v = Var->new(('sigil' => chr(37)), ('twigil' => $v->twigil()), ('namespace' => $v->namespace()), ('name' => $v->name())))
+                    };
+                    return scalar (('(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
                 };
                 if (((Main::isa($arg, 'Call') && ($arg->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>')))) {
                     return scalar (('(' . $arg->invocant()->emit_javascript() . ').hasOwnProperty(' . $arg->arguments()->emit_javascript() . ')'))
