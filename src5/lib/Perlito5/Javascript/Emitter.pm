@@ -662,9 +662,6 @@ class Apply {
         if $code eq 'Int'        { return 'parseInt(' . (@.arguments[0])->emit_javascript() . ')' }
         if $code eq 'Num'        { return 'parseFloat(' . (@.arguments[0])->emit_javascript() . ')' }
 
-        # XXX Perl6
-        if $code eq 'prefix:<~>' { return Javascript::escape_function('string') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ')' }
-
         if $code eq 'prefix:<!>' { return '( ' . Javascript::escape_function('bool') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ') ? false : true)' }
         if $code eq 'prefix:<?>' { return '( ' . Javascript::escape_function('bool') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ') ? true : false)' }
         if $code eq 'prefix:<$>' { return Javascript::escape_function('scalar') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ')' }
@@ -682,9 +679,6 @@ class Apply {
         if $code eq 'prefix:<-->'  { return '--(' . (@.arguments.>>emit_javascript)->join(' ')  . ')' }
 
         if $code eq 'infix:<x>'  { return 'str_replicate(' . (@.arguments.>>emit_javascript)->join(', ')  . ')' }
-
-        # XXX Perl6
-        if $code eq 'list:<~>'   { return '(' . Javascript::escape_function('string') . '(' . (@.arguments.>>emit_javascript())->join(  ') + ' . Javascript::escape_function('string') . '('  ) . '))' }
 
         if $code eq 'list:<.>'   { return '(' . Javascript::escape_function('string') . '(' . (@.arguments.>>emit_javascript())->join(  ') + ' . Javascript::escape_function('string') . '('  ) . '))' }
 

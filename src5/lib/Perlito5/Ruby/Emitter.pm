@@ -482,7 +482,6 @@ class Apply {
         if $code eq 'Int'        { return '(' . (@.arguments[0]).emit_ruby     . ').to_i' };
         if $code eq 'Num'        { return '(' . (@.arguments[0]).emit_ruby     . ').to_f' };
 
-        if $code eq 'prefix:<~>' { return Ruby::to_str(' + ', @.arguments) };
         if $code eq 'prefix:<!>' { return '!'   . Ruby::to_bool(' && ', @.arguments)       };
         if $code eq 'prefix:<?>' { return '!(!' . Ruby::to_bool(' && ', @.arguments) . ')' };
 
@@ -490,7 +489,7 @@ class Apply {
         if $code eq 'prefix:<@>' { return '(' . (@.arguments.>>emit_ruby).join(' ')    . ')' };
         if $code eq 'prefix:<%>' { return '%{' . (@.arguments.>>emit_ruby).join(' ')    . '}' };
 
-        if $code eq 'list:<~>'   { return Ruby::to_str(' + ', @.arguments) };
+        if $code eq 'list:<.>'   { return Ruby::to_str(' + ', @.arguments) };
         if $code eq 'infix:<+>'  { return Ruby::to_num(' + ', @.arguments) };
         if $code eq 'infix:<->'  { return Ruby::to_num(' - ', @.arguments) };
         if $code eq 'infix:<*>'  { return Ruby::to_num(' * ', @.arguments) };

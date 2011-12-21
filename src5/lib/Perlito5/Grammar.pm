@@ -215,7 +215,7 @@ token val_buf {
             else {
                 make Apply->new(
                     namespace => '',
-                    code => 'list:<~>',
+                    code => 'list:<.>',
                     arguments => ($<double_quoted_buf>).>>capture,
                 )
             }

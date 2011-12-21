@@ -288,7 +288,7 @@ package GLOBAL;
                 else {
                     if (Perlito5::Precedence::is_assoc_type('chain', $last_op->[1])) {
                         if ((scalar( @{$num_stack} ) < 2)) {
-                            die((('Missing value after operator ') . $last_op->[1]))
+                            die(('Missing value after operator ' . $last_op->[1]))
                         };
                         ((my  $v2) = pop_term($num_stack));
                         ((my  $arg) = do {
@@ -317,7 +317,7 @@ package GLOBAL;
                         }
                         else {
                             if (((scalar( @{$num_stack} ) < 2))) {
-                                die((('missing value after operator ' . chr(39)) . $last_op->[1] . (chr(39))))
+                                die(('missing value after operator ' . chr(39) . $last_op->[1] . (chr(39))))
                             };
                             ((my  $v2) = pop_term($num_stack));
                             push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('infix:<' . $last_op->[1] . '>')), ('arguments' => do {

@@ -1314,7 +1314,7 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ($MATCH->{capture} = (((chr(92)) . $MATCH->{'single_quoted_unescape'})))
+    ($MATCH->{capture} = ((chr(92) . $MATCH->{'single_quoted_unescape'})))
 }) || 1)))
 }) || (do {
     (($MATCH)->{to} = $pos1);
@@ -1344,7 +1344,7 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ($MATCH->{capture} = (((chr(92)) . $MATCH->{'single_quoted_unescape'})))
+    ($MATCH->{capture} = ((chr(92) . $MATCH->{'single_quoted_unescape'})))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
@@ -1885,7 +1885,7 @@ package GLOBAL;
         ($MATCH->{capture} = (Val::Buf->new(('buf' => ''))))
     }
     else {
-        ($MATCH->{capture} = (Apply->new(('namespace' => ''), ('code' => 'list:<' . chr(126) . '>'), ('arguments' => [ map { $_->capture() } @{( ($MATCH->{'double_quoted_buf'}) )} ]))))
+        ($MATCH->{capture} = (Apply->new(('namespace' => ''), ('code' => 'list:<.>'), ('arguments' => [ map { $_->capture() } @{( ($MATCH->{'double_quoted_buf'}) )} ]))))
     }
 }) || 1)))
 }) || (do {

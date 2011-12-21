@@ -113,7 +113,7 @@ package GLOBAL;
         my $List__ = bless \@_, "ARRAY";
         ((my  $reason) = shift());
         ((my  $depends) = shift());
-        Perlito5::Test::proclaim(1, '', (('skip ') . $reason), $depends)
+        Perlito5::Test::proclaim(1, '', ('skip ' . $reason), $depends)
     };
     sub pass {
         my $List__ = bless \@_, "ARRAY";
@@ -161,13 +161,13 @@ package GLOBAL;
             return ()
         };
         if ((!($num_of_tests_planned))) {
-            Main::say((('1..') . $num_of_tests_run))
+            Main::say(('1..' . $num_of_tests_run))
         };
         if ((($num_of_tests_planned != $num_of_tests_run))) {
-            Main::say(((chr(35) . ' Looks like you planned ') . $num_of_tests_planned . (' tests, but ran ') . $num_of_tests_run))
+            Main::say((chr(35) . ' Looks like you planned ' . $num_of_tests_planned . (' tests, but ran ') . $num_of_tests_run))
         };
         if (($num_of_tests_failed)) {
-            Main::say(((chr(35) . ' Looks like you failed ') . $num_of_tests_failed . (' tests of ') . $num_of_tests_run))
+            Main::say((chr(35) . ' Looks like you failed ' . $num_of_tests_failed . (' tests of ') . $num_of_tests_run))
         };
         ($num_of_tests_run = 0);
         ($num_of_tests_failed = 0);

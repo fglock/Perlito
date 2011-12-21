@@ -430,7 +430,6 @@ package GLOBAL;
     ($Hash_a->{'Int'} = '0+');
     ($Hash_a->{'Num'} = '0+');
     ($Hash_a->{'bool'} = chr(33) . chr(33));
-    ($Hash_a->{'prefix:<' . chr(126) . '>'} = chr(34) . chr(34) . '.');
     ($Hash_a->{'prefix:<' . chr(33) . '>'} = chr(33));
     ($Hash_a->{'prefix:<' . chr(63) . '>'} = chr(33) . chr(33));
     ($Hash_a->{'prefix:<++>'} = '++');
@@ -439,7 +438,6 @@ package GLOBAL;
 });
         ((my  $Hash_op_infix_perl5 = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'list:<' . chr(126) . '>'} = ' . ');
     ($Hash_a->{'list:<.>'} = ' . ');
     ($Hash_a->{'infix:<+>'} = ' + ');
     ($Hash_a->{'infix:<->'} = ' - ');
@@ -608,7 +606,7 @@ package GLOBAL;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
-            return scalar ((Perl5::tab($level) . 'if (' . $self->{cond}->emit_perl5() . (') ' . chr(123) . chr(10)) . (($self->{body} ? (Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{otherwise} && scalar( @{$self->{otherwise}->stmts()} )) ? (((chr(10)) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
+            return scalar ((Perl5::tab($level) . 'if (' . $self->{cond}->emit_perl5() . (') ' . chr(123) . chr(10)) . (($self->{body} ? (Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{otherwise} && scalar( @{$self->{otherwise}->stmts()} )) ? ((chr(10) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
         }
     }
 
@@ -785,7 +783,7 @@ package GLOBAL;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             if (((($self->{mod} eq 'v6') || ($self->{mod} eq 'strict')) || ($self->{mod} eq 'feature'))) {
-                return scalar (((chr(10)) . Perl5::tab($level) . (chr(35) . ' use ' . $self->{mod} . ' ' . chr(10))))
+                return scalar ((chr(10) . Perl5::tab($level) . (chr(35) . ' use ' . $self->{mod} . ' ' . chr(10))))
             };
             (Perl5::tab($level) . 'use ' . $self->{mod})
         }

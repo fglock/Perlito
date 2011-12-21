@@ -673,9 +673,6 @@ package GLOBAL;
             if (($code eq 'Num')) {
                 return scalar (('parseFloat(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')'))
             };
-            if (($code eq 'prefix:<' . chr(126) . '>')) {
-                return scalar ((Javascript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
-            };
             if (($code eq 'prefix:<' . chr(33) . '>')) {
                 return scalar (('( ' . Javascript::escape_function('bool') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ') ' . chr(63) . ' false : true)'))
             };
@@ -708,9 +705,6 @@ package GLOBAL;
             };
             if (($code eq 'infix:<x>')) {
                 return scalar (('str_replicate(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
-            };
-            if (($code eq 'list:<' . chr(126) . '>')) {
-                return scalar (('(' . Javascript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), (') + ' . Javascript::escape_function('string') . '(')) . '))'))
             };
             if (($code eq 'list:<.>')) {
                 return scalar (('(' . Javascript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), (') + ' . Javascript::escape_function('string') . '(')) . '))'))
@@ -941,7 +935,7 @@ package GLOBAL;
                 return scalar ($str)
             }
             else {
-                die((('not implemented: Decl ' . chr(39)) . $self->{decl} . (chr(39))))
+                die(('not implemented: Decl ' . chr(39) . $self->{decl} . (chr(39))))
             }
         }
     }

@@ -551,7 +551,6 @@ class Apply {
         if $code eq 'Int'        { return 'mp6_to_num(' . (@.arguments[0]).emit_python     . ')' };
         if $code eq 'Num'        { return 'mp6_to_num(' . (@.arguments[0]).emit_python     . ')' };
 
-        if $code eq 'prefix:<~>' { return 'unicode('   . (@.arguments.>>emit_python).join(' ') . ')' };
         if $code eq 'prefix:<!>' {
             return 'not mp6_to_bool('  . (@.arguments.>>emit_python).join(' ') . ')'
         }
@@ -568,7 +567,7 @@ class Apply {
                 . ' * mp6_to_num(' . @.arguments[1].emit_python() . '))'
         };
 
-        if $code eq 'list:<~>'   { return '(unicode('  . (@.arguments.>>emit_python).join(') + unicode(')  . '))' };
+        if $code eq 'list:<.>'   { return '(unicode('  . (@.arguments.>>emit_python).join(') + unicode(')  . '))' };
         if $code eq 'infix:<+>'  { return '(mp6_to_num('  . (@.arguments.>>emit_python).join(') + mp6_to_num(')  . '))' };
         if $code eq 'infix:<->'  { return '('  . (@.arguments.>>emit_python).join(' - ')  . ')' };
         if $code eq 'infix:<*>'  { return '('  . (@.arguments.>>emit_python).join(' * ')  . ')' };

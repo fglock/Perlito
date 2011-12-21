@@ -172,8 +172,6 @@ class Perlito5::Precedence {
     add_op( 'infix',    'x',   $prec );
     $prec = $prec - 1;
     add_op( 'infix',    '.',   $prec, { assoc => 'list' } );
-    add_op( 'infix',    '~',   $prec, { assoc => 'list' } );    # XXX Perl6
-    add_op( 'prefix',   '~',   $prec );                         # XXX Perl6
     $prec = $prec - 1;
     add_op( 'infix',    '&',   $prec, { assoc => 'list' } );
     add_op( 'prefix',   '&',   $prec );
@@ -222,7 +220,6 @@ class Perlito5::Precedence {
     add_op( 'infix',    '-=',   $prec, { assoc => 'right' } );
     add_op( 'infix',    '*=',   $prec, { assoc => 'right' } );
     add_op( 'infix',    '/=',   $prec, { assoc => 'right' } );
-    add_op( 'infix',    '~=',   $prec, { assoc => 'right' } );
     add_op( 'infix',    '.=',   $prec, { assoc => 'right' } );
 
     $prec = $prec - 1;

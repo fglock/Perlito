@@ -378,7 +378,6 @@ class Apply {
         Int     => '0+',
         Num     => '0+',
         bool    => '!!',
-        'prefix:<~>'    => '"".',
         'prefix:<!>'    => '!',
         'prefix:<?>'    => '!!',  # XXX Perl6
         'prefix:<++>'   => '++',
@@ -386,7 +385,6 @@ class Apply {
     );
 
     my %op_infix_perl5 = (
-        'list:<~>'   => ' . ',   # XXX Perl6
         'list:<.>'   => ' . ',
         'infix:<+>'  => ' + ',
         'infix:<->'  => ' - ',
