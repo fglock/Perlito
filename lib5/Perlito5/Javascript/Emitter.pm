@@ -148,12 +148,13 @@ package GLOBAL;
         sub needs_return { $_[0]->{needs_return} };
         sub top_level { $_[0]->{top_level} };
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             if ($self->{top_level}) {
                 ((my  $block) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->block()), ('needs_return' => $self->needs_return()), ('top_level' => 0)));
                 return scalar ((Javascript::tab($level) . 'try ' . chr(123) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . chr(59) . (chr(10)) . Javascript::tab($level) . chr(125) . (chr(10)) . Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'return(err)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab($level) . chr(125)))
@@ -307,12 +308,13 @@ package GLOBAL;
     package Val::Int;
         sub new { shift; bless { @_ }, "Val::Int" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             (Javascript::tab($level) . $self->{int})
         }
     }
@@ -322,12 +324,13 @@ package GLOBAL;
     package Val::Bit;
         sub new { shift; bless { @_ }, "Val::Bit" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             (Javascript::tab($level) . (($self->{bit} ? 'true' : 'false')))
         }
     }
@@ -337,12 +340,13 @@ package GLOBAL;
     package Val::Num;
         sub new { shift; bless { @_ }, "Val::Num" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             (Javascript::tab($level) . $self->{num})
         }
     }
@@ -352,12 +356,13 @@ package GLOBAL;
     package Val::Buf;
         sub new { shift; bless { @_ }, "Val::Buf" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             (Javascript::tab($level) . Javascript::escape_string($self->{buf}))
         }
     }
@@ -367,12 +372,13 @@ package GLOBAL;
     package Lit::Block;
         sub new { shift; bless { @_ }, "Lit::Block" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $sig) = 'v__');
             if ($self->{sig}) {
                 ($sig = $self->{sig}->emit_javascript_indented(($level + 1)))
@@ -386,12 +392,13 @@ package GLOBAL;
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $ast) = $self->expand_interpolation());
             return scalar ($ast->emit_javascript_indented($level))
         }
@@ -402,12 +409,13 @@ package GLOBAL;
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $ast) = $self->expand_interpolation());
             return scalar ($ast->emit_javascript_indented($level))
         }
@@ -418,12 +426,13 @@ package GLOBAL;
     package Index;
         sub new { shift; bless { @_ }, "Index" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             if (((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))))) {
                 ((my  $v) = Var->new(('sigil' => chr(64)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
                 return scalar (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
@@ -437,12 +446,13 @@ package GLOBAL;
     package Lookup;
         sub new { shift; bless { @_ }, "Lookup" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne chr(47))))) {
                 ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
                 return scalar (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
@@ -456,12 +466,13 @@ package GLOBAL;
     package Var;
         sub new { shift; bless { @_ }, "Var" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $table) = do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = 'v_');
@@ -477,11 +488,12 @@ package GLOBAL;
             ((($self->{twigil} eq '.')) ? (('v_self.v_' . $self->{name} . '')) : (((($self->{name} eq chr(47))) ? (($table->{$self->{sigil}} . 'MATCH')) : (($table->{$self->{sigil}} . $ns . $self->{name})))))
         };
         sub plain_name {
-            my $self = $_[0];
-            if ($self->{namespace}) {
-                return scalar (($self->{namespace} . '.' . $self->{name}))
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            if ($self->namespace()) {
+                return scalar (($self->namespace() . '.' . $self->name()))
             };
-            return scalar ($self->{name})
+            return scalar ($self->name())
         }
     }
 
@@ -490,12 +502,13 @@ package GLOBAL;
     package Proto;
         sub new { shift; bless { @_ }, "Proto" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             (Javascript::tab($level) . Main::to_javascript_namespace($self->{name}))
         }
     }
@@ -529,12 +542,13 @@ package GLOBAL;
     $Hash_a
 });
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $invocant) = $self->{invocant}->emit_javascript());
             if (($invocant eq 'self')) {
                 ($invocant = 'v_self')
@@ -617,12 +631,13 @@ package GLOBAL;
     $Hash_a
 });
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $apply) = $self->op_assign());
             if ($apply) {
                 return scalar ($apply->emit_javascript_indented($level))
@@ -833,12 +848,13 @@ package GLOBAL;
     package If;
         sub new { shift; bless { @_ }, "If" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $cond) = $self->{cond});
             if ((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64)))) {
                 ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => do {
@@ -863,12 +879,13 @@ package GLOBAL;
     package While;
         sub new { shift; bless { @_ }, "While" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->stmts()), ('needs_return' => 0)));
             return scalar ((Javascript::tab($level) . 'for ( ' . (($self->{init} ? ($self->{init}->emit_javascript() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{cond} ? (Javascript::escape_function('bool') . '(' . $self->{cond}->emit_javascript() . ')' . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_javascript() . ' ') : ' ')) . ') ' . chr(123) . ' ' . '(function () ' . chr(123) . ' ' . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')()' . ' ' . chr(125)))
         }
@@ -879,12 +896,13 @@ package GLOBAL;
     package For;
         sub new { shift; bless { @_ }, "For" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $cond) = $self->{cond});
             if (!(((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64)))))) {
                 ($cond = Lit::Array->new(('array1' => do {
@@ -908,16 +926,18 @@ package GLOBAL;
     package Decl;
         sub new { shift; bless { @_ }, "Decl" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             (Javascript::tab($level) . $self->{var}->emit_javascript())
         };
         sub emit_javascript_init {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
             if (($self->{decl} eq 'my')) {
                 ((my  $str) = '');
                 ($str = ($str . 'var ' . ($self->{var})->emit_javascript() . ' ' . chr(61) . ' '));
@@ -945,12 +965,13 @@ package GLOBAL;
     package Method;
         sub new { shift; bless { @_ }, "Method" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $sig) = $self->{sig});
             ((my  $invocant) = $sig->invocant());
             ((my  $pos) = $sig->positional());
@@ -964,12 +985,13 @@ package GLOBAL;
     package Sub;
         sub new { shift; bless { @_ }, "Sub" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $sig) = $self->{sig});
             ((my  $pos) = $sig->positional());
             ((my  $str) = Main::join([ map { $_->emit_javascript() } @{( $pos )} ], ', '));
@@ -982,12 +1004,13 @@ package GLOBAL;
     package Do;
         sub new { shift; bless { @_ }, "Do" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             ((my  $block) = $self->simplify()->block());
             return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()'))
         }
@@ -998,12 +1021,13 @@ package GLOBAL;
     package Use;
         sub new { shift; bless { @_ }, "Use" }
         sub emit_javascript {
-            my $self = $_[0];
-            $self->emit_javascript_indented(0)
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->emit_javascript_indented(0)
         };
         sub emit_javascript_indented {
-            my $self = $_[0];
-            my $level = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $level) = shift());
             (Javascript::tab($level) . chr(47) . chr(47) . ' use ' . $self->{mod} . (chr(10)))
         }
     }

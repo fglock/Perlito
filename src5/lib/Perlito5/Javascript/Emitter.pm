@@ -135,8 +135,10 @@ class Perlito5::Javascript::LexicalBlock {
     has @.block;
     has $.needs_return;
     has $.top_level;
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
 
         if $.top_level {
             my $block = Perlito5::Javascript::LexicalBlock->new( block => self->block, needs_return => self->needs_return, top_level => 0 );
@@ -344,28 +346,38 @@ class CompUnit {
 }
 
 class Val::Int {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) { Javascript::tab($level) . $.int }
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift; Javascript::tab($level) . $.int }
 }
 
 class Val::Bit {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) { Javascript::tab($level) . ($.bit ? 'true' : 'false') }
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift; Javascript::tab($level) . ($.bit ? 'true' : 'false') }
 }
 
 class Val::Num {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) { Javascript::tab($level) . $.num }
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift; Javascript::tab($level) . $.num }
 }
 
 class Val::Buf {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) { Javascript::tab($level) . Javascript::escape_string($.buf) }
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift; Javascript::tab($level) . Javascript::escape_string($.buf) }
 }
 
 class Lit::Block {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $sig = 'v__';
         if $.sig {
             $sig = $.sig->emit_javascript_indented( $level + 1 );
@@ -378,24 +390,30 @@ class Lit::Block {
 }
 
 class Lit::Array {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $ast = self->expand_interpolation;
         return $ast->emit_javascript_indented( $level );
     }
 }
 
 class Lit::Hash {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $ast = self->expand_interpolation;
         return $ast->emit_javascript_indented( $level );
     }
 }
 
 class Index {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
 
         if (  $.obj->isa('Var')
            && $.obj->sigil eq '$'
@@ -410,8 +428,10 @@ class Index {
 }
 
 class Lookup {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         # my $var = $.obj->emit_javascript;
         # return $var . '[' . $.index_exp->emit_javascript() . ']'
 
@@ -424,38 +444,14 @@ class Lookup {
             return $v->emit_javascript_indented($level) . '[' . $.index_exp->emit_javascript() . ']';
         }
         return $.obj->emit_javascript_indented($level) . '[' . $.index_exp->emit_javascript() . ']';
-
-        ## my $str = '';
-        ## my $var = $.obj;
-        ## my $var_js;
-        ## if $var->isa('Lookup') {
-        ##     my $var1 = $var->obj;
-
-        ##     if (  $var1->isa('Var')
-        ##        && $var1->sigil eq '$'
-        ##        && $var1->name ne '/'  # XXX $/ is the Perl6 match object
-        ##        )
-        ##     {
-        ##         $var1 = Var->new( sigil => '%', twigil => $var1->twigil, namespace => $var1->namespace, name => $var1->name );
-        ##     }
- 
-        ##     my $var1_js = $var1->emit_javascript;
-        ##     $str = $str . Javascript::autovivify( $var1 );
-        ##     $var_js = $var1_js . '[' . $var->index_exp->emit_javascript() . ']'
-        ## }
-        ## else {
-        ##     $var_js = $var->emit_javascript;
-        ## }
-        ## $str = $str . 'if (' . $var_js . ' == null) { ' . $var_js . ' = {} }; ';
-        ## my $index_js = $.index_exp->emit_javascript;
-        ## $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . '); ';
-        ## return Javascript::tab($level) . '(function () { ' . $str . '})()';
     }
 }
 
 class Var {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $table = {
             '$' => 'v_',
             '@' => 'List_',
@@ -473,17 +469,20 @@ class Var {
            :    ( $table->{$.sigil} . $ns . $.name )
            )
     }
-    method plain_name {
-        if $.namespace {
-            return $.namespace . '.' . $.name
+    sub plain_name {
+        my $self = shift;
+        if $self->namespace {
+            return $self->namespace . '.' . $self->name
         }
-        return $.name
+        return $self->name
     }
 }
 
 class Proto {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         Javascript::tab($level) . Main::to_javascript_namespace($.name)
     }
 }
@@ -511,8 +510,10 @@ class Call {
         'pop'     => 'pop',
     );
 
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $invocant = $.invocant->emit_javascript;
         if $invocant eq 'self' {
             $invocant = 'v_self';
@@ -617,8 +618,10 @@ class Apply {
         'warn'    => 1,
     );
 
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
 
         my $apply = self->op_assign();
         if $apply {
@@ -833,8 +836,10 @@ class Apply {
 }
 
 class If {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $cond = $.cond;
         if   $cond->isa( 'Var' )
           && $cond->sigil eq '@'
@@ -861,8 +866,10 @@ class If {
 
 
 class While {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $body      = Perlito5::Javascript::LexicalBlock->new( block => @.body->stmts, needs_return => 0 );
         return
            Javascript::tab($level) . 'for ( '
@@ -876,8 +883,10 @@ class While {
 }
 
 class For {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $cond = $.cond;
         if !( $cond->isa( 'Var' ) && $cond->sigil eq '@' ) {
             $cond = Lit::Array->new( array1 => [$cond] )
@@ -896,11 +905,14 @@ class For {
 }
 
 class Decl {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         Javascript::tab($level) . $.var->emit_javascript;
     }
-    method emit_javascript_init {
+    sub emit_javascript_init {
+        my $self = shift;
         if $.decl eq 'my' {
             my $str = "";
             $str = $str . 'var ' . ($.var)->emit_javascript() . ' = ';
@@ -922,8 +934,10 @@ class Decl {
 }
 
 class Method {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $sig = $.sig;
         my $invocant = $sig->invocant;
         my $pos = $sig->positional;
@@ -935,8 +949,10 @@ class Method {
 }
 
 class Sub {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $sig = $.sig;
         my $pos = $sig->positional;
         my $str = $pos.>>emit_javascript->join(', ');
@@ -954,8 +970,10 @@ class Sub {
 }
 
 class Do {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         my $block = self->simplify->block;
         return
               Javascript::tab($level) . '(function () { ' . "\n"
@@ -965,8 +983,10 @@ class Do {
 }
 
 class Use {
-    method emit_javascript { self->emit_javascript_indented(0) }
-    method emit_javascript_indented( $level ) {
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
         Javascript::tab($level) . '// use ' . $.mod . "\n"
     }
 }
