@@ -565,7 +565,7 @@ package GLOBAL;
                         die('Error in constructor, field: ', Main::perl($field, ))
                     }
                 };
-                return scalar (('(function () ' . chr(123) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . Main::join($str, ',') . chr(125) . chr(59) . ' ' . 'tmp.__proto__ ' . chr(61) . ' ' . Main::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
+                return scalar (('(function () ' . chr(123) . ' ' . 'if (' . Main::to_javascript_namespace($invocant) . '.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ) ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . Main::join($str, ',') . chr(125) . chr(59) . ' ' . 'tmp.__proto__ ' . chr(61) . ' ' . Main::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
             };
             if (exists($Hash_method_js->{$self->{method}})) {
                 if (($self->{hyper})) {
