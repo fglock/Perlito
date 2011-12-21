@@ -38,7 +38,7 @@ if (typeof IO !== 'object') {
     IO = new IO;
 }
 
-IO.slurp = function(filename) {
+IO.slurp = function(v_callsub, filename) {
     if (typeof readFile == 'function') {
         return readFile(filename);
     }

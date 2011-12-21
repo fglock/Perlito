@@ -1,0 +1,12 @@
+Running the tests using perl:
+
+find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cperl5 $_ > x && perl -Ilib5 x  ` '
+
+Running the tests using v8:
+
+find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cjs $_ > tmp.js && ~/bin/d8 tmp.js  ` '
+
+Compile the compiler to Javascript:
+
+perl -Ilib5 perlito5.pl -Cjs src5/util/perlito5.pl > perlito5.js
+
