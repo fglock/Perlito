@@ -37,7 +37,7 @@ class Pair {
     has $.value;
 
     method perl {
-        return $.key ~ ' => ' ~ $.value->perl;
+        return $.key . ' => ' . $.value->perl;
     }
 
 }
@@ -45,13 +45,13 @@ class Pair {
 class Main {
 
     sub to_lisp_identifier {
-        return 'sv-' ~ $_[0];
+        return 'sv-' . $_[0];
     }
 
     sub lisp_dump_object {
         my $class_name = shift;
         my $data = shift;
-        return $class_name ~ '( ' ~ ($data.>>perl)->join(', ') ~ ' )';
+        return $class_name . '( ' . ($data.>>perl)->join(', ') . ' )';
     }
 
 }

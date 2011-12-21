@@ -1314,7 +1314,7 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ($MATCH->{capture} = ((chr(92) . $MATCH->{'single_quoted_unescape'})))
+    ($MATCH->{capture} = (((chr(92)) . $MATCH->{'single_quoted_unescape'})))
 }) || 1)))
 }) || (do {
     (($MATCH)->{to} = $pos1);
@@ -1344,7 +1344,7 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ($MATCH->{capture} = ((chr(92) . $MATCH->{'single_quoted_unescape'})))
+    ($MATCH->{capture} = (((chr(92)) . $MATCH->{'single_quoted_unescape'})))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
@@ -2490,7 +2490,7 @@ package GLOBAL;
         0
     }
 })) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
-    ((my  $source) = ($MATCH->{'opt_name'} . ' ( ' . chr(36) . 'grammar: ' . chr(36) . 'str, ' . chr(36) . 'pos ) ' . chr(123) . ' ' . 'my ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( str ' . chr(61) . '> ' . chr(36) . 'str, from ' . chr(61) . '> ' . chr(36) . 'pos, to ' . chr(61) . '> ' . chr(36) . 'pos, bool ' . chr(61) . '> 1 )' . chr(59) . ' ' . chr(36) . 'MATCH->bool ' . chr(61) . ' ( ' . (${$MATCH->{'Perlito5::Grammar::Regex.rule'}})->emit_perl6() . ')' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(125)));
+    ((my  $source) = (($MATCH->{'opt_name'} . ' ( ' . chr(36) . 'grammar: ' . chr(36) . 'str, ' . chr(36) . 'pos ) ' . chr(123) . ' ') . 'my ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( str ' . chr(61) . '> ' . chr(36) . 'str, from ' . chr(61) . '> ' . chr(36) . 'pos, to ' . chr(61) . '> ' . chr(36) . 'pos, bool ' . chr(61) . '> 1 )' . chr(59) . ' ' . chr(36) . 'MATCH->bool ' . chr(61) . ' ( ' . (${$MATCH->{'Perlito5::Grammar::Regex.rule'}})->emit_perl6() . ')' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(125)));
     ((my  $ast) = Perlito5::Grammar->method_def($source, 0));
     ($MATCH->{capture} = (${$ast}))
 }) || 1)))

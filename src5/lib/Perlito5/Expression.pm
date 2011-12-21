@@ -238,7 +238,7 @@ class Perlito5::Expression {
             push $num_stack,
                 Apply->new(
                     namespace => '',
-                    code      => 'prefix:<' ~ $last_op->[1] ~ '>',
+                    code      => 'prefix:<' . $last_op->[1] . '>',
                     arguments => [ pop_term($num_stack) ],
                   );
         }
@@ -246,7 +246,7 @@ class Perlito5::Expression {
             push $num_stack,
                 Apply->new(
                     namespace => '',
-                    code      => 'postfix:<' ~ $last_op->[1] ~ '>',
+                    code      => 'postfix:<' . $last_op->[1] . '>',
                     arguments => [ pop_term($num_stack) ],
                   );
         }
@@ -257,7 +257,7 @@ class Perlito5::Expression {
             my $arg;
             if $num_stack->elems < 2 {
                 my $v2 = pop_term($num_stack);
-                if ($v2->isa('Apply')) && ($v2->code eq ('list:<' ~ $last_op->[1] ~ '>')) {
+                if ($v2->isa('Apply')) && ($v2->code eq ('list:<' . $last_op->[1] . '>')) {
                     ($v2->arguments)->push( Mu );
                     $num_stack->push( $v2 );
                 }
@@ -265,7 +265,7 @@ class Perlito5::Expression {
                     push $num_stack,
                         Apply->new(
                             namespace => '',
-                            code      => 'list:<' ~ $last_op->[1] ~ '>',
+                            code      => 'list:<' . $last_op->[1] . '>',
                             arguments => [ $v2, Mu ],
                           );
                 }
@@ -277,7 +277,7 @@ class Perlito5::Expression {
             }
             if     (($arg->[0])->isa('Apply'))
                 && ($last_op->[0] eq 'infix')
-                && (($arg->[0])->code eq ('list:<' ~ $last_op->[1] ~ '>'))
+                && (($arg->[0])->code eq ('list:<' . $last_op->[1] . '>'))
             {
                 push $num_stack,
                     Apply->new(
@@ -290,13 +290,13 @@ class Perlito5::Expression {
             push $num_stack,
                 Apply->new(
                     namespace => '',
-                    code      => 'list:<' ~ $last_op->[1] ~ '>',
+                    code      => 'list:<' . $last_op->[1] . '>',
                     arguments => $arg,
                   );
         }
         elsif Perlito5::Precedence::is_assoc_type('chain', $last_op->[1]) {
             if $num_stack->elems < 2 {
-                die("Missing value after operator " ~ $last_op->[1]);
+                die("Missing value after operator " . $last_op->[1]);
             }
             my $v2 = pop_term($num_stack);
             my $arg = [ pop_term($num_stack), $v2 ];
@@ -309,7 +309,7 @@ class Perlito5::Expression {
             #     push $num_stack,
             #         Apply->new(
             #             namespace => '',
-            #             code      => 'infix:<' ~ $last_op->[1] ~ '>',
+            #             code      => 'infix:<' . $last_op->[1] . '>',
             #             arguments => {
             #                 val   => [ $arg->[0] ],
             #                 chain => $arg->[1]
@@ -320,7 +320,7 @@ class Perlito5::Expression {
             push $num_stack,
                     Apply->new(
                         namespace => '',
-                        code      => 'infix:<' ~ $last_op->[1] ~ '>',
+                        code      => 'infix:<' . $last_op->[1] . '>',
                         arguments => $arg
                     );
         }
@@ -332,19 +332,19 @@ class Perlito5::Expression {
             push $num_stack,
                 Apply->new(
                     namespace => '',
-                    code      => 'ternary:<' ~ $last_op->[1] ~ '>',
+                    code      => 'ternary:<' . $last_op->[1] . '>',
                     arguments => [ pop_term($num_stack), $last_op->[2], $v2 ],
                   );
         }
         else {
             if ( $num_stack->elems < 2 ) {
-                die("missing value after operator '" ~ $last_op->[1] ~ "'");
+                die("missing value after operator '" . $last_op->[1] . "'");
             }
             my $v2 = pop_term($num_stack);
             push $num_stack,
                 Apply->new(
                     namespace => '',
-                    code      => 'infix:<' ~ $last_op->[1] ~ '>',
+                    code      => 'infix:<' . $last_op->[1] . '>',
                     arguments => [ pop_term($num_stack), $v2 ],
                   );
         }
@@ -448,7 +448,7 @@ class Perlito5::Expression {
             { my $namespace = ~$<Perlito5::Grammar.optional_namespace_before_ident>;
               my $name      = ~$<Perlito5::Grammar.ident>;
               if $namespace {
-                $name = $namespace ~ '::' ~ $name;
+                $name = $namespace . '::' . $name;
               }
               make [ 'term', Proto->new( name => $name )            ]
             }
@@ -494,7 +494,7 @@ class Perlito5::Expression {
             }
             else {
                 my $m = self->operator($str, $last_pos);
-                # say "# list lexer got: " ~ $m->perl;
+                # say "# list lexer got: " . $m->perl;
                 if !$m {
                     return [ 'end', '*end*' ];
                 }
@@ -510,9 +510,9 @@ class Perlito5::Expression {
                     $last_pos = $m->to;
                 }
             }
-            # say "# list_lexer got " ~ $v->perl;
+            # say "# list_lexer got " . $v->perl;
 
-            # say "# list_lexer " ~ $v->perl;
+            # say "# list_lexer " . $v->perl;
 
             if (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block')
                 && $last_token_was_space
@@ -579,7 +579,7 @@ class Perlito5::Expression {
             if $v->[0] ne 'end' {
                 $last_pos = $m->to;
             }
-            # say "# circumfix_lexer " ~ $v->perl;
+            # say "# circumfix_lexer " . $v->perl;
             return $v;
         };
         my $prec = Perlito5::Precedence->new(get_token => $get_token, reduce => $reduce_to_ast,
@@ -621,7 +621,7 @@ class Perlito5::Expression {
             }
             else {
                 my $m = self->operator($str, $last_pos);
-                # say "# exp lexer got: " ~ $m->perl;
+                # say "# exp lexer got: " . $m->perl;
                 if !$m {
                     return [ 'end', '*end*' ];
                 }
@@ -630,7 +630,7 @@ class Perlito5::Expression {
                     $last_pos = $m->to;
                 }
             }
-            # say "# exp_lexer got " ~ $v->perl;
+            # say "# exp_lexer got " . $v->perl;
 
             if     ( (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block') )
                 || ( (($v->[0]) eq 'term') && (($v->[1])->isa('Sub')) )

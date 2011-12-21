@@ -27,7 +27,7 @@ package GLOBAL;
                 ($str = chr(92) . chr(39))
             };
             if (($len)) {
-                ('( ' . chr(39) . $str . chr(39) . ' eq substr( ' . chr(36) . 'str, ' . chr(36) . 'MATCH->to, ' . $len . ') ' . chr(38) . chr(38) . ' ( ' . chr(36) . 'MATCH->to ' . chr(61) . ' ' . $len . ' + ' . chr(36) . 'MATCH->to )' . ')')
+                (((('( ' . chr(39) . $str . chr(39) . ' eq substr( ' . chr(36) . 'str, ' . chr(36) . 'MATCH->to, ' . $len . ') ') . chr(38) . chr(38) . ' ( ' . chr(36) . 'MATCH->to ' . chr(61) . ' ') . $len . ' + ' . chr(36) . 'MATCH->to )') . ')')
             }
             else {
                 return scalar ('1')
@@ -62,7 +62,7 @@ package GLOBAL;
                 $self->{term}->set_captures_to_array();
                 return scalar (('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH->to' . chr(59) . ' ' . 'if (' . chr(33) . '(do ' . chr(123) . $self->{term}->emit_perl6() . chr(125) . ')) ' . chr(123) . ' ' . chr(36) . 'MATCH->to ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . ')'))
             };
-            warn(('Rul::Quantifier: ' . Main::perl($self, ) . (' not implemented')));
+            warn((('Rul::Quantifier: ') . Main::perl($self, ) . (' not implemented')));
             $self->{term}->emit_perl6()
         };
         sub set_captures_to_array {

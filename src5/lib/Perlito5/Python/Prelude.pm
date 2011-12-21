@@ -4,7 +4,7 @@ class Main {
 
     sub to_lisp_identifier {
         my $ident = shift;
-        return 'sv-' ~ $ident;
+        return 'sv-' . $ident;
     }
 
 }
@@ -14,7 +14,7 @@ class Pair {
     has $.value;
 
     method perl {
-        return $.key ~ ' => ' ~ $.value.perl;
+        return $.key . ' => ' . $.value.perl;
     }
 
 }

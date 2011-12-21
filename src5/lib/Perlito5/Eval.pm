@@ -71,23 +71,23 @@ class Var {
     method eval ($env) {
         my $ns = '';
         if $.namespace {
-            $ns = $.namespace ~ '::';
+            $ns = $.namespace . '::';
         }
         else {
             if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
                 return @*ARGS
             }
             if $.twigil eq '.' {
-                warn 'Interpreter TODO: $.' ~ $.name;
-                return '$self->{' ~ $.name ~ '}'
+                warn 'Interpreter TODO: $.' . $.name;
+                return '$self->{' . $.name . '}'
             }
             if $.name eq '/' {
                 warn 'Interpreter TODO: $/';
-                return $.sigil ~ 'MATCH'
+                return $.sigil . 'MATCH'
             }
         }
 
-        my $name = $.sigil ~ $ns ~ $.name;
+        my $name = $.sigil . $ns . $.name;
         for my $e ( @($env) ) {
             if exists( $e->{ $name } ) {
                 return $e->{ $name };
@@ -97,9 +97,9 @@ class Var {
     };
     method plain_name {
         if $.namespace {
-            return $.sigil ~ $.namespace ~ '::' ~ $.name
+            return $.sigil . $.namespace . '::' . $.name
         }
-        return $.sigil ~ $.name
+        return $.sigil . $.name
     };
 }
 
@@ -117,7 +117,7 @@ class Call {
             $invocant = '$self';
         }
         if ($.hyper) {
-            # '[ map { $_' ~ $call ~ ' } @{ ' ~ $invocant ~ ' } ]';
+            # '[ map { $_' . $call . ' } @{ ' . $invocant . ' } ]';
         }
         else {
             # $invocant.$meth( @.arguments );
@@ -130,9 +130,9 @@ class Apply {
     method eval ($env) {
         my $ns = '';
         if $.namespace {
-            $ns = $.namespace ~ '::';
+            $ns = $.namespace . '::';
         }
-        my $code = $ns ~ $.code;
+        my $code = $ns . $.code;
         # warn "Apply ", $env->perl, " code: '", $code, "'";
         for my $e ( @($env) ) {
             if exists( $e->{ $code } ) {
@@ -255,7 +255,7 @@ class Do {
 class Use {
     method eval ($env) {
         warn "Interpreter TODO: Use";
-        'use ' ~ $.mod
+        'use ' . $.mod
     }
 }
 

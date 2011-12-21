@@ -144,13 +144,13 @@ token char_any_single_quote {
 
 token single_quoted_unescape {
     |  \\ \\  <single_quoted_unescape>
-        { make "\\" ~ $<single_quoted_unescape> }
+        { make "\\" . $<single_quoted_unescape> }
     |  \\ \'  <single_quoted_unescape>
-        { make '\'' ~ $<single_quoted_unescape> }
+        { make '\'' . $<single_quoted_unescape> }
     |  \\   <single_quoted_unescape>
-        { make "\\" ~ $<single_quoted_unescape> }
+        { make "\\" . $<single_quoted_unescape> }
     |  <char_any_single_quote> <single_quoted_unescape>
-        { make $<char_any_single_quote> ~ $<single_quoted_unescape> }
+        { make $<char_any_single_quote> . $<single_quoted_unescape> }
     |  ''
 }
 
@@ -310,7 +310,7 @@ token token {
     \}
     {
         #say 'Token was compiled into: ', ($$<Perlito5::Grammar::Regex.rule>)->perl;
-        my $source = $<opt_name> ~ ' ( $grammar: $str, $pos ) { ' ~
+        my $source = $<opt_name> . ' ( $grammar: $str, $pos ) { ' ~
             'my $MATCH; $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' ~
             '$MATCH->bool = ( ' ~
                 ($$<Perlito5::Grammar::Regex.rule>)->emit_perl6() ~

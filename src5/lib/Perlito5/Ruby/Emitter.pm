@@ -13,10 +13,10 @@ class Ruby {
                 push @s, $cond.emit_ruby;
             }
             else {
-                push @s, '(' ~ $cond.emit_ruby ~ ').to_s';
+                push @s, '(' . $cond.emit_ruby . ').to_s';
             }
         }
-        return '(' ~ @s.join($op) ~ ')'
+        return '(' . @s.join($op) . ')'
     }
     sub to_num {
         my $op = shift;
@@ -28,10 +28,10 @@ class Ruby {
                 push @s, $cond.emit_ruby;
             }
             else {
-                push @s, 'mp6_to_num(' ~ $cond.emit_ruby ~ ')';
+                push @s, 'mp6_to_num(' . $cond.emit_ruby . ')';
             }
         }
-        return '(' ~ @s.join($op) ~ ')'
+        return '(' . @s.join($op) . ')'
     }
     sub to_bool {
         my $op = shift;
@@ -42,7 +42,7 @@ class Ruby {
             if     ($cond.isa( 'Val::Int' ))
                 || ($cond.isa( 'Val::Num' ))
             {
-                push @s, '(' ~ $cond.emit_ruby ~ ' != 0 )';
+                push @s, '(' . $cond.emit_ruby . ' != 0 )';
             }
             elsif  (($cond.isa( 'Apply' )) && ($cond.code eq 'infix:<||>'))
                 || (($cond.isa( 'Apply' )) && ($cond.code eq 'infix:<&&>'))
@@ -53,10 +53,10 @@ class Ruby {
                 push @s, $cond.emit_ruby;
             }
             else {
-                push @s, 'mp6_to_bool(' ~ $cond.emit_ruby ~ ')';
+                push @s, 'mp6_to_bool(' . $cond.emit_ruby . ')';
             }
         }
-        return '(' ~ @s.join($op) ~ ')'
+        return '(' . @s.join($op) . ')'
     }
     sub tab {
         my $level = shift;
@@ -82,11 +82,11 @@ class Perlito5::Ruby::AnonSub {
                 needs_return => 1 );
         my @s;
         push @s, Ruby::tab($level)
-            ~ ( $.name ? ("f_" ~ $.name ~ " = ") : "" )
-            ~ "lambda\{ |" ~ $args.join(", ") ~ "| ";
+            . ( $.name ? ("f_" . $.name . " = ") : "" )
+            . "lambda\{ |" . $args.join(", ") . "| ";
 
         push @s,    $block.emit_ruby_indented($level + 1);
-        push @s, Ruby::tab($level)   ~ "}";
+        push @s, Ruby::tab($level)   . "}";
         return @s.join("\n");
 
     }
@@ -152,18 +152,18 @@ class Perlito5::Ruby::LexicalBlock {
             # create accessors
             for my $decl ( @($has_decl) ) {
                 if $decl.isa( 'Decl' ) && ( $decl.decl eq 'has' ) {
-                    push @s, Ruby::tab($level) ~ 'attr_accessor :v_' ~ ($decl.var).name;
-                    push @s, Ruby::tab($level) ~ 'def f_' ~ ($decl.var).name ~ '()';
-                    push @s, Ruby::tab($level+1) ~ 'return self.v_' ~ ($decl.var).name;
-                    push @s, Ruby::tab($level) ~ "end";
+                    push @s, Ruby::tab($level) . 'attr_accessor :v_' . ($decl.var).name;
+                    push @s, Ruby::tab($level) . 'def f_' . ($decl.var).name . '()';
+                    push @s, Ruby::tab($level+1) . 'return self.v_' . ($decl.var).name;
+                    push @s, Ruby::tab($level) . "end";
                 }
                 if     $decl.isa( 'Apply' ) && $decl.code eq 'infix:<=>'
                     && $decl.arguments[0].isa( 'Decl' ) && $decl.arguments[0].decl eq 'has'
                 {
-                    push @s, Ruby::tab($level) ~ 'attr_accessor :v_' ~ (($decl.arguments[0]).var).name;
-                    push @s, Ruby::tab($level) ~ 'def f_' ~ (($decl.arguments[0]).var).name ~ '()';
-                    push @s, Ruby::tab($level+1) ~ 'return self.v_' ~ (($decl.arguments[0]).var).name;
-                    push @s, Ruby::tab($level) ~ "end";
+                    push @s, Ruby::tab($level) . 'attr_accessor :v_' . (($decl.arguments[0]).var).name;
+                    push @s, Ruby::tab($level) . 'def f_' . (($decl.arguments[0]).var).name . '()';
+                    push @s, Ruby::tab($level+1) . 'return self.v_' . (($decl.arguments[0]).var).name;
+                    push @s, Ruby::tab($level) . "end";
                 }
             }
 
@@ -194,7 +194,7 @@ class Perlito5::Ruby::LexicalBlock {
             }
         }
         if $has_my_decl {
-            push @s, Ruby::tab($level) ~ "Proc.new\{ |" ~ @my_decl.join(", ") ~ "|";
+            push @s, Ruby::tab($level) . "Proc.new\{ |" . @my_decl.join(", ") . "|";
             $level += 1;
         }
 
@@ -230,28 +230,28 @@ class Perlito5::Ruby::LexicalBlock {
                     $otherwise_block = Return.new( result => Do.new( block => ($last_statement.otherwise) ) );
                 }
 
-                $s2 = Ruby::tab($level) ~ 'if ' ~ Ruby::to_bool(' && ', [$cond]) ~ "\n"
-                    ~ $body_block.emit_ruby_indented( $level + 1 );
+                $s2 = Ruby::tab($level) . 'if ' . Ruby::to_bool(' && ', [$cond]) . "\n"
+                    . $body_block.emit_ruby_indented( $level + 1 );
                 if ( $has_otherwise ) {
-                    $s2 = $s2 ~ "\n"
-                        ~ Ruby::tab($level) ~ "else\n"
-                            ~ $otherwise_block.emit_ruby_indented($level+1)
-                        ~ "\n" ~ Ruby::tab($level) ~ "end"
+                    $s2 = $s2 . "\n"
+                        . Ruby::tab($level) . "else\n"
+                            . $otherwise_block.emit_ruby_indented($level+1)
+                        . "\n" . Ruby::tab($level) . "end"
                 }
                 else {
-                    $s2 = $s2 ~ "\n" ~ Ruby::tab($level) ~ "end"
+                    $s2 = $s2 . "\n" . Ruby::tab($level) . "end"
                 }
             }
             elsif $last_statement.isa( 'Bind' ) {
                 $s2 = $last_statement.emit_ruby_indented( $level );
-                $s2 = $s2 ~ "\n"
-                        ~ Ruby::tab($level) ~ "return " ~ ($last_statement.parameters).emit_ruby;
+                $s2 = $s2 . "\n"
+                        . Ruby::tab($level) . "return " . ($last_statement.parameters).emit_ruby;
             }
             elsif $last_statement.isa( 'Return' ) || $last_statement.isa( 'For' ) {
                 $s2 = $last_statement.emit_ruby_indented( $level );
             }
             else {
-                $s2 = Ruby::tab($level) ~ "return " ~ $last_statement.emit_ruby;
+                $s2 = Ruby::tab($level) . "return " . $last_statement.emit_ruby;
             }
 
             for my $stmt ( @anon_block ) {
@@ -262,7 +262,7 @@ class Perlito5::Ruby::LexicalBlock {
 
         if $has_my_decl {
             $level -= 1;
-            push @s, Ruby::tab($level) ~ "}.call(" ~ @my_init.join(", ") ~ ")";
+            push @s, Ruby::tab($level) . "}.call(" . @my_init.join(", ") . ")";
         }
 
         @anon_block = @tmp;
@@ -279,16 +279,16 @@ class CompUnit {
 
         for my $decl ( @.body ) {
             if $decl.isa('Use') {
-                push @s, Ruby::tab($level) ~ "require '" ~ Main::to_go_namespace($decl.mod) ~ ".rb'"
+                push @s, Ruby::tab($level) . "require '" . Main::to_go_namespace($decl.mod) . ".rb'"
                     unless $decl.mod eq 'v6';
             }
         }
 
-        push @s, Ruby::tab($level)    ~     'class C_' ~ $name;
-        push @s, Ruby::tab($level+1)  ~         '$' ~ $name ~ ' = C_' ~ $name ~ '.new()';
-        push @s, Ruby::tab($level+1)  ~         'namespace = $' ~ $name;
+        push @s, Ruby::tab($level)    .     'class C_' . $name;
+        push @s, Ruby::tab($level+1)  .         '$' . $name . ' = C_' . $name . '.new()';
+        push @s, Ruby::tab($level+1)  .         'namespace = $' . $name;
         push @s,    $block.emit_ruby_indented($level + 1);
-        push @s, Ruby::tab($level)    ~     "end";
+        push @s, Ruby::tab($level)    .     "end";
         return @s.join( "\n" );
     }
 }
@@ -296,28 +296,28 @@ class CompUnit {
 class Val::Int {
     method emit_ruby { $.int }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ $.int
+        Ruby::tab($level) . $.int
     }
 }
 
 class Val::Bit {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ ( $.bit ? 'true' : 'false' )
+        Ruby::tab($level) . ( $.bit ? 'true' : 'false' )
     }
 }
 
 class Val::Num {
     method emit_ruby { $.num }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ $.num
+        Ruby::tab($level) . $.num
     }
 }
 
 class Val::Buf {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ '"' ~ $.buf ~ '"'
+        Ruby::tab($level) . '"' . $.buf . '"'
     }
 }
 
@@ -350,7 +350,7 @@ class Index {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~
-            $.obj.emit_ruby ~ '[' ~ $.index_exp.emit_ruby ~ ']';
+            $.obj.emit_ruby . '[' . $.index_exp.emit_ruby . ']';
     }
 }
 
@@ -358,7 +358,7 @@ class Lookup {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         Ruby::tab($level) ~
-            $.obj.emit_ruby ~ '[' ~ $.index_exp.emit_ruby ~ ']';
+            $.obj.emit_ruby . '[' . $.index_exp.emit_ruby . ']';
     }
 }
 
@@ -372,24 +372,24 @@ class Var {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
         if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
-            return Ruby::tab($level) ~ 'ARGV'
+            return Ruby::tab($level) . 'ARGV'
         }
-        return Ruby::tab($level) ~ (
+        return Ruby::tab($level) . (
                ( $.twigil eq '.' )
-            ? ( 'self.v_' ~ $.name ~ '' )
+            ? ( 'self.v_' . $.name . '' )
             :  (    ( $.name eq '/' )
-                ?   ( $table->{$.sigil} ~ 'MATCH' )
-                :   ( $table->{$.sigil} ~ $.name ~ '' )
+                ?   ( $table->{$.sigil} . 'MATCH' )
+                :   ( $table->{$.sigil} . $.name . '' )
                 )
             )
     };
     method emit_ruby_name {
         return (
                ( $.twigil eq '.' )
-            ? ( 'self.v_' ~ $.name )
+            ? ( 'self.v_' . $.name )
             :  (    ( $.name eq '/' )
-                ?   ( $table->{$.sigil} ~ 'MATCH' )
-                :   ( $table->{$.sigil} ~ $.name )
+                ?   ( $table->{$.sigil} . 'MATCH' )
+                :   ( $table->{$.sigil} . $.name )
                 )
             )
     };
@@ -398,7 +398,7 @@ class Var {
 class Proto {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ '$' ~ Main::to_go_namespace($.name)
+        Ruby::tab($level) . '$' . Main::to_go_namespace($.name)
     }
 }
 
@@ -412,17 +412,17 @@ class Call {
             || ($.method eq 'isa')
         {
             if ($.hyper) {
-            	return $invocant ~ ".map \{|x| x." ~ $.method ~ "(" ~ (@.arguments.>>emit_ruby).join(', ') ~ ")}";
+            	return $invocant . ".map \{|x| x." . $.method . "(" . (@.arguments.>>emit_ruby).join(', ') . ")}";
             }
             else {
-                return "mp6_" ~ $.method ~ '(' ~ ([ $.invocant, @.arguments].>>emit_ruby).join(', ') ~ ')';
+                return "mp6_" . $.method . '(' . ([ $.invocant, @.arguments].>>emit_ruby).join(', ') . ')';
             }
         };
 
         my $meth = $.method;
         if $meth eq 'postcircumfix:<( )>' {
             return Ruby::tab($level) ~
-                $invocant ~ '.call(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+                $invocant . '.call(' . (@.arguments.>>emit_ruby).join(', ') . ')';
         }
         if     ( $meth eq 'values' )
             || ( $meth eq 'keys' )
@@ -432,21 +432,21 @@ class Call {
             || ( $meth eq 'concat' )
             || ( $meth eq 'join')
         {
-            return Ruby::tab($level) ~ $invocant ~ '.' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+            return Ruby::tab($level) . $invocant . '.' . $meth . '(' . (@.arguments.>>emit_ruby).join(', ') . ')';
         }
         if $meth eq 'chars' {
-            return Ruby::tab($level) ~ $invocant ~ ".length";
+            return Ruby::tab($level) . $invocant . ".length";
         }
         if $meth eq 'elems' {
-            return Ruby::tab($level) ~ $invocant ~ ".length";
+            return Ruby::tab($level) . $invocant . ".length";
         }
 
-        my $call = 'f_' ~ $meth ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+        my $call = 'f_' . $meth . '(' . (@.arguments.>>emit_ruby).join(', ') . ')';
         if ($.hyper) {
-            Ruby::tab($level) ~ $invocant ~ ".map \{|x| x." ~ $call ~ "}";
+            Ruby::tab($level) . $invocant . ".map \{|x| x." . $call . "}";
         }
         else {
-            Ruby::tab($level) ~ $invocant ~ '.' ~ $call;
+            Ruby::tab($level) . $invocant . '.' . $call;
         };
 
     }
@@ -462,33 +462,33 @@ class Apply {
 
         if $code.isa( 'Str' ) { }
         else {
-            return '(' ~ $.code.emit_ruby ~ ').(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+            return '(' . $.code.emit_ruby . ').(' . (@.arguments.>>emit_ruby).join(', ') . ')';
         };
 
         if $code eq 'self'       { return 'self' };
         if $code eq 'Mu'         { return 'nil' }
 
-        if $code eq 'make'       { return "v_MATCH.v_capture = " ~ (@.arguments[0]).emit_ruby ~ '' }
+        if $code eq 'make'       { return "v_MATCH.v_capture = " . (@.arguments[0]).emit_ruby . '' }
         if $code eq 'False'      { return 'false' };
         if $code eq 'True'       { return 'true' };
 
-        if $code eq 'say'        { return 'puts'  ~ Ruby::to_str(' + ', @.arguments) }
-        if $code eq 'print'      { return 'print' ~ Ruby::to_str(' + ', @.arguments) }
-        if $code eq 'warn'       { return '$stdout.puts('  ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
-        if $code eq 'return'     { return 'return('  ~ (@.arguments.>>emit_ruby).join(', ') ~ ')' }
+        if $code eq 'say'        { return 'puts'  . Ruby::to_str(' + ', @.arguments) }
+        if $code eq 'print'      { return 'print' . Ruby::to_str(' + ', @.arguments) }
+        if $code eq 'warn'       { return '$stdout.puts('  . (@.arguments.>>emit_ruby).join(', ') . ')' }
+        if $code eq 'return'     { return 'return('  . (@.arguments.>>emit_ruby).join(', ') . ')' }
 
-        if $code eq 'array'      { return '[' ~ (@.arguments.>>emit_ruby).join(' ')      ~ ']' };
+        if $code eq 'array'      { return '[' . (@.arguments.>>emit_ruby).join(' ')      . ']' };
 
-        if $code eq 'Int'        { return '(' ~ (@.arguments[0]).emit_ruby     ~ ').to_i' };
-        if $code eq 'Num'        { return '(' ~ (@.arguments[0]).emit_ruby     ~ ').to_f' };
+        if $code eq 'Int'        { return '(' . (@.arguments[0]).emit_ruby     . ').to_i' };
+        if $code eq 'Num'        { return '(' . (@.arguments[0]).emit_ruby     . ').to_f' };
 
         if $code eq 'prefix:<~>' { return Ruby::to_str(' + ', @.arguments) };
-        if $code eq 'prefix:<!>' { return '!'   ~ Ruby::to_bool(' && ', @.arguments)       };
-        if $code eq 'prefix:<?>' { return '!(!' ~ Ruby::to_bool(' && ', @.arguments) ~ ')' };
+        if $code eq 'prefix:<!>' { return '!'   . Ruby::to_bool(' && ', @.arguments)       };
+        if $code eq 'prefix:<?>' { return '!(!' . Ruby::to_bool(' && ', @.arguments) . ')' };
 
-        if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' ~ (@.arguments.>>emit_ruby).join(' ')    ~ ')' };
-        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_ruby).join(' ')    ~ ')' };
-        if $code eq 'prefix:<%>' { return '%{' ~ (@.arguments.>>emit_ruby).join(' ')    ~ '}' };
+        if $code eq 'prefix:<$>' { return 'mp6_to_scalar(' . (@.arguments.>>emit_ruby).join(' ')    . ')' };
+        if $code eq 'prefix:<@>' { return '(' . (@.arguments.>>emit_ruby).join(' ')    . ')' };
+        if $code eq 'prefix:<%>' { return '%{' . (@.arguments.>>emit_ruby).join(' ')    . '}' };
 
         if $code eq 'list:<~>'   { return Ruby::to_str(' + ', @.arguments) };
         if $code eq 'infix:<+>'  { return Ruby::to_num(' + ', @.arguments) };
@@ -509,51 +509,51 @@ class Apply {
         if $code eq 'infix:<>>'  { return Ruby::to_num(' > ', @.arguments)  };
 
         if $code eq 'infix:<..>' {
-            return '(' ~ @.arguments[0].emit_ruby() ~ '..' ~ @.arguments[1].emit_ruby() ~ ')'
+            return '(' . @.arguments[0].emit_ruby() . '..' . @.arguments[1].emit_ruby() . ')'
         }
 
         if $code eq 'exists'     {
             my $arg = @.arguments[0];
             if $arg.isa( 'Lookup' ) {
-                return '(' ~ ($arg.obj).emit_ruby ~ ').has_key?(' ~ ($arg.index_exp).emit_ruby ~ ')';
+                return '(' . ($arg.obj).emit_ruby . ').has_key?(' . ($arg.index_exp).emit_ruby . ')';
             }
         }
 
         if $code eq 'ternary:<?? !!>' {
-            return '(' ~ Ruby::to_bool(' && ', [@.arguments[0]]) ~ ' ? '
-                    ~ (@.arguments[1]).emit_ruby ~ ' : '
-                    ~ (@.arguments[2]).emit_ruby ~ ')'
+            return '(' . Ruby::to_bool(' && ', [@.arguments[0]]) . ' ? '
+                    . (@.arguments[1]).emit_ruby . ' : '
+                    . (@.arguments[2]).emit_ruby . ')'
         }
         if $code eq 'circumfix:<( )>' {
-            return '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+            return '(' . (@.arguments.>>emit_ruby).join(', ') . ')';
         }
         if $code eq 'infix:<=>' {
             return emit_ruby_bind( @.arguments[0], @.arguments[1] );
         }
 
         if $code eq 'substr' {
-            return Ruby::to_str(' + ', [@.arguments[0]]) ~ '['
-                    ~ (@.arguments[1]).emit_ruby ~ ', '
-                    ~ (@.arguments[2]).emit_ruby
-                ~ ']'
+            return Ruby::to_str(' + ', [@.arguments[0]]) . '['
+                    . (@.arguments[1]).emit_ruby . ', '
+                    . (@.arguments[2]).emit_ruby
+                . ']'
         }
         if $code eq 'index' {
-            return '(' ~ (@.arguments[0]).emit_ruby ~ ').index(' ~ (@.arguments[1]).emit_ruby ~ ')'
+            return '(' . (@.arguments[0]).emit_ruby . ').index(' . (@.arguments[1]).emit_ruby . ')'
         }
-        if $code eq 'defined' { return '(' ~ (@.arguments[0]).emit_ruby ~ ' != nil)' }
-        if $code eq 'shift'   { return (@.arguments[0]).emit_ruby ~ '.shift()' }
-        if $code eq 'pop'     { return (@.arguments[0]).emit_ruby ~ '.pop()'   }
-        if $code eq 'push'    { return (@.arguments[0]).emit_ruby ~ '.push('    ~ (@.arguments[1]).emit_ruby ~ ')' }
-        if $code eq 'unshift' { return (@.arguments[0]).emit_ruby ~ '.unshift(' ~ (@.arguments[1]).emit_ruby ~ ')' }
-        if $code eq 'elems'   { return (@.arguments[0]).emit_ruby ~ '.length()' }
+        if $code eq 'defined' { return '(' . (@.arguments[0]).emit_ruby . ' != nil)' }
+        if $code eq 'shift'   { return (@.arguments[0]).emit_ruby . '.shift()' }
+        if $code eq 'pop'     { return (@.arguments[0]).emit_ruby . '.pop()'   }
+        if $code eq 'push'    { return (@.arguments[0]).emit_ruby . '.push('    . (@.arguments[1]).emit_ruby . ')' }
+        if $code eq 'unshift' { return (@.arguments[0]).emit_ruby . '.unshift(' . (@.arguments[1]).emit_ruby . ')' }
+        if $code eq 'elems'   { return (@.arguments[0]).emit_ruby . '.length()' }
 
         if $.namespace {
-            return '$' ~ Main::to_go_namespace($.namespace) ~ '.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+            return '$' . Main::to_go_namespace($.namespace) . '.f_' . $.code . '(' . (@.arguments.>>emit_ruby).join(', ') . ')';
         }
-        'namespace.f_' ~ $.code ~ '(' ~ (@.arguments.>>emit_ruby).join(', ') ~ ')';
+        'namespace.f_' . $.code . '(' . (@.arguments.>>emit_ruby).join(', ') . ')';
     }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ self.emit_ruby
+        Ruby::tab($level) . self.emit_ruby
     }
     sub emit_ruby_bind {
         my $parameters = shift;
@@ -563,32 +563,32 @@ class Apply {
             if      $parameters.obj.isa( 'Var' ) && $parameters.obj.sigil eq '@'
                 ||  $parameters.obj.isa( 'Decl' ) && $parameters.obj.var.sigil eq '@'
             {
-                return      ($parameters.obj).emit_ruby ~ '['
-                    ~       ($parameters.index_exp).emit_ruby ~ '] = '
-                    ~       $arguments.emit_ruby
+                return      ($parameters.obj).emit_ruby . '['
+                    .       ($parameters.index_exp).emit_ruby . '] = '
+                    .       $arguments.emit_ruby
             }
             return    '('
-                    ~   $parameters.obj.emit_ruby() ~ ' '
-                    ~ '? '
-                    ~   ($parameters.obj).emit_ruby ~ '['
-                    ~   ($parameters.index_exp).emit_ruby ~ '] = '
-                    ~   $arguments.emit_ruby ~ ' '
-                    ~ ': Proc.new{|| '
-                    ~       ($parameters.obj).emit_ruby ~ ' = [];'
-                    ~       ($parameters.obj).emit_ruby ~ '['
-                    ~       ($parameters.index_exp).emit_ruby ~ '] = '
-                    ~       $arguments.emit_ruby
-                    ~   ' }.call() '
-                    ~ ')';
+                    .   $parameters.obj.emit_ruby() . ' '
+                    . '? '
+                    .   ($parameters.obj).emit_ruby . '['
+                    .   ($parameters.index_exp).emit_ruby . '] = '
+                    .   $arguments.emit_ruby . ' '
+                    . ': Proc.new{|| '
+                    .       ($parameters.obj).emit_ruby . ' = [];'
+                    .       ($parameters.obj).emit_ruby . '['
+                    .       ($parameters.index_exp).emit_ruby . '] = '
+                    .       $arguments.emit_ruby
+                    .   ' }.call() '
+                    . ')';
         }
         if $parameters.isa( 'Lookup' ) {
-            return    ($parameters.obj).emit_ruby ~ '['
-                    ~ ($parameters.index_exp).emit_ruby ~ '] = '
-                    ~ $arguments.emit_ruby;
+            return    ($parameters.obj).emit_ruby . '['
+                    . ($parameters.index_exp).emit_ruby . '] = '
+                    . $arguments.emit_ruby;
         }
         if $parameters.isa( 'Call' ) {
             # $var.attr = 3;
-            return ($parameters.invocant).emit_ruby ~ ".v_" ~ $parameters.method ~ " = " ~ $arguments.emit_ruby ~ "";
+            return ($parameters.invocant).emit_ruby . ".v_" . $parameters.method . " = " . $arguments.emit_ruby . "";
         }
         if      $parameters.isa( 'Var' ) && $parameters.sigil eq '@'
             ||  $parameters.isa( 'Decl' ) && $parameters.var.sigil eq '@'
@@ -600,14 +600,14 @@ class Apply {
         {
             $arguments = Lit::Hash.new( hash1 => [$arguments] );
         }
-        return $parameters.emit_ruby ~ ' = ' ~ $arguments.emit_ruby;
+        return $parameters.emit_ruby . ' = ' . $arguments.emit_ruby;
     }
 }
 
 class Return {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~ 'return ' ~ $.result.emit_ruby ~ '';
+        Ruby::tab($level) . 'return ' . $.result.emit_ruby . '';
     }
 }
 
@@ -620,18 +620,18 @@ class If {
         if $body_block.has_my_decl() {
             $body_block = Do.new( block => @.body );
         }
-        my $s = Ruby::tab($level) ~   'if ' ~ Ruby::to_bool(' && ', [$.cond]) ~ "\n"
-            ~ $body_block.emit_ruby_indented( $level + 1 );
+        my $s = Ruby::tab($level) .   'if ' . Ruby::to_bool(' && ', [$.cond]) . "\n"
+            . $body_block.emit_ruby_indented( $level + 1 );
         if ( $has_otherwise ) {
             my $otherwise_block = Perlito5::Ruby::LexicalBlock.new( block => @.otherwise.stmts );
             if $otherwise_block.has_my_decl() {
                 $otherwise_block = Do.new( block => @.otherwise );
             }
             $s ~= "\n"
-                ~ Ruby::tab($level) ~ "else\n"
-                ~   $otherwise_block.emit_ruby_indented($level+1)
+                . Ruby::tab($level) . "else\n"
+                .   $otherwise_block.emit_ruby_indented($level+1)
         }
-        $s ~= "\n" ~ Ruby::tab($level) ~ "end";
+        $s ~= "\n" . Ruby::tab($level) . "end";
         return $s;
     }
 }
@@ -646,13 +646,13 @@ class While {
         if $.init && $.continue {
             die "not implemented (While)"
             #    'for ( '
-            # ~  ( $.init     ? $.init.emit_             ~ '; '  : '; ' )
-            # ~  ( $.cond     ? 'f_bool(' ~ $.cond.emit_ ~ '); ' : '; ' )
-            # ~  ( $.continue ? $.continue.emit_         ~ ' '   : ' '  )
+            # .  ( $.init     ? $.init.emit_             . '; '  : '; ' )
+            # .  ( $.cond     ? 'f_bool(' . $.cond.emit_ . '); ' : '; ' )
+            # .  ( $.continue ? $.continue.emit_         . ' '   : ' '  )
         }
-        Ruby::tab($level) ~ 'while ' ~ Ruby::to_bool(' && ', [$.cond]) ~ "\n"
-                ~ $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
-        ~ Ruby::tab($level) ~ 'end'
+        Ruby::tab($level) . 'while ' . Ruby::to_bool(' && ', [$.cond]) . "\n"
+                . $body_block.emit_ruby_indented( $level + 1 ) . "\n"
+        . Ruby::tab($level) . 'end'
     }
 }
 
@@ -667,9 +667,9 @@ class For {
         else {
             $topic = 'v__'
         }
-        Ruby::tab($level) ~   'for ' ~ $topic ~ " in " ~ $.cond.emit_ruby ~ "\n"
-                ~ $body_block.emit_ruby_indented( $level + 1 ) ~ "\n"
-        ~ Ruby::tab($level) ~   'end'
+        Ruby::tab($level) .   'for ' . $topic . " in " . $.cond.emit_ruby . "\n"
+                . $body_block.emit_ruby_indented( $level + 1 ) . "\n"
+        . Ruby::tab($level) .   'end'
     }
 }
 
@@ -679,7 +679,7 @@ class Decl {
         my $decl = $.decl;
         my $name = $.var.name;
         Ruby::tab($level)
-            ~ ( ( $decl eq 'has' )
+            . ( ( $decl eq 'has' )
             ? ( '' )
             : $.var.emit_ruby );
     }
@@ -709,17 +709,17 @@ class Method {
         for my $field ( @$pos ) {
             my $arg = $field.emit_ruby_name;
             $args.push( $arg );
-            $default_args.push( $arg ~ '=nil' );
-            $meth_args.push( $arg ~ '=nil' );
+            $default_args.push( $arg . '=nil' );
+            $meth_args.push( $arg . '=nil' );
         };
         my $block = Perlito5::Ruby::LexicalBlock.new(
                 block => @.block,
                 needs_return => 1 );
         my @s;
-        push @s, Ruby::tab($level)   ~  'send( :define_method, "f_' ~ $.name ~ '".to_sym, lambda{ |' ~ $default_args.join(", ") ~ '|';
-        push @s, Ruby::tab($level+1) ~      $invocant.emit_ruby_name ~ " = self";
+        push @s, Ruby::tab($level)   .  'send( :define_method, "f_' . $.name . '".to_sym, lambda{ |' . $default_args.join(", ") . '|';
+        push @s, Ruby::tab($level+1) .      $invocant.emit_ruby_name . " = self";
         push @s,    $block.emit_ruby_indented($level + 1);
-        push @s, Ruby::tab($level)   ~  "} )";
+        push @s, Ruby::tab($level)   .  "} )";
         return @s.join("\n");
     }
 }
@@ -727,7 +727,7 @@ class Method {
 class Sub {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        my $label = "_anon_" ~ Perlito5::Ruby::LexicalBlock::get_ident_ruby;
+        my $label = "_anon_" . Perlito5::Ruby::LexicalBlock::get_ident_ruby;
         if ( $.name eq '' ) {
             # generate an anonymous sub in the current block
             Perlito5::Ruby::LexicalBlock::push_stmt_ruby(
@@ -739,7 +739,7 @@ class Sub {
                     )
                 );
             # return a ref to the anonymous sub
-            return Ruby::tab($level) ~ 'f_' ~ $label;
+            return Ruby::tab($level) . 'f_' . $label;
         }
 
         my $sig = $.sig;
@@ -750,17 +750,17 @@ class Sub {
         for my $field ( @$pos ) {
             my $arg = $field.emit_ruby_name;
             $args.push( $arg );
-            $default_args.push( $arg ~ '=nil' );
-            $meth_args.push( $arg ~ '=nil' );
+            $default_args.push( $arg . '=nil' );
+            $meth_args.push( $arg . '=nil' );
         };
         my $block = Perlito5::Ruby::LexicalBlock.new(
                 block => @.block,
                 needs_return => 1 );
-        my $label2 = "_anon_" ~ Perlito5::Ruby::LexicalBlock::get_ident_ruby;
+        my $label2 = "_anon_" . Perlito5::Ruby::LexicalBlock::get_ident_ruby;
         my @s;
-        push @s, Ruby::tab($level)   ~  'send( :define_method, "f_' ~ $.name ~ '".to_sym, lambda{ |' ~ $default_args.join(", ") ~ '|';
+        push @s, Ruby::tab($level)   .  'send( :define_method, "f_' . $.name . '".to_sym, lambda{ |' . $default_args.join(", ") . '|';
         push @s,    $block.emit_ruby_indented($level + 1);
-        push @s, Ruby::tab($level) ~ "} )";
+        push @s, Ruby::tab($level) . "} )";
         return @s.join("\n");
     }
 }
@@ -770,9 +770,9 @@ class Do {
     method emit_ruby_indented( $level ) {
         my $block = self.simplify.block;
         my @s;
-        push @s, Ruby::tab($level)   ~ "Proc.new\{ || ";
+        push @s, Ruby::tab($level)   . "Proc.new\{ || ";
         push @s,    (Perlito5::Ruby::LexicalBlock.new( block => $block, needs_return => 0 )).emit_ruby_indented($level+1);
-        push @s, Ruby::tab($level)   ~ "}.call()";
+        push @s, Ruby::tab($level)   . "}.call()";
         return @s.join("\n");
     }
 }
@@ -780,7 +780,7 @@ class Do {
 class Use {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        # Ruby::tab($level) ~ 'from ' ~ Main::to_go_namespace($.mod) ~ ' import *'
+        # Ruby::tab($level) . 'from ' . Main::to_go_namespace($.mod) . ' import *'
         return '';
     }
 }

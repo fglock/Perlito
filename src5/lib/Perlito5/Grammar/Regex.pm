@@ -67,12 +67,12 @@ token variables {
     |
         '$<'
         <rule_ident> \>
-        { make '$/{' ~ '\'' ~ $<rule_ident> ~ '\'' ~ '}' }
+        { make '$/{' . '\'' . $<rule_ident> . '\'' . '}' }
     |
         # TODO
         <Perlito5::Grammar.var_sigil>
         <Perlito5::Grammar.val_int>
-        { make $<Perlito5::Grammar.var_sigil> ~ '/[' ~ $<Perlito5::Grammar.val_int> ~ ']' }
+        { make $<Perlito5::Grammar.var_sigil> . '/[' . $<Perlito5::Grammar.val_int> . ']' }
     |
         <Perlito5::Grammar.var_sigil>
         <Perlito5::Grammar.var_twigil>
@@ -151,13 +151,13 @@ token rule_terms {
 # TODO
 #        | [ x | X ] <[ 0..9 a..f A..F ]]>+
 #          #  \x0021    \X0021
-#          { make Rul::SpecialChar->new( char => '\\' ~ $/ ) }
+#          { make Rul::SpecialChar->new( char => '\\' . $/ ) }
 #        | [ o | O ] <[ 0..7 ]>+
 #          #  \x0021    \X0021
-#          { make Rul::SpecialChar->new( char => '\\' ~ $/ ) }
+#          { make Rul::SpecialChar->new( char => '\\' . $/ ) }
 #        | ( x | X | o | O ) \[ (<-[ \] ]>*) \]
 #          #  \x[0021]  \X[0021]
-#          { make Rul::SpecialChar->new( char => '\\' ~ $0 ~ $1 ) }
+#          { make Rul::SpecialChar->new( char => '\\' . $0 . $1 ) }
 
         | c \[ <Perlito5::Grammar.digits> \]
           { make Rul::Constant->new( constant => chr( $<Perlito5::Grammar.digits> ) ) }

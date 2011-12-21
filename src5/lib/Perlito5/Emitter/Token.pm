@@ -15,8 +15,8 @@ class Rul {
                 $str = '\\\'';
             }
             if ( $len ) {
-                '( \'' ~ $str ~ '\' eq substr( $str, $MATCH->to, ' ~ $len ~ ') ' ~
-                '&& ( $MATCH->to = ' ~ $len ~ ' + $MATCH->to )' ~
+                '( \'' . $str . '\' eq substr( $str, $MATCH->to, ' . $len . ') ' ~
+                '&& ( $MATCH->to = ' . $len . ' + $MATCH->to )' ~
                 ')';
             }
             else {
@@ -40,59 +40,59 @@ class Rul::Quantifier {
             $.term->set_captures_to_array;
             return
                 '(do { '
-                ~   'my $last_match_null = 0; '
-                ~   'my $last_pos = $MATCH->to; '
-                ~   'my $count = 0; '
-                ~   'while (' ~ $.term->emit_perl6() ~ ' && ($last_match_null < 2)) '
-                ~   '{ '
-                ~       'if ($last_pos == $MATCH->to()) { '
-                ~           '$last_match_null = $last_match_null + 1; '
-                ~       '} '
-                ~       'else { '
-                ~           '$last_match_null = 0; '
-                ~       '}; '
-                ~       '$last_pos = $MATCH->to; '
-                ~       '$count = $count + 1; '
-                ~   '}; '
-                ~   '$MATCH->to = $last_pos; '
-                ~   '$count > 0; '
-                ~ '})';
+                .   'my $last_match_null = 0; '
+                .   'my $last_pos = $MATCH->to; '
+                .   'my $count = 0; '
+                .   'while (' . $.term->emit_perl6() . ' && ($last_match_null < 2)) '
+                .   '{ '
+                .       'if ($last_pos == $MATCH->to()) { '
+                .           '$last_match_null = $last_match_null + 1; '
+                .       '} '
+                .       'else { '
+                .           '$last_match_null = 0; '
+                .       '}; '
+                .       '$last_pos = $MATCH->to; '
+                .       '$count = $count + 1; '
+                .   '}; '
+                .   '$MATCH->to = $last_pos; '
+                .   '$count > 0; '
+                . '})';
         }
         if (($.quant eq '*') && ($.greedy eq '')) {
             $.term->set_captures_to_array;
             return
                 '(do { '
-                ~   'my $last_match_null = 0; '
-                ~   'my $last_pos = $MATCH->to; '
-                ~   'while (' ~ $.term->emit_perl6() ~ ' && ($last_match_null < 2)) '
-                ~   '{ '
-                ~       'if ($last_pos == $MATCH->to()) { '
-                ~           '$last_match_null = $last_match_null + 1; '
-                ~       '} '
-                ~       'else { '
-                ~           '$last_match_null = 0; '
-                ~       '}; '
-                ~       '$last_pos = $MATCH->to; '
-                ~   '}; '
-                ~   '$MATCH->to = $last_pos; '
-                ~   '1 '
-                ~ '})';
+                .   'my $last_match_null = 0; '
+                .   'my $last_pos = $MATCH->to; '
+                .   'while (' . $.term->emit_perl6() . ' && ($last_match_null < 2)) '
+                .   '{ '
+                .       'if ($last_pos == $MATCH->to()) { '
+                .           '$last_match_null = $last_match_null + 1; '
+                .       '} '
+                .       'else { '
+                .           '$last_match_null = 0; '
+                .       '}; '
+                .       '$last_pos = $MATCH->to; '
+                .   '}; '
+                .   '$MATCH->to = $last_pos; '
+                .   '1 '
+                . '})';
         }
         if (($.quant eq '?') && ($.greedy eq '')) {
             $.term->set_captures_to_array;
             return
                 '(do { '
-                ~   'my $last_pos = $MATCH->to; '
-                ~   'if (!(do {' ~ $.term->emit_perl6() ~ '})) '
-                ~   '{ '
-                ~       '$MATCH->to = $last_pos; '
-                ~   '}; '
-                ~   '1 '
-                ~ '})';
+                .   'my $last_pos = $MATCH->to; '
+                .   'if (!(do {' . $.term->emit_perl6() . '})) '
+                .   '{ '
+                .       '$MATCH->to = $last_pos; '
+                .   '}; '
+                .   '1 '
+                . '})';
         }
 
         # TODO
-        warn "Rul::Quantifier: " ~ self->perl ~ " not implemented";
+        warn "Rul::Quantifier: " . self->perl . " not implemented";
         $.term->emit_perl6;
     }
     method set_captures_to_array {
@@ -116,7 +116,7 @@ class Rul::Or {
 class Rul::Concat {
     has @.concat;
     method emit_perl6 {
-        '(' ~ (@.concat.>>emit_perl6)->join(' && ') ~ ')';
+        '(' . (@.concat.>>emit_perl6)->join(' && ') . ')';
     }
     method set_captures_to_array {
         @.concat.>>set_captures_to_array;
@@ -129,33 +129,33 @@ class Rul::Subrule {
     method emit_perl6 {
         my $meth = ( 1 + index( $.metasyntax, '.' ) )
             ? Main::_replace( $.metasyntax, '.', '->' )
-            : ( '$grammar->' ~ $.metasyntax );
+            : ( '$grammar->' . $.metasyntax );
 
         my $code;
         if ($.captures == 1) {
-            $code = 'if ($m2) { $MATCH->to = $m2->to; $MATCH->{\'' ~ $.metasyntax ~ '\'} = $m2; 1 } else { 0 }; '
+            $code = 'if ($m2) { $MATCH->to = $m2->to; $MATCH->{\'' . $.metasyntax . '\'} = $m2; 1 } else { 0 }; '
         }
         elsif $.captures > 1 {
             # TODO: capture level > 2
             $code = 'if ($m2) { '
-                    ~   '$MATCH->to = $m2->to; '
-                    ~   'if (exists $MATCH->{\'' ~ $.metasyntax ~ '\'}) { '
-                    ~       '($MATCH->{\'' ~ $.metasyntax ~ '\'})->push( $m2 ); '
-                    ~   '} '
-                    ~   'else { '
-                    ~       '$MATCH->{\'' ~ $.metasyntax ~ '\'} = [ $m2 ]; '
-                    ~   '}; '
-                    ~   '1 '
-                    ~ '} else { 0 }; '
+                    .   '$MATCH->to = $m2->to; '
+                    .   'if (exists $MATCH->{\'' . $.metasyntax . '\'}) { '
+                    .       '($MATCH->{\'' . $.metasyntax . '\'})->push( $m2 ); '
+                    .   '} '
+                    .   'else { '
+                    .       '$MATCH->{\'' . $.metasyntax . '\'} = [ $m2 ]; '
+                    .   '}; '
+                    .   '1 '
+                    . '} else { 0 }; '
         }
         else {
             $code = 'if ($m2) { $MATCH->to = $m2->to; 1 } else { 0 }; '
         }
 
         '(do { '
-        ~   'my $m2 = ' ~ $meth ~ '($str, $MATCH->to); '
-        ~   $code
-        ~ '})'
+        .   'my $m2 = ' . $meth . '($str, $MATCH->to); '
+        .   $code
+        . '})'
     }
     method set_captures_to_array {
         if ($.captures > 0) {
@@ -180,7 +180,7 @@ class Rul::Var {
             '%' => '$Hash_',
             '&' => '$Code_',
         };
-        $table->{$.sigil} ~ $.name
+        $table->{$.sigil} . $.name
     }
 }
 
@@ -229,7 +229,7 @@ class Rul::SpecialChar {
 class Rul::Block {
     has $.closure;
     method emit_perl6 {
-        '((do { ' ~ $.closure ~ ' }) || 1)'
+        '((do { ' . $.closure . ' }) || 1)'
     }
     method set_captures_to_array { }
 }
@@ -237,7 +237,7 @@ class Rul::Block {
 class Rul::InterpolateVar {
     has $.var;
     method emit_perl6 {
-        say '# TODO: interpolate var ' ~ $.var->emit_perl6() ~ '';
+        say '# TODO: interpolate var ' . $.var->emit_perl6() . '';
         die();
     };
     method set_captures_to_array { }
@@ -247,7 +247,7 @@ class Rul::NamedCapture {
     has $.rule_exp;
     has $.capture_ident;
     method emit_perl6 {
-        say '# TODO: named capture ' ~ $.capture_ident ~ ' = ' ~ $.rule_exp->emit_perl6() ~ '';
+        say '# TODO: named capture ' . $.capture_ident . ' = ' . $.rule_exp->emit_perl6() . '';
         die();
     }
     method set_captures_to_array {
