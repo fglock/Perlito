@@ -74,7 +74,7 @@ class Perlito5::Expression {
             # say "# ** processing term ", $v->perl;
             if $v->[1] eq 'methcall_no_params' {
                 # say "#   Call ", ($v->[2])->perl;
-                $v = Call->new( invocant => Mu, method => $v->[2], hyper => $v->[3] );
+                $v = Call->new( invocant => Mu, method => $v->[2], arguments => [], hyper => $v->[3] );
                 # say "#     ", $v->perl;
                 return $v;
             }
@@ -166,7 +166,7 @@ class Perlito5::Expression {
         # say "#      v:     ", $v->perl;
         if $v->[1] eq 'methcall_no_params' {
             # say "#   Call ", ($v->[2])->perl;
-            $v = Call->new( invocant => $value, method => $v->[2], hyper => $v->[3] );
+            $v = Call->new( invocant => $value, method => $v->[2], arguments => [], hyper => $v->[3] );
             return $v;
         }
         if $v->[1] eq 'funcall_no_params' {

@@ -15,8 +15,9 @@ use feature 'say';
 
 package Main;
 
-my $out = $Document->getElementById('print-result');
-$out->{'value'} = "using the 'document' object\n";
+my $where = 'print-result';
+my $out = $Document->getElementById($where);
+$out->{'value'} = "Changing the '$where' box using the 'Document' object\n";
 
 say "hello, World!";
 
@@ -31,6 +32,23 @@ sub fact {
 for my $v ( 1 .. 5 ) {
     say "fact $v = ", fact($v);
 }
+
+package Printer;
+
+    my $where = 'print-result';
+    my $out = $Document->getElementById($where);
+
+    sub new { 
+        bless {}, $_[0] 
+    }
+    sub out { 
+        $out->{'value'} .= $_[1] 
+    }
+
+package Main;
+
+my $printer = Printer->new;
+$printer->out( "Using my 'Printer' object\n" );
 
 </textarea><br/>
 		<input type="button" value="Execute" onclick="execute()"/>

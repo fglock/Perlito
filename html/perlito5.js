@@ -6754,7 +6754,13 @@ List_a.push(v_stmt);
 (v_v = v_num_stack.pop());
                 if ( bool(isa(v_v, 'Array')) ) { (function () {
                     if ( bool((v_v[1] == 'methcall_no_params')) ) { (function () {
-(v_v = (function () { var tmp = {v_invocant: null,v_method: v_v[2],v_hyper: v_v[3]}; tmp.__proto__ = Call; return tmp; })());
+(v_v = (function () { var tmp = {v_invocant: null,v_method: v_v[2],v_arguments: (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+    return(List_a);
+})(),v_hyper: v_v[3]}; tmp.__proto__ = Call; return tmp; })());
                         throw(v_v);;
                     })(); }
                     else { (function () {
@@ -6892,7 +6898,13 @@ v_num_stack.unshift((v_v[4])['end_block']);;
 (v_value = shift(List__));
 (v_v = v_op);
                 if ( bool((v_v[1] == 'methcall_no_params')) ) { (function () {
-(v_v = (function () { var tmp = {v_invocant: v_value,v_method: v_v[2],v_hyper: v_v[3]}; tmp.__proto__ = Call; return tmp; })());
+(v_v = (function () { var tmp = {v_invocant: v_value,v_method: v_v[2],v_arguments: (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+    return(List_a);
+})(),v_hyper: v_v[3]}; tmp.__proto__ = Call; return tmp; })());
                     throw(v_v);;
                 })(); }
                 else { (function () {

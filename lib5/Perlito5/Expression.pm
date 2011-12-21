@@ -95,7 +95,11 @@ package GLOBAL;
             ((my  $v) = pop( @{$num_stack} ));
             if (Main::isa($v, 'Array')) {
                 if (($v->[1] eq 'methcall_no_params')) {
-                    ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('hyper' => $v->[3])));
+                    ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    $List_a
+}), ('hyper' => $v->[3])));
                     return scalar ($v)
                 };
                 if (($v->[1] eq 'funcall_no_params')) {
@@ -159,7 +163,11 @@ package GLOBAL;
             ((my  $value) = shift());
             ((my  $v) = $op);
             if (($v->[1] eq 'methcall_no_params')) {
-                ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('hyper' => $v->[3])));
+                ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    $List_a
+}), ('hyper' => $v->[3])));
                 return scalar ($v)
             };
             if (($v->[1] eq 'funcall_no_params')) {
