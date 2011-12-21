@@ -51,7 +51,7 @@ class Main {
     sub lisp_dump_object {
         my $class_name = shift;
         my $data = shift;
-        return $class_name ~ '( ' ~ ($data.>>perl).join(', ') ~ ' )';
+        return $class_name ~ '( ' ~ ($data.>>perl)->join(', ') ~ ' )';
     }
 
 }

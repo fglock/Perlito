@@ -21,8 +21,6 @@ package GLOBAL;
     use Perlito5::Macro;
     use Perlito5::Perl5::Emitter;
     use Perlito5::Precedence;
-    use Perlito5::Python::Emitter;
-    use Perlito5::Ruby::Emitter;
     use Perlito5::Runtime;
     ((my  $_V6_COMPILER_NAME) = 'Perlito5');
     ((my  $_V6_COMPILER_VERSION) = '7.0');

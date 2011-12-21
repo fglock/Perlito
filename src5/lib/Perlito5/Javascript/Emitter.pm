@@ -115,13 +115,13 @@ class Javascript {
             }
         }
         elsif $ast->isa( 'Index' ) {
-            my $var_js = $ast.emit_javascript;
+            my $var_js = $ast->emit_javascript;
             # $a[3][4]
             return autovivify( $ast->obj, 'ARRAY' )
                  ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = [] }; ';
         }
         elsif $ast->isa( 'Lookup' ) {
-            my $var_js = $ast.emit_javascript;
+            my $var_js = $ast->emit_javascript;
             # $a{'x'}{'y'}
             return autovivify( $ast->obj, 'HASH' )
                  ~ 'if (' ~ $var_js ~ ' == null) { ' ~ $var_js ~ ' = {} }; ';
@@ -232,14 +232,14 @@ class CompUnit {
         # process 'package' statements
         my @body;
         my $i = 0;
-        while ( $i <= @.body.elems ) {
+        while ( $i <= @.body->elems ) {
             my $stmt = @.body->[$i];
             if ( $stmt->isa( 'Apply' ) && $stmt->code eq 'package' ) {
                 # found an inner package
                 my $name = $stmt->namespace;
                 my @stmts;
                 $i++;
-                while (  $i <= @.body.elems 
+                while (  $i <= @.body->elems 
                       && !( @.body->[$i]->isa( 'Apply' ) && @.body->[$i]->code eq 'package' )
                       )
                 {
@@ -293,7 +293,7 @@ class CompUnit {
                 $str = $str
               ~ '  // method ' ~ $decl->name() ~ "\n"
               ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function( $decl->name() )
-                    ~ ' = function (' ~ ($pos.>>emit_javascript).join(', ') ~ ') {' ~ "\n"
+                    ~ ' = function (' ~ ($pos.>>emit_javascript)->join(', ') ~ ') {' ~ "\n"
               ~ '    var ' ~ $invocant->emit_javascript() ~ ' = this;' ~ "\n"
               ~         $block->emit_javascript_indented( $level + 1 ) ~ "\n"
               ~ '  }' ~ "\n"
@@ -306,7 +306,7 @@ class CompUnit {
                 $str = $str
               ~ '  // sub ' ~ $decl->name() ~ "\n"
               ~ '  ' ~ $class_name ~ '.' ~ Javascript::escape_function( $decl->name() )
-                    ~ ' = function (' ~ ($pos.>>emit_javascript).join(', ') ~ ') {' ~ "\n"
+                    ~ ' = function (' ~ ($pos.>>emit_javascript)->join(', ') ~ ') {' ~ "\n"
                 # create @_
               ~ Javascript::tab($level + 1) ~ 'var List__ = Array.prototype.slice.call(arguments);' ~ "\n"
               ~ Javascript::tab($level + 1) ~ 'if (List__[0] instanceof CallSubClass) {' ~ "\n"
@@ -327,7 +327,7 @@ class CompUnit {
                && (!( $decl->isa( 'Method')))
                && (!( $decl->isa( 'Sub')))
             {
-                $str = $str ~ ($decl).emit_javascript_indented( $level + 1 ) ~ ';';
+                $str = $str ~ ($decl)->emit_javascript_indented( $level + 1 ) ~ ';';
             }
         }
         $str = $str ~ '}'
@@ -372,7 +372,7 @@ class Lit::Block {
         }
         return
               Javascript::tab($level) ~ "(function ($sig) \{\n"
-            ~   (Perlito5::Javascript::LexicalBlock->new( block => @.stmts, needs_return => 1 )).emit_javascript_indented( $level + 1 ) ~ "\n"
+            ~   (Perlito5::Javascript::LexicalBlock->new( block => @.stmts, needs_return => 1 ))->emit_javascript_indented( $level + 1 ) ~ "\n"
             ~ Javascript::tab($level) ~ '})'
     }
 }
@@ -439,7 +439,7 @@ class Lookup {
         ##         $var1 = Var->new( sigil => '%', twigil => $var1->twigil, namespace => $var1->namespace, name => $var1->name );
         ##     }
  
-        ##     my $var1_js = $var1.emit_javascript;
+        ##     my $var1_js = $var1->emit_javascript;
         ##     $str = $str ~ Javascript::autovivify( $var1 );
         ##     $var_js = $var1_js ~ '[' ~ $var->index_exp->emit_javascript() ~ ']'
         ## }
@@ -523,7 +523,7 @@ class Call {
             my $str = [];
             for my $field ( @.arguments ) {
                 if $field->isa('Apply') && $field->code eq 'infix:<=>>' {
-                    $str->push( 'v_' ~ $field->arguments[0].buf() ~ ': ' ~ $field->arguments[1].emit_javascript() );
+                    $str->push( 'v_' ~ $field->arguments[0]->buf() ~ ': ' ~ $field->arguments[1]->emit_javascript() );
                 }
                 else {
                     die 'Error in constructor, field: ', $field->perl;
@@ -549,12 +549,12 @@ class Call {
             }
             return Javascript::escape_function( $.method ) ~ '('
                     ~ $invocant
-                    ~ ( @.arguments ? ', ' ~ (@.arguments.>>emit_javascript).join(', ') : '' )
+                    ~ ( @.arguments ? ', ' ~ (@.arguments.>>emit_javascript)->join(', ') : '' )
                 ~ ')';
         }
 
         if exists( %method_native_js{ $.method } ) {
-            return $invocant ~ '.' ~ $.method ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+            return $invocant ~ '.' ~ $.method ~ '(' ~ (@.arguments.>>emit_javascript)->join(', ') ~ ')';
         }
 
         my $meth = $.method;
@@ -564,7 +564,7 @@ class Call {
                         ~ 'var out = []; '
                         ~ 'if ( a_ == null ) { return out; }; '
                         ~ 'for(var i = 0; i < a_.length; i++) { '
-                            ~ 'out.push( a_[i].' ~ Javascript::escape_function( $meth ) ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ') ) '
+                            ~ 'out.push( a_[i].' ~ Javascript::escape_function( $meth ) ~ '(' ~ (@.arguments.>>emit_javascript)->join(', ') ~ ') ) '
                         ~ '}; '
                         ~ 'return out;'
                     ~ ' })(' ~ $invocant ~ ')'
@@ -578,9 +578,9 @@ class Call {
         }
 
         if  $meth eq 'postcircumfix:<( )>'  {
-            return '(' ~ $invocant ~ ')(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+            return '(' ~ $invocant ~ ')(' ~ (@.arguments.>>emit_javascript)->join(', ') ~ ')';
         }
-        return Javascript::tab($level) ~ $invocant ~ '.' ~ Javascript::escape_function( $meth ) ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+        return Javascript::tab($level) ~ $invocant ~ '.' ~ Javascript::escape_function( $meth ) ~ '(' ~ (@.arguments.>>emit_javascript)->join(', ') ~ ')';
     }
 }
 
@@ -629,71 +629,71 @@ class Apply {
 
         if $code->isa( 'Str' ) { }
         else {
-            return Javascript::tab($level) ~ '(' ~ $.code->emit_javascript() ~ ')->(' ~ (@.arguments.>>emit).join(', ') ~ ')';
+            return Javascript::tab($level) ~ '(' ~ $.code->emit_javascript() ~ ')->(' ~ (@.arguments.>>emit)->join(', ') ~ ')';
         }
         if $code eq 'infix:<=>>' {
-            return Javascript::tab($level) ~ (@.arguments.>>emit_javascript).join( ', ' )
+            return Javascript::tab($level) ~ (@.arguments.>>emit_javascript)->join( ', ' )
         }
         if exists %op_infix_js{$code} {
-            return Javascript::tab($level) ~ '(' ~ (@.arguments.>>emit_javascript).join( %op_infix_js{$code} ) ~ ')'
+            return Javascript::tab($level) ~ '(' ~ (@.arguments.>>emit_javascript)->join( %op_infix_js{$code} ) ~ ')'
         }
 
         if $code eq 'self'       { return Javascript::tab($level) ~ 'v_self' }
         if $code eq 'Mu'         { return Javascript::tab($level) ~ 'null' }
-        if $code eq 'make'       { return Javascript::tab($level) ~ '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')' }
-        if $code eq 'defined'    { return Javascript::tab($level) ~ '('  ~ (@.arguments.>>emit_javascript).join(' ')    ~ ' != null)' }
+        if $code eq 'make'       { return Javascript::tab($level) ~ '(v_MATCH.v_capture = ' ~ (@.arguments.>>emit_javascript)->join(', ') ~ ')' }
+        if $code eq 'defined'    { return Javascript::tab($level) ~ '('  ~ (@.arguments.>>emit_javascript)->join(' ')    ~ ' != null)' }
         if $code eq 'substr' {
-            return '(' ~ (@.arguments[0]).emit_javascript()
-                 ~ ' || "").substr(' ~ (@.arguments[1]).emit_javascript()
-                 ~ ( defined(@.arguments[2]) ? ', ' ~ (@.arguments[2]).emit_javascript() : '' )
+            return '(' ~ (@.arguments[0])->emit_javascript()
+                 ~ ' || "").substr(' ~ (@.arguments[1])->emit_javascript()
+                 ~ ( defined(@.arguments[2]) ? ', ' ~ (@.arguments[2])->emit_javascript() : '' )
                  ~ ')'
         }
 
         if $code eq 'shift'      {
             if ( @.arguments ) {
-                return 'shift(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')'
+                return 'shift(' ~ (@.arguments.>>emit_javascript)->join(', ') ~ ')'
             }
             return 'shift(List__)'
         }
 
-        if $code eq 'chr'        { return 'String.fromCharCode(' ~ Javascript::escape_function('num') ~ '(' ~ (@.arguments[0]).emit_javascript() ~ '))' }
-        if $code eq 'ord'        { return '(' ~ (@.arguments[0]).emit_javascript() ~ ').charCodeAt(0)' }
+        if $code eq 'chr'        { return 'String.fromCharCode(' ~ Javascript::escape_function('num') ~ '(' ~ (@.arguments[0])->emit_javascript() ~ '))' }
+        if $code eq 'ord'        { return '(' ~ (@.arguments[0])->emit_javascript() ~ ').charCodeAt(0)' }
 
-        if $code eq 'Int'        { return 'parseInt(' ~ (@.arguments[0]).emit_javascript() ~ ')' }
-        if $code eq 'Num'        { return 'parseFloat(' ~ (@.arguments[0]).emit_javascript() ~ ')' }
+        if $code eq 'Int'        { return 'parseInt(' ~ (@.arguments[0])->emit_javascript() ~ ')' }
+        if $code eq 'Num'        { return 'parseFloat(' ~ (@.arguments[0])->emit_javascript() ~ ')' }
 
         # XXX Perl6
-        if $code eq 'prefix:<~>' { return Javascript::escape_function('string') ~ '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' }
+        if $code eq 'prefix:<~>' { return Javascript::escape_function('string') ~ '(' ~ (@.arguments.>>emit_javascript)->join(' ')    ~ ')' }
 
-        if $code eq 'prefix:<!>' { return '( ' ~ Javascript::escape_function('bool') ~ '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ') ? false : true)' }
-        if $code eq 'prefix:<?>' { return '( ' ~ Javascript::escape_function('bool') ~ '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ') ? true : false)' }
-        if $code eq 'prefix:<$>' { return Javascript::escape_function('scalar') ~ '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' }
-        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ')' };  # .' ~ Javascript::escape_function('array') ~ '()' }
-        if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_javascript).join(' ')    ~ ').' ~ Javascript::escape_function('hash') ~ '()' }
+        if $code eq 'prefix:<!>' { return '( ' ~ Javascript::escape_function('bool') ~ '(' ~ (@.arguments.>>emit_javascript)->join(' ')    ~ ') ? false : true)' }
+        if $code eq 'prefix:<?>' { return '( ' ~ Javascript::escape_function('bool') ~ '(' ~ (@.arguments.>>emit_javascript)->join(' ')    ~ ') ? true : false)' }
+        if $code eq 'prefix:<$>' { return Javascript::escape_function('scalar') ~ '(' ~ (@.arguments.>>emit_javascript)->join(' ')    ~ ')' }
+        if $code eq 'prefix:<@>' { return '(' ~ (@.arguments.>>emit_javascript)->join(' ')    ~ ')' };  # .' ~ Javascript::escape_function('array') ~ '()' }
+        if $code eq 'prefix:<%>' { return '(' ~ (@.arguments.>>emit_javascript)->join(' ')    ~ ').' ~ Javascript::escape_function('hash') ~ '()' }
 
         if $code eq 'prefix:<\\>' { 
             # XXX currently a no-op
-            return (@.arguments.>>emit_javascript).join(' ') 
+            return (@.arguments.>>emit_javascript)->join(' ') 
         }
 
-        if $code eq 'postfix:<++>' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')++' }
-        if $code eq 'postfix:<-->' { return '('   ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')--' }
-        if $code eq 'prefix:<++>'  { return '++(' ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')' }
-        if $code eq 'prefix:<-->'  { return '--(' ~ (@.arguments.>>emit_javascript).join(' ')  ~ ')' }
+        if $code eq 'postfix:<++>' { return '('   ~ (@.arguments.>>emit_javascript)->join(' ')  ~ ')++' }
+        if $code eq 'postfix:<-->' { return '('   ~ (@.arguments.>>emit_javascript)->join(' ')  ~ ')--' }
+        if $code eq 'prefix:<++>'  { return '++(' ~ (@.arguments.>>emit_javascript)->join(' ')  ~ ')' }
+        if $code eq 'prefix:<-->'  { return '--(' ~ (@.arguments.>>emit_javascript)->join(' ')  ~ ')' }
 
-        if $code eq 'infix:<x>'  { return 'str_replicate(' ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' }
+        if $code eq 'infix:<x>'  { return 'str_replicate(' ~ (@.arguments.>>emit_javascript)->join(', ')  ~ ')' }
 
         # XXX Perl6
-        if $code eq 'list:<~>'   { return '(' ~ Javascript::escape_function('string') ~ '(' ~ (@.arguments.>>emit_javascript()).join(  ') + ' ~ Javascript::escape_function('string') ~ '('  ) ~ '))' }
+        if $code eq 'list:<~>'   { return '(' ~ Javascript::escape_function('string') ~ '(' ~ (@.arguments.>>emit_javascript())->join(  ') + ' ~ Javascript::escape_function('string') ~ '('  ) ~ '))' }
 
-        if $code eq 'list:<.>'   { return '(' ~ Javascript::escape_function('string') ~ '(' ~ (@.arguments.>>emit_javascript()).join(  ') + ' ~ Javascript::escape_function('string') ~ '('  ) ~ '))' }
+        if $code eq 'list:<.>'   { return '(' ~ Javascript::escape_function('string') ~ '(' ~ (@.arguments.>>emit_javascript())->join(  ') + ' ~ Javascript::escape_function('string') ~ '('  ) ~ '))' }
 
-        if $code eq 'infix:<+>'  { return Javascript::escape_function('add') ~ '('  ~ (@.arguments.>>emit_javascript).join(', ')  ~ ')' }
+        if $code eq 'infix:<+>'  { return Javascript::escape_function('add') ~ '('  ~ (@.arguments.>>emit_javascript)->join(', ')  ~ ')' }
 
         if $code eq 'infix:<..>' {
             return '(function (a) { '
-                    ~ 'for (var i=' ~ @.arguments[0].emit_javascript()
-                           ~ ', l=' ~ @.arguments[1].emit_javascript() ~ '; '
+                    ~ 'for (var i=' ~ @.arguments[0]->emit_javascript()
+                           ~ ', l=' ~ @.arguments[1]->emit_javascript() ~ '; '
                        ~ 'i<=l; ++i)'
                     ~ '{ '
                         ~ 'a.push(i) '
@@ -706,45 +706,45 @@ class Apply {
           || $code eq 'infix:<and>'
         {
             return Javascript::escape_function('and') ~ '('
-                ~ @.arguments[0].emit_javascript() ~ ', '
-                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '; })'
+                ~ @.arguments[0]->emit_javascript() ~ ', '
+                ~ 'function () { return ' ~ @.arguments[1]->emit_javascript() ~ '; })'
         }
         if   $code eq 'infix:<||>'
           || $code eq 'infix:<or>'
         {
             return Javascript::escape_function('or') ~ '('
-                ~ @.arguments[0].emit_javascript() ~ ', '
-                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '; })'
+                ~ @.arguments[0]->emit_javascript() ~ ', '
+                ~ 'function () { return ' ~ @.arguments[1]->emit_javascript() ~ '; })'
         }
         if $code eq 'infix:<//>' { return Javascript::escape_function('defined_or') ~ '('
-                ~ @.arguments[0].emit_javascript() ~ ', '
-                ~ 'function () { return ' ~ @.arguments[1].emit_javascript() ~ '; })'
+                ~ @.arguments[0]->emit_javascript() ~ ', '
+                ~ 'function () { return ' ~ @.arguments[1]->emit_javascript() ~ '; })'
         }
 
         if $code eq 'exists'     {
             my $arg = @.arguments[0];
             if $arg->isa( 'Lookup' ) {
-                return '(' ~ ($arg->obj).emit_javascript() ~ ').hasOwnProperty(' ~ ($arg->index_exp).emit_javascript() ~ ')';
+                return '(' ~ ($arg->obj)->emit_javascript() ~ ').hasOwnProperty(' ~ ($arg->index_exp)->emit_javascript() ~ ')';
             }
             if ( $arg->isa( 'Call' ) && $arg->method eq 'postcircumfix:<{ }>' ) {
                 return '(' ~ $arg->invocant->emit_javascript() ~ ').hasOwnProperty(' ~ $arg->arguments->emit_javascript() ~ ')';
             }
         }
         if $code eq 'ternary:<?? !!>' {
-            return '( ' ~ Javascript::escape_function('bool') ~ '(' ~ (@.arguments[0]).emit_javascript() ~ ')'
-                 ~ ' ? ' ~ (@.arguments[1]).emit_javascript()
-                 ~ ' : ' ~ (@.arguments[2]).emit_javascript()
+            return '( ' ~ Javascript::escape_function('bool') ~ '(' ~ (@.arguments[0])->emit_javascript() ~ ')'
+                 ~ ' ? ' ~ (@.arguments[1])->emit_javascript()
+                 ~ ' : ' ~ (@.arguments[2])->emit_javascript()
                  ~ ')'
         }
         if $code eq 'circumfix:<( )>' {
-            return '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+            return '(' ~ (@.arguments.>>emit_javascript)->join(', ') ~ ')';
         }
         if $code eq 'infix:<=>' {
             return emit_javascript_bind( @.arguments[0], @.arguments[1] );
         }
         if $code eq 'return' {
             return Javascript::tab($level) ~ 'throw('
-                ~   (@.arguments ? @.arguments[0].emit_javascript() : 'null')
+                ~   (@.arguments ? @.arguments[0]->emit_javascript() : 'null')
                 ~ ')'
         }
 
@@ -756,9 +756,9 @@ class Apply {
         }
         else {
             $code = Javascript::escape_function( $.code );
-            return Javascript::tab($level) ~ $code ~ '(' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+            return Javascript::tab($level) ~ $code ~ '(' ~ (@.arguments.>>emit_javascript)->join(', ') ~ ')';
         }
-        Javascript::tab($level) ~ $code ~ '(CallSub, ' ~ (@.arguments.>>emit_javascript).join(', ') ~ ')';
+        Javascript::tab($level) ~ $code ~ '(CallSub, ' ~ (@.arguments.>>emit_javascript)->join(', ') ~ ')';
     }
 
     sub emit_javascript_bind {
@@ -787,7 +787,7 @@ class Apply {
             }
 
             # $var->attr = 3;
-            return '(' ~ ($parameters->invocant).emit_javascript() ~ '.v_' ~ $parameters->method() ~ ' = ' ~ $arguments->emit_javascript() ~ ')';
+            return '(' ~ ($parameters->invocant)->emit_javascript() ~ '.v_' ~ $parameters->method() ~ ' = ' ~ $arguments->emit_javascript() ~ ')';
         }
         if $parameters->isa( 'Lookup' ) {
             my $str = '';
@@ -909,11 +909,11 @@ class Decl {
     method emit_javascript_init {
         if $.decl eq 'my' {
             my $str = "";
-            $str = $str ~ 'var ' ~ ($.var).emit_javascript() ~ ' = ';
-            if ($.var).sigil eq '%' {
+            $str = $str ~ 'var ' ~ ($.var)->emit_javascript() ~ ' = ';
+            if ($.var)->sigil eq '%' {
                 $str = $str ~ '{};' ~ "\n";
             }
-            elsif ($.var).sigil eq '@' {
+            elsif ($.var)->sigil eq '@' {
                 $str = $str ~ '[];' ~ "\n";
             }
             else {
@@ -935,7 +935,7 @@ class Method {
         my $pos = $sig->positional;
         my $str = $pos.>>emit_javascript->join(', ');
           Javascript::tab($level) ~ 'function ' ~ $.name ~ '(' ~ $str ~ ') {' ~ "\n"
-        ~   (Perlito5::Javascript::LexicalBlock->new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript_indented( $level + 1 ) ~ "\n"
+        ~   (Perlito5::Javascript::LexicalBlock->new( block => @.block, needs_return => 1, top_level => 1 ))->emit_javascript_indented( $level + 1 ) ~ "\n"
         ~ Javascript::tab($level) ~ '}'
     }
 }
@@ -954,7 +954,7 @@ class Sub {
         ~ Javascript::tab($level + 1) ~ 'else {' ~ "\n"
         ~ Javascript::tab($level + 2) ~   'List__.unshift(this)' ~ "\n"
         ~ Javascript::tab($level + 1) ~ '}' ~ "\n"
-        ~   (Perlito5::Javascript::LexicalBlock->new( block => @.block, needs_return => 1, top_level => 1 )).emit_javascript_indented( $level + 1 ) ~ "\n"
+        ~   (Perlito5::Javascript::LexicalBlock->new( block => @.block, needs_return => 1, top_level => 1 ))->emit_javascript_indented( $level + 1 ) ~ "\n"
         ~ Javascript::tab($level) ~ '}'
     }
 }
@@ -965,7 +965,7 @@ class Do {
         my $block = self->simplify->block;
         return
               Javascript::tab($level) ~ '(function () { ' ~ "\n"
-            ~   (Perlito5::Javascript::LexicalBlock->new( block => $block, needs_return => 1 )).emit_javascript_indented( $level + 1 ) ~ "\n"
+            ~   (Perlito5::Javascript::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript_indented( $level + 1 ) ~ "\n"
             ~ Javascript::tab($level) ~ '})()'
     }
 }
@@ -985,7 +985,7 @@ Perlito5::Javascript::Emit - Code generator for Perlito-in-Javascript
 
 =head1 SYNOPSIS
 
-    $program.emit_javascript()  # generated Perl5 code
+    $program->emit_javascript()  # generated Perl5 code
 
 =head1 DESCRIPTION
 

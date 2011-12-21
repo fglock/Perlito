@@ -263,6 +263,11 @@ package GLOBAL;
         ($prec = ($prec - 1));
         add_op('infix', 'x', $prec);
         ($prec = ($prec - 1));
+        add_op('infix', '.', $prec, do {
+    (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{'assoc'} = 'list');
+    $Hash_a
+});
         add_op('infix', chr(126), $prec, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'assoc'} = 'list');

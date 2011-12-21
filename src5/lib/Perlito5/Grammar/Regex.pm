@@ -59,7 +59,7 @@ token named_capture_body {
     | \(  <rule>        \)  { make { capturing_group => $$<rule> ,} }
     | \[  <rule>        \]  { make $$<rule> }
     | \<  <metasyntax_exp>  \>
-            { make Rul::Subrule.new( metasyntax => $$<metasyntax_exp>, captures => 1 ) }
+            { make Rul::Subrule->new( metasyntax => $$<metasyntax_exp>, captures => 1 ) }
     | { die 'invalid alias syntax' }
 }
 
@@ -78,7 +78,7 @@ token variables {
         <Perlito5::Grammar.var_twigil>
         <Perlito5::Grammar.full_ident>
         {
-            make Rul::Var.new(
+            make Rul::Var->new(
                     sigil  => ~$<Perlito5::Grammar.var_sigil>,
                     twigil => ~$<Perlito5::Grammar.var_twigil>,
                     name   => ~$<Perlito5::Grammar.full_ident>
@@ -89,19 +89,19 @@ token variables {
 token rule_terms {
     |   '('
         <rule> \)
-        { make Rul::Capture.new( rule_exp => $$<rule> ) }
+        { make Rul::Capture->new( rule_exp => $$<rule> ) }
     |   '<('
         <rule>  ')>'
-        { make Rul::CaptureResult.new( rule_exp => $$<rule> ) }
+        { make Rul::CaptureResult->new( rule_exp => $$<rule> ) }
     |   '<after'
         <.ws> <rule> \>
-        { make Rul::After.new( rule_exp => $$<rule> ) }
+        { make Rul::After->new( rule_exp => $$<rule> ) }
     |   '<before'
         <.ws> <rule> \>
-        { make Rul::Before.new( rule_exp => $$<rule> ) }
+        { make Rul::Before->new( rule_exp => $$<rule> ) }
     |   '<!before'
         <.ws> <rule> \>
-        { make Rul::NotBefore.new( rule_exp => $$<rule> ) }
+        { make Rul::NotBefore->new( rule_exp => $$<rule> ) }
     |   '<!'
         # TODO
         <metasyntax_exp> \>
@@ -109,66 +109,66 @@ token rule_terms {
     |   '<+'
         # TODO
         <char_class>  \>
-        { make Rul::CharClass.new( chars => ~$<char_class> ) }
+        { make Rul::CharClass->new( chars => ~$<char_class> ) }
     |   '<-'
         # TODO
         <char_class> \>
-        { make Rul::NegateCharClass.new( chars => ~$<char_class> ) }
+        { make Rul::NegateCharClass->new( chars => ~$<char_class> ) }
     |   \'
         <literal> \'
-        { make Rul::Constant.new( constant => $$<literal> ) }
+        { make Rul::Constant->new( constant => $$<literal> ) }
     |   # XXX - obsolete syntax
         \< \'
         <literal> \' \>
-        { make Rul::Constant.new( constant => $$<literal> ) }
+        { make Rul::Constant->new( constant => $$<literal> ) }
     |   \<
         [
             <variables>   \>
             # { say 'matching < variables ...' }
             {
                 # say 'found < hash-variable >';
-                make Rul::InterpolateVar.new( var => $$<variables> )
+                make Rul::InterpolateVar->new( var => $$<variables> )
             }
         |
             \?
             # TODO
             <metasyntax_exp>  \>
-            { make Rul::Subrule.new( metasyntax => $$<metasyntax_exp>, captures => 0 ) }
+            { make Rul::Subrule->new( metasyntax => $$<metasyntax_exp>, captures => 0 ) }
         |
             \.
             <metasyntax_exp>  \>
-            { make Rul::Subrule.new( metasyntax => $$<metasyntax_exp>, captures => 0 ) }
+            { make Rul::Subrule->new( metasyntax => $$<metasyntax_exp>, captures => 0 ) }
         |
             # TODO
             <metasyntax_exp>  \>
-            { make Rul::Subrule.new( metasyntax => $$<metasyntax_exp>, captures => 1 ) }
+            { make Rul::Subrule->new( metasyntax => $$<metasyntax_exp>, captures => 1 ) }
         ]
     |   \{
         <parsed_code>  \}
-        { make Rul::Block.new( closure => $$<parsed_code> ) }
+        { make Rul::Block->new( closure => $$<parsed_code> ) }
     |   \\
         [
 # TODO
 #        | [ x | X ] <[ 0..9 a..f A..F ]]>+
 #          #  \x0021    \X0021
-#          { make Rul::SpecialChar.new( char => '\\' ~ $/ ) }
+#          { make Rul::SpecialChar->new( char => '\\' ~ $/ ) }
 #        | [ o | O ] <[ 0..7 ]>+
 #          #  \x0021    \X0021
-#          { make Rul::SpecialChar.new( char => '\\' ~ $/ ) }
+#          { make Rul::SpecialChar->new( char => '\\' ~ $/ ) }
 #        | ( x | X | o | O ) \[ (<-[ \] ]>*) \]
 #          #  \x[0021]  \X[0021]
-#          { make Rul::SpecialChar.new( char => '\\' ~ $0 ~ $1 ) }
+#          { make Rul::SpecialChar->new( char => '\\' ~ $0 ~ $1 ) }
 
         | c \[ <Perlito5::Grammar.digits> \]
-          { make Rul::Constant.new( constant => chr( $<Perlito5::Grammar.digits> ) ) }
+          { make Rul::Constant->new( constant => chr( $<Perlito5::Grammar.digits> ) ) }
         | c <Perlito5::Grammar.digits>
-          { make Rul::Constant.new( constant => chr( $<Perlito5::Grammar.digits> ) ) }
+          { make Rul::Constant->new( constant => chr( $<Perlito5::Grammar.digits> ) ) }
         | <any>
           #  \e  \E
-          { make Rul::SpecialChar.new( char => $$<any> ) }
+          { make Rul::SpecialChar->new( char => $$<any> ) }
         ]
     |   \.
-        { make Rul::Dot.new() }
+        { make Rul::Dot->new() }
     |   '['
         <rule> ']'
         { make $$<rule> }
@@ -232,7 +232,7 @@ token rule_term {
        <variables>
        [  <.ws>? '=' <.ws>? <named_capture_body>
           {
-            make Rul::NamedCapture.new(
+            make Rul::NamedCapture->new(
                 rule_exp =>  $$<named_capture_body>,
                 capture_ident => $$<variables>
             );
@@ -249,7 +249,7 @@ token rule_term {
             make $$<rule_terms>
         }
     |  <!before \] | \} | \) | \> | \: | \? | \+ | \* | \| | \& | \/ > <any>   # TODO - <...>* - optimize!
-        { make Rul::Constant.new( constant => $$<any> ) }
+        { make Rul::Constant->new( constant => $$<any> ) }
 }
 
 token quant_exp {
@@ -272,7 +272,7 @@ token quantifier {
     [
         <quant_exp> <greedy_exp>
         <.Perlito5::Grammar.opt_ws3>
-        { make Rul::Quantifier.new(
+        { make Rul::Quantifier->new(
                 term    => $$<rule_term>,
                 quant   => $$<quant_exp>,
                 greedy  => $$<greedy_exp>,
@@ -300,7 +300,7 @@ token concat_list {
 
 token concat_exp {
     <concat_list>
-    { make Rul::Concat.new( concat => $$<concat_list> ) }
+    { make Rul::Concat->new( concat => $$<concat_list> ) }
 }
 
 token or_list_exp {
@@ -322,7 +322,7 @@ token rule {
     <or_list_exp>
     {
         # say 'found Rule';
-        make Rul::Or.new( or_list => $$<or_list_exp> )
+        make Rul::Or->new( or_list => $$<or_list_exp> )
     }
 }
 

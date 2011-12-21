@@ -7,9 +7,9 @@ token unless {
             if !(defined($body)) {
                 die "Missing code block in 'unless'";
             }
-            make If.new(
+            make If->new(
                 cond => ($$<exp>){'exp'},
-                body => Lit::Block.new(stmts => [ ]),
+                body => Lit::Block->new(stmts => [ ]),
                 otherwise => $body,
              )
         }
@@ -29,10 +29,10 @@ token if {
             if !(defined($otherwise)) {
                 die "Missing code block in 'else'";
             }
-            if $otherwise.isa('Lit::Hash') {
-                $otherwise = Lit::Block.new( stmts => $otherwise.hash1 );
+            if $otherwise->isa('Lit::Hash') {
+                $otherwise = Lit::Block->new( stmts => $otherwise->hash1 );
             }
-            make If.new(
+            make If->new(
                 cond      => ($$<exp>){'exp'},
                 body      => $body,
                 otherwise => $otherwise,
@@ -46,10 +46,10 @@ token if {
             if !(defined($body)) {
                 die "Missing code block in 'if'";
             }
-            make If.new(
+            make If->new(
                 cond => ($$<exp>){'exp'},
                 body => $body,
-                otherwise => Lit::Block.new( stmts => [ $$<if> ] ),
+                otherwise => Lit::Block->new( stmts => [ $$<if> ] ),
             )
         }
     |
@@ -58,10 +58,10 @@ token if {
             if !(defined($body)) {
                 die "Missing code block in 'if'";
             }
-            make If.new(
+            make If->new(
                 cond => ($$<exp>){'exp'},
                 body => $body,
-                otherwise => Lit::Block.new(stmts => [ ]),
+                otherwise => Lit::Block->new(stmts => [ ]),
              )
         }
     ]
@@ -74,7 +74,7 @@ token when {
         if !(defined($body)) {
             die "Missing code block in 'when'";
         }
-        make When.new(
+        make When->new(
                 parameters => ($$<exp>){'exp'},
                 body       => $body )
     }
@@ -90,10 +90,10 @@ token for {
                 <.opt_ws>
             '}'
         {
-            make For.new( 
+            make For->new( 
                     cond  => $$<Perlito5::Expression.paren_parse>, 
                     topic => Mu(), 
-                    body  => Lit::Block.new( stmts => $$<Perlito5::Grammar.exp_stmts>, sig => $$<Perlito5::Grammar.var_ident> )
+                    body  => Lit::Block->new( stmts => $$<Perlito5::Grammar.exp_stmts>, sig => $$<Perlito5::Grammar.var_ident> )
                  )
         }
     |
@@ -103,7 +103,7 @@ token for {
             if !(defined($body)) {
                 die "Missing code block in 'when'";
             }
-            make For.new( cond => ($$<exp>){'exp'}, topic => Mu(), body => $body )
+            make For->new( cond => ($$<exp>){'exp'}, topic => Mu(), body => $body )
         }
     ]
 }
@@ -115,7 +115,7 @@ token while {
         if !(defined($body)) {
             die "Missing code block in 'while'";
         }
-        make While.new(
+        make While->new(
                 cond => ($$<exp>){'exp'},
                 body => $body )
     }
@@ -127,8 +127,8 @@ token loop {
         my $body = ($$<exp>){'end_block'};
         if !(defined($body)) {
             $body = ($$<exp>){'exp'};
-            if $body.isa( 'Lit::Block' ) {
-                make While.new( cond => Val::Bit.new( bit => 1 ), body => $body )
+            if $body->isa( 'Lit::Block' ) {
+                make While->new( cond => Val::Bit->new( bit => 1 ), body => $body )
             }
             else {
                 die "Missing code block in 'loop'";

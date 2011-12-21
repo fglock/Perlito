@@ -5,51 +5,51 @@ class Lit::Array {
         my $needs_interpolation = 0;
         my @items;
         for my $item ( @.array1 ) {
-            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
-                for my $arg ( @($item.arguments) ) {
-                    @items.push($arg);
+            if $item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' ) {
+                for my $arg ( @($item->arguments) ) {
+                    @items->push($arg);
                 }
             }
             else {
-                @items.push($item);
+                @items->push($item);
             }
         }
         for my $item ( @items ) {
-            if      $item.isa( 'Var' )   && $item.sigil eq '@'
-                ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
+            if      $item->isa( 'Var' )   && $item->sigil eq '@'
+                ||  $item->isa( 'Apply' ) && ( $item->code eq 'prefix:<@>' || $item->code eq 'infix:<..>' )
             {
                 $needs_interpolation = 1;
             }
         }
-        if $needs_interpolation && @items.elems() == 1 {
+        if $needs_interpolation && @items->elems() == 1 {
             return @items[0];
         }
         my @s;
         for my $item ( @items ) {
-            if      $item.isa( 'Var' )   && $item.sigil eq '@'
-                ||  $item.isa( 'Apply' ) && ( $item.code eq 'prefix:<@>' || $item.code eq 'infix:<..>' )
+            if      $item->isa( 'Var' )   && $item->sigil eq '@'
+                ||  $item->isa( 'Apply' ) && ( $item->code eq 'prefix:<@>' || $item->code eq 'infix:<..>' )
             {
                 push @s,
-                    Apply.new(
+                    Apply->new(
                         'arguments' => [
-                                Var.new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
+                                Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
                                 $item
                             ],
                         'code' => 'infix:<=>',
                         'namespace' => ''
                     );
                 push @s,
-                    For.new(
-                        'body' => Lit::Block.new(
-                            'sig' => Var.new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
+                    For->new(
+                        'body' => Lit::Block->new(
+                            'sig' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
                             'stmts' => [
-                                Call.new('arguments' => [Index.new('index_exp' => Var.new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'obj' => Var.new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => ''))], 'hyper' => '', 'invocant' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''), 'method' => 'push')
+                                Call->new('arguments' => [Index->new('index_exp' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'obj' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => ''))], 'hyper' => '', 'invocant' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''), 'method' => 'push')
                             ]
                         ),
-                        'cond' => Apply.new(
+                        'cond' => Apply->new(
                             'arguments' => [
-                                Val::Int.new('int' => 0),
-                                Apply.new('arguments' => [Apply.new('arguments' => [Call.new('arguments' => [], 'hyper' => '', 'invocant' => Var.new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => ''), 'method' => 'elems'), Val::Int.new('int' => 1)], 'code' => 'infix:<->', 'namespace' => '')], 'code' => 'circumfix:<( )>', 'namespace' => '')
+                                Val::Int->new('int' => 0),
+                                Apply->new('arguments' => [Apply->new('arguments' => [Call->new('arguments' => [], 'hyper' => '', 'invocant' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => ''), 'method' => 'elems'), Val::Int->new('int' => 1)], 'code' => 'infix:<->', 'namespace' => '')], 'code' => 'circumfix:<( )>', 'namespace' => '')
                             ],
                             'code' => 'infix:<..>',
                             'namespace' => ''
@@ -59,27 +59,27 @@ class Lit::Array {
             }
             else {
                 push @s,
-                    Call.new(
+                    Call->new(
                         'arguments' => [ $item ],
                         'hyper' => '',
-                        'invocant' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
+                        'invocant' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
                         'method' => 'push');
             }
         }
-        return Do.new(
-            'block' => Lit::Block.new(
+        return Do->new(
+            'block' => Lit::Block->new(
                 'sig' => Mu,
                 'stmts' => [
-                    Decl.new(
+                    Decl->new(
                         'decl' => 'my',
                         'type' => '',
-                        'var' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => '')),
-                    Decl.new(
+                        'var' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => '')),
+                    Decl->new(
                         'decl' => 'my',
                         'type' => '',
-                        'var' => Var.new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => '')),
+                        'var' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => '')),
                     @s,
-                    Var.new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
+                    Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
                 ],
             ),
         );
@@ -90,56 +90,56 @@ class Lit::Hash {
     method expand_interpolation {
         my @items;
         for my $item ( @.hash1 ) {
-            if $item.isa( 'Apply' ) && ( $item.code eq 'circumfix:<( )>' || $item.code eq 'list:<,>' ) {
-                for my $arg ( @($item.arguments) ) {
-                    @items.push($arg);
+            if $item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' ) {
+                for my $arg ( @($item->arguments) ) {
+                    @items->push($arg);
                 }
             }
             else {
-                @items.push($item);
+                @items->push($item);
             }
         }
         my @s;
         for my $item ( @items ) {
-            if $item.isa('Apply') && $item.code eq 'infix:<=>>' {
+            if $item->isa('Apply') && $item->code eq 'infix:<=>>' {
                 push @s,
-                    Apply.new(
+                    Apply->new(
                         'arguments' => [
-                            Lookup.new(
-                                'index_exp' => $item.arguments[0],
-                                'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')),
-                            $item.arguments[1]
+                            Lookup->new(
+                                'index_exp' => $item->arguments[0],
+                                'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')),
+                            $item->arguments[1]
                         ],
                         'code' => 'infix:<=>',
                         'namespace' => '');
             }
-            elsif   $item.isa( 'Var' )   && $item.sigil eq '%'
-                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<%>'
+            elsif   $item->isa( 'Var' )   && $item->sigil eq '%'
+                ||  $item->isa( 'Apply' ) && $item->code eq 'prefix:<%>'
             {
                 push @s,
-                    For.new(
-                        'body' => Lit::Block.new(
-                            'sig' => Var.new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
-                            'stmts' => [Apply.new(
+                    For->new(
+                        'body' => Lit::Block->new(
+                            'sig' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
+                            'stmts' => [Apply->new(
                                     'arguments' => [
-                                        Lookup.new(
-                                            'index_exp' => Call.new(
+                                        Lookup->new(
+                                            'index_exp' => Call->new(
                                                 'arguments' => Mu,
                                                 'hyper' => '',
-                                                'invocant' => Var.new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
+                                                'invocant' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
                                                 'method' => 'key'),
-                                            'obj' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')),
-                                        Call.new('arguments' => [], 'hyper' => '', 'invocant' => Var.new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'method' => 'value')
+                                            'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')),
+                                        Call->new('arguments' => [], 'hyper' => '', 'invocant' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'method' => 'value')
                                     ],
                                     'code' => 'infix:<=>',
                                     'namespace' => '')
                                 ]
                             ),
-                        'cond' => Apply.new(
+                        'cond' => Apply->new(
                             'arguments' => [
-                                Apply.new(
+                                Apply->new(
                                     'arguments' => [
-                                        Call.new(
+                                        Call->new(
                                             'arguments' => Mu,
                                             'hyper' => '',
                                             'invocant' => $item,
@@ -153,8 +153,8 @@ class Lit::Hash {
                         'topic' => Mu
                     );
             }
-            elsif   $item.isa( 'Var' )   && $item.sigil eq '@'
-                ||  $item.isa( 'Apply' ) && $item.code eq 'prefix:<@>'
+            elsif   $item->isa( 'Var' )   && $item->sigil eq '@'
+                ||  $item->isa( 'Apply' ) && $item->code eq 'prefix:<@>'
             {
 
                 # do {
@@ -202,19 +202,19 @@ class Lit::Hash {
 
             }
             else {
-                die 'Error in hash composer: ', $item.perl;
+                die 'Error in hash composer: ', $item->perl;
             }
         }
-        return Do.new(
-            'block' => Lit::Block.new(
+        return Do->new(
+            'block' => Lit::Block->new(
                 'sig' => Mu,
                 'stmts' => [
-                    Decl.new(
+                    Decl->new(
                         'decl' => 'my',
                         'type' => '',
-                        'var' => Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')),
+                        'var' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')),
                     @s,
-                    Var.new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''),
+                    Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''),
                 ],
             ),
         );
@@ -238,14 +238,14 @@ class Apply {
 
     method op_assign {
         my $code = $.code;
-        return 0 unless $code.isa( 'Str' );
+        return 0 unless $code->isa( 'Str' );
 
         if exists( %op{$code} ) {
-            return Apply.new(
+            return Apply->new(
                 code      => 'infix:<=>',
                 arguments => [
                     @.arguments[0],
-                    Apply.new(
+                    Apply->new(
                         code      => %op{$code},
                         arguments => @.arguments,
                     ),
@@ -260,24 +260,24 @@ class Apply {
 class Do {
     method simplify {
         my $block;
-        if $.block.isa('Lit::Block') {
-            $block = $.block.stmts;
+        if $.block->isa('Lit::Block') {
+            $block = $.block->stmts;
         }
         else {
             $block = [ $.block ]
         }
-        if $block.elems() == 1 {
+        if $block->elems() == 1 {
             # optimize some code generated by the regex compiler
             my $stmt = $block->[0];
-            if $stmt.isa('Apply') && $stmt.code() eq 'circumfix:<( )>' {
-                my $args = $stmt.arguments;
-                return Do.new( block => $args->[0] ).simplify;
+            if $stmt->isa('Apply') && $stmt->code() eq 'circumfix:<( )>' {
+                my $args = $stmt->arguments;
+                return Do->new( block => $args->[0] )->simplify;
             }
-            if $stmt.isa('Do') {
-                return $stmt.simplify;
+            if $stmt->isa('Do') {
+                return $stmt->simplify;
             }
         }
-        return Do.new( block => $block );
+        return Do->new( block => $block );
     }
 }
 

@@ -4,7 +4,7 @@ class CompUnit {
     method eval ($env) {
         my $env1 = [ {}, @$env ];
         for my $stmt ( @.body ) {
-            $stmt.eval($env1);
+            $stmt->eval($env1);
         }
     }
 }
@@ -29,7 +29,7 @@ class Lit::Block {
     method eval ($env) {
         my $env1 = [ {}, @$env ];
         for my $stmt ( @.stmts ) {
-            $stmt.eval($env1);
+            $stmt->eval($env1);
         }
     }
 }
@@ -38,7 +38,7 @@ class Lit::Array {
     method eval ($env) {
         my @a;
         for my $v ( @.array1 ) {
-            push( @a, $v.eval($env) );
+            push( @a, $v->eval($env) );
         }
         return @a;
     }
@@ -48,8 +48,8 @@ class Lit::Hash {
     method eval ($env) {
         my %h;
         for my $field ( @.hash1 ) {
-            my $pair = $field.arguments;
-            %h{ ($pair->[0]).eval($env) } = ($pair->[1]).eval($env);
+            my $pair = $field->arguments;
+            %h{ ($pair->[0])->eval($env) } = ($pair->[1])->eval($env);
         };
         return %h;
     }
@@ -57,13 +57,13 @@ class Lit::Hash {
 
 class Index {
     method eval ($env) {
-        ( $.obj.eval($env) )[ $.index_exp.eval($env) ];
+        ( $.obj->eval($env) )[ $.index_exp->eval($env) ];
     }
 }
 
 class Lookup {
     method eval ($env) {
-        ( $.obj.eval($env) ){ $.index_exp.eval($env) };
+        ( $.obj->eval($env) ){ $.index_exp->eval($env) };
     }
 }
 
@@ -112,7 +112,7 @@ class Proto {
 class Call {
     method eval ($env) {
         warn "Interpreter TODO: Call";
-        my $invocant = $.invocant.eval($env);
+        my $invocant = $.invocant->eval($env);
         if $invocant eq 'self' {
             $invocant = '$self';
         }
@@ -133,7 +133,7 @@ class Apply {
             $ns = $.namespace ~ '::';
         }
         my $code = $ns ~ $.code;
-        # warn "Apply ", $env.perl, " code: '", $code, "'";
+        # warn "Apply ", $env->perl, " code: '", $code, "'";
         for my $e ( @($env) ) {
             if exists( $e->{ $code } ) {
                 return (($e->{ $code }).( $env, @.arguments ));
@@ -146,16 +146,16 @@ class Apply {
 class If {
     method eval ($env) {
         my $cond = $.cond;
-        if $cond.eval($env) {
+        if $cond->eval($env) {
             my $env1 = [ {}, @$env ];
-            for my $stmt ( @(($.body).stmts) ) {
-                $stmt.eval($env1);
+            for my $stmt ( @(($.body)->stmts) ) {
+                $stmt->eval($env1);
             }
         }
         else {
             my $env1 = [ {}, @$env ];
-            for my $stmt ( @(($.otherwise).stmts) ) {
-                $stmt.eval($env1);
+            for my $stmt ( @(($.otherwise)->stmts) ) {
+                $stmt->eval($env1);
             }
         }
         return Mu;
@@ -165,12 +165,12 @@ class If {
 class For {
     method eval ($env) {
         my $cond = $.cond;
-        my $topic_name = (($.body).sig).plain_name;
+        my $topic_name = (($.body)->sig)->plain_name;
         my $env1 = [ {}, @$env ];
-        for my $topic (@( $cond.eval($env) )) {
+        for my $topic (@( $cond->eval($env) )) {
             $env1->[0] = { $topic_name => $topic };
-            for my $stmt ( @(($.body).stmts) ) {
-                $stmt.eval($env1);
+            for my $stmt ( @(($.body)->stmts) ) {
+                $stmt->eval($env1);
             }
         }
         return Mu;
@@ -188,7 +188,7 @@ class While {
 class Decl {
     method eval ($env) {
         my $decl = $.decl;
-        my $name = $.var.plain_name;
+        my $name = $.var->plain_name;
         if $decl eq 'has' {
             warn "Interpreter TODO: has";
         }
@@ -198,7 +198,7 @@ class Decl {
         return Mu;
     }
     method plain_name {
-        $.var.plain_name;
+        $.var->plain_name;
     }
 }
 
@@ -206,8 +206,8 @@ class Method {
     method eval ($env) {
         warn "Interpreter TODO: Method";
         my $sig = $.sig;
-        my $invocant = $sig.invocant;
-        my $pos = $sig.positional;
+        my $invocant = $sig->invocant;
+        my $pos = $sig->positional;
         my $str = 'my $List__ = \\@_; ';
 
         # ...
@@ -217,8 +217,8 @@ class Method {
 class Sub {
     method eval ($env) {
         my @param_name;
-        for my $field (@( $.sig.positional )) {
-            push( @param_name, $field.plain_name );
+        for my $field (@( $.sig->positional )) {
+            push( @param_name, $field->plain_name );
         }
         my $sub =
                 sub ( $env, $args ) {
@@ -226,13 +226,13 @@ class Sub {
                     my $n = 0;
                     %context{'@_'} = $args;
                     for my $name ( @param_name ) {
-                        %context{$name} = ($args->[$n]).eval($env);
+                        %context{$name} = ($args->[$n])->eval($env);
                         $n = $n + 1;
                     }
                     my $env1 = [ %context, @$env ];
                     my $r;
                     for my $stmt ( @.block ) {
-                        $r = $stmt.eval($env1);
+                        $r = $stmt->eval($env1);
                     }
                     return $r;
                 };
@@ -247,7 +247,7 @@ class Do {
     method eval ($env) {
         my $env1 = [ {}, @$env ];
         for my $stmt ( @.block ) {
-            $stmt.eval($env1);
+            $stmt->eval($env1);
         }
     }
 }

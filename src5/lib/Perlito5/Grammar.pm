@@ -60,7 +60,7 @@ token grammar {
         <.ws>?
     '}'
     {
-        make CompUnit.new(
+        make CompUnit->new(
             name        => $$<full_ident>,
             body        => $$<exp_stmts>,
         )
@@ -71,7 +71,7 @@ token package_body {
     <full_ident> <.ws>?
         <exp_stmts_no_package>
     {
-        make CompUnit.new(
+        make CompUnit->new(
             name        => $$<full_ident>,
             body        => $$<exp_stmts_no_package>,
         )
@@ -113,7 +113,7 @@ token var_name      { <full_ident> | '/' | <digit> }
 token var_ident {
     <var_sigil> <var_twigil> <optional_namespace_before_ident> <var_name>
     {
-        make Var.new(
+        make Var->new(
             sigil       => ~$<var_sigil>,
             twigil      => ~$<var_twigil>,
             namespace   => $$<optional_namespace_before_ident>,
@@ -130,7 +130,7 @@ token val_num {
     [   \. \d+    <.exponent>?
     |   \d+     [ <.exponent>  |   \. \d+  <.exponent>? ]
     ]
-    { make Val::Num.new( num => ~$/ ) }
+    { make Val::Num->new( num => ~$/ ) }
 }
 
 token char_any {
@@ -185,24 +185,24 @@ token double_quoted_buf {
         [ <before \$ <.var_twigil> <.ident> > <Perlito5::Expression.operator>
             { make ($$<Perlito5::Expression.operator>)[1] }
         | <char_any>
-            { make Val::Buf.new( buf => ~$<char_any> ) }
+            { make Val::Buf->new( buf => ~$<char_any> ) }
         ]
     | <before \@ >
         [ <before \@ <.var_twigil> <.ident> > <Perlito5::Expression.operator> '[]'
             { make ($$<Perlito5::Expression.operator>)[1] }
         | <char_any>
-            { make Val::Buf.new( buf => ~$<char_any> ) }
+            { make Val::Buf->new( buf => ~$<char_any> ) }
         ]
     | <before \% >
         [ <before \% <.var_twigil> <.ident> > <Perlito5::Expression.operator> '{}'
             { make ($$<Perlito5::Expression.operator>)[1] }
         | <char_any>
-            { make Val::Buf.new( buf => ~$<char_any> ) }
+            { make Val::Buf->new( buf => ~$<char_any> ) }
         ]
     | \{ <exp_stmts> \}
-            { make Do.new( block => Lit::Block.new( stmts => $$<exp_stmts> ) ) }
+            { make Do->new( block => Lit::Block->new( stmts => $$<exp_stmts> ) ) }
     | <double_quoted_unescape>
-        { make Val::Buf.new( buf => $$<double_quoted_unescape> ) }
+        { make Val::Buf->new( buf => $$<double_quoted_unescape> ) }
 }
 
 token val_buf {
@@ -210,10 +210,10 @@ token val_buf {
         {
             my $args = $<double_quoted_buf>;
             if !$args {
-                make Val::Buf.new( buf => '' )
+                make Val::Buf->new( buf => '' )
             }
             else {
-                make Apply.new(
+                make Apply->new(
                     namespace => '',
                     code => 'list:<~>',
                     arguments => ($<double_quoted_buf>).>>capture,
@@ -221,7 +221,7 @@ token val_buf {
             }
         }
     | \' <single_quoted_unescape>  \'
-        { make Val::Buf.new( buf => $$<single_quoted_unescape> ) }
+        { make Val::Buf->new( buf => $$<single_quoted_unescape> ) }
 }
 
 token digits {
@@ -230,7 +230,7 @@ token digits {
 
 token val_int {
     \d+
-    { make Val::Int.new( int => ~$/ ) }
+    { make Val::Int->new( int => ~$/ ) }
 }
 
 token exp_stmts {
@@ -247,7 +247,7 @@ token opt_name {  <ident>?  }
 
 token var_invocant {
     |  <var_ident> \:    { make $$<var_ident> }
-    |  { make Var.new(
+    |  { make Var->new(
             sigil  => '$',
             twigil => '',
             name   => 'self',
@@ -263,7 +263,7 @@ token args_sig {
     {
         # say ' invocant: ', ($$<var_invocant>).perl;
         # say ' positional: ', ($$<>).perl;
-        make Sig.new(
+        make Sig->new(
             invocant    => $$<var_invocant>,
             positional  => Perlito5::Expression::expand_list(($$<Perlito5::Expression.list_parse>){'exp'}),
             named       => { } );
@@ -273,8 +273,8 @@ token args_sig {
 token method_sig {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
         { make $$<args_sig> }
-    |   { make Sig.new(
-            invocant => Var.new(
+    |   { make Sig->new(
+            invocant => Var->new(
                 sigil  => '$',
                 twigil => '',
                 name   => 'self' ),
@@ -288,10 +288,10 @@ token method_def {
     <.opt_ws> \{ <.opt_ws>
           <exp_stmts>
         <.opt_ws>
-    [   \}     | { die 'Syntax Error in method \'.', $$<name>, '\' near pos=', $/.to; } ]
+    [   \}     | { die 'Syntax Error in method \'.', $$<name>, '\' near pos=', $/->to; } ]
     {
         # say ' block: ', ($$<exp_stmts>).perl;
-        make Method.new( name => $$<opt_name>, sig => $$<method_sig>, block => $$<exp_stmts> );
+        make Method->new( name => $$<opt_name>, sig => $$<method_sig>, block => $$<exp_stmts> );
     }
 }
 
@@ -301,7 +301,7 @@ token sub_def {
     <.opt_ws> \{ <.opt_ws>
           <exp_stmts> <.opt_ws>
     [   \}     | { die 'Syntax Error in sub \'', $$<name>, '\''; } ]
-    { make Sub.new( name => $$<opt_name>, sig => $$<method_sig>, block => $$<exp_stmts> ) }
+    { make Sub->new( name => $$<opt_name>, sig => $$<method_sig>, block => $$<exp_stmts> ) }
 }
 
 token token {
@@ -309,16 +309,16 @@ token token {
         <Perlito5::Grammar::Regex.rule>
     \}
     {
-        #say 'Token was compiled into: ', ($$<Perlito5::Grammar::Regex.rule>).perl;
+        #say 'Token was compiled into: ', ($$<Perlito5::Grammar::Regex.rule>)->perl;
         my $source = $<opt_name> ~ ' ( $grammar: $str, $pos ) { ' ~
-            'my $MATCH; $MATCH = Perlito5::Match.new( str => $str, from => $pos, to => $pos, bool => 1 ); ' ~
-            '$MATCH.bool = ( ' ~
-                ($$<Perlito5::Grammar::Regex.rule>).emit_perl6() ~
+            'my $MATCH; $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' ~
+            '$MATCH->bool = ( ' ~
+                ($$<Perlito5::Grammar::Regex.rule>)->emit_perl6() ~
             '); ' ~
             '$MATCH }';
         #say 'Intermediate code: ', $source;
-        my $ast = Perlito5::Grammar.method_def( $source, 0 );
-        # say 'Intermediate ast: ', $$ast.perl;
+        my $ast = Perlito5::Grammar->method_def( $source, 0 );
+        # say 'Intermediate ast: ', $$ast->perl;
         make $$ast;
     }
 }
