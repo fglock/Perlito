@@ -712,6 +712,9 @@ package GLOBAL;
             if (($code eq 'list:<' . chr(126) . '>')) {
                 return scalar (('(' . Javascript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), (') + ' . Javascript::escape_function('string') . '(')) . '))'))
             };
+            if (($code eq 'list:<.>')) {
+                return scalar (('(' . Javascript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), (') + ' . Javascript::escape_function('string') . '(')) . '))'))
+            };
             if (($code eq 'infix:<+>')) {
                 return scalar ((Javascript::escape_function('add') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };

@@ -440,6 +440,7 @@ package GLOBAL;
         ((my  $Hash_op_infix_perl5 = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'list:<' . chr(126) . '>'} = ' . ');
+    ($Hash_a->{'list:<.>'} = ' . ');
     ($Hash_a->{'infix:<+>'} = ' + ');
     ($Hash_a->{'infix:<->'} = ' - ');
     ($Hash_a->{'infix:<*>'} = ' * ');

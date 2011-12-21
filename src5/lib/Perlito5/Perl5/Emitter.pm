@@ -380,13 +380,14 @@ class Apply {
         bool    => '!!',
         'prefix:<~>'    => '"".',
         'prefix:<!>'    => '!',
-        'prefix:<?>'    => '!!',
+        'prefix:<?>'    => '!!',  # XXX Perl6
         'prefix:<++>'   => '++',
         'prefix:<-->'   => '--',
     );
 
     my %op_infix_perl5 = (
-        'list:<~>'   => ' . ',
+        'list:<~>'   => ' . ',   # XXX Perl6
+        'list:<.>'   => ' . ',
         'infix:<+>'  => ' + ',
         'infix:<->'  => ' - ',
         'infix:<*>'  => ' * ',
