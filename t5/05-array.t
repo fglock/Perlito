@@ -48,7 +48,7 @@ $x->[4] = 5;
 print 'not ' if !defined $x->[4];
 say "ok 10 - defined item";
 
-$x.unshift(6);
+$x->unshift(6);
 print 'not ' if $x->[0] != 6;
 say "ok 11 - unshift";
 print 'not ' if $x->[5] != 5;

@@ -25,9 +25,9 @@ package GLOBAL;
     ((do {
     ((((chr(10) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((chr(13) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -36,9 +36,9 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((((chr(13) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((chr(10) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -63,7 +63,7 @@ package GLOBAL;
     ((my  $pos1) = $MATCH->to());
     (do {
     ((my  $m2) = $grammar->is_newline($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -96,7 +96,7 @@ package GLOBAL;
     ((my  $pos1) = $MATCH->to());
     (do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -112,17 +112,17 @@ package GLOBAL;
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     ((my  $count) = 0);
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->word($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -149,7 +149,7 @@ package GLOBAL;
     (do {
     ((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -159,12 +159,12 @@ package GLOBAL;
 }) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     (((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -173,8 +173,8 @@ package GLOBAL;
     }
 }))
 })
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -200,7 +200,7 @@ package GLOBAL;
     (do {
     (((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -222,12 +222,12 @@ package GLOBAL;
 })) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -248,8 +248,8 @@ package GLOBAL;
     ($MATCH ? 1 : 0)
 }))
 })
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -275,7 +275,7 @@ package GLOBAL;
     ((do {
     (((do {
     ((my  $m2) = $grammar->namespace_before_ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'namespace_before_ident'} = $m2);
         1
@@ -306,7 +306,7 @@ package GLOBAL;
     ((do {
     (((do {
     ((my  $m2) = $grammar->is_newline($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -316,17 +316,17 @@ package GLOBAL;
 }) && (((chr(61) . 'end' eq substr($str, $MATCH->to(), 4)) && ((($MATCH)->{to} = (4 + $MATCH->to())))))) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->not_newline($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -342,17 +342,17 @@ package GLOBAL;
     (((((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->not_newline($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -364,7 +364,7 @@ package GLOBAL;
     1
 })) && (do {
     ((my  $m2) = $grammar->pod_begin($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -388,23 +388,23 @@ package GLOBAL;
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     ((my  $count) = 0);
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     ((((chr(35) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->not_newline($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -419,7 +419,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((do {
     ((my  $m2) = $grammar->is_newline($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -431,7 +431,7 @@ package GLOBAL;
     (((do {
     ((((chr(61) . 'begin' eq substr($str, $MATCH->to(), 6)) && ((($MATCH)->{to} = (6 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->pod_begin($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -443,7 +443,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((((chr(61) . 'for' eq substr($str, $MATCH->to(), 4)) && ((($MATCH)->{to} = (4 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->pod_begin($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -460,7 +460,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     ((do {
     ((my  $m2) = $grammar->space($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -469,8 +469,8 @@ package GLOBAL;
     }
 }))
 }))
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -495,16 +495,16 @@ package GLOBAL;
     ((my  $pos1) = $MATCH->to());
     (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -522,16 +522,16 @@ package GLOBAL;
     ((my  $pos1) = $MATCH->to());
     (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -549,16 +549,16 @@ package GLOBAL;
     ((my  $pos1) = $MATCH->to());
     (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -577,7 +577,7 @@ package GLOBAL;
     (do {
     ((((((((do {
     ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'full_ident'} = $m2);
         1
@@ -587,37 +587,37 @@ package GLOBAL;
     }
 }) && (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
 })) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
 })) && (do {
     ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
@@ -627,16 +627,16 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -658,7 +658,7 @@ package GLOBAL;
     (do {
     ((((do {
     ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'full_ident'} = $m2);
         1
@@ -668,22 +668,22 @@ package GLOBAL;
     }
 }) && (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
 })) && (do {
     ((my  $m2) = $grammar->exp_stmts_no_package($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts_no_package'} = $m2);
         1
@@ -729,7 +729,7 @@ package GLOBAL;
     (do {
     ((do {
     ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
@@ -755,7 +755,7 @@ package GLOBAL;
     (do {
     ((do {
     ((my  $m2) = Perlito5::Expression->exp_parse($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Expression.exp_parse'} = $m2);
         1
@@ -781,7 +781,7 @@ package GLOBAL;
     (do {
     ((do {
     ((my  $m2) = Perlito5::Expression->exp_parse($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Expression.exp_parse'} = $m2);
         1
@@ -807,7 +807,7 @@ package GLOBAL;
     ((do {
     ((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'ident'} = $m2);
         1
@@ -838,15 +838,15 @@ package GLOBAL;
     ((do {
     (((do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     (('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
 }) && (do {
     ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'full_ident'} = $m2);
         1
@@ -899,7 +899,7 @@ package GLOBAL;
     ((my  $pos1) = $MATCH->to());
     (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $pos1) = $MATCH->to());
     ((((do {
     (('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
@@ -913,7 +913,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((('*' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 }))
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -931,7 +931,7 @@ package GLOBAL;
     ((my  $pos1) = $MATCH->to());
     (((do {
     ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'full_ident'} = $m2);
         1
@@ -946,7 +946,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     ((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'digit'} = $m2);
         1
@@ -970,7 +970,7 @@ package GLOBAL;
     (do {
     (((((do {
     ((my  $m2) = $grammar->var_sigil($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'var_sigil'} = $m2);
         1
@@ -980,7 +980,7 @@ package GLOBAL;
     }
 }) && (do {
     ((my  $m2) = $grammar->var_twigil($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'var_twigil'} = $m2);
         1
@@ -990,7 +990,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->optional_namespace_before_ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'optional_namespace_before_ident'} = $m2);
         1
@@ -1000,7 +1000,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->var_name($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'var_name'} = $m2);
         1
@@ -1047,17 +1047,17 @@ package GLOBAL;
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     ((my  $count) = 0);
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1089,17 +1089,17 @@ package GLOBAL;
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     ((my  $count) = 0);
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1112,16 +1112,16 @@ package GLOBAL;
     ($count > 0)
 })) && (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $m2) = $grammar->exponent($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -1132,17 +1132,17 @@ package GLOBAL;
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     ((my  $count) = 0);
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1157,7 +1157,7 @@ package GLOBAL;
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $m2) = $grammar->exponent($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1170,17 +1170,17 @@ package GLOBAL;
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     ((my  $count) = 0);
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1193,16 +1193,16 @@ package GLOBAL;
     ($count > 0)
 })) && (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $m2) = $grammar->exponent($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -1255,7 +1255,7 @@ package GLOBAL;
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
@@ -1278,8 +1278,8 @@ package GLOBAL;
     ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1305,7 +1305,7 @@ package GLOBAL;
     (((((do {
     ((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
@@ -1320,7 +1320,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
@@ -1335,7 +1335,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     ((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
@@ -1350,7 +1350,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     ((((do {
     ((my  $m2) = $grammar->char_any_single_quote($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any_single_quote'} = $m2);
         1
@@ -1360,7 +1360,7 @@ package GLOBAL;
     }
 }) && (do {
     ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
@@ -1417,7 +1417,7 @@ package GLOBAL;
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
@@ -1452,8 +1452,8 @@ package GLOBAL;
     ($MATCH ? 1 : 0)
 }) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1485,7 +1485,7 @@ package GLOBAL;
     ((do {
     (((((('[' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->digits($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'digits'} = $m2);
         1
@@ -1500,7 +1500,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((do {
     ((my  $m2) = $grammar->digits($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'digits'} = $m2);
         1
@@ -1532,7 +1532,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((do {
     ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
@@ -1549,7 +1549,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((do {
     ((my  $m2) = $grammar->char_any_double_quote($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any_double_quote'} = $m2);
         1
@@ -1596,7 +1596,7 @@ package GLOBAL;
     (do {
     (((((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->var_twigil($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1605,7 +1605,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1620,7 +1620,7 @@ package GLOBAL;
     ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $m2) = Perlito5::Expression->operator($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Expression.operator'} = $m2);
         1
@@ -1635,7 +1635,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((do {
     ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
@@ -1673,7 +1673,7 @@ package GLOBAL;
     (do {
     (((((chr(64) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->var_twigil($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1682,7 +1682,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1697,7 +1697,7 @@ package GLOBAL;
     ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $m2) = Perlito5::Expression->operator($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Expression.operator'} = $m2);
         1
@@ -1712,7 +1712,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((do {
     ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
@@ -1750,7 +1750,7 @@ package GLOBAL;
     (do {
     (((((chr(37) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->var_twigil($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1759,7 +1759,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -1774,7 +1774,7 @@ package GLOBAL;
     ($MATCH ? 1 : 0)
 }) && (do {
     ((my  $m2) = Perlito5::Expression->operator($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Expression.operator'} = $m2);
         1
@@ -1789,7 +1789,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((do {
     ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
@@ -1806,7 +1806,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((((((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
@@ -1821,7 +1821,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((do {
     ((my  $m2) = $grammar->double_quoted_unescape($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'double_quoted_unescape'} = $m2);
         1
@@ -1848,11 +1848,11 @@ package GLOBAL;
     ((((((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->double_quoted_buf($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
-        if (exists($MATCH->{'double_quoted_buf'})) {
+        if ((exists($MATCH->{'double_quoted_buf'}))) {
             push( @{($MATCH->{'double_quoted_buf'})}, $m2 )
         }
         else {
@@ -1868,8 +1868,8 @@ package GLOBAL;
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1892,7 +1892,7 @@ package GLOBAL;
     (($MATCH)->{to} = $pos1);
     (((((((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
@@ -1919,17 +1919,17 @@ package GLOBAL;
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     ((my  $count) = 0);
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1957,17 +1957,17 @@ package GLOBAL;
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     ((my  $count) = 0);
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -1997,11 +1997,11 @@ package GLOBAL;
     ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = Perlito5::Expression->delimited_statement($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
-        if (exists($MATCH->{'Perlito5::Expression.delimited_statement'})) {
+        if ((exists($MATCH->{'Perlito5::Expression.delimited_statement'}))) {
             push( @{($MATCH->{'Perlito5::Expression.delimited_statement'})}, $m2 )
         }
         else {
@@ -2017,8 +2017,8 @@ package GLOBAL;
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -2047,11 +2047,11 @@ package GLOBAL;
     ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
-    for ( ; ((do {
+    for ( ; (((do {
     ((my  $m2) = Perlito5::Expression->delimited_statement_no_package($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
-        if (exists($MATCH->{'Perlito5::Expression.delimited_statement_no_package'})) {
+        if ((exists($MATCH->{'Perlito5::Expression.delimited_statement_no_package'}))) {
             push( @{($MATCH->{'Perlito5::Expression.delimited_statement_no_package'})}, $m2 )
         }
         else {
@@ -2067,8 +2067,8 @@ package GLOBAL;
     else {
         0
     }
-}) && (($last_match_null < 2)));  ) {
-        if (($last_pos == $MATCH->to())) {
+}) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->to()))) {
             ($last_match_null = ($last_match_null + 1))
         }
         else {
@@ -2095,11 +2095,11 @@ package GLOBAL;
     ((my  $pos1) = $MATCH->to());
     (do {
     ((my  $last_pos) = $MATCH->to());
-    if (!((do {
+    if ((!((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
-        if (exists($MATCH->{'ident'})) {
+        if ((exists($MATCH->{'ident'}))) {
             push( @{($MATCH->{'ident'})}, $m2 )
         }
         else {
@@ -2115,7 +2115,7 @@ package GLOBAL;
     else {
         0
     }
-}))) {
+})))) {
         (($MATCH)->{to} = $last_pos)
     };
     1
@@ -2134,7 +2134,7 @@ package GLOBAL;
     ((do {
     (((do {
     ((my  $m2) = $grammar->var_ident($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'var_ident'} = $m2);
         1
@@ -2165,7 +2165,7 @@ package GLOBAL;
     (do {
     ((((do {
     ((my  $m2) = $grammar->var_invocant($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'var_invocant'} = $m2);
         1
@@ -2175,7 +2175,7 @@ package GLOBAL;
     }
 }) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2184,7 +2184,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = Perlito5::Expression->list_parse($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Expression.list_parse'} = $m2);
         1
@@ -2213,7 +2213,7 @@ package GLOBAL;
     ((do {
     (((((((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2222,7 +2222,7 @@ package GLOBAL;
     }
 }) && ((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2231,7 +2231,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->args_sig($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'args_sig'} = $m2);
         1
@@ -2241,7 +2241,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2278,7 +2278,7 @@ package GLOBAL;
     (do {
     ((((((((((do {
     ((my  $m2) = $grammar->opt_name($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'opt_name'} = $m2);
         1
@@ -2288,7 +2288,7 @@ package GLOBAL;
     }
 }) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2297,7 +2297,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->method_sig($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'method_sig'} = $m2);
         1
@@ -2307,7 +2307,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2316,7 +2316,7 @@ package GLOBAL;
     }
 })) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2325,7 +2325,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
@@ -2335,7 +2335,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2370,7 +2370,7 @@ package GLOBAL;
     (do {
     ((((((((((do {
     ((my  $m2) = $grammar->opt_name($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'opt_name'} = $m2);
         1
@@ -2380,7 +2380,7 @@ package GLOBAL;
     }
 }) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2389,7 +2389,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->method_sig($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'method_sig'} = $m2);
         1
@@ -2399,7 +2399,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2408,7 +2408,7 @@ package GLOBAL;
     }
 })) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2417,7 +2417,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
@@ -2427,7 +2427,7 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2462,7 +2462,7 @@ package GLOBAL;
     (do {
     ((((((do {
     ((my  $m2) = $grammar->opt_name($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'opt_name'} = $m2);
         1
@@ -2472,7 +2472,7 @@ package GLOBAL;
     }
 }) && (do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -2481,7 +2481,7 @@ package GLOBAL;
     }
 })) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
     ((my  $m2) = Perlito5::Grammar::Regex->rule($str, $MATCH->to()));
-    if ($m2) {
+    if (($m2)) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Grammar::Regex.rule'} = $m2);
         1

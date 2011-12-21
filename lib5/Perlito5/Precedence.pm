@@ -108,6 +108,9 @@ package GLOBAL;
             if ((substr($str, $pos, 2) eq '->')) {
                 return scalar (Perlito5::Match->new(('bool' => 0)))
             };
+            if ((substr($str, $pos, 3) eq '.>>')) {
+                return scalar (Perlito5::Match->new(('bool' => 0)))
+            };
             for my $len ( @{$List_Op_chars} ) {
                 ((my  $op) = substr($str, $pos, $len));
                 if (exists($List_Op->[$len]->{$op})) {

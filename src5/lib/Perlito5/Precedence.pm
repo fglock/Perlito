@@ -71,6 +71,10 @@ class Perlito5::Precedence {
         return Perlito5::Match->new( bool => 0 )
             if substr($str, $pos, 2) eq '->';
 
+        # XXX Perl6 hyper operator
+        return Perlito5::Match->new( bool => 0 )
+            if substr($str, $pos, 3) eq '.>>';
+
         for my $len ( @Op_chars ) {
             my $op = substr($str, $pos, $len);
             if exists(@Op[$len]{$op}) {

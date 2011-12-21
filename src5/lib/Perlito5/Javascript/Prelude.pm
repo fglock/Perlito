@@ -37,7 +37,7 @@ class Pair {
     has $.value;
 
     method perl {
-        return $.key ~ ' => ' ~ $.value.perl;
+        return $.key ~ ' => ' ~ $.value->perl;
     }
 
 }
