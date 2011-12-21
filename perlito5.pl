@@ -41,11 +41,11 @@ package GLOBAL;
     };
     (my  $Hash_module_seen = bless {}, 'HASH');
     sub module_name {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {

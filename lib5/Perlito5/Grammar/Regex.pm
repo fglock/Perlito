@@ -13,11 +13,11 @@ package GLOBAL;
     package Perlito5::Grammar::Regex;
     (my  $Hash_rule_terms = bless {}, 'HASH');
     sub ws {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
@@ -34,11 +34,11 @@ package GLOBAL;
         $MATCH
     };
     sub rule_ident {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
@@ -68,11 +68,11 @@ package GLOBAL;
         $MATCH
     };
     sub any {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
@@ -82,11 +82,11 @@ package GLOBAL;
         $MATCH
     };
     sub literal {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
@@ -128,11 +128,11 @@ package GLOBAL;
         $MATCH
     };
     sub metasyntax_exp {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
@@ -212,11 +212,11 @@ package GLOBAL;
         $MATCH
     };
     sub char_range {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
@@ -260,11 +260,11 @@ package GLOBAL;
         $MATCH
     };
     sub char_class {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
@@ -293,11 +293,11 @@ package GLOBAL;
         $MATCH
     };
     sub string_code {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
@@ -365,11 +365,11 @@ package GLOBAL;
         $MATCH
     };
     sub parsed_code {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
@@ -390,11 +390,11 @@ package GLOBAL;
         $MATCH
     };
     sub named_capture_body {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((((do {
@@ -455,11 +455,11 @@ package GLOBAL;
         $MATCH
     };
     sub variables {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
@@ -541,11 +541,11 @@ package GLOBAL;
         $MATCH
     };
     sub rule_terms {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (((((((((((((((do {
@@ -887,11 +887,11 @@ package GLOBAL;
         $MATCH
     };
     sub rule_term {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
@@ -1035,11 +1035,11 @@ package GLOBAL;
         $MATCH
     };
     sub quant_exp {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
@@ -1104,11 +1104,11 @@ package GLOBAL;
         $MATCH
     };
     sub greedy_exp {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
@@ -1124,11 +1124,11 @@ package GLOBAL;
         $MATCH
     };
     sub quantifier {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
@@ -1207,11 +1207,11 @@ package GLOBAL;
         $MATCH
     };
     sub concat_list {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
@@ -1276,11 +1276,11 @@ package GLOBAL;
         $MATCH
     };
     sub concat_exp {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
@@ -1302,11 +1302,11 @@ package GLOBAL;
         $MATCH
     };
     sub or_list_exp {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
@@ -1371,11 +1371,11 @@ package GLOBAL;
         $MATCH
     };
     sub rule {
-        my $grammar = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        (my  $MATCH);
-        ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {

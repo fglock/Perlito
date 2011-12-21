@@ -32,9 +32,9 @@ class Rul::Quantifier {
     has $.ws1;
     has $.ws2;
     has $.ws3;
-    method emit_perl6 {
+    method emit_perl5 {
         if (($.quant eq '') && ($.greedy eq '')) {
-            return $.term->emit_perl6;
+            return $.term->emit_perl5;
         }
         if (($.quant eq '+') && ($.greedy eq '')) {
             $.term->set_captures_to_array;
@@ -43,7 +43,7 @@ class Rul::Quantifier {
                 .   'my $last_match_null = 0; '
                 .   'my $last_pos = $MATCH->to; '
                 .   'my $count = 0; '
-                .   'while (' . $.term->emit_perl6() . ' && ($last_match_null < 2)) '
+                .   'while (' . $.term->emit_perl5() . ' && ($last_match_null < 2)) '
                 .   '{ '
                 .       'if ($last_pos == $MATCH->to()) { '
                 .           '$last_match_null = $last_match_null + 1; '
@@ -64,7 +64,7 @@ class Rul::Quantifier {
                 '(do { '
                 .   'my $last_match_null = 0; '
                 .   'my $last_pos = $MATCH->to; '
-                .   'while (' . $.term->emit_perl6() . ' && ($last_match_null < 2)) '
+                .   'while (' . $.term->emit_perl5() . ' && ($last_match_null < 2)) '
                 .   '{ '
                 .       'if ($last_pos == $MATCH->to()) { '
                 .           '$last_match_null = $last_match_null + 1; '
@@ -83,7 +83,7 @@ class Rul::Quantifier {
             return
                 '(do { '
                 .   'my $last_pos = $MATCH->to; '
-                .   'if (!(do {' . $.term->emit_perl6() . '})) '
+                .   'if (!(do {' . $.term->emit_perl5() . '})) '
                 .   '{ '
                 .       '$MATCH->to = $last_pos; '
                 .   '}; '
@@ -93,7 +93,7 @@ class Rul::Quantifier {
 
         # TODO
         warn "Rul::Quantifier: " . self->perl . " not implemented";
-        $.term->emit_perl6;
+        $.term->emit_perl5;
     }
     method set_captures_to_array {
         $.term->set_captures_to_array;
@@ -102,10 +102,10 @@ class Rul::Quantifier {
 
 class Rul::Or {
     has @.or_list;
-    method emit_perl6 {
+    method emit_perl5 {
         '(do { ' .
             'my $pos1 = $MATCH->to; (do { ' .
-            (@.or_list.>>emit_perl6)->join('}) || (do { $MATCH->to = $pos1; ') .
+            (@.or_list.>>emit_perl5)->join('}) || (do { $MATCH->to = $pos1; ') .
         '}) })';
     }
     method set_captures_to_array {
@@ -115,8 +115,8 @@ class Rul::Or {
 
 class Rul::Concat {
     has @.concat;
-    method emit_perl6 {
-        '(' . (@.concat.>>emit_perl6)->join(' && ') . ')';
+    method emit_perl5 {
+        '(' . (@.concat.>>emit_perl5)->join(' && ') . ')';
     }
     method set_captures_to_array {
         @.concat.>>set_captures_to_array;
@@ -126,7 +126,7 @@ class Rul::Concat {
 class Rul::Subrule {
     has $.metasyntax;
     has $.captures;
-    method emit_perl6 {
+    method emit_perl5 {
         my $meth = ( 1 + index( $.metasyntax, '.' ) )
             ? Main::_replace( $.metasyntax, '.', '->' )
             : ( '$grammar->' . $.metasyntax );
@@ -168,7 +168,7 @@ class Rul::Var {
     has $.sigil;
     has $.twigil;
     has $.name;
-    method emit_perl6 {
+    method emit_perl5 {
         # Normalize the sigil here into $
         # $x    => $x
         # @x    => $List_x
@@ -186,7 +186,7 @@ class Rul::Var {
 
 class Rul::Constant {
     has $.constant;
-    method emit_perl6 {
+    method emit_perl5 {
         my $str = $.constant;
         Rul::constant( $str );
     }
@@ -194,7 +194,7 @@ class Rul::Constant {
 }
 
 class Rul::Dot {
-    method emit_perl6 {
+    method emit_perl5 {
         '( \'\' ne substr( $str, $MATCH->to, 1 ) ' .
         '&& ($MATCH->to = 1 + $MATCH->to)' .
         ')';
@@ -204,19 +204,19 @@ class Rul::Dot {
 
 class Rul::SpecialChar {
     has $.char;
-    method emit_perl6 {
+    method emit_perl5 {
         my $char = $.char;
         if ($char eq 'n') {
-            return Rul::Subrule->new( metasyntax => 'is_newline', captures => 0 )->emit_perl6;
+            return Rul::Subrule->new( metasyntax => 'is_newline', captures => 0 )->emit_perl5;
         }
         if ($char eq 'N') {
-            return Rul::Subrule->new( metasyntax => 'not_newline', captures => 0 )->emit_perl6;
+            return Rul::Subrule->new( metasyntax => 'not_newline', captures => 0 )->emit_perl5;
         }
         if ($char eq 'd') {
-            return Rul::Subrule->new( metasyntax => 'digit', captures => 0 )->emit_perl6;
+            return Rul::Subrule->new( metasyntax => 'digit', captures => 0 )->emit_perl5;
         }
         if ($char eq 's') {
-            return Rul::Subrule->new( metasyntax => 'space', captures => 0 )->emit_perl6;
+            return Rul::Subrule->new( metasyntax => 'space', captures => 0 )->emit_perl5;
         }
         if ($char eq 't') {
             return Rul::constant( chr(9) );
@@ -228,7 +228,7 @@ class Rul::SpecialChar {
 
 class Rul::Block {
     has $.closure;
-    method emit_perl6 {
+    method emit_perl5 {
         '((do { ' . $.closure . ' }) || 1)'
     }
     method set_captures_to_array { }
@@ -236,8 +236,8 @@ class Rul::Block {
 
 class Rul::InterpolateVar {
     has $.var;
-    method emit_perl6 {
-        say '# TODO: interpolate var ' . $.var->emit_perl6() . '';
+    method emit_perl5 {
+        say '# TODO: interpolate var ' . $.var->emit_perl5() . '';
         die();
     };
     method set_captures_to_array { }
@@ -246,8 +246,8 @@ class Rul::InterpolateVar {
 class Rul::NamedCapture {
     has $.rule_exp;
     has $.capture_ident;
-    method emit_perl6 {
-        say '# TODO: named capture ' . $.capture_ident . ' = ' . $.rule_exp->emit_perl6() . '';
+    method emit_perl5 {
+        say '# TODO: named capture ' . $.capture_ident . ' = ' . $.rule_exp->emit_perl5() . '';
         die();
     }
     method set_captures_to_array {
@@ -257,12 +257,12 @@ class Rul::NamedCapture {
 
 class Rul::Before {
     has $.rule_exp;
-    method emit_perl6 {
+    method emit_perl5 {
         '(do { ' .
             'my $tmp = $MATCH; ' .
             '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
             '$MATCH->bool = ' .
-                $.rule_exp->emit_perl6() .
+                $.rule_exp->emit_perl5() .
             '; ' .
             '$tmp->bool = $MATCH ? 1 : 0; ' .
             '$MATCH = $tmp; ' .
@@ -274,12 +274,12 @@ class Rul::Before {
 
 class Rul::NotBefore {
     has $.rule_exp;
-    method emit_perl6 {
+    method emit_perl5 {
         '(do { ' .
             'my $tmp = $MATCH; ' .
             '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
             '$MATCH->bool = ' .
-                $.rule_exp->emit_perl6() .
+                $.rule_exp->emit_perl5() .
             '; ' .
             '$tmp->bool = !$MATCH; ' .
             '$MATCH = $tmp; ' .
@@ -291,7 +291,7 @@ class Rul::NotBefore {
 
 class Rul::NegateCharClass {
     has $.chars;
-    method emit_perl6 {
+    method emit_perl5 {
         say "TODO NegateCharClass";
         die();
     }
@@ -299,7 +299,7 @@ class Rul::NegateCharClass {
 
 class Rul::CharClass {
     has $.chars;
-    method emit_perl6 {
+    method emit_perl5 {
         say "TODO CharClass";
         die();
     }
@@ -307,7 +307,7 @@ class Rul::CharClass {
 
 class Rul::Capture {
     has $.rule_exp;
-    method emit_perl6 {
+    method emit_perl5 {
         say "TODO RulCapture";
         die();
     }
@@ -315,7 +315,7 @@ class Rul::Capture {
 
 class Rul::CaptureResult {
     has $.rule_exp;
-    method emit_perl6 {
+    method emit_perl5 {
         say "TODO Rul::CaptureResult";
         die();
     }
@@ -323,7 +323,7 @@ class Rul::CaptureResult {
 
 class Rul::After {
     has $.rule_exp;
-    method emit_perl6 {
+    method emit_perl5 {
         say "TODO Rul::After";
         die();
     }
@@ -338,7 +338,7 @@ Perlito5::Emitter::Token - Code generator for Perlito Regex
 =head1 SYNOPSIS
 
     my $match = $source.rule;
-    ($$match)->emit_perl6;    # generated Perlito source code
+    ($$match)->emit_perl5;    # generated Perlito source code
 
 =head1 DESCRIPTION
 
