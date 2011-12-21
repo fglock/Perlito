@@ -1,6 +1,4 @@
-use v6;
 
-class Main {
     say '1..6';
     my %a;
     say 'ok 1 - create hash';
@@ -19,4 +17,3 @@ class Main {
         print 'not '
     }
     say 'ok 6 - fetch element # ', $b->{'abc'}{'def'};
-}

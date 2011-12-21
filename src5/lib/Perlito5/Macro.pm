@@ -1,4 +1,4 @@
-use v6;
+use v5;
 
 class Lit::Array {
     method expand_interpolation {

@@ -1,4 +1,4 @@
-use v6;
+use v5;
 
 use Perlito5::AST;
 
@@ -280,7 +280,7 @@ class CompUnit {
         for my $decl ( @.body ) {
             if $decl.isa('Use') {
                 push @s, Ruby::tab($level) . "require '" . Main::to_go_namespace($decl.mod) . ".rb'"
-                    unless $decl.mod eq 'v6';
+                    unless $decl.mod eq 'v5';
             }
         }
 

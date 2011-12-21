@@ -1,4 +1,4 @@
-use v6;
+use v5;
 
 # no <after .. > - so it doesn't need to match backwards
 # no backtracking on quantifiers

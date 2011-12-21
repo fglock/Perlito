@@ -1,4 +1,4 @@
-use v6;
+use v5;
 
 use Perlito5::AST;
 
@@ -263,7 +263,7 @@ class CompUnit {
 
         for my $decl ( @.body ) {
             if $decl.isa('Use') {
-                if $decl.mod ne 'v6' {
+                if $decl.mod ne 'v5' {
                     push @s, Python::tab($level) . 'import ' . Main::to_go_namespace($decl.mod)
                 }
             }

@@ -1,4 +1,4 @@
-use v6;
+use v5;
 
 use Perlito5::AST;
 

@@ -709,8 +709,7 @@ class Use {
         my $self = $_[0];
         my $level = $_[1];
         
-        if     $.mod eq 'v6' 
-            || $.mod eq 'strict'
+        if     $.mod eq 'strict'
             || $.mod eq 'feature'
         {
             return "\n"

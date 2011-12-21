@@ -1,11 +1,29 @@
 
-class Other {
-    method subr( $a, $b ) { $a + $b };
+package Other;
+
+sub new {
+    my $class = shift;
+    bless { @_ }, $class
 }
 
-class Other {
-    method subr2( $a, $b, $c ) { $a + $b + $c };
+sub subr {
+    my $self = shift;
+    my $a = shift;
+    my $b = shift;
+    $a + $b
 }
+
+package Other;
+
+sub subr2 {
+    my $self = shift;
+    my $a = shift;
+    my $b = shift;
+    my $c = shift;
+    $a + $b + $c
+}
+
+package Main;
     
     say '1..2';
 

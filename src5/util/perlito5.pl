@@ -47,8 +47,7 @@ sub expand_use {
     my $stmt = shift;
     my $module_name = $stmt->mod;
     return
-        if $module_name eq 'v6'
-        || $module_name eq 'v5'
+        if $module_name eq 'v5'
         || $module_name eq 'strict'
         || $module_name eq 'feature';
     if !(%module_seen{$module_name}) {

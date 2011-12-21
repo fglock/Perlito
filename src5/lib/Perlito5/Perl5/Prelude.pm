@@ -1,4 +1,4 @@
-use v6;
+use v5;
 
 class Perlito5::Match {
     has $.from;
