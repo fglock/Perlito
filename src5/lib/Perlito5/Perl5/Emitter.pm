@@ -85,9 +85,9 @@ class CompUnit {
             . "use Perlito5::Perl5::Prelude;\n"
             . "our \$MATCH = Perlito5::Match->new();\n";
         for my $comp_unit (@($comp_units)) {
-            $str ~= $comp_unit->emit_perl5_indented(0)
+            $str .= $comp_unit->emit_perl5_indented(0)
         }
-        $str ~= "1;\n";
+        $str .= "1;\n";
         return $str;
     }
 }
@@ -621,13 +621,13 @@ class Decl {
         my $str =
             '(' . $.decl . ' ' . $.type . ' ' . $.var->emit_perl5();
         if ($.var)->sigil eq '%' {
-            $str ~= ' = bless {}, \'HASH\')';
+            $str .= ' = bless {}, \'HASH\')';
         }
         elsif ($.var)->sigil eq '@' {
-            $str ~= ' = bless [], \'ARRAY\')';
+            $str .= ' = bless [], \'ARRAY\')';
         }
         else {
-            $str ~= ')';
+            $str .= ')';
         }
         return Perl5::tab($level) . $str;
     }
@@ -649,7 +649,7 @@ class Method {
 
         my $i = 1;
         for my $field (@$pos) {
-            $str ~= Perl5::tab( $level + 1 ) . 'my ' . $field->emit_perl5() . ' = $_[' . $i . '];' . "\n";
+            $str .= Perl5::tab( $level + 1 ) . 'my ' . $field->emit_perl5() . ' = $_[' . $i . '];' . "\n";
             $i = $i + 1;
         }
 
@@ -675,7 +675,7 @@ class Sub {
         my $str = '';
         my $i = 0;
         for my $field (@$pos) {
-            $str ~= Perl5::tab( $level + 1 ) . 'my ' . $field->emit_perl5() . ' = $_[' . $i . '];' . "\n";
+            $str .= Perl5::tab( $level + 1 ) . 'my ' . $field->emit_perl5() . ' = $_[' . $i . '];' . "\n";
             $i = $i + 1;
         }
           Perl5::tab($level) . 'sub ' . $.name . " \{\n"

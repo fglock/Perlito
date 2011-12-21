@@ -349,7 +349,7 @@ class Lit::Hash {
 class Index {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~
+        Ruby::tab($level) .
             $.obj.emit_ruby . '[' . $.index_exp.emit_ruby . ']';
     }
 }
@@ -357,7 +357,7 @@ class Index {
 class Lookup {
     method emit_ruby { self.emit_ruby_indented(0) }
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~
+        Ruby::tab($level) .
             $.obj.emit_ruby . '[' . $.index_exp.emit_ruby . ']';
     }
 }
@@ -421,7 +421,7 @@ class Call {
 
         my $meth = $.method;
         if $meth eq 'postcircumfix:<( )>' {
-            return Ruby::tab($level) ~
+            return Ruby::tab($level) .
                 $invocant . '.call(' . (@.arguments.>>emit_ruby).join(', ') . ')';
         }
         if     ( $meth eq 'values' )
@@ -454,7 +454,7 @@ class Call {
 
 class Apply {
     method emit_ruby_indented( $level ) {
-        Ruby::tab($level) ~
+        Ruby::tab($level) .
             self.emit_ruby
     }
     method emit_ruby {

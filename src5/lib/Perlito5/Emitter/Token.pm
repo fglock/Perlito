@@ -15,8 +15,8 @@ class Rul {
                 $str = '\\\'';
             }
             if ( $len ) {
-                '( \'' . $str . '\' eq substr( $str, $MATCH->to, ' . $len . ') ' ~
-                '&& ( $MATCH->to = ' . $len . ' + $MATCH->to )' ~
+                '( \'' . $str . '\' eq substr( $str, $MATCH->to, ' . $len . ') ' .
+                '&& ( $MATCH->to = ' . $len . ' + $MATCH->to )' .
                 ')';
             }
             else {
@@ -103,9 +103,9 @@ class Rul::Quantifier {
 class Rul::Or {
     has @.or_list;
     method emit_perl6 {
-        '(do { ' ~
-            'my $pos1 = $MATCH->to; (do { ' ~
-            (@.or_list.>>emit_perl6)->join('}) || (do { $MATCH->to = $pos1; ') ~
+        '(do { ' .
+            'my $pos1 = $MATCH->to; (do { ' .
+            (@.or_list.>>emit_perl6)->join('}) || (do { $MATCH->to = $pos1; ') .
         '}) })';
     }
     method set_captures_to_array {
@@ -195,8 +195,8 @@ class Rul::Constant {
 
 class Rul::Dot {
     method emit_perl6 {
-        '( \'\' ne substr( $str, $MATCH->to, 1 ) ' ~
-        '&& ($MATCH->to = 1 + $MATCH->to)' ~
+        '( \'\' ne substr( $str, $MATCH->to, 1 ) ' .
+        '&& ($MATCH->to = 1 + $MATCH->to)' .
         ')';
     }
     method set_captures_to_array { }
@@ -258,15 +258,15 @@ class Rul::NamedCapture {
 class Rul::Before {
     has $.rule_exp;
     method emit_perl6 {
-        '(do { ' ~
-            'my $tmp = $MATCH; ' ~
-            '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' ~
-            '$MATCH->bool = ' ~
-                $.rule_exp->emit_perl6() ~
-            '; ' ~
-            '$tmp->bool = $MATCH ? 1 : 0; ' ~
-            '$MATCH = $tmp; ' ~
-            '$MATCH ? 1 : 0; ' ~
+        '(do { ' .
+            'my $tmp = $MATCH; ' .
+            '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
+            '$MATCH->bool = ' .
+                $.rule_exp->emit_perl6() .
+            '; ' .
+            '$tmp->bool = $MATCH ? 1 : 0; ' .
+            '$MATCH = $tmp; ' .
+            '$MATCH ? 1 : 0; ' .
         '})'
     }
     method set_captures_to_array { }
@@ -275,15 +275,15 @@ class Rul::Before {
 class Rul::NotBefore {
     has $.rule_exp;
     method emit_perl6 {
-        '(do { ' ~
-            'my $tmp = $MATCH; ' ~
-            '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' ~
-            '$MATCH->bool = ' ~
-                $.rule_exp->emit_perl6() ~
-            '; ' ~
-            '$tmp->bool = !$MATCH; ' ~
-            '$MATCH = $tmp; ' ~
-            '$MATCH ? 1 : 0; ' ~
+        '(do { ' .
+            'my $tmp = $MATCH; ' .
+            '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
+            '$MATCH->bool = ' .
+                $.rule_exp->emit_perl6() .
+            '; ' .
+            '$tmp->bool = !$MATCH; ' .
+            '$MATCH = $tmp; ' .
+            '$MATCH ? 1 : 0; ' .
         '})'
     }
     method set_captures_to_array { }

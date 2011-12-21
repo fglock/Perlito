@@ -209,7 +209,7 @@ package GLOBAL;
         sub eval {
             my $self = $_[0];
             my $env = $_[1];
-            "".($self->{name})
+            ('' . $self->{name})
         }
     }
 

@@ -310,11 +310,11 @@ token token {
     \}
     {
         #say 'Token was compiled into: ', ($$<Perlito5::Grammar::Regex.rule>)->perl;
-        my $source = $<opt_name> . ' ( $grammar: $str, $pos ) { ' ~
-            'my $MATCH; $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' ~
-            '$MATCH->bool = ( ' ~
-                ($$<Perlito5::Grammar::Regex.rule>)->emit_perl6() ~
-            '); ' ~
+        my $source = $<opt_name> . ' ( $grammar: $str, $pos ) { ' .
+            'my $MATCH; $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' .
+            '$MATCH->bool = ( ' .
+                ($$<Perlito5::Grammar::Regex.rule>)->emit_perl6() .
+            '); ' .
             '$MATCH }';
         #say 'Intermediate code: ', $source;
         my $ast = Perlito5::Grammar->method_def( $source, 0 );

@@ -26,7 +26,7 @@ sub ok {
     my $desc    = shift;
     my $todo    = shift;
     my $depends = shift;
-    Perlito5::Test::proclaim( $cond, 'ok! ' ~$desc, $todo, $depends );
+    Perlito5::Test::proclaim( $cond, 'ok! ' . $desc, $todo, $depends );
 }
 
 sub is {
@@ -37,7 +37,7 @@ sub is {
     my $depends  = shift;
 
     my $test = $got eq $expected;
-    Perlito5::Test::proclaim( $test, 'is! ' ~$desc, $todo, $got, $expected, $depends );
+    Perlito5::Test::proclaim( $test, 'is! ' . $desc, $todo, $got, $expected, $depends );
 }
 
 sub is_deeply {
@@ -114,12 +114,12 @@ sub lives_ok {
 sub skip {
     my $reason  = shift;
     my $depends = shift;
-    Perlito5::Test::proclaim( 1, '', "skip " ~$reason, $depends );
+    Perlito5::Test::proclaim( 1, '', "skip " . $reason, $depends );
 }
 
 sub pass {
     my $desc = shift;
-    Perlito5::Test::proclaim( 1, 'pass! ' ~$desc );
+    Perlito5::Test::proclaim( 1, 'pass! ' . $desc );
 }
 
 sub flunk {
@@ -127,7 +127,7 @@ sub flunk {
     my $todo    = shift;
     my $depends = shift;
 
-    Perlito5::Test::proclaim( 0, 'flunk! ' ~$desc, $todo, $depends );
+    Perlito5::Test::proclaim( 0, 'flunk! ' . $desc, $todo, $depends );
 }
 
 ## 'private' subs
@@ -170,15 +170,15 @@ sub test_ends {
     }
 
     if ( !$num_of_tests_planned ) {
-        say "1.." ~$num_of_tests_run;
+        say "1.." . $num_of_tests_run;
     }
 
     if ( $num_of_tests_planned != $num_of_tests_run ) {
-        say "# Looks like you planned " ~$num_of_tests_planned ~" tests, but ran " ~$num_of_tests_run;
+        say "# Looks like you planned " . $num_of_tests_planned . " tests, but ran " . $num_of_tests_run;
     }
 
     if ($num_of_tests_failed) {
-        say "# Looks like you failed " ~$num_of_tests_failed ~" tests of " ~$num_of_tests_run;
+        say "# Looks like you failed " . $num_of_tests_failed . " tests of " . $num_of_tests_run;
     }
 
     $num_of_tests_run     = 0;

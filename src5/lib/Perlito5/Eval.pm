@@ -105,7 +105,7 @@ class Var {
 
 class Proto {
     method eval ($env) {
-        ~$.name
+        '' . $.name
     }
 }
 

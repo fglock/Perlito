@@ -27,7 +27,7 @@ package GLOBAL;
                 ($str = chr(92) . chr(39))
             };
             if (($len)) {
-                (((('( ' . chr(39) . $str . chr(39) . ' eq substr( ' . chr(36) . 'str, ' . chr(36) . 'MATCH->to, ' . $len . ') ') . chr(38) . chr(38) . ' ( ' . chr(36) . 'MATCH->to ' . chr(61) . ' ') . $len . ' + ' . chr(36) . 'MATCH->to )') . ')')
+                ('( ' . chr(39) . $str . chr(39) . ' eq substr( ' . chr(36) . 'str, ' . chr(36) . 'MATCH->to, ' . $len . ') ' . chr(38) . chr(38) . ' ( ' . chr(36) . 'MATCH->to ' . chr(61) . ' ' . $len . ' + ' . chr(36) . 'MATCH->to )' . ')')
             }
             else {
                 return scalar ('1')

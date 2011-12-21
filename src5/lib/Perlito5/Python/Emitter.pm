@@ -377,7 +377,7 @@ class Lit::Hash {
 class Index {
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        Python::tab($level) ~
+        Python::tab($level) .
             $.obj.emit_python() . '.f_index(' . $.index_exp.emit_python() . ')';
     }
 }
@@ -385,7 +385,7 @@ class Index {
 class Lookup {
     method emit_python { self.emit_python_indented(0) }
     method emit_python_indented( $level ) {
-        Python::tab($level) ~
+        Python::tab($level) .
             $.obj.emit_python() . '.f_lookup(' . $.index_exp.emit_python() . ')';
     }
 }
@@ -426,7 +426,7 @@ class Proto {
         if $.name eq 'self' {
             return Python::tab($level) . 'v_self'
         }
-        Python::tab($level) ~
+        Python::tab($level) .
             Main::to_go_namespace($.name) . '_proto'
     }
 }
@@ -471,7 +471,7 @@ class Call {
 
         my $meth = $.method;
         if $meth eq 'postcircumfix:<( )>' {
-            return Python::tab($level) ~
+            return Python::tab($level) .
                 $invocant . '(' . (@.arguments.>>emit_python).join(', ') . ')';
         }
         if     ( $meth eq 'values' )
@@ -496,7 +496,7 @@ class Call {
 
 class Apply {
     method emit_python_indented( $level ) {
-        Python::tab($level) ~
+        Python::tab($level) .
             self.emit_python
     }
     method emit_python {
