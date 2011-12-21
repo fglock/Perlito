@@ -627,11 +627,11 @@ class If {
             if $otherwise_block.has_my_decl() {
                 $otherwise_block = Do.new( block => @.otherwise );
             }
-            $s ~= "\n"
+            $s .= "\n"
                 . Ruby::tab($level) . "else\n"
                 .   $otherwise_block.emit_ruby_indented($level+1)
         }
-        $s ~= "\n" . Ruby::tab($level) . "end";
+        $s .= "\n" . Ruby::tab($level) . "end";
         return $s;
     }
 }

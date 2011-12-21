@@ -52,7 +52,7 @@ token parsed_code {
     # this subrule is overridden inside the perl6 compiler
     # XXX - call Perlito 'Statement List'
     <.string_code>
-    { make ~$/ }
+    { make '' . $/ }
 }
 
 token named_capture_body {
@@ -79,9 +79,9 @@ token variables {
         <Perlito5::Grammar.full_ident>
         {
             make Rul::Var->new(
-                    sigil  => ~$<Perlito5::Grammar.var_sigil>,
-                    twigil => ~$<Perlito5::Grammar.var_twigil>,
-                    name   => ~$<Perlito5::Grammar.full_ident>
+                    sigil  => '' . $<Perlito5::Grammar.var_sigil>,
+                    twigil => '' . $<Perlito5::Grammar.var_twigil>,
+                    name   => '' . $<Perlito5::Grammar.full_ident>
                    )
         }
 }
@@ -109,11 +109,11 @@ token rule_terms {
     |   '<+'
         # TODO
         <char_class>  \>
-        { make Rul::CharClass->new( chars => ~$<char_class> ) }
+        { make Rul::CharClass->new( chars => '' . $<char_class> ) }
     |   '<-'
         # TODO
         <char_class> \>
-        { make Rul::NegateCharClass->new( chars => ~$<char_class> ) }
+        { make Rul::NegateCharClass->new( chars => '' . $<char_class> ) }
     |   \'
         <literal> \'
         { make Rul::Constant->new( constant => $$<literal> ) }

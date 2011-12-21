@@ -26,7 +26,7 @@ token namespace_before_ident {
 }
 token optional_namespace_before_ident {
     | <namespace_before_ident> '::'
-        { make ~$<namespace_before_ident> }
+        { make '' . $<namespace_before_ident> }
     | ''
         { make '' }
 }
@@ -114,10 +114,10 @@ token var_ident {
     <var_sigil> <var_twigil> <optional_namespace_before_ident> <var_name>
     {
         make Var->new(
-            sigil       => ~$<var_sigil>,
-            twigil      => ~$<var_twigil>,
+            sigil       => '' . $<var_sigil>,
+            twigil      => '' . $<var_twigil>,
             namespace   => $$<optional_namespace_before_ident>,
-            name        => ~$<var_name>,
+            name        => '' . $<var_name>,
         )
     }
 }
@@ -130,7 +130,7 @@ token val_num {
     [   \. \d+    <.exponent>?
     |   \d+     [ <.exponent>  |   \. \d+  <.exponent>? ]
     ]
-    { make Val::Num->new( num => ~$/ ) }
+    { make Val::Num->new( num => '' . $/ ) }
 }
 
 token char_any {
@@ -174,10 +174,10 @@ token double_quoted_unescape {
         |  t
             { make chr(9) }
         |  <char_any>
-            { make ~$<char_any> }
+            { make '' . $<char_any> }
         ]
     |  <char_any_double_quote>
-        { make ~$<char_any_double_quote> }
+        { make '' . $<char_any_double_quote> }
 }
 
 token double_quoted_buf {
@@ -185,19 +185,19 @@ token double_quoted_buf {
         [ <before \$ <.var_twigil> <.ident> > <Perlito5::Expression.operator>
             { make ($$<Perlito5::Expression.operator>)[1] }
         | <char_any>
-            { make Val::Buf->new( buf => ~$<char_any> ) }
+            { make Val::Buf->new( buf => '' . $<char_any> ) }
         ]
     | <before \@ >
         [ <before \@ <.var_twigil> <.ident> > <Perlito5::Expression.operator> '[]'
             { make ($$<Perlito5::Expression.operator>)[1] }
         | <char_any>
-            { make Val::Buf->new( buf => ~$<char_any> ) }
+            { make Val::Buf->new( buf => '' . $<char_any> ) }
         ]
     | <before \% >
         [ <before \% <.var_twigil> <.ident> > <Perlito5::Expression.operator> '{}'
             { make ($$<Perlito5::Expression.operator>)[1] }
         | <char_any>
-            { make Val::Buf->new( buf => ~$<char_any> ) }
+            { make Val::Buf->new( buf => '' . $<char_any> ) }
         ]
     | \{ <exp_stmts> \}
             { make Do->new( block => Lit::Block->new( stmts => $$<exp_stmts> ) ) }
@@ -230,7 +230,7 @@ token digits {
 
 token val_int {
     \d+
-    { make Val::Int->new( int => ~$/ ) }
+    { make Val::Int->new( int => '' . $/ ) }
 }
 
 token exp_stmts {

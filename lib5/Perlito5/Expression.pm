@@ -867,7 +867,7 @@ package GLOBAL;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Lookup->new(('obj' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => chr(47)))), ('index_exp' => Val::Buf->new(('buf' => "".($MATCH->{'capture_name'}))))) );
+    push( @{$List_a}, Lookup->new(('obj' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => chr(47)))), ('index_exp' => Val::Buf->new(('buf' => ('' . $MATCH->{'capture_name'}))))) );
     $List_a
 }))
 }) || 1))))
@@ -930,7 +930,7 @@ package GLOBAL;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Val::Buf->new(('buf' => "".($MATCH->{'Perlito5::Grammar.ident'}))) );
+    push( @{$List_a}, Val::Buf->new(('buf' => ('' . $MATCH->{'Perlito5::Grammar.ident'}))) );
     $List_a
 }))
 }) || 1))))
@@ -1336,7 +1336,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall' );
-    push( @{$List_a}, "".($MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
     push( @{$List_a}, ${$MATCH->{'list_parse'}} );
     push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
     $List_a
@@ -1360,7 +1360,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall' );
-    push( @{$List_a}, "".($MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
     push( @{$List_a}, do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'end_block'} = undef());
@@ -1380,7 +1380,7 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall_no_params' );
-    push( @{$List_a}, "".($MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
     push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
     $List_a
 }))
@@ -1437,8 +1437,8 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'funcall' );
-    push( @{$List_a}, "".($MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}) );
-    push( @{$List_a}, "".($MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
     push( @{$List_a}, ${$MATCH->{'list_parse'}} );
     $List_a
 }))
@@ -1464,8 +1464,8 @@ package GLOBAL;
     ($MATCH = $tmp);
     ($MATCH ? 1 : 0)
 }) && (((do {
-    ((my  $namespace) = "".($MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}));
-    ((my  $name) = "".($MATCH->{'Perlito5::Grammar.ident'}));
+    ((my  $namespace) = ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}));
+    ((my  $name) = ('' . $MATCH->{'Perlito5::Grammar.ident'}));
     if ($namespace) {
         ($name = ($namespace . '::' . $name))
     };
@@ -1485,8 +1485,8 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'funcall_no_params' );
-    push( @{$List_a}, "".($MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}) );
-    push( @{$List_a}, "".($MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
     $List_a
 }))
 }) || 1)))
@@ -2312,7 +2312,7 @@ package GLOBAL;
             if ((${$modifier_exp})->{'end_block'}) {
                 die(('Unexpected block after expression near '), $modifier->to())
             };
-            ($modifier = "".($modifier));
+            ($modifier = ('' . $modifier));
             if (($modifier eq 'if')) {
                 return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');

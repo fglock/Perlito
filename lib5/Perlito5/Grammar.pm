@@ -284,7 +284,7 @@ package GLOBAL;
         0
     }
 }) && ((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && (((do {
-    ($MATCH->{capture} = ("".($MATCH->{'namespace_before_ident'})))
+    ($MATCH->{capture} = (('' . $MATCH->{'namespace_before_ident'})))
 }) || 1)))
 }) || (do {
     (($MATCH)->{to} = $pos1);
@@ -1009,7 +1009,7 @@ package GLOBAL;
         0
     }
 })) && (((do {
-    ($MATCH->{capture} = (Var->new(('sigil' => "".($MATCH->{'var_sigil'})), ('twigil' => "".($MATCH->{'var_twigil'})), ('namespace' => ${$MATCH->{'optional_namespace_before_ident'}}), ('name' => "".($MATCH->{'var_name'})))))
+    ($MATCH->{capture} = (Var->new(('sigil' => ('' . $MATCH->{'var_sigil'})), ('twigil' => ('' . $MATCH->{'var_twigil'})), ('namespace' => ${$MATCH->{'optional_namespace_before_ident'}}), ('name' => ('' . $MATCH->{'var_name'})))))
 }) || 1)))
 })
 })));
@@ -1211,7 +1211,7 @@ package GLOBAL;
 })))
 }))
 }) && (((do {
-    ($MATCH->{capture} = (Val::Num->new(('num' => "".($MATCH)))))
+    ($MATCH->{capture} = (Val::Num->new(('num' => ('' . $MATCH)))))
 }) || 1)))
 })
 })));
@@ -1541,7 +1541,7 @@ package GLOBAL;
         0
     }
 }) && (((do {
-    ($MATCH->{capture} = ("".($MATCH->{'char_any'})))
+    ($MATCH->{capture} = (('' . $MATCH->{'char_any'})))
 }) || 1))))
 }))
 }))
@@ -1558,7 +1558,7 @@ package GLOBAL;
         0
     }
 }) && (((do {
-    ($MATCH->{capture} = ("".($MATCH->{'char_any_double_quote'})))
+    ($MATCH->{capture} = (('' . $MATCH->{'char_any_double_quote'})))
 }) || 1))))
 }))
 })));
@@ -1644,7 +1644,7 @@ package GLOBAL;
         0
     }
 }) && (((do {
-    ($MATCH->{capture} = (Val::Buf->new(('buf' => "".($MATCH->{'char_any'})))))
+    ($MATCH->{capture} = (Val::Buf->new(('buf' => ('' . $MATCH->{'char_any'})))))
 }) || 1))))
 }))
 }))
@@ -1721,7 +1721,7 @@ package GLOBAL;
         0
     }
 }) && (((do {
-    ($MATCH->{capture} = (Val::Buf->new(('buf' => "".($MATCH->{'char_any'})))))
+    ($MATCH->{capture} = (Val::Buf->new(('buf' => ('' . $MATCH->{'char_any'})))))
 }) || 1))))
 }))
 })))
@@ -1798,7 +1798,7 @@ package GLOBAL;
         0
     }
 }) && (((do {
-    ($MATCH->{capture} = (Val::Buf->new(('buf' => "".($MATCH->{'char_any'})))))
+    ($MATCH->{capture} = (Val::Buf->new(('buf' => ('' . $MATCH->{'char_any'})))))
 }) || 1))))
 }))
 })))
@@ -1979,7 +1979,7 @@ package GLOBAL;
     (($MATCH)->{to} = $last_pos);
     ($count > 0)
 }) && (((do {
-    ($MATCH->{capture} = (Val::Int->new(('int' => "".($MATCH)))))
+    ($MATCH->{capture} = (Val::Int->new(('int' => ('' . $MATCH)))))
 }) || 1)))
 })
 })));
