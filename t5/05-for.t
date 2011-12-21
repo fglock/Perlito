@@ -3,7 +3,7 @@ use feature 'say';
 say '1..13';
 my @a = ( 1, 2 );
 for my $v (@a) {
-    say 'ok ' ~ $v ~ ' - loop';
+    say 'ok ' . $v . ' - loop';
 }
 
 my $x = 123;
@@ -13,14 +13,14 @@ for my $v (@a) {
     if ($x != 3) {
         print 'not '
     }
-    say 'ok ' ~ $v ~ ' - for block';
+    say 'ok ' . $v . ' - for block';
     my @b = ( $v + 1, $v + 2 );
     for my $v (@b) {
         my $x = do { 3 };
         if ($x != 3) {
             print 'not '
         }
-        say 'ok ' ~ $v ~ ' - inner for block';
+        say 'ok ' . $v . ' - inner for block';
     }
 }
 

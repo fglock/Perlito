@@ -262,6 +262,7 @@ package GLOBAL;
     ($Hash_a->{'infix:<' . chr(38) . chr(61) . '>'} = 'infix:<' . chr(38) . '>');
     ($Hash_a->{'infix:<' . chr(47) . chr(47) . chr(61) . '>'} = 'infix:<' . chr(47) . chr(47) . '>');
     ($Hash_a->{'infix:<' . chr(126) . chr(61) . '>'} = 'list:<' . chr(126) . '>');
+    ($Hash_a->{'infix:<.' . chr(61) . '>'} = 'list:<.>');
     $Hash_a
 });
         sub op_assign {

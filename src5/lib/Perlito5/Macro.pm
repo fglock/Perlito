@@ -233,7 +233,8 @@ class Apply {
         'infix:<|=>'  => 'infix:<|>',
         'infix:<&=>'  => 'infix:<&>',
         'infix:<//=>' => 'infix:<//>',
-        'infix:<~=>'  => 'list:<~>',
+        'infix:<~=>'  => 'list:<~>',   # XXX Perl6
+        'infix:<.=>'  => 'list:<.>',
     );
 
     method op_assign {

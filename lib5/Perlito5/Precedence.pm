@@ -425,6 +425,11 @@ package GLOBAL;
     ($Hash_a->{'assoc'} = 'right');
     $Hash_a
 });
+        add_op('infix', '.' . chr(61), $prec, do {
+    (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{'assoc'} = 'right');
+    $Hash_a
+});
         ($prec = ($prec - 1));
         add_op('prefix', 'not', $prec);
         ($prec = ($prec - 1));

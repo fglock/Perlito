@@ -941,7 +941,7 @@ package GLOBAL;
                 return scalar ($str)
             }
             else {
-                die(('not implemented: Decl ' . chr(39) . $self->{decl} . (chr(39))))
+                die((('not implemented: Decl ' . chr(39)) . $self->{decl} . (chr(39))))
             }
         }
     }

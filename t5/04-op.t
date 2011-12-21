@@ -31,7 +31,7 @@ package Main;
     say 'ok 7 - add ';
 
     $x = 2;
-    if (!(($x ~ 2) eq "22")) {
+    if (!(($x . 2) eq "22")) {
         print 'not '
     };
     say 'ok 8 - concat';
@@ -42,7 +42,7 @@ package Main;
     };
     say 'ok 9 - undef to bool';
 
-    if (!(($undef ~ 2) eq "2")) {
+    if (!(($undef . 2) eq "2")) {
         print 'not '
     };
     say 'ok 10 - undef to str';
