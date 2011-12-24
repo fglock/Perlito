@@ -15,7 +15,7 @@ use Perlito5::Precedence;
 use Perlito5::Runtime;
 
 my $_V6_COMPILER_NAME    = 'Perlito5';
-my $_V6_COMPILER_VERSION = '7.0';
+my $_V6_COMPILER_VERSION = '8.0';
 my $source      = '';
 my $backend     = '';
 my $execute     = 0;

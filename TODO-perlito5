@@ -1,0 +1,32 @@
+TODO list for Perlito5
+
+* source code 
+
+-- remove Perl6 code: "class", "has", "token", hyper operator, .push, .shift, .print
+
+-- add "map", "grep", "sort"
+
+-- add regexes
+
+
+* libraries
+
+-- Data::Dumper
+
+
+* Perl5 backend
+
+* Javascript backend
+
+-- bug: packages currently create lexical blocks
+
+-- bug: "my" variables are block-wide; this doesn't work as expected: my $v = $v
+
+-- bug: variable aliases create copies instead
+
+* Python backend
+
+* Ruby backend
+
+* Java backend
+

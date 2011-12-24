@@ -19,13 +19,13 @@ class Main {
     use Perlito::Runtime;
 
     my $_V6_COMPILER_NAME    = 'Perlito';
-    my $_V6_COMPILER_VERSION = '7.0';
+    my $_V6_COMPILER_VERSION = '8.0';
     my $source      = '';
     my $backend     = '';
     my $execute     = 0;
     my $verbose     = 0;
     my $comp_units  = [];
-    my $perl6lib    = './src/lib';
+    my $perl6lib    = './src6/lib';
     my $expand_use  = 1;
 
     if $verbose {
@@ -272,11 +272,11 @@ perlito [switches] [programfile]
 
 =head1 NAME
 
-util/perlito.pl - Perl6 compiler
+util/perlito6.pl - Perl6 compiler
 
 =head1 SYNOPSIS
 
-    perlito -Cjs program.pl
+    perlito6 -Cjs program.pl
 
 =head1 DESCRIPTION
 

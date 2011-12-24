@@ -1,17 +1,28 @@
-dev  2011-11-10
+8.0  2011-12-24
+- added new compiler for Perl version 5.
+
+Perlito Perl 5:
+- command line "perlito5.pl"
+- supported backends: Perl 5, Javascript
+- source code in src5/ directory
+
+Perlito Perl 6:
+- command line renamed to "perlito6.pl"
+- supported backends: Perl 5, Python 2.6, Javascript
 - new experimental backend: Java
 - fixed META.yml for "v6.pm" CPAN distribution (thanks Aevar)
 - fixed unicode IO, added unicode tests
 - add some formatting to Perl5 and Javascript output
 - methods: map, grep
 - operators: x
-- source code moved to src/ directory
+- source code moved to src6/ directory
 
   Regressions:
 
 - removed '-B' command line flag (since 7.0)
-- backends pending upgrade to the new AST: Go, Common Lisp, Ruby 1.9, Eval (since 7.0)
-- backends not supported in this version: Parrot, Rakudo, Clojure (since 7.0)
+- backends pending upgrade to the new AST: Common Lisp, Ruby 1.9, Eval
+- backends no longer supported in this version: Go, Parrot, Rakudo, Clojure
+
 
 7.0  2011-04-20
 - supported backends: Perl 5, Python 2.6, Javascript

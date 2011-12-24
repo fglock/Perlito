@@ -1,4 +1,4 @@
-TODO list for Perlito
+TODO list for Perlito6
 
 CPAN distribution
 
@@ -10,9 +10,7 @@ Eval.pm module
 
 - complete ast nodes implementation
 
-Command line compiler (util/perlito.pl)
-
-- migrate all bootstrap scripts to use util/perlito.pl - FIXED
+Command line compiler (src6/util/perlito6.pl)
 
 - build Ast cache using JSON (we currently use Perl5 Data::Dumper) or XML (Go has XML and JSON input)
 
@@ -24,33 +22,33 @@ Command line compiler (util/perlito.pl)
 
 - add '-B' option (execute)
 
-Perlito in Rakudo
+Perlito6 in Rakudo
 
-- Rakudo should be able to execute Perlito directly. What do we need to fix in both sides?
+- Rakudo should be able to execute Perlito6 directly. What do we need to fix in both sides?
 
-Perlito in Lisp
+Perlito6 in Lisp
 
 - test other Lisp implementations
 
-Perlito in Go
+Perlito6 in Go
 
 - document which release of Go to use
 
-Perlito in Perl5
+Perlito6 in Perl5
 
 (no issues at the moment)
 
-Perlito in Parrot
+Perlito6 in Parrot
 
 - finish OO, class variables
 
 - fix die() parameter handling
 
-Perlito in Python
+Perlito6 in Python
 
 - module loading uses mangled filenames (with underlines); it should use dot-separated names instead.
 
-Perlito in Ruby
+Perlito6 in Ruby
 
 - module loading uses mangled filenames (with underlines); it should use dot-separated names instead.
 
