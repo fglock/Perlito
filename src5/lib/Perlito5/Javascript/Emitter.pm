@@ -740,16 +740,17 @@ class Apply {
             }
         }
         if $code eq 'ternary:<?? !!>' {
-            return '( ' . Javascript::escape_function('bool') . '(' . (@.arguments[0])->emit_javascript() . ')'
+            return Javascript::tab($level) 
+                 . '( ' . Javascript::escape_function('bool') . '(' . (@.arguments[0])->emit_javascript() . ')'
                  . ' ? ' . (@.arguments[1])->emit_javascript()
                  . ' : ' . (@.arguments[2])->emit_javascript()
                  . ')'
         }
         if $code eq 'circumfix:<( )>' {
-            return '(' . (@.arguments.>>emit_javascript)->join(', ') . ')';
+            return Javascript::tab($level) . '(' . (@.arguments.>>emit_javascript)->join(', ') . ')';
         }
         if $code eq 'infix:<=>' {
-            return emit_javascript_bind( @.arguments[0], @.arguments[1] );
+            return emit_javascript_bind( @.arguments[0], @.arguments[1], $level );
         }
         if $code eq 'return' {
             return Javascript::tab($level) . 'throw('
@@ -773,6 +774,7 @@ class Apply {
     sub emit_javascript_bind {
         my $parameters = shift;
         my $arguments = shift;
+        my $level = shift;
         if $parameters->isa( 'Call' ) {
 
             # $a->[3] = 4
@@ -782,7 +784,7 @@ class Apply {
                 $str = $str . Javascript::autovivify( $parameters, 'ARRAYREF' );
                 my $index_js = $parameters->arguments->emit_javascript;
                 $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
-                return '(function () { ' . $str . '})()';
+                return Javascript::tab($level) . '(function () { ' . $str . '})()';
             }
  
             # $a->{x} = 4
@@ -792,11 +794,11 @@ class Apply {
                 $str = $str . Javascript::autovivify( $parameters, 'HASHREF' );
                 my $index_js = $parameters->arguments->emit_javascript;
                 $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
-                return '(function () { ' . $str . '})()';
+                return Javascript::tab($level) . '(function () { ' . $str . '})()';
             }
 
             # $var->attr = 3;
-            return '(' . ($parameters->invocant)->emit_javascript() . '.v_' . $parameters->method() . ' = ' . $arguments->emit_javascript() . ')';
+            return Javascript::tab($level) . '(' . ($parameters->invocant)->emit_javascript() . '.v_' . $parameters->method() . ' = ' . $arguments->emit_javascript() . ')';
         }
         if $parameters->isa( 'Lookup' ) {
             my $str = '';
@@ -814,7 +816,7 @@ class Apply {
             $str = $str . Javascript::autovivify( $parameters, 'HASH' );
             my $index_js = $parameters->index_exp->emit_javascript;
             $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
-            return '(function () { ' . $str . '})()';
+            return Javascript::tab($level) . '(function () { ' . $str . '})()';
         }
         if $parameters->isa( 'Index' ) {
             my $str = '';
@@ -831,7 +833,7 @@ class Apply {
             $str = $str . Javascript::autovivify( $parameters, 'ARRAY' );
             my $index_js = $parameters->index_exp->emit_javascript;
             $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
-            return '(function () { ' . $str . '})()';
+            return Javascript::tab($level) . '(function () { ' . $str . '})()';
         }
         if      $parameters->isa( 'Var' ) && $parameters->sigil eq '@'
             ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '@'
@@ -843,7 +845,7 @@ class Apply {
         {
             $arguments = Lit::Hash->new( hash1 => [$arguments] );
         }
-        '(' . $parameters->emit_javascript() . ' = ' . $arguments->emit_javascript() . ')';
+        Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' = ' . $arguments->emit_javascript() . ')';
     }
 }
 

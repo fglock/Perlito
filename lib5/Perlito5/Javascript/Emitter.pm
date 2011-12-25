@@ -751,13 +751,13 @@ package GLOBAL;
                 }
             };
             if (($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>')) {
-                return scalar (('( ' . Javascript::escape_function('bool') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . ' ' . chr(63) . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . ' : ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_javascript() . ')'))
+                return scalar ((Javascript::tab($level) . '( ' . Javascript::escape_function('bool') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . ' ' . chr(63) . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . ' : ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_javascript() . ')'))
             };
             if (($code eq 'circumfix:<( )>')) {
-                return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return scalar ((Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if (($code eq 'infix:<' . chr(61) . '>')) {
-                return scalar (emit_javascript_bind((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0], (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]))
+                return scalar (emit_javascript_bind((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0], (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1], $level))
             };
             if (($code eq 'return')) {
                 return scalar ((Javascript::tab($level) . 'throw(' . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() : 'null')) . ')'))
@@ -780,6 +780,7 @@ package GLOBAL;
             my $List__ = bless \@_, "ARRAY";
             ((my  $parameters) = shift());
             ((my  $arguments) = shift());
+            ((my  $level) = shift());
             if (Main::isa($parameters, 'Call')) {
                 if ((($parameters->method() eq 'postcircumfix:<[ ]>'))) {
                     ((my  $str) = '');
@@ -787,7 +788,7 @@ package GLOBAL;
                     ($str = ($str . Javascript::autovivify($parameters, 'ARRAYREF')));
                     ((my  $index_js) = $parameters->arguments()->emit_javascript());
                     ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
-                    return scalar (('(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+                    return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
                 };
                 if ((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
                     ((my  $str) = '');
@@ -795,9 +796,9 @@ package GLOBAL;
                     ($str = ($str . Javascript::autovivify($parameters, 'HASHREF')));
                     ((my  $index_js) = $parameters->arguments()->emit_javascript());
                     ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
-                    return scalar (('(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+                    return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
                 };
-                return scalar (('(' . ($parameters->invocant())->emit_javascript() . '.v_' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
+                return scalar ((Javascript::tab($level) . '(' . ($parameters->invocant())->emit_javascript() . '.v_' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
             };
             if (Main::isa($parameters, 'Lookup')) {
                 ((my  $str) = '');
@@ -809,7 +810,7 @@ package GLOBAL;
                 ($str = ($str . Javascript::autovivify($parameters, 'HASH')));
                 ((my  $index_js) = $parameters->index_exp()->emit_javascript());
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
-                return scalar (('(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+                return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
             };
             if (Main::isa($parameters, 'Index')) {
                 ((my  $str) = '');
@@ -821,7 +822,7 @@ package GLOBAL;
                 ($str = ($str . Javascript::autovivify($parameters, 'ARRAY')));
                 ((my  $index_js) = $parameters->index_exp()->emit_javascript());
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
-                return scalar (('(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+                return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
             };
             if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64))))) {
                 ($arguments = Lit::Array->new(('array1' => do {
@@ -841,7 +842,7 @@ package GLOBAL;
 })))
                 }
             };
-            ('(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')')
+            (Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')')
         }
     }
 
