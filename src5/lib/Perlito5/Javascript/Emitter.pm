@@ -645,6 +645,13 @@ class Apply {
             return Javascript::tab($level) . '(' . (@.arguments.>>emit_javascript)->join( %op_infix_js{$code} ) . ')'
         }
 
+        if $code eq 'eval' {
+            return
+                'eval(perl5_to_js(' 
+                    . Javascript::escape_function('string') . '(' . (@.arguments[0])->emit_javascript() . ')'
+                . '))'
+        }
+
         if $code eq 'self'       { return Javascript::tab($level) . 'v_self' }
         if $code eq 'Mu'         { return Javascript::tab($level) . 'null' }
         if $code eq 'make'       { return Javascript::tab($level) . '(v_MATCH.v_capture = ' . (@.arguments.>>emit_javascript)->join(', ') . ')' }

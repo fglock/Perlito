@@ -653,6 +653,9 @@ package GLOBAL;
             if (exists($Hash_op_infix_js->{$code})) {
                 return scalar ((Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), $Hash_op_infix_js->{$code}) . ')'))
             };
+            if (($code eq 'eval')) {
+                return scalar (('eval(perl5_to_js(' . Javascript::escape_function('string') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . '))'))
+            };
             if (($code eq 'self')) {
                 return scalar ((Javascript::tab($level) . 'v_self'))
             };

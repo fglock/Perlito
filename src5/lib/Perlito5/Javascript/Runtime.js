@@ -528,3 +528,18 @@ Perlito5$Grammar.space = function(v_str, v_pos) {
     return tmp;
 };
 
+function perl5_to_js( source ) {
+    // say( "source: [" + source + "]" );
+    match = Perlito5$Grammar.exp_stmts(source, 0);
+    ast = match.scalar();
+    var block = {v_stmts: ast};
+    block.__proto__ = Lit$Block;
+    var tmp = {v_block: block};
+    tmp.__proto__ = Do;   
+    ast = tmp;
+    // say( "ast: [" + perl(ast) + "]" );
+    js_code = ast.emit_javascript();
+    // say( "js-source: [" + js_code + "]" );
+    return js_code;
+}
+

@@ -529,6 +529,21 @@ Perlito5$Grammar.space = function(v_str, v_pos) {
     return tmp;
 };
 
+function perl5_to_js( source ) {
+    // say( "source: [" + source + "]" );
+    match = Perlito5$Grammar.exp_stmts(source, 0);
+    ast = match.scalar();
+    var block = {v_stmts: ast};
+    block.__proto__ = Lit$Block;
+    var tmp = {v_block: block};
+    tmp.__proto__ = Do;   
+    ast = tmp;
+    // say( "ast: [" + perl(ast) + "]" );
+    js_code = ast.emit_javascript();
+    // say( "js-source: [" + js_code + "]" );
+    return js_code;
+}
+
 
 // class GLOBAL
 if (typeof GLOBAL !== 'object') {
@@ -2691,6 +2706,12 @@ if (typeof Apply !== 'object') {
             })(); };
             if ( bool((Hash_op_infix_js).hasOwnProperty(v_code)) ) { (function () {
                 throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(Hash_op_infix_js[v_code])) + string(')')));;
+            })(); }
+            else { (function () {
+                null;
+            })(); };
+            if ( bool((v_code == 'eval')) ) { (function () {
+                throw((string('eval(perl5_to_js(') + string(Javascript.escape_function(CallSub, 'string')) + string('(') + string((v_self.v_arguments[0]).emit_javascript()) + string(')') + string('))')));;
             })(); }
             else { (function () {
                 null;
