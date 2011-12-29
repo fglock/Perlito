@@ -398,8 +398,11 @@ class Perlito5::Expression {
                 index_exp => Val::Buf->new( buf => '' . $<capture_name> )
             ) ] }
         | <Perlito5::Precedence.op_parse>              { make $$<Perlito5::Precedence.op_parse>             }
-        | <Perlito5::Grammar.ident> <before <.Perlito5::Grammar.ws>? '=>' >   # autoquote
+
+        | <before <.Perlito5::Grammar.word> >
+          <Perlito5::Grammar.ident> <before <.Perlito5::Grammar.ws>? '=>' >   # autoquote
             { make [ 'term', Val::Buf->new( buf => '' . $<Perlito5::Grammar.ident> ) ] }
+
         | 'True'  <!before [ <.Perlito5::Grammar.word> | '(' ] > { make [ 'term', Val::Bit->new( bit => 1 ) ] }
         | 'False' <!before [ <.Perlito5::Grammar.word> | '(' ] > { make [ 'term', Val::Bit->new( bit => 0 ) ] }
         | 'and'   <!before [ <.Perlito5::Grammar.word> | '(' ] > { make [ 'op',    'and'                   ] }
@@ -439,11 +442,20 @@ class Perlito5::Expression {
           | { make [ 'postfix_or_term', 'methcall_no_params', '' . $<Perlito5::Grammar.ident>, $$<hyper_op>                  ] }
           ]
 
-        | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
+        | <before <.Perlito5::Grammar.digit> >
+            [ <Perlito5::Grammar.val_num>    { make [ 'term', $$<Perlito5::Grammar.val_num> ]  }  # 123.456
+            | <Perlito5::Grammar.val_int>    { make [ 'term', $$<Perlito5::Grammar.val_int> ]  }  # 123
+            ]
+
+        | <before <.Perlito5::Grammar.word> >
+          <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
           [ <.Perlito5::Grammar.ws> <list_parse>
             { make [ 'postfix_or_term', 'funcall',
                      '' . $<Perlito5::Grammar.optional_namespace_before_ident>,
-                     '' . $<Perlito5::Grammar.ident>, $$<list_parse>  ] }
+                     '' . $<Perlito5::Grammar.ident>, 
+                     $$<list_parse>  
+                   ] 
+            }
           | <before [ '.' | '->' ] >
             { my $namespace = '' . $<Perlito5::Grammar.optional_namespace_before_ident>;
               my $name      = '' . $<Perlito5::Grammar.ident>;
@@ -456,10 +468,8 @@ class Perlito5::Expression {
                      '' . $<Perlito5::Grammar.optional_namespace_before_ident>,
                      '' . $<Perlito5::Grammar.ident>                  ] }
           ]
-        | <Perlito5::Grammar.val_num>    { make [ 'term', $$<Perlito5::Grammar.val_num> ]  }  # 123.456
-        | <Perlito5::Grammar.val_int>    { make [ 'term', $$<Perlito5::Grammar.val_int> ]  }  # 123
-        | <Perlito5::Grammar.val_buf>    { make [ 'term', $$<Perlito5::Grammar.val_buf> ]  }  # 'moose'
 
+        | <Perlito5::Grammar.val_buf>    { make [ 'term', $$<Perlito5::Grammar.val_buf> ]  }  # 'moose'
         | <.Perlito5::Grammar.ws>                      { make [ 'space',   ' '                             ] }
     }
 
