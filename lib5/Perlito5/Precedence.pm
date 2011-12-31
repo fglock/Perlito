@@ -93,17 +93,10 @@ package GLOBAL;
             ((my  $c02) = substr($str, $pos, 2));
             ((my  $hyper_left) = 0);
             ((my  $hyper_right) = 0);
-            if (((($c01 eq chr(171))) || (($c01 eq chr(187))))) {
-                ($hyper_left = $c01);
-                ($pos = ($pos + 1));
+            if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
+                ($hyper_left = $c02);
+                ($pos = ($pos + 2));
                 ($c02 = substr($str, $pos, 2))
-            }
-            else {
-                if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
-                    ($hyper_left = $c02);
-                    ($pos = ($pos + 2));
-                    ($c02 = substr($str, $pos, 2))
-                }
             };
             if ((substr($str, $pos, 2) eq '->')) {
                 return scalar (Perlito5::Match->new(('bool' => 0)))
@@ -123,15 +116,9 @@ package GLOBAL;
                         ($pos = ($pos + $len));
                         ((my  $c01) = substr($str, $pos, 1));
                         ((my  $c02) = substr($str, $pos, 2));
-                        if (((($c01 eq chr(171))) || (($c01 eq chr(187))))) {
-                            ($hyper_right = $c01);
-                            ($pos = ($pos + 1))
-                        }
-                        else {
-                            if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
-                                ($hyper_right = $c02);
-                                ($pos = ($pos + 2))
-                            }
+                        if (((($c02 eq '<<')) || (($c02 eq '>>')))) {
+                            ($hyper_right = $c02);
+                            ($pos = ($pos + 2))
                         };
                         return scalar (Perlito5::Match->new(('str' => $str), ('from' => $from), ('to' => $pos), ('bool' => 1), ('capture' => do {
     (my  $List_a = bless [], 'ARRAY');

@@ -175,57 +175,6 @@ token rule_terms {
 
 }
 
-=begin later
-    |   ':::' { make { colon => ':::' ,} }
-    |   ':?'  { make { colon => ':?' ,} }
-    |   ':+'  { make { colon => ':+' ,} }
-    |   '::'  { make { colon => '::' ,} }
-    |   ':'   { make { colon => ':'  ,} }
-    |   '$$'  { make { colon => '$$' ,} }
-    |   '$'   { make { colon => '$'  ,} }
-
-
-# TODO - parser error ???
-#    |   '^^' { make { colon => '^^' ,} }
-#    |   '^'  { make { colon => '^'  ,} } }
-#    |   '»'  { make { colon => '>>' ,} } }
-#    |   '«'  { make { colon => '<<' ,} } }
-
-    |   '<<'  { make { colon => '<<' ,} }
-    |   '>>'  { make { colon => '>>' ,} }
-    |   ':i'
-        <.ws> <rule>
-        { make { modifier => 'ignorecase', rule_exp => $$<rule>, } }
-    |   ':ignorecase'
-        <.ws> <rule>
-        { make { modifier => 'ignorecase', rule_exp => $$<rule>, } }
-    |   ':s'
-        <.ws> <rule>
-        { make { modifier => 'sigspace',   rule_exp => $$<rule>, } }
-    |   ':sigspace'
-        <.ws> <rule>
-        { make { modifier => 'sigspace',   rule_exp => $$<rule>, } }
-    |   ':P5'
-        <.ws> <rule>
-        { make { modifier => 'Perl5',  rule_exp => $$<rule>, } }
-    |   ':Perl5'
-        <.ws> <rule>
-        { make { modifier => 'Perl5',  rule_exp => $$<rule>, } }
-    |   ':bytes'
-        <.ws> <rule>
-        { make { modifier => 'bytes',  rule_exp => $$<rule>, } }
-    |   ':codes'
-        <.ws> <rule>
-        { make { modifier => 'codes',  rule_exp => $$<rule>, } }
-    |   ':graphs'
-        <.ws> <rule>
-        { make { modifier => 'graphs', rule_exp => $$<rule>, } }
-    |   ':langs'
-        <.ws> <rule>
-        { make { modifier => 'langs',  rule_exp => $$<rule>, } } }
-}
-=end
-
 token rule_term {
     |
        # { say 'matching variables' }

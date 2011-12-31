@@ -57,12 +57,7 @@ class Perlito5::Precedence {
         my $c02 = substr($str, $pos, 2);
         my $hyper_left = 0;
         my $hyper_right = 0;
-        if ($c01 eq '«') || ($c01 eq '»') {
-            $hyper_left = $c01;
-            $pos = $pos + 1;
-            $c02 = substr($str, $pos, 2);
-        }
-        elsif ($c02 eq '<<') || ($c02 eq '>>') {
+        if ($c02 eq '<<') || ($c02 eq '>>') {
             $hyper_left = $c02;
             $pos = $pos + 2;
             $c02 = substr($str, $pos, 2);
@@ -86,11 +81,7 @@ class Perlito5::Precedence {
                     $pos = $pos + $len;
                     my $c01 = substr($str, $pos, 1);
                     my $c02 = substr($str, $pos, 2);
-                    if ($c01 eq '«') || ($c01 eq '»') {
-                        $hyper_right = $c01;
-                        $pos = $pos + 1;
-                    }
-                    elsif ($c02 eq '<<') || ($c02 eq '>>') {
+                    if ($c02 eq '<<') || ($c02 eq '>>') {
                         $hyper_right = $c02;
                         $pos = $pos + 2;
                     }

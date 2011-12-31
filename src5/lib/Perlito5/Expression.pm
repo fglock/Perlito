@@ -400,8 +400,6 @@ class Perlito5::Expression {
           <Perlito5::Grammar.ident> <before <.Perlito5::Grammar.ws>? '=>' >   # autoquote
             { make [ 'term', Val::Buf->new( buf => '' . $<Perlito5::Grammar.ident> ) ] }
 
-        | 'and'   <!before [ <.Perlito5::Grammar.word> | '(' ] > { make [ 'op',    'and'                   ] }
-        | 'not'   <!before [ <.Perlito5::Grammar.word> | '(' ] > { make [ 'op',    'not'                   ] }
         | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
             { make [ 'term', Use->new( mod => $$<Perlito5::Grammar.full_ident> ) ] }
 
