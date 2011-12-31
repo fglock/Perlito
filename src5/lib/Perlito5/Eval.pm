@@ -136,7 +136,7 @@ class Apply {
         # warn "Apply ", $env->perl, " code: '", $code, "'";
         for my $e ( @($env) ) {
             if exists( $e->{ $code } ) {
-                return (($e->{ $code }).( $env, @.arguments ));
+                return (($e->{ $code })->( $env, @.arguments ));
             }
         }
         warn "Interpreter runtime error: subroutine '", $code, "()' not found";

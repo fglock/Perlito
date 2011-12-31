@@ -247,10 +247,10 @@ class Perlito5::Precedence {
         my $num_stack = [];
         my $last      = ['op', '*start*'];
         my $last_has_space = False;
-        my $token     = $get_token.();
+        my $token     = $get_token->();
         # say "# precedence get_token: (0) ", $token->perl;
         if ($token->[0]) eq 'space' {
-            $token = $get_token.()
+            $token = $get_token->()
         }
         while (defined($token)) && ($token->[0] ne 'end') {
             # say "# precedence      last: (1) ", $last->perl;
@@ -270,7 +270,7 @@ class Perlito5::Precedence {
             {
                 my $pr = $Precedence->{$token->[1]};
                 while $op_stack->elems && ($pr <= $Precedence->{ ($op_stack->[0])[1] }) {
-                    $reduce.($op_stack, $num_stack);
+                    $reduce->($op_stack, $num_stack);
                 }
                 if ($token->[0]) ne 'postfix_or_term' {
                     $token->[0] = 'postfix';
@@ -281,7 +281,7 @@ class Perlito5::Precedence {
                 # a block in this position terminates the current expression
                 # say "# there is a block after the expression: ", $token->perl;
                 while $op_stack->elems() {
-                    $reduce.($op_stack, $num_stack);
+                    $reduce->($op_stack, $num_stack);
                 }
                 $num_stack->push($token);  # save the block
                 $End_token = $last_end_token;  # restore previous 'end token' context
@@ -305,12 +305,12 @@ class Perlito5::Precedence {
                 my $pr = $Precedence->{$token->[1]};
                 if $Assoc->{'right'}{$token->[1]} {
                     while $op_stack->elems && ( $pr < $Precedence->{ ($op_stack->[0])[1] } ) {
-                        $reduce.($op_stack, $num_stack);
+                        $reduce->($op_stack, $num_stack);
                     }
                 }
                 else {
                     while $op_stack->elems && ( $pr <= $Precedence->{ ($op_stack->[0])[1] } ) {
-                        $reduce.($op_stack, $num_stack);
+                        $reduce->($op_stack, $num_stack);
                     }
                 }
                 if $Operator->{'ternary'}{$token->[1]} {
@@ -325,10 +325,10 @@ class Perlito5::Precedence {
                 die "Unknown token: '", $token->[1], "'";
             }
             $last = $token;
-            $token = $get_token.();
+            $token = $get_token->();
             # say "# precedence get_token: (2) ", $token->perl;
             if $token->[0] eq 'space' {
-                $token = $get_token.();
+                $token = $get_token->();
                 $last_has_space = True;
             }
             else {
@@ -339,7 +339,7 @@ class Perlito5::Precedence {
             die "Unexpected end token: ",$token->perl;
         }
         while $op_stack->elems() {
-            $reduce.($op_stack, $num_stack);
+            $reduce->($op_stack, $num_stack);
         }
         # say "# precedence return";
         $End_token = $last_end_token;  # restore previous 'end token' context

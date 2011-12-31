@@ -365,10 +365,6 @@ class Perlito5::Expression {
     }
 
     token operator {
-        # XXX Perl6
-        | '.(' <paren_parse>   ')'                      { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
-        | '.[' <square_parse>  ']'                      { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
-        | '.{' <curly_parse>   '}'                      { make [ 'postfix_or_term',  'block', $$<curly_parse>   ] }
 
         | '->(' <paren_parse>   ')'                     { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
         | '->[' <square_parse>  ']'                     { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
