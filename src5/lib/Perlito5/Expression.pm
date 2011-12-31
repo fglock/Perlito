@@ -371,7 +371,8 @@ class Perlito5::Expression {
         | '->{' <curly_parse>   '}'                     { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
-        | [ '.<' | '<' ] <Perlito5::Grammar.ident> '>'   { make [ 'postfix_or_term',  'block', [Val::Buf->new('buf' => $$<Perlito5::Grammar.ident>)] ] }
+        | '<'  <Perlito5::Grammar.ident> '>'
+                    { make [ 'postfix_or_term',  'block', [Val::Buf->new('buf' => $$<Perlito5::Grammar.ident>)] ] }
 
         | '{'  <.Perlito5::Grammar.ws>?
                <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.ws>? '}'
@@ -399,8 +400,6 @@ class Perlito5::Expression {
           <Perlito5::Grammar.ident> <before <.Perlito5::Grammar.ws>? '=>' >   # autoquote
             { make [ 'term', Val::Buf->new( buf => '' . $<Perlito5::Grammar.ident> ) ] }
 
-        | 'True'  <!before [ <.Perlito5::Grammar.word> | '(' ] > { make [ 'term', Val::Bit->new( bit => 1 ) ] }
-        | 'False' <!before [ <.Perlito5::Grammar.word> | '(' ] > { make [ 'term', Val::Bit->new( bit => 0 ) ] }
         | 'and'   <!before [ <.Perlito5::Grammar.word> | '(' ] > { make [ 'op',    'and'                   ] }
         | 'not'   <!before [ <.Perlito5::Grammar.word> | '(' ] > { make [ 'op',    'not'                   ] }
         | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
@@ -482,7 +481,7 @@ class Perlito5::Expression {
         # say "# list_parse: input ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
-        my $is_first_token = True;
+        my $is_first_token = 1;
         my $lexer_stack = [];
         my $terminated = 0;
         my $last_token_was_space = 1;
@@ -535,7 +534,7 @@ class Perlito5::Expression {
                 }
             }
             $last_token_was_space = ($v->[0] eq 'space');
-            $is_first_token = False;
+            $is_first_token = 0;
 
             return $v;
         };

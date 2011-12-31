@@ -164,7 +164,6 @@ package Main;
         : bless [ CORE::sort( @{$_[0]} ) ], 'ARRAY'
     }
 
-    sub True { 1 }
     sub Str {
         my $can = UNIVERSAL::can($o => 'Str');
         return $can->($o) if $can;

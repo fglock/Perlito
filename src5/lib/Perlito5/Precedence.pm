@@ -116,7 +116,7 @@ class Perlito5::Precedence {
         $Operator->{$fixity}{$name} = 1;
         $Precedence->{$name}        = $precedence;
         $Assoc->{$assoc}{$name}     = 1;
-        $Allow_space_before->{$fixity}{$name} = $param->{'no_space_before'} ? False : True;
+        $Allow_space_before->{$fixity}{$name} = $param->{'no_space_before'} ? 0 : 1;
         @Op[ $name->chars ]{$name} = 1;
     }
 
@@ -135,22 +135,22 @@ class Perlito5::Precedence {
     # - statement-ending blocks (S04)
 
     my $prec = 100;
-    add_op( 'postfix', '.( )',               $prec, { no_space_before => True } );
-    add_op( 'postfix', '.[ ]',               $prec, { no_space_before => True } );
-    add_op( 'postfix', '.{ }',               $prec, { no_space_before => True } );
-    add_op( 'postfix', '( )',                $prec, { no_space_before => True } );
-    add_op( 'postfix', '[ ]',                $prec, { no_space_before => True } );
-    add_op( 'postfix', 'funcall',            $prec, { no_space_before => True } );
-    add_op( 'postfix', 'funcall_no_params',  $prec, { no_space_before => True } );
-    add_op( 'postfix', 'methcall',           $prec, { no_space_before => True } );
-    add_op( 'postfix', 'methcall_no_params', $prec, { no_space_before => True } );
-    add_op( 'postfix', 'block',              $prec, { no_space_before => True } );
-    add_op( 'postfix', 'hash',               $prec, { no_space_before => True } );
+    add_op( 'postfix', '.( )',               $prec, { no_space_before => 1 } );
+    add_op( 'postfix', '.[ ]',               $prec, { no_space_before => 1 } );
+    add_op( 'postfix', '.{ }',               $prec, { no_space_before => 1 } );
+    add_op( 'postfix', '( )',                $prec, { no_space_before => 1 } );
+    add_op( 'postfix', '[ ]',                $prec, { no_space_before => 1 } );
+    add_op( 'postfix', 'funcall',            $prec, { no_space_before => 1 } );
+    add_op( 'postfix', 'funcall_no_params',  $prec, { no_space_before => 1 } );
+    add_op( 'postfix', 'methcall',           $prec, { no_space_before => 1 } );
+    add_op( 'postfix', 'methcall_no_params', $prec, { no_space_before => 1 } );
+    add_op( 'postfix', 'block',              $prec, { no_space_before => 1 } );
+    add_op( 'postfix', 'hash',               $prec, { no_space_before => 1 } );
     $prec = $prec - 1;
     add_op( 'prefix',   '++',  $prec );
     add_op( 'prefix',   '--',  $prec );
-    add_op( 'postfix',  '++',  $prec, { no_space_before => True } );
-    add_op( 'postfix',  '--',  $prec, { no_space_before => True } );
+    add_op( 'postfix',  '++',  $prec, { no_space_before => 1 } );
+    add_op( 'postfix',  '--',  $prec, { no_space_before => 1 } );
     $prec = $prec - 1;
     add_op( 'infix',    '**',  $prec, { assoc => 'right' } );
     $prec = $prec - 1;
@@ -246,7 +246,7 @@ class Perlito5::Precedence {
         my $op_stack  = [];   # [category, name]
         my $num_stack = [];
         my $last      = ['op', '*start*'];
-        my $last_has_space = False;
+        my $last_has_space = 0;
         my $token     = $get_token->();
         # say "# precedence get_token: (0) ", $token->perl;
         if ($token->[0]) eq 'space' {
@@ -329,10 +329,10 @@ class Perlito5::Precedence {
             # say "# precedence get_token: (2) ", $token->perl;
             if $token->[0] eq 'space' {
                 $token = $get_token->();
-                $last_has_space = True;
+                $last_has_space = 1;
             }
             else {
-                $last_has_space = False;
+                $last_has_space = 0;
             }
         }
         if defined($token) && ($token->[0] ne 'end') {
