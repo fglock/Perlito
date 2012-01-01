@@ -38,13 +38,18 @@ token pod_begin {
 
 token ws {
     [
-    |    '#' \N*
-    |    \n [
-            |  '=begin'  <.pod_begin>
-            |  '=for'    <.pod_begin>  # fixme
-            |  ''
-            ]
-    |    \s
+    |   '#' \N*
+    |
+        [ \c10 \c13?
+        | \c13 \c10?
+        ]
+
+        [
+        |  '=begin'  <.pod_begin>
+        |  '=for'    <.pod_begin>  # fixme
+        |  ''
+        ]
+    |   \s
     ]+
 }
 
