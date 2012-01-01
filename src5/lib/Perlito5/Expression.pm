@@ -396,10 +396,6 @@ class Perlito5::Expression {
             ) ] }
         | <Perlito5::Precedence.op_parse>              { make $$<Perlito5::Precedence.op_parse>             }
 
-        | <before <.Perlito5::Grammar.word> >
-          <Perlito5::Grammar.ident> <before <.Perlito5::Grammar.ws>? '=>' >   # autoquote
-            { make [ 'term', Val::Buf->new( buf => '' . $<Perlito5::Grammar.ident> ) ] }
-
         | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
             { make [ 'term', Use->new( mod => $$<Perlito5::Grammar.full_ident> ) ] }
 
@@ -442,7 +438,18 @@ class Perlito5::Expression {
 
         | <before <.Perlito5::Grammar.word> >
           <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
-          [ <.Perlito5::Grammar.ws> <list_parse>
+
+          [
+            <before <.Perlito5::Grammar.ws>? '=>' >   # autoquote
+            { my $namespace = '' . $<Perlito5::Grammar.optional_namespace_before_ident>;
+              my $name      = '' . $<Perlito5::Grammar.ident>;
+              if $namespace {
+                $name = $namespace . '::' . $name;
+              }
+              make [ 'term', Val::Buf->new( buf => $name ) ] 
+            }
+
+          | <.Perlito5::Grammar.ws> <list_parse>
             { make [ 'postfix_or_term', 'funcall',
                      '' . $<Perlito5::Grammar.optional_namespace_before_ident>,
                      '' . $<Perlito5::Grammar.ident>, 

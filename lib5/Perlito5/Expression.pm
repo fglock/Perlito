@@ -433,7 +433,7 @@ package GLOBAL;
             ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
-    (((((((((((((((((((((((((do {
+    ((((((((((((((((((((((((do {
     (((((('->(' eq substr($str, $MATCH->to(), 3)) && ((($MATCH)->{to} = (3 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->paren_parse($str, $MATCH->to()));
     if (($m2)) {
@@ -819,73 +819,6 @@ package GLOBAL;
     }
 }) && (((do {
     ($MATCH->{capture} = (${$MATCH->{'Perlito5::Precedence.op_parse'}}))
-}) || 1))))
-})) || (do {
-    (($MATCH)->{to} = $pos1);
-    (((((do {
-    ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = (do {
-    ((my  $pos1) = $MATCH->to());
-    (do {
-    ((my  $m2) = Perlito5::Grammar->word($str, $MATCH->to()));
-    if (($m2)) {
-        (($MATCH)->{to} = $m2->to());
-        1
-    }
-    else {
-        0
-    }
-})
-}));
-    (($tmp)->{bool} = ($MATCH ? 1 : 0));
-    ($MATCH = $tmp);
-    ($MATCH ? 1 : 0)
-}) && (do {
-    ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->to()));
-    if (($m2)) {
-        (($MATCH)->{to} = $m2->to());
-        ($MATCH->{'Perlito5::Grammar.ident'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && (do {
-    ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = (do {
-    ((my  $pos1) = $MATCH->to());
-    (do {
-    ((do {
-    ((my  $last_pos) = $MATCH->to());
-    if ((!((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->to()));
-    if (($m2)) {
-        (($MATCH)->{to} = $m2->to());
-        1
-    }
-    else {
-        0
-    }
-})))) {
-        (($MATCH)->{to} = $last_pos)
-    };
-    1
-}) && (((chr(61) . '>' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))))
-})
-}));
-    (($tmp)->{bool} = ($MATCH ? 1 : 0));
-    ($MATCH = $tmp);
-    ($MATCH ? 1 : 0)
-})) && (((do {
-    ($MATCH->{capture} = (do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, 'term' );
-    push( @{$List_a}, Val::Buf->new(('buf' => ('' . $MATCH->{'Perlito5::Grammar.ident'}))) );
-    $List_a
-}))
 }) || 1))))
 })) || (do {
     (($MATCH)->{to} = $pos1);
@@ -1305,8 +1238,51 @@ package GLOBAL;
     }
 })) && (do {
     ((my  $pos1) = $MATCH->to());
-    (((do {
-    (((do {
+    ((((do {
+    ((do {
+    ((my  $tmp) = $MATCH);
+    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
+    (($MATCH)->{bool} = (do {
+    ((my  $pos1) = $MATCH->to());
+    (do {
+    ((do {
+    ((my  $last_pos) = $MATCH->to());
+    if ((!((do {
+    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->to()));
+    if (($m2)) {
+        (($MATCH)->{to} = $m2->to());
+        1
+    }
+    else {
+        0
+    }
+})))) {
+        (($MATCH)->{to} = $last_pos)
+    };
+    1
+}) && (((chr(61) . '>' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))))
+})
+}));
+    (($tmp)->{bool} = ($MATCH ? 1 : 0));
+    ($MATCH = $tmp);
+    ($MATCH ? 1 : 0)
+}) && (((do {
+    ((my  $namespace) = ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}));
+    ((my  $name) = ('' . $MATCH->{'Perlito5::Grammar.ident'}));
+    if ($namespace) {
+        ($name = ($namespace . '::' . $name))
+    };
+    ($MATCH->{capture} = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'term' );
+    push( @{$List_a}, Val::Buf->new(('buf' => $name)) );
+    $List_a
+}))
+}) || 1)))
+}) || (do {
+    (($MATCH)->{to} = $pos1);
+    ((((do {
     ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->to()));
     if (($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -1336,8 +1312,8 @@ package GLOBAL;
     push( @{$List_a}, ${$MATCH->{'list_parse'}} );
     $List_a
 }))
-}) || 1)))
-}) || (do {
+}) || 1))))
+})) || (do {
     (($MATCH)->{to} = $pos1);
     (((do {
     ((my  $tmp) = $MATCH);
