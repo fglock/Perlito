@@ -366,21 +366,26 @@ class Perlito5::Expression {
 
     token operator {
 
-        | '->(' <paren_parse>   ')'                     { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
-        | '->[' <square_parse>  ']'                     { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
-        | '->{' <curly_parse>   '}'                     { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
+        | '->'
+            [
+            | '(' <paren_parse>   ')'                   { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
+            | '[' <square_parse>  ']'                   { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
+            | '{' <curly_parse>   '}'                   { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
+            ]
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
+
+        # XXX Perl6
         | '<'  <Perlito5::Grammar.ident> '>'
                     { make [ 'postfix_or_term',  'block', [Val::Buf->new('buf' => $$<Perlito5::Grammar.ident>)] ] }
 
         | '{'  <.Perlito5::Grammar.ws>?
                <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.ws>? '}'
                     { make [ 'postfix_or_term', 'block', $$<Perlito5::Grammar.exp_stmts> ] }
-        | 'method' <.Perlito5::Grammar.ws> <Perlito5::Grammar.method_def>
-                    { make [ 'term', $$<Perlito5::Grammar.method_def>  ] }
         | 'sub' <.Perlito5::Grammar.ws> <Perlito5::Grammar.sub_def>
                     { make [ 'term', $$<Perlito5::Grammar.sub_def>     ] }
+
+        # XXX Perl6
         | 'token' <.Perlito5::Grammar.ws> <Perlito5::Grammar.token>
                     { make [ 'term', $$<Perlito5::Grammar.token>       ] }
         | 'do' <.Perlito5::Grammar.ws> <statement_parse>
@@ -389,6 +394,8 @@ class Perlito5::Expression {
         | '?'  <ternary5_parse> ':'
                     { make [ 'op',          '?? !!', $$<ternary5_parse>  ] }
         | <Perlito5::Grammar.var_ident>                { make [ 'term', $$<Perlito5::Grammar.var_ident>   ] }
+
+        # XXX Perl6
         | '$<' <capture_name> '>'
             { make [ 'term', Lookup->new(
                 obj   => Var->new( sigil => '$', twigil => '', name => '/' ),
@@ -414,7 +421,11 @@ class Perlito5::Expression {
         | <Perlito5::Grammar.declarator> <.Perlito5::Grammar.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
             { make [ 'term', Decl->new( decl => $$<Perlito5::Grammar.declarator>, type => $$<Perlito5::Grammar.opt_type>, var => $$<Perlito5::Grammar.var_ident> ) ] }
 
-        | [ '.' | '->' ] <hyper_op> <Perlito5::Grammar.ident>
+        | [ '.'    # XXX Perl6
+          | '->' 
+          ] 
+            <hyper_op> # XXX Perl6
+            <Perlito5::Grammar.ident>
           [ ':' <.Perlito5::Grammar.ws>? <list_parse>
             { make [ 'postfix_or_term', 'methcall',           '' . $<Perlito5::Grammar.ident>, $$<list_parse>, $$<hyper_op>  ] }
           | '(' <paren_parse> ')'
@@ -456,7 +467,7 @@ class Perlito5::Expression {
                      $$<list_parse>  
                    ] 
             }
-          | <before [ '.' | '->' ] >
+          | <before '->' >
             { my $namespace = '' . $<Perlito5::Grammar.optional_namespace_before_ident>;
               my $name      = '' . $<Perlito5::Grammar.ident>;
               if $namespace {

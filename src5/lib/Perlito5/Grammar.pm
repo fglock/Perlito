@@ -287,19 +287,6 @@ token method_sig {
             named => { } ) }
 }
 
-token method_def {
-    <opt_name>  <.opt_ws>
-    <method_sig>
-    <.opt_ws> \{ <.opt_ws>
-          <exp_stmts>
-        <.opt_ws>
-    [   \}     | { die 'Syntax Error in method \'.', $$<name>, '\' near pos=', $/->to; } ]
-    {
-        # say ' block: ', ($$<exp_stmts>).perl;
-        make Method->new( name => $$<opt_name>, sig => $$<method_sig>, block => $$<exp_stmts> );
-    }
-}
-
 token sub_def {
     <opt_name>  <.opt_ws>
     <method_sig>
