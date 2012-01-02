@@ -285,7 +285,7 @@ package GLOBAL;
             };
             for my $decl ( @{$List_body} ) {
                 if ((((defined($decl) && (!(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my'))))))))) && (!((Main::isa($decl, 'Method'))))) && (!((Main::isa($decl, 'Sub')))))) {
-                    ($str = ($str . ($decl)->emit_javascript_indented(($level + 1)) . chr(59)))
+                    ($str = ($str . ($decl)->emit_javascript_indented(($level + 1)) . (chr(59) . chr(10))))
                 }
             };
             ($str = ($str . chr(125) . ')()' . (chr(10))))
@@ -295,7 +295,7 @@ package GLOBAL;
             ((my  $comp_units) = shift());
             ((my  $str) = '');
             for my $comp_unit ( @{(($comp_units))} ) {
-                ($str = ($str . $comp_unit->emit_javascript()))
+                ($str = ($str . $comp_unit->emit_javascript() . (chr(10))))
             };
             return scalar ($str)
         }

@@ -329,7 +329,7 @@ class CompUnit {
                && (!( $decl->isa( 'Method')))
                && (!( $decl->isa( 'Sub')))
             {
-                $str = $str . ($decl)->emit_javascript_indented( $level + 1 ) . ';';
+                $str = $str . ($decl)->emit_javascript_indented( $level + 1 ) . ";\n";
             }
         }
         $str = $str . '}'
@@ -339,7 +339,7 @@ class CompUnit {
         my $comp_units = shift;
         my $str = '';
         for my $comp_unit ( @($comp_units) ) {
-            $str = $str . $comp_unit->emit_javascript()
+            $str = $str . $comp_unit->emit_javascript() . "\n";
         }
         return $str;
     }
