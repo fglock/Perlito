@@ -5,7 +5,7 @@ sub new {
     bless {}, 'Main';
 }
 
-    say '1..35';
+    say '1..33';
     
     say ( 0     ? "not " : "" ), "ok 1 - integer";
     say ( 1     ? "" : "not " ), "ok 2";
@@ -18,9 +18,6 @@ sub new {
     say ( "0.0" ? "" : "not " ), "ok 7";
     say ( "1"   ? "" : "not " ), "ok 8";
     say ( "aaa" ? "" : "not " ), "ok 9";
-
-    say ( False ? "not " : "" ), "ok 10 - bool";
-    say ( True  ? "" : "not " ), "ok 11";
 
     say ( []    ? "not " : "" ), "ok 12 - array";
     say ( ["x"] ? "" : "not " ), "ok 13";

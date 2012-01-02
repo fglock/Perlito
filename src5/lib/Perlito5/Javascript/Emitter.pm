@@ -862,8 +862,9 @@ class If {
         my $self = shift;
         my $level = shift;
         my $cond = $.cond;
-        if   $cond->isa( 'Var' )
-          && $cond->sigil eq '@'
+        if (  $cond->isa( 'Var' )
+           && $cond->sigil eq '@'
+           )
         {
             $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
         }
@@ -872,7 +873,7 @@ class If {
             . '(function () {' . "\n"
             .       $body->emit_javascript_indented( $level + 1 ) . "\n"
             . Javascript::tab($level) . '})(); }';
-        if $.otherwise {
+        if ( $.otherwise->stmts ) {
             my $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $.otherwise->stmts, needs_return => 0 );
             $s = $s
                 . "\n"
