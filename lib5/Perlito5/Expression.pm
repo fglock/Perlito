@@ -1496,9 +1496,10 @@ package GLOBAL;
             $MATCH
         };
         sub list_parse {
-            my $self = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $str) = $List__->[1]);
+            ((my  $pos) = $List__->[2]);
             (my  $expr);
             ((my  $last_pos) = $pos);
             ((my  $is_first_token) = 1);
@@ -1614,10 +1615,11 @@ package GLOBAL;
 })))
         };
         sub circumfix_parse {
-            my $self = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
-            my $delimiter = $_[3];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $str) = $List__->[1]);
+            ((my  $pos) = $List__->[2]);
+            ((my  $delimiter) = $List__->[3]);
             (my  $expr);
             ((my  $last_pos) = $pos);
             ((my  $get_token) = sub  {
@@ -1641,9 +1643,10 @@ package GLOBAL;
             return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => $res)))
         };
         sub ternary5_parse {
-            my $self = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $str) = $List__->[1]);
+            ((my  $pos) = $List__->[2]);
             return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1652,9 +1655,10 @@ package GLOBAL;
 }))
         };
         sub curly_parse {
-            my $self = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $str) = $List__->[1]);
+            ((my  $pos) = $List__->[2]);
             return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1663,9 +1667,10 @@ package GLOBAL;
 }))
         };
         sub square_parse {
-            my $self = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $str) = $List__->[1]);
+            ((my  $pos) = $List__->[2]);
             return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1674,9 +1679,10 @@ package GLOBAL;
 }))
         };
         sub paren_parse {
-            my $self = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $str) = $List__->[1]);
+            ((my  $pos) = $List__->[2]);
             return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1685,9 +1691,10 @@ package GLOBAL;
 }))
         };
         sub exp_parse {
-            my $self = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $str) = $List__->[1]);
+            ((my  $pos) = $List__->[2]);
             (my  $expr);
             ((my  $last_pos) = $pos);
             ((my  $lexer_stack) = do {
@@ -2099,9 +2106,10 @@ package GLOBAL;
             $MATCH
         };
         sub statement_parse {
-            my $self = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $str) = $List__->[1]);
+            ((my  $pos) = $List__->[2]);
             (my  $expr);
             ((my  $last_pos) = $pos);
             ((my  $lexer_stack) = do {

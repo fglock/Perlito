@@ -37,7 +37,11 @@ class Perlito5::Precedence {
     my @Op;
     my $End_token;
     my @Op_chars = (3,2,1);
-    method op_parse ($str, $pos) {
+    sub op_parse {
+        my $self = shift;
+        my $str  = shift;
+        my $pos  = shift;
+
         my $from = $pos;
         for my $tok ( @($End_token) ) {
             my $l = $tok->chars;
@@ -229,11 +233,13 @@ class Perlito5::Precedence {
     $prec = $prec - 1;
     add_op( 'infix',    '*start*', $prec );
 
-    method precedence_parse {
-        my $get_token = self->get_token;
-        my $reduce    = self->reduce;
+    sub precedence_parse {
+        my $self = shift;
+
+        my $get_token = $self->get_token;
+        my $reduce    = $self->reduce;
         my $last_end_token = $End_token;
-        $End_token    = self->end_token;
+        $End_token    = $self->end_token;
         my $op_stack  = [];   # [category, name]
         my $num_stack = [];
         my $last      = ['op', '*start*'];

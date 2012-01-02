@@ -482,7 +482,11 @@ class Perlito5::Expression {
         <.Perlito5::Grammar.ws> <!before [ ',' | ':' ]> .
     }
 
-    method list_parse ($str, $pos) {
+    sub list_parse {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+       
         # say "# list_parse: input ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
@@ -576,7 +580,12 @@ class Perlito5::Expression {
                 terminated => $terminated } )
     }
 
-    method circumfix_parse ($str, $pos, $delimiter) {
+    sub circumfix_parse {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+        my $delimiter = $_[3];
+       
         # say "# circumfix_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
@@ -605,20 +614,40 @@ class Perlito5::Expression {
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
     }
 
-    method ternary5_parse ($str, $pos) {
+    sub ternary5_parse {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+       
         return self->circumfix_parse($str, $pos, [':']);
     }
-    method curly_parse ($str, $pos) {
+    sub curly_parse {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+       
         return self->circumfix_parse($str, $pos, ['}']);
     }
-    method square_parse ($str, $pos) {
+    sub square_parse {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+       
         return self->circumfix_parse($str, $pos, [']']);
     }
-    method paren_parse ($str, $pos) {
+    sub paren_parse {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+       
         return self->circumfix_parse($str, $pos, [')']);
     }
 
-    method exp_parse ($str, $pos) {
+    sub exp_parse {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+       
         # say "# exp_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
@@ -719,7 +748,11 @@ class Perlito5::Expression {
         ]
     }
 
-    method statement_parse ($str, $pos) {
+    sub statement_parse {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+       
         # say "# statement_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;

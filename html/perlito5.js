@@ -3702,10 +3702,22 @@ if (typeof Perlito5$Precedence !== 'object') {
             }
   }
   Perlito5$Precedence.is_ident_middle;  // v8 bug workaround
-  // method op_parse
-  Perlito5$Precedence.op_parse = function (v_str, v_pos) {
-    var v_self = this;
+  // sub op_parse
+  Perlito5$Precedence.op_parse = function () {
+            var List__ = Array.prototype.slice.call(arguments);
+            if (List__[0] instanceof CallSubClass) {
+                List__.shift()
+            }
+            else {
+                List__.unshift(this)
+            }
             try {
+                var v_self = null;
+
+                var v_str = null;
+
+                var v_pos = null;
+
                 var v_from = null;
 
                 var v_c01 = null;
@@ -3716,6 +3728,9 @@ if (typeof Perlito5$Precedence !== 'object') {
 
                 var v_hyper_right = null;
 
+                (v_self = shift(List__));
+                (v_str = shift(List__));
+                (v_pos = shift(List__));
                 (v_from = v_pos);
                 (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_tok) {                     var v_l = null;
 
@@ -3886,10 +3901,18 @@ List_a.push((function () {
             }
   }
   Perlito5$Precedence.add_op;  // v8 bug workaround
-  // method precedence_parse
+  // sub precedence_parse
   Perlito5$Precedence.precedence_parse = function () {
-    var v_self = this;
+            var List__ = Array.prototype.slice.call(arguments);
+            if (List__[0] instanceof CallSubClass) {
+                List__.shift()
+            }
+            else {
+                List__.unshift(this)
+            }
             try {
+                var v_self = null;
+
                 var v_get_token = null;
 
                 var v_reduce = null;
@@ -3906,6 +3929,7 @@ List_a.push((function () {
 
                 var v_token = null;
 
+                (v_self = shift(List__));
                 (v_get_token = v_self.get_token());
                 (v_reduce = v_self.reduce());
                 (v_last_end_token = v_End_token);
@@ -8281,10 +8305,22 @@ List_a.push(' ');
             }
   }
   Perlito5$Expression.has_no_comma_or_colon_after;  // v8 bug workaround
-  // method list_parse
-  Perlito5$Expression.list_parse = function (v_str, v_pos) {
-    var v_self = this;
+  // sub list_parse
+  Perlito5$Expression.list_parse = function () {
+            var List__ = Array.prototype.slice.call(arguments);
+            if (List__[0] instanceof CallSubClass) {
+                List__.shift()
+            }
+            else {
+                List__.unshift(this)
+            }
             try {
+                var v_self = null;
+
+                var v_str = null;
+
+                var v_pos = null;
+
                 var v_expr = null;
 
                 var v_last_pos = null;
@@ -8307,6 +8343,9 @@ List_a.push(' ');
 
                 var v_result = null;
 
+                (v_self = List__[0]);
+                (v_str = List__[1]);
+                (v_pos = List__[2]);
                 (v_last_pos = v_pos);
                 (v_is_first_token = 1);
                 (v_lexer_stack = (function () { 
@@ -8495,10 +8534,24 @@ List_a.push('loop');
             }
   }
   Perlito5$Expression.list_parse;  // v8 bug workaround
-  // method circumfix_parse
-  Perlito5$Expression.circumfix_parse = function (v_str, v_pos, v_delimiter) {
-    var v_self = this;
+  // sub circumfix_parse
+  Perlito5$Expression.circumfix_parse = function () {
+            var List__ = Array.prototype.slice.call(arguments);
+            if (List__[0] instanceof CallSubClass) {
+                List__.shift()
+            }
+            else {
+                List__.unshift(this)
+            }
             try {
+                var v_self = null;
+
+                var v_str = null;
+
+                var v_pos = null;
+
+                var v_delimiter = null;
+
                 var v_expr = null;
 
                 var v_last_pos = null;
@@ -8509,6 +8562,10 @@ List_a.push('loop');
 
                 var v_res = null;
 
+                (v_self = List__[0]);
+                (v_str = List__[1]);
+                (v_pos = List__[2]);
+                (v_delimiter = List__[3]);
                 (v_last_pos = v_pos);
                 (v_get_token = function () {
     var List__ = Array.prototype.slice.call(arguments);
@@ -8560,10 +8617,25 @@ List_a.push('loop');
             }
   }
   Perlito5$Expression.circumfix_parse;  // v8 bug workaround
-  // method ternary5_parse
-  Perlito5$Expression.ternary5_parse = function (v_str, v_pos) {
-    var v_self = this;
+  // sub ternary5_parse
+  Perlito5$Expression.ternary5_parse = function () {
+            var List__ = Array.prototype.slice.call(arguments);
+            if (List__[0] instanceof CallSubClass) {
+                List__.shift()
+            }
+            else {
+                List__.unshift(this)
+            }
             try {
+                var v_self = null;
+
+                var v_str = null;
+
+                var v_pos = null;
+
+                (v_self = List__[0]);
+                (v_str = List__[1]);
+                (v_pos = List__[2]);
                 throw(v_self.circumfix_parse(v_str, v_pos, (function () { 
     var List_a = [];
 
@@ -8583,10 +8655,25 @@ List_a.push(':');
             }
   }
   Perlito5$Expression.ternary5_parse;  // v8 bug workaround
-  // method curly_parse
-  Perlito5$Expression.curly_parse = function (v_str, v_pos) {
-    var v_self = this;
+  // sub curly_parse
+  Perlito5$Expression.curly_parse = function () {
+            var List__ = Array.prototype.slice.call(arguments);
+            if (List__[0] instanceof CallSubClass) {
+                List__.shift()
+            }
+            else {
+                List__.unshift(this)
+            }
             try {
+                var v_self = null;
+
+                var v_str = null;
+
+                var v_pos = null;
+
+                (v_self = List__[0]);
+                (v_str = List__[1]);
+                (v_pos = List__[2]);
                 throw(v_self.circumfix_parse(v_str, v_pos, (function () { 
     var List_a = [];
 
@@ -8606,10 +8693,25 @@ List_a.push(String.fromCharCode(125));
             }
   }
   Perlito5$Expression.curly_parse;  // v8 bug workaround
-  // method square_parse
-  Perlito5$Expression.square_parse = function (v_str, v_pos) {
-    var v_self = this;
+  // sub square_parse
+  Perlito5$Expression.square_parse = function () {
+            var List__ = Array.prototype.slice.call(arguments);
+            if (List__[0] instanceof CallSubClass) {
+                List__.shift()
+            }
+            else {
+                List__.unshift(this)
+            }
             try {
+                var v_self = null;
+
+                var v_str = null;
+
+                var v_pos = null;
+
+                (v_self = List__[0]);
+                (v_str = List__[1]);
+                (v_pos = List__[2]);
                 throw(v_self.circumfix_parse(v_str, v_pos, (function () { 
     var List_a = [];
 
@@ -8629,10 +8731,25 @@ List_a.push(']');
             }
   }
   Perlito5$Expression.square_parse;  // v8 bug workaround
-  // method paren_parse
-  Perlito5$Expression.paren_parse = function (v_str, v_pos) {
-    var v_self = this;
+  // sub paren_parse
+  Perlito5$Expression.paren_parse = function () {
+            var List__ = Array.prototype.slice.call(arguments);
+            if (List__[0] instanceof CallSubClass) {
+                List__.shift()
+            }
+            else {
+                List__.unshift(this)
+            }
             try {
+                var v_self = null;
+
+                var v_str = null;
+
+                var v_pos = null;
+
+                (v_self = List__[0]);
+                (v_str = List__[1]);
+                (v_pos = List__[2]);
                 throw(v_self.circumfix_parse(v_str, v_pos, (function () { 
     var List_a = [];
 
@@ -8652,10 +8769,22 @@ List_a.push(')');
             }
   }
   Perlito5$Expression.paren_parse;  // v8 bug workaround
-  // method exp_parse
-  Perlito5$Expression.exp_parse = function (v_str, v_pos) {
-    var v_self = this;
+  // sub exp_parse
+  Perlito5$Expression.exp_parse = function () {
+            var List__ = Array.prototype.slice.call(arguments);
+            if (List__[0] instanceof CallSubClass) {
+                List__.shift()
+            }
+            else {
+                List__.unshift(this)
+            }
             try {
+                var v_self = null;
+
+                var v_str = null;
+
+                var v_pos = null;
+
                 var v_expr = null;
 
                 var v_last_pos = null;
@@ -8674,6 +8803,9 @@ List_a.push(')');
 
                 var v_result = null;
 
+                (v_self = List__[0]);
+                (v_str = List__[1]);
+                (v_pos = List__[2]);
                 (v_last_pos = v_pos);
                 (v_lexer_stack = (function () { 
     var List_a = [];
@@ -9311,10 +9443,22 @@ List_a.push('loop');
             }
   }
   Perlito5$Expression.delimited_statement_no_package;  // v8 bug workaround
-  // method statement_parse
-  Perlito5$Expression.statement_parse = function (v_str, v_pos) {
-    var v_self = this;
+  // sub statement_parse
+  Perlito5$Expression.statement_parse = function () {
+            var List__ = Array.prototype.slice.call(arguments);
+            if (List__[0] instanceof CallSubClass) {
+                List__.shift()
+            }
+            else {
+                List__.unshift(this)
+            }
             try {
+                var v_self = null;
+
+                var v_str = null;
+
+                var v_pos = null;
+
                 var v_expr = null;
 
                 var v_last_pos = null;
@@ -9327,6 +9471,9 @@ List_a.push('loop');
 
                 var v_modifier_exp = null;
 
+                (v_self = List__[0]);
+                (v_str = List__[1]);
+                (v_pos = List__[2]);
                 (v_last_pos = v_pos);
                 (v_lexer_stack = (function () { 
     var List_a = [];

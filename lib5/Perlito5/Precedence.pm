@@ -65,9 +65,10 @@ package GLOBAL;
     $List_a
 });
         sub op_parse {
-            my $self = $_[0];
-            my $str = $_[1];
-            my $pos = $_[2];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
+            ((my  $str) = shift());
+            ((my  $pos) = shift());
             ((my  $from) = $pos);
             for my $tok ( @{(($End_token))} ) {
                 ((my  $l) = Main::chars($tok, ));
@@ -423,7 +424,8 @@ package GLOBAL;
         ($prec = ($prec - 1));
         add_op('infix', '*start*', $prec);
         sub precedence_parse {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = shift());
             ((my  $get_token) = $self->get_token());
             ((my  $reduce) = $self->reduce());
             ((my  $last_end_token) = $End_token);
