@@ -19,7 +19,8 @@ package GLOBAL;
         sub str { $_[0]->{str} };
         sub bool { $_[0]->{bool} };
         sub scalar {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             substr($self->{str}, $self->{from}, (($self->{to} - $self->{from})))
         }
     }
@@ -31,7 +32,8 @@ package GLOBAL;
         sub key { $_[0]->{key} };
         sub value { $_[0]->{value} };
         sub perl {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             return scalar (($self->{key} . ' ' . chr(61) . '> ' . Main::perl($self->{value}, )))
         }
     }

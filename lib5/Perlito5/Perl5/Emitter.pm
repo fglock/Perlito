@@ -312,7 +312,8 @@ package GLOBAL;
             return scalar ((Perl5::tab($level) . $table->{$self->{sigil}} . $ns . $self->{name}))
         };
         sub plain_name {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             if ($self->{namespace}) {
                 return scalar (($self->{namespace} . '::' . $self->{name}))
             };

@@ -1,7 +1,9 @@
 use v5;
 
 class Lit::Array {
-    method expand_interpolation {
+    sub expand_interpolation {
+        my $self = $_[0];
+
         my $needs_interpolation = 0;
         my @items;
         for my $item ( @.array1 ) {
@@ -87,7 +89,9 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    method expand_interpolation {
+    sub expand_interpolation {
+        my $self = $_[0];
+
         my @items;
         for my $item ( @.hash1 ) {
             if $item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' ) {
@@ -236,7 +240,9 @@ class Apply {
         'infix:<.=>'  => 'list:<.>',
     );
 
-    method op_assign {
+    sub op_assign {
+        my $self = $_[0];
+
         my $code = $.code;
         return 0 unless $code->isa( 'Str' );
 
@@ -258,7 +264,9 @@ class Apply {
 }
 
 class Do {
-    method simplify {
+    sub simplify {
+        my $self = $_[0];
+
         my $block;
         if $.block->isa('Lit::Block') {
             $block = $.block->stmts;

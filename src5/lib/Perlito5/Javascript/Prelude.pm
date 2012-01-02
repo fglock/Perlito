@@ -7,7 +7,9 @@ class Perlito5::Match {
     has $.bool;
     has $.capture;
 
-    method scalar {
+    sub scalar {
+        my $self = $_[0];
+
         if $.bool {
             if defined($.capture) {
                 return $.capture;
@@ -19,7 +21,9 @@ class Perlito5::Match {
         }
     }
 
-    method string {
+    sub string {
+        my $self = $_[0];
+
         if $.bool {
             if defined($.capture) {
                 return $.capture;
@@ -36,7 +40,9 @@ class Pair {
     has $.key;
     has $.value;
 
-    method perl {
+    sub perl {
+        my $self = $_[0];
+
         return $.key . ' => ' . $.value->perl;
     }
 

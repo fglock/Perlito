@@ -6,7 +6,9 @@ class Perlito5::Match {
     has $.str;
     has $.bool;
 
-    method scalar {
+    sub scalar {
+        my $self = $_[0];
+
         substr( $.str, $.from, ( $.to - $.from ) );
     }
 }
@@ -15,7 +17,9 @@ class Pair {
     has $.key;
     has $.value;
 
-    method perl {
+    sub perl {
+        my $self = $_[0];
+
         return $.key . ' => ' . $.value->perl;
     }
 

@@ -263,7 +263,9 @@ class Var {
         }
         return Perl5::tab($level) . $table->{$.sigil} . $ns . $.name
     }
-    method plain_name {
+    sub plain_name {
+        my $self = $_[0];
+
         if $.namespace {
             return $.namespace . '::' . $.name
         }

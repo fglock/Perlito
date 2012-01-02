@@ -20,7 +20,8 @@ package GLOBAL;
         sub bool { $_[0]->{bool} };
         sub capture { $_[0]->{capture} };
         sub scalar {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             if ($self->{bool}) {
                 if (defined($self->{capture})) {
                     return scalar ($self->{capture})
@@ -32,7 +33,8 @@ package GLOBAL;
             }
         };
         sub string {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             if ($self->{bool}) {
                 if (defined($self->{capture})) {
                     return scalar ($self->{capture})
@@ -52,7 +54,8 @@ package GLOBAL;
         sub key { $_[0]->{key} };
         sub value { $_[0]->{value} };
         sub perl {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             return scalar (($self->{key} . ' ' . chr(61) . '> ' . Main::perl($self->{value}, )))
         }
     }

@@ -15,7 +15,8 @@ package GLOBAL;
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub expand_interpolation {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ((my  $needs_interpolation) = 0);
             (my  $List_items = bless [], 'ARRAY');
             for my $item ( @{(defined $self->{array1} ? $self->{array1} : ($self->{array1} ||= bless([], 'ARRAY')))} ) {
@@ -108,7 +109,8 @@ package GLOBAL;
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
         sub expand_interpolation {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             (my  $List_items = bless [], 'ARRAY');
             for my $item ( @{(defined $self->{hash1} ? $self->{hash1} : ($self->{hash1} ||= bless([], 'ARRAY')))} ) {
                 if ((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>'))))) {
@@ -263,7 +265,8 @@ package GLOBAL;
     $Hash_a
 });
         sub op_assign {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ((my  $code) = $self->{code});
             if (Main::isa($code, 'Str')) {
 
@@ -289,7 +292,8 @@ package GLOBAL;
     package Do;
         sub new { shift; bless { @_ }, "Do" }
         sub simplify {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             (my  $block);
             if (Main::isa($self->{block}, 'Lit::Block')) {
                 ($block = $self->{block}->stmts())
