@@ -44,7 +44,8 @@ package GLOBAL;
         sub ws2 { $_[0]->{ws2} };
         sub ws3 { $_[0]->{ws3} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             if ((((($self->{quant} eq '')) && (($self->{greedy} eq ''))))) {
                 return scalar ($self->{term}->emit_perl5())
             };
@@ -64,7 +65,8 @@ package GLOBAL;
             $self->{term}->emit_perl5()
         };
         sub set_captures_to_array {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             $self->{term}->set_captures_to_array()
         }
     }
@@ -75,11 +77,13 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Rul::Or" }
         sub or_list { $_[0]->{or_list} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'pos1 ' . chr(61) . ' ' . chr(36) . 'MATCH->to' . chr(59) . ' (do ' . chr(123) . ' ' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{or_list} ? $self->{or_list} : ($self->{or_list} ||= bless([], 'ARRAY'))) )} ]), chr(125) . ') ' . chr(124) . chr(124) . ' (do ' . chr(123) . ' ' . chr(36) . 'MATCH->to ' . chr(61) . ' ' . chr(36) . 'pos1' . chr(59) . ' ') . chr(125) . ') ' . chr(125) . ')')
         };
         sub set_captures_to_array {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             [ map { $_->set_captures_to_array() } @{( (defined $self->{or_list} ? $self->{or_list} : ($self->{or_list} ||= bless([], 'ARRAY'))) )} ]
         }
     }
@@ -90,11 +94,13 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Rul::Concat" }
         sub concat { $_[0]->{concat} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ('(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{concat} ? $self->{concat} : ($self->{concat} ||= bless([], 'ARRAY'))) )} ]), ' ' . chr(38) . chr(38) . ' ') . ')')
         };
         sub set_captures_to_array {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             [ map { $_->set_captures_to_array() } @{( (defined $self->{concat} ? $self->{concat} : ($self->{concat} ||= bless([], 'ARRAY'))) )} ]
         }
     }
@@ -106,7 +112,8 @@ package GLOBAL;
         sub metasyntax { $_[0]->{metasyntax} };
         sub captures { $_[0]->{captures} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ((my  $meth) = (((1 + index($self->{metasyntax}, '.'))) ? Main::_replace($self->{metasyntax}, '.', '->') : ((chr(36) . 'grammar->' . $self->{metasyntax}))));
             (my  $code);
             if ((($self->{captures} == 1))) {
@@ -123,7 +130,8 @@ package GLOBAL;
             ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'm2 ' . chr(61) . ' ' . $meth . '(' . chr(36) . 'str, ' . chr(36) . 'MATCH->to)' . chr(59) . ' ' . $code . chr(125) . ')')
         };
         sub set_captures_to_array {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             if ((($self->{captures} > 0))) {
                 ($self->{captures} = ($self->{captures} + 1))
             }
@@ -138,7 +146,8 @@ package GLOBAL;
         sub twigil { $_[0]->{twigil} };
         sub name { $_[0]->{name} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ((my  $table) = do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = chr(36));
@@ -157,13 +166,14 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Rul::Constant" }
         sub constant { $_[0]->{constant} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ((my  $str) = $self->{constant});
             Rul::constant($str)
         };
         sub set_captures_to_array {
-            my $self = $_[0];
-
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0])
         }
     }
 
@@ -172,12 +182,13 @@ package GLOBAL;
     package Rul::Dot;
         sub new { shift; bless { @_ }, "Rul::Dot" }
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ('( ' . chr(39) . chr(39) . ' ne substr( ' . chr(36) . 'str, ' . chr(36) . 'MATCH->to, 1 ) ' . chr(38) . chr(38) . ' (' . chr(36) . 'MATCH->to ' . chr(61) . ' 1 + ' . chr(36) . 'MATCH->to)' . ')')
         };
         sub set_captures_to_array {
-            my $self = $_[0];
-
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0])
         }
     }
 
@@ -187,7 +198,8 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Rul::SpecialChar" }
         sub char { $_[0]->{char} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ((my  $char) = $self->{char});
             if ((($char eq 'n'))) {
                 return scalar (Rul::Subrule->new(('metasyntax' => 'is_newline'), ('captures' => 0))->emit_perl5())
@@ -207,8 +219,8 @@ package GLOBAL;
             return scalar (Rul::constant($char))
         };
         sub set_captures_to_array {
-            my $self = $_[0];
-
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0])
         }
     }
 
@@ -218,12 +230,13 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Rul::Block" }
         sub closure { $_[0]->{closure} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ('((do ' . chr(123) . ' ' . $self->{closure} . ' ' . chr(125) . ') ' . chr(124) . chr(124) . ' 1)')
         };
         sub set_captures_to_array {
-            my $self = $_[0];
-
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0])
         }
     }
 
@@ -233,13 +246,14 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Rul::InterpolateVar" }
         sub var { $_[0]->{var} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             Main::say((chr(35) . ' TODO: interpolate var ' . $self->{var}->emit_perl5() . ''));
             die()
         };
         sub set_captures_to_array {
-            my $self = $_[0];
-
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0])
         }
     }
 
@@ -250,12 +264,14 @@ package GLOBAL;
         sub rule_exp { $_[0]->{rule_exp} };
         sub capture_ident { $_[0]->{capture_ident} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             Main::say((chr(35) . ' TODO: named capture ' . $self->{capture_ident} . ' ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl5() . ''));
             die()
         };
         sub set_captures_to_array {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             Main::say(chr(35) . ' TODO: named capture ')
         }
     }
@@ -266,12 +282,13 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Rul::Before" }
         sub rule_exp { $_[0]->{rule_exp} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'tmp ' . chr(61) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( ' . chr(39) . 'str' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'str, ' . chr(39) . 'from' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp->to, ' . chr(39) . 'to' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp->to, ' . chr(39) . 'bool' . chr(39) . ' ' . chr(61) . '> 1  )' . chr(59) . ' ' . chr(36) . 'MATCH->bool ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl5() . chr(59) . ' ' . chr(36) . 'tmp->bool ' . chr(61) . ' ' . chr(36) . 'MATCH ' . chr(63) . ' 1 : 0' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' ' . chr(36) . 'tmp' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(63) . ' 1 : 0' . chr(59) . ' ' . chr(125) . ')')
         };
         sub set_captures_to_array {
-            my $self = $_[0];
-
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0])
         }
     }
 
@@ -281,72 +298,13 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Rul::NotBefore" }
         sub rule_exp { $_[0]->{rule_exp} };
         sub emit_perl5 {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'tmp ' . chr(61) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( ' . chr(39) . 'str' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'str, ' . chr(39) . 'from' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp->to, ' . chr(39) . 'to' . chr(39) . ' ' . chr(61) . '> ' . chr(36) . 'tmp->to, ' . chr(39) . 'bool' . chr(39) . ' ' . chr(61) . '> 1  )' . chr(59) . ' ' . chr(36) . 'MATCH->bool ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl5() . chr(59) . ' ' . chr(36) . 'tmp->bool ' . chr(61) . ' ' . chr(33) . chr(36) . 'MATCH' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(61) . ' ' . chr(36) . 'tmp' . chr(59) . ' ' . chr(36) . 'MATCH ' . chr(63) . ' 1 : 0' . chr(59) . ' ' . chr(125) . ')')
         };
         sub set_captures_to_array {
-            my $self = $_[0];
-
-        }
-    }
-
-;
-    {
-    package Rul::NegateCharClass;
-        sub new { shift; bless { @_ }, "Rul::NegateCharClass" }
-        sub chars { $_[0]->{chars} };
-        sub emit_perl5 {
-            my $self = $_[0];
-            Main::say(('TODO NegateCharClass'));
-            die()
-        }
-    }
-
-;
-    {
-    package Rul::CharClass;
-        sub new { shift; bless { @_ }, "Rul::CharClass" }
-        sub chars { $_[0]->{chars} };
-        sub emit_perl5 {
-            my $self = $_[0];
-            Main::say(('TODO CharClass'));
-            die()
-        }
-    }
-
-;
-    {
-    package Rul::Capture;
-        sub new { shift; bless { @_ }, "Rul::Capture" }
-        sub rule_exp { $_[0]->{rule_exp} };
-        sub emit_perl5 {
-            my $self = $_[0];
-            Main::say(('TODO RulCapture'));
-            die()
-        }
-    }
-
-;
-    {
-    package Rul::CaptureResult;
-        sub new { shift; bless { @_ }, "Rul::CaptureResult" }
-        sub rule_exp { $_[0]->{rule_exp} };
-        sub emit_perl5 {
-            my $self = $_[0];
-            Main::say(('TODO Rul::CaptureResult'));
-            die()
-        }
-    }
-
-;
-    {
-    package Rul::After;
-        sub new { shift; bless { @_ }, "Rul::After" }
-        sub rule_exp { $_[0]->{rule_exp} };
-        sub emit_perl5 {
-            my $self = $_[0];
-            Main::say(('TODO Rul::After'));
-            die()
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0])
         }
     }
 

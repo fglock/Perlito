@@ -32,7 +32,9 @@ class Rul::Quantifier {
     has $.ws1;
     has $.ws2;
     has $.ws3;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         if (($.quant eq '') && ($.greedy eq '')) {
             return $.term->emit_perl5;
         }
@@ -92,33 +94,43 @@ class Rul::Quantifier {
         }
 
         # TODO
-        warn "Rul::Quantifier: " . self->perl . " not implemented";
+        warn "Rul::Quantifier: " . $self->perl . " not implemented";
         $.term->emit_perl5;
     }
-    method set_captures_to_array {
+    sub set_captures_to_array {
+        my $self = $_[0];
+
         $.term->set_captures_to_array;
     }
 }
 
 class Rul::Or {
     has @.or_list;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         '(do { ' .
             'my $pos1 = $MATCH->to; (do { ' .
             (@.or_list.>>emit_perl5)->join('}) || (do { $MATCH->to = $pos1; ') .
         '}) })';
     }
-    method set_captures_to_array {
+    sub set_captures_to_array {
+        my $self = $_[0];
+
         @.or_list.>>set_captures_to_array;
     }
 }
 
 class Rul::Concat {
     has @.concat;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         '(' . (@.concat.>>emit_perl5)->join(' && ') . ')';
     }
-    method set_captures_to_array {
+    sub set_captures_to_array {
+        my $self = $_[0];
+
         @.concat.>>set_captures_to_array;
     }
 }
@@ -126,7 +138,9 @@ class Rul::Concat {
 class Rul::Subrule {
     has $.metasyntax;
     has $.captures;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         my $meth = ( 1 + index( $.metasyntax, '.' ) )
             ? Main::_replace( $.metasyntax, '.', '->' )
             : ( '$grammar->' . $.metasyntax );
@@ -157,7 +171,9 @@ class Rul::Subrule {
         .   $code
         . '})'
     }
-    method set_captures_to_array {
+    sub set_captures_to_array {
+        my $self = $_[0];
+
         if ($.captures > 0) {
             $.captures = $.captures + 1;
         }
@@ -168,7 +184,9 @@ class Rul::Var {
     has $.sigil;
     has $.twigil;
     has $.name;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         # Normalize the sigil here into $
         # $x    => $x
         # @x    => $List_x
@@ -186,25 +204,35 @@ class Rul::Var {
 
 class Rul::Constant {
     has $.constant;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         my $str = $.constant;
         Rul::constant( $str );
     }
-    method set_captures_to_array { }
+    sub set_captures_to_array {
+        my $self = $_[0];
+ }
 }
 
 class Rul::Dot {
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         '( \'\' ne substr( $str, $MATCH->to, 1 ) ' .
         '&& ($MATCH->to = 1 + $MATCH->to)' .
         ')';
     }
-    method set_captures_to_array { }
+    sub set_captures_to_array {
+        my $self = $_[0];
+ }
 }
 
 class Rul::SpecialChar {
     has $.char;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         my $char = $.char;
         if ($char eq 'n') {
             return Rul::Subrule->new( metasyntax => 'is_newline', captures => 0 )->emit_perl5;
@@ -223,41 +251,57 @@ class Rul::SpecialChar {
         }
         return Rul::constant( $char );
     }
-    method set_captures_to_array { }
+    sub set_captures_to_array {
+        my $self = $_[0];
+ }
 }
 
 class Rul::Block {
     has $.closure;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         '((do { ' . $.closure . ' }) || 1)'
     }
-    method set_captures_to_array { }
+    sub set_captures_to_array {
+        my $self = $_[0];
+ }
 }
 
 class Rul::InterpolateVar {
     has $.var;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         say '# TODO: interpolate var ' . $.var->emit_perl5() . '';
         die();
     };
-    method set_captures_to_array { }
+    sub set_captures_to_array {
+        my $self = $_[0];
+ }
 }
 
 class Rul::NamedCapture {
     has $.rule_exp;
     has $.capture_ident;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         say '# TODO: named capture ' . $.capture_ident . ' = ' . $.rule_exp->emit_perl5() . '';
         die();
     }
-    method set_captures_to_array {
+    sub set_captures_to_array {
+        my $self = $_[0];
+
         say '# TODO: named capture ';
     }
 }
 
 class Rul::Before {
     has $.rule_exp;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         '(do { ' .
             'my $tmp = $MATCH; ' .
             '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
@@ -269,12 +313,16 @@ class Rul::Before {
             '$MATCH ? 1 : 0; ' .
         '})'
     }
-    method set_captures_to_array { }
+    sub set_captures_to_array {
+        my $self = $_[0];
+ }
 }
 
 class Rul::NotBefore {
     has $.rule_exp;
-    method emit_perl5 {
+    sub emit_perl5 {
+        my $self = $_[0];
+
         '(do { ' .
             'my $tmp = $MATCH; ' .
             '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
@@ -286,47 +334,9 @@ class Rul::NotBefore {
             '$MATCH ? 1 : 0; ' .
         '})'
     }
-    method set_captures_to_array { }
-}
-
-class Rul::NegateCharClass {
-    has $.chars;
-    method emit_perl5 {
-        say "TODO NegateCharClass";
-        die();
-    }
-}
-
-class Rul::CharClass {
-    has $.chars;
-    method emit_perl5 {
-        say "TODO CharClass";
-        die();
-    }
-}
-
-class Rul::Capture {
-    has $.rule_exp;
-    method emit_perl5 {
-        say "TODO RulCapture";
-        die();
-    }
-}
-
-class Rul::CaptureResult {
-    has $.rule_exp;
-    method emit_perl5 {
-        say "TODO Rul::CaptureResult";
-        die();
-    }
-}
-
-class Rul::After {
-    has $.rule_exp;
-    method emit_perl5 {
-        say "TODO Rul::After";
-        die();
-    }
+    sub set_captures_to_array {
+        my $self = $_[0];
+ }
 }
 
 =begin

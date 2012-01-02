@@ -1,7 +1,10 @@
 use v5;
 
 class CompUnit {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my $env1 = [ {}, @$env ];
         for my $stmt ( @.body ) {
             $stmt->eval($env1);
@@ -10,23 +13,42 @@ class CompUnit {
 }
 
 class Val::Int {
-    method eval ($env) { Int( $.int ) }
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+        Int( $.int ) 
+    }
 }
 
 class Val::Bit {
-    method eval ($env) { $.bit }
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+        $.bit 
+    }
 }
 
 class Val::Num {
-    method eval ($env) { Num( $.num ) }
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+        Num( $.num ) 
+    }
 }
 
 class Val::Buf {
-    method eval ($env) { $.buf }
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+        $.buf 
+    }
 }
 
 class Lit::Block {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my $env1 = [ {}, @$env ];
         for my $stmt ( @.stmts ) {
             $stmt->eval($env1);
@@ -35,7 +57,10 @@ class Lit::Block {
 }
 
 class Lit::Array {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my @a;
         for my $v ( @.array1 ) {
             push( @a, $v->eval($env) );
@@ -45,7 +70,10 @@ class Lit::Array {
 }
 
 class Lit::Hash {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my %h;
         for my $field ( @.hash1 ) {
             my $pair = $field->arguments;
@@ -56,19 +84,28 @@ class Lit::Hash {
 }
 
 class Index {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         ( $.obj->eval($env) )[ $.index_exp->eval($env) ];
     }
 }
 
 class Lookup {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         ( $.obj->eval($env) ){ $.index_exp->eval($env) };
     }
 }
 
 class Var {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my $ns = '';
         if $.namespace {
             $ns = $.namespace . '::';
@@ -95,7 +132,9 @@ class Var {
         }
         warn "Interpreter runtime error: variable '", $name, "' not found";
     };
-    method plain_name {
+    sub plain_name {
+        my $self = $_[0];
+
         if $.namespace {
             return $.sigil . $.namespace . '::' . $.name
         }
@@ -104,13 +143,19 @@ class Var {
 }
 
 class Proto {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         '' . $.name
     }
 }
 
 class Call {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         warn "Interpreter TODO: Call";
         my $invocant = $.invocant->eval($env);
         if $invocant eq 'self' {
@@ -127,7 +172,10 @@ class Call {
 }
 
 class Apply {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my $ns = '';
         if $.namespace {
             $ns = $.namespace . '::';
@@ -144,7 +192,10 @@ class Apply {
 }
 
 class If {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my $cond = $.cond;
         if $cond->eval($env) {
             my $env1 = [ {}, @$env ];
@@ -163,7 +214,10 @@ class If {
 }
 
 class For {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my $cond = $.cond;
         my $topic_name = (($.body)->sig)->plain_name;
         my $env1 = [ {}, @$env ];
@@ -178,15 +232,24 @@ class For {
 }
 
 class When {
-    method eval ($env) { die "TODO - When" }
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+ die "TODO - When" }
 }
 
 class While {
-    method eval ($env) { die "TODO - While" }
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+ die "TODO - While" }
 }
 
 class Decl {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my $decl = $.decl;
         my $name = $.var->plain_name;
         if $decl eq 'has' {
@@ -197,13 +260,18 @@ class Decl {
         }
         return Mu;
     }
-    method plain_name {
+    sub plain_name {
+        my $self = $_[0];
+
         $.var->plain_name;
     }
 }
 
 class Method {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         warn "Interpreter TODO: Method";
         my $sig = $.sig;
         my $invocant = $sig->invocant;
@@ -215,7 +283,10 @@ class Method {
 }
 
 class Sub {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my @param_name;
         for my $field (@( $.sig->positional )) {
             push( @param_name, $field->plain_name );
@@ -244,7 +315,10 @@ class Sub {
 }
 
 class Do {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         my $env1 = [ {}, @$env ];
         for my $stmt ( @.block ) {
             $stmt->eval($env1);
@@ -253,7 +327,10 @@ class Do {
 }
 
 class Use {
-    method eval ($env) {
+    sub eval {
+        my $self = $_[0];
+        my $env = $_[1];
+
         warn "Interpreter TODO: Use";
         'use ' . $.mod
     }

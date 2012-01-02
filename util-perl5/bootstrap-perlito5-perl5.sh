@@ -9,8 +9,6 @@ mkdir lib5-new/Perlito5/Emitter
 mkdir lib5-new/Perlito5/Grammar
 mkdir lib5-new/Perlito5/Javascript
 mkdir lib5-new/Perlito5/Perl5
-mkdir lib5-new/Perlito5/Python
-mkdir lib5-new/Perlito5/Ruby
 
 cp src5/lib/Perlito5/Perl5/Runtime.pm lib5-new/Perlito5/Perl5/Runtime.pm
 
@@ -27,8 +25,6 @@ perl perlito5.pl -Cperl5 src5/lib/Perlito5/Macro.pm           > lib5-new/Perlito
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Precedence.pm      > lib5-new/Perlito5/Precedence.pm
 
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Javascript/Emitter.pm > lib5-new/Perlito5/Javascript/Emitter.pm
-## perl perlito5.pl -Cperl5 src5/lib/Perlito5/Python/Emitter.pm  > lib5-new/Perlito5/Python/Emitter.pm
-## perl perlito5.pl -Cperl5 src5/lib/Perlito5/Ruby/Emitter.pm    > lib5-new/Perlito5/Ruby/Emitter.pm
 
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Perl5/Emitter.pm   > lib5-new/Perlito5/Perl5/Emitter.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Perl5/Prelude.pm   > lib5-new/Perlito5/Perl5/Prelude.pm
@@ -39,7 +35,6 @@ perl perlito5.pl -Cperl5 src5/util/perlito5.pl                > ./perlito5-new.p
 # other files we use for cross-compilation
 
 cp src5/lib/Perlito5/Javascript/Runtime.js lib5-new/Perlito5/Javascript/Runtime.js
-cp src5/lib/Perlito5/Python/Runtime.py     lib5-new/Perlito5/Python/Runtime.py
 
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Javascript/Prelude.pm   > lib5-new/Perlito5/Javascript/Prelude.pm
 

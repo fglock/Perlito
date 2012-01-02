@@ -15,8 +15,9 @@ package GLOBAL;
     package CompUnit;
         sub new { shift; bless { @_ }, "CompUnit" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ((my  $env1) = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -41,8 +42,9 @@ package GLOBAL;
     package Val::Int;
         sub new { shift; bless { @_ }, "Val::Int" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             0+($self->{int})
         }
     }
@@ -52,8 +54,9 @@ package GLOBAL;
     package Val::Bit;
         sub new { shift; bless { @_ }, "Val::Bit" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             $self->{bit}
         }
     }
@@ -63,8 +66,9 @@ package GLOBAL;
     package Val::Num;
         sub new { shift; bless { @_ }, "Val::Num" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             0+($self->{num})
         }
     }
@@ -74,8 +78,9 @@ package GLOBAL;
     package Val::Buf;
         sub new { shift; bless { @_ }, "Val::Buf" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             $self->{buf}
         }
     }
@@ -85,8 +90,9 @@ package GLOBAL;
     package Lit::Block;
         sub new { shift; bless { @_ }, "Lit::Block" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ((my  $env1) = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -111,8 +117,9 @@ package GLOBAL;
     package Lit::Array;
         sub new { shift; bless { @_ }, "Lit::Array" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             (my  $List_a = bless [], 'ARRAY');
             for my $v ( @{(defined $self->{array1} ? $self->{array1} : ($self->{array1} ||= bless([], 'ARRAY')))} ) {
                 push( @{$List_a}, $v->eval($env) )
@@ -126,8 +133,9 @@ package GLOBAL;
     package Lit::Hash;
         sub new { shift; bless { @_ }, "Lit::Hash" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             (my  $Hash_h = bless {}, 'HASH');
             for my $field ( @{(defined $self->{hash1} ? $self->{hash1} : ($self->{hash1} ||= bless([], 'ARRAY')))} ) {
                 ((my  $pair) = $field->arguments());
@@ -142,8 +150,9 @@ package GLOBAL;
     package Index;
         sub new { shift; bless { @_ }, "Index" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ($self->{obj}->eval($env))->[$self->{index_exp}->eval($env)]
         }
     }
@@ -153,8 +162,9 @@ package GLOBAL;
     package Lookup;
         sub new { shift; bless { @_ }, "Lookup" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ($self->{obj}->eval($env))->{$self->{index_exp}->eval($env)}
         }
     }
@@ -164,8 +174,9 @@ package GLOBAL;
     package Var;
         sub new { shift; bless { @_ }, "Var" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ((my  $ns) = '');
             if ($self->{namespace}) {
                 ($ns = ($self->{namespace} . '::'))
@@ -192,7 +203,8 @@ package GLOBAL;
             warn(('Interpreter runtime error: variable ' . chr(39)), $name, (chr(39) . ' not found'))
         };
         sub plain_name {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             if ($self->{namespace}) {
                 return scalar (($self->{sigil} . $self->{namespace} . '::' . $self->{name}))
             };
@@ -205,8 +217,9 @@ package GLOBAL;
     package Proto;
         sub new { shift; bless { @_ }, "Proto" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ('' . $self->{name})
         }
     }
@@ -216,8 +229,9 @@ package GLOBAL;
     package Call;
         sub new { shift; bless { @_ }, "Call" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             warn(('Interpreter TODO: Call'));
             ((my  $invocant) = $self->{invocant}->eval($env));
             if (($invocant eq 'self')) {
@@ -235,8 +249,9 @@ package GLOBAL;
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ((my  $ns) = '');
             if ($self->{namespace}) {
                 ($ns = ($self->{namespace} . '::'))
@@ -256,8 +271,9 @@ package GLOBAL;
     package If;
         sub new { shift; bless { @_ }, "If" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ((my  $cond) = $self->{cond});
             if ($cond->eval($env)) {
                 ((my  $env1) = do {
@@ -304,8 +320,9 @@ package GLOBAL;
     package For;
         sub new { shift; bless { @_ }, "For" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ((my  $cond) = $self->{cond});
             ((my  $topic_name) = (($self->{body})->sig())->plain_name());
             ((my  $env1) = do {
@@ -340,8 +357,9 @@ package GLOBAL;
     package When;
         sub new { shift; bless { @_ }, "When" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             die(('TODO - When'))
         }
     }
@@ -351,8 +369,9 @@ package GLOBAL;
     package While;
         sub new { shift; bless { @_ }, "While" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             die(('TODO - While'))
         }
     }
@@ -362,8 +381,9 @@ package GLOBAL;
     package Decl;
         sub new { shift; bless { @_ }, "Decl" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ((my  $decl) = $self->{decl});
             ((my  $name) = $self->{var}->plain_name());
             if (($decl eq 'has')) {
@@ -375,7 +395,8 @@ package GLOBAL;
             return scalar (undef())
         };
         sub plain_name {
-            my $self = $_[0];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
             $self->{var}->plain_name()
         }
     }
@@ -385,8 +406,9 @@ package GLOBAL;
     package Method;
         sub new { shift; bless { @_ }, "Method" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             warn(('Interpreter TODO: Method'));
             ((my  $sig) = $self->{sig});
             ((my  $invocant) = $sig->invocant());
@@ -400,8 +422,9 @@ package GLOBAL;
     package Sub;
         sub new { shift; bless { @_ }, "Sub" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             (my  $List_param_name = bless [], 'ARRAY');
             for my $field ( @{(($self->{sig}->positional()))} ) {
                 push( @{$List_param_name}, $field->plain_name() )
@@ -445,8 +468,9 @@ package GLOBAL;
     package Do;
         sub new { shift; bless { @_ }, "Do" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             ((my  $env1) = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -471,8 +495,9 @@ package GLOBAL;
     package Use;
         sub new { shift; bless { @_ }, "Use" }
         sub eval {
-            my $self = $_[0];
-            my $env = $_[1];
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            ((my  $env) = $List__->[1]);
             warn(('Interpreter TODO: Use'));
             ('use ' . $self->{mod})
         }
