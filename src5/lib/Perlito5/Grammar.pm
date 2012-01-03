@@ -214,7 +214,7 @@ token val_buf {
     | \" <double_quoted_buf>*      \"
         {
             my $args = $<double_quoted_buf>;
-            if !$args {
+            if (!$args) {
                 make Val::Buf->new( buf => '' )
             }
             else {

@@ -73,10 +73,10 @@ package GLOBAL;
             for my $tok ( @{(($End_token))} ) {
                 ((my  $l) = Main::chars($tok, ));
                 ((my  $s) = substr($str, $pos, $l));
-                if (($s eq $tok)) {
+                if ((($s eq $tok))) {
                     ((my  $c1) = substr($str, (($pos + $l) - 1), 1));
                     ((my  $c2) = substr($str, ($pos + $l), 1));
-                    if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))) {
+                    if (((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))) {
 
                     }
                     else {
@@ -107,10 +107,10 @@ package GLOBAL;
             };
             for my $len ( @{$List_Op_chars} ) {
                 ((my  $op) = substr($str, $pos, $len));
-                if (exists($List_Op->[$len]->{$op})) {
+                if ((exists($List_Op->[$len]->{$op}))) {
                     ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
                     ((my  $c2) = substr($str, ($pos + $len), 1));
-                    if ((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))) {
+                    if (((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))) {
 
                     }
                     else {
@@ -145,7 +145,7 @@ package GLOBAL;
             ((my  $name) = shift());
             ((my  $precedence) = shift());
             ((my  $param) = shift());
-            if (!((defined($param)))) {
+            if ((!((defined($param))))) {
                 ($param = do {
     (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
@@ -462,12 +462,12 @@ package GLOBAL;
     $List_a
 } )
                 };
-                if (($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !((is_term($last))))))) {
+                if ((($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !((is_term($last)))))))) {
                     ($token->[0] = 'prefix');
                     unshift( @{($op_stack)}, $token )
                 }
                 else {
-                    if ((($Operator->{'postfix'}->{$token->[1]} && is_term($last)) && (($Allow_space_before->{'postfix'}->{$token->[1]} || !(($last_has_space)))))) {
+                    if (((($Operator->{'postfix'})->{$token->[1]} && is_term($last)) && (($Allow_space_before->{'postfix'}->{$token->[1]} || !(($last_has_space)))))) {
                         ((my  $pr) = $Precedence->{$token->[1]});
                         for ( ; (scalar( @{$op_stack} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
                             $reduce->($op_stack, $num_stack)
@@ -487,8 +487,8 @@ package GLOBAL;
                             return scalar ($num_stack)
                         }
                         else {
-                            if (is_term($token)) {
-                                if (is_term($last)) {
+                            if ((is_term($token))) {
+                                if ((is_term($last))) {
                                     Main::say((chr(35) . '      last:  '), Main::perl($last, ));
                                     Main::say((chr(35) . '      token: '), Main::perl($token, ));
                                     Main::say((chr(35) . '      space: '), $last_has_space);
@@ -498,9 +498,9 @@ package GLOBAL;
                                 push( @{($num_stack)}, $token )
                             }
                             else {
-                                if ($Precedence->{$token->[1]}) {
+                                if (($Precedence->{$token->[1]})) {
                                     ((my  $pr) = $Precedence->{$token->[1]});
-                                    if ($Assoc->{'right'}->{$token->[1]}) {
+                                    if (($Assoc->{'right'}->{$token->[1]})) {
                                         for ( ; (scalar( @{$op_stack} ) && (($pr < $Precedence->{($op_stack->[0])->[1]})));  ) {
                                             $reduce->($op_stack, $num_stack)
                                         }
@@ -510,7 +510,7 @@ package GLOBAL;
                                             $reduce->($op_stack, $num_stack)
                                         }
                                     };
-                                    if ($Operator->{'ternary'}->{$token->[1]}) {
+                                    if (($Operator->{'ternary'}->{$token->[1]})) {
                                         ($token->[0] = 'ternary')
                                     }
                                     else {
@@ -535,7 +535,7 @@ package GLOBAL;
                     ($last_has_space = 0)
                 }
             };
-            if ((defined($token) && (($token->[0] ne 'end')))) {
+            if (((defined($token) && (($token->[0] ne 'end'))))) {
                 die(('Unexpected end token: '), Main::perl($token, ))
             };
             for ( ; scalar( @{$op_stack} );  ) {

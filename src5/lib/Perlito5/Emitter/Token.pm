@@ -149,7 +149,7 @@ class Rul::Subrule {
         if ($.captures == 1) {
             $code = 'if ($m2) { $MATCH->to = $m2->to; $MATCH->{\'' . $.metasyntax . '\'} = $m2; 1 } else { 0 }; '
         }
-        elsif $.captures > 1 {
+        elsif ($.captures > 1) {
             # TODO: capture level > 2
             $code = 'if ($m2) { '
                     .   '$MATCH->to = $m2->to; '

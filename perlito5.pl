@@ -35,7 +35,7 @@ package GLOBAL;
 });
     ((my  $perl6lib) = '.' . chr(47) . 'src5' . chr(47) . 'lib');
     ((my  $expand_use) = 1);
-    if ($verbose) {
+    if (($verbose)) {
         warn((chr(47) . chr(47) . ' Perlito5 compiler'));
         warn((chr(47) . chr(47) . ' ARGS: '), Main::perl((\@ARGV), ))
     };
@@ -113,7 +113,7 @@ package GLOBAL;
         if (((($module_name eq 'v5') || ($module_name eq 'strict')) || ($module_name eq 'feature'))) {
             return ()
         };
-        if (!(($Hash_module_seen->{$module_name}))) {
+        if ((!(($Hash_module_seen->{$module_name})))) {
             ($Hash_module_seen->{$module_name} = 1);
             if (((($backend eq 'perl5')) || (($backend eq 'ast-perl5')))) {
 
@@ -134,16 +134,16 @@ package GLOBAL;
         my $List__ = bless \@_, "ARRAY";
         ((my  $parse) = shift());
         for my $comp_unit ( @{($parse)} ) {
-            if (($expand_use && Main::isa($comp_unit, 'Use'))) {
+            if ((($expand_use && Main::isa($comp_unit, 'Use')))) {
                 expand_use($comp_unit)
             }
             else {
-                if (Main::isa($comp_unit, 'CompUnit')) {
-                    if ($verbose) {
+                if ((Main::isa($comp_unit, 'CompUnit'))) {
+                    if (($verbose)) {
                         warn(('parsed comp_unit: ' . chr(39)), $comp_unit->name(), (chr(39)))
                     };
                     for my $stmt ( @{(($comp_unit->body()))} ) {
-                        if (($expand_use && Main::isa($stmt, 'Use'))) {
+                        if ((($expand_use && Main::isa($stmt, 'Use')))) {
                             expand_use($stmt)
                         }
                     }
@@ -156,7 +156,7 @@ package GLOBAL;
         ($verbose = 1);
         shift( @{(\@ARGV)} )
     };
-    if ((substr((\@ARGV)->[0], 0, 2) eq '-C')) {
+    if (((substr((\@ARGV)->[0], 0, 2) eq '-C'))) {
         ($backend = substr((\@ARGV)->[0], 2, 10));
         ($execute = 0);
         shift( @{(\@ARGV)} );
@@ -164,7 +164,7 @@ package GLOBAL;
             ($expand_use = 0)
         }
     };
-    if ((substr((\@ARGV)->[0], 0, 2) eq '-B')) {
+    if (((substr((\@ARGV)->[0], 0, 2) eq '-B'))) {
         ($backend = substr((\@ARGV)->[0], 2, 10));
         ($execute = 1);
         shift( @{(\@ARGV)} );
@@ -184,41 +184,41 @@ package GLOBAL;
             shift( @{(\@ARGV)} )
         }
     };
-    if (((\@ARGV)->[0] eq '--expand_use')) {
+    if ((((\@ARGV)->[0] eq '--expand_use'))) {
         ($expand_use = 1);
         shift( @{(\@ARGV)} )
     };
-    if (((\@ARGV)->[0] eq '--noexpand_use')) {
+    if ((((\@ARGV)->[0] eq '--noexpand_use'))) {
         ($expand_use = 0);
         shift( @{(\@ARGV)} )
     };
-    if (($backend && (\@ARGV))) {
+    if ((($backend && (\@ARGV)))) {
         (my  $prelude_filename);
         if ((($backend eq 'js'))) {
             ($prelude_filename = ($perl6lib . chr(47) . 'Perlito5' . chr(47) . 'Javascript' . chr(47) . 'Prelude.pm'))
         };
-        if ($prelude_filename) {
-            if ($verbose) {
+        if (($prelude_filename)) {
+            if (($verbose)) {
                 warn((chr(47) . chr(47) . ' loading lib: '), $prelude_filename)
             };
             ($source = IO::slurp($prelude_filename));
             ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
             add_comp_unit(${$m})
         };
-        if (((\@ARGV)->[0] eq '-e')) {
+        if ((((\@ARGV)->[0] eq '-e'))) {
             shift( @{(\@ARGV)} );
-            if ($verbose) {
+            if (($verbose)) {
                 warn((chr(47) . chr(47) . ' source from command line: '), (\@ARGV)->[0])
             };
             ($source = shift( @{(\@ARGV)} ))
         }
         else {
-            if ($verbose) {
+            if (($verbose)) {
                 warn((chr(47) . chr(47) . ' source from file: '), (\@ARGV)->[0])
             };
             ($source = IO::slurp(shift( @{(\@ARGV)} )))
         };
-        if ($verbose) {
+        if (($verbose)) {
             warn((chr(47) . chr(47) . ' backend: '), $backend);
             warn(('now parsing'))
         };

@@ -46,10 +46,10 @@ class Perlito5::Precedence {
         for my $tok ( @($End_token) ) {
             my $l = $tok->chars;
             my $s = substr($str, $pos, $l);
-            if $s eq $tok {
+            if ($s eq $tok) {
                 my $c1 = substr($str, $pos+$l-1, 1);
                 my $c2 = substr($str, $pos+$l, 1);
-                if is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ) {
+                if (is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' )) {
                 }
                 else {
                     return Perlito5::Match->new( 'str' => $str, 'from' => $from, 'to' => $pos+2, 'bool' => 1,
@@ -76,10 +76,10 @@ class Perlito5::Precedence {
 
         for my $len ( @Op_chars ) {
             my $op = substr($str, $pos, $len);
-            if exists(@Op[$len]{$op}) {
+            if (exists(@Op[$len]{$op})) {
                 my $c1 = substr($str, $pos+$len-1, 1);
                 my $c2 = substr($str, $pos+$len, 1);
-                if is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ) {
+                if (is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' )) {
                 }
                 else {
                     $pos = $pos + $len;
@@ -104,7 +104,7 @@ class Perlito5::Precedence {
         my $precedence = shift;
         my $param = shift;
  
-        if !(defined($param)) {
+        if (!(defined($param))) {
             $param = {}
         }
         my $assoc = $param->{'assoc'} || 'left';
@@ -256,11 +256,11 @@ class Perlito5::Precedence {
                 # allow (,,,)
                 push( @$num_stack, ['term', Mu] );
             }
-            if $Operator->{'prefix'}{$token->[1]} && ( ($last->[1] eq '*start*') || !(is_term($last)) ) {
+            if ($Operator->{'prefix'}{$token->[1]} && ( ($last->[1] eq '*start*') || !(is_term($last)) )) {
                 $token->[0] = 'prefix';
                 unshift( @$op_stack, $token);
             }
-            elsif $Operator->{'postfix'}{$token->[1]} && is_term($last)
+            elsif ($Operator->{'postfix'}){$token->[1]} && is_term($last)
                 && (  $Allow_space_before->{'postfix'}{$token->[1]}
                    || !($last_has_space)
                    )
@@ -284,12 +284,12 @@ class Perlito5::Precedence {
                 $End_token = $last_end_token;  # restore previous 'end token' context
                 return $num_stack;
             }
-            elsif is_term($token) {
+            elsif (is_term($token)) {
                 # say "# ** two terms in a row ";
                 # say "#      last:  ", $last->perl;
                 # say "#      token: ", $token->perl;
                 # say "#      space: ", $last_has_space;
-                if is_term($last) {
+                if (is_term($last)) {
                     say "#      last:  ", $last->perl;
                     say "#      token: ", $token->perl;
                     say "#      space: ", $last_has_space;
@@ -298,9 +298,9 @@ class Perlito5::Precedence {
                 $token->[0] = 'term';
                 push( @$num_stack, $token);
             }
-            elsif $Precedence->{$token->[1]} {
+            elsif ($Precedence->{$token->[1]}) {
                 my $pr = $Precedence->{$token->[1]};
-                if $Assoc->{'right'}{$token->[1]} {
+                if ($Assoc->{'right'}{$token->[1]}) {
                     while $op_stack->elems && ( $pr < $Precedence->{ ($op_stack->[0])[1] } ) {
                         $reduce->($op_stack, $num_stack);
                     }
@@ -310,7 +310,7 @@ class Perlito5::Precedence {
                         $reduce->($op_stack, $num_stack);
                     }
                 }
-                if $Operator->{'ternary'}{$token->[1]} {
+                if ($Operator->{'ternary'}{$token->[1]}) {
                     $token->[0] = 'ternary';
                 }
                 else {
@@ -332,7 +332,7 @@ class Perlito5::Precedence {
                 $last_has_space = 0;
             }
         }
-        if defined($token) && ($token->[0] ne 'end') {
+        if (defined($token) && ($token->[0] ne 'end')) {
             die "Unexpected end token: ",$token->perl;
         }
         while $op_stack->elems() {

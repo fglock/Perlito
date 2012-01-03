@@ -120,7 +120,7 @@ package GLOBAL;
                 ($code = ('if (' . chr(36) . 'm2) ' . chr(123) . ' ' . chr(36) . 'MATCH->to ' . chr(61) . ' ' . chr(36) . 'm2->to' . chr(59) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' ' . chr(36) . 'm2' . chr(59) . ' 1 ' . chr(125) . ' else ' . chr(123) . ' 0 ' . chr(125) . chr(59) . ' '))
             }
             else {
-                if (($self->{captures} > 1)) {
+                if ((($self->{captures} > 1))) {
                     ($code = ('if (' . chr(36) . 'm2) ' . chr(123) . ' ' . chr(36) . 'MATCH->to ' . chr(61) . ' ' . chr(36) . 'm2->to' . chr(59) . ' ' . 'if (exists ' . chr(36) . 'MATCH->' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ') ' . chr(123) . ' ' . 'push ' . chr(64) . chr(123) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(125) . ', ' . chr(36) . 'm2' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' [ ' . chr(36) . 'm2 ]' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . ' else ' . chr(123) . ' 0 ' . chr(125) . chr(59) . ' '))
                 }
                 else {

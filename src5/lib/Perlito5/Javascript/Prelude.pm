@@ -10,8 +10,8 @@ class Perlito5::Match {
     sub scalar {
         my $self = $_[0];
 
-        if $.bool {
-            if defined($.capture) {
+        if ($.bool) {
+            if (defined($.capture)) {
                 return $.capture;
             }
             return substr( $.str, $.from, ( $.to - $.from ) );
@@ -24,8 +24,8 @@ class Perlito5::Match {
     sub string {
         my $self = $_[0];
 
-        if $.bool {
-            if defined($.capture) {
+        if ($.bool) {
+            if (defined($.capture)) {
                 return $.capture;
             }
             return substr( $.str, $.from, ( $.to - $.from ) );

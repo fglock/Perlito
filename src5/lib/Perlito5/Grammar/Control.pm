@@ -4,7 +4,7 @@ token unless {
     unless <.ws> <exp>
         {
             my $body = ($$<exp>){'end_block'};
-            if !(defined($body)) {
+            if (!(defined($body))) {
                 die "Missing code block in 'unless'";
             }
             make If->new(
@@ -23,13 +23,13 @@ token if {
         {
             my $body = ($$<exp>){'end_block'};
             my $otherwise = ($$<exp2>){'exp'};
-            if !(defined($body)) {
+            if (!(defined($body))) {
                 die "Missing code block in 'if'";
             }
-            if !(defined($otherwise)) {
+            if (!(defined($otherwise))) {
                 die "Missing code block in 'else'";
             }
-            if $otherwise->isa('Lit::Hash') {
+            if ($otherwise->isa('Lit::Hash')) {
                 $otherwise = Lit::Block->new( stmts => $otherwise->hash1 );
             }
             make If->new(
@@ -43,7 +43,7 @@ token if {
         els <if>
         {
             my $body = ($$<exp>){'end_block'};
-            if !(defined($body)) {
+            if (!(defined($body))) {
                 die "Missing code block in 'if'";
             }
             make If->new(
@@ -55,7 +55,7 @@ token if {
     |
         {
             my $body = ($$<exp>){'end_block'};
-            if !(defined($body)) {
+            if (!(defined($body))) {
                 die "Missing code block in 'if'";
             }
             make If->new(
@@ -71,7 +71,7 @@ token when {
     when <.ws> <exp>
     {
         my $body = ($$<exp>){'end_block'};
-        if !(defined($body)) {
+        if (!(defined($body))) {
             die "Missing code block in 'when'";
         }
         make When->new(
@@ -100,7 +100,7 @@ token for {
         <exp>
         {
             my $body = ($$<exp>){'end_block'};
-            if !(defined($body)) {
+            if (!(defined($body))) {
                 die "Missing code block in 'when'";
             }
             make For->new( cond => ($$<exp>){'exp'}, topic => Mu(), body => $body )
@@ -112,7 +112,7 @@ token while {
     while <.ws> <exp>
     {
         my $body = ($$<exp>){'end_block'};
-        if !(defined($body)) {
+        if (!(defined($body))) {
             die "Missing code block in 'while'";
         }
         make While->new(
@@ -125,9 +125,9 @@ token loop {
     loop <.ws> <exp>
     {
         my $body = ($$<exp>){'end_block'};
-        if !(defined($body)) {
+        if (!(defined($body))) {
             $body = ($$<exp>){'exp'};
-            if $body->isa( 'Lit::Block' ) {
+            if ($body->isa( 'Lit::Block' )) {
                 make While->new( cond => Val::Bit->new( bit => 1 ), body => $body )
             }
             else {

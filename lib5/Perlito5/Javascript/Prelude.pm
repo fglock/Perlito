@@ -22,8 +22,8 @@ package GLOBAL;
         sub scalar {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            if ($self->{bool}) {
-                if (defined($self->{capture})) {
+            if (($self->{bool})) {
+                if ((defined($self->{capture}))) {
                     return scalar ($self->{capture})
                 };
                 return scalar (substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))))
@@ -35,8 +35,8 @@ package GLOBAL;
         sub string {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            if ($self->{bool}) {
-                if (defined($self->{capture})) {
+            if (($self->{bool})) {
+                if ((defined($self->{capture}))) {
                     return scalar ($self->{capture})
                 };
                 return scalar (substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))))

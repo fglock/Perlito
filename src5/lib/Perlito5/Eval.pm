@@ -107,18 +107,18 @@ class Var {
         my $env = $_[1];
 
         my $ns = '';
-        if $.namespace {
+        if ($.namespace) {
             $ns = $.namespace . '::';
         }
         else {
             if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
                 return @*ARGS
             }
-            if $.twigil eq '.' {
+            if ($.twigil eq '.') {
                 warn 'Interpreter TODO: $.' . $.name;
                 return '$self->{' . $.name . '}'
             }
-            if $.name eq '/' {
+            if ($.name eq '/') {
                 warn 'Interpreter TODO: $/';
                 return $.sigil . 'MATCH'
             }
@@ -126,7 +126,7 @@ class Var {
 
         my $name = $.sigil . $ns . $.name;
         for my $e ( @($env) ) {
-            if exists( $e->{ $name } ) {
+            if (exists( $e->{ $name } )) {
                 return $e->{ $name };
             }
         }
@@ -135,7 +135,7 @@ class Var {
     sub plain_name {
         my $self = $_[0];
 
-        if $.namespace {
+        if ($.namespace) {
             return $.sigil . $.namespace . '::' . $.name
         }
         return $.sigil . $.name
@@ -158,7 +158,7 @@ class Call {
 
         warn "Interpreter TODO: Call";
         my $invocant = $.invocant->eval($env);
-        if $invocant eq 'self' {
+        if ($invocant eq 'self') {
             $invocant = '$self';
         }
         if ($.hyper) {
@@ -177,13 +177,13 @@ class Apply {
         my $env = $_[1];
 
         my $ns = '';
-        if $.namespace {
+        if ($.namespace) {
             $ns = $.namespace . '::';
         }
         my $code = $ns . $.code;
         # warn "Apply ", $env->perl, " code: '", $code, "'";
         for my $e ( @($env) ) {
-            if exists( $e->{ $code } ) {
+            if (exists( $e->{ $code } )) {
                 return (($e->{ $code })->( $env, @.arguments ));
             }
         }
@@ -197,7 +197,7 @@ class If {
         my $env = $_[1];
 
         my $cond = $.cond;
-        if $cond->eval($env) {
+        if ($cond->eval($env)) {
             my $env1 = [ {}, @$env ];
             for my $stmt ( @(($.body)->stmts) ) {
                 $stmt->eval($env1);
@@ -252,10 +252,10 @@ class Decl {
 
         my $decl = $.decl;
         my $name = $.var->plain_name;
-        if $decl eq 'has' {
+        if ($decl eq 'has') {
             warn "Interpreter TODO: has";
         }
-        if !( exists ($env->[0]){ $name } ) {
+        if (!( exists ($env->[0]){ $name } )) {
             ($env->[0]){ $name } = Mu;
         }
         return Mu;
@@ -292,7 +292,7 @@ class Sub {
                     }
                     return $r;
                 };
-        if $.name {
+        if ($.name) {
             ($env->[0]){$.name} = $sub;
         }
         return $sub;

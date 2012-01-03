@@ -20,7 +20,7 @@ package GLOBAL;
             ((my  $needs_interpolation) = 0);
             (my  $List_items = bless [], 'ARRAY');
             for my $item ( @{(defined $self->{array1} ? $self->{array1} : ($self->{array1} ||= bless([], 'ARRAY')))} ) {
-                if ((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>'))))) {
+                if (((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
                     for my $arg ( @{(($item->arguments()))} ) {
                         push( @{$List_items}, $arg )
                     }
@@ -34,7 +34,7 @@ package GLOBAL;
                     ($needs_interpolation = 1)
                 }
             };
-            if (($needs_interpolation && (scalar( @{$List_items} ) == 1))) {
+            if ((($needs_interpolation && (scalar( @{$List_items} ) == 1)))) {
                 return scalar ($List_items->[0])
             };
             (my  $List_s = bless [], 'ARRAY');
@@ -115,7 +115,7 @@ package GLOBAL;
             ((my  $self) = $List__->[0]);
             (my  $List_items = bless [], 'ARRAY');
             for my $item ( @{(defined $self->{hash1} ? $self->{hash1} : ($self->{hash1} ||= bless([], 'ARRAY')))} ) {
-                if ((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>'))))) {
+                if (((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
                     for my $arg ( @{(($item->arguments()))} ) {
                         push( @{$List_items}, $arg )
                     }
@@ -126,7 +126,7 @@ package GLOBAL;
             };
             (my  $List_s = bless [], 'ARRAY');
             for my $item ( @{$List_items} ) {
-                if ((Main::isa($item, 'Apply') && ($item->code() eq 'infix:<' . chr(61) . '>>'))) {
+                if (((Main::isa($item, 'Apply') && ($item->code() eq 'infix:<' . chr(61) . '>>')))) {
                     push( @{$List_s}, Apply->new(('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -276,7 +276,7 @@ package GLOBAL;
             else {
                 return scalar (0)
             };
-            if (exists($Hash_op->{$code})) {
+            if ((exists($Hash_op->{$code}))) {
                 return scalar (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -297,7 +297,7 @@ package GLOBAL;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             (my  $block);
-            if (Main::isa($self->{block}, 'Lit::Block')) {
+            if ((Main::isa($self->{block}, 'Lit::Block'))) {
                 ($block = $self->{block}->stmts())
             }
             else {
@@ -308,13 +308,13 @@ package GLOBAL;
     $List_a
 })
             };
-            if ((scalar( @{$block} ) == 1)) {
+            if (((scalar( @{$block} ) == 1))) {
                 ((my  $stmt) = $block->[0]);
-                if ((Main::isa($stmt, 'Apply') && ($stmt->code() eq 'circumfix:<( )>'))) {
+                if (((Main::isa($stmt, 'Apply') && ($stmt->code() eq 'circumfix:<( )>')))) {
                     ((my  $args) = $stmt->arguments());
                     return scalar (Do->new(('block' => $args->[0]))->simplify())
                 };
-                if (Main::isa($stmt, 'Do')) {
+                if ((Main::isa($stmt, 'Do'))) {
                     return scalar ($stmt->simplify())
                 }
             };

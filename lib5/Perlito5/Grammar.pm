@@ -1896,7 +1896,7 @@ package GLOBAL;
     1
 })) && (((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
     ((my  $args) = $MATCH->{'double_quoted_buf'});
-    if (!($args)) {
+    if ((!($args))) {
         ($MATCH->{capture} = (Val::Buf->new(('buf' => ''))))
     }
     else {

@@ -178,25 +178,25 @@ package GLOBAL;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             ((my  $ns) = '');
-            if ($self->{namespace}) {
+            if (($self->{namespace})) {
                 ($ns = ($self->{namespace} . '::'))
             }
             else {
                 if ((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS')))) {
                     return scalar ((\@ARGV))
                 };
-                if (($self->{twigil} eq '.')) {
+                if ((($self->{twigil} eq '.'))) {
                     warn(('Interpreter TODO: ' . chr(36) . '.' . $self->{name}));
                     return scalar ((chr(36) . 'self->' . chr(123) . $self->{name} . chr(125)))
                 };
-                if (($self->{name} eq chr(47))) {
+                if ((($self->{name} eq chr(47)))) {
                     warn('Interpreter TODO: ' . chr(36) . chr(47));
                     return scalar (($self->{sigil} . 'MATCH'))
                 }
             };
             ((my  $name) = ($self->{sigil} . $ns . $self->{name}));
             for my $e ( @{(($env))} ) {
-                if (exists($e->{$name})) {
+                if ((exists($e->{$name}))) {
                     return scalar ($e->{$name})
                 }
             };
@@ -205,7 +205,7 @@ package GLOBAL;
         sub plain_name {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            if ($self->{namespace}) {
+            if (($self->{namespace})) {
                 return scalar (($self->{sigil} . $self->{namespace} . '::' . $self->{name}))
             };
             return scalar (($self->{sigil} . $self->{name}))
@@ -234,7 +234,7 @@ package GLOBAL;
             ((my  $env) = $List__->[1]);
             warn(('Interpreter TODO: Call'));
             ((my  $invocant) = $self->{invocant}->eval($env));
-            if (($invocant eq 'self')) {
+            if ((($invocant eq 'self'))) {
                 ($invocant = chr(36) . 'self')
             };
             if (($self->{hyper})) {
@@ -253,12 +253,12 @@ package GLOBAL;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             ((my  $ns) = '');
-            if ($self->{namespace}) {
+            if (($self->{namespace})) {
                 ($ns = ($self->{namespace} . '::'))
             };
             ((my  $code) = ($ns . $self->{code}));
             for my $e ( @{(($env))} ) {
-                if (exists($e->{$code})) {
+                if ((exists($e->{$code}))) {
                     return scalar ((($e->{$code})->($env, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))))
                 }
             };
@@ -275,7 +275,7 @@ package GLOBAL;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             ((my  $cond) = $self->{cond});
-            if ($cond->eval($env)) {
+            if (($cond->eval($env))) {
                 ((my  $env1) = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -386,10 +386,10 @@ package GLOBAL;
             ((my  $env) = $List__->[1]);
             ((my  $decl) = $self->{decl});
             ((my  $name) = $self->{var}->plain_name());
-            if (($decl eq 'has')) {
+            if ((($decl eq 'has'))) {
                 warn(('Interpreter TODO: has'))
             };
-            if (!((exists(($env->[0])->{$name})))) {
+            if ((!((exists(($env->[0])->{$name}))))) {
                 (($env->[0])->{$name} = undef())
             };
             return scalar (undef())
@@ -440,7 +440,7 @@ package GLOBAL;
     };
     return scalar ($r)
 });
-            if ($self->{name}) {
+            if (($self->{name})) {
                 (($env->[0])->{$self->{name}} = $sub)
             };
             return scalar ($sub)

@@ -26,7 +26,7 @@ package GLOBAL;
     $List_a
 });
                 for my $v ( @{(($param_list->arguments()))} ) {
-                    if (defined($v)) {
+                    if ((defined($v))) {
                         push( @{($args)}, $v )
                     }
                 };
@@ -53,7 +53,7 @@ package GLOBAL;
         sub block_or_hash {
             my $List__ = bless \@_, "ARRAY";
             ((my  $o) = shift());
-            if (defined($o->sig())) {
+            if ((defined($o->sig()))) {
                 return scalar ($o)
             };
             ((my  $stmts) = $o->stmts());
@@ -68,7 +68,7 @@ package GLOBAL;
                 return scalar ($o)
             };
             ((my  $stmt) = $stmts->[0]);
-            if (!((Main::isa($stmt, 'Apply')))) {
+            if ((!((Main::isa($stmt, 'Apply'))))) {
                 return scalar ($o)
             };
             if ((($stmt->code()) eq 'infix:<' . chr(61) . '>>')) {
@@ -93,7 +93,7 @@ package GLOBAL;
             my $List__ = bless \@_, "ARRAY";
             ((my  $num_stack) = shift());
             ((my  $v) = pop( @{($num_stack)} ));
-            if (Main::isa($v, 'Array')) {
+            if ((Main::isa($v, 'Array'))) {
                 if ((($v->[1] eq 'methcall_no_params'))) {
                     ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -187,11 +187,11 @@ package GLOBAL;
             };
             if ((($v->[1] eq '( )'))) {
                 ((my  $param_list) = expand_list($v->[2]));
-                if ((Main::isa($value, 'Apply') && !((defined($value->arguments()))))) {
+                if (((Main::isa($value, 'Apply') && !((defined($value->arguments())))))) {
                     (($value)->{arguments} = $param_list);
                     return scalar ($value)
                 };
-                if ((Main::isa($value, 'Call') && !((defined($value->arguments()))))) {
+                if (((Main::isa($value, 'Call') && !((defined($value->arguments())))))) {
                     (($value)->{arguments} = $param_list);
                     return scalar ($value)
                 };
@@ -249,9 +249,9 @@ package GLOBAL;
                 push( @{($num_stack)}, reduce_postfix($last_op, pop_term($num_stack)) )
             }
             else {
-                if (Perlito5::Precedence::is_assoc_type('list', $last_op->[1])) {
+                if ((Perlito5::Precedence::is_assoc_type('list', $last_op->[1]))) {
                     (my  $arg);
-                    if ((scalar( @{$num_stack} ) < 2)) {
+                    if (((scalar( @{$num_stack} ) < 2))) {
                         ((my  $v2) = pop_term($num_stack));
                         if (((Main::isa($v2, 'Apply')) && (($v2->code() eq (('list:<' . $last_op->[1] . '>')))))) {
                             push( @{($num_stack)}, Apply->new(('namespace' => $v2->namespace()), ('code' => $v2->code()), ('arguments' => do {
@@ -302,8 +302,8 @@ package GLOBAL;
                     push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('list:<' . $last_op->[1] . '>')), ('arguments' => $arg)) )
                 }
                 else {
-                    if (Perlito5::Precedence::is_assoc_type('chain', $last_op->[1])) {
-                        if ((scalar( @{$num_stack} ) < 2)) {
+                    if ((Perlito5::Precedence::is_assoc_type('chain', $last_op->[1]))) {
+                        if (((scalar( @{$num_stack} ) < 2))) {
                             die(('Missing value after operator ' . $last_op->[1]))
                         };
                         ((my  $v2) = pop_term($num_stack));
@@ -1288,7 +1288,7 @@ package GLOBAL;
 }) && (((do {
     ((my  $namespace) = ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}));
     ((my  $name) = ('' . $MATCH->{'Perlito5::Grammar.ident'}));
-    if ($namespace) {
+    if (($namespace)) {
         ($name = ($namespace . '::' . $name))
     };
     ($MATCH->{capture} = (do {
@@ -1349,7 +1349,7 @@ package GLOBAL;
 }) && (((do {
     ((my  $namespace) = ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}));
     ((my  $name) = ('' . $MATCH->{'Perlito5::Grammar.ident'}));
-    if ($namespace) {
+    if (($namespace)) {
         ($name = ($namespace . '::' . $name))
     };
     ($MATCH->{capture} = (do {
@@ -1526,7 +1526,7 @@ package GLOBAL;
             ((my  $get_token) = sub  {
     my $List__ = bless \@_, "ARRAY";
     (my  $v);
-    if (scalar( @{$lexer_stack} )) {
+    if ((scalar( @{$lexer_stack} ))) {
         ($v = pop( @{($lexer_stack)} ));
         if ((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))))) {
             ($v->[0] = 'end')
@@ -1534,7 +1534,7 @@ package GLOBAL;
     }
     else {
         ((my  $m) = $self->operator($str, $last_pos));
-        if (!($m)) {
+        if ((!($m))) {
             return scalar (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1552,7 +1552,7 @@ package GLOBAL;
         }
     };
     if (((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block'))) && $last_token_was_space)) {
-        if ($self->has_newline_after($str, $last_pos)) {
+        if (($self->has_newline_after($str, $last_pos))) {
             ($terminated = 1);
             push( @{($lexer_stack)}, do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1563,7 +1563,7 @@ package GLOBAL;
 } )
         }
         else {
-            if ($self->has_no_comma_or_colon_after($str, $last_pos)) {
+            if (($self->has_no_comma_or_colon_after($str, $last_pos))) {
                 ($terminated = 1);
                 push( @{($lexer_stack)}, do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1600,7 +1600,7 @@ package GLOBAL;
     $List_a
 })));
             ((my  $res) = $prec->precedence_parse());
-            if ((scalar( @{$res} ) == 0)) {
+            if (((scalar( @{$res} ) == 0))) {
                 return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'exp'} = '*undef*');
@@ -1610,12 +1610,12 @@ package GLOBAL;
 })))
             };
             (my  $block);
-            if ((scalar( @{$res} ) > 1)) {
+            if (((scalar( @{$res} ) > 1))) {
                 ($block = pop( @{($res)} ));
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
             };
             ((my  $result) = pop_term($res));
-            if ((scalar( @{$res} ) > 0)) {
+            if (((scalar( @{$res} ) > 0))) {
                 ($block = pop( @{($res)} ));
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
             };
@@ -1638,7 +1638,7 @@ package GLOBAL;
             ((my  $get_token) = sub  {
     my $List__ = bless \@_, "ARRAY";
     ((my  $m) = $self->operator($str, $last_pos));
-    if (!($m)) {
+    if ((!($m))) {
         die(('Expected closing delimiter: '), (($delimiter)), ' near ', $last_pos)
     };
     ((my  $v) = ${$m});
@@ -1650,7 +1650,7 @@ package GLOBAL;
             ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => $delimiter)));
             ((my  $res) = $prec->precedence_parse());
             ($res = pop_term($res));
-            if (!((defined($res)))) {
+            if ((!((defined($res))))) {
                 ($res = '*undef*')
             };
             return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => $res)))
@@ -1719,12 +1719,12 @@ package GLOBAL;
             ((my  $get_token) = sub  {
     my $List__ = bless \@_, "ARRAY";
     (my  $v);
-    if (scalar( @{$lexer_stack} )) {
+    if ((scalar( @{$lexer_stack} ))) {
         ($v = pop( @{($lexer_stack)} ))
     }
     else {
         ((my  $m) = $self->operator($str, $last_pos));
-        if (!($m)) {
+        if ((!($m))) {
             return scalar (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1739,7 +1739,7 @@ package GLOBAL;
         }
     };
     if ((((((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block')))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'Sub'))))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'Do'))))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'CompUnit')))))) {
-        if ($self->has_newline_after($str, $last_pos)) {
+        if (($self->has_newline_after($str, $last_pos))) {
             ($terminated = 1);
             push( @{($lexer_stack)}, do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1770,18 +1770,18 @@ package GLOBAL;
     $List_a
 })));
             ((my  $res) = $prec->precedence_parse());
-            if ((scalar( @{$res} ) == 0)) {
+            if (((scalar( @{$res} ) == 0))) {
                 return scalar (Perlito5::Match->new(('bool' => 0)))
             };
             (my  $block);
-            if ((scalar( @{$res} ) > 1)) {
+            if (((scalar( @{$res} ) > 1))) {
                 ($block = pop( @{($res)} ));
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
             };
             ((my  $result) = pop_term($res));
-            if ((scalar( @{$res} ) > 0)) {
+            if (((scalar( @{$res} ) > 0))) {
                 ($block = pop( @{($res)} ));
-                if (!((Main::isa($block, 'Lit::Block')))) {
+                if ((!((Main::isa($block, 'Lit::Block'))))) {
                     ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
                 }
             };
@@ -2132,11 +2132,11 @@ package GLOBAL;
 });
             (my  $res);
             ($res = $self->exp_stmt($str, $pos));
-            if ($res) {
+            if (($res)) {
                 return scalar ($res)
             };
             ($res = $self->exp_parse($str, $pos));
-            if (!(($res))) {
+            if ((!(($res)))) {
                 return scalar ($res)
             };
             if (Main::isa((${$res})->{'exp'}, 'Lit::Block')) {
@@ -2150,12 +2150,12 @@ package GLOBAL;
                 return scalar ($res)
             };
             ((my  $modifier) = $self->statement_modifier($str, $res->to()));
-            if (!(($modifier))) {
+            if ((!(($modifier)))) {
                 (($res)->{capture} = (${$res})->{'exp'});
                 return scalar ($res)
             };
             ((my  $modifier_exp) = $self->exp_parse($str, $modifier->to()));
-            if (!(($modifier_exp))) {
+            if ((!(($modifier_exp)))) {
                 die(('Expected expression after ' . chr(39)), $modifier, (chr(39)))
             };
             if ((${$modifier_exp})->{'end_block'}) {

@@ -24,7 +24,7 @@ my $comp_units  = [];
 my $perl6lib    = './src5/lib';
 my $expand_use  = 1;
 
-if $verbose {
+if ($verbose) {
     warn "// Perlito5 compiler";
     warn "// ARGS: ", @*ARGS->perl;
 }
@@ -50,7 +50,7 @@ sub expand_use {
         if $module_name eq 'v5'
         || $module_name eq 'strict'
         || $module_name eq 'feature';
-    if !(%module_seen{$module_name}) {
+    if (!(%module_seen{$module_name})) {
         %module_seen{$module_name} = 1;
         # say "  now use: ", $module_name;
         if ($backend eq 'perl5') || ($backend eq 'ast-perl5') {
@@ -78,15 +78,15 @@ sub expand_use {
 sub add_comp_unit {
     my $parse = shift;
     for my $comp_unit (@$parse) {
-        if $expand_use && $comp_unit->isa('Use') {
+        if ($expand_use && $comp_unit->isa('Use')) {
             expand_use($comp_unit);
         }
-        elsif $comp_unit->isa('CompUnit') {
-            if $verbose {
+        elsif ($comp_unit->isa('CompUnit')) {
+            if ($verbose) {
                 warn "parsed comp_unit: '", $comp_unit->name, "'";
             }
             for my $stmt (@( $comp_unit->body )) {
-                if $expand_use && $stmt->isa('Use') {
+                if ($expand_use && $stmt->isa('Use')) {
                     expand_use($stmt);
                 }
             }
@@ -100,7 +100,7 @@ sub add_comp_unit {
         $verbose = 1;
         shift @*ARGS;
     }
-    if substr(@*ARGS[0], 0, 2) eq '-C' {
+    if (substr(@*ARGS[0], 0, 2) eq '-C') {
         $backend = substr(@*ARGS[0], 2, 10);
         $execute = 0;
         shift @*ARGS;
@@ -108,7 +108,7 @@ sub add_comp_unit {
             $expand_use = 0;
         }
     }
-    if substr(@*ARGS[0], 0, 2) eq '-B' {
+    if (substr(@*ARGS[0], 0, 2) eq '-B') {
         $backend = substr(@*ARGS[0], 2, 10);
         $execute = 1;
         shift @*ARGS;
@@ -136,42 +136,42 @@ perlito5 [switches] [programfile]
 ";
         shift @*ARGS;
     }
-    if @*ARGS[0] eq '--expand_use' {
+    if (@*ARGS[0] eq '--expand_use') {
         $expand_use = 1;
         shift @*ARGS;
     }
-    if @*ARGS[0] eq '--noexpand_use' {
+    if (@*ARGS[0] eq '--noexpand_use') {
         $expand_use = 0;
         shift @*ARGS;
     }
-    if $backend && @*ARGS {
+    if ($backend && @*ARGS) {
         my $prelude_filename;
         if ($backend eq 'js') {
             $prelude_filename = $perl6lib . '/Perlito5/Javascript/Prelude.pm';
         }
-        if $prelude_filename {
-            if $verbose {
+        if ($prelude_filename) {
+            if ($verbose) {
                 warn "// loading lib: ", $prelude_filename;
             }
             $source = IO::slurp( $prelude_filename );
             my $m = Perlito5::Grammar->exp_stmts($source, 0);
             add_comp_unit($$m);
         }
-        if @*ARGS[0] eq '-e' {
+        if (@*ARGS[0] eq '-e') {
             shift @*ARGS;
-            if $verbose {
+            if ($verbose) {
                 warn "// source from command line: ", @*ARGS[0];
             }
             $source = shift @*ARGS;
         }
         else {
-            if $verbose {
+            if ($verbose) {
                 warn "// source from file: ", @*ARGS[0];
             }
             $source = IO::slurp( shift @*ARGS );
         }
 
-        if $verbose {
+        if ($verbose) {
             warn "// backend: ", $backend;
             warn "now parsing";
         }

@@ -61,7 +61,7 @@ class CompUnit {
 
         my @body;
         for (@.body) {
-            if defined($_) {
+            if (defined($_)) {
                 push @body, $_
             }
         }
@@ -233,7 +233,7 @@ class Var {
             '&' => '$Code_',
         }
         my $ns = '';
-        if $.namespace {
+        if ($.namespace) {
             $ns = $.namespace . '::';
         }
         else {
@@ -266,7 +266,7 @@ class Var {
     sub plain_name {
         my $self = $_[0];
 
-        if $.namespace {
+        if ($.namespace) {
             return $.namespace . '::' . $.name
         }
         return $.name
@@ -313,7 +313,7 @@ class Call {
             $invocant = '$self';
         }
 
-        if exists( $method_perl5{ $.method } ) {
+        if (exists( $method_perl5{ $.method } )) {
             if ($.hyper) {
                 return Perl5::tab($level)
                     . 'bless [ map { '
@@ -338,7 +338,7 @@ class Call {
         }
 
         my $meth = $.method;
-        if  $meth eq 'postcircumfix:<( )>'  {
+        if  ($meth eq 'postcircumfix:<( )>')  {
              $meth = '';
         }
 
@@ -411,25 +411,25 @@ class Apply {
         
 
         my $apply = $self->op_assign();
-        if $apply {
+        if ($apply) {
             return $apply->emit_perl5_indented( $level );
         }
 
         my $ns = '';
-        if $.namespace {
+        if ($.namespace) {
             $ns = $.namespace . '::';
         }
         my $code = $ns . $.code;
 
-        if $code->isa( 'Str' ) { }
+        if ($code->isa( 'Str' )) { }
         else {
             return Perl5::tab($level) . '(' . $.code->emit_perl5() . ')->(' . (@.arguments.>>emit_perl5)->join(', ') . ')';
         }
 
-        if exists $op_infix_perl5{$code} {
+        if (exists $op_infix_perl5{$code}) {
             return Perl5::tab($level) . '(' . (@.arguments.>>emit_perl5)->join( $op_infix_perl5{$code} ) . ')'
         }
-        if exists $op_prefix_perl5{$code} {
+        if (exists $op_prefix_perl5{$code}) {
             return Perl5::tab($level) . $op_prefix_perl5{$code} . '('   . (@.arguments.>>emit_perl5)->join(', ') . ')'
         }
 
@@ -494,7 +494,7 @@ class Apply {
         my $parameters = shift;
         my $arguments = shift;
 
-        if $parameters->isa( 'Call' ) {
+        if ($parameters->isa( 'Call' )) {
 
             # $a->[3] = 4
             if  (  $parameters->method eq 'postcircumfix:<{ }>'
@@ -580,11 +580,11 @@ class For {
         my $level = $_[1];
         
         my $cond = $.cond;
-        if !( $cond->isa( 'Var' ) && $cond->sigil eq '@' ) {
+        if (!( $cond->isa( 'Var' ) && $cond->sigil eq '@' )) {
             $cond = Lit::Array->new( array1 => [$cond] )
         }
         my $sig;
-        if $.body->sig() {
+        if ($.body->sig()) {
             $sig = 'my ' . $.body->sig->emit_perl5() . ' ';
         }
         return  Perl5::tab($level) . 'for ' . $sig . '( @{' . $cond->emit_perl5() . '} ) {' . "\n"
