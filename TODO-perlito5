@@ -4,10 +4,14 @@ TODO list for Perlito5
 
 -- add "require"
 
+-- add "CORE" namespace
+
 
 * source code 
 
--- remove Perl6 code: "class", "has", "token", hyper operator, .push, .shift, .print
+-- remove Perl6 code: "class", "has", "token", hyper operator, .perl, .pairs
+
+-- remove Perl6 "match" special variables: $<..>, $/
 
 -- add "map", "grep", "sort"
 
@@ -42,9 +46,13 @@ TODO list for Perlito5
 
 * Nice to Have
 
--- require perl5 grammar (any perl6 is a syntax error)
+-- require plain perl5 syntax (any perl6 is a syntax error)
 
 -- run perltidy on the source code
 
 -- use the same error messages and warnings as 'perl'
+
+-- __PACKAGE__, __END__
+
+-- BEGIN{}
 
