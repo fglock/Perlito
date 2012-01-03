@@ -16,7 +16,7 @@ class Perlito5::Expression {
             }
             return $args;
         }
-        elsif $param_list eq '*undef*' {
+        elsif ($param_list eq '*undef*') {
             return [];
         }
         else {
@@ -57,7 +57,7 @@ class Perlito5::Expression {
         # the argument is a list -- check that it contains a pair
         for my $item ( @($stmt->arguments) ) {
             # say "#  item: ", $item->perl;
-            if $item->isa('Apply') && ($item->code) eq 'infix:<=>>' {
+            if ($item->isa('Apply') && ($item->code) eq 'infix:<=>>') {
                 # argument is a pair
                 # say "#  block: ", $o->perl;
                 # say "#  hash with args: ", ( expand_list($stmt->arguments) )->perl;
@@ -72,19 +72,19 @@ class Perlito5::Expression {
         my $v = pop @$num_stack;
         if $v->isa('Array') {
             # say "# ** processing term ", $v->perl;
-            if $v->[1] eq 'methcall_no_params' {
+            if ($v->[1] eq 'methcall_no_params') {
                 # say "#   Call ", ($v->[2])->perl;
                 $v = Call->new( invocant => Mu, method => $v->[2], arguments => [], hyper => $v->[3] );
                 # say "#     ", $v->perl;
                 return $v;
             }
-            if $v->[1] eq 'funcall_no_params' {
+            if ($v->[1] eq 'funcall_no_params') {
                 # say "#   Apply ", ($v->[2])->perl;
                 $v = Apply->new( code => $v->[3], namespace => $v->[2] );
                 # say "#     ", $v->perl;
                 return $v;
             }
-            if $v->[1] eq 'methcall' {
+            if ($v->[1] eq 'methcall') {
                 # say "#   Call ", ($v->[2])->perl;
                 if ($v->[3])<end_block> {
                     # say "# pop_term: found end_block in Call";
@@ -95,7 +95,7 @@ class Perlito5::Expression {
                 # say "#     ", $v->perl;
                 return $v;
             }
-            if $v->[1] eq 'funcall' {
+            if ($v->[1] eq 'funcall') {
                 # say "#   Apply ", ($v->[2])->perl;
                 if ($v->[4])<end_block> {
                     # say "# pop_term: found end_block in Apply";
@@ -106,40 +106,40 @@ class Perlito5::Expression {
                 # say "#     ", $v->perl;
                 return $v;
             }
-            if $v->[1] eq '( )' {
+            if ($v->[1] eq '( )') {
                 # say "#   Plain parentheses ", ($v->[2])->perl;
                 my $param_list = expand_list($v->[2]);
                 $v = Apply->new( code => 'circumfix:<( )>', arguments => $param_list, namespace => '' );
                 # say "#     ", $v->perl;
                 return $v;
             }
-            if $v->[1] eq '[ ]' {
+            if ($v->[1] eq '[ ]') {
                 # say "#   Array ", ($v->[2])->perl;
                 my $param_list = expand_list($v->[2]);
                 $v = Lit::Array->new( array1 => $param_list );
                 # say "#     ", $v->perl;
                 return $v;
             }
-            if $v->[1] eq 'block' {
+            if ($v->[1] eq 'block') {
                 # say "#   Block, Hash, or Pair ", ($v->[2])->perl;
                 $v = Lit::Block->new( stmts => $v->[2], sig => $v->[3] );
                 $v = block_or_hash($v);
                 # TODO: $v = Lit::Hash->new( hash1 => $v->[2] );
                 return $v;
             }
-            if $v->[1] eq '.( )' {
+            if ($v->[1] eq '.( )') {
                 # say "#   Params ", ($v->[2])->perl;
                 # say "#     v:     ", $v->perl;
                 $v = Call->new( invocant => Mu, method => 'postcircumfix:<( )>', arguments => $v->[2], hyper => 0 );
                 return $v;
             }
-            if $v->[1] eq '.[ ]' {
+            if ($v->[1] eq '.[ ]') {
                 # say "#   Index ", ($v->[2])->perl;
                 $v = Index->new( obj => Mu, index_exp => $v->[2] );
                 # say "#     ", $v->perl;
                 return $v;
             }
-            if $v->[1] eq '.{ }' {
+            if ($v->[1] eq '.{ }') {
                 # say "#   Lookup ", ($v->[2])->perl;
                 $v = Lookup->new( obj => Mu, index_exp => $v->[2] );
                 # say "#     ", $v->perl;
@@ -164,30 +164,30 @@ class Perlito5::Expression {
         # say "# ** reduce_postfix ", $op->perl;
         # say "#      value: ", $value->perl;
         # say "#      v:     ", $v->perl;
-        if $v->[1] eq 'methcall_no_params' {
+        if ($v->[1] eq 'methcall_no_params') {
             # say "#   Call ", ($v->[2])->perl;
             $v = Call->new( invocant => $value, method => $v->[2], arguments => [], hyper => $v->[3] );
             return $v;
         }
-        if $v->[1] eq 'funcall_no_params' {
+        if ($v->[1] eq 'funcall_no_params') {
             die "unexpected function call";
             # say "#   Apply ", ($v->[2])->perl;
             push $v, $value;
             return $v;
         }
-        if $v->[1] eq 'methcall' {
+        if ($v->[1] eq 'methcall') {
             # say "#   Call ", ($v->[2])->perl;
             my $param_list = expand_list(($v->[3])<exp>);
             $v = Call->new( invocant => $value, method => $v->[2], arguments => $param_list, hyper => $v->[4] );
             return $v;
         }
-        if $v->[1] eq 'funcall' {
+        if ($v->[1] eq 'funcall') {
             die "unexpected function call";
             # say "#   Apply ", ($v->[2])->perl;
             push $v, $value;
             return $v;
         }
-        if $v->[1] eq '( )' {
+        if ($v->[1] eq '( )') {
             # say "#   Params ", ($v->[2])->perl;
             my $param_list = expand_list($v->[2]);
             if $value->isa('Apply') && !(defined($value->arguments)) {
@@ -201,27 +201,27 @@ class Perlito5::Expression {
             $v = Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list, hyper => 0 );
             return $v;
         }
-        if $v->[1] eq '[ ]' {
+        if ($v->[1] eq '[ ]') {
             # say "#   Index ", ($v->[2])->perl;
             $v = Index->new( obj => $value, index_exp => $v->[2] );
             # say "#     ", $v->perl;
             return $v;
         }
-        if $v->[1] eq 'block' {
+        if ($v->[1] eq 'block') {
             # say "#   Lookup (was Block)", ($v->[2])->perl;
             $v = Lookup->new( obj => $value, index_exp => ($v->[2])[0] );
             return $v;
         }
-        if $v->[1] eq '.( )' {
+        if ($v->[1] eq '.( )') {
             my $param_list = expand_list($v->[2]);
             $v = Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list, hyper => 0 );
             return $v;
         }
-        if $v->[1] eq '.[ ]' {
+        if ($v->[1] eq '.[ ]') {
             $v = Call->new( invocant => $value, method => 'postcircumfix:<[ ]>', arguments => $v->[2], hyper => 0 );
             return $v;
         }
-        if $v->[1] eq '.{ }' {
+        if ($v->[1] eq '.{ }') {
             $v = Call->new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v->[2], hyper => 0 );
             return $v;
         }
@@ -234,7 +234,7 @@ class Perlito5::Expression {
         # say "# reduce_to_ast ";
         # say "#     last_op: ", $last_op->perl;
         # say "#   num_stack: ", $num_stack;
-        if $last_op->[0] eq 'prefix' {
+        if ($last_op->[0] eq 'prefix') {
             push $num_stack,
                 Apply->new(
                     namespace => '',
@@ -242,7 +242,7 @@ class Perlito5::Expression {
                     arguments => [ pop_term($num_stack) ],
                   );
         }
-        elsif $last_op->[0] eq 'postfix' {
+        elsif ($last_op->[0] eq 'postfix') {
             push $num_stack,
                 Apply->new(
                     namespace => '',
@@ -250,7 +250,7 @@ class Perlito5::Expression {
                     arguments => [ pop_term($num_stack) ],
                   );
         }
-        elsif $last_op->[0] eq 'postfix_or_term' {
+        elsif ($last_op->[0] eq 'postfix_or_term') {
             push( @$num_stack,  reduce_postfix( $last_op, pop_term($num_stack) ) );
         }
         elsif Perlito5::Precedence::is_assoc_type('list', $last_op->[1]) {
@@ -328,7 +328,7 @@ class Perlito5::Expression {
                         arguments => $arg
                     );
         }
-        elsif $last_op->[0] eq 'ternary' {
+        elsif ($last_op->[0] eq 'ternary') {
             if ( $num_stack->elems < 2 ) {
                 die "Missing value after ternary operator";
             }
@@ -538,7 +538,7 @@ class Perlito5::Expression {
                     # say "# finishing list - first token is: ", $v->[1];
                     $v->[0] = 'end';
                 }
-                if $v->[0] ne 'end' {
+                if ($v->[0] ne 'end') {
                     $last_pos = $m->to;
                 }
             }
@@ -613,7 +613,7 @@ class Perlito5::Expression {
                 die "Expected closing delimiter: ", @($delimiter), ' near ', $last_pos;
             }
             my $v = $$m;
-            if $v->[0] ne 'end' {
+            if ($v->[0] ne 'end') {
                 $last_pos = $m->to;
             }
             # say "# circumfix_lexer " . $v->perl;
@@ -683,7 +683,7 @@ class Perlito5::Expression {
                     return [ 'end', '*end*' ];
                 }
                 $v = $$m;
-                if $v->[0] ne 'end' {
+                if ($v->[0] ne 'end') {
                     $last_pos = $m->to;
                 }
             }
@@ -820,7 +820,7 @@ class Perlito5::Expression {
 
         $modifier = '' . $modifier;
 
-        if $modifier eq 'if' {
+        if ($modifier eq 'if') {
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
                 capture => If->new(
@@ -828,7 +828,7 @@ class Perlito5::Expression {
                     body      => Lit::Block->new(stmts => [ ($$res)<exp> ]),
                     otherwise => Lit::Block->new(stmts => [ ]) ) );
         }
-        if $modifier eq 'unless' {
+        if ($modifier eq 'unless') {
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
                 capture => If->new(
@@ -836,14 +836,14 @@ class Perlito5::Expression {
                     body      => Lit::Block->new(stmts => [ ]),
                     otherwise => Lit::Block->new(stmts => [ ($$res)<exp> ]) ) );
         }
-        if $modifier eq 'while' {
+        if ($modifier eq 'while') {
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
                 capture => While->new(
                     cond    => ($$modifier_exp)<exp>,
                     body    => Lit::Block->new(stmts => [ ($$res)<exp> ] ) ) );
         }
-        if $modifier eq 'for' {
+        if ($modifier eq 'for') {
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
                 capture => For->new(

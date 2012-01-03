@@ -33,7 +33,7 @@ package GLOBAL;
                 return scalar ($args)
             }
             else {
-                if (($param_list eq '*undef*')) {
+                if ((($param_list eq '*undef*'))) {
                     return scalar (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -83,7 +83,7 @@ package GLOBAL;
                 return scalar ($o)
             };
             for my $item ( @{(($stmt->arguments()))} ) {
-                if ((Main::isa($item, 'Apply') && (($item->code()) eq 'infix:<' . chr(61) . '>>'))) {
+                if (((Main::isa($item, 'Apply') && (($item->code()) eq 'infix:<' . chr(61) . '>>')))) {
                     return scalar (Lit::Hash->new(('hash1' => expand_list($stmt))))
                 }
             };
@@ -94,7 +94,7 @@ package GLOBAL;
             ((my  $num_stack) = shift());
             ((my  $v) = pop( @{($num_stack)} ));
             if (Main::isa($v, 'Array')) {
-                if (($v->[1] eq 'methcall_no_params')) {
+                if ((($v->[1] eq 'methcall_no_params'))) {
                     ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -102,11 +102,11 @@ package GLOBAL;
 }), ('hyper' => $v->[3])));
                     return scalar ($v)
                 };
-                if (($v->[1] eq 'funcall_no_params')) {
+                if ((($v->[1] eq 'funcall_no_params'))) {
                     ($v = Apply->new(('code' => $v->[3]), ('namespace' => $v->[2])));
                     return scalar ($v)
                 };
-                if (($v->[1] eq 'methcall')) {
+                if ((($v->[1] eq 'methcall'))) {
                     if (($v->[3])->{'end_block'}) {
                         unshift( @{($num_stack)}, ($v->[3])->{'end_block'} )
                     };
@@ -114,7 +114,7 @@ package GLOBAL;
                     ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => $param_list), ('hyper' => $v->[4])));
                     return scalar ($v)
                 };
-                if (($v->[1] eq 'funcall')) {
+                if ((($v->[1] eq 'funcall'))) {
                     if (($v->[4])->{'end_block'}) {
                         unshift( @{($num_stack)}, ($v->[4])->{'end_block'} )
                     };
@@ -122,30 +122,30 @@ package GLOBAL;
                     ($v = Apply->new(('code' => $v->[3]), ('arguments' => $param_list), ('namespace' => $v->[2])));
                     return scalar ($v)
                 };
-                if (($v->[1] eq '( )')) {
+                if ((($v->[1] eq '( )'))) {
                     ((my  $param_list) = expand_list($v->[2]));
                     ($v = Apply->new(('code' => 'circumfix:<( )>'), ('arguments' => $param_list), ('namespace' => '')));
                     return scalar ($v)
                 };
-                if (($v->[1] eq '[ ]')) {
+                if ((($v->[1] eq '[ ]'))) {
                     ((my  $param_list) = expand_list($v->[2]));
                     ($v = Lit::Array->new(('array1' => $param_list)));
                     return scalar ($v)
                 };
-                if (($v->[1] eq 'block')) {
+                if ((($v->[1] eq 'block'))) {
                     ($v = Lit::Block->new(('stmts' => $v->[2]), ('sig' => $v->[3])));
                     ($v = block_or_hash($v));
                     return scalar ($v)
                 };
-                if (($v->[1] eq '.( )')) {
+                if ((($v->[1] eq '.( )'))) {
                     ($v = Call->new(('invocant' => undef()), ('method' => 'postcircumfix:<( )>'), ('arguments' => $v->[2]), ('hyper' => 0)));
                     return scalar ($v)
                 };
-                if (($v->[1] eq '.[ ]')) {
+                if ((($v->[1] eq '.[ ]'))) {
                     ($v = Index->new(('obj' => undef()), ('index_exp' => $v->[2])));
                     return scalar ($v)
                 };
-                if (($v->[1] eq '.' . chr(123) . ' ' . chr(125))) {
+                if ((($v->[1] eq '.' . chr(123) . ' ' . chr(125)))) {
                     ($v = Lookup->new(('obj' => undef()), ('index_exp' => $v->[2])));
                     return scalar ($v)
                 };
@@ -162,7 +162,7 @@ package GLOBAL;
             ((my  $op) = shift());
             ((my  $value) = shift());
             ((my  $v) = $op);
-            if (($v->[1] eq 'methcall_no_params')) {
+            if ((($v->[1] eq 'methcall_no_params'))) {
                 ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -170,22 +170,22 @@ package GLOBAL;
 }), ('hyper' => $v->[3])));
                 return scalar ($v)
             };
-            if (($v->[1] eq 'funcall_no_params')) {
+            if ((($v->[1] eq 'funcall_no_params'))) {
                 die(('unexpected function call'));
                 push( @{$v}, $value );
                 return scalar ($v)
             };
-            if (($v->[1] eq 'methcall')) {
+            if ((($v->[1] eq 'methcall'))) {
                 ((my  $param_list) = expand_list(($v->[3])->{'exp'}));
                 ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('arguments' => $param_list), ('hyper' => $v->[4])));
                 return scalar ($v)
             };
-            if (($v->[1] eq 'funcall')) {
+            if ((($v->[1] eq 'funcall'))) {
                 die(('unexpected function call'));
                 push( @{$v}, $value );
                 return scalar ($v)
             };
-            if (($v->[1] eq '( )')) {
+            if ((($v->[1] eq '( )'))) {
                 ((my  $param_list) = expand_list($v->[2]));
                 if ((Main::isa($value, 'Apply') && !((defined($value->arguments()))))) {
                     (($value)->{arguments} = $param_list);
@@ -198,24 +198,24 @@ package GLOBAL;
                 ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list), ('hyper' => 0)));
                 return scalar ($v)
             };
-            if (($v->[1] eq '[ ]')) {
+            if ((($v->[1] eq '[ ]'))) {
                 ($v = Index->new(('obj' => $value), ('index_exp' => $v->[2])));
                 return scalar ($v)
             };
-            if (($v->[1] eq 'block')) {
+            if ((($v->[1] eq 'block'))) {
                 ($v = Lookup->new(('obj' => $value), ('index_exp' => ($v->[2])->[0])));
                 return scalar ($v)
             };
-            if (($v->[1] eq '.( )')) {
+            if ((($v->[1] eq '.( )'))) {
                 ((my  $param_list) = expand_list($v->[2]));
                 ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list), ('hyper' => 0)));
                 return scalar ($v)
             };
-            if (($v->[1] eq '.[ ]')) {
+            if ((($v->[1] eq '.[ ]'))) {
                 ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<[ ]>'), ('arguments' => $v->[2]), ('hyper' => 0)));
                 return scalar ($v)
             };
-            if (($v->[1] eq '.' . chr(123) . ' ' . chr(125))) {
+            if ((($v->[1] eq '.' . chr(123) . ' ' . chr(125)))) {
                 ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('arguments' => $v->[2]), ('hyper' => 0)));
                 return scalar ($v)
             };
@@ -227,7 +227,7 @@ package GLOBAL;
     my $op_stack = $_[0];
     my $num_stack = $_[1];
     ((my  $last_op) = shift( @{($op_stack)} ));
-    if (($last_op->[0] eq 'prefix')) {
+    if ((($last_op->[0] eq 'prefix'))) {
         push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('prefix:<' . $last_op->[1] . '>')), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -236,7 +236,7 @@ package GLOBAL;
 })) )
     }
     else {
-        if (($last_op->[0] eq 'postfix')) {
+        if ((($last_op->[0] eq 'postfix'))) {
             push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('postfix:<' . $last_op->[1] . '>')), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -245,7 +245,7 @@ package GLOBAL;
 })) )
         }
         else {
-            if (($last_op->[0] eq 'postfix_or_term')) {
+            if ((($last_op->[0] eq 'postfix_or_term'))) {
                 push( @{($num_stack)}, reduce_postfix($last_op, pop_term($num_stack)) )
             }
             else {
@@ -317,7 +317,7 @@ package GLOBAL;
                         push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('infix:<' . $last_op->[1] . '>')), ('arguments' => $arg)) )
                     }
                     else {
-                        if (($last_op->[0] eq 'ternary')) {
+                        if ((($last_op->[0] eq 'ternary'))) {
                             if (((scalar( @{$num_stack} ) < 2))) {
                                 die(('Missing value after ternary operator'))
                             };
@@ -1547,7 +1547,7 @@ package GLOBAL;
         if ((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))))) {
             ($v->[0] = 'end')
         };
-        if (($v->[0] ne 'end')) {
+        if ((($v->[0] ne 'end'))) {
             ($last_pos = $m->to())
         }
     };
@@ -1642,7 +1642,7 @@ package GLOBAL;
         die(('Expected closing delimiter: '), (($delimiter)), ' near ', $last_pos)
     };
     ((my  $v) = ${$m});
-    if (($v->[0] ne 'end')) {
+    if ((($v->[0] ne 'end'))) {
         ($last_pos = $m->to())
     };
     return scalar ($v)
@@ -1734,7 +1734,7 @@ package GLOBAL;
 })
         };
         ($v = ${$m});
-        if (($v->[0] ne 'end')) {
+        if ((($v->[0] ne 'end'))) {
             ($last_pos = $m->to())
         }
     };
@@ -2162,7 +2162,7 @@ package GLOBAL;
                 die(('Unexpected block after expression near '), $modifier->to())
             };
             ($modifier = ('' . $modifier));
-            if (($modifier eq 'if')) {
+            if ((($modifier eq 'if'))) {
                 return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -2174,7 +2174,7 @@ package GLOBAL;
     $List_a
 })))))))
             };
-            if (($modifier eq 'unless')) {
+            if ((($modifier eq 'unless'))) {
                 return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -2186,7 +2186,7 @@ package GLOBAL;
     $List_a
 })))))))
             };
-            if (($modifier eq 'while')) {
+            if ((($modifier eq 'while'))) {
                 return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => While->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -2194,7 +2194,7 @@ package GLOBAL;
     $List_a
 })))))))
             };
-            if (($modifier eq 'for')) {
+            if ((($modifier eq 'for'))) {
                 return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => For->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');

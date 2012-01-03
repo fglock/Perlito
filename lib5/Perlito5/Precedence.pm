@@ -527,7 +527,7 @@ package GLOBAL;
                 };
                 ($last = $token);
                 ($token = $get_token->());
-                if (($token->[0] eq 'space')) {
+                if ((($token->[0] eq 'space'))) {
                     ($token = $get_token->());
                     ($last_has_space = 1)
                 }

@@ -167,12 +167,12 @@ class Perlito5::Javascript::LexicalBlock {
         }
         my @str;
         for my $decl ( @block ) {
-            if $decl->isa( 'Decl' ) && $decl->decl eq 'my' {
+            if ($decl->isa( 'Decl' ) && $decl->decl eq 'my') {
                 push @str, Javascript::tab($level) . $decl->emit_javascript_init;
             }
-            if $decl->isa( 'Apply' ) && $decl->code eq 'infix:<=>' {
+            if ($decl->isa( 'Apply' ) && $decl->code eq 'infix:<=>') {
                 my $var = $decl->arguments[0];
-                if $var->isa( 'Decl' ) && $var->decl eq 'my' {
+                if ($var->isa( 'Decl' ) && $var->decl eq 'my') {
                     push @str, Javascript::tab($level) . $var->emit_javascript_init;
                 }
             }
@@ -191,7 +191,7 @@ class Perlito5::Javascript::LexicalBlock {
                 my $cond      = $last_statement->cond;
                 my $body      = $last_statement->body;
                 my $otherwise = $last_statement->otherwise;
-                if $cond->isa( 'Var' ) && $cond->sigil eq '@' {
+                if ($cond->isa( 'Var' ) && $cond->sigil eq '@') {
                     $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
                 }
                 $body      = Perlito5::Javascript::LexicalBlock->new( block => $body->stmts, needs_return => 1 );
@@ -272,9 +272,9 @@ class CompUnit {
             if $decl->isa( 'Decl' ) && ( $decl->decl eq 'my' ) {
                 $str = $str . '  ' . $decl->emit_javascript_init;
             }
-            if $decl->isa( 'Apply' ) && $decl->code eq 'infix:<=>' {
+            if ($decl->isa( 'Apply' ) && $decl->code eq 'infix:<=>') {
                 my $var = $decl->arguments[0];
-                if $var->isa( 'Decl' ) && $var->decl eq 'my' {
+                if ($var->isa( 'Decl' ) && $var->decl eq 'my') {
                     $str = $str . '  ' . $var->emit_javascript_init;
                 }
             }
@@ -496,15 +496,15 @@ class Call {
         my $self = shift;
         my $level = shift;
         my $invocant = $.invocant->emit_javascript;
-        if $invocant eq 'self' {
+        if ($invocant eq 'self') {
             $invocant = 'v_self';
         }
 
         # XXX Perl6
-        if $.method eq 'new' {
+        if ($.method eq 'new') {
             my $str = [];
             for my $field ( @.arguments ) {
-                if $field->isa('Apply') && $field->code eq 'infix:<=>>' {
+                if ($field->isa('Apply') && $field->code eq 'infix:<=>>') {
                     push( @$str, 'v_' . $field->arguments[0]->buf() . ': ' . $field->arguments[1]->emit_javascript() );
                 }
                 else {
@@ -619,67 +619,67 @@ class Apply {
         else {
             return Javascript::tab($level) . '(' . $.code->emit_javascript() . ')->(' . (@.arguments.>>emit)->join(', ') . ')';
         }
-        if $code eq 'infix:<=>>' {
+        if ($code eq 'infix:<=>>') {
             return Javascript::tab($level) . (@.arguments.>>emit_javascript)->join( ', ' )
         }
         if exists %op_infix_js{$code} {
             return Javascript::tab($level) . '(' . (@.arguments.>>emit_javascript)->join( %op_infix_js{$code} ) . ')'
         }
 
-        if $code eq 'eval' {
+        if ($code eq 'eval') {
             return
                 'eval(perl5_to_js(' 
                     . Javascript::escape_function('string') . '(' . (@.arguments[0])->emit_javascript() . ')'
                 . '))'
         }
 
-        if $code eq 'self'       { return Javascript::tab($level) . 'v_self' }
-        if $code eq 'Mu'         { return Javascript::tab($level) . 'null' }
-        if $code eq 'make'       { return Javascript::tab($level) . '(v_MATCH.v_capture = ' . (@.arguments.>>emit_javascript)->join(', ') . ')' }
-        if $code eq 'defined'    { return Javascript::tab($level) . '('  . (@.arguments.>>emit_javascript)->join(' ')    . ' != null)' }
-        if $code eq 'substr' {
+        if ($code eq 'self')       { return Javascript::tab($level) . 'v_self' }
+        if ($code eq 'Mu')         { return Javascript::tab($level) . 'null' }
+        if ($code eq 'make')       { return Javascript::tab($level) . '(v_MATCH.v_capture = ' . (@.arguments.>>emit_javascript)->join(', ') . ')' }
+        if ($code eq 'defined')    { return Javascript::tab($level) . '('  . (@.arguments.>>emit_javascript)->join(' ')    . ' != null)' }
+        if ($code eq 'substr') {
             return '(' . (@.arguments[0])->emit_javascript()
                  . ' || "").substr(' . (@.arguments[1])->emit_javascript()
                  . ( defined(@.arguments[2]) ? ', ' . (@.arguments[2])->emit_javascript() : '' )
                  . ')'
         }
 
-        if $code eq 'shift'      {
+        if ($code eq 'shift')      {
             if ( @.arguments ) {
                 return 'shift(' . (@.arguments.>>emit_javascript)->join(', ') . ')'
             }
             return 'shift(List__)'
         }
 
-        if $code eq 'chr'        { return 'String.fromCharCode(' . Javascript::escape_function('num') . '(' . (@.arguments[0])->emit_javascript() . '))' }
-        if $code eq 'ord'        { return '(' . (@.arguments[0])->emit_javascript() . ').charCodeAt(0)' }
+        if ($code eq 'chr')        { return 'String.fromCharCode(' . Javascript::escape_function('num') . '(' . (@.arguments[0])->emit_javascript() . '))' }
+        if ($code eq 'ord')        { return '(' . (@.arguments[0])->emit_javascript() . ').charCodeAt(0)' }
 
-        if $code eq 'Int'        { return 'parseInt(' . (@.arguments[0])->emit_javascript() . ')' }
-        if $code eq 'Num'        { return 'parseFloat(' . (@.arguments[0])->emit_javascript() . ')' }
+        if ($code eq 'Int')        { return 'parseInt(' . (@.arguments[0])->emit_javascript() . ')' }
+        if ($code eq 'Num')        { return 'parseFloat(' . (@.arguments[0])->emit_javascript() . ')' }
 
-        if $code eq 'prefix:<!>' { return '( ' . Javascript::escape_function('bool') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ') ? false : true)' }
-        if $code eq 'prefix:<?>' { return '( ' . Javascript::escape_function('bool') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ') ? true : false)' }
-        if $code eq 'prefix:<$>' { return Javascript::escape_function('scalar') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ')' }
-        if $code eq 'prefix:<@>' { return '(' . (@.arguments.>>emit_javascript)->join(' ')    . ')' };  # .' . Javascript::escape_function('array') . '()' }
-        if $code eq 'prefix:<%>' { return '(' . (@.arguments.>>emit_javascript)->join(' ')    . ').' . Javascript::escape_function('hash') . '()' }
+        if ($code eq 'prefix:<!>') { return '( ' . Javascript::escape_function('bool') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ') ? false : true)' }
+        if ($code eq 'prefix:<?>') { return '( ' . Javascript::escape_function('bool') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ') ? true : false)' }
+        if ($code eq 'prefix:<$>') { return Javascript::escape_function('scalar') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ')' }
+        if ($code eq 'prefix:<@>') { return '(' . (@.arguments.>>emit_javascript)->join(' ')    . ')' };  # .' . Javascript::escape_function('array') . '()' }
+        if ($code eq 'prefix:<%>') { return '(' . (@.arguments.>>emit_javascript)->join(' ')    . ').' . Javascript::escape_function('hash') . '()' }
 
-        if $code eq 'prefix:<\\>' { 
+        if ($code eq 'prefix:<\\>') { 
             # XXX currently a no-op
             return (@.arguments.>>emit_javascript)->join(' ') 
         }
 
-        if $code eq 'postfix:<++>' { return '('   . (@.arguments.>>emit_javascript)->join(' ')  . ')++' }
-        if $code eq 'postfix:<-->' { return '('   . (@.arguments.>>emit_javascript)->join(' ')  . ')--' }
-        if $code eq 'prefix:<++>'  { return '++(' . (@.arguments.>>emit_javascript)->join(' ')  . ')' }
-        if $code eq 'prefix:<-->'  { return '--(' . (@.arguments.>>emit_javascript)->join(' ')  . ')' }
+        if ($code eq 'postfix:<++>') { return '('   . (@.arguments.>>emit_javascript)->join(' ')  . ')++' }
+        if ($code eq 'postfix:<-->') { return '('   . (@.arguments.>>emit_javascript)->join(' ')  . ')--' }
+        if ($code eq 'prefix:<++>')  { return '++(' . (@.arguments.>>emit_javascript)->join(' ')  . ')' }
+        if ($code eq 'prefix:<-->')  { return '--(' . (@.arguments.>>emit_javascript)->join(' ')  . ')' }
 
-        if $code eq 'infix:<x>'  { return 'str_replicate(' . (@.arguments.>>emit_javascript)->join(', ')  . ')' }
+        if ($code eq 'infix:<x>')  { return 'str_replicate(' . (@.arguments.>>emit_javascript)->join(', ')  . ')' }
 
-        if $code eq 'list:<.>'   { return '(' . Javascript::escape_function('string') . '(' . (@.arguments.>>emit_javascript())->join(  ') + ' . Javascript::escape_function('string') . '('  ) . '))' }
+        if ($code eq 'list:<.>')   { return '(' . Javascript::escape_function('string') . '(' . (@.arguments.>>emit_javascript())->join(  ') + ' . Javascript::escape_function('string') . '('  ) . '))' }
 
-        if $code eq 'infix:<+>'  { return Javascript::escape_function('add') . '('  . (@.arguments.>>emit_javascript)->join(', ')  . ')' }
+        if ($code eq 'infix:<+>')  { return Javascript::escape_function('add') . '('  . (@.arguments.>>emit_javascript)->join(', ')  . ')' }
 
-        if $code eq 'infix:<..>' {
+        if ($code eq 'infix:<..>') {
             return '(function (a) { '
                     . 'for (var i=' . @.arguments[0]->emit_javascript()
                            . ', l=' . @.arguments[1]->emit_javascript() . '; '
@@ -705,12 +705,12 @@ class Apply {
                 . @.arguments[0]->emit_javascript() . ', '
                 . 'function () { return ' . @.arguments[1]->emit_javascript() . '; })'
         }
-        if $code eq 'infix:<//>' { return Javascript::escape_function('defined_or') . '('
+        if ($code eq 'infix:<//>') { return Javascript::escape_function('defined_or') . '('
                 . @.arguments[0]->emit_javascript() . ', '
                 . 'function () { return ' . @.arguments[1]->emit_javascript() . '; })'
         }
 
-        if $code eq 'exists'     {
+        if ($code eq 'exists')     {
             my $arg = @.arguments[0];
             if $arg->isa( 'Lookup' ) {
                 my $v = $arg->obj;
@@ -727,20 +727,20 @@ class Apply {
                 return '(' . $arg->invocant->emit_javascript() . ').hasOwnProperty(' . $arg->arguments->emit_javascript() . ')';
             }
         }
-        if $code eq 'ternary:<?? !!>' {
+        if ($code eq 'ternary:<?? !!>') {
             return Javascript::tab($level) 
                  . '( ' . Javascript::escape_function('bool') . '(' . (@.arguments[0])->emit_javascript() . ')'
                  . ' ? ' . (@.arguments[1])->emit_javascript()
                  . ' : ' . (@.arguments[2])->emit_javascript()
                  . ')'
         }
-        if $code eq 'circumfix:<( )>' {
+        if ($code eq 'circumfix:<( )>') {
             return Javascript::tab($level) . '(' . (@.arguments.>>emit_javascript)->join(', ') . ')';
         }
-        if $code eq 'infix:<=>' {
+        if ($code eq 'infix:<=>') {
             return emit_javascript_bind( @.arguments[0], @.arguments[1], $level );
         }
-        if $code eq 'return' {
+        if ($code eq 'return') {
             return Javascript::tab($level) . 'throw('
                 .   (@.arguments ? @.arguments[0]->emit_javascript() : 'null')
                 . ')'
@@ -919,7 +919,7 @@ class Decl {
     }
     sub emit_javascript_init {
         my $self = shift;
-        if $.decl eq 'my' {
+        if ($.decl eq 'my') {
             my $str = "";
             $str = $str . 'var ' . ($.var)->emit_javascript() . ' = ';
             if ($.var)->sigil eq '%' {

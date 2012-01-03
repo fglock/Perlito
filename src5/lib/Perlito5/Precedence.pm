@@ -324,7 +324,7 @@ class Perlito5::Precedence {
             $last = $token;
             $token = $get_token->();
             # say "# precedence get_token: (2) ", $token->perl;
-            if $token->[0] eq 'space' {
+            if ($token->[0] eq 'space') {
                 $token = $get_token->();
                 $last_has_space = 1;
             }
