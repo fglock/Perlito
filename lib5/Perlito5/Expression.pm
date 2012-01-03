@@ -433,8 +433,44 @@ package GLOBAL;
             ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
             (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
-    (((((((((((((((((((((do {
-    (((('->' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
+    ((((((((((((((((((((((do {
+    (((((do {
+    ((my  $m2) = Perlito5::Grammar->var_sigil($str, $MATCH->to()));
+    if (($m2)) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'Perlito5::Grammar.var_sigil'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (do {
+    ((my  $m2) = $grammar->curly_parse($str, $MATCH->to()));
+    if (($m2)) {
+        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{'curly_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && (((do {
+    ($MATCH->{capture} = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'term' );
+    push( @{$List_a}, Apply->new(('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, ${$MATCH->{'curly_parse'}} );
+    $List_a
+}), ('code' => ('prefix:<' . ${$MATCH->{'Perlito5::Grammar.var_sigil'}} . '>')), ('namespace' => '')) );
+    $List_a
+}))
+}) || 1)))
+}) || (do {
+    (($MATCH)->{to} = $pos1);
+    ((((('->' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && (do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     (((((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
@@ -502,8 +538,8 @@ package GLOBAL;
 }))
 }) || 1))))
 }))
-}))
-}) || (do {
+})))
+})) || (do {
     (($MATCH)->{to} = $pos1);
     ((((((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (do {
     ((my  $m2) = $grammar->paren_parse($str, $MATCH->to()));

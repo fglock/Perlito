@@ -350,12 +350,6 @@ class Perlito5::Expression {
         }
     };
 
-    # TODO
-    # token pair {
-    #     |   \: <var_sigil> <ident>                  #  :$var
-    #                 Val::Buf->new( buf => '' . $<ident> ),
-    #                 Var->new( sigil => '' . $$<var_sigil>, twigil => '', name => $$<ident> ) ]
-
     token capture_name {
         <Perlito5::Grammar.full_ident> [ [ '.' | '->' ] <Perlito5::Grammar.ident> ]?
     }
@@ -366,6 +360,15 @@ class Perlito5::Expression {
 
     token operator {
 
+        | <Perlito5::Grammar.var_sigil> '{' <curly_parse>   '}'
+                    { make [ 'term',  
+                            Apply->new( 
+                                'arguments' => [ $$<curly_parse> ],
+                                'code' => 'prefix:<' . $$<Perlito5::Grammar.var_sigil> . '>', 
+                                'namespace' => ''
+                            )   
+                        ] 
+                    }
         | '->'
             [
             | '(' <paren_parse>   ')'                   { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }

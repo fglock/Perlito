@@ -6804,8 +6804,59 @@ List_a.push(v_m2);
     var v_pos1 = null;
 
     (v_pos1 = v_MATCH.to());
-    return(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(((function () { 
-    return(and((and(('->' == (v_str || "").substr(v_MATCH.to(), 2)), function () { return ((v_MATCH.v_to = add(2, v_MATCH.to()))); })), function () { return ((function () { 
+    return(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(or(((function () { 
+    return(and(and(and(and(((function () { 
+    var v_m2 = null;
+
+    (v_m2 = Perlito5$Grammar.var_sigil(v_str, v_MATCH.to()));
+    if ( bool((v_m2)) ) { return (function () {
+        (v_MATCH.v_to = v_m2.to());
+        (function () { if (v_MATCH == null) { v_MATCH = {} }; if (v_MATCH['Perlito5::Grammar.var_sigil'] == null) { v_MATCH['Perlito5::Grammar.var_sigil'] = {} }; return (v_MATCH['Perlito5::Grammar.var_sigil']  = v_m2); })();
+        return(1);
+    })(); }
+    else { return (function () {
+        return(0);
+    })(); };
+})()), function () { return (and((String.fromCharCode(123) == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })); }), function () { return ((function () { 
+    var v_m2 = null;
+
+    (v_m2 = v_grammar.curly_parse(v_str, v_MATCH.to()));
+    if ( bool((v_m2)) ) { return (function () {
+        (v_MATCH.v_to = v_m2.to());
+        (function () { if (v_MATCH == null) { v_MATCH = {} }; if (v_MATCH['curly_parse'] == null) { v_MATCH['curly_parse'] = {} }; return (v_MATCH['curly_parse']  = v_m2); })();
+        return(1);
+    })(); }
+    else { return (function () {
+        return(0);
+    })(); };
+})()); }), function () { return (and((String.fromCharCode(125) == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })); }), function () { return (or(((function () { 
+    return((v_MATCH.v_capture = (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+List_a.push('term');
+List_a.push((function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('arguments', (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+List_a.push(scalar(v_MATCH['curly_parse']));
+    return(List_a);
+})(), 'code', (string('prefix:<') + string(scalar(v_MATCH['Perlito5::Grammar.var_sigil'])) + string('>')), 'namespace', ''); } var tmp = {v_arguments: (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+List_a.push(scalar(v_MATCH['curly_parse']));
+    return(List_a);
+})(),v_code: (string('prefix:<') + string(scalar(v_MATCH['Perlito5::Grammar.var_sigil'])) + string('>')),v_namespace: ''}; tmp.__proto__ = Apply; return tmp; })());
+    return(List_a);
+})()));
+})()), function () { return 1; })); }));
+})()), function () { return ((function () { 
+    (v_MATCH.v_to = v_pos1);
+    return((and((and(('->' == (v_str || "").substr(v_MATCH.to(), 2)), function () { return ((v_MATCH.v_to = add(2, v_MATCH.to()))); })), function () { return ((function () { 
     var v_pos1 = null;
 
     (v_pos1 = v_MATCH.to());
@@ -6887,8 +6938,8 @@ List_a.push(scalar(v_MATCH['curly_parse']));
 })()));
 })()), function () { return 1; })); })));
 })()); }));
-})()); }));
-})()), function () { return ((function () { 
+})()); })));
+})()); }), function () { return ((function () { 
     (v_MATCH.v_to = v_pos1);
     return((and(and(and((and(('(' == (v_str || "").substr(v_MATCH.to(), 1)), function () { return ((v_MATCH.v_to = add(1, v_MATCH.to()))); })), function () { return ((function () { 
     var v_m2 = null;
