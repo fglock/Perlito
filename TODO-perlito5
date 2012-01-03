@@ -41,6 +41,8 @@ TODO list for Perlito5
 
 -- bug: variable aliases create copies instead
 
+-- scalar references not implemented
+
 
 * Python backend
 

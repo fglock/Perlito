@@ -1,3 +1,5 @@
+use feature 'say';
+
 package Other;
 
 sub new {
@@ -20,9 +22,11 @@ sub subr2 {
     $a + $b + $c
 }
 
+sub my_accessor { $_[0]->{'my_accessor'} }
+
 package Main;
     
-    say '1..2';
+    say '1..4';
 
     my $other = Other->new();
 
@@ -41,4 +45,12 @@ package Main;
         print 'not '
     }
     say 'ok 2 - ', $x;
+
+
+    my $obj = Other->new( my_accessor => '123' );
+    print 'not ' if $obj->{'my_accessor'} ne '123';
+    say 'ok 3 - ', $obj->{'my_accessor'};
+
+    print 'not ' if $obj->my_accessor ne '123';
+    say 'ok 4 - ', $obj->my_accessor;
 
