@@ -770,7 +770,16 @@ package GLOBAL;
                     return scalar ((Javascript::tab($level) . $code . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
                 }
             };
-            (Javascript::tab($level) . $code . '(CallSub, ' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')')
+            ((my  $List_args = bless [], 'ARRAY') = do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'CallSub' );
+    $List_a
+});
+            for ( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ) {
+                push( @{$List_args}, $_->emit_javascript() )
+            };
+            (Javascript::tab($level) . $code . '(' . Main::join($List_args, ', ') . ')')
         };
         sub emit_javascript_bind {
             my $List__ = bless \@_, "ARRAY";

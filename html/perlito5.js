@@ -2600,6 +2600,8 @@ if (typeof Apply !== 'object') {
 
             var v_code = null;
 
+            var List_args = [];
+
             (v_self = shift(List__));
             (v_level = shift(List__));
             (v_apply = v_self.op_assign());
@@ -2747,7 +2749,16 @@ if (typeof Apply !== 'object') {
                     throw((string(Javascript.tab(CallSub, v_level)) + string(v_code) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
                 })(); };;
             })(); };
-            return((string(Javascript.tab(CallSub, v_level)) + string(v_code) + string('(CallSub, ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+            (List_args = (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+List_a.push('CallSub');
+    return(List_a);
+})());
+            (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v__) {                 push(List_args, v__.emit_javascript());; })(a_[i_]) } })(v_self.v_arguments);
+            return((string(Javascript.tab(CallSub, v_level)) + string(v_code) + string('(') + string(List_args.join(', ')) + string(')')));;
         }
         catch(err) {
             if ( err instanceof Error ) {
@@ -3882,7 +3893,7 @@ List_a.push('*start*');
                     (v_token = (v_get_token)());;
                 })(); };
                 for ( ; bool(and(((v_token != null)), function () { return ((v_token[0] != 'end')); }));  ) { (function () {                     if ( bool(and(((v_token[1] == ',')), function () { return (or(((v_last[1] == '*start*')), function () { return ((v_last[1] == ',')); })); })) ) { (function () {
-v_num_stack.push((function () { 
+                        push((v_num_stack), (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -3910,7 +3921,7 @@ v_op_stack.unshift(v_token);;
                         else { (function () {
                             if ( bool(and(and(((v_token[1] == 'block')), function () { return v__NAMESPACE.is_term(CallSub, v_last); }), function () { return v_last_has_space; })) ) { (function () {
                                 for ( ; bool(elems(v_op_stack));  ) { (function () { (v_reduce)(v_op_stack, v_num_stack);; })() };
-v_num_stack.push(v_token);
+                                push((v_num_stack), v_token);
                                 (v_End_token = v_last_end_token);
                                 throw(v_num_stack);;
                             })(); }
@@ -3923,7 +3934,7 @@ v_num_stack.push(v_token);
                                         die((string('Value tokens must be separated by an operator')));;
                                     })(); };
                                     (function () { if (v_token == null) { v_token = [] }; if (v_token[0] == null) { v_token[0] = [] }; return (v_token[0]  = 'term'); })();
-v_num_stack.push(v_token);;
+                                    push((v_num_stack), v_token);;
                                 })(); }
                                 else { (function () {
                                     if ( bool(v_Precedence[v_token[1]]) ) { (function () {
@@ -21791,7 +21802,7 @@ if (typeof Perlito5 !== 'object') {
 
                 (v_s = shift(List__));
                 (v_ast = Perlito5$Grammar.exp_stmts(v_s, 0));
-                return((string(v__NAMESPACE.CompUnit(CallSub, )) + string(v__NAMESPACE.new(CallSub, 'name', 'GLOBAL', 'body', scalar(v_ast)).emit_javascript())));;
+                return((string(v__NAMESPACE.CompUnit(CallSub)) + string(v__NAMESPACE.new(CallSub, 'name', 'GLOBAL', 'body', scalar(v_ast)).emit_javascript())));;
             }
             catch(err) {
                 if ( err instanceof Error ) {

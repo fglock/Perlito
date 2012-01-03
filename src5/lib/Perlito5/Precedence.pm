@@ -254,7 +254,7 @@ class Perlito5::Precedence {
             # say "# precedence get_token: (1) ", $token->perl;
             if ($token->[1] eq ',') && ( ($last->[1] eq '*start*') || ($last->[1] eq ',') ) {
                 # allow (,,,)
-                $num_stack->push( ['term', Mu] );
+                push( @$num_stack, ['term', Mu] );
             }
             if $Operator->{'prefix'}{$token->[1]} && ( ($last->[1] eq '*start*') || !(is_term($last)) ) {
                 $token->[0] = 'prefix';
@@ -280,7 +280,7 @@ class Perlito5::Precedence {
                 while $op_stack->elems() {
                     $reduce->($op_stack, $num_stack);
                 }
-                $num_stack->push($token);  # save the block
+                push( @$num_stack, $token);  # save the block
                 $End_token = $last_end_token;  # restore previous 'end token' context
                 return $num_stack;
             }
@@ -296,7 +296,7 @@ class Perlito5::Precedence {
                     die "Value tokens must be separated by an operator";
                 }
                 $token->[0] = 'term';
-                $num_stack->push($token);
+                push( @$num_stack, $token);
             }
             elsif $Precedence->{$token->[1]} {
                 my $pr = $Precedence->{$token->[1]};

@@ -454,7 +454,7 @@ package GLOBAL;
             };
             for ( ; ((defined($token)) && (($token->[0] ne 'end')));  ) {
                 if (((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ',')))))) {
-                    push( @{$num_stack}, do {
+                    push( @{($num_stack)}, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
@@ -482,7 +482,7 @@ package GLOBAL;
                             for ( ; scalar( @{$op_stack} );  ) {
                                 $reduce->($op_stack, $num_stack)
                             };
-                            push( @{$num_stack}, $token );
+                            push( @{($num_stack)}, $token );
                             ($End_token = $last_end_token);
                             return scalar ($num_stack)
                         }
@@ -495,7 +495,7 @@ package GLOBAL;
                                     die(('Value tokens must be separated by an operator'))
                                 };
                                 ($token->[0] = 'term');
-                                push( @{$num_stack}, $token )
+                                push( @{($num_stack)}, $token )
                             }
                             else {
                                 if ($Precedence->{$token->[1]}) {

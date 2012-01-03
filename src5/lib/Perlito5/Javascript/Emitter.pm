@@ -760,7 +760,10 @@ class Apply {
             $code = Javascript::escape_function( $.code );
             return Javascript::tab($level) . $code . '(' . (@.arguments.>>emit_javascript)->join(', ') . ')';
         }
-        Javascript::tab($level) . $code . '(CallSub, ' . (@.arguments.>>emit_javascript)->join(', ') . ')';
+        my @args = 'CallSub';
+        push @args, $_->emit_javascript
+            for @.arguments;
+        Javascript::tab($level) . $code . '(' . @args->join(', ') . ')';
     }
 
     sub emit_javascript_bind {
