@@ -50,12 +50,13 @@ package GLOBAL;
                     push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, Call->new(('arguments' => do {
+    push( @{$List_a}, Apply->new(('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')) );
     push( @{$List_a}, Index->new(('index_exp' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('obj' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')))) );
     $List_a
-}), ('hyper' => ''), ('invocant' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => ''))), ('method' => 'push')) );
+}), ('code' => 'push'), ('namespace' => '')) );
     $List_a
 }))), ('cond' => Apply->new(('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -81,12 +82,13 @@ package GLOBAL;
 }), ('code' => 'infix:<..>'), ('namespace' => ''))), ('topic' => undef())) )
                 }
                 else {
-                    push( @{$List_s}, Call->new(('arguments' => do {
+                    push( @{$List_s}, Apply->new(('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')) );
     push( @{$List_a}, $item );
     $List_a
-}), ('hyper' => ''), ('invocant' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => ''))), ('method' => 'push')) )
+}), ('code' => 'push'), ('namespace' => '')) )
                 }
             };
             return scalar (Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => do {

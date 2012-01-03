@@ -325,18 +325,7 @@ class Call {
                     . $method_perl5{ $.method } . '(' . $invocant . ', ' . (@.arguments.>>emit_perl5)->join(', ') . ')';
             }
         }
-        if $.method eq 'push' {
-            return Perl5::tab($level) . 'push( @{' . $invocant . '}, ' . (@.arguments.>>emit_perl5)->join(', ') . ' )'
-        }
-        if $.method eq 'unshift' {
-            return Perl5::tab($level) . 'unshift( @{' . $invocant . '}, ' . (@.arguments.>>emit_perl5)->join(', ') . ' )'
-        }
-        if $.method eq 'pop' {
-            return Perl5::tab($level) . 'pop( @{' . $invocant . '} )'
-        }
-        if $.method eq 'shift' {
-            return Perl5::tab($level) . 'shift( @{' . $invocant . '} )'
-        }
+        
         if $.method eq 'elems' {
             return Perl5::tab($level) . 'scalar( @{' . $invocant . '} )'
         }

@@ -45,7 +45,12 @@ class Lit::Array {
                         'body' => Lit::Block->new(
                             'sig' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
                             'stmts' => [
-                                Call->new('arguments' => [Index->new('index_exp' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'obj' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => ''))], 'hyper' => '', 'invocant' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''), 'method' => 'push')
+                                Apply->new(
+                                    'arguments' => [
+                                        Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
+                                        Index->new('index_exp' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'obj' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => ''))],
+                                    'code' => 'push',
+                                    'namespace' => '')
                             ]
                         ),
                         'cond' => Apply->new(
@@ -61,11 +66,12 @@ class Lit::Array {
             }
             else {
                 push @s,
-                    Call->new(
-                        'arguments' => [ $item ],
-                        'hyper' => '',
-                        'invocant' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
-                        'method' => 'push');
+                    Apply->new(
+                        'arguments' => [
+                            Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
+                            $item ],
+                        'code' => 'push',
+                        'namespace' => '');
             }
         }
         return Do->new(

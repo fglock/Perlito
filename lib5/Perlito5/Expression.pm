@@ -254,11 +254,19 @@ package GLOBAL;
                     if ((scalar( @{$num_stack} ) < 2)) {
                         ((my  $v2) = pop_term($num_stack));
                         if (((Main::isa($v2, 'Apply')) && (($v2->code() eq (('list:<' . $last_op->[1] . '>')))))) {
-                            push( @{($v2->arguments())}, undef() );
-                            push( @{($num_stack)}, $v2 )
+                            push( @{($num_stack)}, Apply->new(('namespace' => $v2->namespace()), ('code' => $v2->code()), ('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    ($List_v = ($v2->arguments()));
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
+        push( @{$List_a}, $List_v->[$x] )
+    };
+    push( @{$List_a}, undef() );
+    $List_a
+})) )
                         }
                         else {
-                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('list:<' . $last_op->[1] . '>')), ('arguments' => do {
+                            push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ('list:<' . $last_op->[1] . '>')), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $v2 );

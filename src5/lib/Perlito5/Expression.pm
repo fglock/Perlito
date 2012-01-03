@@ -258,11 +258,15 @@ class Perlito5::Expression {
             if $num_stack->elems < 2 {
                 my $v2 = pop_term($num_stack);
                 if ($v2->isa('Apply')) && ($v2->code eq ('list:<' . $last_op->[1] . '>')) {
-                    ($v2->arguments)->push( Mu );
-                    push( @$num_stack,  $v2 );
+                    push @$num_stack,
+                        Apply->new(
+                            namespace => $v2->namespace,
+                            code      => $v2->code,
+                            arguments => [ @{ $v2->arguments }, Mu ],
+                          );
                 }
                 else {
-                    push $num_stack,
+                    push @$num_stack,
                         Apply->new(
                             namespace => '',
                             code      => 'list:<' . $last_op->[1] . '>',

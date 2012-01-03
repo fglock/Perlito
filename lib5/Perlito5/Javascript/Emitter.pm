@@ -526,10 +526,6 @@ package GLOBAL;
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'join'} = 'join');
     ($Hash_a->{'split'} = 'split');
-    ($Hash_a->{'shift'} = 'shift');
-    ($Hash_a->{'unshift'} = 'unshift');
-    ($Hash_a->{'push'} = 'push');
-    ($Hash_a->{'pop'} = 'pop');
     $Hash_a
 });
         sub emit_javascript {

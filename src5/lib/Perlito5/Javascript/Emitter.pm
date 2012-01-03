@@ -489,10 +489,6 @@ class Call {
     my %method_native_js = (
         'join'    => 'join',
         'split'   => 'split',
-        'shift'   => 'shift',
-        'unshift' => 'unshift',
-        'push'    => 'push',
-        'pop'     => 'pop',
     );
 
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
