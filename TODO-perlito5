@@ -35,6 +35,8 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- bug: hash elements share storage with methods
+
 -- bug: packages currently create lexical blocks
 
 -- bug: "my" variables are block-wide; this doesn't work as expected: my $v = $v
@@ -52,6 +54,8 @@ TODO list for Perlito5
 
 
 * Nice to Have
+
+-- wantarray()
 
 -- require plain perl5 syntax (any perl6 is a syntax error)
 
