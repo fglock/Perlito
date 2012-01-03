@@ -11,7 +11,7 @@ class Perlito5::Expression {
             my $args = [];
             for my $v ( @($param_list->arguments) ) {
                 if defined($v) {
-                    $args->push($v);
+                    push( @$args, $v);
                 }
             }
             return $args;
@@ -251,7 +251,7 @@ class Perlito5::Expression {
                   );
         }
         elsif $last_op->[0] eq 'postfix_or_term' {
-            $num_stack->push( reduce_postfix( $last_op, pop_term($num_stack) ) );
+            push( @$num_stack,  reduce_postfix( $last_op, pop_term($num_stack) ) );
         }
         elsif Perlito5::Precedence::is_assoc_type('list', $last_op->[1]) {
             my $arg;
@@ -259,7 +259,7 @@ class Perlito5::Expression {
                 my $v2 = pop_term($num_stack);
                 if ($v2->isa('Apply')) && ($v2->code eq ('list:<' . $last_op->[1] . '>')) {
                     ($v2->arguments)->push( Mu );
-                    $num_stack->push( $v2 );
+                    push( @$num_stack,  $v2 );
                 }
                 else {
                     push $num_stack,
@@ -548,12 +548,12 @@ class Perlito5::Expression {
                 if self->has_newline_after($str, $last_pos) {
                     # a block followed by newline terminates the expression
                     $terminated = 1;
-                    $lexer_stack->push( [ 'end', '*end*' ] );
+                    push( @$lexer_stack,  [ 'end', '*end*' ] );
                 }
                 elsif self->has_no_comma_or_colon_after($str, $last_pos) {
                     # a sequence ( block - space - not_comma_or_colon ) terminates the list
                     $terminated = 1;
-                    $lexer_stack->push( [ 'end', '*end*' ] );
+                    push( @$lexer_stack,  [ 'end', '*end*' ] );
                 }
             }
             $last_token_was_space = ($v->[0] eq 'space');
@@ -693,7 +693,7 @@ class Perlito5::Expression {
                 # a block followed by newline terminates the expression
                 if self->has_newline_after($str, $last_pos) {
                     $terminated = 1;
-                    $lexer_stack->push( [ 'end', '*end*' ] );
+                    push( @$lexer_stack,  [ 'end', '*end*' ] );
                 }
             }
 

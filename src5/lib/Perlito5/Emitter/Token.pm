@@ -154,7 +154,7 @@ class Rul::Subrule {
             $code = 'if ($m2) { '
                     .   '$MATCH->to = $m2->to; '
                     .   'if (exists $MATCH->{\'' . $.metasyntax . '\'}) { '
-                    .       '($MATCH->{\'' . $.metasyntax . '\'})->push( $m2 ); '
+                    .       'push @{ $MATCH->{\'' . $.metasyntax . '\'} }, $m2; '
                     .   '} '
                     .   'else { '
                     .       '$MATCH->{\'' . $.metasyntax . '\'} = [ $m2 ]; '

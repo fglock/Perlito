@@ -27,7 +27,7 @@ package GLOBAL;
 });
                 for my $v ( @{(($param_list->arguments()))} ) {
                     if (defined($v)) {
-                        push( @{$args}, $v )
+                        push( @{($args)}, $v )
                     }
                 };
                 return scalar ($args)
@@ -246,7 +246,7 @@ package GLOBAL;
         }
         else {
             if (($last_op->[0] eq 'postfix_or_term')) {
-                push( @{$num_stack}, reduce_postfix($last_op, pop_term($num_stack)) )
+                push( @{($num_stack)}, reduce_postfix($last_op, pop_term($num_stack)) )
             }
             else {
                 if (Perlito5::Precedence::is_assoc_type('list', $last_op->[1])) {
@@ -255,7 +255,7 @@ package GLOBAL;
                         ((my  $v2) = pop_term($num_stack));
                         if (((Main::isa($v2, 'Apply')) && (($v2->code() eq (('list:<' . $last_op->[1] . '>')))))) {
                             push( @{($v2->arguments())}, undef() );
-                            push( @{$num_stack}, $v2 )
+                            push( @{($num_stack)}, $v2 )
                         }
                         else {
                             push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('list:<' . $last_op->[1] . '>')), ('arguments' => do {
@@ -1546,7 +1546,7 @@ package GLOBAL;
     if (((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block'))) && $last_token_was_space)) {
         if ($self->has_newline_after($str, $last_pos)) {
             ($terminated = 1);
-            push( @{$lexer_stack}, do {
+            push( @{($lexer_stack)}, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'end' );
@@ -1557,7 +1557,7 @@ package GLOBAL;
         else {
             if ($self->has_no_comma_or_colon_after($str, $last_pos)) {
                 ($terminated = 1);
-                push( @{$lexer_stack}, do {
+                push( @{($lexer_stack)}, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'end' );
@@ -1733,7 +1733,7 @@ package GLOBAL;
     if ((((((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block')))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'Sub'))))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'Do'))))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'CompUnit')))))) {
         if ($self->has_newline_after($str, $last_pos)) {
             ($terminated = 1);
-            push( @{$lexer_stack}, do {
+            push( @{($lexer_stack)}, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'end' );

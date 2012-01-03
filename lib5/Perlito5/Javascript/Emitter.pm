@@ -552,7 +552,7 @@ package GLOBAL;
 });
                 for my $field ( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ) {
                     if ((Main::isa($field, 'Apply') && ($field->code() eq 'infix:<' . chr(61) . '>>'))) {
-                        push( @{$str}, ('v_' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
+                        push( @{($str)}, ('v_' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
                     }
                     else {
                         die('Error in constructor, field: ', Main::perl($field, ))
