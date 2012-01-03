@@ -30,7 +30,7 @@ package GLOBAL;
                 }
             };
             for my $item ( @{$List_items} ) {
-                if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')))))) {
+                if ((((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>'))))))) {
                     ($needs_interpolation = 1)
                 }
             };
@@ -39,7 +39,7 @@ package GLOBAL;
             };
             (my  $List_s = bless [], 'ARRAY');
             for my $item ( @{$List_items} ) {
-                if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')))))) {
+                if ((((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>'))))))) {
                     push( @{$List_s}, Apply->new(('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -136,7 +136,7 @@ package GLOBAL;
 }), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) )
                 }
                 else {
-                    if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(37))) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(37) . '>')))) {
+                    if ((((Main::isa($item, 'Var') && ($item->sigil() eq chr(37))) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(37) . '>'))))) {
                         push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -165,7 +165,7 @@ package GLOBAL;
 }), ('code' => 'prefix:<' . chr(64) . '>'), ('namespace' => ''))), ('topic' => undef())) )
                     }
                     else {
-                        if (((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(64) . '>')))) {
+                        if ((((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(64) . '>'))))) {
                             push( @{$List_s}, Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');

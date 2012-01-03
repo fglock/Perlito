@@ -110,7 +110,7 @@ package GLOBAL;
                 }
             }
             else {
-                if (Main::isa($ast, 'Call')) {
+                if ((Main::isa($ast, 'Call'))) {
                     ((my  $var_js) = $ast->emit_javascript());
                     if ((($ast->method() eq 'postcircumfix:<[ ]>'))) {
                         return scalar ((autovivify($ast->invocant(), 'ARRAYREF') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
@@ -122,12 +122,12 @@ package GLOBAL;
                     }
                 }
                 else {
-                    if (Main::isa($ast, 'Index')) {
+                    if ((Main::isa($ast, 'Index'))) {
                         ((my  $var_js) = $ast->emit_javascript());
                         return scalar ((autovivify($ast->obj(), 'ARRAY') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
                     }
                     else {
-                        if (Main::isa($ast, 'Lookup')) {
+                        if ((Main::isa($ast, 'Lookup'))) {
                             ((my  $var_js) = $ast->emit_javascript());
                             return scalar ((autovivify($ast->obj(), 'HASH') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
                         }
@@ -758,7 +758,7 @@ package GLOBAL;
                 ($code = (Main::to_javascript_namespace($self->{namespace}) . '.' . Javascript::escape_function($code)))
             }
             else {
-                if (!(exists($Hash_op_global_js->{$code}))) {
+                if ((!(exists($Hash_op_global_js->{$code})))) {
                     ($code = ('v__NAMESPACE.' . Javascript::escape_function($code)))
                 }
                 else {

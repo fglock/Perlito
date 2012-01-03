@@ -32,10 +32,11 @@ class Perl5 {
         return "''" if $s eq '';
         for my $i (0 .. $s->chars() - 1) {
             my $c = substr($s, $i, 1);
-            if     (($c ge 'a') && ($c le 'z'))
+            if  (  (($c ge 'a') && ($c le 'z'))
                 || (($c ge 'A') && ($c le 'Z'))
                 || (($c ge '0') && ($c le '9'))
                 || exists( $safe_char{$c} )
+                )
             {
                 $tmp = $tmp . $c;
             }
@@ -344,8 +345,10 @@ class Call {
 
         my $call = '->' . $meth . '(' . (@.arguments.>>emit_perl5)->join(', ') . ')';
         if ($.hyper) {
-            if !(  $.invocant->isa( 'Apply' )
-                && $.invocant->code eq 'prefix:<@>' )
+            if ( !(  $.invocant->isa( 'Apply' )
+                  && $.invocant->code eq 'prefix:<@>' 
+                  )
+               )
             {
                 $invocant = '@{( ' . $invocant . ' )}';
             }
@@ -478,8 +481,9 @@ class Apply {
             return Perl5::tab($level) . emit_perl5_bind( @.arguments[0], @.arguments[1] );
         }
         if ($code eq 'return') {
-            if   @.arguments
-              && @.arguments->elems == 1
+            if (  @.arguments
+               && @.arguments->elems == 1
+               )
             {
                 # bug in "return do", see http://www->perlmonks->org/?node_id=648681
                 return Perl5::tab($level) . 'return scalar (' . (@.arguments.>>emit_perl5)->join(', ') . ')';

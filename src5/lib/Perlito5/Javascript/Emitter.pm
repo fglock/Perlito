@@ -101,7 +101,7 @@ class Javascript {
                 return 'if (' . $var_js . ' == null) { ' . $var_js . ' = [] }; ';
             }
         }
-        elsif $ast->isa( 'Call' ) {
+        elsif ($ast->isa( 'Call' )) {
             my $var_js = $ast->emit_javascript;
             if  (  $ast->method eq 'postcircumfix:<[ ]>' ) {
                 # $a->[3]
@@ -114,13 +114,13 @@ class Javascript {
                  . 'if (' . $var_js . ' == null) { ' . $var_js . ' = {} }; ';
             }
         }
-        elsif $ast->isa( 'Index' ) {
+        elsif ($ast->isa( 'Index' )) {
             my $var_js = $ast->emit_javascript;
             # $a[3][4]
             return autovivify( $ast->obj, 'ARRAY' )
                  . 'if (' . $var_js . ' == null) { ' . $var_js . ' = [] }; ';
         }
-        elsif $ast->isa( 'Lookup' ) {
+        elsif ($ast->isa( 'Lookup' )) {
             my $var_js = $ast->emit_javascript;
             # $a{'x'}{'y'}
             return autovivify( $ast->obj, 'HASH' )
@@ -749,7 +749,7 @@ class Apply {
         if ($.namespace) {
             $code = Main::to_javascript_namespace($.namespace) . '.' . Javascript::escape_function( $code );
         }
-        elsif !exists( %op_global_js{$code} ) {
+        elsif (!exists( %op_global_js{$code} )) {
             $code = 'v__NAMESPACE.' . Javascript::escape_function( $code );
         }
         else {

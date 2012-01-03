@@ -279,9 +279,10 @@ class Perlito5::Expression {
                 my $v2 = pop_term($num_stack);
                 $arg = [ pop_term($num_stack), $v2 ];
             }
-            if     (($arg->[0])->isa('Apply'))
+            if  (  (($arg->[0])->isa('Apply'))
                 && ($last_op->[0] eq 'infix')
                 && (($arg->[0])->code eq ('list:<' . $last_op->[1] . '>'))
+                )
             {
                 push $num_stack,
                     Apply->new(
@@ -516,9 +517,10 @@ class Perlito5::Expression {
             my $v;
             if ($lexer_stack->elems()) {
                 $v = pop @$lexer_stack;
-                if  $is_first_token
+                if  (  $is_first_token
                     && ($v->[0] eq 'op')
                     && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
+                    )
                 {
                     # say "# finishing list - first token is: ", $v->[1];
                     $v->[0] = 'end';
@@ -531,9 +533,10 @@ class Perlito5::Expression {
                     return [ 'end', '*end*' ];
                 }
                 $v = $$m;
-                if  $is_first_token
+                if  (  $is_first_token
                     && ($v->[0] eq 'op')
                     && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
+                    )
                 {
                     # say "# finishing list - first token is: ", $v->[1];
                     $v->[0] = 'end';
@@ -689,10 +692,11 @@ class Perlito5::Expression {
             }
             # say "# exp_lexer got " . $v->perl;
 
-            if     ( (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block') )
+            if  (  ( (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block') )
                 || ( (($v->[0]) eq 'term') && (($v->[1])->isa('Sub')) )
                 || ( (($v->[0]) eq 'term') && (($v->[1])->isa('Do')) )
                 || ( (($v->[0]) eq 'term') && (($v->[1])->isa('CompUnit')) )
+                )
             {
                 # a block followed by newline terminates the expression
                 if (self->has_newline_after($str, $last_pos)) {

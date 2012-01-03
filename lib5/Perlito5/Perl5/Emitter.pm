@@ -48,7 +48,7 @@ package GLOBAL;
             };
             for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
-                if (((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c}))) {
+                if ((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c})))) {
                     ($tmp = ($tmp . $c))
                 }
                 else {
@@ -393,7 +393,7 @@ package GLOBAL;
             };
             ((my  $call) = ('->' . $meth . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'));
             if (($self->{hyper})) {
-                if (!(((Main::isa($self->{invocant}, 'Apply') && ($self->{invocant}->code() eq 'prefix:<' . chr(64) . '>'))))) {
+                if ((!(((Main::isa($self->{invocant}, 'Apply') && ($self->{invocant}->code() eq 'prefix:<' . chr(64) . '>')))))) {
                     ($invocant = (chr(64) . chr(123) . '( ' . $invocant . ' )' . chr(125)))
                 };
                 return scalar ((Perl5::tab($level) . '[ map ' . chr(123) . ' ' . chr(36) . '_' . $call . ' ' . chr(125) . ' ' . $invocant . ' ]'))
@@ -542,7 +542,7 @@ package GLOBAL;
                 return scalar ((Perl5::tab($level) . emit_perl5_bind((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0], (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])))
             };
             if ((($code eq 'return'))) {
-                if (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) && (scalar( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ) == 1))) {
+                if ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) && (scalar( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ) == 1)))) {
                     return scalar ((Perl5::tab($level) . 'return scalar (' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
                 };
                 return scalar ((Perl5::tab($level) . 'return (' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))

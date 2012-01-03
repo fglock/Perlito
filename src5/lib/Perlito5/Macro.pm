@@ -17,8 +17,9 @@ class Lit::Array {
             }
         }
         for my $item ( @items ) {
-            if      $item->isa( 'Var' )   && $item->sigil eq '@'
+            if  (   $item->isa( 'Var' )   && $item->sigil eq '@'
                 ||  $item->isa( 'Apply' ) && ( $item->code eq 'prefix:<@>' || $item->code eq 'infix:<..>' )
+                )
             {
                 $needs_interpolation = 1;
             }
@@ -28,8 +29,9 @@ class Lit::Array {
         }
         my @s;
         for my $item ( @items ) {
-            if      $item->isa( 'Var' )   && $item->sigil eq '@'
+            if  (   $item->isa( 'Var' )   && $item->sigil eq '@'
                 ||  $item->isa( 'Apply' ) && ( $item->code eq 'prefix:<@>' || $item->code eq 'infix:<..>' )
+                )
             {
                 push @s,
                     Apply->new(
@@ -123,8 +125,9 @@ class Lit::Hash {
                         'code' => 'infix:<=>',
                         'namespace' => '');
             }
-            elsif   $item->isa( 'Var' )   && $item->sigil eq '%'
-                ||  $item->isa( 'Apply' ) && $item->code eq 'prefix:<%>'
+            elsif (   $item->isa( 'Var' )   && $item->sigil eq '%'
+                  ||  $item->isa( 'Apply' ) && $item->code eq 'prefix:<%>'
+                  )
             {
                 push @s,
                     For->new(
@@ -163,8 +166,9 @@ class Lit::Hash {
                         'topic' => Mu
                     );
             }
-            elsif   $item->isa( 'Var' )   && $item->sigil eq '@'
-                ||  $item->isa( 'Apply' ) && $item->code eq 'prefix:<@>'
+            elsif (   $item->isa( 'Var' )   && $item->sigil eq '@'
+                  ||  $item->isa( 'Apply' ) && $item->code eq 'prefix:<@>'
+                  )
             {
 
                 # do {

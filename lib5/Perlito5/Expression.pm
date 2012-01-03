@@ -286,7 +286,7 @@ package GLOBAL;
     $List_a
 })
                     };
-                    if ((((Main::isa(($arg->[0]), 'Apply')) && (($last_op->[0] eq 'infix'))) && ((($arg->[0])->code() eq (('list:<' . $last_op->[1] . '>')))))) {
+                    if (((((Main::isa(($arg->[0]), 'Apply')) && (($last_op->[0] eq 'infix'))) && ((($arg->[0])->code() eq (('list:<' . $last_op->[1] . '>'))))))) {
                         push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ($arg->[0])->code()), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1528,7 +1528,7 @@ package GLOBAL;
     (my  $v);
     if ((scalar( @{$lexer_stack} ))) {
         ($v = pop( @{($lexer_stack)} ));
-        if ((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))))) {
+        if (((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1])))))) {
             ($v->[0] = 'end')
         }
     }
@@ -1544,7 +1544,7 @@ package GLOBAL;
 })
         };
         ($v = ${$m});
-        if ((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))))) {
+        if (((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1])))))) {
             ($v->[0] = 'end')
         };
         if ((($v->[0] ne 'end'))) {
@@ -1738,7 +1738,7 @@ package GLOBAL;
             ($last_pos = $m->to())
         }
     };
-    if ((((((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block')))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'Sub'))))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'Do'))))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'CompUnit')))))) {
+    if (((((((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block')))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'Sub'))))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'Do'))))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'CompUnit'))))))) {
         if (($self->has_newline_after($str, $last_pos))) {
             ($terminated = 1);
             push( @{($lexer_stack)}, do {
