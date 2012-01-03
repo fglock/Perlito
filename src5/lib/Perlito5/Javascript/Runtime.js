@@ -23,7 +23,7 @@
 // See http://www.perl.com/perl/misc/Artistic.html
 
 if (typeof arguments === 'object') {
-    List_ARGS = arguments;
+    List_ARGV = arguments;
 }
 
 // call context - method or subroutine

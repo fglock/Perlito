@@ -42,5 +42,9 @@ TODO list for Perlito5
 
 * Nice to Have
 
+-- require perl5 grammar (any perl6 is a syntax error)
+
 -- run perltidy on the source code
+
+-- use the same error messages and warnings as 'perl'
 

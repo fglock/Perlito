@@ -182,7 +182,7 @@ package GLOBAL;
                 ($ns = ($self->{namespace} . '::'))
             }
             else {
-                if ((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS')))) {
+                if (((($self->{sigil} eq chr(64))) && (($self->{name} eq 'ARGV')))) {
                     return scalar ((\@ARGV))
                 };
                 if ((($self->{twigil} eq '.'))) {

@@ -289,7 +289,7 @@ package GLOBAL;
                 ($ns = ($self->{namespace} . '::'))
             }
             else {
-                if ((((($self->{sigil} eq chr(64))) && (($self->{twigil} eq '*'))) && (($self->{name} eq 'ARGS')))) {
+                if (((($self->{sigil} eq chr(64)) && ($self->{name} eq 'ARGV')))) {
                     return scalar ((Perl5::tab($level) . '(' . chr(92) . chr(64) . 'ARGV)'))
                 };
                 if ((($self->{twigil} eq '.'))) {

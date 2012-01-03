@@ -111,8 +111,8 @@ class Var {
             $ns = $.namespace . '::';
         }
         else {
-            if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
-                return @*ARGS
+            if ($.sigil eq '@') && ($.name eq 'ARGV') {
+                return @ARGV
             }
             if ($.twigil eq '.') {
                 warn 'Interpreter TODO: $.' . $.name;

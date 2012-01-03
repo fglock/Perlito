@@ -238,7 +238,7 @@ class Var {
             $ns = $.namespace . '::';
         }
         else {
-            if ($.sigil eq '@') && ($.twigil eq '*') && ($.name eq 'ARGS') {
+            if ($.sigil eq '@' && $.name eq 'ARGV') {
                 return Perl5::tab($level) . '(\\@ARGV)'
             }
             if ($.twigil eq '.') {

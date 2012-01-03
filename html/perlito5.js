@@ -24,7 +24,7 @@
 // See http://www.perl.com/perl/misc/Artistic.html
 
 if (typeof arguments === 'object') {
-    List_ARGS = arguments;
+    List_ARGV = arguments;
 }
 
 // call context - method or subroutine
@@ -5192,7 +5192,7 @@ if (typeof Var !== 'object') {
                     (v_ns = (string(v_self.v_namespace) + string('::')));;
                 })(); }
                 else { (function () {
-                    if ( bool(and(and(((v_self.v_sigil == String.fromCharCode(64))), function () { return ((v_self.v_twigil == '*')); }), function () { return ((v_self.v_name == 'ARGS')); })) ) { (function () {
+                    if ( bool((and((v_self.v_sigil == String.fromCharCode(64)), function () { return (v_self.v_name == 'ARGV'); }))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('(' + String.fromCharCode(92) + String.fromCharCode(64) + 'ARGV)')));;
                     })(); };
                     if ( bool(((v_self.v_twigil == '.'))) ) { (function () {
