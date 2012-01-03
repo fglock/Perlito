@@ -40,12 +40,12 @@ class Perl5 {
                 $tmp = $tmp . $c;
             }
             else {
-                @out->push: "'$tmp'" if $tmp ne '';
-                @out->push: "chr({ ord($c) })";
+                push @out, "'$tmp'" if $tmp ne '';
+                push @out, "chr({ ord($c) })";
                 $tmp = '';
             }
         }
-        @out->push: "'$tmp'" if $tmp ne '';
+        push @out, "'$tmp'" if $tmp ne '';
         return @out->join(' . ');
     }
 

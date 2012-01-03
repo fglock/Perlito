@@ -9,11 +9,11 @@ class Lit::Array {
         for my $item ( @.array1 ) {
             if $item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' ) {
                 for my $arg ( @($item->arguments) ) {
-                    @items->push($arg);
+                    push( @items, $arg);
                 }
             }
             else {
-                @items->push($item);
+                push( @items, $item);
             }
         }
         for my $item ( @items ) {
@@ -96,11 +96,11 @@ class Lit::Hash {
         for my $item ( @.hash1 ) {
             if $item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' ) {
                 for my $arg ( @($item->arguments) ) {
-                    @items->push($arg);
+                    push( @items, $arg);
                 }
             }
             else {
-                @items->push($item);
+                push( @items, $item);
             }
         }
         my @s;

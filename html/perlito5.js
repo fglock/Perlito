@@ -4395,15 +4395,15 @@ if (typeof Perl5 !== 'object') {
                     })(); }
                     else { (function () {
                         if ( bool((v_tmp != '')) ) { (function () {
-List_out.push((string(String.fromCharCode(39)) + string(v_tmp) + string(String.fromCharCode(39))));;
+                            push(List_out, (string(String.fromCharCode(39)) + string(v_tmp) + string(String.fromCharCode(39))));;
                         })(); };
-List_out.push((string('chr(') + string((function () { 
+                        push(List_out, (string('chr(') + string((function () { 
     return((v_c).charCodeAt(0));
 })()) + string(')')));
                         (v_tmp = '');;
                     })(); };; })(a_[i_]) } })((function (a) { for (var i=0, l=(chars(v_s) - 1); i<=l; ++i){ a.push(i) }; return a })([]));
                 if ( bool((v_tmp != '')) ) { (function () {
-List_out.push((string(String.fromCharCode(39)) + string(v_tmp) + string(String.fromCharCode(39))));;
+                    push(List_out, (string(String.fromCharCode(39)) + string(v_tmp) + string(String.fromCharCode(39))));;
                 })(); };
                 throw(List_out.join(' . '));;
             }
@@ -17820,10 +17820,10 @@ if (typeof Lit$Array !== 'object') {
                 (v_self = List__[0]);
                 (v_needs_interpolation = 0);
                 (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {                     if ( bool(and(isa(v_item, 'Apply'), function () { return (or((v_item.code() == 'circumfix:<( )>'), function () { return (v_item.code() == 'list:<,>'); })); })) ) { (function () {
-                        (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) { List_items.push(v_arg);; })(a_[i_]) } })(((v_item.arguments())));;
+                        (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) {                             push(List_items, v_arg);; })(a_[i_]) } })(((v_item.arguments())));;
                     })(); }
                     else { (function () {
-List_items.push(v_item);;
+                        push(List_items, v_item);;
                     })(); };; })(a_[i_]) } })(v_self.v_array1);
                 (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {                     if ( bool(or(and(isa(v_item, 'Var'), function () { return (v_item.sigil() == String.fromCharCode(64)); }), function () { return and(isa(v_item, 'Apply'), function () { return (or((v_item.code() == 'prefix:<' + String.fromCharCode(64) + '>'), function () { return (v_item.code() == 'infix:<..>'); })); }); })) ) { (function () {
                         (v_needs_interpolation = 1);;
@@ -18445,10 +18445,10 @@ if (typeof Lit$Hash !== 'object') {
 
                 (v_self = List__[0]);
                 (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {                     if ( bool(and(isa(v_item, 'Apply'), function () { return (or((v_item.code() == 'circumfix:<( )>'), function () { return (v_item.code() == 'list:<,>'); })); })) ) { (function () {
-                        (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) { List_items.push(v_arg);; })(a_[i_]) } })(((v_item.arguments())));;
+                        (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) {                             push(List_items, v_arg);; })(a_[i_]) } })(((v_item.arguments())));;
                     })(); }
                     else { (function () {
-List_items.push(v_item);;
+                        push(List_items, v_item);;
                     })(); };; })(a_[i_]) } })(v_self.v_hash1);
                 (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {                     if ( bool(and(isa(v_item, 'Apply'), function () { return (v_item.code() == 'infix:<' + String.fromCharCode(61) + '>>'); })) ) { (function () {
                         push(List_s, (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('arguments', (function () { 

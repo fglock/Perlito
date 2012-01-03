@@ -149,7 +149,7 @@ package GLOBAL;
                     }
                 }
             };
-            push( @{$comp_units}, $comp_unit )
+            push( @{($comp_units)}, $comp_unit )
         }
     };
     if (((((\@ARGV)->[0] eq '-v')) || (((\@ARGV)->[0] eq '--verbose')))) {

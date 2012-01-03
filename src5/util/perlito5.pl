@@ -91,7 +91,7 @@ sub add_comp_unit {
                 }
             }
         }
-        $comp_units->push( $comp_unit );
+        push @$comp_units, $comp_unit;
         # say "comp_unit done";
     }
 }
