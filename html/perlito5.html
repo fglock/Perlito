@@ -61,8 +61,9 @@ $printer->out( "Using my 'Printer' object\n" );
         <p>Compiler log:</p>
 		<textarea id="log-result" readonly="true" cols="70" rows="5"></textarea><br/>
 
-        <p>Syntax tree (AST):</p>
-		<textarea id="ast-result" readonly="true" cols="70" rows="5"></textarea><br/>
+        <!-- <p>Syntax tree (AST):</p>
+		     <textarea id="ast-result" readonly="true" cols="70" rows="5"></textarea><br/>
+        -->
 
         <p>Compiled to Javascript:</p>
 		<textarea id="js-result" readonly="true" cols="70" rows="5"></textarea><br/>
@@ -83,7 +84,7 @@ $printer->out( "Using my 'Printer' object\n" );
             var ast;
             var match;
 			document.getElementById('log-result').value   = "";
-			document.getElementById('ast-result').value   = "";
+			// document.getElementById('ast-result').value   = "";
 			document.getElementById('js-result').value    = "";
 		    document.getElementById('print-result').value = "";
             try {
@@ -99,7 +100,7 @@ $printer->out( "Using my 'Printer' object\n" );
                 tmp.__proto__ = CompUnit; 
                 ast = tmp;
 
-		    	document.getElementById('ast-result').value += perl(ast) + "\n";
+		    	// document.getElementById('ast-result').value += perl(ast) + "\n";
 		    	document.getElementById('log-result').value += "Emitting javascript.\n";
     		    document.getElementById('js-result').value += ast.emit_javascript() + ";\n";
                 pos = match.v_to;
@@ -115,7 +116,7 @@ $printer->out( "Using my 'Printer' object\n" );
             }
             catch(err) {
                 document.getElementById('log-result').value += "Error:\n";
-                document.getElementById('log-result').value += perl(err) + "\n";
+                document.getElementById('log-result').value += err + "\n";
                 document.getElementById('log-result').value += "Compilation aborted.\n";
             }
 		}
