@@ -68,6 +68,14 @@ package GLOBAL;
                 return scalar ($o)
             };
             ((my  $stmt) = $stmts->[0]);
+            if ((Main::isa($stmt, 'Var'))) {
+                return scalar (Lit::Hash->new(('hash1' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, $stmt );
+    $List_a
+})))
+            };
             if ((!((Main::isa($stmt, 'Apply'))))) {
                 return scalar ($o)
             };

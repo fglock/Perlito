@@ -6362,6 +6362,23 @@ if (typeof Perlito5$Expression !== 'object') {
                     throw(v_o);;
                 })(); };
                 (v_stmt = v_stmts[0]);
+                if ( bool((isa(v_stmt, 'Var'))) ) { (function () {
+                    throw((function () { if (Lit$Hash.hasOwnProperty("new") ) { return Lit$Hash.new('hash1', (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+    push(List_a, v_stmt);
+    return(List_a);
+})()); } var tmp = {v_hash1: (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+    push(List_a, v_stmt);
+    return(List_a);
+})()}; tmp.__proto__ = Lit$Hash; return tmp; })());;
+                })(); };
                 if ( bool((( bool((isa(v_stmt, 'Apply'))) ? false : true))) ) { (function () {
                     throw(v_o);;
                 })(); };

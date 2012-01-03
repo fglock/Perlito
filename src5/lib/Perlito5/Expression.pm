@@ -41,6 +41,11 @@ class Perlito5::Expression {
             return $o
         }
         my $stmt = $stmts->[0];
+        if ($stmt->isa('Var')) {
+            # the argument is a single variable
+            # say "#  single var -- is hash";
+            return Lit::Hash->new(hash1 => [ $stmt ])
+        }
         if (!($stmt->isa('Apply'))) {
             # say "#  not Apply -- not hash";
             return $o
