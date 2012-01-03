@@ -287,20 +287,6 @@ class CompUnit {
               . '  ' . $class_name . '.' . Javascript::escape_function( $decl->var->name() )
                     . ' = function () { return this.v_' . $decl->var->name() . '; };' . "\n";
             }
-            if $decl->isa( 'Method' ) {
-                my $sig      = $decl->sig;
-                my $pos      = $sig->positional;
-                my $invocant = $sig->invocant;
-                my $block    = Perlito5::Javascript::LexicalBlock->new( block => $decl->block, needs_return => 1, top_level => 1 );
-                $str = $str
-              . '  // method ' . $decl->name() . "\n"
-              . '  ' . $class_name . '.' . Javascript::escape_function( $decl->name() )
-                    . ' = function (' . ($pos.>>emit_javascript)->join(', ') . ') {' . "\n"
-              . '    var ' . $invocant->emit_javascript() . ' = this;' . "\n"
-              .         $block->emit_javascript_indented( $level + 1 ) . "\n"
-              . '  }' . "\n"
-              . '  ' . $class_name . '.' . Javascript::escape_function( $decl->name() ) . ';  // v8 bug workaround' . "\n";
-            }
             if $decl->isa( 'Sub' ) {
                 my $sig      = $decl->sig;
                 my $pos      = $sig->positional;
@@ -326,7 +312,6 @@ class CompUnit {
         for my $decl ( @body ) {
             if    defined( $decl )
                && (!( $decl->isa( 'Decl' ) && (( $decl->decl eq 'has' ) || ( $decl->decl eq 'my' )) ))
-               && (!( $decl->isa( 'Method')))
                && (!( $decl->isa( 'Sub')))
             {
                 $str = $str . ($decl)->emit_javascript_indented( $level + 1 ) . ";\n";
@@ -952,21 +937,6 @@ class Decl {
         else {
             die "not implemented: Decl '" . $.decl . "'";
         }
-    }
-}
-
-class Method {
-    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
-    sub emit_javascript_indented {
-        my $self = shift;
-        my $level = shift;
-        my $sig = $.sig;
-        my $invocant = $sig->invocant;
-        my $pos = $sig->positional;
-        my $str = $pos.>>emit_javascript->join(', ');
-          Javascript::tab($level) . 'function ' . $.name . '(' . $str . ') {' . "\n"
-        .   (Perlito5::Javascript::LexicalBlock->new( block => @.block, needs_return => 1, top_level => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
-        . Javascript::tab($level) . '}'
     }
 }
 

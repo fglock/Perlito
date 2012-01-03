@@ -98,12 +98,6 @@ class Sig {
     has $.named;
 }
 
-class Method {
-    has $.name;
-    has $.sig;
-    has @.block;
-}
-
 class Sub {
     has $.name;
     has $.sig;

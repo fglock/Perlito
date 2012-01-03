@@ -703,32 +703,6 @@ package GLOBAL;
 
 ;
     {
-    package Method;
-        sub new { shift; bless { @_ }, "Method" }
-        sub emit_perl5 {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            $self->emit_perl5_indented(0)
-        };
-        sub emit_perl5_indented {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $level) = $List__->[1]);
-            ((my  $sig) = $self->{sig});
-            ((my  $invocant) = $sig->invocant());
-            ((my  $pos) = $sig->positional());
-            ((my  $str) = '');
-            ((my  $i) = 1);
-            for my $field ( @{($pos)} ) {
-                ($str = ($str . (Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_[' . $i . ']' . chr(59) . (chr(10)))));
-                ($i = ($i + 1))
-            };
-            (Perl5::tab($level) . 'sub ' . $self->{name} . (' ' . chr(123) . chr(10)) . Perl5::tab(($level + 1)) . 'my ' . $invocant->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_[0]' . chr(59) . (chr(10)) . $str . Main::join(([ map { $_->emit_perl5_indented(($level + 1)) } @{( (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY'))) )} ]), (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
-        }
-    }
-
-;
-    {
     package Sub;
         sub new { shift; bless { @_ }, "Sub" }
         sub emit_perl5 {

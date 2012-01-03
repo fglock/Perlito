@@ -403,22 +403,6 @@ package GLOBAL;
 
 ;
     {
-    package Method;
-        sub new { shift; bless { @_ }, "Method" }
-        sub eval {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $env) = $List__->[1]);
-            warn(('Interpreter TODO: Method'));
-            ((my  $sig) = $self->{sig});
-            ((my  $invocant) = $sig->invocant());
-            ((my  $pos) = $sig->positional());
-            ((my  $str) = 'my ' . chr(36) . 'List__ ' . chr(61) . ' ' . chr(92) . chr(64) . '_' . chr(59) . ' ')
-        }
-    }
-
-;
-    {
     package Sub;
         sub new { shift; bless { @_ }, "Sub" }
         sub eval {

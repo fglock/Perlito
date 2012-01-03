@@ -633,34 +633,6 @@ class Decl {
     }
 }
 
-class Method {
-    sub emit_perl5 {
-        my $self = $_[0];
-        $self->emit_perl5_indented(0) 
-    }
-    sub emit_perl5_indented {
-        my $self = $_[0];
-        my $level = $_[1];
-        
-        my $sig = $.sig;
-        my $invocant = $sig->invocant;
-        my $pos = $sig->positional;
-        my $str = '';
-
-        my $i = 1;
-        for my $field (@$pos) {
-            $str .= Perl5::tab( $level + 1 ) . 'my ' . $field->emit_perl5() . ' = $_[' . $i . '];' . "\n";
-            $i = $i + 1;
-        }
-
-          Perl5::tab($level) . 'sub ' . $.name . " \{\n"
-        . Perl5::tab( $level + 1 ) . 'my ' . $invocant->emit_perl5() . ' = $_[0];' . "\n"
-        .   $str
-        .   (@.block.>>emit_perl5_indented( $level + 1 ))->join(";\n") . "\n"
-        . Perl5::tab($level) . "}"
-    }
-}
-
 class Sub {
     sub emit_perl5 {
         my $self = $_[0];

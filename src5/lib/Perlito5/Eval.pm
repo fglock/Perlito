@@ -267,21 +267,6 @@ class Decl {
     }
 }
 
-class Method {
-    sub eval {
-        my $self = $_[0];
-        my $env = $_[1];
-
-        warn "Interpreter TODO: Method";
-        my $sig = $.sig;
-        my $invocant = $sig->invocant;
-        my $pos = $sig->positional;
-        my $str = 'my $List__ = \\@_; ';
-
-        # ...
-    }
-}
-
 class Sub {
     sub eval {
         my $self = $_[0];

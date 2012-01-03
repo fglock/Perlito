@@ -269,13 +269,6 @@ package GLOBAL;
                 if ((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has')))) {
                     ($str = ($str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . (chr(10)) . '  ' . $class_name . '.v_' . $decl->var()->name() . ' ' . chr(61) . ' null' . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->var()->name()) . ' ' . chr(61) . ' function () ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . (chr(10))))
                 };
-                if (Main::isa($decl, 'Method')) {
-                    ((my  $sig) = $decl->sig());
-                    ((my  $pos) = $sig->positional());
-                    ((my  $invocant) = $sig->invocant());
-                    ((my  $block) = Perlito5::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
-                    ($str = ($str . '  ' . chr(47) . chr(47) . ' method ' . $decl->name() . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function (' . Main::join(([ map { $_->emit_javascript() } @{( $pos )} ]), ', ') . ') ' . chr(123) . (chr(10)) . '    var ' . $invocant->emit_javascript() . ' ' . chr(61) . ' this' . chr(59) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . (chr(10)) . '  ' . chr(125) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . (chr(10))))
-                };
                 if (Main::isa($decl, 'Sub')) {
                     ((my  $sig) = $decl->sig());
                     ((my  $pos) = $sig->positional());
@@ -284,7 +277,7 @@ package GLOBAL;
                 }
             };
             for my $decl ( @{$List_body} ) {
-                if ((((defined($decl) && (!(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my'))))))))) && (!((Main::isa($decl, 'Method'))))) && (!((Main::isa($decl, 'Sub')))))) {
+                if (((defined($decl) && (!(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my'))))))))) && (!((Main::isa($decl, 'Sub')))))) {
                     ($str = ($str . ($decl)->emit_javascript_indented(($level + 1)) . (chr(59) . chr(10))))
                 }
             };
@@ -963,26 +956,6 @@ package GLOBAL;
             else {
                 die(('not implemented: Decl ' . chr(39) . $self->{decl} . (chr(39))))
             }
-        }
-    }
-
-;
-    {
-    package Method;
-        sub new { shift; bless { @_ }, "Method" }
-        sub emit_javascript {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->emit_javascript_indented(0)
-        };
-        sub emit_javascript_indented {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = shift());
-            ((my  $level) = shift());
-            ((my  $sig) = $self->{sig});
-            ((my  $invocant) = $sig->invocant());
-            ((my  $pos) = $sig->positional());
-            ((my  $str) = Main::join([ map { $_->emit_javascript() } @{( $pos )} ], ', '));
-            (Javascript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') ' . chr(123) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125))
         }
     }
 

@@ -684,7 +684,6 @@ class Perlito5::Expression {
 
             if     ( (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block') )
                 || ( (($v->[0]) eq 'term') && (($v->[1])->isa('Sub')) )
-                || ( (($v->[0]) eq 'term') && (($v->[1])->isa('Method')) )
                 || ( (($v->[0]) eq 'term') && (($v->[1])->isa('Do')) )
                 || ( (($v->[0]) eq 'term') && (($v->[1])->isa('CompUnit')) )
             {

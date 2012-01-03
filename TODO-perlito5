@@ -1,5 +1,10 @@
 TODO list for Perlito5
 
+* extensibility
+
+-- add "require"
+
+
 * source code 
 
 -- remove Perl6 code: "class", "has", "token", hyper operator, .push, .shift, .print
@@ -16,6 +21,9 @@ TODO list for Perlito5
 
 * Perl5 backend
 
+-- remove "Match" overloads
+
+
 * Javascript backend
 
 -- bug: packages currently create lexical blocks
@@ -24,9 +32,15 @@ TODO list for Perlito5
 
 -- bug: variable aliases create copies instead
 
+
 * Python backend
 
 * Ruby backend
 
 * Java backend
+
+
+* Nice to Have
+
+-- run perltidy on the source code
 

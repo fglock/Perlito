@@ -167,15 +167,6 @@ package GLOBAL;
 
 ;
     {
-    package Method;
-        sub new { shift; bless { @_ }, "Method" }
-        sub name { $_[0]->{name} };
-        sub sig { $_[0]->{sig} };
-        sub block { $_[0]->{block} }
-    }
-
-;
-    {
     package Sub;
         sub new { shift; bless { @_ }, "Sub" }
         sub name { $_[0]->{name} };
