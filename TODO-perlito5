@@ -1,5 +1,12 @@
 TODO list for Perlito5
 
+* basic functionality
+
+-- add "map", "grep", "sort"
+
+-- add regexes
+
+
 * extensibility
 
 -- add "require"
@@ -11,11 +18,9 @@ TODO list for Perlito5
 
 -- remove Perl6 code: "class", "has", "token", hyper operator, .perl, .pairs
 
+-- remove Perl6 accessors: $.term
+
 -- remove Perl6 "match" special variables: $<..>, $/
-
--- add "map", "grep", "sort"
-
--- add regexes
 
 
 * libraries
