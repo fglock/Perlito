@@ -464,7 +464,7 @@ package GLOBAL;
                 };
                 if (($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !((is_term($last))))))) {
                     ($token->[0] = 'prefix');
-                    unshift( @{$op_stack}, $token )
+                    unshift( @{($op_stack)}, $token )
                 }
                 else {
                     if ((($Operator->{'postfix'}->{$token->[1]} && is_term($last)) && (($Allow_space_before->{'postfix'}->{$token->[1]} || !(($last_has_space)))))) {
@@ -475,7 +475,7 @@ package GLOBAL;
                         if ((($token->[0]) ne 'postfix_or_term')) {
                             ($token->[0] = 'postfix')
                         };
-                        unshift( @{$op_stack}, $token )
+                        unshift( @{($op_stack)}, $token )
                     }
                     else {
                         if ((((($token->[1] eq 'block')) && is_term($last)) && $last_has_space)) {
@@ -516,7 +516,7 @@ package GLOBAL;
                                     else {
                                         ($token->[0] = 'infix')
                                     };
-                                    unshift( @{$op_stack}, $token )
+                                    unshift( @{($op_stack)}, $token )
                                 }
                                 else {
                                     die(('Unknown token: ' . chr(39)), $token->[1], (chr(39)))

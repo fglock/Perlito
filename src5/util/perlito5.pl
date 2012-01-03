@@ -162,13 +162,13 @@ perlito5 [switches] [programfile]
             if $verbose {
                 warn "// source from command line: ", @*ARGS[0];
             }
-            $source = @*ARGS->shift;
+            $source = shift @*ARGS;
         }
         else {
             if $verbose {
                 warn "// source from file: ", @*ARGS[0];
             }
-            $source = IO::slurp( @*ARGS->shift );
+            $source = IO::slurp( shift @*ARGS );
         }
 
         if $verbose {

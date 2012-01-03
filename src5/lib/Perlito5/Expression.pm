@@ -69,7 +69,7 @@ class Perlito5::Expression {
 
     sub pop_term {
         my $num_stack = shift;
-        my $v = $num_stack->pop;
+        my $v = pop @$num_stack;
         if $v->isa('Array') {
             # say "# ** processing term ", $v->perl;
             if $v->[1] eq 'methcall_no_params' {
@@ -88,7 +88,7 @@ class Perlito5::Expression {
                 # say "#   Call ", ($v->[2])->perl;
                 if ($v->[3])<end_block> {
                     # say "# pop_term: found end_block in Call";
-                    $num_stack->unshift( ($v->[3])<end_block> );
+                    unshift( @$num_stack, ($v->[3])<end_block> );
                 }
                 my $param_list = expand_list( ($v->[3])<exp> );
                 $v = Call->new( invocant => Mu, method => $v->[2], arguments => $param_list, hyper => $v->[4] );
@@ -99,7 +99,7 @@ class Perlito5::Expression {
                 # say "#   Apply ", ($v->[2])->perl;
                 if ($v->[4])<end_block> {
                     # say "# pop_term: found end_block in Apply";
-                    $num_stack->unshift( ($v->[4])<end_block> );
+                    unshift( @$num_stack, ($v->[4])<end_block> );
                 }
                 my $param_list = expand_list( ($v->[4])<exp> );
                 $v = Apply->new( code => $v->[3], arguments => $param_list, namespace => $v->[2] );
@@ -230,7 +230,7 @@ class Perlito5::Expression {
     }
 
     my $reduce_to_ast = sub ($op_stack, $num_stack) {
-        my $last_op = $op_stack->shift;
+        my $last_op = shift @$op_stack;
         # say "# reduce_to_ast ";
         # say "#     last_op: ", $last_op->perl;
         # say "#   num_stack: ", $num_stack;
@@ -508,7 +508,7 @@ class Perlito5::Expression {
         my $get_token = sub {
             my $v;
             if $lexer_stack->elems() {
-                $v = $lexer_stack->pop;
+                $v = pop @$lexer_stack;
                 if  $is_first_token
                     && ($v->[0] eq 'op')
                     && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
@@ -573,13 +573,13 @@ class Perlito5::Expression {
         # if the expression terminates in a block, the block was pushed to num_stack
         my $block;
         if $res->elems > 1 {
-            $block = $res->pop; # pop_term($res);
+            $block = pop @$res; # pop_term($res);
             $block = Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
             # say "# list exp terminated with a block: ", $block->perl;
         }
         my $result = pop_term($res);
         if $res->elems > 0 {
-            $block = $res->pop; # pop_term($res);
+            $block = pop @$res; # pop_term($res);
             $block = Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
             # say "# list exp terminated with a block (2): ", $block->perl;
         }
@@ -667,7 +667,7 @@ class Perlito5::Expression {
         my $get_token = sub {
             my $v;
             if $lexer_stack->elems() {
-                $v = $lexer_stack->pop;
+                $v = pop @$lexer_stack;
             }
             else {
                 my $m = self->operator($str, $last_pos);
@@ -707,13 +707,13 @@ class Perlito5::Expression {
         # if the expression terminates in a block, the block was pushed to num_stack
         my $block;
         if $res->elems > 1 {
-            $block = $res->pop; # pop_term($res);
+            $block = pop @$res; # pop_term($res);
             $block = Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
             # say "# exp terminated with a block: ", $block->perl;
         }
         my $result = pop_term($res);
         if $res->elems > 0 {
-            $block = $res->pop; # pop_term($res);
+            $block = pop @$res; # pop_term($res);
             if !($block->isa('Lit::Block')) {
                 $block = Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
             }

@@ -92,7 +92,7 @@ package GLOBAL;
         sub pop_term {
             my $List__ = bless \@_, "ARRAY";
             ((my  $num_stack) = shift());
-            ((my  $v) = pop( @{$num_stack} ));
+            ((my  $v) = pop( @{($num_stack)} ));
             if (Main::isa($v, 'Array')) {
                 if (($v->[1] eq 'methcall_no_params')) {
                     ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => do {
@@ -108,7 +108,7 @@ package GLOBAL;
                 };
                 if (($v->[1] eq 'methcall')) {
                     if (($v->[3])->{'end_block'}) {
-                        unshift( @{$num_stack}, ($v->[3])->{'end_block'} )
+                        unshift( @{($num_stack)}, ($v->[3])->{'end_block'} )
                     };
                     ((my  $param_list) = expand_list(($v->[3])->{'exp'}));
                     ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => $param_list), ('hyper' => $v->[4])));
@@ -116,7 +116,7 @@ package GLOBAL;
                 };
                 if (($v->[1] eq 'funcall')) {
                     if (($v->[4])->{'end_block'}) {
-                        unshift( @{$num_stack}, ($v->[4])->{'end_block'} )
+                        unshift( @{($num_stack)}, ($v->[4])->{'end_block'} )
                     };
                     ((my  $param_list) = expand_list(($v->[4])->{'exp'}));
                     ($v = Apply->new(('code' => $v->[3]), ('arguments' => $param_list), ('namespace' => $v->[2])));
@@ -226,7 +226,7 @@ package GLOBAL;
     my $List__ = bless \@_, "ARRAY";
     my $op_stack = $_[0];
     my $num_stack = $_[1];
-    ((my  $last_op) = shift( @{$op_stack} ));
+    ((my  $last_op) = shift( @{($op_stack)} ));
     if (($last_op->[0] eq 'prefix')) {
         push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('prefix:<' . $last_op->[1] . '>')), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1483,7 +1483,7 @@ package GLOBAL;
     my $List__ = bless \@_, "ARRAY";
     (my  $v);
     if (scalar( @{$lexer_stack} )) {
-        ($v = pop( @{$lexer_stack} ));
+        ($v = pop( @{($lexer_stack)} ));
         if ((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))))) {
             ($v->[0] = 'end')
         }
@@ -1567,12 +1567,12 @@ package GLOBAL;
             };
             (my  $block);
             if ((scalar( @{$res} ) > 1)) {
-                ($block = pop( @{$res} ));
+                ($block = pop( @{($res)} ));
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
             };
             ((my  $result) = pop_term($res));
             if ((scalar( @{$res} ) > 0)) {
-                ($block = pop( @{$res} ));
+                ($block = pop( @{($res)} ));
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
             };
             return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => do {
@@ -1676,7 +1676,7 @@ package GLOBAL;
     my $List__ = bless \@_, "ARRAY";
     (my  $v);
     if (scalar( @{$lexer_stack} )) {
-        ($v = pop( @{$lexer_stack} ))
+        ($v = pop( @{($lexer_stack)} ))
     }
     else {
         ((my  $m) = $self->operator($str, $last_pos));
@@ -1731,12 +1731,12 @@ package GLOBAL;
             };
             (my  $block);
             if ((scalar( @{$res} ) > 1)) {
-                ($block = pop( @{$res} ));
+                ($block = pop( @{($res)} ));
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
             };
             ((my  $result) = pop_term($res));
             if ((scalar( @{$res} ) > 0)) {
-                ($block = pop( @{$res} ));
+                ($block = pop( @{($res)} ));
                 if (!((Main::isa($block, 'Lit::Block')))) {
                     ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
                 }

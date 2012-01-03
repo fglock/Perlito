@@ -258,7 +258,7 @@ class Perlito5::Precedence {
             }
             if $Operator->{'prefix'}{$token->[1]} && ( ($last->[1] eq '*start*') || !(is_term($last)) ) {
                 $token->[0] = 'prefix';
-                $op_stack->unshift($token);
+                unshift( @$op_stack, $token);
             }
             elsif $Operator->{'postfix'}{$token->[1]} && is_term($last)
                 && (  $Allow_space_before->{'postfix'}{$token->[1]}
@@ -272,7 +272,7 @@ class Perlito5::Precedence {
                 if ($token->[0]) ne 'postfix_or_term' {
                     $token->[0] = 'postfix';
                 }
-                $op_stack->unshift($token);
+                unshift( @$op_stack, $token);
             }
             elsif ($token->[1] eq 'block') && is_term($last) && $last_has_space {
                 # a block in this position terminates the current expression
@@ -316,7 +316,7 @@ class Perlito5::Precedence {
                 else {
                     $token->[0] = 'infix';
                 }
-                $op_stack->unshift($token);
+                unshift( @$op_stack, $token);
             }
             else {
                 die "Unknown token: '", $token->[1], "'";
