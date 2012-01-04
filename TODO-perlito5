@@ -35,8 +35,6 @@ TODO list for Perlito5
 
 * Javascript backend
 
--- bug: hash elements share storage with methods
-
 -- bug: packages currently create lexical blocks
 
 -- bug: "my" variables are block-wide; this doesn't work as expected: my $v = $v
@@ -44,6 +42,10 @@ TODO list for Perlito5
 -- bug: variable aliases create copies instead
 
 -- scalar references not implemented
+
+-- bug: autovivification generates more code than needed
+
+-- generate more compact code; maybe use more subroutines instead of inlining
 
 
 * Python backend

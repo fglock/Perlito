@@ -566,7 +566,19 @@ class Call {
         if  ($meth eq 'postcircumfix:<( )>')  {
             return '(' . $invocant . ')(' . (@.arguments.>>emit_javascript)->join(', ') . ')';
         }
-        return Javascript::tab($level) . $invocant . '.' . Javascript::escape_function( $meth ) . '(' . (@.arguments.>>emit_javascript)->join(', ') . ')';
+
+        # try to call a method on the prototype; if that fails, then call a method on self.
+        # this prevents properties from overriding methods with the same name
+        my @args = ($invocant);
+        push @args, $_->emit_javascript
+            for @.arguments;
+        return Javascript::tab($level) 
+            . '(' 
+            .          'typeof(' . $invocant . '.__proto__) != \'undefined\' '
+            .   '&& ' . $invocant . '.__proto__.hasOwnProperty("' . Javascript::escape_function( $meth ) . '") '
+            . '? ' . $invocant . '.__proto__.' . Javascript::escape_function( $meth ) . '.call(' . @args->join(', ') . ') '
+            . ': ' . $invocant . '.' . Javascript::escape_function( $meth ) . '(' . (@.arguments.>>emit_javascript)->join(', ') . ')'
+            . ')';
     }
 }
 
