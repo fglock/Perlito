@@ -310,9 +310,6 @@ class Call {
         my $level = $_[1];
         
         my $invocant = $.invocant->emit_perl5;
-        if ($invocant eq 'self') {
-            $invocant = '$self';
-        }
 
         if (exists( $method_perl5{ $.method } )) {
             if ($.hyper) {
@@ -437,7 +434,6 @@ class Apply {
         }
 
         if ($.code eq 'package')   { return Perl5::tab($level) . 'package ' . $.namespace }
-        if ($code eq 'self')       { return Perl5::tab($level) . '$self' }
         if ($code eq 'Mu')         { return Perl5::tab($level) . 'undef()' }
 
         if ($code eq 'make')       { return Perl5::tab($level) . '($MATCH->{capture} = ('   . (@.arguments.>>emit_perl5)->join(', ') . '))' }

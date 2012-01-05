@@ -537,9 +537,6 @@ package GLOBAL;
             ((my  $self) = shift());
             ((my  $level) = shift());
             ((my  $invocant) = $self->{invocant}->emit_javascript());
-            if ((($invocant eq 'self'))) {
-                ($invocant = 'v_self')
-            };
             if ((($self->{method} eq 'new'))) {
                 ((my  $str) = do {
     (my  $List_a = bless [], 'ARRAY');
@@ -653,9 +650,6 @@ package GLOBAL;
             };
             if ((($code eq 'eval'))) {
                 return scalar (('eval(perl5_to_js(' . Javascript::escape_function('string') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . '))'))
-            };
-            if ((($code eq 'self'))) {
-                return scalar ((Javascript::tab($level) . 'v_self'))
             };
             if ((($code eq 'Mu'))) {
                 return scalar ((Javascript::tab($level) . 'null'))

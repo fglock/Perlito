@@ -367,9 +367,6 @@ package GLOBAL;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             ((my  $invocant) = $self->{invocant}->emit_perl5());
-            if ((($invocant eq 'self'))) {
-                ($invocant = chr(36) . 'self')
-            };
             if ((exists($Hash_method_perl5->{$self->{method}}))) {
                 if (($self->{hyper})) {
                     return scalar ((Perl5::tab($level) . 'bless [ map ' . chr(123) . ' ' . $Hash_method_perl5->{$self->{method}} . '( ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')' . ' ' . chr(125) . ' ' . chr(64) . chr(123) . '( ' . $invocant . ' )' . chr(125) . ' ], ' . chr(34) . 'ARRAY' . chr(34)))
@@ -483,9 +480,6 @@ package GLOBAL;
             };
             if ((($self->{code} eq 'package'))) {
                 return scalar ((Perl5::tab($level) . 'package ' . $self->{namespace}))
-            };
-            if ((($code eq 'self'))) {
-                return scalar ((Perl5::tab($level) . chr(36) . 'self'))
             };
             if ((($code eq 'Mu'))) {
                 return scalar ((Perl5::tab($level) . 'undef()'))

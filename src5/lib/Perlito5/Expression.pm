@@ -532,7 +532,7 @@ class Perlito5::Expression {
                 }
             }
             else {
-                my $m = self->operator($str, $last_pos);
+                my $m = $self->operator($str, $last_pos);
                 # say "# list lexer got: " . $m->perl;
                 if (!$m) {
                     return [ 'end', '*end*' ];
@@ -557,12 +557,12 @@ class Perlito5::Expression {
             if (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block')
                 && $last_token_was_space
             {
-                if (self->has_newline_after($str, $last_pos)) {
+                if ($self->has_newline_after($str, $last_pos)) {
                     # a block followed by newline terminates the expression
                     $terminated = 1;
                     push( @$lexer_stack,  [ 'end', '*end*' ] );
                 }
-                elsif (self->has_no_comma_or_colon_after($str, $last_pos)) {
+                elsif ($self->has_no_comma_or_colon_after($str, $last_pos)) {
                     # a sequence ( block - space - not_comma_or_colon ) terminates the list
                     $terminated = 1;
                     push( @$lexer_stack,  [ 'end', '*end*' ] );
@@ -616,7 +616,7 @@ class Perlito5::Expression {
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
-            my $m = self->operator($str, $last_pos);
+            my $m = $self->operator($str, $last_pos);
             if (!$m) {
                 die "Expected closing delimiter: ", @($delimiter), ' near ', $last_pos;
             }
@@ -645,28 +645,28 @@ class Perlito5::Expression {
         my $str = $_[1];
         my $pos = $_[2];
        
-        return self->circumfix_parse($str, $pos, [':']);
+        return $self->circumfix_parse($str, $pos, [':']);
     }
     sub curly_parse {
         my $self = $_[0];
         my $str = $_[1];
         my $pos = $_[2];
        
-        return self->circumfix_parse($str, $pos, ['}']);
+        return $self->circumfix_parse($str, $pos, ['}']);
     }
     sub square_parse {
         my $self = $_[0];
         my $str = $_[1];
         my $pos = $_[2];
        
-        return self->circumfix_parse($str, $pos, [']']);
+        return $self->circumfix_parse($str, $pos, [']']);
     }
     sub paren_parse {
         my $self = $_[0];
         my $str = $_[1];
         my $pos = $_[2];
        
-        return self->circumfix_parse($str, $pos, [')']);
+        return $self->circumfix_parse($str, $pos, [')']);
     }
 
     sub exp_parse {
@@ -685,7 +685,7 @@ class Perlito5::Expression {
                 $v = pop @$lexer_stack;
             }
             else {
-                my $m = self->operator($str, $last_pos);
+                my $m = $self->operator($str, $last_pos);
                 # say "# exp lexer got: " . $m->perl;
                 if (!$m) {
                     return [ 'end', '*end*' ];
@@ -704,7 +704,7 @@ class Perlito5::Expression {
                 )
             {
                 # a block followed by newline terminates the expression
-                if (self->has_newline_after($str, $last_pos)) {
+                if ($self->has_newline_after($str, $last_pos)) {
                     $terminated = 1;
                     push( @$lexer_stack,  [ 'end', '*end*' ] );
                 }
@@ -784,12 +784,12 @@ class Perlito5::Expression {
         my $last_pos = $pos;
         my $lexer_stack = [];
         my $res;
-        $res = self->exp_stmt($str, $pos);
+        $res = $self->exp_stmt($str, $pos);
         if ($res) {
             # say "# statement result: ", $res->perl;
             return $res;
         }
-        $res = self->exp_parse($str, $pos);
+        $res = $self->exp_parse($str, $pos);
         if (!($res)) {
             # say "# not a statement or expression";
             return $res;
@@ -808,14 +808,14 @@ class Perlito5::Expression {
             return $res;
         }
         # say "# look for a statement modifier";
-        my $modifier = self->statement_modifier($str, $res->to);
+        my $modifier = $self->statement_modifier($str, $res->to);
         if (!($modifier)) {
             # say "# statement expression no modifier result: ", $res->perl;
             # TODO - require a statement terminator
             $res->capture = ($$res)<exp>;
             return $res;
         }
-        my $modifier_exp = self->exp_parse($str, $modifier->to);
+        my $modifier_exp = $self->exp_parse($str, $modifier->to);
         # say "# statement modifier [", $modifier, "] exp: ", $modifier_exp->perl;
         if (!($modifier_exp)) {
             die "Expected expression after '", $modifier, "'";

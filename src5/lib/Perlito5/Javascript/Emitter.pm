@@ -141,7 +141,7 @@ class Perlito5::Javascript::LexicalBlock {
         my $level = shift;
 
         if ($.top_level) {
-            my $block = Perlito5::Javascript::LexicalBlock->new( block => self->block, needs_return => self->needs_return, top_level => 0 );
+            my $block = Perlito5::Javascript::LexicalBlock->new( block => $self->block, needs_return => $self->needs_return, top_level => 0 );
             return
                   Javascript::tab($level)   . 'try {' . "\n"
                 .                               $block->emit_javascript_indented( $level + 1 ) . ';' . "\n"
@@ -379,7 +379,7 @@ class Lit::Array {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $ast = self->expand_interpolation;
+        my $ast = $self->expand_interpolation;
         return $ast->emit_javascript_indented( $level );
     }
 }
@@ -389,7 +389,7 @@ class Lit::Hash {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $ast = self->expand_interpolation;
+        my $ast = $self->expand_interpolation;
         return $ast->emit_javascript_indented( $level );
     }
 }
@@ -496,9 +496,6 @@ class Call {
         my $self = shift;
         my $level = shift;
         my $invocant = $.invocant->emit_javascript;
-        if ($invocant eq 'self') {
-            $invocant = 'v_self';
-        }
 
         # XXX Perl6
         if ($.method eq 'new') {
@@ -567,7 +564,7 @@ class Call {
             return '(' . $invocant . ')(' . (@.arguments.>>emit_javascript)->join(', ') . ')';
         }
 
-        # try to call a method on the prototype; if that fails, then call a method on self.
+        # try to call a method on the prototype; if that fails, then call a method on $self.
         # this prevents properties from overriding methods with the same name
         my @args = ($invocant);
         push @args, $_->emit_javascript
@@ -620,7 +617,7 @@ class Apply {
         my $self = shift;
         my $level = shift;
 
-        my $apply = self->op_assign();
+        my $apply = $self->op_assign();
         if ($apply) {
             return $apply->emit_javascript_indented( $level );
         }
@@ -645,7 +642,6 @@ class Apply {
                 . '))'
         }
 
-        if ($code eq 'self')       { return Javascript::tab($level) . 'v_self' }
         if ($code eq 'Mu')         { return Javascript::tab($level) . 'null' }
         if ($code eq 'make')       { return Javascript::tab($level) . '(v_MATCH.v_capture = ' . (@.arguments.>>emit_javascript)->join(', ') . ')' }
         if ($code eq 'defined')    { return Javascript::tab($level) . '('  . (@.arguments.>>emit_javascript)->join(' ')    . ' != null)' }
@@ -977,7 +973,7 @@ class Do {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $block = self->simplify->block;
+        my $block = $self->simplify->block;
         return
               Javascript::tab($level) . '(function () { ' . "\n"
             .   (Perlito5::Javascript::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
