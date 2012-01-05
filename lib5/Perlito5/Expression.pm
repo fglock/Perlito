@@ -10,168 +10,98 @@ our $MATCH = Perlito5::Match->new();
 {
 package GLOBAL;
     sub new { shift; bless { @_ }, "GLOBAL" }
-    {
     package Perlito5::Expression;
-        sub new { shift; bless { @_ }, "Perlito5::Expression" }
-        use Perlito5::Precedence;
-        use Perlito5::Grammar;
-        use Perlito5::Perl5::Emitter;
-        sub expand_list {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $param_list) = shift());
-            if (((Main::isa($param_list, 'Apply')) && ((($param_list->code()) eq 'list:<,>')))) {
-                ((my  $args) = do {
+    use Perlito5::Precedence;
+    use Perlito5::Grammar;
+    use Perlito5::Perl5::Emitter;
+    sub expand_list {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $param_list) = shift());
+        if (((Main::isa($param_list, 'Apply')) && ((($param_list->code()) eq 'list:<,>')))) {
+            ((my  $args) = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-                for my $v ( @{(($param_list->arguments()))} ) {
-                    if ((defined($v))) {
-                        push( @{($args)}, $v )
-                    }
-                };
-                return scalar ($args)
-            }
-            else {
-                if ((($param_list eq '*undef*'))) {
-                    return scalar (do {
+            for my $v ( @{(($param_list->arguments()))} ) {
+                if ((defined($v))) {
+                    push( @{($args)}, $v )
+                }
+            };
+            return scalar ($args)
+        }
+        else {
+            if ((($param_list eq '*undef*'))) {
+                return scalar (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 })
-                }
-                else {
-                    return scalar (do {
+            }
+            else {
+                return scalar (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $param_list );
     $List_a
 })
-                }
             }
-        };
-        sub block_or_hash {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $o) = shift());
-            if ((defined($o->sig()))) {
-                return scalar ($o)
-            };
-            ((my  $stmts) = $o->stmts());
-            if (((!((defined($stmts)))) || (((scalar( @{($stmts)} )) == 0)))) {
-                return scalar (Lit::Hash->new(('hash1' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    $List_a
-})))
-            };
-            if (((scalar( @{($stmts)} )) != 1)) {
-                return scalar ($o)
-            };
-            ((my  $stmt) = $stmts->[0]);
-            if ((Main::isa($stmt, 'Var'))) {
-                return scalar (Lit::Hash->new(('hash1' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $stmt );
-    $List_a
-})))
-            };
-            if ((!((Main::isa($stmt, 'Apply'))))) {
-                return scalar ($o)
-            };
-            if ((($stmt->code()) eq 'infix:<' . chr(61) . '>>')) {
-                return scalar (Lit::Hash->new(('hash1' => do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $stmt );
-    $List_a
-})))
-            };
-            if ((($stmt->code()) ne 'list:<,>')) {
-                return scalar ($o)
-            };
-            for my $item ( @{(($stmt->arguments()))} ) {
-                if (((Main::isa($item, 'Apply') && (($item->code()) eq 'infix:<' . chr(61) . '>>')))) {
-                    return scalar (Lit::Hash->new(('hash1' => expand_list($stmt))))
-                }
-            };
+        }
+    };
+    sub block_or_hash {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $o) = shift());
+        if ((defined($o->sig()))) {
             return scalar ($o)
         };
-        sub pop_term {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $num_stack) = shift());
-            ((my  $v) = pop( @{($num_stack)} ));
-            if ((Main::isa($v, 'Array'))) {
-                if ((($v->[1] eq 'methcall_no_params'))) {
-                    ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => do {
+        ((my  $stmts) = $o->stmts());
+        if (((!((defined($stmts)))) || (((scalar( @{($stmts)} )) == 0)))) {
+            return scalar (Lit::Hash->new(('hash1' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
-}), ('hyper' => $v->[3])));
-                    return scalar ($v)
-                };
-                if ((($v->[1] eq 'funcall_no_params'))) {
-                    ($v = Apply->new(('code' => $v->[3]), ('namespace' => $v->[2])));
-                    return scalar ($v)
-                };
-                if ((($v->[1] eq 'methcall'))) {
-                    if (($v->[3])->{'end_block'}) {
-                        unshift( @{($num_stack)}, ($v->[3])->{'end_block'} )
-                    };
-                    ((my  $param_list) = expand_list(($v->[3])->{'exp'}));
-                    ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => $param_list), ('hyper' => $v->[4])));
-                    return scalar ($v)
-                };
-                if ((($v->[1] eq 'funcall'))) {
-                    if (($v->[4])->{'end_block'}) {
-                        unshift( @{($num_stack)}, ($v->[4])->{'end_block'} )
-                    };
-                    ((my  $param_list) = expand_list(($v->[4])->{'exp'}));
-                    ($v = Apply->new(('code' => $v->[3]), ('arguments' => $param_list), ('namespace' => $v->[2])));
-                    return scalar ($v)
-                };
-                if ((($v->[1] eq '( )'))) {
-                    ((my  $param_list) = expand_list($v->[2]));
-                    ($v = Apply->new(('code' => 'circumfix:<( )>'), ('arguments' => $param_list), ('namespace' => '')));
-                    return scalar ($v)
-                };
-                if ((($v->[1] eq '[ ]'))) {
-                    ((my  $param_list) = expand_list($v->[2]));
-                    ($v = Lit::Array->new(('array1' => $param_list)));
-                    return scalar ($v)
-                };
-                if ((($v->[1] eq 'block'))) {
-                    ($v = Lit::Block->new(('stmts' => $v->[2]), ('sig' => $v->[3])));
-                    ($v = block_or_hash($v));
-                    return scalar ($v)
-                };
-                if ((($v->[1] eq '.( )'))) {
-                    ($v = Call->new(('invocant' => undef()), ('method' => 'postcircumfix:<( )>'), ('arguments' => $v->[2]), ('hyper' => 0)));
-                    return scalar ($v)
-                };
-                if ((($v->[1] eq '.[ ]'))) {
-                    ($v = Index->new(('obj' => undef()), ('index_exp' => $v->[2])));
-                    return scalar ($v)
-                };
-                if ((($v->[1] eq '.' . chr(123) . ' ' . chr(125)))) {
-                    ($v = Lookup->new(('obj' => undef()), ('index_exp' => $v->[2])));
-                    return scalar ($v)
-                };
-                if (((Main::isa($v->[1], 'Array') && (scalar( @{$v->[1]} ) == 2)))) {
-                    ($v = Apply->new(('code' => 'pair'), ('arguments' => $v->[1]), ('namespace' => '')));
-                    return scalar ($v)
-                };
-                return scalar ($v->[1])
-            };
-            return scalar ($v)
+})))
         };
-        sub reduce_postfix {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $op) = shift());
-            ((my  $value) = shift());
-            ((my  $v) = $op);
+        if (((scalar( @{($stmts)} )) != 1)) {
+            return scalar ($o)
+        };
+        ((my  $stmt) = $stmts->[0]);
+        if ((Main::isa($stmt, 'Var'))) {
+            return scalar (Lit::Hash->new(('hash1' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, $stmt );
+    $List_a
+})))
+        };
+        if ((!((Main::isa($stmt, 'Apply'))))) {
+            return scalar ($o)
+        };
+        if ((($stmt->code()) eq 'infix:<' . chr(61) . '>>')) {
+            return scalar (Lit::Hash->new(('hash1' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, $stmt );
+    $List_a
+})))
+        };
+        if ((($stmt->code()) ne 'list:<,>')) {
+            return scalar ($o)
+        };
+        for my $item ( @{(($stmt->arguments()))} ) {
+            if (((Main::isa($item, 'Apply') && (($item->code()) eq 'infix:<' . chr(61) . '>>')))) {
+                return scalar (Lit::Hash->new(('hash1' => expand_list($stmt))))
+            }
+        };
+        return scalar ($o)
+    };
+    sub pop_term {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $num_stack) = shift());
+        ((my  $v) = pop( @{($num_stack)} ));
+        if ((Main::isa($v, 'Array'))) {
             if ((($v->[1] eq 'methcall_no_params'))) {
-                ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('arguments' => do {
+                ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
@@ -179,58 +109,126 @@ package GLOBAL;
                 return scalar ($v)
             };
             if ((($v->[1] eq 'funcall_no_params'))) {
-                die(('unexpected function call'));
-                push( @{$v}, $value );
+                ($v = Apply->new(('code' => $v->[3]), ('namespace' => $v->[2])));
                 return scalar ($v)
             };
             if ((($v->[1] eq 'methcall'))) {
+                if (($v->[3])->{'end_block'}) {
+                    unshift( @{($num_stack)}, ($v->[3])->{'end_block'} )
+                };
                 ((my  $param_list) = expand_list(($v->[3])->{'exp'}));
-                ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('arguments' => $param_list), ('hyper' => $v->[4])));
+                ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => $param_list), ('hyper' => $v->[4])));
                 return scalar ($v)
             };
             if ((($v->[1] eq 'funcall'))) {
-                die(('unexpected function call'));
-                push( @{$v}, $value );
+                if (($v->[4])->{'end_block'}) {
+                    unshift( @{($num_stack)}, ($v->[4])->{'end_block'} )
+                };
+                ((my  $param_list) = expand_list(($v->[4])->{'exp'}));
+                ($v = Apply->new(('code' => $v->[3]), ('arguments' => $param_list), ('namespace' => $v->[2])));
                 return scalar ($v)
             };
             if ((($v->[1] eq '( )'))) {
                 ((my  $param_list) = expand_list($v->[2]));
-                if (((Main::isa($value, 'Apply') && !((defined($value->arguments())))))) {
-                    (($value)->{arguments} = $param_list);
-                    return scalar ($value)
-                };
-                if (((Main::isa($value, 'Call') && !((defined($value->arguments())))))) {
-                    (($value)->{arguments} = $param_list);
-                    return scalar ($value)
-                };
-                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list), ('hyper' => 0)));
+                ($v = Apply->new(('code' => 'circumfix:<( )>'), ('arguments' => $param_list), ('namespace' => '')));
                 return scalar ($v)
             };
             if ((($v->[1] eq '[ ]'))) {
-                ($v = Index->new(('obj' => $value), ('index_exp' => $v->[2])));
+                ((my  $param_list) = expand_list($v->[2]));
+                ($v = Lit::Array->new(('array1' => $param_list)));
                 return scalar ($v)
             };
             if ((($v->[1] eq 'block'))) {
-                ($v = Lookup->new(('obj' => $value), ('index_exp' => ($v->[2])->[0])));
+                ($v = Lit::Block->new(('stmts' => $v->[2]), ('sig' => $v->[3])));
+                ($v = block_or_hash($v));
                 return scalar ($v)
             };
             if ((($v->[1] eq '.( )'))) {
-                ((my  $param_list) = expand_list($v->[2]));
-                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list), ('hyper' => 0)));
+                ($v = Call->new(('invocant' => undef()), ('method' => 'postcircumfix:<( )>'), ('arguments' => $v->[2]), ('hyper' => 0)));
                 return scalar ($v)
             };
             if ((($v->[1] eq '.[ ]'))) {
-                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<[ ]>'), ('arguments' => $v->[2]), ('hyper' => 0)));
+                ($v = Index->new(('obj' => undef()), ('index_exp' => $v->[2])));
                 return scalar ($v)
             };
             if ((($v->[1] eq '.' . chr(123) . ' ' . chr(125)))) {
-                ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('arguments' => $v->[2]), ('hyper' => 0)));
+                ($v = Lookup->new(('obj' => undef()), ('index_exp' => $v->[2])));
                 return scalar ($v)
             };
-            push( @{$op}, $value );
-            return scalar ($op)
+            if (((Main::isa($v->[1], 'Array') && (scalar( @{$v->[1]} ) == 2)))) {
+                ($v = Apply->new(('code' => 'pair'), ('arguments' => $v->[1]), ('namespace' => '')));
+                return scalar ($v)
+            };
+            return scalar ($v->[1])
         };
-        ((my  $reduce_to_ast) = sub  {
+        return scalar ($v)
+    };
+    sub reduce_postfix {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $op) = shift());
+        ((my  $value) = shift());
+        ((my  $v) = $op);
+        if ((($v->[1] eq 'methcall_no_params'))) {
+            ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('arguments' => do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    $List_a
+}), ('hyper' => $v->[3])));
+            return scalar ($v)
+        };
+        if ((($v->[1] eq 'funcall_no_params'))) {
+            die(('unexpected function call'));
+            push( @{$v}, $value );
+            return scalar ($v)
+        };
+        if ((($v->[1] eq 'methcall'))) {
+            ((my  $param_list) = expand_list(($v->[3])->{'exp'}));
+            ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('arguments' => $param_list), ('hyper' => $v->[4])));
+            return scalar ($v)
+        };
+        if ((($v->[1] eq 'funcall'))) {
+            die(('unexpected function call'));
+            push( @{$v}, $value );
+            return scalar ($v)
+        };
+        if ((($v->[1] eq '( )'))) {
+            ((my  $param_list) = expand_list($v->[2]));
+            if (((Main::isa($value, 'Apply') && !((defined($value->arguments())))))) {
+                (($value)->{arguments} = $param_list);
+                return scalar ($value)
+            };
+            if (((Main::isa($value, 'Call') && !((defined($value->arguments())))))) {
+                (($value)->{arguments} = $param_list);
+                return scalar ($value)
+            };
+            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list), ('hyper' => 0)));
+            return scalar ($v)
+        };
+        if ((($v->[1] eq '[ ]'))) {
+            ($v = Index->new(('obj' => $value), ('index_exp' => $v->[2])));
+            return scalar ($v)
+        };
+        if ((($v->[1] eq 'block'))) {
+            ($v = Lookup->new(('obj' => $value), ('index_exp' => ($v->[2])->[0])));
+            return scalar ($v)
+        };
+        if ((($v->[1] eq '.( )'))) {
+            ((my  $param_list) = expand_list($v->[2]));
+            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list), ('hyper' => 0)));
+            return scalar ($v)
+        };
+        if ((($v->[1] eq '.[ ]'))) {
+            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<[ ]>'), ('arguments' => $v->[2]), ('hyper' => 0)));
+            return scalar ($v)
+        };
+        if ((($v->[1] eq '.' . chr(123) . ' ' . chr(125)))) {
+            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('arguments' => $v->[2]), ('hyper' => 0)));
+            return scalar ($v)
+        };
+        push( @{$op}, $value );
+        return scalar ($op)
+    };
+    ((my  $reduce_to_ast) = sub  {
     my $List__ = bless \@_, "ARRAY";
     my $op_stack = $_[0];
     my $num_stack = $_[1];
@@ -358,13 +356,13 @@ package GLOBAL;
         }
     }
 });
-        sub capture_name {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $grammar) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+    sub capture_name {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
@@ -419,15 +417,15 @@ package GLOBAL;
 }))
 })
 })));
-            $MATCH
-        };
-        sub hyper_op {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $grammar) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub hyper_op {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((my  $last_pos) = $MATCH->to());
@@ -439,15 +437,15 @@ package GLOBAL;
     1
 })
 })));
-            $MATCH
-        };
-        sub operator {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $grammar) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub operator {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((((((((((((((((((((((do {
     (((((do {
@@ -1426,15 +1424,15 @@ package GLOBAL;
 }) || 1))))
 }))
 })));
-            $MATCH
-        };
-        sub has_newline_after {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $grammar) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub has_newline_after {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     ((chr(35) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
@@ -1473,15 +1471,15 @@ package GLOBAL;
 })))
 }))
 })));
-            $MATCH
-        };
-        sub has_no_comma_or_colon_after {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $grammar) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub has_no_comma_or_colon_after {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     (((do {
@@ -1514,24 +1512,24 @@ package GLOBAL;
 })) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
 })
 })));
-            $MATCH
-        };
-        sub list_parse {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            (my  $expr);
-            ((my  $last_pos) = $pos);
-            ((my  $is_first_token) = 1);
-            ((my  $lexer_stack) = do {
+        $MATCH
+    };
+    sub list_parse {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        (my  $expr);
+        ((my  $last_pos) = $pos);
+        ((my  $is_first_token) = 1);
+        ((my  $lexer_stack) = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-            ((my  $terminated) = 0);
-            ((my  $last_token_was_space) = 1);
-            ((my  $get_token) = sub  {
+        ((my  $terminated) = 0);
+        ((my  $last_token_was_space) = 1);
+        ((my  $get_token) = sub  {
     my $List__ = bless \@_, "ARRAY";
     (my  $v);
     if ((scalar( @{($lexer_stack)} ))) {
@@ -1587,7 +1585,7 @@ package GLOBAL;
     ($is_first_token = 0);
     return scalar ($v)
 });
-            ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => do {
+        ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'and' );
@@ -1607,43 +1605,43 @@ package GLOBAL;
     push( @{$List_a}, 'loop' );
     $List_a
 })));
-            ((my  $res) = $prec->precedence_parse());
-            if (((scalar( @{($res)} ) == 0))) {
-                return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => do {
+        ((my  $res) = $prec->precedence_parse());
+        if (((scalar( @{($res)} ) == 0))) {
+            return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'exp'} = '*undef*');
     ($Hash_a->{'end_block'} = undef());
     ($Hash_a->{'terminated'} = undef());
     $Hash_a
 })))
-            };
-            (my  $block);
-            if (((scalar( @{($res)} ) > 1))) {
-                ($block = pop( @{($res)} ));
-                ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
-            };
-            ((my  $result) = pop_term($res));
-            if (((scalar( @{($res)} ) > 0))) {
-                ($block = pop( @{($res)} ));
-                ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
-            };
-            return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => do {
+        };
+        (my  $block);
+        if (((scalar( @{($res)} ) > 1))) {
+            ($block = pop( @{($res)} ));
+            ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
+        };
+        ((my  $result) = pop_term($res));
+        if (((scalar( @{($res)} ) > 0))) {
+            ($block = pop( @{($res)} ));
+            ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
+        };
+        return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'exp'} = $result);
     ($Hash_a->{'end_block'} = $block);
     ($Hash_a->{'terminated'} = $terminated);
     $Hash_a
 })))
-        };
-        sub circumfix_parse {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            ((my  $delimiter) = $List__->[3]);
-            (my  $expr);
-            ((my  $last_pos) = $pos);
-            ((my  $get_token) = sub  {
+    };
+    sub circumfix_parse {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $delimiter) = $List__->[3]);
+        (my  $expr);
+        ((my  $last_pos) = $pos);
+        ((my  $get_token) = sub  {
     my $List__ = bless \@_, "ARRAY";
     ((my  $m) = $self->operator($str, $last_pos));
     if ((!($m))) {
@@ -1655,76 +1653,76 @@ package GLOBAL;
     };
     return scalar ($v)
 });
-            ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => $delimiter)));
-            ((my  $res) = $prec->precedence_parse());
-            ($res = pop_term($res));
-            if ((!((defined($res))))) {
-                ($res = '*undef*')
-            };
-            return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => $res)))
+        ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => $delimiter)));
+        ((my  $res) = $prec->precedence_parse());
+        ($res = pop_term($res));
+        if ((!((defined($res))))) {
+            ($res = '*undef*')
         };
-        sub ternary5_parse {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            return scalar ($self->circumfix_parse($str, $pos, do {
+        return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => $res)))
+    };
+    sub ternary5_parse {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ':' );
     $List_a
 }))
-        };
-        sub curly_parse {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            return scalar ($self->circumfix_parse($str, $pos, do {
+    };
+    sub curly_parse {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, chr(125) );
     $List_a
 }))
-        };
-        sub square_parse {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            return scalar ($self->circumfix_parse($str, $pos, do {
+    };
+    sub square_parse {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ']' );
     $List_a
 }))
-        };
-        sub paren_parse {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            return scalar ($self->circumfix_parse($str, $pos, do {
+    };
+    sub paren_parse {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        return scalar ($self->circumfix_parse($str, $pos, do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ')' );
     $List_a
 }))
-        };
-        sub exp_parse {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            (my  $expr);
-            ((my  $last_pos) = $pos);
-            ((my  $lexer_stack) = do {
+    };
+    sub exp_parse {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        (my  $expr);
+        ((my  $last_pos) = $pos);
+        ((my  $lexer_stack) = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-            ((my  $terminated) = 0);
-            ((my  $get_token) = sub  {
+        ((my  $terminated) = 0);
+        ((my  $get_token) = sub  {
     my $List__ = bless \@_, "ARRAY";
     (my  $v);
     if ((scalar( @{($lexer_stack)} ))) {
@@ -1760,7 +1758,7 @@ package GLOBAL;
     };
     return scalar ($v)
 });
-            ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => do {
+        ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ']' );
@@ -1777,37 +1775,37 @@ package GLOBAL;
     push( @{$List_a}, 'loop' );
     $List_a
 })));
-            ((my  $res) = $prec->precedence_parse());
-            if (((scalar( @{($res)} ) == 0))) {
-                return scalar (Perlito5::Match->new(('bool' => 0)))
-            };
-            (my  $block);
-            if (((scalar( @{($res)} ) > 1))) {
-                ($block = pop( @{($res)} ));
+        ((my  $res) = $prec->precedence_parse());
+        if (((scalar( @{($res)} ) == 0))) {
+            return scalar (Perlito5::Match->new(('bool' => 0)))
+        };
+        (my  $block);
+        if (((scalar( @{($res)} ) > 1))) {
+            ($block = pop( @{($res)} ));
+            ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
+        };
+        ((my  $result) = pop_term($res));
+        if (((scalar( @{($res)} ) > 0))) {
+            ($block = pop( @{($res)} ));
+            if ((!((Main::isa($block, 'Lit::Block'))))) {
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
-            };
-            ((my  $result) = pop_term($res));
-            if (((scalar( @{($res)} ) > 0))) {
-                ($block = pop( @{($res)} ));
-                if ((!((Main::isa($block, 'Lit::Block'))))) {
-                    ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
-                }
-            };
-            return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => do {
+            }
+        };
+        return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'exp'} = $result);
     ($Hash_a->{'end_block'} = $block);
     ($Hash_a->{'terminated'} = $terminated);
     $Hash_a
 })))
-        };
-        sub exp_stmt {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $grammar) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+    };
+    sub exp_stmt {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((((((do {
     ((do {
@@ -1900,15 +1898,15 @@ package GLOBAL;
 }) || 1))))
 }))
 })));
-            $MATCH
-        };
-        sub statement_modifier {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $grammar) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub statement_modifier {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((((((do {
     (('if' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
@@ -1929,15 +1927,15 @@ package GLOBAL;
     (((('loop' eq substr($str, $MATCH->to(), 4)) && ((($MATCH)->{to} = (4 + $MATCH->to()))))))
 }))
 })));
-            $MATCH
-        };
-        sub delimited_statement {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $grammar) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub delimited_statement {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
@@ -2016,15 +2014,15 @@ package GLOBAL;
 }))
 })
 })));
-            $MATCH
-        };
-        sub delimited_statement_no_package {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $grammar) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-            (($MATCH)->{bool} = ((do {
+        $MATCH
+    };
+    sub delimited_statement_no_package {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $grammar) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+        (($MATCH)->{bool} = ((do {
     ((my  $pos1) = $MATCH->to());
     (do {
     ((do {
@@ -2124,54 +2122,54 @@ package GLOBAL;
 }))
 })
 })));
-            $MATCH
-        };
-        sub statement_parse {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $str) = $List__->[1]);
-            ((my  $pos) = $List__->[2]);
-            (my  $expr);
-            ((my  $last_pos) = $pos);
-            ((my  $lexer_stack) = do {
+        $MATCH
+    };
+    sub statement_parse {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        ((my  $str) = $List__->[1]);
+        ((my  $pos) = $List__->[2]);
+        (my  $expr);
+        ((my  $last_pos) = $pos);
+        ((my  $lexer_stack) = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 });
-            (my  $res);
-            ($res = $self->exp_stmt($str, $pos));
-            if (($res)) {
-                return scalar ($res)
-            };
-            ($res = $self->exp_parse($str, $pos));
-            if ((!(($res)))) {
-                return scalar ($res)
-            };
-            if (Main::isa((${$res})->{'exp'}, 'Lit::Block')) {
-                ((${$res})->{'exp'} = Do->new(('block' => (${$res})->{'exp'})))
-            };
-            if ((${$res})->{'end_block'}) {
-                die(('Unexpected block after expression near '), $pos)
-            };
-            if ((${$res})->{'terminated'}) {
-                (($res)->{capture} = (${$res})->{'exp'});
-                return scalar ($res)
-            };
-            ((my  $modifier) = $self->statement_modifier($str, $res->to()));
-            if ((!(($modifier)))) {
-                (($res)->{capture} = (${$res})->{'exp'});
-                return scalar ($res)
-            };
-            ((my  $modifier_exp) = $self->exp_parse($str, $modifier->to()));
-            if ((!(($modifier_exp)))) {
-                die(('Expected expression after ' . chr(39)), $modifier, (chr(39)))
-            };
-            if ((${$modifier_exp})->{'end_block'}) {
-                die(('Unexpected block after expression near '), $modifier->to())
-            };
-            ($modifier = ('' . $modifier));
-            if ((($modifier eq 'if'))) {
-                return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
+        (my  $res);
+        ($res = $self->exp_stmt($str, $pos));
+        if (($res)) {
+            return scalar ($res)
+        };
+        ($res = $self->exp_parse($str, $pos));
+        if ((!(($res)))) {
+            return scalar ($res)
+        };
+        if (Main::isa((${$res})->{'exp'}, 'Lit::Block')) {
+            ((${$res})->{'exp'} = Do->new(('block' => (${$res})->{'exp'})))
+        };
+        if ((${$res})->{'end_block'}) {
+            die(('Unexpected block after expression near '), $pos)
+        };
+        if ((${$res})->{'terminated'}) {
+            (($res)->{capture} = (${$res})->{'exp'});
+            return scalar ($res)
+        };
+        ((my  $modifier) = $self->statement_modifier($str, $res->to()));
+        if ((!(($modifier)))) {
+            (($res)->{capture} = (${$res})->{'exp'});
+            return scalar ($res)
+        };
+        ((my  $modifier_exp) = $self->exp_parse($str, $modifier->to()));
+        if ((!(($modifier_exp)))) {
+            die(('Expected expression after ' . chr(39)), $modifier, (chr(39)))
+        };
+        if ((${$modifier_exp})->{'end_block'}) {
+            die(('Unexpected block after expression near '), $modifier->to())
+        };
+        ($modifier = ('' . $modifier));
+        if ((($modifier eq 'if'))) {
+            return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, (${$res})->{'exp'} );
@@ -2181,9 +2179,9 @@ package GLOBAL;
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 })))))))
-            };
-            if ((($modifier eq 'unless'))) {
-                return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
+        };
+        if ((($modifier eq 'unless'))) {
+            return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
@@ -2193,28 +2191,26 @@ package GLOBAL;
     push( @{$List_a}, (${$res})->{'exp'} );
     $List_a
 })))))))
-            };
-            if ((($modifier eq 'while'))) {
-                return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => While->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
+        };
+        if ((($modifier eq 'while'))) {
+            return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => While->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, (${$res})->{'exp'} );
     $List_a
 })))))))
-            };
-            if ((($modifier eq 'for'))) {
-                return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => For->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
+        };
+        if ((($modifier eq 'for'))) {
+            return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => For->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, (${$res})->{'exp'} );
     $List_a
 })))))))
-            };
-            die(('Unexpected statement modifier ' . chr(39) . $modifier . chr(39)))
-        }
-    }
-
-
+        };
+        die(('Unexpected statement modifier ' . chr(39) . $modifier . chr(39)))
+    };
+    1
 }
 
 1;
