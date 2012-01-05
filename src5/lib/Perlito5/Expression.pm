@@ -79,7 +79,7 @@ class Perlito5::Expression {
             # say "# ** processing term ", $v->perl;
             if ($v->[1] eq 'methcall_no_params') {
                 # say "#   Call ", ($v->[2])->perl;
-                $v = Call->new( invocant => Mu, method => $v->[2], arguments => [], hyper => $v->[3] );
+                $v = Call->new( invocant => undef, method => $v->[2], arguments => [], hyper => $v->[3] );
                 # say "#     ", $v->perl;
                 return $v;
             }
@@ -96,7 +96,7 @@ class Perlito5::Expression {
                     unshift( @$num_stack, ($v->[3])<end_block> );
                 }
                 my $param_list = expand_list( ($v->[3])<exp> );
-                $v = Call->new( invocant => Mu, method => $v->[2], arguments => $param_list, hyper => $v->[4] );
+                $v = Call->new( invocant => undef, method => $v->[2], arguments => $param_list, hyper => $v->[4] );
                 # say "#     ", $v->perl;
                 return $v;
             }
@@ -135,18 +135,18 @@ class Perlito5::Expression {
             if ($v->[1] eq '.( )') {
                 # say "#   Params ", ($v->[2])->perl;
                 # say "#     v:     ", $v->perl;
-                $v = Call->new( invocant => Mu, method => 'postcircumfix:<( )>', arguments => $v->[2], hyper => 0 );
+                $v = Call->new( invocant => undef, method => 'postcircumfix:<( )>', arguments => $v->[2], hyper => 0 );
                 return $v;
             }
             if ($v->[1] eq '.[ ]') {
                 # say "#   Index ", ($v->[2])->perl;
-                $v = Index->new( obj => Mu, index_exp => $v->[2] );
+                $v = Index->new( obj => undef, index_exp => $v->[2] );
                 # say "#     ", $v->perl;
                 return $v;
             }
             if ($v->[1] eq '.{ }') {
                 # say "#   Lookup ", ($v->[2])->perl;
-                $v = Lookup->new( obj => Mu, index_exp => $v->[2] );
+                $v = Lookup->new( obj => undef, index_exp => $v->[2] );
                 # say "#     ", $v->perl;
                 return $v;
             }
@@ -267,7 +267,7 @@ class Perlito5::Expression {
                         Apply->new(
                             namespace => $v2->namespace,
                             code      => $v2->code,
-                            arguments => [ @{ $v2->arguments }, Mu ],
+                            arguments => [ @{ $v2->arguments }, undef ],
                           );
                 }
                 else {
@@ -275,7 +275,7 @@ class Perlito5::Expression {
                         Apply->new(
                             namespace => '',
                             code      => 'list:<' . $last_op->[1] . '>',
-                            arguments => [ $v2, Mu ],
+                            arguments => [ $v2, undef ],
                           );
                 }
                 return;
@@ -445,7 +445,7 @@ class Perlito5::Expression {
             { make [ 'postfix_or_term',
                      'methcall',
                      '' . $<Perlito5::Grammar.ident>,
-                     { end_block => Mu,
+                     { end_block => undef,
                        exp       => $$<paren_parse>,
                        terminated => 0,
                      },
@@ -582,8 +582,8 @@ class Perlito5::Expression {
                 'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
                 capture => {
                     exp        => '*undef*',
-                    end_block  => Mu,
-                    terminated => Mu } )
+                    end_block  => undef,
+                    terminated => undef } )
         }
         # if the expression terminates in a block, the block was pushed to num_stack
         my $block;

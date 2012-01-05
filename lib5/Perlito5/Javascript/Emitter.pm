@@ -651,7 +651,7 @@ package GLOBAL;
             if ((($code eq 'eval'))) {
                 return scalar (('eval(perl5_to_js(' . Javascript::escape_function('string') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . '))'))
             };
-            if ((($code eq 'Mu'))) {
+            if ((($code eq 'undef'))) {
                 return scalar ((Javascript::tab($level) . 'null'))
             };
             if ((($code eq 'make'))) {

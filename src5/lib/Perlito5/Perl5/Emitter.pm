@@ -434,7 +434,7 @@ class Apply {
         }
 
         if ($.code eq 'package')   { return Perl5::tab($level) . 'package ' . $.namespace }
-        if ($code eq 'Mu')         { return Perl5::tab($level) . 'undef()' }
+        if ($code eq 'undef')      { return Perl5::tab($level) . 'undef()' }
 
         if ($code eq 'make')       { return Perl5::tab($level) . '($MATCH->{capture} = ('   . (@.arguments.>>emit_perl5)->join(', ') . '))' }
 

@@ -481,7 +481,7 @@ package GLOBAL;
             if ((($self->{code} eq 'package'))) {
                 return scalar ((Perl5::tab($level) . 'package ' . $self->{namespace}))
             };
-            if ((($code eq 'Mu'))) {
+            if ((($code eq 'undef'))) {
                 return scalar ((Perl5::tab($level) . 'undef()'))
             };
             if ((($code eq 'make'))) {

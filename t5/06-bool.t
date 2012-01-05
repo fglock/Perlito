@@ -48,7 +48,7 @@ sub new {
 
     say ( Main->new()  ? "" : "not " ), "ok 22 - object";
 
-    say ( Mu ? "not " : "" ), "ok 23 - Mu";
+    say ( undef ? "not " : "" ), "ok 23 - undef";
 
     {
         my @a = [];  # element #0 is an array

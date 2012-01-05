@@ -642,7 +642,7 @@ class Apply {
                 . '))'
         }
 
-        if ($code eq 'Mu')         { return Javascript::tab($level) . 'null' }
+        if ($code eq 'undef')      { return Javascript::tab($level) . 'null' }
         if ($code eq 'make')       { return Javascript::tab($level) . '(v_MATCH.v_capture = ' . (@.arguments.>>emit_javascript)->join(', ') . ')' }
         if ($code eq 'defined')    { return Javascript::tab($level) . '('  . (@.arguments.>>emit_javascript)->join(' ')    . ' != null)' }
         if ($code eq 'substr') {

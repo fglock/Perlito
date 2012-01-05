@@ -63,7 +63,7 @@ class Lit::Array {
                             'code' => 'infix:<..>',
                             'namespace' => ''
                         ),
-                        'topic' => Mu
+                        'topic' => undef
                     );
             }
             else {
@@ -78,7 +78,7 @@ class Lit::Array {
         }
         return Do->new(
             'block' => Lit::Block->new(
-                'sig' => Mu,
+                'sig' => undef,
                 'stmts' => [
                     Decl->new(
                         'decl' => 'my',
@@ -137,7 +137,7 @@ class Lit::Hash {
                                     'arguments' => [
                                         Lookup->new(
                                             'index_exp' => Call->new(
-                                                'arguments' => Mu,
+                                                'arguments' => undef,
                                                 'hyper' => '',
                                                 'invocant' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
                                                 'method' => 'key'),
@@ -153,7 +153,7 @@ class Lit::Hash {
                                 Apply->new(
                                     'arguments' => [
                                         Call->new(
-                                            'arguments' => Mu,
+                                            'arguments' => undef,
                                             'hyper' => '',
                                             'invocant' => $item,
                                             'method' => 'pairs')
@@ -163,7 +163,7 @@ class Lit::Hash {
                             ],
                             'code' => 'prefix:<@>',
                             'namespace' => ''),
-                        'topic' => Mu
+                        'topic' => undef
                     );
             }
             elsif (   $item->isa( 'Var' )   && $item->sigil eq '@'
@@ -180,7 +180,7 @@ class Lit::Hash {
                 push @s,
                     Do->new(
                         'block' => Lit::Block->new(
-                            'sig'   => Mu,
+                            'sig'   => undef,
                             'stmts' => [
                                 Apply->new( 'arguments' => [ Decl->new( 'decl' => 'my', 'type' => '', 'var' => Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), Val::Int->new( 'int' => 0 ) ], 'code' => 'infix:<=>', 'namespace' => '' ),
                                 Apply->new( 
@@ -193,7 +193,7 @@ class Lit::Hash {
                                 ),
                                 While->new(
                                     'body' => Lit::Block->new(
-                                        'sig'   => Mu,
+                                        'sig'   => undef,
                                         'stmts' => [
                                             Apply->new( 
                                                 'arguments' => [ 
@@ -221,7 +221,7 @@ class Lit::Hash {
         }
         return Do->new(
             'block' => Lit::Block->new(
-                'sig' => Mu,
+                'sig' => undef,
                 'stmts' => [
                     Decl->new(
                         'decl' => 'my',

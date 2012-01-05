@@ -92,7 +92,7 @@ token for {
         {
             make For->new( 
                     cond  => $$<Perlito5::Expression.paren_parse>, 
-                    topic => Mu(), 
+                    topic => undef, 
                     body  => Lit::Block->new( stmts => $$<Perlito5::Grammar.exp_stmts>, sig => $$<Perlito5::Grammar.var_ident> )
                  )
         }
@@ -103,7 +103,7 @@ token for {
             if (!(defined($body))) {
                 die "Missing code block in 'when'";
             }
-            make For->new( cond => ($$<exp>){'exp'}, topic => Mu(), body => $body )
+            make For->new( cond => ($$<exp>){'exp'}, topic => undef, body => $body )
         }
     ]
 }

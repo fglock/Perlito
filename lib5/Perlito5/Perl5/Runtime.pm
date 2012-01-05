@@ -210,6 +210,7 @@ package Main;
         bless [ CORE::values %{$_[0]} ], 'ARRAY';
     }
 
+    # XXX Perl6 - note this is used in some macros
     sub pairs {
         bless [
             map Pair->new( key => $_, value => $_[0]{$_} ),
@@ -217,11 +218,13 @@ package Main;
         ], 'ARRAY';
     }
 
+    # XXX Perl6
     sub id {
            Scalar::Util::refaddr($_[0])
         || "_id_" . $_[0]
     }
 
+    # XXX Perl6
     sub perl {
         return 'Mu' unless defined $_[0];
         local $_;

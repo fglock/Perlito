@@ -209,7 +209,7 @@ class If {
                 $stmt->eval($env1);
             }
         }
-        return Mu;
+        return undef;
     }
 }
 
@@ -227,7 +227,7 @@ class For {
                 $stmt->eval($env1);
             }
         }
-        return Mu;
+        return undef;
     }
 }
 
@@ -256,9 +256,9 @@ class Decl {
             warn "Interpreter TODO: has";
         }
         if (!( exists ($env->[0]){ $name } )) {
-            ($env->[0]){ $name } = Mu;
+            ($env->[0]){ $name } = undef;
         }
-        return Mu;
+        return undef;
     }
     sub plain_name {
         my $self = $_[0];

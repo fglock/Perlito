@@ -283,6 +283,7 @@ Array.prototype.grep = function grep(f) {
     return res
 }
 
+// XXX Perl6
 var _id = 0;
 id = function(o) {
     if (o == null) {
@@ -303,6 +304,7 @@ id = function(o) {
     return o._id;
 };
 
+// XXX Perl6
 perl = function(o) {
     if (o == null) {
         return 'Mu';
@@ -332,11 +334,7 @@ perl = function(o) {
 
 isa = function(o, s) {
     if (o == null) {
-        if (s == 'Mu') {
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
     if (typeof o.isa === 'function') {
         return o.isa(s);

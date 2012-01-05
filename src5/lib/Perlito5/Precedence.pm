@@ -254,7 +254,7 @@ class Perlito5::Precedence {
             # say "# precedence get_token: (1) ", $token->perl;
             if ($token->[1] eq ',') && ( ($last->[1] eq '*start*') || ($last->[1] eq ',') ) {
                 # allow (,,,)
-                push( @$num_stack, ['term', Mu] );
+                push( @$num_stack, ['term', undef] );
             }
             if ($Operator->{'prefix'}{$token->[1]} && ( ($last->[1] eq '*start*') || !(is_term($last)) )) {
                 $token->[0] = 'prefix';
