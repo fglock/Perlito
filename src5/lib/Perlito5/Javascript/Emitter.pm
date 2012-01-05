@@ -234,14 +234,14 @@ class CompUnit {
         # process 'package' statements
         my @body;
         my $i = 0;
-        while ( $i <= @.body->elems ) {
+        while ( $i <= scalar @.body ) {
             my $stmt = @.body->[$i];
             if ( $stmt->isa( 'Apply' ) && $stmt->code eq 'package' ) {
                 # found an inner package
                 my $name = $stmt->namespace;
                 my @stmts;
                 $i++;
-                while (  $i <= @.body->elems 
+                while (  $i <= scalar( @.body )
                       && !( @.body->[$i]->isa( 'Apply' ) && @.body->[$i]->code eq 'package' )
                       )
                 {
@@ -479,7 +479,6 @@ class Call {
         'keys'   => 'keys',
         'values' => 'values',
         'pairs'  => 'pairs',
-        'elems'  => 'elems',
         'say'    => 'say',
         'chars'  => 'chars',
     );
@@ -607,6 +606,7 @@ class Apply {
         'bless'   => 1,
         'print'   => 1,
         'warn'    => 1,
+        'scalar'  => 1,
     );
 
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }

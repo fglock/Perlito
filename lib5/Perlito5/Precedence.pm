@@ -469,7 +469,7 @@ package GLOBAL;
                 else {
                     if (((($Operator->{'postfix'})->{$token->[1]} && is_term($last)) && (($Allow_space_before->{'postfix'}->{$token->[1]} || !(($last_has_space)))))) {
                         ((my  $pr) = $Precedence->{$token->[1]});
-                        for ( ; (scalar( @{$op_stack} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
+                        for ( ; (scalar( @{($op_stack)} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
                             $reduce->($op_stack, $num_stack)
                         };
                         if ((($token->[0]) ne 'postfix_or_term')) {
@@ -479,7 +479,7 @@ package GLOBAL;
                     }
                     else {
                         if ((((($token->[1] eq 'block')) && is_term($last)) && $last_has_space)) {
-                            for ( ; scalar( @{$op_stack} );  ) {
+                            for ( ; (scalar( @{($op_stack)} ));  ) {
                                 $reduce->($op_stack, $num_stack)
                             };
                             push( @{($num_stack)}, $token );
@@ -501,12 +501,12 @@ package GLOBAL;
                                 if (($Precedence->{$token->[1]})) {
                                     ((my  $pr) = $Precedence->{$token->[1]});
                                     if (($Assoc->{'right'}->{$token->[1]})) {
-                                        for ( ; (scalar( @{$op_stack} ) && (($pr < $Precedence->{($op_stack->[0])->[1]})));  ) {
+                                        for ( ; ((scalar( @{($op_stack)} ) && (($pr < $Precedence->{($op_stack->[0])->[1]}))));  ) {
                                             $reduce->($op_stack, $num_stack)
                                         }
                                     }
                                     else {
-                                        for ( ; (scalar( @{$op_stack} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
+                                        for ( ; ((scalar( @{($op_stack)} ) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))));  ) {
                                             $reduce->($op_stack, $num_stack)
                                         }
                                     };
@@ -538,7 +538,7 @@ package GLOBAL;
             if (((defined($token) && (($token->[0] ne 'end'))))) {
                 die(('Unexpected end token: '), $token)
             };
-            for ( ; scalar( @{$op_stack} );  ) {
+            for ( ; (scalar( @{($op_stack)} ));  ) {
                 $reduce->($op_stack, $num_stack)
             };
             ($End_token = $last_end_token);

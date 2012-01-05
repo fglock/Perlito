@@ -32,11 +32,11 @@ class Perlito5::Expression {
             return $o
         }
         my $stmts = $o->stmts;
-        if (!(defined $stmts)) || (($stmts->elems) == 0) {
+        if (!(defined $stmts)) || ((scalar(@$stmts)) == 0) {
             # say "#  no contents -- empty hash";
             return Lit::Hash->new(hash1 => [])
         }
-        if ($stmts->elems) != 1 {
+        if (scalar(@$stmts)) != 1 {
             # say "#  more statements -- not hash";
             return $o
         }
@@ -150,7 +150,7 @@ class Perlito5::Expression {
                 # say "#     ", $v->perl;
                 return $v;
             }
-            if ($v->[1])->isa('Array') && ((($v->[1])->elems) == 2) {
+            if ($v->[1]->isa('Array') && scalar($v->[1]) == 2) {
                 # say "#   old style Pair ", $v->perl;
                 #   old style Pair - wrap it into a subroutine for now
                 $v = Apply->new( code => 'pair', arguments => $v->[1], namespace => '' );
@@ -260,7 +260,7 @@ class Perlito5::Expression {
         }
         elsif (Perlito5::Precedence::is_assoc_type('list', $last_op->[1])) {
             my $arg;
-            if ($num_stack->elems < 2) {
+            if (scalar(@$num_stack) < 2) {
                 my $v2 = pop_term($num_stack);
                 if ($v2->isa('Apply')) && ($v2->code eq ('list:<' . $last_op->[1] . '>')) {
                     push @$num_stack,
@@ -305,7 +305,7 @@ class Perlito5::Expression {
                   );
         }
         elsif (Perlito5::Precedence::is_assoc_type('chain', $last_op->[1])) {
-            if ($num_stack->elems < 2) {
+            if (scalar(@$num_stack) < 2) {
                 die("Missing value after operator " . $last_op->[1]);
             }
             my $v2 = pop_term($num_stack);
@@ -335,7 +335,7 @@ class Perlito5::Expression {
                     );
         }
         elsif ($last_op->[0] eq 'ternary') {
-            if ( $num_stack->elems < 2 ) {
+            if ( scalar(@$num_stack) < 2 ) {
                 die "Missing value after ternary operator";
             }
             my $v2 = pop_term($num_stack);
@@ -347,7 +347,7 @@ class Perlito5::Expression {
                   );
         }
         else {
-            if ( $num_stack->elems < 2 ) {
+            if ( scalar(@$num_stack) < 2 ) {
                 die("missing value after operator '" . $last_op->[1] . "'");
             }
             my $v2 = pop_term($num_stack);
@@ -520,7 +520,7 @@ class Perlito5::Expression {
         my $last_token_was_space = 1;
         my $get_token = sub {
             my $v;
-            if ($lexer_stack->elems()) {
+            if (scalar(@$lexer_stack)) {
                 $v = pop @$lexer_stack;
                 if  (  $is_first_token
                     && ($v->[0] eq 'op')
@@ -577,7 +577,7 @@ class Perlito5::Expression {
             end_token => [ 'and', 'or', ':', ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
         my $res = $prec->precedence_parse;
         # say "# list_lexer return: ", $res->perl;
-        if ($res->elems == 0) {
+        if (scalar(@$res) == 0) {
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
                 capture => {
@@ -587,13 +587,13 @@ class Perlito5::Expression {
         }
         # if the expression terminates in a block, the block was pushed to num_stack
         my $block;
-        if ($res->elems > 1) {
+        if (scalar(@$res) > 1) {
             $block = pop @$res; # pop_term($res);
             $block = Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
             # say "# list exp terminated with a block: ", $block->perl;
         }
         my $result = pop_term($res);
-        if ($res->elems > 0) {
+        if (scalar(@$res) > 0) {
             $block = pop @$res; # pop_term($res);
             $block = Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
             # say "# list exp terminated with a block (2): ", $block->perl;
@@ -681,7 +681,7 @@ class Perlito5::Expression {
         my $terminated = 0;
         my $get_token = sub {
             my $v;
-            if ($lexer_stack->elems()) {
+            if (scalar(@$lexer_stack)) {
                 $v = pop @$lexer_stack;
             }
             else {
@@ -716,19 +716,19 @@ class Perlito5::Expression {
             end_token => [ ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
         my $res = $prec->precedence_parse;
         # say "# exp terminated";
-        if ($res->elems == 0) {
+        if (scalar(@$res) == 0) {
             # say "# exp terminated with false";
             return Perlito5::Match->new(bool => 0);
         }
         # if the expression terminates in a block, the block was pushed to num_stack
         my $block;
-        if ($res->elems > 1) {
+        if (scalar(@$res) > 1) {
             $block = pop @$res; # pop_term($res);
             $block = Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
             # say "# exp terminated with a block: ", $block->perl;
         }
         my $result = pop_term($res);
-        if ($res->elems > 0) {
+        if (scalar(@$res) > 0) {
             $block = pop @$res; # pop_term($res);
             if (!($block->isa('Lit::Block'))) {
                 $block = Lit::Block->new( stmts => $block->[2], sig => $block->[3] );

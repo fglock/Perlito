@@ -170,12 +170,12 @@ chr = function(o) {
     return String.fromCharCode(num(o));
 };
 
-elems = function(o) {
+scalar = function(o) {
     if (o == null) {
         return 1;
     };
-    if (typeof o.elems === 'function') {
-        return o.elems();
+    if (typeof o.scalar === 'function') {
+        return o.scalar();
     }
     if (typeof o === 'object' && (o instanceof Array)) {
         return o.length;
@@ -320,16 +320,6 @@ isa = function(o, s) {
         return (1);
     }
     return false;
-};
-
-scalar = function(o) {
-    if (o == null) {
-        return o;
-    }
-    if (typeof o.scalar === 'function') {
-        return o.scalar();
-    }
-    return o;
 };
 
 string = function(o) {

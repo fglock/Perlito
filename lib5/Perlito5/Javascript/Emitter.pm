@@ -515,7 +515,6 @@ package GLOBAL;
     ($Hash_a->{'keys'} = 'keys');
     ($Hash_a->{'values'} = 'values');
     ($Hash_a->{'pairs'} = 'pairs');
-    ($Hash_a->{'elems'} = 'elems');
     ($Hash_a->{'say'} = 'say');
     ($Hash_a->{'chars'} = 'chars');
     $Hash_a
@@ -619,6 +618,7 @@ package GLOBAL;
     ($Hash_a->{'bless'} = 1);
     ($Hash_a->{'print'} = 1);
     ($Hash_a->{'warn'} = 1);
+    ($Hash_a->{'scalar'} = 1);
     $Hash_a
 });
         sub emit_javascript {

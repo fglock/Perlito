@@ -57,14 +57,14 @@ package GLOBAL;
                 return scalar ($o)
             };
             ((my  $stmts) = $o->stmts());
-            if (((!((defined($stmts)))) || (((scalar( @{$stmts} )) == 0)))) {
+            if (((!((defined($stmts)))) || (((scalar( @{($stmts)} )) == 0)))) {
                 return scalar (Lit::Hash->new(('hash1' => do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 })))
             };
-            if (((scalar( @{$stmts} )) != 1)) {
+            if (((scalar( @{($stmts)} )) != 1)) {
                 return scalar ($o)
             };
             ((my  $stmt) = $stmts->[0]);
@@ -157,7 +157,7 @@ package GLOBAL;
                     ($v = Lookup->new(('obj' => undef()), ('index_exp' => $v->[2])));
                     return scalar ($v)
                 };
-                if ((Main::isa(($v->[1]), 'Array') && (((scalar( @{($v->[1])} )) == 2)))) {
+                if (((Main::isa($v->[1], 'Array') && (scalar( @{$v->[1]} ) == 2)))) {
                     ($v = Apply->new(('code' => 'pair'), ('arguments' => $v->[1]), ('namespace' => '')));
                     return scalar ($v)
                 };
@@ -259,7 +259,7 @@ package GLOBAL;
             else {
                 if ((Perlito5::Precedence::is_assoc_type('list', $last_op->[1]))) {
                     (my  $arg);
-                    if (((scalar( @{$num_stack} ) < 2))) {
+                    if (((scalar( @{($num_stack)} ) < 2))) {
                         ((my  $v2) = pop_term($num_stack));
                         if (((Main::isa($v2, 'Apply')) && (($v2->code() eq (('list:<' . $last_op->[1] . '>')))))) {
                             push( @{($num_stack)}, Apply->new(('namespace' => $v2->namespace()), ('code' => $v2->code()), ('arguments' => do {
@@ -311,7 +311,7 @@ package GLOBAL;
                 }
                 else {
                     if ((Perlito5::Precedence::is_assoc_type('chain', $last_op->[1]))) {
-                        if (((scalar( @{$num_stack} ) < 2))) {
+                        if (((scalar( @{($num_stack)} ) < 2))) {
                             die(('Missing value after operator ' . $last_op->[1]))
                         };
                         ((my  $v2) = pop_term($num_stack));
@@ -326,7 +326,7 @@ package GLOBAL;
                     }
                     else {
                         if ((($last_op->[0] eq 'ternary'))) {
-                            if (((scalar( @{$num_stack} ) < 2))) {
+                            if (((scalar( @{($num_stack)} ) < 2))) {
                                 die(('Missing value after ternary operator'))
                             };
                             ((my  $v2) = pop_term($num_stack));
@@ -340,7 +340,7 @@ package GLOBAL;
 })) )
                         }
                         else {
-                            if (((scalar( @{$num_stack} ) < 2))) {
+                            if (((scalar( @{($num_stack)} ) < 2))) {
                                 die(('missing value after operator ' . chr(39) . $last_op->[1] . (chr(39))))
                             };
                             ((my  $v2) = pop_term($num_stack));
@@ -1534,7 +1534,7 @@ package GLOBAL;
             ((my  $get_token) = sub  {
     my $List__ = bless \@_, "ARRAY";
     (my  $v);
-    if ((scalar( @{$lexer_stack} ))) {
+    if ((scalar( @{($lexer_stack)} ))) {
         ($v = pop( @{($lexer_stack)} ));
         if (((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1])))))) {
             ($v->[0] = 'end')
@@ -1608,7 +1608,7 @@ package GLOBAL;
     $List_a
 })));
             ((my  $res) = $prec->precedence_parse());
-            if (((scalar( @{$res} ) == 0))) {
+            if (((scalar( @{($res)} ) == 0))) {
                 return scalar (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'exp'} = '*undef*');
@@ -1618,12 +1618,12 @@ package GLOBAL;
 })))
             };
             (my  $block);
-            if (((scalar( @{$res} ) > 1))) {
+            if (((scalar( @{($res)} ) > 1))) {
                 ($block = pop( @{($res)} ));
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
             };
             ((my  $result) = pop_term($res));
-            if (((scalar( @{$res} ) > 0))) {
+            if (((scalar( @{($res)} ) > 0))) {
                 ($block = pop( @{($res)} ));
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
             };
@@ -1727,7 +1727,7 @@ package GLOBAL;
             ((my  $get_token) = sub  {
     my $List__ = bless \@_, "ARRAY";
     (my  $v);
-    if ((scalar( @{$lexer_stack} ))) {
+    if ((scalar( @{($lexer_stack)} ))) {
         ($v = pop( @{($lexer_stack)} ))
     }
     else {
@@ -1778,16 +1778,16 @@ package GLOBAL;
     $List_a
 })));
             ((my  $res) = $prec->precedence_parse());
-            if (((scalar( @{$res} ) == 0))) {
+            if (((scalar( @{($res)} ) == 0))) {
                 return scalar (Perlito5::Match->new(('bool' => 0)))
             };
             (my  $block);
-            if (((scalar( @{$res} ) > 1))) {
+            if (((scalar( @{($res)} ) > 1))) {
                 ($block = pop( @{($res)} ));
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
             };
             ((my  $result) = pop_term($res));
-            if (((scalar( @{$res} ) > 0))) {
+            if (((scalar( @{($res)} ) > 0))) {
                 ($block = pop( @{($res)} ));
                 if ((!((Main::isa($block, 'Lit::Block'))))) {
                     ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))

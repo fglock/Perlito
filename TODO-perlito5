@@ -22,6 +22,8 @@ TODO list for Perlito5
 
 -- remove Perl6 "match" special variables: $<..>, $/
 
+-- remove the dependency on "pairs()" for macros 
+
 
 * libraries
 
@@ -31,6 +33,8 @@ TODO list for Perlito5
 * Perl5 backend
 
 -- remove "Match" overloads
+
+-- remove *all* runtime (everything should work natively)
 
 
 * Javascript backend

@@ -261,7 +261,7 @@ class Perlito5::Precedence {
                    )
             {
                 my $pr = $Precedence->{$token->[1]};
-                while $op_stack->elems && ($pr <= $Precedence->{ ($op_stack->[0])[1] }) {
+                while scalar(@$op_stack) && ($pr <= $Precedence->{ ($op_stack->[0])[1] }) {
                     $reduce->($op_stack, $num_stack);
                 }
                 if ($token->[0]) ne 'postfix_or_term' {
@@ -272,7 +272,7 @@ class Perlito5::Precedence {
             elsif ($token->[1] eq 'block') && is_term($last) && $last_has_space {
                 # a block in this position terminates the current expression
                 # say "# there is a block after the expression: ", $token->perl;
-                while $op_stack->elems() {
+                while (scalar(@$op_stack)) {
                     $reduce->($op_stack, $num_stack);
                 }
                 push( @$num_stack, $token);  # save the block
@@ -296,12 +296,12 @@ class Perlito5::Precedence {
             elsif ($Precedence->{$token->[1]}) {
                 my $pr = $Precedence->{$token->[1]};
                 if ($Assoc->{'right'}{$token->[1]}) {
-                    while $op_stack->elems && ( $pr < $Precedence->{ ($op_stack->[0])[1] } ) {
+                    while (scalar(@$op_stack) && ( $pr < $Precedence->{ ($op_stack->[0])[1] } )) {
                         $reduce->($op_stack, $num_stack);
                     }
                 }
                 else {
-                    while $op_stack->elems && ( $pr <= $Precedence->{ ($op_stack->[0])[1] } ) {
+                    while (scalar(@$op_stack) && ( $pr <= $Precedence->{ ($op_stack->[0])[1] } )) {
                         $reduce->($op_stack, $num_stack);
                     }
                 }
@@ -330,7 +330,7 @@ class Perlito5::Precedence {
         if (defined($token) && ($token->[0] ne 'end')) {
             die "Unexpected end token: ",$token;
         }
-        while $op_stack->elems() {
+        while (scalar(@$op_stack)) {
             $reduce->($op_stack, $num_stack);
         }
         # say "# precedence return";
