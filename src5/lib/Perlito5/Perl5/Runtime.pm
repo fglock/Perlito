@@ -1,11 +1,5 @@
 
 use v5;
-binmode(STDOUT, ":utf8");
-use Scalar::Util;
-use Encode;
-
-$_ = Encode::decode('utf-8', $_)
-    for @ARGV;
 
 {
     package Perlito5::Match;
@@ -114,7 +108,7 @@ package IO;
         local $/ = undef;
         $source = <FILE>;
         close FILE;
-        return Encode::decode( 'utf-8', $source );
+        return $source;
     }
 
 package ARRAY;
