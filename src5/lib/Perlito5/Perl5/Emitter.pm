@@ -321,6 +321,7 @@ class Call {
             }
         }
         
+        # XXX Perl6
         if ($.method eq 'elems') {
             return Perl5::tab($level) . 'scalar( @{' . $invocant . '} )'
         }
@@ -475,7 +476,7 @@ class Apply {
         }
         if ($code eq 'return') {
             if (  @.arguments
-               && @.arguments->elems == 1
+               && scalar(@{$.arguments}) == 1
                )
             {
                 # bug in "return do", see http://www->perlmonks->org/?node_id=648681
@@ -533,7 +534,7 @@ class If {
                 : ''
                 )
              . Perl5::tab($level) . "}"
-             .  ($.otherwise && $.otherwise->stmts->elems()
+             .  ($.otherwise && scalar(@{ $.otherwise->stmts })
                 ?  ( "\n"
                     . Perl5::tab($level) . "else \{\n"
                     .   $.otherwise->stmts.>>emit_perl5_indented( $level + 1 )->join(";\n") . "\n"

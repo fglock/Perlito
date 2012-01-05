@@ -533,7 +533,7 @@ package GLOBAL;
                 return scalar ((Perl5::tab($level) . emit_perl5_bind((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0], (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])))
             };
             if ((($code eq 'return'))) {
-                if ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) && (scalar( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ) == 1)))) {
+                if ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) && (scalar( @{($self->{arguments})} ) == 1)))) {
                     return scalar ((Perl5::tab($level) . 'return scalar (' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
                 };
                 return scalar ((Perl5::tab($level) . 'return (' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
@@ -586,7 +586,7 @@ package GLOBAL;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
-            return scalar ((Perl5::tab($level) . 'if (' . $self->{cond}->emit_perl5() . (') ' . chr(123) . chr(10)) . (($self->{body} ? (Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{otherwise} && scalar( @{$self->{otherwise}->stmts()} )) ? ((chr(10) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
+            return scalar ((Perl5::tab($level) . 'if (' . $self->{cond}->emit_perl5() . (') ' . chr(123) . chr(10)) . (($self->{body} ? (Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{otherwise} && scalar( @{($self->{otherwise}->stmts())} )) ? ((chr(10) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
         }
     }
 
