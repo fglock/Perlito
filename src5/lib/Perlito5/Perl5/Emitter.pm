@@ -321,11 +321,6 @@ class Call {
             }
         }
         
-        # XXX Perl6
-        if ($.method eq 'elems') {
-            return Perl5::tab($level) . 'scalar( @{' . $invocant . '} )'
-        }
-
         if ( $.method eq 'postcircumfix:<[ ]>' ) {
             return Perl5::tab($level) . $invocant . '->[' . @.arguments->emit_perl5() . ']'
         }

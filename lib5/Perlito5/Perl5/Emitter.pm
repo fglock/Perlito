@@ -372,9 +372,6 @@ package GLOBAL;
                     return scalar ((Perl5::tab($level) . $Hash_method_perl5->{$self->{method}} . '(' . $invocant . ', ' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
                 }
             };
-            if ((($self->{method} eq 'elems'))) {
-                return scalar ((Perl5::tab($level) . 'scalar( ' . chr(64) . chr(123) . $invocant . chr(125) . ' )'))
-            };
             if ((($self->{method} eq 'postcircumfix:<[ ]>'))) {
                 return scalar ((Perl5::tab($level) . $invocant . '->[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_perl5() . ']'))
             };
