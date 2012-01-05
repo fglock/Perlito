@@ -435,6 +435,7 @@ class Apply {
 
         if ($code eq 'make')       { return Perl5::tab($level) . '($MATCH->{capture} = ('   . (@.arguments.>>emit_perl5)->join(', ') . '))' }
 
+        if ($code eq 'scalar')     { return Perl5::tab($level) . 'scalar( @{' . (@.arguments[0]->emit_perl5) . '} )' }
         if ($code eq 'pop')        { return Perl5::tab($level) . 'pop( @{' . (@.arguments[0]->emit_perl5) . '} )' }
         if ($code eq 'push')       { return Perl5::tab($level) . 'push( @{' . (@.arguments[0])->emit_perl5() . '}, ' . (@.arguments[1])->emit_perl5() . ' )' }
         if ($code eq 'shift')      { 
