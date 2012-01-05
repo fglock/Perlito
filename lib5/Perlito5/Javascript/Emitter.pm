@@ -253,7 +253,7 @@ package GLOBAL;
                 }
             };
             ((my  $class_name) = Main::to_javascript_namespace($self->{name}));
-            ((my  $str) = (chr(47) . chr(47) . ' class ' . $self->{name} . (chr(10)) . 'if (typeof ' . $class_name . ' ' . chr(33) . chr(61) . chr(61) . ' ' . chr(39) . 'object' . chr(39) . ') ' . chr(123) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' function() ' . chr(123) . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' new ' . $class_name . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function('isa') . ' ' . chr(61) . ' function (s) ' . chr(123) . ' return s ' . chr(61) . chr(61) . ' ' . chr(39) . $self->{name} . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function('perl') . ' ' . chr(61) . ' function () ' . chr(123) . ' return ' . chr(39) . $self->{name} . '->new(' . chr(39) . ' + Main._dump(this) + ' . chr(39) . ')' . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . chr(125) . (chr(10)) . '(function () ' . chr(123) . (chr(10)) . '  var v__NAMESPACE ' . chr(61) . ' ' . $class_name . chr(59) . (chr(10))));
+            ((my  $str) = (chr(47) . chr(47) . ' class ' . $self->{name} . (chr(10)) . 'if (typeof ' . $class_name . ' ' . chr(33) . chr(61) . chr(61) . ' ' . chr(39) . 'object' . chr(39) . ') ' . chr(123) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' function() ' . chr(123) . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' new ' . $class_name . chr(59) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function('isa') . ' ' . chr(61) . ' function (s) ' . chr(123) . ' return s ' . chr(61) . chr(61) . ' ' . chr(39) . $self->{name} . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . chr(125) . (chr(10)) . '(function () ' . chr(123) . (chr(10)) . '  var v__NAMESPACE ' . chr(61) . ' ' . $class_name . chr(59) . (chr(10))));
             for my $decl ( @{$List_body} ) {
                 if (((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     ($str = ($str . '  ' . $decl->emit_javascript_init()))
@@ -510,7 +510,6 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Call" }
         ((my  $Hash_method_js = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'perl'} = 'perl');
     ($Hash_a->{'isa'} = 'isa');
     ($Hash_a->{'id'} = 'id');
     ($Hash_a->{'scalar'} = 'scalar');
@@ -548,7 +547,7 @@ package GLOBAL;
                         push( @{($str)}, ('v_' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
                     }
                     else {
-                        die('Error in constructor, field: ', Main::perl($field, ))
+                        die('Error in constructor, field: ', $field)
                     }
                 };
                 return scalar (('(function () ' . chr(123) . ' ' . 'if (' . Main::to_javascript_namespace($invocant) . '.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ) ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . Main::join($str, ',') . chr(125) . chr(59) . ' ' . 'tmp.__proto__ ' . chr(61) . ' ' . Main::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))

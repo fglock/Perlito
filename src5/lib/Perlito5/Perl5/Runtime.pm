@@ -219,7 +219,7 @@ package Main;
 
     # XXX Perl6
     sub perl {
-        return 'Mu' unless defined $_[0];
+        return 'undef' unless defined $_[0];
         local $_;
         local %Main::_seen = %Main::_seen;
         my $o = shift;
@@ -240,8 +240,6 @@ package Main;
             $o =~ s/'/\\'/g;
             return "'" . $o . "'";
         }
-        my $can = UNIVERSAL::can($o => 'perl');
-        return $can->($o) if $can;
         my $ref = ref($o);
         return perl($$o) if $ref eq 'SCALAR';
         return $ref . "->new("

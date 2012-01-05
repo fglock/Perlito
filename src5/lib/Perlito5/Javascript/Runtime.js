@@ -77,9 +77,6 @@ if (typeof Perlito5$Match !== 'object') {
     Perlito5$Match.isa = function(s) {
         return s == 'Perlito::Match';
     };
-    Perlito5$Match.perl = function() {
-        return 'Perlito::Match->new(' + Main._dump(this) + ')';
-    };
 }
 
 v_MATCH = {};
@@ -307,10 +304,7 @@ id = function(o) {
 // XXX Perl6
 perl = function(o) {
     if (o == null) {
-        return 'Mu';
-    }
-    if (typeof o.perl === 'function') {
-        return o.perl();
+        return 'undef';
     }
     if (typeof o === 'object' && (o instanceof Array)) {
         var out = [];

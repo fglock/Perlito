@@ -229,7 +229,7 @@ package GLOBAL;
 })))) )
                         }
                         else {
-                            die('Error in hash composer: ', Main::perl($item, ))
+                            die('Error in hash composer: ', $item)
                         }
                     }
                 }

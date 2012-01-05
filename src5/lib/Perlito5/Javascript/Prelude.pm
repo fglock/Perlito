@@ -39,34 +39,17 @@ class Perlito5::Match {
 class Pair {
     has $.key;
     has $.value;
-
-    sub perl {
-        my $self = $_[0];
-
-        return $.key . ' => ' . $.value->perl;
-    }
-
 }
 
 class Main {
-
-    sub to_lisp_identifier {
-        return 'sv-' . $_[0];
-    }
-
-    sub lisp_dump_object {
-        my $class_name = shift;
-        my $data = shift;
-        return $class_name . '( ' . ($data.>>perl)->join(', ') . ' )';
-    }
-
+    1;
 }
 
 =begin
 
 =head1 NAME
 
-Perlito5::Lisp::Prelude - Runtime for Perlito-in-Lisp
+Perlito5::Javascript::Prelude - Runtime for Perlito-in-Javascript
 
 =head1 SYNOPSIS
 

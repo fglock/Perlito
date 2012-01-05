@@ -48,8 +48,8 @@ package GLOBAL;
         ((my  $desc) = shift());
         ((my  $todo) = shift());
         ((my  $depends) = shift());
-        ((my  $got_perl) = Main::perl($got, ));
-        ((my  $expected_perl) = Main::perl($expected, ));
+        ((my  $got_perl) = $got);
+        ((my  $expected_perl) = $expected);
         ((my  $test) = (($got_perl eq $expected_perl)));
         Perlito5::Test::proclaim($test, ('is deeply' . chr(33) . ' ' . $desc), $todo, $got_perl, $expected_perl, $depends)
     };

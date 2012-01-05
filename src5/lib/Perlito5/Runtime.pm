@@ -10,10 +10,6 @@ class Main {
         : $s
     }
 
-    sub to_lisp_identifier {
-        return 'sv-' . $_[0];
-    }
-
     sub lisp_escape_string {
         my $s = shift;
         _replace($s, "\\", "\\\\");
@@ -22,11 +18,6 @@ class Main {
     sub to_javascript_namespace {
         my $s = shift;
         _replace($s, "::", '$');
-    }
-
-    sub to_lisp_namespace {
-        my $s = shift;
-        _replace($s, "::", "-");
     }
 
     sub to_go_namespace {

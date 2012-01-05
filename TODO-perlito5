@@ -16,7 +16,7 @@ TODO list for Perlito5
 
 * source code 
 
--- remove Perl6 code: "class", "has", "token", hyper operator, .perl, .pairs
+-- remove Perl6 code: "class", "has", "token", hyper operator, .pairs
 
 -- remove Perl6 accessors: $.term
 

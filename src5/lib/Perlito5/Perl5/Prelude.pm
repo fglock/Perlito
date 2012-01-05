@@ -16,13 +16,6 @@ class Perlito5::Match {
 class Pair {
     has $.key;
     has $.value;
-
-    sub perl {
-        my $self = $_[0];
-
-        return $.key . ' => ' . $.value->perl;
-    }
-
 }
 
 =begin

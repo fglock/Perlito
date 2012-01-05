@@ -285,8 +285,8 @@ class Perlito5::Precedence {
                 # say "#      token: ", $token->perl;
                 # say "#      space: ", $last_has_space;
                 if (is_term($last)) {
-                    say "#      last:  ", $last->perl;
-                    say "#      token: ", $token->perl;
+                    say "#      last:  ", $last;
+                    say "#      token: ", $token;
                     say "#      space: ", $last_has_space;
                     die "Value tokens must be separated by an operator";
                 }
@@ -328,7 +328,7 @@ class Perlito5::Precedence {
             }
         }
         if (defined($token) && ($token->[0] ne 'end')) {
-            die "Unexpected end token: ",$token->perl;
+            die "Unexpected end token: ",$token;
         }
         while $op_stack->elems() {
             $reduce->($op_stack, $num_stack);

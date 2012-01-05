@@ -289,7 +289,6 @@ class Proto {
 class Call {
 
     my %method_perl5 = (
-        'perl'   => 'Main::perl',
         'id'     => 'Main::id',
         'yaml'   => 'Main::yaml',
         'say'    => 'Main::say',

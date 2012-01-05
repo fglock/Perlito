@@ -263,7 +263,6 @@ class CompUnit {
             . '  ' . $class_name . ' = function() {};' . "\n"
             . '  ' . $class_name . ' = new ' . $class_name . ';' . "\n"
             . '  ' . $class_name . '.' . Javascript::escape_function('isa') . ' = function (s) { return s == \'' . $.name . '\'; };' . "\n"
-            . '  ' . $class_name . '.' . Javascript::escape_function('perl') . ' = function () { return \'' . $.name . '->new(\' + Main._dump(this) + \')\'; };' . "\n"
             . '}' . "\n"
             . '(function () {' . "\n"
             . '  var v__NAMESPACE = ' . $class_name . ';' . "\n";
@@ -475,7 +474,6 @@ class Proto {
 class Call {
 
     my %method_js = (
-        'perl'   => 'perl',
         'isa'    => 'isa',
         'id'     => 'id',
         'scalar' => 'scalar',
@@ -505,7 +503,7 @@ class Call {
                     push( @$str, 'v_' . $field->arguments[0]->buf() . ': ' . $field->arguments[1]->emit_javascript() );
                 }
                 else {
-                    die 'Error in constructor, field: ', $field->perl;
+                    die 'Error in constructor, field: ', $field;
                 }
             }
             return

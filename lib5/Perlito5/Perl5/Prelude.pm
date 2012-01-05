@@ -30,12 +30,7 @@ package GLOBAL;
     package Pair;
         sub new { shift; bless { @_ }, "Pair" }
         sub key { $_[0]->{key} };
-        sub value { $_[0]->{value} };
-        sub perl {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            return scalar (($self->{key} . ' ' . chr(61) . '> ' . Main::perl($self->{value}, )))
-        }
+        sub value { $_[0]->{value} }
     }
 
 

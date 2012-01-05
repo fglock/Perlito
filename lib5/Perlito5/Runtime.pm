@@ -21,10 +21,6 @@ package GLOBAL;
             ((my  $p) = index($s, $old));
             (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + Main::chars($old, ))), $old, $new)) : $s)
         };
-        sub to_lisp_identifier {
-            my $List__ = bless \@_, "ARRAY";
-            return scalar (('sv-' . $List__->[0]))
-        };
         sub lisp_escape_string {
             my $List__ = bless \@_, "ARRAY";
             ((my  $s) = shift());
@@ -34,11 +30,6 @@ package GLOBAL;
             my $List__ = bless \@_, "ARRAY";
             ((my  $s) = shift());
             _replace($s, ('::'), chr(36))
-        };
-        sub to_lisp_namespace {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $s) = shift());
-            _replace($s, ('::'), ('-'))
         };
         sub to_go_namespace {
             my $List__ = bless \@_, "ARRAY";

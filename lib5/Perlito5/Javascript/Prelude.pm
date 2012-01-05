@@ -52,28 +52,14 @@ package GLOBAL;
     package Pair;
         sub new { shift; bless { @_ }, "Pair" }
         sub key { $_[0]->{key} };
-        sub value { $_[0]->{value} };
-        sub perl {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            return scalar (($self->{key} . ' ' . chr(61) . '> ' . Main::perl($self->{value}, )))
-        }
+        sub value { $_[0]->{value} }
     }
 
 ;
     {
     package Main;
         sub new { shift; bless { @_ }, "Main" }
-        sub to_lisp_identifier {
-            my $List__ = bless \@_, "ARRAY";
-            return scalar (('sv-' . $List__->[0]))
-        };
-        sub lisp_dump_object {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $class_name) = shift());
-            ((my  $data) = shift());
-            return scalar (($class_name . '( ' . Main::join((bless [ map { Main::perl( $_, , ) } @{( $data )} ], "ARRAY"), ', ') . ' )'))
-        }
+        1
     }
 
 

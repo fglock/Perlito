@@ -216,7 +216,7 @@ class Lit::Hash {
 
             }
             else {
-                die 'Error in hash composer: ', $item->perl;
+                die 'Error in hash composer: ', $item;
             }
         }
         return Do->new(

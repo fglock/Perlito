@@ -47,9 +47,9 @@ sub is_deeply {
     my $todo     = shift;
     my $depends  = shift;
 
-    # hack for now
-    my $got_perl      = $got->perl;
-    my $expected_perl = $expected->perl;
+    # hack for now - TODO - use Data::Dumper
+    my $got_perl      = $got;
+    my $expected_perl = $expected;
     my $test          = ( $got_perl eq $expected_perl );
 
     Perlito5::Test::proclaim( $test, "is deeply! $desc", $todo, $got_perl, $expected_perl, $depends );

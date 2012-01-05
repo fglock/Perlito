@@ -489,8 +489,8 @@ package GLOBAL;
                         else {
                             if ((is_term($token))) {
                                 if ((is_term($last))) {
-                                    Main::say((chr(35) . '      last:  '), Main::perl($last, ));
-                                    Main::say((chr(35) . '      token: '), Main::perl($token, ));
+                                    Main::say((chr(35) . '      last:  '), $last);
+                                    Main::say((chr(35) . '      token: '), $token);
                                     Main::say((chr(35) . '      space: '), $last_has_space);
                                     die(('Value tokens must be separated by an operator'))
                                 };
@@ -536,7 +536,7 @@ package GLOBAL;
                 }
             };
             if (((defined($token) && (($token->[0] ne 'end'))))) {
-                die(('Unexpected end token: '), Main::perl($token, ))
+                die(('Unexpected end token: '), $token)
             };
             for ( ; scalar( @{$op_stack} );  ) {
                 $reduce->($op_stack, $num_stack)

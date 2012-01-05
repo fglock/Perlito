@@ -78,9 +78,6 @@ if (typeof Perlito5$Match !== 'object') {
     Perlito5$Match.isa = function(s) {
         return s == 'Perlito::Match';
     };
-    Perlito5$Match.perl = function() {
-        return 'Perlito::Match->new(' + Main._dump(this) + ')';
-    };
 }
 
 v_MATCH = {};
@@ -284,6 +281,7 @@ Array.prototype.grep = function grep(f) {
     return res
 }
 
+// XXX Perl6
 var _id = 0;
 id = function(o) {
     if (o == null) {
@@ -304,12 +302,10 @@ id = function(o) {
     return o._id;
 };
 
+// XXX Perl6
 perl = function(o) {
     if (o == null) {
-        return 'Mu';
-    }
-    if (typeof o.perl === 'function') {
-        return o.perl();
+        return 'undef';
     }
     if (typeof o === 'object' && (o instanceof Array)) {
         var out = [];
@@ -333,11 +329,7 @@ perl = function(o) {
 
 isa = function(o, s) {
     if (o == null) {
-        if (s == 'Mu') {
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
     if (typeof o.isa === 'function') {
         return o.isa(s);
@@ -550,7 +542,6 @@ if (typeof GLOBAL !== 'object') {
   GLOBAL = function() {};
   GLOBAL = new GLOBAL;
   GLOBAL.isa = function (s) { return s == 'GLOBAL'; };
-  GLOBAL.perl = function () { return 'GLOBAL->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = GLOBAL;
@@ -561,7 +552,6 @@ if (typeof Perlito5$Match !== 'object') {
   Perlito5$Match = function() {};
   Perlito5$Match = new Perlito5$Match;
   Perlito5$Match.isa = function (s) { return s == 'Perlito5::Match'; };
-  Perlito5$Match.perl = function () { return 'Perlito5::Match->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Match;
@@ -653,7 +643,6 @@ if (typeof Pair !== 'object') {
   Pair = function() {};
   Pair = new Pair;
   Pair.isa = function (s) { return s == 'Pair'; };
-  Pair.perl = function () { return 'Pair->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Pair;
@@ -663,31 +652,6 @@ if (typeof Pair !== 'object') {
   // accessor value
   Pair.v_value = null;
   Pair.value = function () { return this.v_value; };
-  // sub perl
-  Pair.perl = function () {
-        var List__ = Array.prototype.slice.call(arguments);
-        if (List__[0] instanceof CallSubClass) {
-            List__.shift()
-        }
-        else {
-            List__.unshift(this)
-        }
-        try {
-            var v_self = null;
-
-            (v_self = List__[0]);
-            throw((string(v_self.v_key) + string(' ' + String.fromCharCode(61) + '> ') + string(perl(v_self.v_value))));;
-        }
-        catch(err) {
-            if ( err instanceof Error ) {
-                throw(err);
-            }
-            else {
-                return(err);
-            }
-        }
-  }
-  Pair.perl;  // v8 bug workaround
 })()
 ;
 // class Main
@@ -695,60 +659,10 @@ if (typeof Main !== 'object') {
   Main = function() {};
   Main = new Main;
   Main.isa = function (s) { return s == 'Main'; };
-  Main.perl = function () { return 'Main->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Main;
-  // sub to_lisp_identifier
-  Main.to_lisp_identifier = function () {
-        var List__ = Array.prototype.slice.call(arguments);
-        if (List__[0] instanceof CallSubClass) {
-            List__.shift()
-        }
-        else {
-            List__.unshift(this)
-        }
-        try {
-            throw((string('sv-') + string(List__[0])));;
-        }
-        catch(err) {
-            if ( err instanceof Error ) {
-                throw(err);
-            }
-            else {
-                return(err);
-            }
-        }
-  }
-  Main.to_lisp_identifier;  // v8 bug workaround
-  // sub lisp_dump_object
-  Main.lisp_dump_object = function () {
-        var List__ = Array.prototype.slice.call(arguments);
-        if (List__[0] instanceof CallSubClass) {
-            List__.shift()
-        }
-        else {
-            List__.unshift(this)
-        }
-        try {
-            var v_class_name = null;
-
-            var v_data = null;
-
-            (v_class_name = shift(List__));
-            (v_data = shift(List__));
-            throw((string(v_class_name) + string('( ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( perl(a_[i]) ) } return out; })(v_data)).join(', ')) + string(' )')));;
-        }
-        catch(err) {
-            if ( err instanceof Error ) {
-                throw(err);
-            }
-            else {
-                return(err);
-            }
-        }
-  }
-  Main.lisp_dump_object;  // v8 bug workaround
+        1;
 })()
 ;
     // use v5
@@ -760,7 +674,6 @@ if (typeof CompUnit !== 'object') {
   CompUnit = function() {};
   CompUnit = new CompUnit;
   CompUnit.isa = function (s) { return s == 'CompUnit'; };
-  CompUnit.perl = function () { return 'CompUnit->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = CompUnit;
@@ -777,7 +690,6 @@ if (typeof Val$Int !== 'object') {
   Val$Int = function() {};
   Val$Int = new Val$Int;
   Val$Int.isa = function (s) { return s == 'Val::Int'; };
-  Val$Int.perl = function () { return 'Val::Int->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Int;
@@ -791,7 +703,6 @@ if (typeof Val$Bit !== 'object') {
   Val$Bit = function() {};
   Val$Bit = new Val$Bit;
   Val$Bit.isa = function (s) { return s == 'Val::Bit'; };
-  Val$Bit.perl = function () { return 'Val::Bit->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Bit;
@@ -805,7 +716,6 @@ if (typeof Val$Num !== 'object') {
   Val$Num = function() {};
   Val$Num = new Val$Num;
   Val$Num.isa = function (s) { return s == 'Val::Num'; };
-  Val$Num.perl = function () { return 'Val::Num->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Num;
@@ -819,7 +729,6 @@ if (typeof Val$Buf !== 'object') {
   Val$Buf = function() {};
   Val$Buf = new Val$Buf;
   Val$Buf.isa = function (s) { return s == 'Val::Buf'; };
-  Val$Buf.perl = function () { return 'Val::Buf->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
@@ -833,7 +742,6 @@ if (typeof Lit$Block !== 'object') {
   Lit$Block = function() {};
   Lit$Block = new Lit$Block;
   Lit$Block.isa = function (s) { return s == 'Lit::Block'; };
-  Lit$Block.perl = function () { return 'Lit::Block->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
@@ -850,7 +758,6 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
-  Lit$Array.perl = function () { return 'Lit::Array->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -864,7 +771,6 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
-  Lit$Hash.perl = function () { return 'Lit::Hash->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -878,7 +784,6 @@ if (typeof Index !== 'object') {
   Index = function() {};
   Index = new Index;
   Index.isa = function (s) { return s == 'Index'; };
-  Index.perl = function () { return 'Index->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Index;
@@ -895,7 +800,6 @@ if (typeof Lookup !== 'object') {
   Lookup = function() {};
   Lookup = new Lookup;
   Lookup.isa = function (s) { return s == 'Lookup'; };
-  Lookup.perl = function () { return 'Lookup->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lookup;
@@ -912,7 +816,6 @@ if (typeof Var !== 'object') {
   Var = function() {};
   Var = new Var;
   Var.isa = function (s) { return s == 'Var'; };
-  Var.perl = function () { return 'Var->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Var;
@@ -935,7 +838,6 @@ if (typeof Proto !== 'object') {
   Proto = function() {};
   Proto = new Proto;
   Proto.isa = function (s) { return s == 'Proto'; };
-  Proto.perl = function () { return 'Proto->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Proto;
@@ -949,7 +851,6 @@ if (typeof Call !== 'object') {
   Call = function() {};
   Call = new Call;
   Call.isa = function (s) { return s == 'Call'; };
-  Call.perl = function () { return 'Call->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Call;
@@ -972,7 +873,6 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
-  Apply.perl = function () { return 'Apply->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -992,7 +892,6 @@ if (typeof If !== 'object') {
   If = function() {};
   If = new If;
   If.isa = function (s) { return s == 'If'; };
-  If.perl = function () { return 'If->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = If;
@@ -1012,7 +911,6 @@ if (typeof While !== 'object') {
   While = function() {};
   While = new While;
   While.isa = function (s) { return s == 'While'; };
-  While.perl = function () { return 'While->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = While;
@@ -1035,7 +933,6 @@ if (typeof For !== 'object') {
   For = function() {};
   For = new For;
   For.isa = function (s) { return s == 'For'; };
-  For.perl = function () { return 'For->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = For;
@@ -1052,7 +949,6 @@ if (typeof Decl !== 'object') {
   Decl = function() {};
   Decl = new Decl;
   Decl.isa = function (s) { return s == 'Decl'; };
-  Decl.perl = function () { return 'Decl->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Decl;
@@ -1072,7 +968,6 @@ if (typeof Sig !== 'object') {
   Sig = function() {};
   Sig = new Sig;
   Sig.isa = function (s) { return s == 'Sig'; };
-  Sig.perl = function () { return 'Sig->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Sig;
@@ -1092,7 +987,6 @@ if (typeof Sub !== 'object') {
   Sub = function() {};
   Sub = new Sub;
   Sub.isa = function (s) { return s == 'Sub'; };
-  Sub.perl = function () { return 'Sub->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Sub;
@@ -1112,7 +1006,6 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
-  Do.perl = function () { return 'Do->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -1126,7 +1019,6 @@ if (typeof Use !== 'object') {
   Use = function() {};
   Use = new Use;
   Use.isa = function (s) { return s == 'Use'; };
-  Use.perl = function () { return 'Use->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Use;
@@ -1142,7 +1034,6 @@ if (typeof Javascript !== 'object') {
   Javascript = function() {};
   Javascript = new Javascript;
   Javascript.isa = function (s) { return s == 'Javascript'; };
-  Javascript.perl = function () { return 'Javascript->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Javascript;
@@ -1377,7 +1268,6 @@ if (typeof Perlito5$Javascript$LexicalBlock !== 'object') {
   Perlito5$Javascript$LexicalBlock = function() {};
   Perlito5$Javascript$LexicalBlock = new Perlito5$Javascript$LexicalBlock;
   Perlito5$Javascript$LexicalBlock.isa = function (s) { return s == 'Perlito5::Javascript::LexicalBlock'; };
-  Perlito5$Javascript$LexicalBlock.perl = function () { return 'Perlito5::Javascript::LexicalBlock->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Javascript$LexicalBlock;
@@ -1526,7 +1416,6 @@ if (typeof CompUnit !== 'object') {
   CompUnit = function() {};
   CompUnit = new CompUnit;
   CompUnit.isa = function (s) { return s == 'CompUnit'; };
-  CompUnit.perl = function () { return 'CompUnit->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = CompUnit;
@@ -1599,7 +1488,7 @@ if (typeof CompUnit !== 'object') {
 (v_i)++;;
                 })(); };; })() };
             (v_class_name = Main.to_javascript_namespace(CallSub, v_self.v_name));
-            (v_str = (string(String.fromCharCode(47) + String.fromCharCode(47) + ' class ') + string(v_self.v_name) + string((string(String.fromCharCode(10)))) + string('if (typeof ') + string(v_class_name) + string(' ' + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39) + 'object' + String.fromCharCode(39) + ') ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' function() ' + String.fromCharCode(123) + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' new ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(Javascript.escape_function(CallSub, 'isa')) + string(' ' + String.fromCharCode(61) + ' function (s) ' + String.fromCharCode(123) + ' return s ' + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(Javascript.escape_function(CallSub, 'perl')) + string(' ' + String.fromCharCode(61) + ' function () ' + String.fromCharCode(123) + ' return ' + String.fromCharCode(39)) + string(v_self.v_name) + string('->new(' + String.fromCharCode(39) + ' + Main._dump(this) + ' + String.fromCharCode(39) + ')' + String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string(String.fromCharCode(125)) + string((string(String.fromCharCode(10)))) + string('(function () ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  var v__NAMESPACE ' + String.fromCharCode(61) + ' ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10))))));
+            (v_str = (string(String.fromCharCode(47) + String.fromCharCode(47) + ' class ') + string(v_self.v_name) + string((string(String.fromCharCode(10)))) + string('if (typeof ') + string(v_class_name) + string(' ' + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39) + 'object' + String.fromCharCode(39) + ') ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' function() ' + String.fromCharCode(123) + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' new ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(Javascript.escape_function(CallSub, 'isa')) + string(' ' + String.fromCharCode(61) + ' function (s) ' + String.fromCharCode(123) + ' return s ' + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string(String.fromCharCode(125)) + string((string(String.fromCharCode(10)))) + string('(function () ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  var v__NAMESPACE ' + String.fromCharCode(61) + ' ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10))))));
             (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {                 if ( bool((and(isa(v_decl, 'Decl'), function () { return (((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("decl") ? v_decl.__proto__.decl.call(v_decl) : v_decl.decl()) == 'my')); }))) ) { (function () {
                     (v_str = (string(v_str) + string('  ') + string((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("emit_javascript_init") ? v_decl.__proto__.emit_javascript_init.call(v_decl) : v_decl.emit_javascript_init()))));;
                 })(); };
@@ -1677,7 +1566,6 @@ if (typeof Val$Int !== 'object') {
   Val$Int = function() {};
   Val$Int = new Val$Int;
   Val$Int.isa = function (s) { return s == 'Val::Int'; };
-  Val$Int.perl = function () { return 'Val::Int->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Int;
@@ -1738,7 +1626,6 @@ if (typeof Val$Bit !== 'object') {
   Val$Bit = function() {};
   Val$Bit = new Val$Bit;
   Val$Bit.isa = function (s) { return s == 'Val::Bit'; };
-  Val$Bit.perl = function () { return 'Val::Bit->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Bit;
@@ -1799,7 +1686,6 @@ if (typeof Val$Num !== 'object') {
   Val$Num = function() {};
   Val$Num = new Val$Num;
   Val$Num.isa = function (s) { return s == 'Val::Num'; };
-  Val$Num.perl = function () { return 'Val::Num->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Num;
@@ -1860,7 +1746,6 @@ if (typeof Val$Buf !== 'object') {
   Val$Buf = function() {};
   Val$Buf = new Val$Buf;
   Val$Buf.isa = function (s) { return s == 'Val::Buf'; };
-  Val$Buf.perl = function () { return 'Val::Buf->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
@@ -1921,7 +1806,6 @@ if (typeof Lit$Block !== 'object') {
   Lit$Block = function() {};
   Lit$Block = new Lit$Block;
   Lit$Block.isa = function (s) { return s == 'Lit::Block'; };
-  Lit$Block.perl = function () { return 'Lit::Block->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
@@ -1988,7 +1872,6 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
-  Lit$Array.perl = function () { return 'Lit::Array->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -2052,7 +1935,6 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
-  Lit$Hash.perl = function () { return 'Lit::Hash->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -2116,7 +1998,6 @@ if (typeof Index !== 'object') {
   Index = function() {};
   Index = new Index;
   Index.isa = function (s) { return s == 'Index'; };
-  Index.perl = function () { return 'Index->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Index;
@@ -2183,7 +2064,6 @@ if (typeof Lookup !== 'object') {
   Lookup = function() {};
   Lookup = new Lookup;
   Lookup.isa = function (s) { return s == 'Lookup'; };
-  Lookup.perl = function () { return 'Lookup->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lookup;
@@ -2250,7 +2130,6 @@ if (typeof Var !== 'object') {
   Var = function() {};
   Var = new Var;
   Var.isa = function (s) { return s == 'Var'; };
-  Var.perl = function () { return 'Var->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Var;
@@ -2356,7 +2235,6 @@ if (typeof Proto !== 'object') {
   Proto = function() {};
   Proto = new Proto;
   Proto.isa = function (s) { return s == 'Proto'; };
-  Proto.perl = function () { return 'Proto->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Proto;
@@ -2417,7 +2295,6 @@ if (typeof Call !== 'object') {
   Call = function() {};
   Call = new Call;
   Call.isa = function (s) { return s == 'Call'; };
-  Call.perl = function () { return 'Call->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Call;
@@ -2468,9 +2345,6 @@ if (typeof Call !== 'object') {
             (v_self = shift(List__));
             (v_level = shift(List__));
             (v_invocant = (typeof(v_self.v_invocant.__proto__) != 'undefined' && v_self.v_invocant.__proto__.hasOwnProperty("emit_javascript") ? v_self.v_invocant.__proto__.emit_javascript.call(v_self.v_invocant) : v_self.v_invocant.emit_javascript()));
-            if ( bool(((v_invocant == 'self'))) ) { (function () {
-                (v_invocant = 'v_self');;
-            })(); };
             if ( bool(((v_self.v_method == 'new'))) ) { (function () {
                 var v_str = null;
 
@@ -2485,7 +2359,7 @@ if (typeof Call !== 'object') {
                         push((v_str), (string('v_') + string((typeof((typeof(v_field.__proto__) != 'undefined' && v_field.__proto__.hasOwnProperty("arguments") ? v_field.__proto__.arguments.call(v_field) : v_field.arguments())[0].__proto__) != 'undefined' && (typeof(v_field.__proto__) != 'undefined' && v_field.__proto__.hasOwnProperty("arguments") ? v_field.__proto__.arguments.call(v_field) : v_field.arguments())[0].__proto__.hasOwnProperty("buf") ? (typeof(v_field.__proto__) != 'undefined' && v_field.__proto__.hasOwnProperty("arguments") ? v_field.__proto__.arguments.call(v_field) : v_field.arguments())[0].__proto__.buf.call((typeof(v_field.__proto__) != 'undefined' && v_field.__proto__.hasOwnProperty("arguments") ? v_field.__proto__.arguments.call(v_field) : v_field.arguments())[0]) : (typeof(v_field.__proto__) != 'undefined' && v_field.__proto__.hasOwnProperty("arguments") ? v_field.__proto__.arguments.call(v_field) : v_field.arguments())[0].buf())) + string(': ') + string((typeof((typeof(v_field.__proto__) != 'undefined' && v_field.__proto__.hasOwnProperty("arguments") ? v_field.__proto__.arguments.call(v_field) : v_field.arguments())[1].__proto__) != 'undefined' && (typeof(v_field.__proto__) != 'undefined' && v_field.__proto__.hasOwnProperty("arguments") ? v_field.__proto__.arguments.call(v_field) : v_field.arguments())[1].__proto__.hasOwnProperty("emit_javascript") ? (typeof(v_field.__proto__) != 'undefined' && v_field.__proto__.hasOwnProperty("arguments") ? v_field.__proto__.arguments.call(v_field) : v_field.arguments())[1].__proto__.emit_javascript.call((typeof(v_field.__proto__) != 'undefined' && v_field.__proto__.hasOwnProperty("arguments") ? v_field.__proto__.arguments.call(v_field) : v_field.arguments())[1]) : (typeof(v_field.__proto__) != 'undefined' && v_field.__proto__.hasOwnProperty("arguments") ? v_field.__proto__.arguments.call(v_field) : v_field.arguments())[1].emit_javascript()))));;
                     })(); }
                     else { (function () {
-                        die('Error in constructor, field: ', perl(v_field));;
+                        die('Error in constructor, field: ', v_field);;
                     })(); };; })(a_[i_]) } })(v_self.v_arguments);
                 throw((string('(function () ' + String.fromCharCode(123) + ' ') + string('if (') + string(Main.to_javascript_namespace(CallSub, v_invocant)) + string('.hasOwnProperty(' + String.fromCharCode(34) + 'new' + String.fromCharCode(34) + ') ) ' + String.fromCharCode(123) + ' ') + string('return ') + string(v_invocant) + string('.new(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + ' ') + string('var tmp ' + String.fromCharCode(61) + ' ' + String.fromCharCode(123)) + string(v_str.join(',')) + string(String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('tmp.__proto__ ' + String.fromCharCode(61) + ' ') + string(Main.to_javascript_namespace(CallSub, v_invocant)) + string(String.fromCharCode(59) + ' ') + string('return tmp' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + ')()')));;
             })(); };
@@ -2535,7 +2409,6 @@ if (typeof Call !== 'object') {
         (Hash_method_js = (function () { 
     var Hash_a = {};
 
-    (function () { if (Hash_a['perl'] == null) { Hash_a['perl'] = {} }; return (Hash_a['perl']  = 'perl'); })();
     (function () { if (Hash_a['isa'] == null) { Hash_a['isa'] = {} }; return (Hash_a['isa']  = 'isa'); })();
     (function () { if (Hash_a['id'] == null) { Hash_a['id'] = {} }; return (Hash_a['id']  = 'id'); })();
     (function () { if (Hash_a['scalar'] == null) { Hash_a['scalar'] = {} }; return (Hash_a['scalar']  = 'scalar'); })();
@@ -2561,7 +2434,6 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
-  Apply.perl = function () { return 'Apply->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -2631,10 +2503,7 @@ if (typeof Apply !== 'object') {
             if ( bool(((v_code == 'eval'))) ) { (function () {
                 throw((string('eval(perl5_to_js(') + string(Javascript.escape_function(CallSub, 'string')) + string('(') + string((typeof((v_self.v_arguments[0]).__proto__) != 'undefined' && (v_self.v_arguments[0]).__proto__.hasOwnProperty("emit_javascript") ? (v_self.v_arguments[0]).__proto__.emit_javascript.call((v_self.v_arguments[0])) : (v_self.v_arguments[0]).emit_javascript())) + string(')') + string('))')));;
             })(); };
-            if ( bool(((v_code == 'self'))) ) { (function () {
-                throw((string(Javascript.tab(CallSub, v_level)) + string('v_self')));;
-            })(); };
-            if ( bool(((v_code == 'Mu'))) ) { (function () {
+            if ( bool(((v_code == 'undef'))) ) { (function () {
                 throw((string(Javascript.tab(CallSub, v_level)) + string('null')));;
             })(); };
             if ( bool(((v_code == 'make'))) ) { (function () {
@@ -2955,7 +2824,6 @@ if (typeof If !== 'object') {
   If = function() {};
   If = new If;
   If.isa = function (s) { return s == 'If'; };
-  If.perl = function () { return 'If->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = If;
@@ -3048,7 +2916,6 @@ if (typeof While !== 'object') {
   While = function() {};
   While = new While;
   While.isa = function (s) { return s == 'While'; };
-  While.perl = function () { return 'While->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = While;
@@ -3112,7 +2979,6 @@ if (typeof For !== 'object') {
   For = function() {};
   For = new For;
   For.isa = function (s) { return s == 'For'; };
-  For.perl = function () { return 'For->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = For;
@@ -3202,7 +3068,6 @@ if (typeof Decl !== 'object') {
   Decl = function() {};
   Decl = new Decl;
   Decl.isa = function (s) { return s == 'Decl'; };
-  Decl.perl = function () { return 'Decl->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Decl;
@@ -3308,7 +3173,6 @@ if (typeof Sub !== 'object') {
   Sub = function() {};
   Sub = new Sub;
   Sub.isa = function (s) { return s == 'Sub'; };
-  Sub.perl = function () { return 'Sub->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Sub;
@@ -3378,7 +3242,6 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
-  Do.perl = function () { return 'Do->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -3442,7 +3305,6 @@ if (typeof Use !== 'object') {
   Use = function() {};
   Use = new Use;
   Use.isa = function (s) { return s == 'Use'; };
-  Use.perl = function () { return 'Use->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Use;
@@ -3503,7 +3365,6 @@ if (typeof Perlito5$Grammar !== 'object') {
   Perlito5$Grammar = function() {};
   Perlito5$Grammar = new Perlito5$Grammar;
   Perlito5$Grammar.isa = function (s) { return s == 'Perlito5::Grammar'; };
-  Perlito5$Grammar.perl = function () { return 'Perlito5::Grammar->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Grammar;
@@ -3512,7 +3373,6 @@ if (typeof Perlito5$Precedence !== 'object') {
   Perlito5$Precedence = function() {};
   Perlito5$Precedence = new Perlito5$Precedence;
   Perlito5$Precedence.isa = function (s) { return s == 'Perlito5::Precedence'; };
-  Perlito5$Precedence.perl = function () { return 'Perlito5::Precedence->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Precedence;
@@ -3935,8 +3795,8 @@ if (typeof Perlito5$Precedence !== 'object') {
                             else { (function () {
                                 if ( bool((v__NAMESPACE.is_term(CallSub, v_token))) ) { (function () {
                                     if ( bool((v__NAMESPACE.is_term(CallSub, v_last))) ) { (function () {
-                                        say((string(String.fromCharCode(35) + '      last:  ')), perl(v_last));
-                                        say((string(String.fromCharCode(35) + '      token: ')), perl(v_token));
+                                        say((string(String.fromCharCode(35) + '      last:  ')), v_last);
+                                        say((string(String.fromCharCode(35) + '      token: ')), v_token);
                                         say((string(String.fromCharCode(35) + '      space: ')), v_last_has_space);
                                         die((string('Value tokens must be separated by an operator')));;
                                     })(); };
@@ -3979,7 +3839,7 @@ if (typeof Perlito5$Precedence !== 'object') {
                         (v_last_has_space = 0);;
                     })(); };; })() };
                 if ( bool((and((v_token != null), function () { return ((v_token[0] != 'end')); }))) ) { (function () {
-                    die((string('Unexpected end token: ')), perl(v_token));;
+                    die((string('Unexpected end token: ')), v_token);;
                 })(); };
                 for ( ; bool(elems(v_op_stack));  ) { (function () { (v_reduce)(v_op_stack, v_num_stack);; })() };
                 (v_End_token = v_last_end_token);
@@ -4343,7 +4203,6 @@ if (typeof Perl5 !== 'object') {
   Perl5 = function() {};
   Perl5 = new Perl5;
   Perl5.isa = function (s) { return s == 'Perl5'; };
-  Perl5.perl = function () { return 'Perl5->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Perl5;
@@ -4450,7 +4309,6 @@ if (typeof CompUnit !== 'object') {
   CompUnit = function() {};
   CompUnit = new CompUnit;
   CompUnit.isa = function (s) { return s == 'CompUnit'; };
-  CompUnit.perl = function () { return 'CompUnit->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = CompUnit;
@@ -4546,7 +4404,6 @@ if (typeof Val$Int !== 'object') {
   Val$Int = function() {};
   Val$Int = new Val$Int;
   Val$Int.isa = function (s) { return s == 'Val::Int'; };
-  Val$Int.perl = function () { return 'Val::Int->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Int;
@@ -4610,7 +4467,6 @@ if (typeof Val$Bit !== 'object') {
   Val$Bit = function() {};
   Val$Bit = new Val$Bit;
   Val$Bit.isa = function (s) { return s == 'Val::Bit'; };
-  Val$Bit.perl = function () { return 'Val::Bit->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Bit;
@@ -4674,7 +4530,6 @@ if (typeof Val$Num !== 'object') {
   Val$Num = function() {};
   Val$Num = new Val$Num;
   Val$Num.isa = function (s) { return s == 'Val::Num'; };
-  Val$Num.perl = function () { return 'Val::Num->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Num;
@@ -4738,7 +4593,6 @@ if (typeof Val$Buf !== 'object') {
   Val$Buf = function() {};
   Val$Buf = new Val$Buf;
   Val$Buf.isa = function (s) { return s == 'Val::Buf'; };
-  Val$Buf.perl = function () { return 'Val::Buf->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
@@ -4802,7 +4656,6 @@ if (typeof Lit$Block !== 'object') {
   Lit$Block = function() {};
   Lit$Block = new Lit$Block;
   Lit$Block.isa = function (s) { return s == 'Lit::Block'; };
-  Lit$Block.perl = function () { return 'Lit::Block->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
@@ -4866,7 +4719,6 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
-  Lit$Array.perl = function () { return 'Lit::Array->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -4933,7 +4785,6 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
-  Lit$Hash.perl = function () { return 'Lit::Hash->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -5000,7 +4851,6 @@ if (typeof Index !== 'object') {
   Index = function() {};
   Index = new Index;
   Index.isa = function (s) { return s == 'Index'; };
-  Index.perl = function () { return 'Index->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Index;
@@ -5070,7 +4920,6 @@ if (typeof Lookup !== 'object') {
   Lookup = function() {};
   Lookup = new Lookup;
   Lookup.isa = function (s) { return s == 'Lookup'; };
-  Lookup.perl = function () { return 'Lookup->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lookup;
@@ -5140,7 +4989,6 @@ if (typeof Var !== 'object') {
   Var = function() {};
   Var = new Var;
   Var.isa = function (s) { return s == 'Var'; };
-  Var.perl = function () { return 'Var->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Var;
@@ -5270,7 +5118,6 @@ if (typeof Proto !== 'object') {
   Proto = function() {};
   Proto = new Proto;
   Proto.isa = function (s) { return s == 'Proto'; };
-  Proto.perl = function () { return 'Proto->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Proto;
@@ -5334,7 +5181,6 @@ if (typeof Call !== 'object') {
   Call = function() {};
   Call = new Call;
   Call.isa = function (s) { return s == 'Call'; };
-  Call.perl = function () { return 'Call->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Call;
@@ -5387,9 +5233,6 @@ if (typeof Call !== 'object') {
                 (v_self = List__[0]);
                 (v_level = List__[1]);
                 (v_invocant = (typeof(v_self.v_invocant.__proto__) != 'undefined' && v_self.v_invocant.__proto__.hasOwnProperty("emit_perl5") ? v_self.v_invocant.__proto__.emit_perl5.call(v_self.v_invocant) : v_self.v_invocant.emit_perl5()));
-                if ( bool(((v_invocant == 'self'))) ) { (function () {
-                    (v_invocant = String.fromCharCode(36) + 'self');;
-                })(); };
                 if ( bool(((Hash_method_perl5).hasOwnProperty(v_self.v_method))) ) { (function () {
                     if ( bool((v_self.v_hyper)) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('bless [ map ' + String.fromCharCode(123) + ' ') + string(Hash_method_perl5[v_self.v_method]) + string('( ' + String.fromCharCode(36) + '_, ') + string(', ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')') + string(' ' + String.fromCharCode(125) + ' ' + String.fromCharCode(64) + String.fromCharCode(123) + '( ') + string(v_invocant) + string(' )') + string(String.fromCharCode(125) + ' ], ' + String.fromCharCode(34) + 'ARRAY' + String.fromCharCode(34))));;
@@ -5435,7 +5278,6 @@ if (typeof Call !== 'object') {
             (Hash_method_perl5 = (function () { 
     var Hash_a = {};
 
-    (function () { if (Hash_a['perl'] == null) { Hash_a['perl'] = {} }; return (Hash_a['perl']  = 'Main::perl'); })();
     (function () { if (Hash_a['id'] == null) { Hash_a['id'] = {} }; return (Hash_a['id']  = 'Main::id'); })();
     (function () { if (Hash_a['yaml'] == null) { Hash_a['yaml'] = {} }; return (Hash_a['yaml']  = 'Main::yaml'); })();
     (function () { if (Hash_a['say'] == null) { Hash_a['say'] = {} }; return (Hash_a['say']  = 'Main::say'); })();
@@ -5455,7 +5297,6 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
-  Apply.perl = function () { return 'Apply->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -5532,17 +5373,11 @@ if (typeof Apply !== 'object') {
                 if ( bool(((v_self.v_code == 'package'))) ) { (function () {
                     throw((string(Perl5.tab(CallSub, v_level)) + string('package ') + string(v_self.v_namespace)));;
                 })(); };
-                if ( bool(((v_code == 'self'))) ) { (function () {
-                    throw((string(Perl5.tab(CallSub, v_level)) + string(String.fromCharCode(36) + 'self')));;
-                })(); };
-                if ( bool(((v_code == 'Mu'))) ) { (function () {
+                if ( bool(((v_code == 'undef'))) ) { (function () {
                     throw((string(Perl5.tab(CallSub, v_level)) + string('undef()')));;
                 })(); };
                 if ( bool(((v_code == 'make'))) ) { (function () {
                     throw((string(Perl5.tab(CallSub, v_level)) + string('(' + String.fromCharCode(36) + 'MATCH->' + String.fromCharCode(123) + 'capture' + String.fromCharCode(125) + ' ' + String.fromCharCode(61) + ' (') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string('))')));;
-                })(); };
-                if ( bool(((v_code == 'array'))) ) { (function () {
-                    throw((string(Perl5.tab(CallSub, v_level)) + string(String.fromCharCode(64) + String.fromCharCode(123)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(String.fromCharCode(125))));;
                 })(); };
                 if ( bool(((v_code == 'pop'))) ) { (function () {
                     throw((string(Perl5.tab(CallSub, v_level)) + string('pop( ' + String.fromCharCode(64) + String.fromCharCode(123)) + string(((typeof(v_self.v_arguments[0].__proto__) != 'undefined' && v_self.v_arguments[0].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[0].__proto__.emit_perl5.call(v_self.v_arguments[0]) : v_self.v_arguments[0].emit_perl5()))) + string(String.fromCharCode(125) + ' )')));;
@@ -5732,7 +5567,6 @@ if (typeof If !== 'object') {
   If = function() {};
   If = new If;
   If.isa = function (s) { return s == 'If'; };
-  If.perl = function () { return 'If->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = If;
@@ -5796,7 +5630,6 @@ if (typeof While !== 'object') {
   While = function() {};
   While = new While;
   While.isa = function (s) { return s == 'While'; };
-  While.perl = function () { return 'While->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = While;
@@ -5880,7 +5713,6 @@ if (typeof For !== 'object') {
   For = function() {};
   For = new For;
   For.isa = function (s) { return s == 'For'; };
-  For.perl = function () { return 'For->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = For;
@@ -5969,7 +5801,6 @@ if (typeof Decl !== 'object') {
   Decl = function() {};
   Decl = new Decl;
   Decl.isa = function (s) { return s == 'Decl'; };
-  Decl.perl = function () { return 'Decl->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Decl;
@@ -6056,7 +5887,6 @@ if (typeof Sub !== 'object') {
   Sub = function() {};
   Sub = new Sub;
   Sub.isa = function (s) { return s == 'Sub'; };
-  Sub.perl = function () { return 'Sub->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Sub;
@@ -6134,7 +5964,6 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
-  Do.perl = function () { return 'Do->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -6201,7 +6030,6 @@ if (typeof Use !== 'object') {
   Use = function() {};
   Use = new Use;
   Use.isa = function (s) { return s == 'Use'; };
-  Use.perl = function () { return 'Use->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Use;
@@ -6268,7 +6096,6 @@ if (typeof Perlito5$Expression !== 'object') {
   Perlito5$Expression = function() {};
   Perlito5$Expression = new Perlito5$Expression;
   Perlito5$Expression.isa = function (s) { return s == 'Perlito5::Expression'; };
-  Perlito5$Expression.perl = function () { return 'Perlito5::Expression->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Expression;
@@ -10014,7 +9841,6 @@ if (typeof Perlito5$Grammar$Regex !== 'object') {
   Perlito5$Grammar$Regex = function() {};
   Perlito5$Grammar$Regex = new Perlito5$Grammar$Regex;
   Perlito5$Grammar$Regex.isa = function (s) { return s == 'Perlito5::Grammar::Regex'; };
-  Perlito5$Grammar$Regex.perl = function () { return 'Perlito5::Grammar::Regex->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Grammar$Regex;
@@ -12200,7 +12026,6 @@ if (typeof Perlito5$Grammar !== 'object') {
   Perlito5$Grammar = function() {};
   Perlito5$Grammar = new Perlito5$Grammar;
   Perlito5$Grammar.isa = function (s) { return s == 'Perlito5::Grammar'; };
-  Perlito5$Grammar.perl = function () { return 'Perlito5::Grammar->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Grammar;
@@ -16905,7 +16730,6 @@ if (typeof Rul !== 'object') {
   Rul = function() {};
   Rul = new Rul;
   Rul.isa = function (s) { return s == 'Rul'; };
-  Rul.perl = function () { return 'Rul->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul;
@@ -16955,7 +16779,6 @@ if (typeof Rul$Quantifier !== 'object') {
   Rul$Quantifier = function() {};
   Rul$Quantifier = new Rul$Quantifier;
   Rul$Quantifier.isa = function (s) { return s == 'Rul::Quantifier'; };
-  Rul$Quantifier.perl = function () { return 'Rul::Quantifier->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Quantifier;
@@ -17005,7 +16828,7 @@ if (typeof Rul$Quantifier !== 'object') {
                     (typeof(v_self.v_term.__proto__) != 'undefined' && v_self.v_term.__proto__.hasOwnProperty("set_captures_to_array") ? v_self.v_term.__proto__.set_captures_to_array.call(v_self.v_term) : v_self.v_term.set_captures_to_array());
                     throw((string('(do ' + String.fromCharCode(123) + ' ') + string('my ' + String.fromCharCode(36) + 'last_pos ' + String.fromCharCode(61) + ' ' + String.fromCharCode(36) + 'MATCH->to' + String.fromCharCode(59) + ' ') + string('if (' + String.fromCharCode(33) + '(do ' + String.fromCharCode(123)) + string((typeof(v_self.v_term.__proto__) != 'undefined' && v_self.v_term.__proto__.hasOwnProperty("emit_perl5") ? v_self.v_term.__proto__.emit_perl5.call(v_self.v_term) : v_self.v_term.emit_perl5())) + string(String.fromCharCode(125) + ')) ') + string(String.fromCharCode(123) + ' ') + string(String.fromCharCode(36) + 'MATCH->to ' + String.fromCharCode(61) + ' ' + String.fromCharCode(36) + 'last_pos' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('1 ') + string(String.fromCharCode(125) + ')')));;
                 })(); };
-                warn((string('Rul::Quantifier: ') + string(perl(v_self)) + string((string(' not implemented')))));
+                warn((string('Rul::Quantifier:  not implemented')));
                 return((typeof(v_self.v_term.__proto__) != 'undefined' && v_self.v_term.__proto__.hasOwnProperty("emit_perl5") ? v_self.v_term.__proto__.emit_perl5.call(v_self.v_term) : v_self.v_term.emit_perl5()));;
             }
             catch(err) {
@@ -17050,7 +16873,6 @@ if (typeof Rul$Or !== 'object') {
   Rul$Or = function() {};
   Rul$Or = new Rul$Or;
   Rul$Or.isa = function (s) { return s == 'Rul::Or'; };
-  Rul$Or.perl = function () { return 'Rul::Or->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Or;
@@ -17114,7 +16936,6 @@ if (typeof Rul$Concat !== 'object') {
   Rul$Concat = function() {};
   Rul$Concat = new Rul$Concat;
   Rul$Concat.isa = function (s) { return s == 'Rul::Concat'; };
-  Rul$Concat.perl = function () { return 'Rul::Concat->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Concat;
@@ -17178,7 +16999,6 @@ if (typeof Rul$Subrule !== 'object') {
   Rul$Subrule = function() {};
   Rul$Subrule = new Rul$Subrule;
   Rul$Subrule.isa = function (s) { return s == 'Rul::Subrule'; };
-  Rul$Subrule.perl = function () { return 'Rul::Subrule->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Subrule;
@@ -17266,7 +17086,6 @@ if (typeof Rul$Var !== 'object') {
   Rul$Var = function() {};
   Rul$Var = new Rul$Var;
   Rul$Var.isa = function (s) { return s == 'Rul::Var'; };
-  Rul$Var.perl = function () { return 'Rul::Var->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Var;
@@ -17322,7 +17141,6 @@ if (typeof Rul$Constant !== 'object') {
   Rul$Constant = function() {};
   Rul$Constant = new Rul$Constant;
   Rul$Constant.isa = function (s) { return s == 'Rul::Constant'; };
-  Rul$Constant.perl = function () { return 'Rul::Constant->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Constant;
@@ -17388,7 +17206,6 @@ if (typeof Rul$Dot !== 'object') {
   Rul$Dot = function() {};
   Rul$Dot = new Rul$Dot;
   Rul$Dot.isa = function (s) { return s == 'Rul::Dot'; };
-  Rul$Dot.perl = function () { return 'Rul::Dot->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Dot;
@@ -17448,7 +17265,6 @@ if (typeof Rul$SpecialChar !== 'object') {
   Rul$SpecialChar = function() {};
   Rul$SpecialChar = new Rul$SpecialChar;
   Rul$SpecialChar.isa = function (s) { return s == 'Rul::SpecialChar'; };
-  Rul$SpecialChar.perl = function () { return 'Rul::SpecialChar->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$SpecialChar;
@@ -17529,7 +17345,6 @@ if (typeof Rul$Block !== 'object') {
   Rul$Block = function() {};
   Rul$Block = new Rul$Block;
   Rul$Block.isa = function (s) { return s == 'Rul::Block'; };
-  Rul$Block.perl = function () { return 'Rul::Block->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Block;
@@ -17592,7 +17407,6 @@ if (typeof Rul$InterpolateVar !== 'object') {
   Rul$InterpolateVar = function() {};
   Rul$InterpolateVar = new Rul$InterpolateVar;
   Rul$InterpolateVar.isa = function (s) { return s == 'Rul::InterpolateVar'; };
-  Rul$InterpolateVar.perl = function () { return 'Rul::InterpolateVar->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$InterpolateVar;
@@ -17656,7 +17470,6 @@ if (typeof Rul$NamedCapture !== 'object') {
   Rul$NamedCapture = function() {};
   Rul$NamedCapture = new Rul$NamedCapture;
   Rul$NamedCapture.isa = function (s) { return s == 'Rul::NamedCapture'; };
-  Rul$NamedCapture.perl = function () { return 'Rul::NamedCapture->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$NamedCapture;
@@ -17724,7 +17537,6 @@ if (typeof Rul$Before !== 'object') {
   Rul$Before = function() {};
   Rul$Before = new Rul$Before;
   Rul$Before.isa = function (s) { return s == 'Rul::Before'; };
-  Rul$Before.perl = function () { return 'Rul::Before->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Before;
@@ -17787,7 +17599,6 @@ if (typeof Rul$NotBefore !== 'object') {
   Rul$NotBefore = function() {};
   Rul$NotBefore = new Rul$NotBefore;
   Rul$NotBefore.isa = function (s) { return s == 'Rul::NotBefore'; };
-  Rul$NotBefore.perl = function () { return 'Rul::NotBefore->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Rul$NotBefore;
@@ -17852,7 +17663,6 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
-  Lit$Array.perl = function () { return 'Lit::Array->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -18490,7 +18300,6 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
-  Lit$Hash.perl = function () { return 'Lit::Hash->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -21525,7 +21334,7 @@ if (typeof Lit$Hash !== 'object') {
 })()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = Do; return tmp; })());;
                             })(); }
                             else { (function () {
-                                die('Error in hash composer: ', perl(v_item));;
+                                die('Error in hash composer: ', v_item);;
                             })(); };;
                         })(); };;
                     })(); };; })(a_[i_]) } })(List_items);
@@ -21588,7 +21397,6 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
-  Apply.perl = function () { return 'Apply->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -21668,7 +21476,6 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
-  Do.perl = function () { return 'Do->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -21733,7 +21540,6 @@ if (typeof Main !== 'object') {
   Main = function() {};
   Main = new Main;
   Main.isa = function (s) { return s == 'Main'; };
-  Main.perl = function () { return 'Main->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Main;
@@ -21771,28 +21577,6 @@ if (typeof Main !== 'object') {
             }
   }
   Main._replace;  // v8 bug workaround
-  // sub to_lisp_identifier
-  Main.to_lisp_identifier = function () {
-            var List__ = Array.prototype.slice.call(arguments);
-            if (List__[0] instanceof CallSubClass) {
-                List__.shift()
-            }
-            else {
-                List__.unshift(this)
-            }
-            try {
-                throw((string('sv-') + string(List__[0])));;
-            }
-            catch(err) {
-                if ( err instanceof Error ) {
-                    throw(err);
-                }
-                else {
-                    return(err);
-                }
-            }
-  }
-  Main.to_lisp_identifier;  // v8 bug workaround
   // sub lisp_escape_string
   Main.lisp_escape_string = function () {
             var List__ = Array.prototype.slice.call(arguments);
@@ -21843,31 +21627,6 @@ if (typeof Main !== 'object') {
             }
   }
   Main.to_javascript_namespace;  // v8 bug workaround
-  // sub to_lisp_namespace
-  Main.to_lisp_namespace = function () {
-            var List__ = Array.prototype.slice.call(arguments);
-            if (List__[0] instanceof CallSubClass) {
-                List__.shift()
-            }
-            else {
-                List__.unshift(this)
-            }
-            try {
-                var v_s = null;
-
-                (v_s = shift(List__));
-                return(v__NAMESPACE._replace(CallSub, v_s, (string('::')), (string('-'))));;
-            }
-            catch(err) {
-                if ( err instanceof Error ) {
-                    throw(err);
-                }
-                else {
-                    return(err);
-                }
-            }
-  }
-  Main.to_lisp_namespace;  // v8 bug workaround
   // sub to_go_namespace
   Main.to_go_namespace = function () {
             var List__ = Array.prototype.slice.call(arguments);
@@ -21900,7 +21659,6 @@ if (typeof Perlito5 !== 'object') {
   Perlito5 = function() {};
   Perlito5 = new Perlito5;
   Perlito5.isa = function (s) { return s == 'Perlito5'; };
-  Perlito5.perl = function () { return 'Perlito5->new(' + Main._dump(this) + ')'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5;

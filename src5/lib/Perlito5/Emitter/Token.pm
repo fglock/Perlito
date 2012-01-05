@@ -94,7 +94,7 @@ class Rul::Quantifier {
         }
 
         # TODO
-        warn "Rul::Quantifier: " . $self->perl . " not implemented";
+        warn "Rul::Quantifier:  not implemented";
         $.term->emit_perl5;
     }
     sub set_captures_to_array {

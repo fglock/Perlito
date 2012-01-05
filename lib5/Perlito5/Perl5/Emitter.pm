@@ -344,7 +344,6 @@ package GLOBAL;
         sub new { shift; bless { @_ }, "Call" }
         ((my  $Hash_method_perl5 = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'perl'} = 'Main::perl');
     ($Hash_a->{'id'} = 'Main::id');
     ($Hash_a->{'yaml'} = 'Main::yaml');
     ($Hash_a->{'say'} = 'Main::say');
