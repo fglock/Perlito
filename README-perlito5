@@ -8,7 +8,13 @@ find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl 
 
 Compile the compiler to Javascript into perlito5.js:
 
-perl -Ilib5 perlito5.pl -Cjs src5/util/perlito5.pl > perlito5.js
+-- using perlito5.pl:
+
+  perl -Ilib5 perlito5.pl -Cjs src5/util/perlito5.pl > perlito5.js
+
+-- using perlito5.js:
+
+  ~/bin/d8 perlito5.js -- -Cjs src5/util/perlito5.pl > perlito5-new.js
 
 Running the tests using perlito5.js and v8:
 
