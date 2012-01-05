@@ -487,9 +487,6 @@ package GLOBAL;
             if ((($code eq 'make'))) {
                 return scalar ((Perl5::tab($level) . '(' . chr(36) . 'MATCH->' . chr(123) . 'capture' . chr(125) . ' ' . chr(61) . ' (' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . '))'))
             };
-            if ((($code eq 'array'))) {
-                return scalar ((Perl5::tab($level) . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125)))
-            };
             if ((($code eq 'pop'))) {
                 return scalar ((Perl5::tab($level) . 'pop( ' . chr(64) . chr(123) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5()) . chr(125) . ' )'))
             };

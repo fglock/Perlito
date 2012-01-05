@@ -15,7 +15,6 @@ $_ = Encode::decode('utf-8', $_)
     no warnings 'recursion';
 
     use overload (
-        '@{}'    => \&array,
         bool     => \&bool,
         '${}'    => \&scalar,
         '""'     => \&flat,
@@ -32,12 +31,6 @@ $_ = Encode::decode('utf-8', $_)
     sub to   { $_[0]{to} }
     sub bool { $_[0]{bool} }
     sub capture { $_[0]{capture} }
-
-    sub array {
-        my $v = $_[0];
-             $v->{match}
-        || ( $v->{match} = [] )
-    }
 
     sub hash  {
         $_[0]

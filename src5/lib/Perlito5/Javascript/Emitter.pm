@@ -668,7 +668,7 @@ class Apply {
         if ($code eq 'prefix:<!>') { return '( ' . Javascript::escape_function('bool') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ') ? false : true)' }
         if ($code eq 'prefix:<?>') { return '( ' . Javascript::escape_function('bool') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ') ? true : false)' }
         if ($code eq 'prefix:<$>') { return Javascript::escape_function('scalar') . '(' . (@.arguments.>>emit_javascript)->join(' ')    . ')' }
-        if ($code eq 'prefix:<@>') { return '(' . (@.arguments.>>emit_javascript)->join(' ')    . ')' };  # .' . Javascript::escape_function('array') . '()' }
+        if ($code eq 'prefix:<@>') { return '(' . (@.arguments.>>emit_javascript)->join(' ')    . ')' }
         if ($code eq 'prefix:<%>') { return '(' . (@.arguments.>>emit_javascript)->join(' ')    . ').' . Javascript::escape_function('hash') . '()' }
 
         if ($code eq 'prefix:<\\>') { 

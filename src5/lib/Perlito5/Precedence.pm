@@ -116,18 +116,13 @@ class Perlito5::Precedence {
     }
 
 
-    # s02:
     # - no space allowed before postfix ops
     # - if there is both an infix and a postfix with the same name, then the infix requires space before
-    # - 'reduce' vs. 'array' [...]
     # - @a[] inside string interpolation
-    # - longest token
     # - parentheses vs. Parcel (x) (x,)
     # - pair vs. block, hash vs. closure
-    # - adverbs  1 == 100 :fuzz(3)
     # - function call without parentheses
     # - '|' in prefix position
-    # - statement-ending blocks (S04)
 
     my $prec = 100;
     add_op( 'postfix', '.( )',               $prec, { no_space_before => 1 } );
