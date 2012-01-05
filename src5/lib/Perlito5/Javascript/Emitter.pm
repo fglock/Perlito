@@ -475,7 +475,6 @@ class Call {
 
     my %method_js = (
         'isa'    => 'isa',
-        'id'     => 'id',
         'scalar' => 'scalar',
         'keys'   => 'keys',
         'values' => 'values',

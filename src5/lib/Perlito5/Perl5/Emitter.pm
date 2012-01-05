@@ -289,8 +289,6 @@ class Proto {
 class Call {
 
     my %method_perl5 = (
-        'id'     => 'Main::id',
-        'yaml'   => 'Main::yaml',
         'say'    => 'Main::say',
         'join'   => 'Main::join',
         'split'  => 'Main::split',

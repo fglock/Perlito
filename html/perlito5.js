@@ -282,27 +282,6 @@ Array.prototype.grep = function grep(f) {
 }
 
 // XXX Perl6
-var _id = 0;
-id = function(o) {
-    if (o == null) {
-        return '_id_' + 'Mu';
-    }
-    if (typeof o.id === 'function') {
-        return o.id();
-    }
-    if (o._id) {
-        return o._id;
-    }
-    switch (typeof o) {
-        case "string": return '_id_str_' + o;
-        case "number": return '_id_num_' + o;
-        case "boolean": return '_id_bool_' + o;
-    }
-    o._id = ++_id;
-    return o._id;
-};
-
-// XXX Perl6
 perl = function(o) {
     if (o == null) {
         return 'undef';
@@ -2410,7 +2389,6 @@ if (typeof Call !== 'object') {
     var Hash_a = {};
 
     (function () { if (Hash_a['isa'] == null) { Hash_a['isa'] = {} }; return (Hash_a['isa']  = 'isa'); })();
-    (function () { if (Hash_a['id'] == null) { Hash_a['id'] = {} }; return (Hash_a['id']  = 'id'); })();
     (function () { if (Hash_a['scalar'] == null) { Hash_a['scalar'] = {} }; return (Hash_a['scalar']  = 'scalar'); })();
     (function () { if (Hash_a['keys'] == null) { Hash_a['keys'] = {} }; return (Hash_a['keys']  = 'keys'); })();
     (function () { if (Hash_a['values'] == null) { Hash_a['values'] = {} }; return (Hash_a['values']  = 'values'); })();
@@ -5278,8 +5256,6 @@ if (typeof Call !== 'object') {
             (Hash_method_perl5 = (function () { 
     var Hash_a = {};
 
-    (function () { if (Hash_a['id'] == null) { Hash_a['id'] = {} }; return (Hash_a['id']  = 'Main::id'); })();
-    (function () { if (Hash_a['yaml'] == null) { Hash_a['yaml'] = {} }; return (Hash_a['yaml']  = 'Main::yaml'); })();
     (function () { if (Hash_a['say'] == null) { Hash_a['say'] = {} }; return (Hash_a['say']  = 'Main::say'); })();
     (function () { if (Hash_a['join'] == null) { Hash_a['join'] = {} }; return (Hash_a['join']  = 'Main::join'); })();
     (function () { if (Hash_a['split'] == null) { Hash_a['split'] = {} }; return (Hash_a['split']  = 'Main::split'); })();

@@ -212,12 +212,6 @@ package Main;
     }
 
     # XXX Perl6
-    sub id {
-           Scalar::Util::refaddr($_[0])
-        || "_id_" . $_[0]
-    }
-
-    # XXX Perl6
     sub perl {
         return 'undef' unless defined $_[0];
         local $_;

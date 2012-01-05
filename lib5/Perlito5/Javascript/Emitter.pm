@@ -511,7 +511,6 @@ package GLOBAL;
         ((my  $Hash_method_js = bless {}, 'HASH') = do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'isa'} = 'isa');
-    ($Hash_a->{'id'} = 'id');
     ($Hash_a->{'scalar'} = 'scalar');
     ($Hash_a->{'keys'} = 'keys');
     ($Hash_a->{'values'} = 'values');

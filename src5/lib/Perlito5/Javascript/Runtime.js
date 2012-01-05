@@ -281,27 +281,6 @@ Array.prototype.grep = function grep(f) {
 }
 
 // XXX Perl6
-var _id = 0;
-id = function(o) {
-    if (o == null) {
-        return '_id_' + 'Mu';
-    }
-    if (typeof o.id === 'function') {
-        return o.id();
-    }
-    if (o._id) {
-        return o._id;
-    }
-    switch (typeof o) {
-        case "string": return '_id_str_' + o;
-        case "number": return '_id_num_' + o;
-        case "boolean": return '_id_bool_' + o;
-    }
-    o._id = ++_id;
-    return o._id;
-};
-
-// XXX Perl6
 perl = function(o) {
     if (o == null) {
         return 'undef';
