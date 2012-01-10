@@ -8,8 +8,8 @@ use Perlito5::Perl5::Runtime;
 use Perlito5::Perl5::Prelude;
 our $MATCH = Perlito5::Match->new();
 {
-package GLOBAL;
-    sub new { shift; bless { @_ }, "GLOBAL" }
+package main;
+    sub new { shift; bless { @_ }, "main" }
     use v5;
     use Perlito5::AST;
     {
