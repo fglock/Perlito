@@ -126,7 +126,12 @@ package GLOBAL;
                 };
                 ((my  $source) = IO::slurp($filename));
                 ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
-                add_comp_unit(${$m})
+                add_comp_unit(do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, CompUnit->new(('name' => 'main'), ('body' => ${$m})) );
+    $List_a
+})
             }
         }
     };
@@ -227,7 +232,7 @@ package GLOBAL;
         ($comp_units = do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, CompUnit->new(('name' => 'GLOBAL'), ('body' => $comp_units)) );
+    push( @{$List_a}, CompUnit->new(('name' => 'main'), ('body' => $comp_units)) );
     $List_a
 });
         if ((($backend eq 'ast-perl5'))) {

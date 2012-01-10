@@ -50,8 +50,8 @@ sub expand_use {
         if $module_name eq 'v5'
         || $module_name eq 'strict'
         || $module_name eq 'feature';
-    if (!(%module_seen{$module_name})) {
-        %module_seen{$module_name} = 1;
+    if (!($module_seen{$module_name})) {
+        $module_seen{$module_name} = 1;
         # say "  now use: ", $module_name;
         if ($backend eq 'perl5') || ($backend eq 'ast-perl5') {
             # skip 'use' statements for this backend
@@ -70,7 +70,14 @@ sub expand_use {
             # compile; push AST into comp_units
             # warn $source;
             my $m = Perlito5::Grammar->exp_stmts($source, 0);
-            add_comp_unit($$m);
+            add_comp_unit(
+                [
+                    CompUnit->new(
+                        name => 'main',
+                        body => $$m,
+                    )
+                ]
+            );
         }
     }
 }
@@ -181,7 +188,7 @@ perlito5 [switches] [programfile]
 
         $comp_units = [
                 CompUnit->new(
-                    name => 'GLOBAL',
+                    name => 'main',
                     body => $comp_units,
                 ),
             ];

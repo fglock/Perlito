@@ -14,7 +14,7 @@ class Perlito5 {
     sub compile_p5_to_js {
         my $s = shift;
         my $ast = Perlito5::Grammar->exp_stmts($s, 0);
-        CompUnit.new( name => 'GLOBAL', body => $$ast )->emit_javascript()
+        CompUnit.new( name => 'main', body => $$ast )->emit_javascript()
     }
 }
 
