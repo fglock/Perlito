@@ -478,7 +478,6 @@ class Call {
         'scalar' => 'scalar',
         'keys'   => 'keys',
         'values' => 'values',
-        'pairs'  => 'pairs',
         'say'    => 'say',
         'chars'  => 'chars',
     );

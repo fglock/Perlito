@@ -16,13 +16,11 @@ TODO list for Perlito5
 
 * source code 
 
--- remove Perl6 code: "class", "has", "token", hyper operator, .pairs
+-- remove Perl6 code: "class", "has", "token", hyper operator
 
 -- remove Perl6 accessors: $.term
 
 -- remove Perl6 "match" special variables: $<..>, $/
-
--- remove the dependency on "pairs()" for macros 
 
 
 * libraries

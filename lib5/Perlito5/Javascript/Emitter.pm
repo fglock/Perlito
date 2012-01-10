@@ -20,7 +20,7 @@ package main;
             ((my  $level) = shift());
             (('    ') x $level)
         };
-        ((my  $Hash_safe_char = bless {}, 'HASH') = do {
+        ((my  $Hash_safe_char = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'_'} = 1);
     ($Hash_a->{','} = 1);
@@ -37,14 +37,14 @@ package main;
     ($Hash_a->{'['} = 1);
     ($Hash_a->{']'} = 1);
     $Hash_a
-});
+})->());
         sub escape_string {
             my $List__ = bless \@_, "ARRAY";
             ((my  $s) = shift());
             (my  $List_out = bless [], 'ARRAY');
             ((my  $tmp) = '');
             if (($s eq '')) {
-                return scalar ((chr(39) . chr(39)))
+                return ((chr(39) . chr(39)))
             };
             for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
@@ -55,29 +55,29 @@ package main;
                     if (($tmp ne '')) {
                         push( @{$List_out}, (chr(39) . $tmp . chr(39)) )
                     };
-                    push( @{$List_out}, ('String.fromCharCode(' . do {
+                    push( @{$List_out}, ('String.fromCharCode(' . (sub {
     ord($c)
-} . ')') );
+})->() . ')') );
                     ($tmp = '')
                 }
             };
             if (($tmp ne '')) {
                 push( @{$List_out}, (chr(39) . $tmp . chr(39)) )
             };
-            return scalar (Main::join($List_out, ' + '))
+            return (Main::join($List_out, ' + '))
         };
-        ((my  $Hash_reserved = bless {}, 'HASH') = do {
+        ((my  $Hash_reserved = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'print'} = 1);
     $Hash_a
-});
+})->());
         sub escape_function {
             my $List__ = bless \@_, "ARRAY";
             ((my  $s) = shift());
             if (exists($Hash_reserved->{$s})) {
-                return scalar (('f_' . $s))
+                return (('f_' . $s))
             };
-            return scalar ($s)
+            return ($s)
         };
         sub autovivify {
             my $List__ = bless \@_, "ARRAY";
@@ -87,23 +87,23 @@ package main;
                 if ((((($type eq 'HASH') && ($ast->sigil() eq chr(36))) && ($ast->name() ne chr(47))))) {
                     ($ast = Var->new(('sigil' => chr(37)), ('twigil' => $ast->twigil()), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
                     ((my  $var_js) = $ast->emit_javascript());
-                    return scalar (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                    return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
                 }
                 else {
                     if (((($type eq 'ARRAY') && ($ast->sigil() eq chr(36))))) {
                         ($ast = Var->new(('sigil' => chr(64)), ('twigil' => $ast->twigil()), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
                         ((my  $var_js) = $ast->emit_javascript());
-                        return scalar (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                        return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
                     }
                     else {
                         if ((((($type eq 'HASHREF') && ($ast->sigil() eq chr(36))) && ($ast->name() ne chr(47))))) {
                             ((my  $var_js) = $ast->emit_javascript());
-                            return scalar (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                            return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
                         }
                         else {
                             if (((($type eq 'ARRAYREF') && ($ast->sigil() eq chr(36))))) {
                                 ((my  $var_js) = $ast->emit_javascript());
-                                return scalar (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                                return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
                             }
                         }
                     }
@@ -113,28 +113,28 @@ package main;
                 if ((Main::isa($ast, 'Call'))) {
                     ((my  $var_js) = $ast->emit_javascript());
                     if ((($ast->method() eq 'postcircumfix:<[ ]>'))) {
-                        return scalar ((autovivify($ast->invocant(), 'ARRAYREF') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                        return ((autovivify($ast->invocant(), 'ARRAYREF') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
                     }
                     else {
                         if ((($ast->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-                            return scalar ((autovivify($ast->invocant(), 'HASHREF') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                            return ((autovivify($ast->invocant(), 'HASHREF') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
                         }
                     }
                 }
                 else {
                     if ((Main::isa($ast, 'Index'))) {
                         ((my  $var_js) = $ast->emit_javascript());
-                        return scalar ((autovivify($ast->obj(), 'ARRAY') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                        return ((autovivify($ast->obj(), 'ARRAY') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
                     }
                     else {
                         if ((Main::isa($ast, 'Lookup'))) {
                             ((my  $var_js) = $ast->emit_javascript());
-                            return scalar ((autovivify($ast->obj(), 'HASH') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                            return ((autovivify($ast->obj(), 'HASH') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
                         }
                     }
                 }
             };
-            return scalar ('')
+            return ('')
         }
     }
 
@@ -155,7 +155,7 @@ package main;
             ((my  $level) = shift());
             if (($self->{top_level})) {
                 ((my  $block) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->block()), ('needs_return' => $self->needs_return()), ('top_level' => 0)));
-                return scalar ((Javascript::tab($level) . 'try ' . chr(123) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . chr(59) . (chr(10)) . Javascript::tab($level) . chr(125) . (chr(10)) . Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'return(err)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab($level) . chr(125)))
+                return ((Javascript::tab($level) . 'try ' . chr(123) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . chr(59) . (chr(10)) . Javascript::tab($level) . chr(125) . (chr(10)) . Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'return(err)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab($level) . chr(125)))
             };
             (my  $List_block = bless [], 'ARRAY');
             for ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
@@ -164,7 +164,7 @@ package main;
                 }
             };
             if ((!($List_block))) {
-                return scalar ((Javascript::tab($level) . 'null' . chr(59)))
+                return ((Javascript::tab($level) . 'null' . chr(59)))
             };
             (my  $List_str = bless [], 'ARRAY');
             for my $decl ( @{$List_block} ) {
@@ -193,12 +193,12 @@ package main;
                     ((my  $body) = $last_statement->body());
                     ((my  $otherwise) = $last_statement->otherwise());
                     if (((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
-                        ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => do {
+                        ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-})))
+})->())))
                     };
                     ($body = Perlito5::Javascript::LexicalBlock->new(('block' => $body->stmts()), ('needs_return' => 1)));
                     push( @{$List_str}, (Javascript::tab($level) . 'if ( ' . Javascript::escape_function('bool') . '(' . $cond->emit_javascript() . ') ) ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) );
@@ -216,7 +216,7 @@ package main;
                     }
                 }
             };
-            return scalar ((Main::join($List_str, (chr(10))) . chr(59)))
+            return ((Main::join($List_str, (chr(10))) . chr(59)))
         }
     }
 
@@ -290,7 +290,7 @@ package main;
             for my $comp_unit ( @{(($comp_units))} ) {
                 ($str = ($str . $comp_unit->emit_javascript() . (chr(10))))
             };
-            return scalar ($str)
+            return ($str)
         }
     }
 
@@ -374,7 +374,7 @@ package main;
             if (($self->{sig})) {
                 ($sig = $self->{sig}->emit_javascript_indented(($level + 1)))
             };
-            return scalar ((Javascript::tab($level) . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => (defined $self->{stmts} ? $self->{stmts} : ($self->{stmts} ||= bless([], 'ARRAY')))), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')'))
+            return ((Javascript::tab($level) . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => (defined $self->{stmts} ? $self->{stmts} : ($self->{stmts} ||= bless([], 'ARRAY')))), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')'))
         }
     }
 
@@ -391,7 +391,7 @@ package main;
             ((my  $self) = shift());
             ((my  $level) = shift());
             ((my  $ast) = $self->expand_interpolation());
-            return scalar ($ast->emit_javascript_indented($level))
+            return ($ast->emit_javascript_indented($level))
         }
     }
 
@@ -408,7 +408,7 @@ package main;
             ((my  $self) = shift());
             ((my  $level) = shift());
             ((my  $ast) = $self->expand_interpolation());
-            return scalar ($ast->emit_javascript_indented($level))
+            return ($ast->emit_javascript_indented($level))
         }
     }
 
@@ -426,7 +426,7 @@ package main;
             ((my  $level) = shift());
             if (((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))))) {
                 ((my  $v) = Var->new(('sigil' => chr(64)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
-                return scalar (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
+                return (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
             };
             (Javascript::tab($level) . $self->{obj}->emit_javascript() . '[' . $self->{index_exp}->emit_javascript() . ']')
         }
@@ -446,9 +446,9 @@ package main;
             ((my  $level) = shift());
             if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne chr(47))))) {
                 ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
-                return scalar (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
+                return (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
             };
-            return scalar (($self->{obj}->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
+            return (($self->{obj}->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
         }
     }
 
@@ -464,14 +464,14 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = shift());
             ((my  $level) = shift());
-            ((my  $table) = do {
+            ((my  $table) = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = 'v_');
     ($Hash_a->{chr(64)} = 'List_');
     ($Hash_a->{chr(37)} = 'Hash_');
     ($Hash_a->{chr(38)} = 'Code_');
     $Hash_a
-});
+})->());
             ((my  $ns) = '');
             if (($self->{namespace})) {
                 ($ns = (Main::to_javascript_namespace($self->{namespace}) . '.'))
@@ -482,9 +482,9 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = shift());
             if (($self->namespace())) {
-                return scalar (($self->namespace() . '.' . $self->name()))
+                return (($self->namespace() . '.' . $self->name()))
             };
-            return scalar ($self->name())
+            return ($self->name())
         }
     }
 
@@ -508,23 +508,22 @@ package main;
     {
     package Call;
         sub new { shift; bless { @_ }, "Call" }
-        ((my  $Hash_method_js = bless {}, 'HASH') = do {
+        ((my  $Hash_method_js = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'isa'} = 'isa');
     ($Hash_a->{'scalar'} = 'scalar');
     ($Hash_a->{'keys'} = 'keys');
     ($Hash_a->{'values'} = 'values');
-    ($Hash_a->{'pairs'} = 'pairs');
     ($Hash_a->{'say'} = 'say');
     ($Hash_a->{'chars'} = 'chars');
     $Hash_a
-});
-        ((my  $Hash_method_native_js = bless {}, 'HASH') = do {
+})->());
+        ((my  $Hash_method_native_js = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'join'} = 'join');
     ($Hash_a->{'split'} = 'split');
     $Hash_a
-});
+})->());
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -535,11 +534,11 @@ package main;
             ((my  $level) = shift());
             ((my  $invocant) = $self->{invocant}->emit_javascript());
             if ((($self->{method} eq 'new'))) {
-                ((my  $str) = do {
+                ((my  $str) = (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
-});
+})->());
                 for my $field ( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ) {
                     if (((Main::isa($field, 'Apply') && ($field->code() eq 'infix:<' . chr(61) . '>>')))) {
                         push( @{($str)}, ('v_' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
@@ -548,40 +547,40 @@ package main;
                         die('Error in constructor, field: ', $field)
                     }
                 };
-                return scalar (('(function () ' . chr(123) . ' ' . 'if (' . Main::to_javascript_namespace($invocant) . '.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ) ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . Main::join($str, ',') . chr(125) . chr(59) . ' ' . 'tmp.__proto__ ' . chr(61) . ' ' . Main::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
+                return (('(function () ' . chr(123) . ' ' . 'if (' . Main::to_javascript_namespace($invocant) . '.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ) ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . Main::join($str, ',') . chr(125) . chr(59) . ' ' . 'tmp.__proto__ ' . chr(61) . ' ' . Main::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
             };
             if ((exists($Hash_method_js->{$self->{method}}))) {
                 if (($self->{hyper})) {
-                    return scalar (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( ' . Javascript::escape_function($self->{method}) . '(a_[i]) ) ' . chr(125) . ' return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
+                    return (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( ' . Javascript::escape_function($self->{method}) . '(a_[i]) ) ' . chr(125) . ' return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
                 };
-                return scalar ((Javascript::escape_function($self->{method}) . '(' . $invocant . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (', ' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ')) : '')) . ')'))
+                return ((Javascript::escape_function($self->{method}) . '(' . $invocant . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (', ' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ')) : '')) . ')'))
             };
             if ((exists($Hash_method_native_js->{$self->{method}}))) {
-                return scalar (($invocant . '.' . $self->{method} . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return (($invocant . '.' . $self->{method} . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             ((my  $meth) = $self->{method});
             if (($self->{hyper})) {
-                return scalar (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( a_[i].' . Javascript::escape_function($meth) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ') ) ' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
+                return (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( a_[i].' . Javascript::escape_function($meth) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ') ) ' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
             };
             if ((($self->{method} eq 'postcircumfix:<[ ]>'))) {
-                return scalar ((Javascript::tab($level) . $invocant . '[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_javascript() . ']'))
+                return ((Javascript::tab($level) . $invocant . '[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_javascript() . ']'))
             };
             if ((($self->{method} eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-                return scalar ((Javascript::tab($level) . $invocant . '[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_javascript() . ']'))
+                return ((Javascript::tab($level) . $invocant . '[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_javascript() . ']'))
             };
             if ((($meth eq 'postcircumfix:<( )>'))) {
-                return scalar (('(' . $invocant . ')(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return (('(' . $invocant . ')(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
-            ((my  $List_args = bless [], 'ARRAY') = do {
+            ((my  $List_args = bless [], 'ARRAY') = (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $invocant );
     $List_a
-});
+})->());
             for ( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ) {
                 push( @{$List_args}, $_->emit_javascript() )
             };
-            return scalar ((Javascript::tab($level) . '(' . 'typeof(' . $invocant . '.__proto__) ' . chr(33) . chr(61) . ' ' . chr(39) . 'undefined' . chr(39) . ' ' . chr(38) . chr(38) . ' ' . $invocant . '.__proto__.hasOwnProperty(' . chr(34) . Javascript::escape_function($meth) . chr(34) . ') ' . chr(63) . ' ' . $invocant . '.__proto__.' . Javascript::escape_function($meth) . '.call(' . Main::join($List_args, ', ') . ') ' . ': ' . $invocant . '.' . Javascript::escape_function($meth) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')' . ')'))
+            return ((Javascript::tab($level) . '(' . 'typeof(' . $invocant . '.__proto__) ' . chr(33) . chr(61) . ' ' . chr(39) . 'undefined' . chr(39) . ' ' . chr(38) . chr(38) . ' ' . $invocant . '.__proto__.hasOwnProperty(' . chr(34) . Javascript::escape_function($meth) . chr(34) . ') ' . chr(63) . ' ' . $invocant . '.__proto__.' . Javascript::escape_function($meth) . '.call(' . Main::join($List_args, ', ') . ') ' . ': ' . $invocant . '.' . Javascript::escape_function($meth) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')' . ')'))
         }
     }
 
@@ -589,7 +588,7 @@ package main;
     {
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
-        ((my  $Hash_op_infix_js = bless {}, 'HASH') = do {
+        ((my  $Hash_op_infix_js = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'infix:<->'} = ' - ');
     ($Hash_a->{'infix:<*>'} = ' * ');
@@ -605,8 +604,8 @@ package main;
     ($Hash_a->{'infix:<' . chr(61) . chr(61) . '>'} = ' ' . chr(61) . chr(61) . ' ');
     ($Hash_a->{'infix:<' . chr(33) . chr(61) . '>'} = ' ' . chr(33) . chr(61) . ' ');
     $Hash_a
-});
-        ((my  $Hash_op_global_js = bless {}, 'HASH') = do {
+})->());
+        ((my  $Hash_op_global_js = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'index'} = 1);
     ($Hash_a->{'die'} = 1);
@@ -620,7 +619,7 @@ package main;
     ($Hash_a->{'warn'} = 1);
     ($Hash_a->{'scalar'} = 1);
     $Hash_a
-});
+})->());
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -631,104 +630,104 @@ package main;
             ((my  $level) = shift());
             ((my  $apply) = $self->op_assign());
             if (($apply)) {
-                return scalar ($apply->emit_javascript_indented($level))
+                return ($apply->emit_javascript_indented($level))
             };
             ((my  $code) = $self->{code});
             if ((Main::isa($code, 'Str'))) {
 
             }
             else {
-                return scalar ((Javascript::tab($level) . '(' . $self->{code}->emit_javascript() . ')->(' . Main::join(([ map { $_->emit() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return ((Javascript::tab($level) . '(' . $self->{code}->emit_javascript() . ')->(' . Main::join(([ map { $_->emit() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if ((($code eq 'infix:<' . chr(61) . '>>'))) {
-                return scalar ((Javascript::tab($level) . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ')))
+                return ((Javascript::tab($level) . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ')))
             };
             if ((exists($Hash_op_infix_js->{$code}))) {
-                return scalar ((Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), $Hash_op_infix_js->{$code}) . ')'))
+                return ((Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), $Hash_op_infix_js->{$code}) . ')'))
             };
             if ((($code eq 'eval'))) {
-                return scalar (('eval(perl5_to_js(' . Javascript::escape_function('string') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . '))'))
+                return (('eval(perl5_to_js(' . Javascript::escape_function('string') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . '))'))
             };
             if ((($code eq 'undef'))) {
-                return scalar ((Javascript::tab($level) . 'null'))
+                return ((Javascript::tab($level) . 'null'))
             };
             if ((($code eq 'make'))) {
-                return scalar ((Javascript::tab($level) . '(v_MATCH.v_capture ' . chr(61) . ' ' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return ((Javascript::tab($level) . '(v_MATCH.v_capture ' . chr(61) . ' ' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if ((($code eq 'defined'))) {
-                return scalar ((Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ' ' . chr(33) . chr(61) . ' null)'))
+                return ((Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ' ' . chr(33) . chr(61) . ' null)'))
             };
             if ((($code eq 'substr'))) {
-                return scalar (('(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ' ' . chr(124) . chr(124) . ' ' . chr(34) . chr(34) . ').substr(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . ((defined((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2]) ? (', ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_javascript()) : '')) . ')'))
+                return (('(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ' ' . chr(124) . chr(124) . ' ' . chr(34) . chr(34) . ').substr(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . ((defined((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2]) ? (', ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_javascript()) : '')) . ')'))
             };
             if ((($code eq 'shift'))) {
                 if (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))) {
-                    return scalar (('shift(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                    return (('shift(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
                 };
-                return scalar ('shift(List__)')
+                return ('shift(List__)')
             };
             if ((($code eq 'chr'))) {
-                return scalar (('String.fromCharCode(' . Javascript::escape_function('num') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . '))'))
+                return (('String.fromCharCode(' . Javascript::escape_function('num') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . '))'))
             };
             if ((($code eq 'ord'))) {
-                return scalar (('(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ').charCodeAt(0)'))
+                return (('(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ').charCodeAt(0)'))
             };
             if ((($code eq 'Int'))) {
-                return scalar (('parseInt(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')'))
+                return (('parseInt(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')'))
             };
             if ((($code eq 'Num'))) {
-                return scalar (('parseFloat(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')'))
+                return (('parseFloat(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')'))
             };
             if ((($code eq 'prefix:<' . chr(33) . '>'))) {
-                return scalar (('( ' . Javascript::escape_function('bool') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ') ' . chr(63) . ' false : true)'))
+                return (('( ' . Javascript::escape_function('bool') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ') ' . chr(63) . ' false : true)'))
             };
             if ((($code eq 'prefix:<' . chr(63) . '>'))) {
-                return scalar (('( ' . Javascript::escape_function('bool') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ') ' . chr(63) . ' true : false)'))
+                return (('( ' . Javascript::escape_function('bool') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ') ' . chr(63) . ' true : false)'))
             };
             if ((($code eq 'prefix:<' . chr(36) . '>'))) {
-                return scalar ((Javascript::escape_function('scalar') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
+                return ((Javascript::escape_function('scalar') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
             };
             if ((($code eq 'prefix:<' . chr(64) . '>'))) {
-                return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
+                return (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
             };
             if ((($code eq 'prefix:<' . chr(37) . '>'))) {
-                return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ').' . Javascript::escape_function('hash') . '()'))
+                return (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ').' . Javascript::escape_function('hash') . '()'))
             };
             if ((($code eq 'prefix:<' . chr(92) . '>'))) {
-                return scalar (Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' '))
+                return (Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' '))
             };
             if ((($code eq 'postfix:<++>'))) {
-                return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')++'))
+                return (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')++'))
             };
             if ((($code eq 'postfix:<-->'))) {
-                return scalar (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')--'))
+                return (('(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')--'))
             };
             if ((($code eq 'prefix:<++>'))) {
-                return scalar (('++(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
+                return (('++(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
             };
             if ((($code eq 'prefix:<-->'))) {
-                return scalar (('--(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
+                return (('--(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
             };
             if ((($code eq 'infix:<x>'))) {
-                return scalar (('str_replicate(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return (('str_replicate(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if ((($code eq 'list:<.>'))) {
-                return scalar (('(' . Javascript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), (') + ' . Javascript::escape_function('string') . '(')) . '))'))
+                return (('(' . Javascript::escape_function('string') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), (') + ' . Javascript::escape_function('string') . '(')) . '))'))
             };
             if ((($code eq 'infix:<+>'))) {
-                return scalar ((Javascript::escape_function('add') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return ((Javascript::escape_function('add') . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if ((($code eq 'infix:<..>'))) {
-                return scalar (('(function (a) ' . chr(123) . ' ' . 'for (var i' . chr(61) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', l' . chr(61) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . 'i<' . chr(61) . 'l' . chr(59) . ' ++i)' . chr(123) . ' ' . 'a.push(i) ' . chr(125) . chr(59) . ' ' . 'return a ' . chr(125) . ')([])'))
+                return (('(function (a) ' . chr(123) . ' ' . 'for (var i' . chr(61) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', l' . chr(61) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . 'i<' . chr(61) . 'l' . chr(59) . ' ++i)' . chr(123) . ' ' . 'a.push(i) ' . chr(125) . chr(59) . ' ' . 'return a ' . chr(125) . ')([])'))
             };
             if ((($code eq 'infix:<' . chr(38) . chr(38) . '>') || ($code eq 'infix:<and>'))) {
-                return scalar ((Javascript::escape_function('and') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
+                return ((Javascript::escape_function('and') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
             };
             if ((($code eq 'infix:<' . chr(124) . chr(124) . '>') || ($code eq 'infix:<or>'))) {
-                return scalar ((Javascript::escape_function('or') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
+                return ((Javascript::escape_function('or') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
             };
             if ((($code eq 'infix:<' . chr(47) . chr(47) . '>'))) {
-                return scalar ((Javascript::escape_function('defined_or') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
+                return ((Javascript::escape_function('defined_or') . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() . ', ' . 'function () ' . chr(123) . ' return ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_javascript() . chr(59) . ' ' . chr(125) . ')'))
             };
             if ((($code eq 'exists'))) {
                 ((my  $arg) = (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]);
@@ -737,23 +736,23 @@ package main;
                     if ((((Main::isa($v, 'Var') && ($v->sigil() eq chr(36))) && ($v->name() ne chr(47))))) {
                         ($v = Var->new(('sigil' => chr(37)), ('twigil' => $v->twigil()), ('namespace' => $v->namespace()), ('name' => $v->name())))
                     };
-                    return scalar (('(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
+                    return (('(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
                 };
                 if (((Main::isa($arg, 'Call') && ($arg->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>')))) {
-                    return scalar (('(' . $arg->invocant()->emit_javascript() . ').hasOwnProperty(' . $arg->arguments()->emit_javascript() . ')'))
+                    return (('(' . $arg->invocant()->emit_javascript() . ').hasOwnProperty(' . $arg->arguments()->emit_javascript() . ')'))
                 }
             };
             if ((($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>'))) {
-                return scalar ((Javascript::tab($level) . '( ' . Javascript::escape_function('bool') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . ' ' . chr(63) . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . ' : ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_javascript() . ')'))
+                return ((Javascript::tab($level) . '( ' . Javascript::escape_function('bool') . '(' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_javascript() . ')' . ' ' . chr(63) . ' ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_javascript() . ' : ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2])->emit_javascript() . ')'))
             };
             if ((($code eq 'circumfix:<( )>'))) {
-                return scalar ((Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return ((Javascript::tab($level) . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if ((($code eq 'infix:<' . chr(61) . '>'))) {
-                return scalar (emit_javascript_bind((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0], (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1], $level))
+                return (emit_javascript_bind((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0], (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1], $level))
             };
             if ((($code eq 'return'))) {
-                return scalar ((Javascript::tab($level) . 'throw(' . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() : 'null')) . ')'))
+                return ((Javascript::tab($level) . 'throw(' . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_javascript() : 'null')) . ')'))
             };
             if (($self->{namespace})) {
                 ($code = (Main::to_javascript_namespace($self->{namespace}) . '.' . Javascript::escape_function($code)))
@@ -764,15 +763,15 @@ package main;
                 }
                 else {
                     ($code = Javascript::escape_function($self->{code}));
-                    return scalar ((Javascript::tab($level) . $code . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                    return ((Javascript::tab($level) . $code . '(' . Main::join(([ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
                 }
             };
-            ((my  $List_args = bless [], 'ARRAY') = do {
+            ((my  $List_args = bless [], 'ARRAY') = (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'CallSub' );
     $List_a
-});
+})->());
             for ( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ) {
                 push( @{$List_args}, $_->emit_javascript() )
             };
@@ -790,7 +789,7 @@ package main;
                     ($str = ($str . Javascript::autovivify($parameters, 'ARRAYREF')));
                     ((my  $index_js) = $parameters->arguments()->emit_javascript());
                     ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
-                    return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+                    return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
                 };
                 if ((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
                     ((my  $str) = '');
@@ -798,9 +797,9 @@ package main;
                     ($str = ($str . Javascript::autovivify($parameters, 'HASHREF')));
                     ((my  $index_js) = $parameters->arguments()->emit_javascript());
                     ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
-                    return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+                    return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
                 };
-                return scalar ((Javascript::tab($level) . '(' . ($parameters->invocant())->emit_javascript() . '.v_' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
+                return ((Javascript::tab($level) . '(' . ($parameters->invocant())->emit_javascript() . '.v_' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
             };
             if ((Main::isa($parameters, 'Lookup'))) {
                 ((my  $str) = '');
@@ -812,7 +811,7 @@ package main;
                 ($str = ($str . Javascript::autovivify($parameters, 'HASH')));
                 ((my  $index_js) = $parameters->index_exp()->emit_javascript());
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
-                return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+                return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
             };
             if ((Main::isa($parameters, 'Index'))) {
                 ((my  $str) = '');
@@ -824,24 +823,24 @@ package main;
                 ($str = ($str . Javascript::autovivify($parameters, 'ARRAY')));
                 ((my  $index_js) = $parameters->index_exp()->emit_javascript());
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
-                return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
+                return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
             };
             if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64))))) {
-                ($arguments = Lit::Array->new(('array1' => do {
+                ($arguments = Lit::Array->new(('array1' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
-})))
+})->())))
             }
             else {
                 if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37))))) {
-                    ($arguments = Lit::Hash->new(('hash1' => do {
+                    ($arguments = Lit::Hash->new(('hash1' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
-})))
+})->())))
                 }
             };
             (Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')')
@@ -862,12 +861,12 @@ package main;
             ((my  $level) = shift());
             ((my  $cond) = $self->{cond});
             if (((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
-                ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => do {
+                ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-})))
+})->())))
             };
             ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0)));
             ((my  $s) = (Javascript::tab($level) . 'if ( ' . Javascript::escape_function('bool') . '(' . $cond->emit_javascript() . ') ) ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)));
@@ -875,7 +874,7 @@ package main;
                 ((my  $otherwise) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{otherwise}->stmts()), ('needs_return' => 0)));
                 ($s = ($s . (chr(10)) . Javascript::tab($level) . 'else ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $otherwise->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)))
             };
-            return scalar ($s)
+            return ($s)
         }
     }
 
@@ -892,7 +891,7 @@ package main;
             ((my  $self) = shift());
             ((my  $level) = shift());
             ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->stmts()), ('needs_return' => 0)));
-            return scalar ((Javascript::tab($level) . 'for ( ' . (($self->{init} ? ($self->{init}->emit_javascript() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{cond} ? (Javascript::escape_function('bool') . '(' . $self->{cond}->emit_javascript() . ')' . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_javascript() . ' ') : ' ')) . ') ' . chr(123) . ' ' . '(function () ' . chr(123) . ' ' . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')()' . ' ' . chr(125)))
+            return ((Javascript::tab($level) . 'for ( ' . (($self->{init} ? ($self->{init}->emit_javascript() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{cond} ? (Javascript::escape_function('bool') . '(' . $self->{cond}->emit_javascript() . ')' . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_javascript() . ' ') : ' ')) . ') ' . chr(123) . ' ' . '(function () ' . chr(123) . ' ' . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')()' . ' ' . chr(125)))
         }
     }
 
@@ -910,12 +909,12 @@ package main;
             ((my  $level) = shift());
             ((my  $cond) = $self->{cond});
             if ((!(((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))))) {
-                ($cond = Lit::Array->new(('array1' => do {
+                ($cond = Lit::Array->new(('array1' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-})))
+})->())))
             };
             ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => (defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))->stmts()), ('needs_return' => 0)));
             ((my  $sig) = 'v__');
@@ -957,7 +956,7 @@ package main;
                         ($str = ($str . 'null' . chr(59) . (chr(10))))
                     }
                 };
-                return scalar ($str)
+                return ($str)
             }
             else {
                 die(('not implemented: Decl ' . chr(39) . $self->{decl} . (chr(39))))
@@ -997,7 +996,7 @@ package main;
             ((my  $self) = shift());
             ((my  $level) = shift());
             ((my  $block) = $self->simplify()->block());
-            return scalar ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()'))
+            return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()'))
         }
     }
 

@@ -61,11 +61,11 @@ package main;
         ((my  $todo) = shift());
         ((my  $depends) = shift());
         ((my  $test) = !((($got eq $expected))));
-        Perlito5::Test::proclaim($test, ('isnt' . chr(33) . ' ' . $desc), $todo, $got, $expected, $depends, do {
+        Perlito5::Test::proclaim($test, ('isnt' . chr(33) . ' ' . $desc), $todo, $got, $expected, $depends, (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'negate'} = 1);
     $Hash_a
-})
+})->())
     };
     sub cmp_ok {
         my $List__ = bless \@_, "ARRAY";
@@ -145,7 +145,7 @@ package main;
             Main::say(('not ok '), $num_of_tests_run);
             Perlito5::Test::report_failure($todo, $got, $expected, $negate)
         };
-        return scalar ($cond)
+        return ($cond)
     };
     sub report_failure {
         my $List__ = bless \@_, "ARRAY";

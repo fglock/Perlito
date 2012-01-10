@@ -145,37 +145,27 @@ class Lit::Hash {
                 push @s,
                     For->new(
                         'body' => Lit::Block->new(
-                            'sig' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
-                            'stmts' => [Apply->new(
-                                    'arguments' => [
-                                        Lookup->new(
-                                            'index_exp' => Call->new(
-                                                'arguments' => undef,
-                                                'hyper' => '',
-                                                'invocant' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
-                                                'method' => 'key'),
-                                            'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')),
-                                        Call->new('arguments' => [], 'hyper' => '', 'invocant' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'method' => 'value')
-                                    ],
-                                    'code' => 'infix:<=>',
-                                    'namespace' => '')
-                                ]
-                            ),
+                                    'sig' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
+                                    'stmts' => [Apply->new(
+                                            'arguments' => [
+                                                Lookup->new(
+                                                        'index_exp' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
+                                                        'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')
+                                                    ),
+                                                Lookup->new(
+                                                        'index_exp' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
+                                                        'obj' => $item
+                                                    ),
+                                            ],
+                                            'code' => 'infix:<=>',
+                                            'namespace' => '')
+                                        ]
+                                ),
                         'cond' => Apply->new(
-                            'arguments' => [
-                                Apply->new(
-                                    'arguments' => [
-                                        Call->new(
-                                            'arguments' => undef,
-                                            'hyper' => '',
-                                            'invocant' => $item,
-                                            'method' => 'pairs')
-                                    ],
-                                    'code' => 'circumfix:<( )>',
-                                    'namespace' => '')
-                            ],
-                            'code' => 'prefix:<@>',
-                            'namespace' => ''),
+                                    'arguments' => [ $item ],
+                                    'code'      => 'keys',
+                                    'namespace' => ''
+                                ),
                         'topic' => undef
                     );
             }

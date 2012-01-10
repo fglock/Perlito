@@ -36,11 +36,6 @@ use v5;
     sub values {
         bless [ CORE::values %{$_[0]} ], 'ARRAY';
     }
-    sub pairs {
-        bless [ map Pair->new( key => $_, value => $_[0]{$_} ),
-            CORE::keys %{$_[0]}
-        ], 'ARRAY';
-    }
 
     sub flat {
         my $obj = $_[0];
@@ -195,14 +190,6 @@ package Main;
     }
     sub values {
         bless [ CORE::values %{$_[0]} ], 'ARRAY';
-    }
-
-    # XXX Perl6 - note this is used in some macros
-    sub pairs {
-        bless [
-            map Pair->new( key => $_, value => $_[0]{$_} ),
-                CORE::keys %{$_[0]}
-        ], 'ARRAY';
     }
 
     # XXX Perl6

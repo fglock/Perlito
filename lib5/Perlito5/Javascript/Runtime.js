@@ -238,38 +238,6 @@ keys = function(o) {
     return out;
 };
 
-pairs = function(o) {
-    if (o == null) {
-        return [];
-    }
-    if (typeof o.pairs === 'function') {
-        return o.pairs();
-    }
-    if (typeof o === 'object' && (o instanceof Array)) {
-        var count = 0;
-        for (var i in o) {
-            var tmp = {
-                v_key: count,
-                v_value: i
-            };
-            tmp.__proto__ = Pair;
-            out.push(tmp);
-            count++;
-        }
-        return o;
-    }
-    var out = [];
-    for (var i in o) {
-        var tmp = {
-            v_key: i,
-            v_value: o[i]
-        };
-        tmp.__proto__ = Pair;
-        out.push(tmp);
-    }
-    return out;
-};
-
 Array.prototype.grep = function grep(f) {
     var res = new Array()
     for (var i in this) {

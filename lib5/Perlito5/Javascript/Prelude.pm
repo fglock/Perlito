@@ -24,12 +24,12 @@ package main;
             ((my  $self) = $List__->[0]);
             if (($self->{bool})) {
                 if ((defined($self->{capture}))) {
-                    return scalar ($self->{capture})
+                    return ($self->{capture})
                 };
-                return scalar (substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))))
+                return (substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))))
             }
             else {
-                return scalar ('')
+                return ('')
             }
         };
         sub string {
@@ -37,12 +37,12 @@ package main;
             ((my  $self) = $List__->[0]);
             if (($self->{bool})) {
                 if ((defined($self->{capture}))) {
-                    return scalar ($self->{capture})
+                    return ($self->{capture})
                 };
-                return scalar (substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))))
+                return (substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))))
             }
             else {
-                return scalar ('')
+                return ('')
             }
         }
     }

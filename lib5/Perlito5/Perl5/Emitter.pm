@@ -20,7 +20,7 @@ package main;
             ((my  $level) = shift());
             (('    ') x $level)
         };
-        ((my  $Hash_safe_char = bless {}, 'HASH') = do {
+        ((my  $Hash_safe_char = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'_'} = 1);
     ($Hash_a->{','} = 1);
@@ -37,14 +37,14 @@ package main;
     ($Hash_a->{'['} = 1);
     ($Hash_a->{']'} = 1);
     $Hash_a
-});
+})->());
         sub escape_string {
             my $List__ = bless \@_, "ARRAY";
             ((my  $s) = shift());
             (my  $List_out = bless [], 'ARRAY');
             ((my  $tmp) = '');
             if (($s eq '')) {
-                return scalar ((chr(39) . chr(39)))
+                return ((chr(39) . chr(39)))
             };
             for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
@@ -55,16 +55,16 @@ package main;
                     if (($tmp ne '')) {
                         push( @{$List_out}, (chr(39) . $tmp . chr(39)) )
                     };
-                    push( @{$List_out}, ('chr(' . do {
+                    push( @{$List_out}, ('chr(' . (sub {
     ord($c)
-} . ')') );
+})->() . ')') );
                     ($tmp = '')
                 }
             };
             if (($tmp ne '')) {
                 push( @{$List_out}, (chr(39) . $tmp . chr(39)) )
             };
-            return scalar (Main::join($List_out, ' . '))
+            return (Main::join($List_out, ' . '))
         }
     }
 
@@ -96,7 +96,7 @@ package main;
                 ($str = ($str . $comp_unit->emit_perl5_indented(0)))
             };
             ($str = ($str . ('1' . chr(59) . chr(10))));
-            return scalar ($str)
+            return ($str)
         }
     }
 
@@ -199,7 +199,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             ((my  $ast) = $self->expand_interpolation());
-            return scalar ($ast->emit_perl5_indented($level))
+            return ($ast->emit_perl5_indented($level))
         }
     }
 
@@ -217,7 +217,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             ((my  $ast) = $self->expand_interpolation());
-            return scalar ($ast->emit_perl5_indented($level))
+            return ($ast->emit_perl5_indented($level))
         }
     }
 
@@ -236,7 +236,7 @@ package main;
             ((my  $level) = $List__->[1]);
             if (((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))))) {
                 ((my  $v) = Var->new(('sigil' => chr(64)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
-                return scalar (($v->emit_perl5_indented($level) . '->[' . $self->{index_exp}->emit_perl5() . ']'))
+                return (($v->emit_perl5_indented($level) . '->[' . $self->{index_exp}->emit_perl5() . ']'))
             };
             ($self->{obj}->emit_perl5_indented($level) . '->[' . $self->{index_exp}->emit_perl5() . ']')
         }
@@ -257,7 +257,7 @@ package main;
             ((my  $level) = $List__->[1]);
             if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne chr(47))))) {
                 ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
-                return scalar (($v->emit_perl5_indented($level) . '->' . chr(123) . $self->{index_exp}->emit_perl5() . chr(125)))
+                return (($v->emit_perl5_indented($level) . '->' . chr(123) . $self->{index_exp}->emit_perl5() . chr(125)))
             };
             ($self->{obj}->emit_perl5_indented($level) . '->' . chr(123) . $self->{index_exp}->emit_perl5() . chr(125))
         }
@@ -276,48 +276,48 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
-            ((my  $table) = do {
+            ((my  $table) = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = chr(36));
     ($Hash_a->{chr(64)} = chr(36) . 'List_');
     ($Hash_a->{chr(37)} = chr(36) . 'Hash_');
     ($Hash_a->{chr(38)} = chr(36) . 'Code_');
     $Hash_a
-});
+})->());
             ((my  $ns) = '');
             if (($self->{namespace})) {
                 ($ns = ($self->{namespace} . '::'))
             }
             else {
                 if (((($self->{sigil} eq chr(64)) && ($self->{name} eq 'ARGV')))) {
-                    return scalar ((Perl5::tab($level) . '(' . chr(92) . chr(64) . 'ARGV)'))
+                    return ((Perl5::tab($level) . '(' . chr(92) . chr(64) . 'ARGV)'))
                 };
                 if ((($self->{twigil} eq '.'))) {
                     if ((($self->{sigil} eq chr(37)))) {
-                        return scalar ((Perl5::tab($level) . '(' . 'defined ' . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125) . ' ' . chr(63) . ' ' . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125) . ' ' . ': (' . chr(36) . 'self->' . chr(123) . $self->{name} . (chr(125) . ' ' . chr(61) . ' bless(' . chr(123) . chr(125) . ', ' . chr(39) . 'HASH' . chr(39) . ')))')))
+                        return ((Perl5::tab($level) . '(' . 'defined ' . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125) . ' ' . chr(63) . ' ' . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125) . ' ' . ': (' . chr(36) . 'self->' . chr(123) . $self->{name} . (chr(125) . ' ' . chr(61) . ' bless(' . chr(123) . chr(125) . ', ' . chr(39) . 'HASH' . chr(39) . ')))')))
                     }
                     else {
                         if ((($self->{sigil} eq chr(64)))) {
-                            return scalar ((Perl5::tab($level) . '(' . 'defined ' . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125) . ' ' . chr(63) . ' ' . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125) . ' ' . ': (' . chr(36) . 'self->' . chr(123) . $self->{name} . (chr(125) . ' ' . chr(124) . chr(124) . chr(61) . ' bless([], ' . chr(39) . 'ARRAY' . chr(39) . ')))')))
+                            return ((Perl5::tab($level) . '(' . 'defined ' . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125) . ' ' . chr(63) . ' ' . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125) . ' ' . ': (' . chr(36) . 'self->' . chr(123) . $self->{name} . (chr(125) . ' ' . chr(124) . chr(124) . chr(61) . ' bless([], ' . chr(39) . 'ARRAY' . chr(39) . ')))')))
                         }
                         else {
-                            return scalar ((Perl5::tab($level) . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125)))
+                            return ((Perl5::tab($level) . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125)))
                         }
                     }
                 };
                 if ((($self->{name} eq chr(47)))) {
-                    return scalar ((Perl5::tab($level) . $table->{$self->{sigil}} . 'MATCH'))
+                    return ((Perl5::tab($level) . $table->{$self->{sigil}} . 'MATCH'))
                 }
             };
-            return scalar ((Perl5::tab($level) . $table->{$self->{sigil}} . $ns . $self->{name}))
+            return ((Perl5::tab($level) . $table->{$self->{sigil}} . $ns . $self->{name}))
         };
         sub plain_name {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             if (($self->{namespace})) {
-                return scalar (($self->{namespace} . '::' . $self->{name}))
+                return (($self->{namespace} . '::' . $self->{name}))
             };
-            return scalar ($self->{name})
+            return ($self->{name})
         }
     }
 
@@ -342,18 +342,17 @@ package main;
     {
     package Call;
         sub new { shift; bless { @_ }, "Call" }
-        ((my  $Hash_method_perl5 = bless {}, 'HASH') = do {
+        ((my  $Hash_method_perl5 = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'say'} = 'Main::say');
     ($Hash_a->{'join'} = 'Main::join');
     ($Hash_a->{'split'} = 'Main::split');
     ($Hash_a->{'chars'} = 'Main::chars');
     ($Hash_a->{'isa'} = 'Main::isa');
-    ($Hash_a->{'pairs'} = 'Main::pairs');
     ($Hash_a->{'keys'} = 'Main::keys');
     ($Hash_a->{'values'} = 'Main::values');
     $Hash_a
-});
+})->());
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -366,17 +365,17 @@ package main;
             ((my  $invocant) = $self->{invocant}->emit_perl5());
             if ((exists($Hash_method_perl5->{$self->{method}}))) {
                 if (($self->{hyper})) {
-                    return scalar ((Perl5::tab($level) . 'bless [ map ' . chr(123) . ' ' . $Hash_method_perl5->{$self->{method}} . '( ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')' . ' ' . chr(125) . ' ' . chr(64) . chr(123) . '( ' . $invocant . ' )' . chr(125) . ' ], ' . chr(34) . 'ARRAY' . chr(34)))
+                    return ((Perl5::tab($level) . 'bless [ map ' . chr(123) . ' ' . $Hash_method_perl5->{$self->{method}} . '( ' . chr(36) . '_, ' . ', ' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')' . ' ' . chr(125) . ' ' . chr(64) . chr(123) . '( ' . $invocant . ' )' . chr(125) . ' ], ' . chr(34) . 'ARRAY' . chr(34)))
                 }
                 else {
-                    return scalar ((Perl5::tab($level) . $Hash_method_perl5->{$self->{method}} . '(' . $invocant . ', ' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                    return ((Perl5::tab($level) . $Hash_method_perl5->{$self->{method}} . '(' . $invocant . ', ' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
                 }
             };
             if ((($self->{method} eq 'postcircumfix:<[ ]>'))) {
-                return scalar ((Perl5::tab($level) . $invocant . '->[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_perl5() . ']'))
+                return ((Perl5::tab($level) . $invocant . '->[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_perl5() . ']'))
             };
             if ((($self->{method} eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-                return scalar ((Perl5::tab($level) . $invocant . '->' . chr(123) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_perl5() . chr(125)))
+                return ((Perl5::tab($level) . $invocant . '->' . chr(123) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_perl5() . chr(125)))
             };
             ((my  $meth) = $self->{method});
             if ((($meth eq 'postcircumfix:<( )>'))) {
@@ -387,7 +386,7 @@ package main;
                 if ((!(((Main::isa($self->{invocant}, 'Apply') && ($self->{invocant}->code() eq 'prefix:<' . chr(64) . '>')))))) {
                     ($invocant = (chr(64) . chr(123) . '( ' . $invocant . ' )' . chr(125)))
                 };
-                return scalar ((Perl5::tab($level) . '[ map ' . chr(123) . ' ' . chr(36) . '_' . $call . ' ' . chr(125) . ' ' . $invocant . ' ]'))
+                return ((Perl5::tab($level) . '[ map ' . chr(123) . ' ' . chr(36) . '_' . $call . ' ' . chr(125) . ' ' . $invocant . ' ]'))
             }
             else {
                 (Perl5::tab($level) . $invocant . $call)
@@ -399,13 +398,14 @@ package main;
     {
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
-        ((my  $Hash_op_prefix_perl5 = bless {}, 'HASH') = do {
+        ((my  $Hash_op_prefix_perl5 = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'say'} = 'Main::say');
     ($Hash_a->{'print'} = 'Main::print');
     ($Hash_a->{'map'} = 'Main::map');
     ($Hash_a->{'grep'} = 'Main::grep');
     ($Hash_a->{'sort'} = 'Main::sort');
+    ($Hash_a->{'keys'} = 'Main::keys');
     ($Hash_a->{'warn'} = 'warn');
     ($Hash_a->{'Int'} = '0+');
     ($Hash_a->{'Num'} = '0+');
@@ -415,8 +415,8 @@ package main;
     ($Hash_a->{'prefix:<++>'} = '++');
     ($Hash_a->{'prefix:<-->'} = '--');
     $Hash_a
-});
-        ((my  $Hash_op_infix_perl5 = bless {}, 'HASH') = do {
+})->());
+        ((my  $Hash_op_infix_perl5 = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'list:<.>'} = ' . ');
     ($Hash_a->{'infix:<+>'} = ' + ');
@@ -441,7 +441,7 @@ package main;
     ($Hash_a->{'infix:<' . chr(33) . chr(61) . '>'} = ' ' . chr(33) . chr(61) . ' ');
     ($Hash_a->{'infix:<' . chr(61) . '>>'} = ' ' . chr(61) . '> ');
     $Hash_a
-});
+})->());
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -453,7 +453,7 @@ package main;
             ((my  $level) = $List__->[1]);
             ((my  $apply) = $self->op_assign());
             if (($apply)) {
-                return scalar ($apply->emit_perl5_indented($level))
+                return ($apply->emit_perl5_indented($level))
             };
             ((my  $ns) = '');
             if (($self->{namespace})) {
@@ -464,76 +464,73 @@ package main;
 
             }
             else {
-                return scalar ((Perl5::tab($level) . '(' . $self->{code}->emit_perl5() . ')->(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return ((Perl5::tab($level) . '(' . $self->{code}->emit_perl5() . ')->(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if ((exists($Hash_op_infix_perl5->{$code}))) {
-                return scalar ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), $Hash_op_infix_perl5->{$code}) . ')'))
+                return ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), $Hash_op_infix_perl5->{$code}) . ')'))
             };
             if ((exists($Hash_op_prefix_perl5->{$code}))) {
-                return scalar ((Perl5::tab($level) . $Hash_op_prefix_perl5->{$code} . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return ((Perl5::tab($level) . $Hash_op_prefix_perl5->{$code} . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if ((($self->{code} eq 'package'))) {
-                return scalar ((Perl5::tab($level) . 'package ' . $self->{namespace}))
+                return ((Perl5::tab($level) . 'package ' . $self->{namespace}))
             };
             if ((($code eq 'undef'))) {
-                return scalar ((Perl5::tab($level) . 'undef()'))
+                return ((Perl5::tab($level) . 'undef()'))
             };
             if ((($code eq 'make'))) {
-                return scalar ((Perl5::tab($level) . '(' . chr(36) . 'MATCH->' . chr(123) . 'capture' . chr(125) . ' ' . chr(61) . ' (' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . '))'))
+                return ((Perl5::tab($level) . '(' . chr(36) . 'MATCH->' . chr(123) . 'capture' . chr(125) . ' ' . chr(61) . ' (' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . '))'))
             };
             if ((($code eq 'scalar'))) {
-                return scalar ((Perl5::tab($level) . 'scalar( ' . chr(64) . chr(123) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5()) . chr(125) . ' )'))
+                return ((Perl5::tab($level) . 'scalar( ' . chr(64) . chr(123) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5()) . chr(125) . ' )'))
             };
             if ((($code eq 'pop'))) {
-                return scalar ((Perl5::tab($level) . 'pop( ' . chr(64) . chr(123) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5()) . chr(125) . ' )'))
+                return ((Perl5::tab($level) . 'pop( ' . chr(64) . chr(123) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5()) . chr(125) . ' )'))
             };
             if ((($code eq 'push'))) {
-                return scalar ((Perl5::tab($level) . 'push( ' . chr(64) . chr(123) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_perl5() . chr(125) . ', ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_perl5() . ' )'))
+                return ((Perl5::tab($level) . 'push( ' . chr(64) . chr(123) . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0])->emit_perl5() . chr(125) . ', ' . ((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])->emit_perl5() . ' )'))
             };
             if ((($code eq 'shift'))) {
                 if (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))) {
-                    return scalar ((Perl5::tab($level) . 'shift( ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125) . ' )'))
+                    return ((Perl5::tab($level) . 'shift( ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125) . ' )'))
                 };
-                return scalar ('shift()')
+                return ('shift()')
             };
             if ((($code eq 'unshift'))) {
-                return scalar ((Perl5::tab($level) . 'unshift( ' . chr(64) . chr(123) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5() . chr(125) . ', ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_perl5() . ' )'))
+                return ((Perl5::tab($level) . 'unshift( ' . chr(64) . chr(123) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5() . chr(125) . ', ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_perl5() . ' )'))
             };
             if ((($code eq 'prefix:<' . chr(92) . '>'))) {
-                return scalar ((Perl5::tab($level) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ')))
+                return ((Perl5::tab($level) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ')))
             };
             if ((($code eq 'prefix:<' . chr(36) . '>'))) {
-                return scalar ((Perl5::tab($level) . chr(36) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125)))
+                return ((Perl5::tab($level) . chr(36) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125)))
             };
             if ((($code eq 'prefix:<' . chr(64) . '>'))) {
-                return scalar ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
+                return ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')'))
             };
             if ((($code eq 'prefix:<' . chr(37) . '>'))) {
-                return scalar ((Perl5::tab($level) . chr(37) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125)))
+                return ((Perl5::tab($level) . chr(37) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . chr(125)))
             };
             if ((($code eq 'postfix:<++>'))) {
-                return scalar ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')++'))
+                return ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')++'))
             };
             if ((($code eq 'postfix:<-->'))) {
-                return scalar ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')--'))
+                return ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ') . ')--'))
             };
             if ((($code eq 'infix:<..>'))) {
-                return scalar ((Perl5::tab($level) . '(bless [' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' .. ') . ('], ' . chr(39) . 'ARRAY' . chr(39) . ')')))
+                return ((Perl5::tab($level) . '(bless [' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' .. ') . ('], ' . chr(39) . 'ARRAY' . chr(39) . ')')))
             };
             if ((($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>'))) {
-                return scalar ((Perl5::tab($level) . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5() . ' ' . chr(63) . ' ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_perl5() . ' : ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2]->emit_perl5() . ')'))
+                return ((Perl5::tab($level) . '(' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5() . ' ' . chr(63) . ' ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_perl5() . ' : ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[2]->emit_perl5() . ')'))
             };
             if ((($code eq 'circumfix:<( )>'))) {
-                return scalar ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             if ((($code eq 'infix:<' . chr(61) . '>'))) {
-                return scalar ((Perl5::tab($level) . emit_perl5_bind((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0], (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])))
+                return ((Perl5::tab($level) . emit_perl5_bind((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0], (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1])))
             };
             if ((($code eq 'return'))) {
-                if ((((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) && (scalar( @{($self->{arguments})} ) == 1)))) {
-                    return scalar ((Perl5::tab($level) . 'return scalar (' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
-                };
-                return scalar ((Perl5::tab($level) . 'return (' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
+                return ((Perl5::tab($level) . 'return (' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')'))
             };
             (Perl5::tab($level) . $code . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ', ') . ')')
         };
@@ -543,27 +540,27 @@ package main;
             ((my  $arguments) = shift());
             if ((Main::isa($parameters, 'Call'))) {
                 if (((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>') || ($parameters->method() eq 'postcircumfix:<[ ]>')))) {
-                    return scalar (('(' . $parameters->emit_perl5() . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')'))
+                    return (('(' . $parameters->emit_perl5() . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')'))
                 };
                 ((my  $a) = $parameters);
-                return scalar (('((' . ($a->invocant())->emit_perl5() . ')->' . chr(123) . $a->method() . chr(125) . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')'))
+                return (('((' . ($a->invocant())->emit_perl5() . ')->' . chr(123) . $a->method() . chr(125) . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')'))
             };
             if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64))))) {
-                ($arguments = Lit::Array->new(('array1' => do {
+                ($arguments = Lit::Array->new(('array1' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
-})))
+})->())))
             }
             else {
                 if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37))))) {
-                    ($arguments = Lit::Hash->new(('hash1' => do {
+                    ($arguments = Lit::Hash->new(('hash1' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
-})))
+})->())))
                 }
             };
             ('(' . $parameters->emit_perl5() . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')')
@@ -583,7 +580,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
-            return scalar ((Perl5::tab($level) . 'if (' . $self->{cond}->emit_perl5() . (') ' . chr(123) . chr(10)) . (($self->{body} ? (Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{otherwise} && scalar( @{($self->{otherwise}->stmts())} )) ? ((chr(10) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
+            return ((Perl5::tab($level) . 'if (' . $self->{cond}->emit_perl5() . (') ' . chr(123) . chr(10)) . (($self->{body} ? (Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{otherwise} && scalar( @{($self->{otherwise}->stmts())} )) ? ((chr(10) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
         }
     }
 
@@ -602,12 +599,12 @@ package main;
             ((my  $level) = $List__->[1]);
             ((my  $cond) = $self->{cond});
             if ((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64)))) {
-                ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => do {
+                ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-})))
+})->())))
             };
             (Perl5::tab($level) . 'for ( ' . (($self->{init} ? ($self->{init}->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($cond ? ($cond->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_perl5() . ' ') : ' ')) . ') ' . chr(123) . (chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
         }
@@ -628,18 +625,18 @@ package main;
             ((my  $level) = $List__->[1]);
             ((my  $cond) = $self->{cond});
             if ((!(((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))))) {
-                ($cond = Lit::Array->new(('array1' => do {
+                ($cond = Lit::Array->new(('array1' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-})))
+})->())))
             };
             (my  $sig);
             if (($self->{body}->sig())) {
                 ($sig = ('my ' . $self->{body}->sig()->emit_perl5() . ' '))
             };
-            return scalar ((Perl5::tab($level) . 'for ' . $sig . '( ' . chr(64) . chr(123) . $cond->emit_perl5() . chr(125) . ' ) ' . chr(123) . (chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125))))
+            return ((Perl5::tab($level) . 'for ' . $sig . '( ' . chr(64) . chr(123) . $cond->emit_perl5() . chr(125) . ' ) ' . chr(123) . (chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125))))
         }
     }
 
@@ -659,7 +656,7 @@ package main;
             ((my  $decl) = $self->{decl});
             ((my  $name) = $self->{var}->plain_name());
             if ((($decl eq 'has'))) {
-                return scalar ((Perl5::tab($level) . 'sub ' . $name . ' ' . chr(123) . ' ' . chr(36) . '_[0]->' . chr(123) . $name . chr(125) . ' ' . chr(125)))
+                return ((Perl5::tab($level) . 'sub ' . $name . ' ' . chr(123) . ' ' . chr(36) . '_[0]->' . chr(123) . $name . chr(125) . ' ' . chr(125)))
             };
             ((my  $str) = ('(' . $self->{decl} . ' ' . $self->{type} . ' ' . $self->{var}->emit_perl5()));
             if ((($self->{var})->sigil() eq chr(37))) {
@@ -673,7 +670,7 @@ package main;
                     ($str = ($str . ')'))
                 }
             };
-            return scalar ((Perl5::tab($level) . $str))
+            return ((Perl5::tab($level) . $str))
         }
     }
 
@@ -716,7 +713,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             ((my  $block) = $self->simplify()->block());
-            (Perl5::tab($level) . ('do ' . chr(123) . chr(10)) . Main::join(([ map { $_->emit_perl5_indented(($level + 1)) } @{( $block )} ]), (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
+            (Perl5::tab($level) . ('(sub ' . chr(123) . chr(10)) . Main::join(([ map { $_->emit_perl5_indented(($level + 1)) } @{( $block )} ]), (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125) . ')->()'))
         }
     }
 
@@ -734,7 +731,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             if ((($self->{mod} eq 'strict') || ($self->{mod} eq 'feature'))) {
-                return scalar ((chr(10) . Perl5::tab($level) . (chr(35) . ' use ' . $self->{mod} . ' ' . chr(10))))
+                return ((chr(10) . Perl5::tab($level) . (chr(35) . ' use ' . $self->{mod} . ' ' . chr(10))))
             };
             (Perl5::tab($level) . 'use ' . $self->{mod})
         }

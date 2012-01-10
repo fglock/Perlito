@@ -1,29 +1,29 @@
-class Main {
+package Main;
 
-    sub _replace {
-        my $s = shift;
-        my $old = shift;
-        my $new = shift;
-        my $p = index($s, $old);
-        $p >= 0
-        ? substr( $s, 0, $p ) . $new . _replace( substr( $s, $p + $old->chars ), $old, $new )
-        : $s
-    }
-
-    sub lisp_escape_string {
-        my $s = shift;
-        _replace($s, "\\", "\\\\");
-    }
-
-    sub to_javascript_namespace {
-        my $s = shift;
-        _replace($s, "::", '$');
-    }
-
-    sub to_go_namespace {
-        my $s = shift;
-        _replace($s, "::", "__");
-    }
-
+sub _replace {
+    my $s = shift;
+    my $old = shift;
+    my $new = shift;
+    my $p = index($s, $old);
+    $p >= 0
+    ? substr( $s, 0, $p ) . $new . _replace( substr( $s, $p + $old->chars ), $old, $new )
+    : $s
 }
+
+sub lisp_escape_string {
+    my $s = shift;
+    _replace($s, "\\", "\\\\");
+}
+
+sub to_javascript_namespace {
+    my $s = shift;
+    _replace($s, "::", '$');
+}
+
+sub to_go_namespace {
+    my $s = shift;
+    _replace($s, "::", "__");
+}
+
+1;
 

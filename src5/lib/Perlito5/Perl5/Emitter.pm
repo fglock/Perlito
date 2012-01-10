@@ -294,7 +294,6 @@ class Call {
         'split'  => 'Main::split',
         'chars'  => 'Main::chars',
         'isa'    => 'Main::isa',
-        'pairs'  => 'Main::pairs',
         'keys'   => 'Main::keys',
         'values' => 'Main::values',
     );
@@ -358,6 +357,7 @@ class Apply {
         map     => 'Main::map',
         grep    => 'Main::grep',
         sort    => 'Main::sort',
+        keys    => 'Main::keys',
         warn    => 'warn',
         Int     => '0+',
         Num     => '0+',
@@ -470,13 +470,6 @@ class Apply {
             return Perl5::tab($level) . emit_perl5_bind( @.arguments[0], @.arguments[1] );
         }
         if ($code eq 'return') {
-            if (  @.arguments
-               && scalar(@{$.arguments}) == 1
-               )
-            {
-                # bug in "return do", see http://www->perlmonks->org/?node_id=648681
-                return Perl5::tab($level) . 'return scalar (' . (@.arguments.>>emit_perl5)->join(', ') . ')';
-            }
             return Perl5::tab($level) . 'return (' . (@.arguments.>>emit_perl5)->join(', ') . ')';
         }
 
@@ -650,9 +643,9 @@ class Do {
         my $level = $_[1];
         
         my $block = $self->simplify->block;
-          Perl5::tab($level) . "do \{\n"
+          Perl5::tab($level) . "(sub \{\n"
         .   ($block.>>emit_perl5_indented( $level + 1 ))->join(";\n") . "\n"
-        . Perl5::tab($level) . "}"
+        . Perl5::tab($level) . "})->()"
     }
 }
 

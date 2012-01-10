@@ -10,35 +10,31 @@ our $MATCH = Perlito5::Match->new();
 {
 package main;
     sub new { shift; bless { @_ }, "main" }
-    {
     package Main;
-        sub new { shift; bless { @_ }, "Main" }
-        sub _replace {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $s) = shift());
-            ((my  $old) = shift());
-            ((my  $new) = shift());
-            ((my  $p) = index($s, $old));
-            (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + Main::chars($old, ))), $old, $new)) : $s)
-        };
-        sub lisp_escape_string {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $s) = shift());
-            _replace($s, (chr(92)), (chr(92) . chr(92)))
-        };
-        sub to_javascript_namespace {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $s) = shift());
-            _replace($s, ('::'), chr(36))
-        };
-        sub to_go_namespace {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $s) = shift());
-            _replace($s, ('::'), ('__'))
-        }
-    }
-
-
+    sub _replace {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $s) = shift());
+        ((my  $old) = shift());
+        ((my  $new) = shift());
+        ((my  $p) = index($s, $old));
+        (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + Main::chars($old, ))), $old, $new)) : $s)
+    };
+    sub lisp_escape_string {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $s) = shift());
+        _replace($s, (chr(92)), (chr(92) . chr(92)))
+    };
+    sub to_javascript_namespace {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $s) = shift());
+        _replace($s, ('::'), chr(36))
+    };
+    sub to_go_namespace {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $s) = shift());
+        _replace($s, ('::'), ('__'))
+    };
+    1
 }
 
 1;
