@@ -239,38 +239,6 @@ keys = function(o) {
     return out;
 };
 
-pairs = function(o) {
-    if (o == null) {
-        return [];
-    }
-    if (typeof o.pairs === 'function') {
-        return o.pairs();
-    }
-    if (typeof o === 'object' && (o instanceof Array)) {
-        var count = 0;
-        for (var i in o) {
-            var tmp = {
-                v_key: count,
-                v_value: i
-            };
-            tmp.__proto__ = Pair;
-            out.push(tmp);
-            count++;
-        }
-        return o;
-    }
-    var out = [];
-    for (var i in o) {
-        var tmp = {
-            v_key: i,
-            v_value: o[i]
-        };
-        tmp.__proto__ = Pair;
-        out.push(tmp);
-    }
-    return out;
-};
-
 Array.prototype.grep = function grep(f) {
     var res = new Array()
     for (var i in this) {
@@ -605,22 +573,6 @@ if (typeof Perlito5$Match !== 'object') {
         }
   }
   Perlito5$Match.string;  // v8 bug workaround
-})()
-;
-// class Pair
-if (typeof Pair !== 'object') {
-  Pair = function() {};
-  Pair = new Pair;
-  Pair.isa = function (s) { return s == 'Pair'; };
-}
-(function () {
-  var v__NAMESPACE = Pair;
-  // accessor key
-  Pair.v_key = null;
-  Pair.key = function () { return this.v_key; };
-  // accessor value
-  Pair.v_value = null;
-  Pair.value = function () { return this.v_value; };
 })()
 ;
 // class Main
@@ -2436,7 +2388,6 @@ if (typeof Call !== 'object') {
     (function () { if (Hash_a['scalar'] == null) { Hash_a['scalar'] = {} }; return (Hash_a['scalar']  = 'scalar'); })();
     (function () { if (Hash_a['keys'] == null) { Hash_a['keys'] = {} }; return (Hash_a['keys']  = 'keys'); })();
     (function () { if (Hash_a['values'] == null) { Hash_a['values'] = {} }; return (Hash_a['values']  = 'values'); })();
-    (function () { if (Hash_a['pairs'] == null) { Hash_a['pairs'] = {} }; return (Hash_a['pairs']  = 'pairs'); })();
     (function () { if (Hash_a['say'] == null) { Hash_a['say'] = {} }; return (Hash_a['say']  = 'say'); })();
     (function () { if (Hash_a['chars'] == null) { Hash_a['chars'] = {} }; return (Hash_a['chars']  = 'chars'); })();
     return(Hash_a);
@@ -2837,6 +2788,7 @@ if (typeof Apply !== 'object') {
     (function () { if (Hash_a['print'] == null) { Hash_a['print'] = {} }; return (Hash_a['print']  = 1); })();
     (function () { if (Hash_a['warn'] == null) { Hash_a['warn'] = {} }; return (Hash_a['warn']  = 1); })();
     (function () { if (Hash_a['scalar'] == null) { Hash_a['scalar'] = {} }; return (Hash_a['scalar']  = 1); })();
+    (function () { if (Hash_a['keys'] == null) { Hash_a['keys'] = {} }; return (Hash_a['keys']  = 1); })();
     return(Hash_a);
 })());
 })()
@@ -5347,7 +5299,6 @@ if (typeof Call !== 'object') {
     (function () { if (Hash_a['split'] == null) { Hash_a['split'] = {} }; return (Hash_a['split']  = 'Main::split'); })();
     (function () { if (Hash_a['chars'] == null) { Hash_a['chars'] = {} }; return (Hash_a['chars']  = 'Main::chars'); })();
     (function () { if (Hash_a['isa'] == null) { Hash_a['isa'] = {} }; return (Hash_a['isa']  = 'Main::isa'); })();
-    (function () { if (Hash_a['pairs'] == null) { Hash_a['pairs'] = {} }; return (Hash_a['pairs']  = 'Main::pairs'); })();
     (function () { if (Hash_a['keys'] == null) { Hash_a['keys'] = {} }; return (Hash_a['keys']  = 'Main::keys'); })();
     (function () { if (Hash_a['values'] == null) { Hash_a['values'] = {} }; return (Hash_a['values']  = 'Main::values'); })();
     return(Hash_a);

@@ -34,6 +34,8 @@ TODO list for Perlito5
 
 -- remove *all* runtime (everything should work natively)
 
+-- broken test in t5/05-anon-sub-lex-block.t
+
 
 * Javascript backend
 

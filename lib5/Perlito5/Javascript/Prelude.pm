@@ -49,14 +49,6 @@ package main;
 
 ;
     {
-    package Pair;
-        sub new { shift; bless { @_ }, "Pair" }
-        sub key { $_[0]->{key} };
-        sub value { $_[0]->{value} }
-    }
-
-;
-    {
     package Main;
         sub new { shift; bless { @_ }, "Main" }
         1

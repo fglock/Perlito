@@ -606,6 +606,7 @@ class Apply {
         'print'   => 1,
         'warn'    => 1,
         'scalar'  => 1,
+        'keys'    => 1,
     );
 
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }

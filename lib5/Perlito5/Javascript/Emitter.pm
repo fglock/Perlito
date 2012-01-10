@@ -618,6 +618,7 @@ package main;
     ($Hash_a->{'print'} = 1);
     ($Hash_a->{'warn'} = 1);
     ($Hash_a->{'scalar'} = 1);
+    ($Hash_a->{'keys'} = 1);
     $Hash_a
 })->());
         sub emit_javascript {

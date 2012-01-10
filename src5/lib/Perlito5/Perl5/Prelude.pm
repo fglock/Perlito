@@ -13,10 +13,7 @@ class Perlito5::Match {
     }
 }
 
-class Pair {
-    has $.key;
-    has $.value;
-}
+1;
 
 =begin
 
