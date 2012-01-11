@@ -46,7 +46,7 @@ package main;
             if (($s eq '')) {
                 return ((chr(39) . chr(39)))
             };
-            for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY')} ) {
+            for my $i ( @{(bless [0 .. (length($s) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
                 if ((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c})))) {
                     ($tmp = ($tmp . $c))
@@ -347,10 +347,7 @@ package main;
     ($Hash_a->{'say'} = 'Main::say');
     ($Hash_a->{'join'} = 'Main::join');
     ($Hash_a->{'split'} = 'Main::split');
-    ($Hash_a->{'chars'} = 'Main::chars');
     ($Hash_a->{'isa'} = 'Main::isa');
-    ($Hash_a->{'keys'} = 'Main::keys');
-    ($Hash_a->{'values'} = 'Main::values');
     $Hash_a
 })->());
         sub emit_perl5 {

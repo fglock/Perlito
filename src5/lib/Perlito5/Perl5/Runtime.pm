@@ -167,7 +167,6 @@ package Main;
         return 1;
     }
     sub say   { Main::print( @_, "\n" ) }
-    sub chars { length( $_[0] ) }
     sub isa {
         my $ref = ref($_[0]);
            (  $ref eq 'ARRAY'

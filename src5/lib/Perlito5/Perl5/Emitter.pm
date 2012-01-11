@@ -30,7 +30,7 @@ class Perl5 {
         my @out;
         my $tmp = '';
         return "''" if $s eq '';
-        for my $i (0 .. $s->chars() - 1) {
+        for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
             if  (  (($c ge 'a') && ($c le 'z'))
                 || (($c ge 'A') && ($c le 'Z'))
@@ -292,10 +292,7 @@ class Call {
         'say'    => 'Main::say',
         'join'   => 'Main::join',
         'split'  => 'Main::split',
-        'chars'  => 'Main::chars',
         'isa'    => 'Main::isa',
-        'keys'   => 'Main::keys',
-        'values' => 'Main::values',
     );
 
     sub emit_perl5 {

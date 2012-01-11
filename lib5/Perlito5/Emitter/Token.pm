@@ -17,7 +17,7 @@ package main;
         sub constant {
             my $List__ = bless \@_, "ARRAY";
             ((my  $str) = shift());
-            ((my  $len) = Main::chars($str, ));
+            ((my  $len) = length($str));
             if ((($str eq chr(92)))) {
                 ($str = chr(92) . chr(92))
             };

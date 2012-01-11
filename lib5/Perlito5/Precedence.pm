@@ -82,7 +82,7 @@ package main;
         ((my  $pos) = shift());
         ((my  $from) = $pos);
         for my $tok ( @{(($End_token))} ) {
-            ((my  $l) = Main::chars($tok, ));
+            ((my  $l) = length($tok));
             ((my  $s) = substr($str, $pos, $l));
             if ((($s eq $tok))) {
                 ((my  $c1) = substr($str, (($pos + $l) - 1), 1));
@@ -167,7 +167,7 @@ package main;
         ($Precedence->{$name} = $precedence);
         ($Assoc->{$assoc}->{$name} = 1);
         ($Allow_space_before->{$fixity}->{$name} = ($param->{'no_space_before'} ? 0 : 1));
-        ($List_Op->[Main::chars($name, )]->{$name} = 1)
+        ($List_Op->[length($name)]->{$name} = 1)
     };
     ((my  $prec) = 100);
     add_op('postfix', '.( )', $prec, (sub {

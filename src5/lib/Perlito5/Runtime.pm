@@ -6,7 +6,7 @@ sub _replace {
     my $new = shift;
     my $p = index($s, $old);
     $p >= 0
-    ? substr( $s, 0, $p ) . $new . _replace( substr( $s, $p + $old->chars ), $old, $new )
+    ? substr( $s, 0, $p ) . $new . _replace( substr( $s, $p + length($old) ), $old, $new )
     : $s
 }
 

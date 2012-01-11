@@ -46,7 +46,7 @@ package main;
             if (($s eq '')) {
                 return ((chr(39) . chr(39)))
             };
-            for my $i ( @{(bless [0 .. (Main::chars($s, ) - 1)], 'ARRAY')} ) {
+            for my $i ( @{(bless [0 .. (length($s) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
                 if (((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c}))) {
                     ($tmp = ($tmp . $c))
@@ -512,10 +512,7 @@ package main;
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'isa'} = 'isa');
     ($Hash_a->{'scalar'} = 'scalar');
-    ($Hash_a->{'keys'} = 'keys');
-    ($Hash_a->{'values'} = 'values');
     ($Hash_a->{'say'} = 'say');
-    ($Hash_a->{'chars'} = 'chars');
     $Hash_a
 })->());
         ((my  $Hash_method_native_js = bless {}, 'HASH') = (sub {

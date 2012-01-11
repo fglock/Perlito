@@ -50,7 +50,7 @@ sub op_parse {
 
     my $from = $pos;
     for my $tok ( @($End_token) ) {
-        my $l = $tok->chars;
+        my $l = length($tok);
         my $s = substr($str, $pos, $l);
         if ($s eq $tok) {
             my $c1 = substr($str, $pos+$l-1, 1);
@@ -118,7 +118,7 @@ sub add_op {
     $Precedence->{$name}        = $precedence;
     $Assoc->{$assoc}{$name}     = 1;
     $Allow_space_before->{$fixity}{$name} = $param->{'no_space_before'} ? 0 : 1;
-    @Op[ $name->chars ]{$name} = 1;
+    @Op[ length($name) ]{$name} = 1;
 }
 
 

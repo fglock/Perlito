@@ -17,7 +17,7 @@ package main;
         ((my  $old) = shift());
         ((my  $new) = shift());
         ((my  $p) = index($s, $old));
-        (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + Main::chars($old, ))), $old, $new)) : $s)
+        (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + length($old))), $old, $new)) : $s)
     };
     sub lisp_escape_string {
         my $List__ = bless \@_, "ARRAY";

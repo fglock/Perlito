@@ -407,7 +407,7 @@ index = function(o, s) {
     }
 };
 
-chars = function(o) {
+length = function(o) {
     if (typeof o.string === 'function') {
         return o.string().length;
     }

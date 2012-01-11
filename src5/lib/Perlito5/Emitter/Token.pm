@@ -7,7 +7,7 @@ class Rul {
 
     sub constant {
             my $str = shift;
-            my $len = $str->chars;
+            my $len = length $str;
             if ($str eq '\\') {
                 $str = '\\\\';
             }
