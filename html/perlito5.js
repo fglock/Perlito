@@ -408,7 +408,7 @@ index = function(o, s) {
     }
 };
 
-chars = function(o) {
+length = function(o) {
     if (typeof o.string === 'function') {
         return o.string().length;
     }
@@ -1074,7 +1074,7 @@ if (typeof Javascript !== 'object') {
     return((v_c).charCodeAt(0));
 })()) + string(')')));
                             (v_tmp = '');;
-                        })(); };; })(a_[i_]) } })((function (a) { for (var i=0, l=(chars(v_s) - 1); i<=l; ++i){ a.push(i) }; return a })([]));
+                        })(); };; })(a_[i_]) } })((function (a) { for (var i=0, l=(length(v_s) - 1); i<=l; ++i){ a.push(i) }; return a })([]));
                     if ( bool((v_tmp != '')) ) { (function () {
                         push(List_out, (string(String.fromCharCode(39)) + string(v_tmp) + string(String.fromCharCode(39))));;
                     })(); };
@@ -2386,10 +2386,7 @@ if (typeof Call !== 'object') {
 
     (function () { if (Hash_a['isa'] == null) { Hash_a['isa'] = {} }; return (Hash_a['isa']  = 'isa'); })();
     (function () { if (Hash_a['scalar'] == null) { Hash_a['scalar'] = {} }; return (Hash_a['scalar']  = 'scalar'); })();
-    (function () { if (Hash_a['keys'] == null) { Hash_a['keys'] = {} }; return (Hash_a['keys']  = 'keys'); })();
-    (function () { if (Hash_a['values'] == null) { Hash_a['values'] = {} }; return (Hash_a['values']  = 'values'); })();
     (function () { if (Hash_a['say'] == null) { Hash_a['say'] = {} }; return (Hash_a['say']  = 'say'); })();
-    (function () { if (Hash_a['chars'] == null) { Hash_a['chars'] = {} }; return (Hash_a['chars']  = 'chars'); })();
     return(Hash_a);
 })());
                 (Hash_method_native_js = (function () { 
@@ -2789,6 +2786,7 @@ if (typeof Apply !== 'object') {
     (function () { if (Hash_a['warn'] == null) { Hash_a['warn'] = {} }; return (Hash_a['warn']  = 1); })();
     (function () { if (Hash_a['scalar'] == null) { Hash_a['scalar'] = {} }; return (Hash_a['scalar']  = 1); })();
     (function () { if (Hash_a['keys'] == null) { Hash_a['keys'] = {} }; return (Hash_a['keys']  = 1); })();
+    (function () { if (Hash_a['length'] == null) { Hash_a['length'] = {} }; return (Hash_a['length']  = 1); })();
     return(Hash_a);
 })());
 })()
@@ -3541,7 +3539,7 @@ if (typeof Perlito5$Precedence !== 'object') {
 
                         var v_s = null;
 
-                        (v_l = chars(v_tok));
+                        (v_l = length(v_tok));
                         (v_s = (v_str || "").substr(v_pos, v_l));
                         if ( bool(((v_s == v_tok))) ) { (function () {
                             var v_c1 = null;
@@ -3694,7 +3692,7 @@ if (typeof Perlito5$Precedence !== 'object') {
                     (function () { if (v_Precedence == null) { v_Precedence = {} }; if (v_Precedence[v_name] == null) { v_Precedence[v_name] = {} }; return (v_Precedence[v_name]  = v_precedence); })();
                     (function () { if (v_Assoc == null) { v_Assoc = {} }; if (v_Assoc[v_assoc] == null) { v_Assoc[v_assoc] = {} }; if (v_Assoc[v_assoc][v_name] == null) { v_Assoc[v_assoc][v_name] = {} }; return (v_Assoc[v_assoc][v_name]  = 1); })();
                     (function () { if (v_Allow_space_before == null) { v_Allow_space_before = {} }; if (v_Allow_space_before[v_fixity] == null) { v_Allow_space_before[v_fixity] = {} }; if (v_Allow_space_before[v_fixity][v_name] == null) { v_Allow_space_before[v_fixity][v_name] = {} }; return (v_Allow_space_before[v_fixity][v_name]  = ( bool(v_param['no_space_before']) ? 0 : 1)); })();
-                    return((function () { if (List_Op[chars(v_name)] == null) { List_Op[chars(v_name)] = [] }; if (List_Op[chars(v_name)][v_name] == null) { List_Op[chars(v_name)][v_name] = {} }; return (List_Op[chars(v_name)][v_name]  = 1); })());;
+                    return((function () { if (List_Op[length(v_name)] == null) { List_Op[length(v_name)] = [] }; if (List_Op[length(v_name)][v_name] == null) { List_Op[length(v_name)][v_name] = {} }; return (List_Op[length(v_name)][v_name]  = 1); })());;
                 }
                 catch(err) {
                     if ( err instanceof Error ) {
@@ -4286,7 +4284,7 @@ if (typeof Perl5 !== 'object') {
     return((v_c).charCodeAt(0));
 })()) + string(')')));
                             (v_tmp = '');;
-                        })(); };; })(a_[i_]) } })((function (a) { for (var i=0, l=(chars(v_s) - 1); i<=l; ++i){ a.push(i) }; return a })([]));
+                        })(); };; })(a_[i_]) } })((function (a) { for (var i=0, l=(length(v_s) - 1); i<=l; ++i){ a.push(i) }; return a })([]));
                     if ( bool((v_tmp != '')) ) { (function () {
                         push(List_out, (string(String.fromCharCode(39)) + string(v_tmp) + string(String.fromCharCode(39))));;
                     })(); };
@@ -5297,10 +5295,7 @@ if (typeof Call !== 'object') {
     (function () { if (Hash_a['say'] == null) { Hash_a['say'] = {} }; return (Hash_a['say']  = 'Main::say'); })();
     (function () { if (Hash_a['join'] == null) { Hash_a['join'] = {} }; return (Hash_a['join']  = 'Main::join'); })();
     (function () { if (Hash_a['split'] == null) { Hash_a['split'] = {} }; return (Hash_a['split']  = 'Main::split'); })();
-    (function () { if (Hash_a['chars'] == null) { Hash_a['chars'] = {} }; return (Hash_a['chars']  = 'Main::chars'); })();
     (function () { if (Hash_a['isa'] == null) { Hash_a['isa'] = {} }; return (Hash_a['isa']  = 'Main::isa'); })();
-    (function () { if (Hash_a['keys'] == null) { Hash_a['keys'] = {} }; return (Hash_a['keys']  = 'Main::keys'); })();
-    (function () { if (Hash_a['values'] == null) { Hash_a['values'] = {} }; return (Hash_a['values']  = 'Main::values'); })();
     return(Hash_a);
 })());
 })()
@@ -16846,7 +16841,7 @@ if (typeof Rul !== 'object') {
                     var v_len = null;
 
                     (v_str = shift(List__));
-                    (v_len = chars(v_str));
+                    (v_len = length(v_str));
                     if ( bool(((v_str == String.fromCharCode(92)))) ) { (function () {
                         (v_str = String.fromCharCode(92) + String.fromCharCode(92));;
                     })(); };
@@ -22019,7 +22014,7 @@ if (typeof Main !== 'object') {
                     (v_old = shift(List__));
                     (v_new = shift(List__));
                     (v_p = index(v_s, v_old));
-                    return(( bool((v_p >= 0)) ? (string((v_s || "").substr(0, v_p)) + string(v_new) + string(v__NAMESPACE._replace(CallSub, (v_s || "").substr(add(v_p, chars(v_old))), v_old, v_new))) : v_s));;
+                    return(( bool((v_p >= 0)) ? (string((v_s || "").substr(0, v_p)) + string(v_new) + string(v__NAMESPACE._replace(CallSub, (v_s || "").substr(add(v_p, length(v_old))), v_old, v_new))) : v_s));;
                 }
                 catch(err) {
                     if ( err instanceof Error ) {
