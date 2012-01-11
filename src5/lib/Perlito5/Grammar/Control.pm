@@ -81,7 +81,7 @@ token when {
 }
 
 token for {
-    for <.ws> 
+    for 'each'? <.ws> 
     [
         my <.ws> <Perlito5::Grammar.var_ident> <.opt_ws> 
             '(' <Perlito5::Expression.paren_parse>   ')' <.opt_ws>

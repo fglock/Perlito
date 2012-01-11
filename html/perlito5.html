@@ -21,7 +21,8 @@ $out->{'value'} = "Changing the '$where' box using the 'Document' object\n";
 
 say "hello, World!";
 
-say "goodbye $_" for 1 .. 3;
+say "goodbye $_"
+    foreach 1 .. 3;
 
 sub fact {
     $_[0] <= 1

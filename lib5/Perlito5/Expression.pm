@@ -1600,6 +1600,7 @@ package main;
     push( @{$List_a}, 'elsif' );
     push( @{$List_a}, 'unless' );
     push( @{$List_a}, 'when' );
+    push( @{$List_a}, 'foreach' );
     push( @{$List_a}, 'for' );
     push( @{$List_a}, 'while' );
     push( @{$List_a}, 'loop' );
@@ -1770,6 +1771,7 @@ package main;
     push( @{$List_a}, 'elsif' );
     push( @{$List_a}, 'unless' );
     push( @{$List_a}, 'when' );
+    push( @{$List_a}, 'foreach' );
     push( @{$List_a}, 'for' );
     push( @{$List_a}, 'while' );
     push( @{$List_a}, 'loop' );
@@ -1908,7 +1910,7 @@ package main;
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = (((sub {
     ((my  $pos1) = $MATCH->to());
-    (((((((sub {
+    ((((((((sub {
     (('if' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -1916,6 +1918,9 @@ package main;
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
     (((('when' eq substr($str, $MATCH->to(), 4)) && ((($MATCH)->{to} = (4 + $MATCH->to()))))))
+})->())) || ((sub {
+    (($MATCH)->{to} = $pos1);
+    (((('foreach' eq substr($str, $MATCH->to(), 7)) && ((($MATCH)->{to} = (7 + $MATCH->to()))))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
     (((('for' eq substr($str, $MATCH->to(), 3)) && ((($MATCH)->{to} = (3 + $MATCH->to()))))))
@@ -2200,7 +2205,7 @@ package main;
     $List_a
 })->())))))))
         };
-        if ((($modifier eq 'for'))) {
+        if (((($modifier eq 'for') || ($modifier eq 'foreach')))) {
             return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => For->new(('cond' => (${$modifier_exp})->{'exp'}), ('body' => Lit::Block->new(('stmts' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');

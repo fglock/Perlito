@@ -574,7 +574,10 @@ package Perlito5::Expression;
             return $v;
         };
         my $prec = Perlito5::Precedence->new(get_token => $get_token, reduce => $reduce_to_ast,
-            end_token => [ 'and', 'or', ':', ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
+            end_token => [ 'and', 'or', ':', ']', ')', '}', ';', 
+                           'if', 'else', 'elsif', 'unless', 'when', 'foreach', 'for', 'while', 'loop' 
+                         ] 
+        );
         my $res = $prec->precedence_parse;
         # say "# list_lexer return: ", $res->perl;
         if (scalar(@$res) == 0) {
@@ -713,7 +716,10 @@ package Perlito5::Expression;
             return $v;
         };
         my $prec = Perlito5::Precedence->new(get_token => $get_token, reduce => $reduce_to_ast,
-            end_token => [ ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'for', 'while', 'loop' ] );
+            end_token => [ ']', ')', '}', ';', 
+                           'if', 'else', 'elsif', 'unless', 'when', 'foreach', 'for', 'while', 'loop' 
+                         ] 
+        );
         my $res = $prec->precedence_parse;
         # say "# exp terminated";
         if (scalar(@$res) == 0) {
@@ -754,7 +760,7 @@ package Perlito5::Expression;
     }
 
     token statement_modifier {
-        'if' | 'unless' | 'when' | 'for' | 'while' | 'loop'
+        'if' | 'unless' | 'when' | 'foreach' | 'for' | 'while' | 'loop'
     }
 
     token delimited_statement {
@@ -852,7 +858,10 @@ package Perlito5::Expression;
                     cond    => ($$modifier_exp){'exp'},
                     body    => Lit::Block->new(stmts => [ ($$res){'exp'} ] ) ) );
         }
-        if ($modifier eq 'for') {
+        if  (  $modifier eq 'for'
+            || $modifier eq 'foreach'
+            ) 
+        {
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
                 capture => For->new(
