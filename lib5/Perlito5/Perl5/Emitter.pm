@@ -496,6 +496,10 @@ package main;
             if ((($code eq 'unshift'))) {
                 return ((Perl5::tab($level) . 'unshift( ' . chr(64) . chr(123) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5() . chr(125) . ', ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_perl5() . ' )'))
             };
+            if ((($code eq 'join'))) {
+                ((my  $str) = shift( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ));
+                return ((Perl5::tab($level) . 'join(' . $str->emit_perl5() . ', ' . chr(64) . chr(123) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ',') . chr(125) . ')'))
+            };
             if ((($code eq 'prefix:<' . chr(92) . '>'))) {
                 return ((Perl5::tab($level) . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), ' ')))
             };

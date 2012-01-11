@@ -439,6 +439,11 @@ class Apply {
         }
         if ($code eq 'unshift')    { return Perl5::tab($level) . 'unshift( @{' . @.arguments[0]->emit_perl5()  . '}, ' . @.arguments[1]->emit_perl5() . ' )' }
 
+        if ($code eq 'join')       {    
+            my $str = shift @.arguments;
+            return Perl5::tab($level) . 'join(' . $str->emit_perl5 . ', @{' . (@.arguments.>>emit_perl5)->join(',') . '})'
+        }
+
         if ($code eq 'prefix:<\\>') { 
             # XXX currently a no-op
             return Perl5::tab($level) . (@.arguments.>>emit_perl5)->join(' ') 
