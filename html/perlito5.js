@@ -1082,7 +1082,7 @@ if (typeof Javascript !== 'object') {
                     if ( bool((v_tmp != '')) ) { (function () {
                         push(List_out, (string(String.fromCharCode(39)) + string(v_tmp) + string(String.fromCharCode(39))));;
                     })(); };
-                    throw(List_out.join(' + '));;
+                    throw(join(' + ', List_out));;
                 }
                 catch(err) {
                     if ( err instanceof Error ) {
@@ -1376,7 +1376,7 @@ if (typeof Perlito5$Javascript$LexicalBlock !== 'object') {
                             })(); };;
                         })(); };;
                     })(); };
-                    throw((string(List_str.join((string(String.fromCharCode(10))))) + string(String.fromCharCode(59))));;
+                    throw((string(join((string(String.fromCharCode(10))), List_str)) + string(String.fromCharCode(59))));;
                 }
                 catch(err) {
                     if ( err instanceof Error ) {
@@ -2340,20 +2340,20 @@ if (typeof Call !== 'object') {
                             else { (function () {
                                 die('Error in constructor, field: ', v_field);;
                             })(); };; })(a_[i_]) } })(v_self.v_arguments);
-                        throw((string('(function () ' + String.fromCharCode(123) + ' ') + string('if (') + string(Main.to_javascript_namespace(CallSub, v_invocant)) + string('.hasOwnProperty(' + String.fromCharCode(34) + 'new' + String.fromCharCode(34) + ') ) ' + String.fromCharCode(123) + ' ') + string('return ') + string(v_invocant) + string('.new(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + ' ') + string('var tmp ' + String.fromCharCode(61) + ' ' + String.fromCharCode(123)) + string(v_str.join(',')) + string(String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('tmp.__proto__ ' + String.fromCharCode(61) + ' ') + string(Main.to_javascript_namespace(CallSub, v_invocant)) + string(String.fromCharCode(59) + ' ') + string('return tmp' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + ')()')));;
+                        throw((string('(function () ' + String.fromCharCode(123) + ' ') + string('if (') + string(Main.to_javascript_namespace(CallSub, v_invocant)) + string('.hasOwnProperty(' + String.fromCharCode(34) + 'new' + String.fromCharCode(34) + ') ) ' + String.fromCharCode(123) + ' ') + string('return ') + string(v_invocant) + string('.new(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + ' ') + string('var tmp ' + String.fromCharCode(61) + ' ' + String.fromCharCode(123)) + string(v_str.join(',')) + string(String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('tmp.__proto__ ' + String.fromCharCode(61) + ' ') + string(Main.to_javascript_namespace(CallSub, v_invocant)) + string(String.fromCharCode(59) + ' ') + string('return tmp' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + ')()')));;
                     })(); };
                     if ( bool(((Hash_method_js).hasOwnProperty(v_self.v_method))) ) { (function () {
                         if ( bool((v_self.v_hyper)) ) { (function () {
                             throw((string('(function (a_) ' + String.fromCharCode(123) + ' ') + string('var out ' + String.fromCharCode(61) + ' []' + String.fromCharCode(59) + ' ') + string('if ( a_ ' + String.fromCharCode(61) + String.fromCharCode(61) + ' null ) ' + String.fromCharCode(123) + ' return out' + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('for(var i ' + String.fromCharCode(61) + ' 0' + String.fromCharCode(59) + ' i < a_.length' + String.fromCharCode(59) + ' i++) ' + String.fromCharCode(123) + ' ') + string('out.push( ') + string(Javascript.escape_function(CallSub, v_self.v_method)) + string('(a_[i]) ) ' + String.fromCharCode(125) + ' return out' + String.fromCharCode(59)) + string(' ' + String.fromCharCode(125) + ')(') + string(v_invocant) + string(')')));;
                         })(); };
-                        throw((string(Javascript.escape_function(CallSub, v_self.v_method)) + string('(') + string(v_invocant) + string((( bool(v_self.v_arguments) ? (string(', ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', '))) : ''))) + string(')')));;
+                        throw((string(Javascript.escape_function(CallSub, v_self.v_method)) + string('(') + string(v_invocant) + string((( bool(v_self.v_arguments) ? (string(', ') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)))) : ''))) + string(')')));;
                     })(); };
                     if ( bool(((Hash_method_native_js).hasOwnProperty(v_self.v_method))) ) { (function () {
-                        throw((string(v_invocant) + string('.') + string(v_self.v_method) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                        throw((string(v_invocant) + string('.') + string(v_self.v_method) + string('(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     (v_meth = v_self.v_method);
                     if ( bool((v_self.v_hyper)) ) { (function () {
-                        throw((string('(function (a_) ' + String.fromCharCode(123) + ' ') + string('var out ' + String.fromCharCode(61) + ' []' + String.fromCharCode(59) + ' ') + string('if ( a_ ' + String.fromCharCode(61) + String.fromCharCode(61) + ' null ) ' + String.fromCharCode(123) + ' return out' + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('for(var i ' + String.fromCharCode(61) + ' 0' + String.fromCharCode(59) + ' i < a_.length' + String.fromCharCode(59) + ' i++) ' + String.fromCharCode(123) + ' ') + string('out.push( a_[i].') + string(Javascript.escape_function(CallSub, v_meth)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(') ) ') + string(String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('return out' + String.fromCharCode(59)) + string(' ' + String.fromCharCode(125) + ')(') + string(v_invocant) + string(')')));;
+                        throw((string('(function (a_) ' + String.fromCharCode(123) + ' ') + string('var out ' + String.fromCharCode(61) + ' []' + String.fromCharCode(59) + ' ') + string('if ( a_ ' + String.fromCharCode(61) + String.fromCharCode(61) + ' null ) ' + String.fromCharCode(123) + ' return out' + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('for(var i ' + String.fromCharCode(61) + ' 0' + String.fromCharCode(59) + ' i < a_.length' + String.fromCharCode(59) + ' i++) ' + String.fromCharCode(123) + ' ') + string('out.push( a_[i].') + string(Javascript.escape_function(CallSub, v_meth)) + string('(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(') ) ') + string(String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('return out' + String.fromCharCode(59)) + string(' ' + String.fromCharCode(125) + ')(') + string(v_invocant) + string(')')));;
                     })(); };
                     if ( bool(((v_self.v_method == 'postcircumfix:<[ ]>'))) ) { (function () {
                         throw((string(Javascript.tab(CallSub, v_level)) + string(v_invocant) + string('[') + string((typeof(v_self.v_arguments.__proto__) != 'undefined' && v_self.v_arguments.__proto__.hasOwnProperty("emit_javascript") ? v_self.v_arguments.__proto__.emit_javascript.call(v_self.v_arguments) : v_self.v_arguments.emit_javascript())) + string(']')));;
@@ -2362,7 +2362,7 @@ if (typeof Call !== 'object') {
                         throw((string(Javascript.tab(CallSub, v_level)) + string(v_invocant) + string('[') + string((typeof(v_self.v_arguments.__proto__) != 'undefined' && v_self.v_arguments.__proto__.hasOwnProperty("emit_javascript") ? v_self.v_arguments.__proto__.emit_javascript.call(v_self.v_arguments) : v_self.v_arguments.emit_javascript())) + string(']')));;
                     })(); };
                     if ( bool(((v_meth == 'postcircumfix:<( )>'))) ) { (function () {
-                        throw((string('(') + string(v_invocant) + string(')(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                        throw((string('(') + string(v_invocant) + string(')(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     (List_args = (function () { 
     var List_a = [];
@@ -2373,7 +2373,7 @@ if (typeof Call !== 'object') {
     return(List_a);
 })());
                     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v__) {                         push(List_args, (typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit_javascript") ? v__.__proto__.emit_javascript.call(v__) : v__.emit_javascript()));; })(a_[i_]) } })(v_self.v_arguments);
-                    throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string('typeof(') + string(v_invocant) + string('.__proto__) ' + String.fromCharCode(33) + String.fromCharCode(61) + ' ' + String.fromCharCode(39) + 'undefined' + String.fromCharCode(39) + ' ') + string(String.fromCharCode(38) + String.fromCharCode(38) + ' ') + string(v_invocant) + string('.__proto__.hasOwnProperty(' + String.fromCharCode(34)) + string(Javascript.escape_function(CallSub, v_meth)) + string(String.fromCharCode(34) + ') ') + string(String.fromCharCode(63) + ' ') + string(v_invocant) + string('.__proto__.') + string(Javascript.escape_function(CallSub, v_meth)) + string('.call(') + string(List_args.join(', ')) + string(') ') + string(': ') + string(v_invocant) + string('.') + string(Javascript.escape_function(CallSub, v_meth)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')') + string(')')));;
+                    throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string('typeof(') + string(v_invocant) + string('.__proto__) ' + String.fromCharCode(33) + String.fromCharCode(61) + ' ' + String.fromCharCode(39) + 'undefined' + String.fromCharCode(39) + ' ') + string(String.fromCharCode(38) + String.fromCharCode(38) + ' ') + string(v_invocant) + string('.__proto__.hasOwnProperty(' + String.fromCharCode(34)) + string(Javascript.escape_function(CallSub, v_meth)) + string(String.fromCharCode(34) + ') ') + string(String.fromCharCode(63) + ' ') + string(v_invocant) + string('.__proto__.') + string(Javascript.escape_function(CallSub, v_meth)) + string('.call(') + string(List_args.join(', ')) + string(') ') + string(': ') + string(v_invocant) + string('.') + string(Javascript.escape_function(CallSub, v_meth)) + string('(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')') + string(')')));;
                 }
                 catch(err) {
                     if ( err instanceof Error ) {
@@ -2468,7 +2468,7 @@ if (typeof Apply !== 'object') {
                         throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string((typeof(v_self.v_code.__proto__) != 'undefined' && v_self.v_code.__proto__.hasOwnProperty("emit_javascript") ? v_self.v_code.__proto__.emit_javascript.call(v_self.v_code) : v_self.v_code.emit_javascript())) + string(')->(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'infix:<' + String.fromCharCode(61) + '>>'))) ) { (function () {
-                        throw((string(Javascript.tab(CallSub, v_level)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', '))));;
+                        throw((string(Javascript.tab(CallSub, v_level)) + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)))));;
                     })(); };
                     if ( bool(((Hash_op_infix_js).hasOwnProperty(v_code))) ) { (function () {
                         throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(Hash_op_infix_js[v_code])) + string(')')));;
@@ -2480,17 +2480,17 @@ if (typeof Apply !== 'object') {
                         throw((string(Javascript.tab(CallSub, v_level)) + string('null')));;
                     })(); };
                     if ( bool(((v_code == 'make'))) ) { (function () {
-                        throw((string(Javascript.tab(CallSub, v_level)) + string('(v_MATCH.v_capture ' + String.fromCharCode(61) + ' ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                        throw((string(Javascript.tab(CallSub, v_level)) + string('(v_MATCH.v_capture ' + String.fromCharCode(61) + ' ') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'defined'))) ) { (function () {
-                        throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(' ' + String.fromCharCode(33) + String.fromCharCode(61) + ' null)')));;
+                        throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(' ' + String.fromCharCode(33) + String.fromCharCode(61) + ' null)')));;
                     })(); };
                     if ( bool(((v_code == 'substr'))) ) { (function () {
                         throw((string('(') + string((typeof((v_self.v_arguments[0]).__proto__) != 'undefined' && (v_self.v_arguments[0]).__proto__.hasOwnProperty("emit_javascript") ? (v_self.v_arguments[0]).__proto__.emit_javascript.call((v_self.v_arguments[0])) : (v_self.v_arguments[0]).emit_javascript())) + string(' ' + String.fromCharCode(124) + String.fromCharCode(124) + ' ' + String.fromCharCode(34) + String.fromCharCode(34) + ').substr(') + string((typeof((v_self.v_arguments[1]).__proto__) != 'undefined' && (v_self.v_arguments[1]).__proto__.hasOwnProperty("emit_javascript") ? (v_self.v_arguments[1]).__proto__.emit_javascript.call((v_self.v_arguments[1])) : (v_self.v_arguments[1]).emit_javascript())) + string((( bool((v_self.v_arguments[2] != null)) ? (string(', ') + string((typeof((v_self.v_arguments[2]).__proto__) != 'undefined' && (v_self.v_arguments[2]).__proto__.hasOwnProperty("emit_javascript") ? (v_self.v_arguments[2]).__proto__.emit_javascript.call((v_self.v_arguments[2])) : (v_self.v_arguments[2]).emit_javascript()))) : ''))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'shift'))) ) { (function () {
                         if ( bool((v_self.v_arguments)) ) { (function () {
-                            throw((string('shift(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                            throw((string('shift(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                         })(); };
                         throw('shift(List__)');;
                     })(); };
@@ -2507,43 +2507,43 @@ if (typeof Apply !== 'object') {
                         throw((string('parseFloat(') + string((typeof((v_self.v_arguments[0]).__proto__) != 'undefined' && (v_self.v_arguments[0]).__proto__.hasOwnProperty("emit_javascript") ? (v_self.v_arguments[0]).__proto__.emit_javascript.call((v_self.v_arguments[0])) : (v_self.v_arguments[0]).emit_javascript())) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(33) + '>'))) ) { (function () {
-                        throw((string('( ') + string(Javascript.escape_function(CallSub, 'bool')) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(') ' + String.fromCharCode(63) + ' false : true)')));;
+                        throw((string('( ') + string(Javascript.escape_function(CallSub, 'bool')) + string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(') ' + String.fromCharCode(63) + ' false : true)')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(63) + '>'))) ) { (function () {
-                        throw((string('( ') + string(Javascript.escape_function(CallSub, 'bool')) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(') ' + String.fromCharCode(63) + ' true : false)')));;
+                        throw((string('( ') + string(Javascript.escape_function(CallSub, 'bool')) + string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(') ' + String.fromCharCode(63) + ' true : false)')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(36) + '>'))) ) { (function () {
-                        throw((string(Javascript.escape_function(CallSub, 'scalar')) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(')')));;
+                        throw((string(Javascript.escape_function(CallSub, 'scalar')) + string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(64) + '>'))) ) { (function () {
-                        throw((string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(')')));;
+                        throw((string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(37) + '>'))) ) { (function () {
-                        throw((string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(').') + string(Javascript.escape_function(CallSub, 'hash')) + string('()')));;
+                        throw((string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(').') + string(Javascript.escape_function(CallSub, 'hash')) + string('()')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(92) + '>'))) ) { (function () {
-                        throw(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' '));;
+                        throw(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)));;
                     })(); };
                     if ( bool(((v_code == 'postfix:<++>'))) ) { (function () {
-                        throw((string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(')++')));;
+                        throw((string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')++')));;
                     })(); };
                     if ( bool(((v_code == 'postfix:<-->'))) ) { (function () {
-                        throw((string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(')--')));;
+                        throw((string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')--')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<++>'))) ) { (function () {
-                        throw((string('++(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(')')));;
+                        throw((string('++(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<-->'))) ) { (function () {
-                        throw((string('--(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(')')));;
+                        throw((string('--(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'infix:<x>'))) ) { (function () {
-                        throw((string('str_replicate(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                        throw((string('str_replicate(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'list:<.>'))) ) { (function () {
                         throw((string('(') + string(Javascript.escape_function(CallSub, 'string')) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join((string(') + ') + string(Javascript.escape_function(CallSub, 'string')) + string('(')))) + string('))')));;
                     })(); };
                     if ( bool(((v_code == 'infix:<+>'))) ) { (function () {
-                        throw((string(Javascript.escape_function(CallSub, 'add')) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                        throw((string(Javascript.escape_function(CallSub, 'add')) + string('(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'infix:<..>'))) ) { (function () {
                         throw((string('(function (a) ' + String.fromCharCode(123) + ' ') + string('for (var i' + String.fromCharCode(61)) + string((typeof(v_self.v_arguments[0].__proto__) != 'undefined' && v_self.v_arguments[0].__proto__.hasOwnProperty("emit_javascript") ? v_self.v_arguments[0].__proto__.emit_javascript.call(v_self.v_arguments[0]) : v_self.v_arguments[0].emit_javascript())) + string(', l' + String.fromCharCode(61)) + string((typeof(v_self.v_arguments[1].__proto__) != 'undefined' && v_self.v_arguments[1].__proto__.hasOwnProperty("emit_javascript") ? v_self.v_arguments[1].__proto__.emit_javascript.call(v_self.v_arguments[1]) : v_self.v_arguments[1].emit_javascript())) + string(String.fromCharCode(59) + ' ') + string('i<' + String.fromCharCode(61) + 'l' + String.fromCharCode(59) + ' ++i)') + string(String.fromCharCode(123) + ' ') + string('a.push(i) ') + string(String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('return a ') + string(String.fromCharCode(125) + ')([])')));;
@@ -2578,7 +2578,7 @@ if (typeof Apply !== 'object') {
                         throw((string(Javascript.tab(CallSub, v_level)) + string('( ') + string(Javascript.escape_function(CallSub, 'bool')) + string('(') + string((typeof((v_self.v_arguments[0]).__proto__) != 'undefined' && (v_self.v_arguments[0]).__proto__.hasOwnProperty("emit_javascript") ? (v_self.v_arguments[0]).__proto__.emit_javascript.call((v_self.v_arguments[0])) : (v_self.v_arguments[0]).emit_javascript())) + string(')') + string(' ' + String.fromCharCode(63) + ' ') + string((typeof((v_self.v_arguments[1]).__proto__) != 'undefined' && (v_self.v_arguments[1]).__proto__.hasOwnProperty("emit_javascript") ? (v_self.v_arguments[1]).__proto__.emit_javascript.call((v_self.v_arguments[1])) : (v_self.v_arguments[1]).emit_javascript())) + string(' : ') + string((typeof((v_self.v_arguments[2]).__proto__) != 'undefined' && (v_self.v_arguments[2]).__proto__.hasOwnProperty("emit_javascript") ? (v_self.v_arguments[2]).__proto__.emit_javascript.call((v_self.v_arguments[2])) : (v_self.v_arguments[2]).emit_javascript())) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'circumfix:<( )>'))) ) { (function () {
-                        throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                        throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'infix:<' + String.fromCharCode(61) + '>'))) ) { (function () {
                         throw(v__NAMESPACE.emit_javascript_bind(CallSub, v_self.v_arguments[0], v_self.v_arguments[1], v_level));;
@@ -2595,7 +2595,7 @@ if (typeof Apply !== 'object') {
                         })(); }
                         else { (function () {
                             (v_code = Javascript.escape_function(CallSub, v_self.v_code));
-                            throw((string(Javascript.tab(CallSub, v_level)) + string(v_code) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                            throw((string(Javascript.tab(CallSub, v_level)) + string(v_code) + string('(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_javascript() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                         })(); };;
                     })(); };
                     (List_args = (function () { 
@@ -2607,7 +2607,7 @@ if (typeof Apply !== 'object') {
     return(List_a);
 })());
                     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v__) {                         push(List_args, (typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit_javascript") ? v__.__proto__.emit_javascript.call(v__) : v__.emit_javascript()));; })(a_[i_]) } })(v_self.v_arguments);
-                    return((string(Javascript.tab(CallSub, v_level)) + string(v_code) + string('(') + string(List_args.join(', ')) + string(')')));;
+                    return((string(Javascript.tab(CallSub, v_level)) + string(v_code) + string('(') + string(join(', ', List_args)) + string(')')));;
                 }
                 catch(err) {
                     if ( err instanceof Error ) {
@@ -4294,7 +4294,7 @@ if (typeof Perl5 !== 'object') {
                     if ( bool((v_tmp != '')) ) { (function () {
                         push(List_out, (string(String.fromCharCode(39)) + string(v_tmp) + string(String.fromCharCode(39))));;
                     })(); };
-                    throw(List_out.join(' . '));;
+                    throw(join(' . ', List_out));;
                 }
                 catch(err) {
                     if ( err instanceof Error ) {
@@ -5404,7 +5404,7 @@ if (typeof Apply !== 'object') {
                     })(); };
                     if ( bool(((v_code == 'shift'))) ) { (function () {
                         if ( bool((v_self.v_arguments)) ) { (function () {
-                            throw((string(Perl5.tab(CallSub, v_level)) + string('shift( ' + String.fromCharCode(64) + String.fromCharCode(123)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(String.fromCharCode(125) + ' )')));;
+                            throw((string(Perl5.tab(CallSub, v_level)) + string('shift( ' + String.fromCharCode(64) + String.fromCharCode(123)) + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(String.fromCharCode(125) + ' )')));;
                         })(); };
                         throw('shift()');;
                     })(); };
@@ -5415,28 +5415,28 @@ if (typeof Apply !== 'object') {
                         var v_str = null;
 
                         (v_str = shift(v_self.v_arguments));
-                        throw((string(Perl5.tab(CallSub, v_level)) + string('join(') + string((typeof(v_str.__proto__) != 'undefined' && v_str.__proto__.hasOwnProperty("emit_perl5") ? v_str.__proto__.emit_perl5.call(v_str) : v_str.emit_perl5())) + string(', ' + String.fromCharCode(64) + String.fromCharCode(123)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(',')) + string(String.fromCharCode(125) + ')')));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string('join(') + string((typeof(v_str.__proto__) != 'undefined' && v_str.__proto__.hasOwnProperty("emit_perl5") ? v_str.__proto__.emit_perl5.call(v_str) : v_str.emit_perl5())) + string(', ' + String.fromCharCode(64) + String.fromCharCode(123)) + string(join(',', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(String.fromCharCode(125) + ')')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(92) + '>'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' '))));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)))));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(36) + '>'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string(String.fromCharCode(36) + String.fromCharCode(123)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(String.fromCharCode(125))));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string(String.fromCharCode(36) + String.fromCharCode(123)) + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(String.fromCharCode(125))));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(64) + '>'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(')')));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(37) + '>'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string(String.fromCharCode(37) + String.fromCharCode(123)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(String.fromCharCode(125))));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string(String.fromCharCode(37) + String.fromCharCode(123)) + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(String.fromCharCode(125))));;
                     })(); };
                     if ( bool(((v_code == 'postfix:<++>'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(')++')));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')++')));;
                     })(); };
                     if ( bool(((v_code == 'postfix:<-->'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' ')) + string(')--')));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')--')));;
                     })(); };
                     if ( bool(((v_code == 'infix:<..>'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string('(bless [') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' .. ')) + string((string('], ' + String.fromCharCode(39) + 'ARRAY' + String.fromCharCode(39) + ')')))));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string('(bless [') + string(join(' .. ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string((string('], ' + String.fromCharCode(39) + 'ARRAY' + String.fromCharCode(39) + ')')))));;
                     })(); };
                     if ( bool(((v_code == 'ternary:<' + String.fromCharCode(63) + String.fromCharCode(63) + ' ' + String.fromCharCode(33) + String.fromCharCode(33) + '>'))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string((typeof(v_self.v_arguments[0].__proto__) != 'undefined' && v_self.v_arguments[0].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[0].__proto__.emit_perl5.call(v_self.v_arguments[0]) : v_self.v_arguments[0].emit_perl5())) + string(' ' + String.fromCharCode(63) + ' ') + string((typeof(v_self.v_arguments[1].__proto__) != 'undefined' && v_self.v_arguments[1].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[1].__proto__.emit_perl5.call(v_self.v_arguments[1]) : v_self.v_arguments[1].emit_perl5())) + string(' : ') + string((typeof(v_self.v_arguments[2].__proto__) != 'undefined' && v_self.v_arguments[2].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[2].__proto__.emit_perl5.call(v_self.v_arguments[2]) : v_self.v_arguments[2].emit_perl5())) + string(')')));;

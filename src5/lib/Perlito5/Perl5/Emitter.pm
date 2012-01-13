@@ -47,7 +47,7 @@ class Perl5 {
             }
         }
         push @out, "'$tmp'" if $tmp ne '';
-        return @out->join(' . ');
+        return join(' . ', @out);
     }
 
 }
@@ -434,7 +434,7 @@ class Apply {
         if ($code eq 'push')       { return Perl5::tab($level) . 'push( @{' . (@.arguments[0])->emit_perl5() . '}, ' . (@.arguments[1])->emit_perl5() . ' )' }
         if ($code eq 'shift')      { 
             if ( @.arguments ) {
-                return Perl5::tab($level) . 'shift( @{' . (@.arguments.>>emit_perl5)->join(' ')    . '} )' 
+                return Perl5::tab($level) . 'shift( @{' . join(' ', @.arguments.>>emit_perl5)    . '} )' 
             }
             return 'shift()'
         }
@@ -442,21 +442,21 @@ class Apply {
 
         if ($code eq 'join')       {    
             my $str = shift @.arguments;
-            return Perl5::tab($level) . 'join(' . $str->emit_perl5 . ', @{' . (@.arguments.>>emit_perl5)->join(',') . '})'
+            return Perl5::tab($level) . 'join(' . $str->emit_perl5 . ', @{' . join(',', @.arguments.>>emit_perl5) . '})'
         }
 
         if ($code eq 'prefix:<\\>') { 
             # XXX currently a no-op
-            return Perl5::tab($level) . (@.arguments.>>emit_perl5)->join(' ') 
+            return Perl5::tab($level) . join(' ', @.arguments.>>emit_perl5) 
         }
-        if ($code eq 'prefix:<$>') { return Perl5::tab($level) . '${' . (@.arguments.>>emit_perl5)->join(' ')     . '}' }
-        if ($code eq 'prefix:<@>') { return Perl5::tab($level) . '(' . (@.arguments.>>emit_perl5)->join(' ')     . ')' }
-        if ($code eq 'prefix:<%>') { return Perl5::tab($level) . '%{' . (@.arguments.>>emit_perl5)->join(' ')     . '}' }
+        if ($code eq 'prefix:<$>') { return Perl5::tab($level) . '${' . join(' ', @.arguments.>>emit_perl5)     . '}' }
+        if ($code eq 'prefix:<@>') { return Perl5::tab($level) . '(' . join(' ', @.arguments.>>emit_perl5)     . ')' }
+        if ($code eq 'prefix:<%>') { return Perl5::tab($level) . '%{' . join(' ', @.arguments.>>emit_perl5)     . '}' }
 
-        if ($code eq 'postfix:<++>') { return Perl5::tab($level) . '('   . (@.arguments.>>emit_perl5)->join(' ')  . ')++' }
-        if ($code eq 'postfix:<-->') { return Perl5::tab($level) . '('   . (@.arguments.>>emit_perl5)->join(' ')  . ')--' }
+        if ($code eq 'postfix:<++>') { return Perl5::tab($level) . '('   . join(' ', @.arguments.>>emit_perl5)  . ')++' }
+        if ($code eq 'postfix:<-->') { return Perl5::tab($level) . '('   . join(' ', @.arguments.>>emit_perl5)  . ')--' }
 
-        if ($code eq 'infix:<..>') { return Perl5::tab($level) . '(bless ['  . (@.arguments.>>emit_perl5)->join(' .. ')  . "], 'ARRAY')" }
+        if ($code eq 'infix:<..>') { return Perl5::tab($level) . '(bless ['  . join(' .. ', @.arguments.>>emit_perl5)  . "], 'ARRAY')" }
 
         if ($code eq 'ternary:<?? !!>') {
             return Perl5::tab($level)
