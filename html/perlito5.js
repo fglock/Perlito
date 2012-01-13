@@ -399,6 +399,10 @@ unshift = function(o, v) {
     return o.unshift(v);
 };
 
+join = function(s, o) {
+    return o.join(s);
+};
+
 index = function(o, s) {
     try {
         return o.indexOf(s);
@@ -2779,6 +2783,7 @@ if (typeof Apply !== 'object') {
     (function () { if (Hash_a['unshift'] == null) { Hash_a['unshift'] = {} }; return (Hash_a['unshift']  = 1); })();
     (function () { if (Hash_a['push'] == null) { Hash_a['push'] = {} }; return (Hash_a['push']  = 1); })();
     (function () { if (Hash_a['pop'] == null) { Hash_a['pop'] = {} }; return (Hash_a['pop']  = 1); })();
+    (function () { if (Hash_a['join'] == null) { Hash_a['join'] = {} }; return (Hash_a['join']  = 1); })();
     (function () { if (Hash_a['chr'] == null) { Hash_a['chr'] = {} }; return (Hash_a['chr']  = 1); })();
     (function () { if (Hash_a['say'] == null) { Hash_a['say'] = {} }; return (Hash_a['say']  = 1); })();
     (function () { if (Hash_a['bless'] == null) { Hash_a['bless'] = {} }; return (Hash_a['bless']  = 1); })();
@@ -2786,6 +2791,7 @@ if (typeof Apply !== 'object') {
     (function () { if (Hash_a['warn'] == null) { Hash_a['warn'] = {} }; return (Hash_a['warn']  = 1); })();
     (function () { if (Hash_a['scalar'] == null) { Hash_a['scalar'] = {} }; return (Hash_a['scalar']  = 1); })();
     (function () { if (Hash_a['keys'] == null) { Hash_a['keys'] = {} }; return (Hash_a['keys']  = 1); })();
+    (function () { if (Hash_a['values'] == null) { Hash_a['values'] = {} }; return (Hash_a['values']  = 1); })();
     (function () { if (Hash_a['length'] == null) { Hash_a['length'] = {} }; return (Hash_a['length']  = 1); })();
     return(Hash_a);
 })());
@@ -5252,10 +5258,10 @@ if (typeof Call !== 'object') {
                     (v_invocant = (typeof(v_self.v_invocant.__proto__) != 'undefined' && v_self.v_invocant.__proto__.hasOwnProperty("emit_perl5") ? v_self.v_invocant.__proto__.emit_perl5.call(v_self.v_invocant) : v_self.v_invocant.emit_perl5()));
                     if ( bool(((Hash_method_perl5).hasOwnProperty(v_self.v_method))) ) { (function () {
                         if ( bool((v_self.v_hyper)) ) { (function () {
-                            throw((string(Perl5.tab(CallSub, v_level)) + string('bless [ map ' + String.fromCharCode(123) + ' ') + string(Hash_method_perl5[v_self.v_method]) + string('( ' + String.fromCharCode(36) + '_, ') + string(', ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')') + string(' ' + String.fromCharCode(125) + ' ' + String.fromCharCode(64) + String.fromCharCode(123) + '( ') + string(v_invocant) + string(' )') + string(String.fromCharCode(125) + ' ], ' + String.fromCharCode(34) + 'ARRAY' + String.fromCharCode(34))));;
+                            throw((string(Perl5.tab(CallSub, v_level)) + string('bless [ map ' + String.fromCharCode(123) + ' ') + string(Hash_method_perl5[v_self.v_method]) + string('( ' + String.fromCharCode(36) + '_, ') + string(', ') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')') + string(' ' + String.fromCharCode(125) + ' ' + String.fromCharCode(64) + String.fromCharCode(123) + '( ') + string(v_invocant) + string(' )') + string(String.fromCharCode(125) + ' ], ' + String.fromCharCode(34) + 'ARRAY' + String.fromCharCode(34))));;
                         })(); }
                         else { (function () {
-                            throw((string(Perl5.tab(CallSub, v_level)) + string(Hash_method_perl5[v_self.v_method]) + string('(') + string(v_invocant) + string(', ') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                            throw((string(Perl5.tab(CallSub, v_level)) + string(Hash_method_perl5[v_self.v_method]) + string('(') + string(v_invocant) + string(', ') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                         })(); };;
                     })(); };
                     if ( bool(((v_self.v_method == 'postcircumfix:<[ ]>'))) ) { (function () {
@@ -5268,7 +5274,7 @@ if (typeof Call !== 'object') {
                     if ( bool(((v_meth == 'postcircumfix:<( )>'))) ) { (function () {
                         (v_meth = '');;
                     })(); };
-                    (v_call = (string('->') + string(v_meth) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));
+                    (v_call = (string('->') + string(v_meth) + string('(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')')));
                     if ( bool((v_self.v_hyper)) ) { return (function () {
                         if ( bool((( bool((and(isa(v_self.v_invocant, 'Apply'), function () { return ((typeof(v_self.v_invocant.__proto__) != 'undefined' && v_self.v_invocant.__proto__.hasOwnProperty("code") ? v_self.v_invocant.__proto__.code.call(v_self.v_invocant) : v_self.v_invocant.code()) == 'prefix:<' + String.fromCharCode(64) + '>'); }))) ? false : true))) ) { (function () {
                             (v_invocant = (string(String.fromCharCode(64) + String.fromCharCode(123) + '( ') + string(v_invocant) + string(' )' + String.fromCharCode(125))));;
@@ -5370,13 +5376,13 @@ if (typeof Apply !== 'object') {
                         null;
                     })(); }
                     else { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string((typeof(v_self.v_code.__proto__) != 'undefined' && v_self.v_code.__proto__.hasOwnProperty("emit_perl5") ? v_self.v_code.__proto__.emit_perl5.call(v_self.v_code) : v_self.v_code.emit_perl5())) + string(')->(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string((typeof(v_self.v_code.__proto__) != 'undefined' && v_self.v_code.__proto__.hasOwnProperty("emit_perl5") ? v_self.v_code.__proto__.emit_perl5.call(v_self.v_code) : v_self.v_code.emit_perl5())) + string(')->(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((Hash_op_infix_perl5).hasOwnProperty(v_code))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(Hash_op_infix_perl5[v_code])) + string(')')));;
                     })(); };
                     if ( bool(((Hash_op_prefix_perl5).hasOwnProperty(v_code))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string(Hash_op_prefix_perl5[v_code]) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string(Hash_op_prefix_perl5[v_code]) + string('(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_self.v_code == 'package'))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('package ') + string(v_self.v_namespace)));;
@@ -5385,7 +5391,7 @@ if (typeof Apply !== 'object') {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('undef()')));;
                     })(); };
                     if ( bool(((v_code == 'make'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string('(' + String.fromCharCode(36) + 'MATCH->' + String.fromCharCode(123) + 'capture' + String.fromCharCode(125) + ' ' + String.fromCharCode(61) + ' (') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string('))')));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string('(' + String.fromCharCode(36) + 'MATCH->' + String.fromCharCode(123) + 'capture' + String.fromCharCode(125) + ' ' + String.fromCharCode(61) + ' (') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string('))')));;
                     })(); };
                     if ( bool(((v_code == 'scalar'))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('scalar( ' + String.fromCharCode(64) + String.fromCharCode(123)) + string(((typeof(v_self.v_arguments[0].__proto__) != 'undefined' && v_self.v_arguments[0].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[0].__proto__.emit_perl5.call(v_self.v_arguments[0]) : v_self.v_arguments[0].emit_perl5()))) + string(String.fromCharCode(125) + ' )')));;
@@ -5404,6 +5410,12 @@ if (typeof Apply !== 'object') {
                     })(); };
                     if ( bool(((v_code == 'unshift'))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('unshift( ' + String.fromCharCode(64) + String.fromCharCode(123)) + string((typeof(v_self.v_arguments[0].__proto__) != 'undefined' && v_self.v_arguments[0].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[0].__proto__.emit_perl5.call(v_self.v_arguments[0]) : v_self.v_arguments[0].emit_perl5())) + string(String.fromCharCode(125) + ', ') + string((typeof(v_self.v_arguments[1].__proto__) != 'undefined' && v_self.v_arguments[1].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[1].__proto__.emit_perl5.call(v_self.v_arguments[1]) : v_self.v_arguments[1].emit_perl5())) + string(' )')));;
+                    })(); };
+                    if ( bool(((v_code == 'join'))) ) { (function () {
+                        var v_str = null;
+
+                        (v_str = shift(v_self.v_arguments));
+                        throw((string(Perl5.tab(CallSub, v_level)) + string('join(') + string((typeof(v_str.__proto__) != 'undefined' && v_str.__proto__.hasOwnProperty("emit_perl5") ? v_str.__proto__.emit_perl5.call(v_str) : v_str.emit_perl5())) + string(', ' + String.fromCharCode(64) + String.fromCharCode(123)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(',')) + string(String.fromCharCode(125) + ')')));;
                     })(); };
                     if ( bool(((v_code == 'prefix:<' + String.fromCharCode(92) + '>'))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(' '))));;
@@ -5430,15 +5442,15 @@ if (typeof Apply !== 'object') {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string((typeof(v_self.v_arguments[0].__proto__) != 'undefined' && v_self.v_arguments[0].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[0].__proto__.emit_perl5.call(v_self.v_arguments[0]) : v_self.v_arguments[0].emit_perl5())) + string(' ' + String.fromCharCode(63) + ' ') + string((typeof(v_self.v_arguments[1].__proto__) != 'undefined' && v_self.v_arguments[1].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[1].__proto__.emit_perl5.call(v_self.v_arguments[1]) : v_self.v_arguments[1].emit_perl5())) + string(' : ') + string((typeof(v_self.v_arguments[2].__proto__) != 'undefined' && v_self.v_arguments[2].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[2].__proto__.emit_perl5.call(v_self.v_arguments[2]) : v_self.v_arguments[2].emit_perl5())) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'circumfix:<( )>'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'infix:<' + String.fromCharCode(61) + '>'))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string(v__NAMESPACE.emit_perl5_bind(CallSub, v_self.v_arguments[0], v_self.v_arguments[1]))));;
                     })(); };
                     if ( bool(((v_code == 'return'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string('return (') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                        throw((string(Perl5.tab(CallSub, v_level)) + string('return (') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
-                    return((string(Perl5.tab(CallSub, v_level)) + string(v_code) + string('(') + string(((function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments)).join(', ')) + string(')')));;
+                    return((string(Perl5.tab(CallSub, v_level)) + string(v_code) + string('(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit_perl5() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                 }
                 catch(err) {
                     if ( err instanceof Error ) {
@@ -5532,6 +5544,7 @@ if (typeof Apply !== 'object') {
     (function () { if (Hash_a['grep'] == null) { Hash_a['grep'] = {} }; return (Hash_a['grep']  = 'Main::grep'); })();
     (function () { if (Hash_a['sort'] == null) { Hash_a['sort'] = {} }; return (Hash_a['sort']  = 'Main::sort'); })();
     (function () { if (Hash_a['keys'] == null) { Hash_a['keys'] = {} }; return (Hash_a['keys']  = 'Main::keys'); })();
+    (function () { if (Hash_a['values'] == null) { Hash_a['values'] = {} }; return (Hash_a['values']  = 'Main::values'); })();
     (function () { if (Hash_a['warn'] == null) { Hash_a['warn'] = {} }; return (Hash_a['warn']  = 'warn'); })();
     (function () { if (Hash_a['Int'] == null) { Hash_a['Int'] = {} }; return (Hash_a['Int']  = '0+'); })();
     (function () { if (Hash_a['Num'] == null) { Hash_a['Num'] = {} }; return (Hash_a['Num']  = '0+'); })();
