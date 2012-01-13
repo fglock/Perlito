@@ -221,17 +221,6 @@ package Main;
             . ")";
     }
 
-    sub join {
-        return '' unless defined $_[0];
-        my $can = UNIVERSAL::can($_[0] => 'join');
-        if ($can) {
-            $can->(@_);
-        }
-        else {
-            join($_[1], @{$_[0]} );
-        }
-    }
-
     sub split {
         return '' unless defined $_[0];
         my $can = UNIVERSAL::can($_[0] => 'split');

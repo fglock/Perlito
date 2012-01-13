@@ -475,12 +475,6 @@ class Call {
 
     my %method_js = (
         'isa'    => 'isa',
-        'scalar' => 'scalar',
-        'say'    => 'say',
-    );
-    my %method_native_js = (
-        'join'    => 'join',
-        'split'   => 'split',
     );
 
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
@@ -513,23 +507,10 @@ class Call {
         }
 
         if (exists( %method_js{ $.method } )) {
-            if ($.hyper) {
-                return
-                    '(function (a_) { '
-                        . 'var out = []; '
-                        . 'if ( a_ == null ) { return out; }; '
-                        . 'for(var i = 0; i < a_.length; i++) { '
-                            . 'out.push( ' . Javascript::escape_function( $.method ) . '(a_[i]) ) } return out;'
-                    . ' })(' . $invocant . ')'
-            }
             return Javascript::escape_function( $.method ) . '('
                     . $invocant
                     . ( @.arguments ? ', ' . join(', ', @.arguments.>>emit_javascript) : '' )
                 . ')';
-        }
-
-        if (exists( %method_native_js{ $.method } )) {
-            return $invocant . '.' . $.method . '(' . join(', ', @.arguments.>>emit_javascript) . ')';
         }
 
         my $meth = $.method;

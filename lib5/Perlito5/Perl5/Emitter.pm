@@ -344,9 +344,6 @@ package main;
         sub new { shift; bless { @_ }, "Call" }
         ((my  $Hash_method_perl5 = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'say'} = 'Main::say');
-    ($Hash_a->{'join'} = 'Main::join');
-    ($Hash_a->{'split'} = 'Main::split');
     ($Hash_a->{'isa'} = 'Main::isa');
     $Hash_a
 })->());
@@ -361,12 +358,7 @@ package main;
             ((my  $level) = $List__->[1]);
             ((my  $invocant) = $self->{invocant}->emit_perl5());
             if ((exists($Hash_method_perl5->{$self->{method}}))) {
-                if (($self->{hyper})) {
-                    return ((Perl5::tab($level) . 'bless [ map ' . chr(123) . ' ' . $Hash_method_perl5->{$self->{method}} . '( ' . chr(36) . '_, ' . ', ' . join(', ', @{[ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]}) . ')' . ' ' . chr(125) . ' ' . chr(64) . chr(123) . '( ' . $invocant . ' )' . chr(125) . ' ], ' . chr(34) . 'ARRAY' . chr(34)))
-                }
-                else {
-                    return ((Perl5::tab($level) . $Hash_method_perl5->{$self->{method}} . '(' . $invocant . ', ' . join(', ', @{[ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]}) . ')'))
-                }
+                return ((Perl5::tab($level) . $Hash_method_perl5->{$self->{method}} . '(' . $invocant . ', ' . join(', ', @{[ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]}) . ')'))
             };
             if ((($self->{method} eq 'postcircumfix:<[ ]>'))) {
                 return ((Perl5::tab($level) . $invocant . '->[' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->emit_perl5() . ']'))

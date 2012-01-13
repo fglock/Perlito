@@ -511,14 +511,6 @@ package main;
         ((my  $Hash_method_js = bless {}, 'HASH') = (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'isa'} = 'isa');
-    ($Hash_a->{'scalar'} = 'scalar');
-    ($Hash_a->{'say'} = 'say');
-    $Hash_a
-})->());
-        ((my  $Hash_method_native_js = bless {}, 'HASH') = (sub {
-    (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'join'} = 'join');
-    ($Hash_a->{'split'} = 'split');
     $Hash_a
 })->());
         sub emit_javascript {
@@ -547,13 +539,7 @@ package main;
                 return (('(function () ' . chr(123) . ' ' . 'if (' . Main::to_javascript_namespace($invocant) . '.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ) ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . join(', ', @{[ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]}) . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . join(',', @{($str)}) . chr(125) . chr(59) . ' ' . 'tmp.__proto__ ' . chr(61) . ' ' . Main::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
             };
             if ((exists($Hash_method_js->{$self->{method}}))) {
-                if (($self->{hyper})) {
-                    return (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( ' . Javascript::escape_function($self->{method}) . '(a_[i]) ) ' . chr(125) . ' return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
-                };
                 return ((Javascript::escape_function($self->{method}) . '(' . $invocant . (((defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) ? (', ' . join(', ', @{[ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]})) : '')) . ')'))
-            };
-            if ((exists($Hash_method_native_js->{$self->{method}}))) {
-                return (($invocant . '.' . $self->{method} . '(' . join(', ', @{[ map { $_->emit_javascript() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]}) . ')'))
             };
             ((my  $meth) = $self->{method});
             if (($self->{hyper})) {

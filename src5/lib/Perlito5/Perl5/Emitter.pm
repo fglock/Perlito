@@ -289,9 +289,6 @@ class Proto {
 class Call {
 
     my %method_perl5 = (
-        'say'    => 'Main::say',
-        'join'   => 'Main::join',
-        'split'  => 'Main::split',
         'isa'    => 'Main::isa',
     );
 
@@ -305,16 +302,8 @@ class Call {
         my $invocant = $.invocant->emit_perl5;
 
         if (exists( $method_perl5{ $.method } )) {
-            if ($.hyper) {
-                return Perl5::tab($level)
-                    . 'bless [ map { '
-                        . $method_perl5{ $.method } . '( $_, ' . ', ' . join(', ', @.arguments.>>emit_perl5) . ')' . ' } @{( ' . $invocant . ' )'
-                    . '} ], "ARRAY"';
-            }
-            else {
-                return Perl5::tab($level)
-                    . $method_perl5{ $.method } . '(' . $invocant . ', ' . join(', ', @.arguments.>>emit_perl5) . ')';
-            }
+            return Perl5::tab($level)
+                . $method_perl5{ $.method } . '(' . $invocant . ', ' . join(', ', @.arguments.>>emit_perl5) . ')';
         }
         
         if ( $.method eq 'postcircumfix:<[ ]>' ) {
