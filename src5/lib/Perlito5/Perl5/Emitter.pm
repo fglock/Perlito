@@ -355,6 +355,7 @@ class Apply {
         grep    => 'Main::grep',
         sort    => 'Main::sort',
         keys    => 'Main::keys',
+        values  => 'Main::values',
         warn    => 'warn',
         Int     => '0+',
         Num     => '0+',

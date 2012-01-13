@@ -604,6 +604,7 @@ class Apply {
         'warn'    => 1,
         'scalar'  => 1,
         'keys'    => 1,
+        'values'  => 1,
         'length'  => 1,
     );
 

@@ -403,6 +403,7 @@ package main;
     ($Hash_a->{'grep'} = 'Main::grep');
     ($Hash_a->{'sort'} = 'Main::sort');
     ($Hash_a->{'keys'} = 'Main::keys');
+    ($Hash_a->{'values'} = 'Main::values');
     ($Hash_a->{'warn'} = 'warn');
     ($Hash_a->{'Int'} = '0+');
     ($Hash_a->{'Num'} = '0+');
