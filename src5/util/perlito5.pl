@@ -40,7 +40,7 @@ token module_name {
 sub modulename_to_filename {
     my $s = shift;
     my $ident = Main->module_name( $s, 0 );
-    return ($$ident)->join("/");
+    return join("/", $$ident);
 }
 
 sub expand_use {

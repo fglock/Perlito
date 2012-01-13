@@ -104,7 +104,7 @@ package main;
         my $List__ = bless \@_, "ARRAY";
         ((my  $s) = shift());
         ((my  $ident) = Main->module_name($s, 0));
-        return (Main::join((${$ident}), (chr(47))))
+        return (join((chr(47)), @{${$ident}}))
     };
     sub expand_use {
         my $List__ = bless \@_, "ARRAY";

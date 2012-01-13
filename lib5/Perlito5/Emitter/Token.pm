@@ -79,7 +79,7 @@ package main;
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'pos1 ' . chr(61) . ' ' . chr(36) . 'MATCH->to' . chr(59) . ' (do ' . chr(123) . ' ' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{or_list} ? $self->{or_list} : ($self->{or_list} ||= bless([], 'ARRAY'))) )} ]), chr(125) . ') ' . chr(124) . chr(124) . ' (do ' . chr(123) . ' ' . chr(36) . 'MATCH->to ' . chr(61) . ' ' . chr(36) . 'pos1' . chr(59) . ' ') . chr(125) . ') ' . chr(125) . ')')
+            ('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'pos1 ' . chr(61) . ' ' . chr(36) . 'MATCH->to' . chr(59) . ' (do ' . chr(123) . ' ' . join(chr(125) . ') ' . chr(124) . chr(124) . ' (do ' . chr(123) . ' ' . chr(36) . 'MATCH->to ' . chr(61) . ' ' . chr(36) . 'pos1' . chr(59) . ' ', @{[ map { $_->emit_perl5() } @{( (defined $self->{or_list} ? $self->{or_list} : ($self->{or_list} ||= bless([], 'ARRAY'))) )} ]}) . chr(125) . ') ' . chr(125) . ')')
         };
         sub set_captures_to_array {
             my $List__ = bless \@_, "ARRAY";
@@ -96,7 +96,7 @@ package main;
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            ('(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{concat} ? $self->{concat} : ($self->{concat} ||= bless([], 'ARRAY'))) )} ]), ' ' . chr(38) . chr(38) . ' ') . ')')
+            ('(' . join(' ' . chr(38) . chr(38) . ' ', @{[ map { $_->emit_perl5() } @{( (defined $self->{concat} ? $self->{concat} : ($self->{concat} ||= bless([], 'ARRAY'))) )} ]}) . ')')
         };
         sub set_captures_to_array {
             my $List__ = bless \@_, "ARRAY";

@@ -69,7 +69,7 @@ class CompUnit {
           Perl5::tab($level)    . "\{\n"
         . Perl5::tab($level)    . 'package ' . $.name . ";" . "\n"
         . Perl5::tab($level + 1)    . 'sub new { shift; bless { @_ }, "' . $.name . '" }'  . "\n"
-        .                             (@body.>>emit_perl5_indented( $level + 1 ))->join( ";\n" ) . "\n"
+        .                             join(";\n", @body.>>emit_perl5_indented( $level + 1 )) . "\n"
         . Perl5::tab($level)    . "}\n"
         . "\n"
     }
@@ -144,7 +144,7 @@ class Lit::Block {
         my $level = $_[1];
         
           Perl5::tab($level) . "sub \{\n"
-        .   @.stmts.>>emit_perl5_indented( $level + 1 )->join(";\n") . "\n"
+        .   join(";\n", @.stmts.>>emit_perl5_indented( $level + 1 )) . "\n"
         . Perl5::tab($level) . "}"
     }
 }
@@ -418,7 +418,11 @@ class Apply {
         }
 
         if (exists $op_infix_perl5{$code}) {
-            return Perl5::tab($level) . '(' . (@.arguments.>>emit_perl5)->join( $op_infix_perl5{$code} ) . ')'
+            return Perl5::tab($level) . '(' 
+                . join( $op_infix_perl5{$code},
+                        (@.arguments.>>emit_perl5)
+                      )
+                . ')'
         }
         if (exists $op_prefix_perl5{$code}) {
             return Perl5::tab($level) . $op_prefix_perl5{$code} . '('   . join(', ', @.arguments.>>emit_perl5) . ')'
@@ -521,14 +525,14 @@ class If {
         
         return Perl5::tab($level) . 'if (' . $.cond->emit_perl5() . ") \{\n"
              .  ($.body
-                ? $.body->stmts.>>emit_perl5_indented( $level + 1 )->join(";\n") . "\n"
+                ? join(";\n", $.body->stmts.>>emit_perl5_indented( $level + 1 )) . "\n"
                 : ''
                 )
              . Perl5::tab($level) . "}"
              .  ($.otherwise && scalar(@{ $.otherwise->stmts })
                 ?  ( "\n"
                     . Perl5::tab($level) . "else \{\n"
-                    .   $.otherwise->stmts.>>emit_perl5_indented( $level + 1 )->join(";\n") . "\n"
+                    .   join( ";\n", $.otherwise->stmts.>>emit_perl5_indented( $level + 1 )) . "\n"
                     . Perl5::tab($level) . "}"
                     )
                 : ''
@@ -555,7 +559,7 @@ class While {
         .  ( $cond      ? $cond->emit_perl5()            . '; ' : '; ' )
         .  ( $.continue ? $.continue->emit_perl5()       . ' '  : ' '  )
         .  ') {' . "\n"
-        .       $.body->stmts.>>emit_perl5_indented( $level + 1 )->join(";\n") . "\n"
+        .       join(";\n", $.body->stmts.>>emit_perl5_indented( $level + 1 )) . "\n"
         . Perl5::tab($level) . "}"
     }
 }
@@ -577,7 +581,7 @@ class For {
             $sig = 'my ' . $.body->sig->emit_perl5() . ' ';
         }
         return  Perl5::tab($level) . 'for ' . $sig . '( @{' . $cond->emit_perl5() . '} ) {' . "\n"
-             .   $.body->stmts.>>emit_perl5_indented( $level + 1 )->join(";\n") . "\n"
+             .   join(";\n", $.body->stmts.>>emit_perl5_indented( $level + 1 )) . "\n"
              . Perl5::tab($level) . "}"
     }
 }
@@ -631,7 +635,7 @@ class Sub {
           Perl5::tab($level) . 'sub ' . $.name . " \{\n"
         . Perl5::tab( $level + 1 ) . 'my $List__ = bless \\@_, "ARRAY";' . "\n"
         .   $str
-        .   (@.block.>>emit_perl5_indented( $level + 1 ))->join(";\n") . "\n"
+        .   join(";\n", @.block.>>emit_perl5_indented( $level + 1 )) . "\n"
         . Perl5::tab($level) . "}"
     }
 }
@@ -647,7 +651,7 @@ class Do {
         
         my $block = $self->simplify->block;
           Perl5::tab($level) . "(sub \{\n"
-        .   ($block.>>emit_perl5_indented( $level + 1 ))->join(";\n") . "\n"
+        .   join(";\n", $block.>>emit_perl5_indented( $level + 1 )) . "\n"
         . Perl5::tab($level) . "})->()"
     }
 }

@@ -86,7 +86,7 @@ package main;
                     push( @{$List_body}, $_ )
                 }
             };
-            (Perl5::tab($level) . (chr(123) . chr(10)) . Perl5::tab($level) . 'package ' . $self->{name} . (chr(59)) . (chr(10)) . Perl5::tab(($level + 1)) . 'sub new ' . chr(123) . ' shift' . chr(59) . ' bless ' . chr(123) . ' ' . chr(64) . '_ ' . chr(125) . ', ' . chr(34) . $self->{name} . chr(34) . ' ' . chr(125) . (chr(10)) . Main::join(([ map { $_->emit_perl5_indented(($level + 1)) } @{( $List_body )} ]), (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125) . chr(10)) . (chr(10)))
+            (Perl5::tab($level) . (chr(123) . chr(10)) . Perl5::tab($level) . 'package ' . $self->{name} . (chr(59)) . (chr(10)) . Perl5::tab(($level + 1)) . 'sub new ' . chr(123) . ' shift' . chr(59) . ' bless ' . chr(123) . ' ' . chr(64) . '_ ' . chr(125) . ', ' . chr(34) . $self->{name} . chr(34) . ' ' . chr(125) . (chr(10)) . join((chr(59) . chr(10)), @{[ map { $_->emit_perl5_indented(($level + 1)) } @{( $List_body )} ]}) . (chr(10)) . Perl5::tab($level) . (chr(125) . chr(10)) . (chr(10)))
         };
         sub emit_perl5_program {
             my $List__ = bless \@_, "ARRAY";
@@ -181,7 +181,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
-            (Perl5::tab($level) . ('sub ' . chr(123) . chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( (defined $self->{stmts} ? $self->{stmts} : ($self->{stmts} ||= bless([], 'ARRAY'))) )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
+            (Perl5::tab($level) . ('sub ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), @{[ map { $_->emit_perl5_indented(($level + 1)) } @{( (defined $self->{stmts} ? $self->{stmts} : ($self->{stmts} ||= bless([], 'ARRAY'))) )} ]}) . (chr(10)) . Perl5::tab($level) . (chr(125)))
         }
     }
 
@@ -465,7 +465,7 @@ package main;
                 return ((Perl5::tab($level) . '(' . $self->{code}->emit_perl5() . ')->(' . join(', ', @{[ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]}) . ')'))
             };
             if ((exists($Hash_op_infix_perl5->{$code}))) {
-                return ((Perl5::tab($level) . '(' . Main::join(([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]), $Hash_op_infix_perl5->{$code}) . ')'))
+                return ((Perl5::tab($level) . '(' . join($Hash_op_infix_perl5->{$code}, @{([ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ])}) . ')'))
             };
             if ((exists($Hash_op_prefix_perl5->{$code}))) {
                 return ((Perl5::tab($level) . $Hash_op_prefix_perl5->{$code} . '(' . join(', ', @{[ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]}) . ')'))
@@ -582,7 +582,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
-            return ((Perl5::tab($level) . 'if (' . $self->{cond}->emit_perl5() . (') ' . chr(123) . chr(10)) . (($self->{body} ? (Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{otherwise} && scalar( @{($self->{otherwise}->stmts())} )) ? ((chr(10) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
+            return ((Perl5::tab($level) . 'if (' . $self->{cond}->emit_perl5() . (') ' . chr(123) . chr(10)) . (($self->{body} ? (join((chr(59) . chr(10)), @{[ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ]}) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{otherwise} && scalar( @{($self->{otherwise}->stmts())} )) ? ((chr(10) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), @{[ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{otherwise}->stmts() )} ]}) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
         }
     }
 
@@ -608,7 +608,7 @@ package main;
     $List_a
 })->())))
             };
-            (Perl5::tab($level) . 'for ( ' . (($self->{init} ? ($self->{init}->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($cond ? ($cond->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_perl5() . ' ') : ' ')) . ') ' . chr(123) . (chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
+            (Perl5::tab($level) . 'for ( ' . (($self->{init} ? ($self->{init}->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($cond ? ($cond->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_perl5() . ' ') : ' ')) . ') ' . chr(123) . (chr(10)) . join((chr(59) . chr(10)), @{[ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ]}) . (chr(10)) . Perl5::tab($level) . (chr(125)))
         }
     }
 
@@ -638,7 +638,7 @@ package main;
             if (($self->{body}->sig())) {
                 ($sig = ('my ' . $self->{body}->sig()->emit_perl5() . ' '))
             };
-            return ((Perl5::tab($level) . 'for ' . $sig . '( ' . chr(64) . chr(123) . $cond->emit_perl5() . chr(125) . ' ) ' . chr(123) . (chr(10)) . Main::join([ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ], (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125))))
+            return ((Perl5::tab($level) . 'for ' . $sig . '( ' . chr(64) . chr(123) . $cond->emit_perl5() . chr(125) . ' ) ' . chr(123) . (chr(10)) . join((chr(59) . chr(10)), @{[ map { $_->emit_perl5_indented(($level + 1)) } @{( $self->{body}->stmts() )} ]}) . (chr(10)) . Perl5::tab($level) . (chr(125))))
         }
     }
 
@@ -697,7 +697,7 @@ package main;
                 ($str = ($str . (Perl5::tab(($level + 1)) . 'my ' . $field->emit_perl5() . ' ' . chr(61) . ' ' . chr(36) . '_[' . $i . ']' . chr(59) . (chr(10)))));
                 ($i = ($i + 1))
             };
-            (Perl5::tab($level) . 'sub ' . $self->{name} . (' ' . chr(123) . chr(10)) . Perl5::tab(($level + 1)) . 'my ' . chr(36) . 'List__ ' . chr(61) . ' bless ' . chr(92) . chr(64) . '_, ' . chr(34) . 'ARRAY' . chr(34) . chr(59) . (chr(10)) . $str . Main::join(([ map { $_->emit_perl5_indented(($level + 1)) } @{( (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY'))) )} ]), (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125)))
+            (Perl5::tab($level) . 'sub ' . $self->{name} . (' ' . chr(123) . chr(10)) . Perl5::tab(($level + 1)) . 'my ' . chr(36) . 'List__ ' . chr(61) . ' bless ' . chr(92) . chr(64) . '_, ' . chr(34) . 'ARRAY' . chr(34) . chr(59) . (chr(10)) . $str . join((chr(59) . chr(10)), @{[ map { $_->emit_perl5_indented(($level + 1)) } @{( (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY'))) )} ]}) . (chr(10)) . Perl5::tab($level) . (chr(125)))
         }
     }
 
@@ -715,7 +715,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             ((my  $block) = $self->simplify()->block());
-            (Perl5::tab($level) . ('(sub ' . chr(123) . chr(10)) . Main::join(([ map { $_->emit_perl5_indented(($level + 1)) } @{( $block )} ]), (chr(59) . chr(10))) . (chr(10)) . Perl5::tab($level) . (chr(125) . ')->()'))
+            (Perl5::tab($level) . ('(sub ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), @{[ map { $_->emit_perl5_indented(($level + 1)) } @{( $block )} ]}) . (chr(10)) . Perl5::tab($level) . (chr(125) . ')->()'))
         }
     }
 

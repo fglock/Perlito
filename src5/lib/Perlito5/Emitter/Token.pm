@@ -109,10 +109,12 @@ class Rul::Or {
     sub emit_perl5 {
         my $self = $_[0];
 
-        '(do { ' .
-            'my $pos1 = $MATCH->to; (do { ' .
-            (@.or_list.>>emit_perl5)->join('}) || (do { $MATCH->to = $pos1; ') .
-        '}) })';
+        '(do { '
+            . 'my $pos1 = $MATCH->to; (do { '
+            . join( '}) || (do { $MATCH->to = $pos1; ',
+                  @.or_list.>>emit_perl5
+                )
+        . '}) })';
     }
     sub set_captures_to_array {
         my $self = $_[0];
@@ -126,7 +128,11 @@ class Rul::Concat {
     sub emit_perl5 {
         my $self = $_[0];
 
-        '(' . (@.concat.>>emit_perl5)->join(' && ') . ')';
+        '('
+            . join( ' && ',
+                    @.concat.>>emit_perl5
+                  )
+        . ')';
     }
     sub set_captures_to_array {
         my $self = $_[0];
