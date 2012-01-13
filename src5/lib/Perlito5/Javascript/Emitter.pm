@@ -597,6 +597,7 @@ class Apply {
         'unshift' => 1,
         'push'    => 1,
         'pop'     => 1,
+        'join'    => 1,
         'chr'     => 1,
         'say'     => 1,
         'bless'   => 1,

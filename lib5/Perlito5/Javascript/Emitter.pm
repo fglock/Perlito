@@ -609,6 +609,7 @@ package main;
     ($Hash_a->{'unshift'} = 1);
     ($Hash_a->{'push'} = 1);
     ($Hash_a->{'pop'} = 1);
+    ($Hash_a->{'join'} = 1);
     ($Hash_a->{'chr'} = 1);
     ($Hash_a->{'say'} = 1);
     ($Hash_a->{'bless'} = 1);

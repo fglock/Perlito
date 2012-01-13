@@ -1,6 +1,6 @@
 use v5;
 
-say '1..12';
+say '1..13';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -53,4 +53,10 @@ print 'not ' if $x->[0] != 6;
 say "ok 11 - unshift";
 print 'not ' if $x->[5] != 5;
 say "ok 12 - unshift";
+
+my @x13 = ( 3, 4 );
+my $s13 = join('#', @x13);
+print 'not '
+    unless $s13 eq '3#4';
+say "ok 13 - join # '$s13'";
 

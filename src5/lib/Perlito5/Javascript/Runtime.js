@@ -398,6 +398,10 @@ unshift = function(o, v) {
     return o.unshift(v);
 };
 
+join = function(s, o) {
+    return o.join(s);
+};
+
 index = function(o, s) {
     try {
         return o.indexOf(s);
