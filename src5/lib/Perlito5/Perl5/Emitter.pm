@@ -340,7 +340,7 @@ class Apply {
     my %op_prefix_perl5 = (
         say     => 'Main::say',
         print   => 'Main::print',
-        map     => 'Main::map',
+        # map     => 'Main::map',
         grep    => 'Main::grep',
         sort    => 'Main::sort',
         keys    => 'Main::keys',
@@ -432,6 +432,11 @@ class Apply {
             return 'shift()'
         }
         if ($code eq 'unshift')    { return Perl5::tab($level) . 'unshift( @{' . @.arguments[0]->emit_perl5()  . '}, ' . @.arguments[1]->emit_perl5() . ' )' }
+
+        if ($code eq 'map')       {    
+            my $str = shift @.arguments;
+            return Perl5::tab($level) . '[map(' . $str->emit_perl5 . ', @{' . join(',', @.arguments.>>emit_perl5) . '})]'
+        }
 
         if ($code eq 'join')       {    
             my $str = shift @.arguments;

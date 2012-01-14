@@ -391,7 +391,6 @@ package main;
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'say'} = 'Main::say');
     ($Hash_a->{'print'} = 'Main::print');
-    ($Hash_a->{'map'} = 'Main::map');
     ($Hash_a->{'grep'} = 'Main::grep');
     ($Hash_a->{'sort'} = 'Main::sort');
     ($Hash_a->{'keys'} = 'Main::keys');
@@ -488,6 +487,10 @@ package main;
             };
             if ((($code eq 'unshift'))) {
                 return ((Perl5::tab($level) . 'unshift( ' . chr(64) . chr(123) . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0]->emit_perl5() . chr(125) . ', ' . (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[1]->emit_perl5() . ' )'))
+            };
+            if ((($code eq 'map'))) {
+                ((my  $str) = shift( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ));
+                return ((Perl5::tab($level) . '[map(' . $str->emit_perl5() . ', ' . chr(64) . chr(123) . join(',', @{[ map { $_->emit_perl5() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]}) . chr(125) . ')]'))
             };
             if ((($code eq 'join'))) {
                 ((my  $str) = shift( @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))} ));
