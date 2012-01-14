@@ -112,14 +112,14 @@ class Rul::Or {
         '(do { '
             . 'my $pos1 = $MATCH->to; (do { '
             . join( '}) || (do { $MATCH->to = $pos1; ',
-                  @.or_list.>>emit_perl5
+                  map( $_->emit_perl5, @.or_list )
                 )
         . '}) })';
     }
     sub set_captures_to_array {
         my $self = $_[0];
 
-        @.or_list.>>set_captures_to_array;
+        map( $_->set_captures_to_array, @.or_list );
     }
 }
 
@@ -130,14 +130,14 @@ class Rul::Concat {
 
         '('
             . join( ' && ',
-                    @.concat.>>emit_perl5
+                    map( $_->emit_perl5, @.concat )
                   )
         . ')';
     }
     sub set_captures_to_array {
         my $self = $_[0];
 
-        @.concat.>>set_captures_to_array;
+        map( $_->set_captures_to_array, @.concat );
     }
 }
 
