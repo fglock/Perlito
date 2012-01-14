@@ -639,6 +639,21 @@ class Apply {
             return 'shift(List__)'
         }
 
+        if ($code eq 'map') {
+            my @args = @.arguments;
+            my $fun = shift @args;
+            return
+                    '(function (a_) { '
+                        . 'var out = []; '
+                        . 'if ( a_ == null ) { return out; }; '
+                        . 'for(var i = 0; i < a_.length; i++) { '
+                            . 'v__ = a_[i]; '
+                            . 'out.push(' . $fun->emit_javascript . ')'
+                        . '}; '
+                        . 'return out;'
+                    . ' })(' . $args[0]->emit_javascript() . ')'
+        }
+
         if ($code eq 'chr')        { return 'String.fromCharCode(' . Javascript::escape_function('num') . '(' . (@.arguments[0])->emit_javascript() . '))' }
         if ($code eq 'ord')        { return '(' . (@.arguments[0])->emit_javascript() . ').charCodeAt(0)' }
 
