@@ -55,9 +55,7 @@ package main;
                     if (($tmp ne '')) {
                         push( @{$List_out}, (chr(39) . $tmp . chr(39)) )
                     };
-                    push( @{$List_out}, ('String.fromCharCode(' . (sub {
-    ord($c)
-})->() . ')') );
+                    push( @{$List_out}, ('String.fromCharCode(' . ord($c) . (')')) );
                     ($tmp = '')
                 }
             };

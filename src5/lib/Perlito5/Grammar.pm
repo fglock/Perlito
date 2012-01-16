@@ -160,8 +160,8 @@ token single_quoted_unescape {
 }
 
 token char_any_double_quote {
-    <!before   [ \" | \$ | \@ | \% | \{ ] > .
-    [ <!before [ \" | \$ | \@ | \% | \{ | \\ ] > . ]*
+    <!before   [ \" | \$ | \@ ] > .
+    [ <!before [ \" | \$ | \@ | \\ ] > . ]*
 }
 
 token double_quoted_unescape {
@@ -187,25 +187,42 @@ token double_quoted_unescape {
 
 token double_quoted_buf {
     | <before \$ >
-        [ <before \$ <.var_twigil> <.ident> > <Perlito5::Expression.operator>
+        [ <before \$ <.ident> > <Perlito5::Expression.operator>
             { make ($$<Perlito5::Expression.operator>)[1] }
+        | \$\{ <ident> \}
+            { make Var->new(
+                    sigil  => '$',
+                    twigil => '',
+                    name   => $$<ident>,
+                   )
+            }
         | <char_any>
             { make Val::Buf->new( buf => '' . $<char_any> ) }
         ]
     | <before \@ >
-        [ <before \@ <.var_twigil> <.ident> > <Perlito5::Expression.operator> '[]'
-            { make ($$<Perlito5::Expression.operator>)[1] }
+        [ <before \@ <.ident> > <Perlito5::Expression.operator> 
+            { make Apply->new(
+                    namespace => '',
+                    code      => 'join',
+                    arguments => [ 
+                        Val::Buf->new( buf => ' ' ), 
+                        ($$<Perlito5::Expression.operator>)[1] 
+                    ],
+                )
+            }
+        | \@\{ <exp_stmts> \}
+            { make Apply->new(
+                    namespace => '',
+                    code      => 'join',
+                    arguments => [ 
+                        Val::Buf->new( buf => ' ' ), 
+                        ($$<exp_stmts>)[0] 
+                    ],
+                )
+            }
         | <char_any>
             { make Val::Buf->new( buf => '' . $<char_any> ) }
         ]
-    | <before \% >
-        [ <before \% <.var_twigil> <.ident> > <Perlito5::Expression.operator> '{}'
-            { make ($$<Perlito5::Expression.operator>)[1] }
-        | <char_any>
-            { make Val::Buf->new( buf => '' . $<char_any> ) }
-        ]
-    | \{ <exp_stmts> \}
-            { make Do->new( block => Lit::Block->new( stmts => $$<exp_stmts> ) ) }
     | <double_quoted_unescape>
         { make Val::Buf->new( buf => $$<double_quoted_unescape> ) }
 }

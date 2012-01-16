@@ -42,7 +42,7 @@ class Perl5 {
             }
             else {
                 push @out, "'$tmp'" if $tmp ne '';
-                push @out, "chr({ ord($c) })";
+                push @out, "chr(" . ord($c) . ")";
                 $tmp = '';
             }
         }

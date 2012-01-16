@@ -55,9 +55,7 @@ package main;
                     if (($tmp ne '')) {
                         push( @{$List_out}, (chr(39) . $tmp . chr(39)) )
                     };
-                    push( @{$List_out}, ('chr(' . (sub {
-    ord($c)
-})->() . ')') );
+                    push( @{$List_out}, ('chr(' . ord($c) . (')')) );
                     ($tmp = '')
                 }
             };
@@ -728,7 +726,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             if ((($self->{mod} eq 'strict') || ($self->{mod} eq 'feature'))) {
-                return ((chr(10) . Perl5::tab($level) . (chr(35) . ' use ' . $self->{mod} . ' ' . chr(10))))
+                return ((chr(10) . Perl5::tab($level) . (chr(35) . ' use ' . chr(36) . '.mod ' . chr(10))))
             };
             (Perl5::tab($level) . 'use ' . $self->{mod})
         }

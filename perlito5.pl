@@ -37,7 +37,7 @@ package main;
     ((my  $expand_use) = 1);
     if (($verbose)) {
         warn((chr(47) . chr(47) . ' Perlito5 compiler'));
-        warn((chr(47) . chr(47) . ' ARGV: ' . chr(64) . 'ARGV'))
+        warn((chr(47) . chr(47) . ' ARGV: ' . join(' ', @{(\@ARGV)})))
     };
     (my  $Hash_module_seen = bless {}, 'HASH');
     sub module_name {

@@ -41,7 +41,7 @@ class Javascript {
             }
             else {
                 push @out, "'$tmp'" if $tmp ne '';
-                push @out, "String.fromCharCode({ ord($c) })";
+                push @out, "String.fromCharCode(" . ord($c) . ")";
                 $tmp = '';
             }
         }
