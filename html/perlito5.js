@@ -171,6 +171,25 @@ chr = function(o) {
     return String.fromCharCode(num(o));
 };
 
+ref = function(o) {
+    if (o == null) {
+        return '';
+    }
+    if (typeof o.ref === 'function') {
+        return o.ref();
+    }
+    if (typeof o === 'object' && (o instanceof Array)) {
+        return 'ARRAY';
+    }
+    switch (typeof o) {
+        case "string": return '';
+        case "function": return 'CODE';
+        case "number": return '';
+        case "boolean": return '';
+    }
+    return 'HASH';
+};
+
 scalar = function(o) {
     if (o == null) {
         return 1;
@@ -483,6 +502,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -493,6 +513,7 @@ if (typeof Perlito5$Match !== 'object') {
   Perlito5$Match = function() {};
   Perlito5$Match = new Perlito5$Match;
   Perlito5$Match.isa = function (s) { return s == 'Perlito5::Match'; };
+  Perlito5$Match.ref = function (s) { return 'Perlito5::Match'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Match;
@@ -584,6 +605,7 @@ if (typeof Main !== 'object') {
   Main = function() {};
   Main = new Main;
   Main.isa = function (s) { return s == 'Main'; };
+  Main.ref = function (s) { return 'Main'; };
 }
 (function () {
   var v__NAMESPACE = Main;
@@ -595,6 +617,7 @@ if (typeof Perlito5 !== 'object') {
   Perlito5 = function() {};
   Perlito5 = new Perlito5;
   Perlito5.isa = function (s) { return s == 'Perlito5'; };
+  Perlito5.ref = function (s) { return 'Perlito5'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5;
@@ -631,6 +654,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -641,6 +665,7 @@ if (typeof CompUnit !== 'object') {
   CompUnit = function() {};
   CompUnit = new CompUnit;
   CompUnit.isa = function (s) { return s == 'CompUnit'; };
+  CompUnit.ref = function (s) { return 'CompUnit'; };
 }
 (function () {
   var v__NAMESPACE = CompUnit;
@@ -657,6 +682,7 @@ if (typeof Val$Int !== 'object') {
   Val$Int = function() {};
   Val$Int = new Val$Int;
   Val$Int.isa = function (s) { return s == 'Val::Int'; };
+  Val$Int.ref = function (s) { return 'Val::Int'; };
 }
 (function () {
   var v__NAMESPACE = Val$Int;
@@ -670,6 +696,7 @@ if (typeof Val$Bit !== 'object') {
   Val$Bit = function() {};
   Val$Bit = new Val$Bit;
   Val$Bit.isa = function (s) { return s == 'Val::Bit'; };
+  Val$Bit.ref = function (s) { return 'Val::Bit'; };
 }
 (function () {
   var v__NAMESPACE = Val$Bit;
@@ -683,6 +710,7 @@ if (typeof Val$Num !== 'object') {
   Val$Num = function() {};
   Val$Num = new Val$Num;
   Val$Num.isa = function (s) { return s == 'Val::Num'; };
+  Val$Num.ref = function (s) { return 'Val::Num'; };
 }
 (function () {
   var v__NAMESPACE = Val$Num;
@@ -696,6 +724,7 @@ if (typeof Val$Buf !== 'object') {
   Val$Buf = function() {};
   Val$Buf = new Val$Buf;
   Val$Buf.isa = function (s) { return s == 'Val::Buf'; };
+  Val$Buf.ref = function (s) { return 'Val::Buf'; };
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
@@ -709,6 +738,7 @@ if (typeof Lit$Block !== 'object') {
   Lit$Block = function() {};
   Lit$Block = new Lit$Block;
   Lit$Block.isa = function (s) { return s == 'Lit::Block'; };
+  Lit$Block.ref = function (s) { return 'Lit::Block'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
@@ -725,6 +755,7 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
+  Lit$Array.ref = function (s) { return 'Lit::Array'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -738,6 +769,7 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
+  Lit$Hash.ref = function (s) { return 'Lit::Hash'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -751,6 +783,7 @@ if (typeof Index !== 'object') {
   Index = function() {};
   Index = new Index;
   Index.isa = function (s) { return s == 'Index'; };
+  Index.ref = function (s) { return 'Index'; };
 }
 (function () {
   var v__NAMESPACE = Index;
@@ -767,6 +800,7 @@ if (typeof Lookup !== 'object') {
   Lookup = function() {};
   Lookup = new Lookup;
   Lookup.isa = function (s) { return s == 'Lookup'; };
+  Lookup.ref = function (s) { return 'Lookup'; };
 }
 (function () {
   var v__NAMESPACE = Lookup;
@@ -783,6 +817,7 @@ if (typeof Var !== 'object') {
   Var = function() {};
   Var = new Var;
   Var.isa = function (s) { return s == 'Var'; };
+  Var.ref = function (s) { return 'Var'; };
 }
 (function () {
   var v__NAMESPACE = Var;
@@ -805,6 +840,7 @@ if (typeof Proto !== 'object') {
   Proto = function() {};
   Proto = new Proto;
   Proto.isa = function (s) { return s == 'Proto'; };
+  Proto.ref = function (s) { return 'Proto'; };
 }
 (function () {
   var v__NAMESPACE = Proto;
@@ -818,6 +854,7 @@ if (typeof Call !== 'object') {
   Call = function() {};
   Call = new Call;
   Call.isa = function (s) { return s == 'Call'; };
+  Call.ref = function (s) { return 'Call'; };
 }
 (function () {
   var v__NAMESPACE = Call;
@@ -840,6 +877,7 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
+  Apply.ref = function (s) { return 'Apply'; };
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -859,6 +897,7 @@ if (typeof If !== 'object') {
   If = function() {};
   If = new If;
   If.isa = function (s) { return s == 'If'; };
+  If.ref = function (s) { return 'If'; };
 }
 (function () {
   var v__NAMESPACE = If;
@@ -878,6 +917,7 @@ if (typeof While !== 'object') {
   While = function() {};
   While = new While;
   While.isa = function (s) { return s == 'While'; };
+  While.ref = function (s) { return 'While'; };
 }
 (function () {
   var v__NAMESPACE = While;
@@ -900,6 +940,7 @@ if (typeof For !== 'object') {
   For = function() {};
   For = new For;
   For.isa = function (s) { return s == 'For'; };
+  For.ref = function (s) { return 'For'; };
 }
 (function () {
   var v__NAMESPACE = For;
@@ -916,6 +957,7 @@ if (typeof Decl !== 'object') {
   Decl = function() {};
   Decl = new Decl;
   Decl.isa = function (s) { return s == 'Decl'; };
+  Decl.ref = function (s) { return 'Decl'; };
 }
 (function () {
   var v__NAMESPACE = Decl;
@@ -935,6 +977,7 @@ if (typeof Sig !== 'object') {
   Sig = function() {};
   Sig = new Sig;
   Sig.isa = function (s) { return s == 'Sig'; };
+  Sig.ref = function (s) { return 'Sig'; };
 }
 (function () {
   var v__NAMESPACE = Sig;
@@ -954,6 +997,7 @@ if (typeof Sub !== 'object') {
   Sub = function() {};
   Sub = new Sub;
   Sub.isa = function (s) { return s == 'Sub'; };
+  Sub.ref = function (s) { return 'Sub'; };
 }
 (function () {
   var v__NAMESPACE = Sub;
@@ -973,6 +1017,7 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
+  Do.ref = function (s) { return 'Do'; };
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -986,6 +1031,7 @@ if (typeof Use !== 'object') {
   Use = function() {};
   Use = new Use;
   Use.isa = function (s) { return s == 'Use'; };
+  Use.ref = function (s) { return 'Use'; };
 }
 (function () {
   var v__NAMESPACE = Use;
@@ -1001,6 +1047,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -1013,6 +1060,7 @@ if (typeof Javascript !== 'object') {
   Javascript = function() {};
   Javascript = new Javascript;
   Javascript.isa = function (s) { return s == 'Javascript'; };
+  Javascript.ref = function (s) { return 'Javascript'; };
 }
 (function () {
   var v__NAMESPACE = Javascript;
@@ -1245,6 +1293,7 @@ if (typeof Perlito5$Javascript$LexicalBlock !== 'object') {
   Perlito5$Javascript$LexicalBlock = function() {};
   Perlito5$Javascript$LexicalBlock = new Perlito5$Javascript$LexicalBlock;
   Perlito5$Javascript$LexicalBlock.isa = function (s) { return s == 'Perlito5::Javascript::LexicalBlock'; };
+  Perlito5$Javascript$LexicalBlock.ref = function (s) { return 'Perlito5::Javascript::LexicalBlock'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Javascript$LexicalBlock;
@@ -1393,6 +1442,7 @@ if (typeof CompUnit !== 'object') {
   CompUnit = function() {};
   CompUnit = new CompUnit;
   CompUnit.isa = function (s) { return s == 'CompUnit'; };
+  CompUnit.ref = function (s) { return 'CompUnit'; };
 }
 (function () {
   var v__NAMESPACE = CompUnit;
@@ -1465,7 +1515,7 @@ if (typeof CompUnit !== 'object') {
 (v_i)++;;
                         })(); };; })() };
                     (v_class_name = Main.to_javascript_namespace(CallSub, v_self.v_name));
-                    (v_str = (string(String.fromCharCode(47) + String.fromCharCode(47) + ' class ') + string(v_self.v_name) + string((string(String.fromCharCode(10)))) + string('if (typeof ') + string(v_class_name) + string(' ' + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39) + 'object' + String.fromCharCode(39) + ') ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' function() ' + String.fromCharCode(123) + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' new ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(Javascript.escape_function(CallSub, 'isa')) + string(' ' + String.fromCharCode(61) + ' function (s) ' + String.fromCharCode(123) + ' return s ' + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string(String.fromCharCode(125)) + string((string(String.fromCharCode(10)))) + string('(function () ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  var v__NAMESPACE ' + String.fromCharCode(61) + ' ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10))))));
+                    (v_str = (string(String.fromCharCode(47) + String.fromCharCode(47) + ' class ') + string(v_self.v_name) + string((string(String.fromCharCode(10)))) + string('if (typeof ') + string(v_class_name) + string(' ' + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39) + 'object' + String.fromCharCode(39) + ') ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' function() ' + String.fromCharCode(123) + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' new ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(Javascript.escape_function(CallSub, 'isa')) + string(' ' + String.fromCharCode(61) + ' function (s) ' + String.fromCharCode(123) + ' return s ' + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(Javascript.escape_function(CallSub, 'ref')) + string(' ' + String.fromCharCode(61) + ' function (s) ' + String.fromCharCode(123) + ' return ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string(String.fromCharCode(125)) + string((string(String.fromCharCode(10)))) + string('(function () ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  var v__NAMESPACE ' + String.fromCharCode(61) + ' ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10))))));
                     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {                         if ( bool((and(isa(v_decl, 'Decl'), function () { return (((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("decl") ? v_decl.__proto__.decl.call(v_decl) : v_decl.decl()) == 'my')); }))) ) { (function () {
                             (v_str = (string(v_str) + string('  ') + string((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("emit_javascript_init") ? v_decl.__proto__.emit_javascript_init.call(v_decl) : v_decl.emit_javascript_init()))));;
                         })(); };
@@ -1543,6 +1593,7 @@ if (typeof Val$Int !== 'object') {
   Val$Int = function() {};
   Val$Int = new Val$Int;
   Val$Int.isa = function (s) { return s == 'Val::Int'; };
+  Val$Int.ref = function (s) { return 'Val::Int'; };
 }
 (function () {
   var v__NAMESPACE = Val$Int;
@@ -1603,6 +1654,7 @@ if (typeof Val$Bit !== 'object') {
   Val$Bit = function() {};
   Val$Bit = new Val$Bit;
   Val$Bit.isa = function (s) { return s == 'Val::Bit'; };
+  Val$Bit.ref = function (s) { return 'Val::Bit'; };
 }
 (function () {
   var v__NAMESPACE = Val$Bit;
@@ -1663,6 +1715,7 @@ if (typeof Val$Num !== 'object') {
   Val$Num = function() {};
   Val$Num = new Val$Num;
   Val$Num.isa = function (s) { return s == 'Val::Num'; };
+  Val$Num.ref = function (s) { return 'Val::Num'; };
 }
 (function () {
   var v__NAMESPACE = Val$Num;
@@ -1723,6 +1776,7 @@ if (typeof Val$Buf !== 'object') {
   Val$Buf = function() {};
   Val$Buf = new Val$Buf;
   Val$Buf.isa = function (s) { return s == 'Val::Buf'; };
+  Val$Buf.ref = function (s) { return 'Val::Buf'; };
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
@@ -1783,6 +1837,7 @@ if (typeof Lit$Block !== 'object') {
   Lit$Block = function() {};
   Lit$Block = new Lit$Block;
   Lit$Block.isa = function (s) { return s == 'Lit::Block'; };
+  Lit$Block.ref = function (s) { return 'Lit::Block'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
@@ -1849,6 +1904,7 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
+  Lit$Array.ref = function (s) { return 'Lit::Array'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -1912,6 +1968,7 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
+  Lit$Hash.ref = function (s) { return 'Lit::Hash'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -1975,6 +2032,7 @@ if (typeof Index !== 'object') {
   Index = function() {};
   Index = new Index;
   Index.isa = function (s) { return s == 'Index'; };
+  Index.ref = function (s) { return 'Index'; };
 }
 (function () {
   var v__NAMESPACE = Index;
@@ -2041,6 +2099,7 @@ if (typeof Lookup !== 'object') {
   Lookup = function() {};
   Lookup = new Lookup;
   Lookup.isa = function (s) { return s == 'Lookup'; };
+  Lookup.ref = function (s) { return 'Lookup'; };
 }
 (function () {
   var v__NAMESPACE = Lookup;
@@ -2107,6 +2166,7 @@ if (typeof Var !== 'object') {
   Var = function() {};
   Var = new Var;
   Var.isa = function (s) { return s == 'Var'; };
+  Var.ref = function (s) { return 'Var'; };
 }
 (function () {
   var v__NAMESPACE = Var;
@@ -2212,6 +2272,7 @@ if (typeof Proto !== 'object') {
   Proto = function() {};
   Proto = new Proto;
   Proto.isa = function (s) { return s == 'Proto'; };
+  Proto.ref = function (s) { return 'Proto'; };
 }
 (function () {
   var v__NAMESPACE = Proto;
@@ -2272,6 +2333,7 @@ if (typeof Call !== 'object') {
   Call = function() {};
   Call = new Call;
   Call.isa = function (s) { return s == 'Call'; };
+  Call.ref = function (s) { return 'Call'; };
 }
 (function () {
   var v__NAMESPACE = Call;
@@ -2389,6 +2451,7 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
+  Apply.ref = function (s) { return 'Apply'; };
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -2784,6 +2847,7 @@ if (typeof Apply !== 'object') {
     (function () { if (Hash_a['keys'] == null) { Hash_a['keys'] = {} }; return (Hash_a['keys']  = 1); })();
     (function () { if (Hash_a['values'] == null) { Hash_a['values'] = {} }; return (Hash_a['values']  = 1); })();
     (function () { if (Hash_a['length'] == null) { Hash_a['length'] = {} }; return (Hash_a['length']  = 1); })();
+    (function () { if (Hash_a['ref'] == null) { Hash_a['ref'] = {} }; return (Hash_a['ref']  = 1); })();
     return(Hash_a);
 })());
 })()
@@ -2793,6 +2857,7 @@ if (typeof If !== 'object') {
   If = function() {};
   If = new If;
   If.isa = function (s) { return s == 'If'; };
+  If.ref = function (s) { return 'If'; };
 }
 (function () {
   var v__NAMESPACE = If;
@@ -2885,6 +2950,7 @@ if (typeof While !== 'object') {
   While = function() {};
   While = new While;
   While.isa = function (s) { return s == 'While'; };
+  While.ref = function (s) { return 'While'; };
 }
 (function () {
   var v__NAMESPACE = While;
@@ -2948,6 +3014,7 @@ if (typeof For !== 'object') {
   For = function() {};
   For = new For;
   For.isa = function (s) { return s == 'For'; };
+  For.ref = function (s) { return 'For'; };
 }
 (function () {
   var v__NAMESPACE = For;
@@ -3037,6 +3104,7 @@ if (typeof Decl !== 'object') {
   Decl = function() {};
   Decl = new Decl;
   Decl.isa = function (s) { return s == 'Decl'; };
+  Decl.ref = function (s) { return 'Decl'; };
 }
 (function () {
   var v__NAMESPACE = Decl;
@@ -3142,6 +3210,7 @@ if (typeof Sub !== 'object') {
   Sub = function() {};
   Sub = new Sub;
   Sub.isa = function (s) { return s == 'Sub'; };
+  Sub.ref = function (s) { return 'Sub'; };
 }
 (function () {
   var v__NAMESPACE = Sub;
@@ -3211,6 +3280,7 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
+  Do.ref = function (s) { return 'Do'; };
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -3274,6 +3344,7 @@ if (typeof Use !== 'object') {
   Use = function() {};
   Use = new Use;
   Use.isa = function (s) { return s == 'Use'; };
+  Use.ref = function (s) { return 'Use'; };
 }
 (function () {
   var v__NAMESPACE = Use;
@@ -3338,6 +3409,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -3346,6 +3418,7 @@ if (typeof Perlito5$Precedence !== 'object') {
   Perlito5$Precedence = function() {};
   Perlito5$Precedence = new Perlito5$Precedence;
   Perlito5$Precedence.isa = function (s) { return s == 'Perlito5::Precedence'; };
+  Perlito5$Precedence.ref = function (s) { return 'Perlito5::Precedence'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Precedence;
@@ -4205,6 +4278,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -4217,6 +4291,7 @@ if (typeof Perl5 !== 'object') {
   Perl5 = function() {};
   Perl5 = new Perl5;
   Perl5.isa = function (s) { return s == 'Perl5'; };
+  Perl5.ref = function (s) { return 'Perl5'; };
 }
 (function () {
   var v__NAMESPACE = Perl5;
@@ -4321,6 +4396,7 @@ if (typeof CompUnit !== 'object') {
   CompUnit = function() {};
   CompUnit = new CompUnit;
   CompUnit.isa = function (s) { return s == 'CompUnit'; };
+  CompUnit.ref = function (s) { return 'CompUnit'; };
 }
 (function () {
   var v__NAMESPACE = CompUnit;
@@ -4416,6 +4492,7 @@ if (typeof Val$Int !== 'object') {
   Val$Int = function() {};
   Val$Int = new Val$Int;
   Val$Int.isa = function (s) { return s == 'Val::Int'; };
+  Val$Int.ref = function (s) { return 'Val::Int'; };
 }
 (function () {
   var v__NAMESPACE = Val$Int;
@@ -4479,6 +4556,7 @@ if (typeof Val$Bit !== 'object') {
   Val$Bit = function() {};
   Val$Bit = new Val$Bit;
   Val$Bit.isa = function (s) { return s == 'Val::Bit'; };
+  Val$Bit.ref = function (s) { return 'Val::Bit'; };
 }
 (function () {
   var v__NAMESPACE = Val$Bit;
@@ -4542,6 +4620,7 @@ if (typeof Val$Num !== 'object') {
   Val$Num = function() {};
   Val$Num = new Val$Num;
   Val$Num.isa = function (s) { return s == 'Val::Num'; };
+  Val$Num.ref = function (s) { return 'Val::Num'; };
 }
 (function () {
   var v__NAMESPACE = Val$Num;
@@ -4605,6 +4684,7 @@ if (typeof Val$Buf !== 'object') {
   Val$Buf = function() {};
   Val$Buf = new Val$Buf;
   Val$Buf.isa = function (s) { return s == 'Val::Buf'; };
+  Val$Buf.ref = function (s) { return 'Val::Buf'; };
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
@@ -4668,6 +4748,7 @@ if (typeof Lit$Block !== 'object') {
   Lit$Block = function() {};
   Lit$Block = new Lit$Block;
   Lit$Block.isa = function (s) { return s == 'Lit::Block'; };
+  Lit$Block.ref = function (s) { return 'Lit::Block'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
@@ -4731,6 +4812,7 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
+  Lit$Array.ref = function (s) { return 'Lit::Array'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -4797,6 +4879,7 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
+  Lit$Hash.ref = function (s) { return 'Lit::Hash'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -4863,6 +4946,7 @@ if (typeof Index !== 'object') {
   Index = function() {};
   Index = new Index;
   Index.isa = function (s) { return s == 'Index'; };
+  Index.ref = function (s) { return 'Index'; };
 }
 (function () {
   var v__NAMESPACE = Index;
@@ -4932,6 +5016,7 @@ if (typeof Lookup !== 'object') {
   Lookup = function() {};
   Lookup = new Lookup;
   Lookup.isa = function (s) { return s == 'Lookup'; };
+  Lookup.ref = function (s) { return 'Lookup'; };
 }
 (function () {
   var v__NAMESPACE = Lookup;
@@ -5001,6 +5086,7 @@ if (typeof Var !== 'object') {
   Var = function() {};
   Var = new Var;
   Var.isa = function (s) { return s == 'Var'; };
+  Var.ref = function (s) { return 'Var'; };
 }
 (function () {
   var v__NAMESPACE = Var;
@@ -5130,6 +5216,7 @@ if (typeof Proto !== 'object') {
   Proto = function() {};
   Proto = new Proto;
   Proto.isa = function (s) { return s == 'Proto'; };
+  Proto.ref = function (s) { return 'Proto'; };
 }
 (function () {
   var v__NAMESPACE = Proto;
@@ -5193,6 +5280,7 @@ if (typeof Call !== 'object') {
   Call = function() {};
   Call = new Call;
   Call.isa = function (s) { return s == 'Call'; };
+  Call.ref = function (s) { return 'Call'; };
 }
 (function () {
   var v__NAMESPACE = Call;
@@ -5292,6 +5380,7 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
+  Apply.ref = function (s) { return 'Apply'; };
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -5575,6 +5664,7 @@ if (typeof If !== 'object') {
   If = function() {};
   If = new If;
   If.isa = function (s) { return s == 'If'; };
+  If.ref = function (s) { return 'If'; };
 }
 (function () {
   var v__NAMESPACE = If;
@@ -5638,6 +5728,7 @@ if (typeof While !== 'object') {
   While = function() {};
   While = new While;
   While.isa = function (s) { return s == 'While'; };
+  While.ref = function (s) { return 'While'; };
 }
 (function () {
   var v__NAMESPACE = While;
@@ -5721,6 +5812,7 @@ if (typeof For !== 'object') {
   For = function() {};
   For = new For;
   For.isa = function (s) { return s == 'For'; };
+  For.ref = function (s) { return 'For'; };
 }
 (function () {
   var v__NAMESPACE = For;
@@ -5809,6 +5901,7 @@ if (typeof Decl !== 'object') {
   Decl = function() {};
   Decl = new Decl;
   Decl.isa = function (s) { return s == 'Decl'; };
+  Decl.ref = function (s) { return 'Decl'; };
 }
 (function () {
   var v__NAMESPACE = Decl;
@@ -5895,6 +5988,7 @@ if (typeof Sub !== 'object') {
   Sub = function() {};
   Sub = new Sub;
   Sub.isa = function (s) { return s == 'Sub'; };
+  Sub.ref = function (s) { return 'Sub'; };
 }
 (function () {
   var v__NAMESPACE = Sub;
@@ -5972,6 +6066,7 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
+  Do.ref = function (s) { return 'Do'; };
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -6038,6 +6133,7 @@ if (typeof Use !== 'object') {
   Use = function() {};
   Use = new Use;
   Use.isa = function (s) { return s == 'Use'; };
+  Use.ref = function (s) { return 'Use'; };
 }
 (function () {
   var v__NAMESPACE = Use;
@@ -6106,6 +6202,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -6114,6 +6211,7 @@ if (typeof Perlito5$Expression !== 'object') {
   Perlito5$Expression = function() {};
   Perlito5$Expression = new Perlito5$Expression;
   Perlito5$Expression.isa = function (s) { return s == 'Perlito5::Expression'; };
+  Perlito5$Expression.ref = function (s) { return 'Perlito5::Expression'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Expression;
@@ -6289,7 +6387,7 @@ if (typeof Perlito5$Expression !== 'object') {
 
                     (v_num_stack = shift(List__));
                     (v_v = pop((v_num_stack)));
-                    if ( bool((isa(v_v, 'Array'))) ) { (function () {
+                    if ( bool(((ref(v_v) == 'ARRAY'))) ) { (function () {
                         if ( bool(((v_v[1] == 'methcall_no_params'))) ) { (function () {
                             (v_v = (function () { if (Call.hasOwnProperty("new") ) { return Call.new('invocant', null, 'method', v_v[2], 'arguments', (function () { 
     var List_a = [];
@@ -6361,7 +6459,7 @@ if (typeof Perlito5$Expression !== 'object') {
                             (v_v = (function () { if (Lookup.hasOwnProperty("new") ) { return Lookup.new('obj', null, 'index_exp', v_v[2]); } var tmp = {v_obj: null,v_index_exp: v_v[2]}; tmp.__proto__ = Lookup; return tmp; })());
                             throw(v_v);;
                         })(); };
-                        if ( bool((and(isa(v_v[1], 'Array'), function () { return (scalar(v_v[1]) == 2); }))) ) { (function () {
+                        if ( bool((and((ref(v_v[1]) == 'ARRAY'), function () { return (scalar(v_v[1]) == 2); }))) ) { (function () {
                             (v_v = (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('code', 'pair', 'arguments', v_v[1], 'namespace', ''); } var tmp = {v_code: 'pair',v_arguments: v_v[1],v_namespace: ''}; tmp.__proto__ = Apply; return tmp; })());
                             throw(v_v);;
                         })(); };
@@ -9865,6 +9963,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -9873,6 +9972,7 @@ if (typeof Perlito5$Grammar$Regex !== 'object') {
   Perlito5$Grammar$Regex = function() {};
   Perlito5$Grammar$Regex = new Perlito5$Grammar$Regex;
   Perlito5$Grammar$Regex.isa = function (s) { return s == 'Perlito5::Grammar::Regex'; };
+  Perlito5$Grammar$Regex.ref = function (s) { return 'Perlito5::Grammar::Regex'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Grammar$Regex;
@@ -12058,6 +12158,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -12066,6 +12167,7 @@ if (typeof Perlito5$Grammar !== 'object') {
   Perlito5$Grammar = function() {};
   Perlito5$Grammar = new Perlito5$Grammar;
   Perlito5$Grammar.isa = function (s) { return s == 'Perlito5::Grammar'; };
+  Perlito5$Grammar.ref = function (s) { return 'Perlito5::Grammar'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Grammar;
@@ -12797,6 +12899,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -12805,6 +12908,7 @@ if (typeof Perlito5$Grammar !== 'object') {
   Perlito5$Grammar = function() {};
   Perlito5$Grammar = new Perlito5$Grammar;
   Perlito5$Grammar.isa = function (s) { return s == 'Perlito5::Grammar'; };
+  Perlito5$Grammar.ref = function (s) { return 'Perlito5::Grammar'; };
 }
 (function () {
   var v__NAMESPACE = Perlito5$Grammar;
@@ -16732,6 +16836,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -16742,6 +16847,7 @@ if (typeof Rul !== 'object') {
   Rul = function() {};
   Rul = new Rul;
   Rul.isa = function (s) { return s == 'Rul'; };
+  Rul.ref = function (s) { return 'Rul'; };
 }
 (function () {
   var v__NAMESPACE = Rul;
@@ -16791,6 +16897,7 @@ if (typeof Rul$Quantifier !== 'object') {
   Rul$Quantifier = function() {};
   Rul$Quantifier = new Rul$Quantifier;
   Rul$Quantifier.isa = function (s) { return s == 'Rul::Quantifier'; };
+  Rul$Quantifier.ref = function (s) { return 'Rul::Quantifier'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Quantifier;
@@ -16885,6 +16992,7 @@ if (typeof Rul$Or !== 'object') {
   Rul$Or = function() {};
   Rul$Or = new Rul$Or;
   Rul$Or.isa = function (s) { return s == 'Rul::Or'; };
+  Rul$Or.ref = function (s) { return 'Rul::Or'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Or;
@@ -16948,6 +17056,7 @@ if (typeof Rul$Concat !== 'object') {
   Rul$Concat = function() {};
   Rul$Concat = new Rul$Concat;
   Rul$Concat.isa = function (s) { return s == 'Rul::Concat'; };
+  Rul$Concat.ref = function (s) { return 'Rul::Concat'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Concat;
@@ -17011,6 +17120,7 @@ if (typeof Rul$Subrule !== 'object') {
   Rul$Subrule = function() {};
   Rul$Subrule = new Rul$Subrule;
   Rul$Subrule.isa = function (s) { return s == 'Rul::Subrule'; };
+  Rul$Subrule.ref = function (s) { return 'Rul::Subrule'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Subrule;
@@ -17098,6 +17208,7 @@ if (typeof Rul$Var !== 'object') {
   Rul$Var = function() {};
   Rul$Var = new Rul$Var;
   Rul$Var.isa = function (s) { return s == 'Rul::Var'; };
+  Rul$Var.ref = function (s) { return 'Rul::Var'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Var;
@@ -17153,6 +17264,7 @@ if (typeof Rul$Constant !== 'object') {
   Rul$Constant = function() {};
   Rul$Constant = new Rul$Constant;
   Rul$Constant.isa = function (s) { return s == 'Rul::Constant'; };
+  Rul$Constant.ref = function (s) { return 'Rul::Constant'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Constant;
@@ -17218,6 +17330,7 @@ if (typeof Rul$Dot !== 'object') {
   Rul$Dot = function() {};
   Rul$Dot = new Rul$Dot;
   Rul$Dot.isa = function (s) { return s == 'Rul::Dot'; };
+  Rul$Dot.ref = function (s) { return 'Rul::Dot'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Dot;
@@ -17277,6 +17390,7 @@ if (typeof Rul$SpecialChar !== 'object') {
   Rul$SpecialChar = function() {};
   Rul$SpecialChar = new Rul$SpecialChar;
   Rul$SpecialChar.isa = function (s) { return s == 'Rul::SpecialChar'; };
+  Rul$SpecialChar.ref = function (s) { return 'Rul::SpecialChar'; };
 }
 (function () {
   var v__NAMESPACE = Rul$SpecialChar;
@@ -17357,6 +17471,7 @@ if (typeof Rul$Block !== 'object') {
   Rul$Block = function() {};
   Rul$Block = new Rul$Block;
   Rul$Block.isa = function (s) { return s == 'Rul::Block'; };
+  Rul$Block.ref = function (s) { return 'Rul::Block'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Block;
@@ -17419,6 +17534,7 @@ if (typeof Rul$InterpolateVar !== 'object') {
   Rul$InterpolateVar = function() {};
   Rul$InterpolateVar = new Rul$InterpolateVar;
   Rul$InterpolateVar.isa = function (s) { return s == 'Rul::InterpolateVar'; };
+  Rul$InterpolateVar.ref = function (s) { return 'Rul::InterpolateVar'; };
 }
 (function () {
   var v__NAMESPACE = Rul$InterpolateVar;
@@ -17482,6 +17598,7 @@ if (typeof Rul$NamedCapture !== 'object') {
   Rul$NamedCapture = function() {};
   Rul$NamedCapture = new Rul$NamedCapture;
   Rul$NamedCapture.isa = function (s) { return s == 'Rul::NamedCapture'; };
+  Rul$NamedCapture.ref = function (s) { return 'Rul::NamedCapture'; };
 }
 (function () {
   var v__NAMESPACE = Rul$NamedCapture;
@@ -17549,6 +17666,7 @@ if (typeof Rul$Before !== 'object') {
   Rul$Before = function() {};
   Rul$Before = new Rul$Before;
   Rul$Before.isa = function (s) { return s == 'Rul::Before'; };
+  Rul$Before.ref = function (s) { return 'Rul::Before'; };
 }
 (function () {
   var v__NAMESPACE = Rul$Before;
@@ -17611,6 +17729,7 @@ if (typeof Rul$NotBefore !== 'object') {
   Rul$NotBefore = function() {};
   Rul$NotBefore = new Rul$NotBefore;
   Rul$NotBefore.isa = function (s) { return s == 'Rul::NotBefore'; };
+  Rul$NotBefore.ref = function (s) { return 'Rul::NotBefore'; };
 }
 (function () {
   var v__NAMESPACE = Rul$NotBefore;
@@ -17681,6 +17800,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -17691,6 +17811,7 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
+  Lit$Array.ref = function (s) { return 'Lit::Array'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -18360,6 +18481,7 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
+  Lit$Hash.ref = function (s) { return 'Lit::Hash'; };
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -21753,6 +21875,7 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
+  Apply.ref = function (s) { return 'Apply'; };
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -21832,6 +21955,7 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
+  Do.ref = function (s) { return 'Do'; };
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -21900,6 +22024,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
+  main.ref = function (s) { return 'main'; };
 }
 (function () {
   var v__NAMESPACE = main;
@@ -21908,6 +22033,7 @@ if (typeof Main !== 'object') {
   Main = function() {};
   Main = new Main;
   Main.isa = function (s) { return s == 'Main'; };
+  Main.ref = function (s) { return 'Main'; };
 }
 (function () {
   var v__NAMESPACE = Main;

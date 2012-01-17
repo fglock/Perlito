@@ -75,7 +75,7 @@ package Perlito5::Expression;
     sub pop_term {
         my $num_stack = shift;
         my $v = pop @$num_stack;
-        if ($v->isa('Array')) {
+        if (ref($v) eq 'ARRAY') {
             # say "# ** processing term ", $v->perl;
             if ($v->[1] eq 'methcall_no_params') {
                 # say "#   Call ", ($v->[2])->perl;
@@ -150,7 +150,7 @@ package Perlito5::Expression;
                 # say "#     ", $v->perl;
                 return $v;
             }
-            if ($v->[1]->isa('Array') && scalar($v->[1]) == 2) {
+            if (ref($v->[1]) eq 'ARRAY' && scalar($v->[1]) == 2) {
                 # say "#   old style Pair ", $v->perl;
                 #   old style Pair - wrap it into a subroutine for now
                 $v = Apply->new( code => 'pair', arguments => $v->[1], namespace => '' );

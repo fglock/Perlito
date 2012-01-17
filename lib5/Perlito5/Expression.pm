@@ -99,7 +99,7 @@ package main;
         my $List__ = bless \@_, "ARRAY";
         ((my  $num_stack) = shift());
         ((my  $v) = pop( @{($num_stack)} ));
-        if ((Main::isa($v, 'Array'))) {
+        if (((ref($v) eq 'ARRAY'))) {
             if ((($v->[1] eq 'methcall_no_params'))) {
                 ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => (sub {
     (my  $List_a = bless [], 'ARRAY');
@@ -155,7 +155,7 @@ package main;
                 ($v = Lookup->new(('obj' => undef()), ('index_exp' => $v->[2])));
                 return ($v)
             };
-            if (((Main::isa($v->[1], 'Array') && (scalar( @{$v->[1]} ) == 2)))) {
+            if ((((ref($v->[1]) eq 'ARRAY') && (scalar( @{$v->[1]} ) == 2)))) {
                 ($v = Apply->new(('code' => 'pair'), ('arguments' => $v->[1]), ('namespace' => '')));
                 return ($v)
             };
