@@ -205,7 +205,7 @@ token quant_exp {
     |   '**'  <.Perlito5::Grammar.opt_ws>
         [
         |  <Perlito5::Grammar.val_int>
-           { make $$<Perlito5::Grammar.val_int> }
+           { make $<Perlito5::Grammar.val_int>->flat() }
         |  <rule_term>
            { make $<rule_term>->flat() }
         ]
@@ -215,19 +215,19 @@ token quant_exp {
 token greedy_exp {   \?  |  \+  |  ''  }
 
 token quantifier {
-    <.Perlito5::Grammar.opt_ws>
+    <Perlito5::Grammar.opt_ws>
     <rule_term>
-    <.Perlito5::Grammar.opt_ws2>
+    <Perlito5::Grammar.opt_ws2>
     [
         <quant_exp> <greedy_exp>
-        <.Perlito5::Grammar.opt_ws3>
+        <Perlito5::Grammar.opt_ws3>
         { make Rul::Quantifier->new(
                 term    => $<rule_term>->flat(),
                 quant   => $<quant_exp>->flat(),
                 greedy  => $<greedy_exp>->flat(),
-                ws1     => $$<Perlito5::Grammar.opt_ws>,
-                ws2     => $$<Perlito5::Grammar.opt_ws2>,
-                ws3     => $$<Perlito5::Grammar.opt_ws3>,
+                ws1     => $<Perlito5::Grammar.opt_ws>->flat(),
+                ws2     => $<Perlito5::Grammar.opt_ws2>->flat(),
+                ws3     => $<Perlito5::Grammar.opt_ws3>->flat(),
             )
         }
     |
@@ -284,7 +284,7 @@ Perlito5::Grammar::Regex - Grammar for Perlito Regex
 =head1 SYNOPSIS
 
     my $match = $source.rule;
-    ($$match).perl;    # generated Regex AST
+    $match->flat();    # generated Regex AST
 
 =head1 DESCRIPTION
 
