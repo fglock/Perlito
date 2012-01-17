@@ -483,7 +483,7 @@ Perlito5$Grammar.space = function(v_str, v_pos) {
 function perl5_to_js( source ) {
     // say( "source: [" + source + "]" );
     match = Perlito5$Grammar.exp_stmts(source, 0);
-    ast = match.scalar();
+    ast = match.flat();
     var block = {v_stmts: ast};
     block.__proto__ = Lit$Block;
     var tmp = {v_block: block};

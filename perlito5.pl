@@ -77,7 +77,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
-    ($List_v = ((${$MATCH->{'module_name'}})));
+    ($List_v = (($MATCH->{'module_name'}->flat())));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
@@ -104,7 +104,7 @@ package main;
         my $List__ = bless \@_, "ARRAY";
         ((my  $s) = shift());
         ((my  $ident) = Main->module_name($s, 0));
-        return (join((chr(47)), @{${$ident}}))
+        return (join((chr(47)), @{$ident->flat()}))
     };
     sub expand_use {
         my $List__ = bless \@_, "ARRAY";
@@ -129,7 +129,7 @@ package main;
                 add_comp_unit((sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, CompUnit->new(('name' => 'main'), ('body' => ${$m})) );
+    push( @{$List_a}, CompUnit->new(('name' => 'main'), ('body' => $m->flat())) );
     $List_a
 })->())
             }
@@ -208,7 +208,7 @@ package main;
             };
             ($source = IO::slurp($prelude_filename));
             ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
-            add_comp_unit(${$m})
+            add_comp_unit($m->flat())
         };
         if ((((\@ARGV)->[0] eq '-e'))) {
             shift( @{(\@ARGV)} );
@@ -228,7 +228,7 @@ package main;
             warn(('now parsing'))
         };
         ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
-        add_comp_unit(${$m});
+        add_comp_unit($m->flat());
         ($comp_units = (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');

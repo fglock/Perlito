@@ -7,7 +7,22 @@ class Perlito5::Match {
     has $.bool;
     has $.capture;
 
+    # obsolete, use flat() instead
     sub scalar {
+        my $self = $_[0];
+
+        if ($.bool) {
+            if (defined($.capture)) {
+                return $.capture;
+            }
+            return substr( $.str, $.from, ( $.to - $.from ) );
+        }
+        else {
+            return '';
+        }
+    }
+
+    sub flat {
         my $self = $_[0];
 
         if ($.bool) {

@@ -33,14 +33,14 @@ my %module_seen;
 
 token module_name {
     <Perlito5::Grammar.ident>
-    [   '::' <module_name>  { make [ '' . $<Perlito5::Grammar.ident>, @( $$<module_name> ) ] }
+    [   '::' <module_name>  { make [ '' . $<Perlito5::Grammar.ident>, @( $<module_name>->flat() ) ] }
     |   ''                  { make [ '' . $<Perlito5::Grammar.ident> ] }
     ]
 }
 sub modulename_to_filename {
     my $s = shift;
     my $ident = Main->module_name( $s, 0 );
-    return join("/", $$ident);
+    return join("/", $ident->flat());
 }
 
 sub expand_use {
@@ -74,7 +74,7 @@ sub expand_use {
                 [
                     CompUnit->new(
                         name => 'main',
-                        body => $$m,
+                        body => $m->flat(),
                     )
                 ]
             );
@@ -162,7 +162,7 @@ perlito5 [switches] [programfile]
             }
             $source = IO::slurp( $prelude_filename );
             my $m = Perlito5::Grammar->exp_stmts($source, 0);
-            add_comp_unit($$m);
+            add_comp_unit($m->flat());
         }
         if ($ARGV[0] eq '-e') {
             shift @ARGV;
@@ -184,7 +184,7 @@ perlito5 [switches] [programfile]
         }
 
         my $m = Perlito5::Grammar->exp_stmts($source, 0);
-        add_comp_unit($$m);
+        add_comp_unit($m->flat());
 
         $comp_units = [
                 CompUnit->new(

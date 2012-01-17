@@ -354,7 +354,7 @@ Perlito5::Emitter::Token - Code generator for Perlito Regex
 =head1 SYNOPSIS
 
     my $match = $source.rule;
-    ($$match)->emit_perl5;    # generated Perlito source code
+    $match->flat()->emit_perl5;    # generated Perlito source code
 
 =head1 DESCRIPTION
 

@@ -478,7 +478,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $MATCH->{'curly_parse'}->flat() );
     $List_a
-})->()), ('code' => ('prefix:<' . ${$MATCH->{'Perlito5::Grammar.var_sigil'}} . '>')), ('namespace' => '')) );
+})->()), ('code' => ('prefix:<' . $MATCH->{'Perlito5::Grammar.var_sigil'}->flat() . '>')), ('namespace' => '')) );
     $List_a
 })->()))
 })->()) || 1)))
@@ -618,7 +618,7 @@ package main;
     push( @{$List_a}, (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, Val::Buf->new(('buf' => ${$MATCH->{'Perlito5::Grammar.ident'}})) );
+    push( @{$List_a}, Val::Buf->new(('buf' => $MATCH->{'Perlito5::Grammar.ident'}->flat())) );
     $List_a
 })->() );
     $List_a
@@ -672,7 +672,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'block' );
-    push( @{$List_a}, ${$MATCH->{'Perlito5::Grammar.exp_stmts'}} );
+    push( @{$List_a}, $MATCH->{'Perlito5::Grammar.exp_stmts'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -702,7 +702,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, ${$MATCH->{'Perlito5::Grammar.sub_def'}} );
+    push( @{$List_a}, $MATCH->{'Perlito5::Grammar.sub_def'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -732,7 +732,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, ${$MATCH->{'Perlito5::Grammar.token'}} );
+    push( @{$List_a}, $MATCH->{'Perlito5::Grammar.token'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -784,7 +784,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'op' );
     push( @{$List_a}, chr(63) . chr(63) . ' ' . chr(33) . chr(33) );
-    push( @{$List_a}, ${$MATCH->{'ternary5_parse'}} );
+    push( @{$List_a}, $MATCH->{'ternary5_parse'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -805,7 +805,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, ${$MATCH->{'Perlito5::Grammar.var_ident'}} );
+    push( @{$List_a}, $MATCH->{'Perlito5::Grammar.var_ident'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -843,7 +843,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'Perlito5::Precedence.op_parse'}}))
+    ($MATCH->{capture} = ($MATCH->{'Perlito5::Precedence.op_parse'}->flat()))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -912,7 +912,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Use->new(('mod' => ${$MATCH->{'Perlito5::Grammar.full_ident'}})) );
+    push( @{$List_a}, Use->new(('mod' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat())) );
     $List_a
 })->()))
 })->()) || 1))))
@@ -942,7 +942,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, ${$MATCH->{'Perlito5::Grammar.grammar'}} );
+    push( @{$List_a}, $MATCH->{'Perlito5::Grammar.grammar'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -976,7 +976,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
-})->()), ('namespace' => ${$MATCH->{'Perlito5::Grammar.full_ident'}})) );
+})->()), ('namespace' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat())) );
     $List_a
 })->()))
 })->()) || 1))))
@@ -1035,7 +1035,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Decl->new(('decl' => ${$MATCH->{'Perlito5::Grammar.declarator'}}), ('type' => ${$MATCH->{'Perlito5::Grammar.opt_type'}}), ('var' => ${$MATCH->{'Perlito5::Grammar.var_ident'}})) );
+    push( @{$List_a}, Decl->new(('decl' => $MATCH->{'Perlito5::Grammar.declarator'}->flat()), ('type' => $MATCH->{'Perlito5::Grammar.opt_type'}->flat()), ('var' => $MATCH->{'Perlito5::Grammar.var_ident'}->flat())) );
     $List_a
 })->()))
 })->()) || 1))))
@@ -1193,7 +1193,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, ${$MATCH->{'Perlito5::Grammar.val_num'}} );
+    push( @{$List_a}, $MATCH->{'Perlito5::Grammar.val_num'}->flat() );
     $List_a
 })->()))
 })->()) || 1)))
@@ -1214,7 +1214,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, ${$MATCH->{'Perlito5::Grammar.val_int'}} );
+    push( @{$List_a}, $MATCH->{'Perlito5::Grammar.val_int'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -1398,7 +1398,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, ${$MATCH->{'Perlito5::Grammar.val_buf'}} );
+    push( @{$List_a}, $MATCH->{'Perlito5::Grammar.val_buf'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -1821,7 +1821,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'Perlito5::Grammar.if'}}))
+    ($MATCH->{capture} = ($MATCH->{'Perlito5::Grammar.if'}->flat()))
 })->()) || 1)))
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -1836,7 +1836,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'Perlito5::Grammar.unless'}}))
+    ($MATCH->{capture} = ($MATCH->{'Perlito5::Grammar.unless'}->flat()))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -1851,7 +1851,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'Perlito5::Grammar.when'}}))
+    ($MATCH->{capture} = ($MATCH->{'Perlito5::Grammar.when'}->flat()))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -1866,7 +1866,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'Perlito5::Grammar.for'}}))
+    ($MATCH->{capture} = ($MATCH->{'Perlito5::Grammar.for'}->flat()))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -1881,7 +1881,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'Perlito5::Grammar.while'}}))
+    ($MATCH->{capture} = ($MATCH->{'Perlito5::Grammar.while'}->flat()))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -1896,7 +1896,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'Perlito5::Grammar.loop'}}))
+    ($MATCH->{capture} = ($MATCH->{'Perlito5::Grammar.loop'}->flat()))
 })->()) || 1))))
 })->()))
 })->())));

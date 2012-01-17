@@ -374,7 +374,7 @@ package Perlito5::Expression;
                     { make [ 'term',  
                             Apply->new( 
                                 'arguments' => [ $<curly_parse>->flat() ],
-                                'code' => 'prefix:<' . $$<Perlito5::Grammar.var_sigil> . '>', 
+                                'code' => 'prefix:<' . $<Perlito5::Grammar.var_sigil>->flat() . '>', 
                                 'namespace' => ''
                             )   
                         ] 
@@ -390,23 +390,23 @@ package Perlito5::Expression;
 
         # XXX Perl6
         | '<'  <Perlito5::Grammar.ident> '>'
-                    { make [ 'postfix_or_term',  'block', [Val::Buf->new('buf' => $$<Perlito5::Grammar.ident>)] ] }
+                    { make [ 'postfix_or_term',  'block', [Val::Buf->new('buf' => $<Perlito5::Grammar.ident>->flat())] ] }
 
         | '{'  <.Perlito5::Grammar.ws>?
                <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.ws>? '}'
-                    { make [ 'postfix_or_term', 'block', $$<Perlito5::Grammar.exp_stmts> ] }
+                    { make [ 'postfix_or_term', 'block', $<Perlito5::Grammar.exp_stmts>->flat() ] }
         | 'sub' <.Perlito5::Grammar.ws> <Perlito5::Grammar.sub_def>
-                    { make [ 'term', $$<Perlito5::Grammar.sub_def>     ] }
+                    { make [ 'term', $<Perlito5::Grammar.sub_def>->flat()     ] }
 
         # XXX Perl6
         | 'token' <.Perlito5::Grammar.ws> <Perlito5::Grammar.token>
-                    { make [ 'term', $$<Perlito5::Grammar.token>       ] }
+                    { make [ 'term', $<Perlito5::Grammar.token>->flat()       ] }
         | 'do' <.Perlito5::Grammar.ws> <statement_parse>
                     { make [ 'term', Do->new( block => $<statement_parse>->flat() ) ] }
 
         | '?'  <ternary5_parse> ':'
-                    { make [ 'op',          '?? !!', $$<ternary5_parse>  ] }
-        | <Perlito5::Grammar.var_ident>                { make [ 'term', $$<Perlito5::Grammar.var_ident>   ] }
+                    { make [ 'op',          '?? !!', $<ternary5_parse>->flat()  ] }
+        | <Perlito5::Grammar.var_ident>                { make [ 'term', $<Perlito5::Grammar.var_ident>->flat()   ] }
 
         # XXX Perl6
         | '$<' <capture_name> '>'
@@ -414,25 +414,25 @@ package Perlito5::Expression;
                 obj   => Var->new( sigil => '$', twigil => '', name => '/' ),
                 index_exp => Val::Buf->new( buf => '' . $<capture_name> )
             ) ] }
-        | <Perlito5::Precedence.op_parse>              { make $$<Perlito5::Precedence.op_parse>             }
+        | <Perlito5::Precedence.op_parse>              { make $<Perlito5::Precedence.op_parse>->flat()             }
 
         | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
-            { make [ 'term', Use->new( mod => $$<Perlito5::Grammar.full_ident> ) ] }
+            { make [ 'term', Use->new( mod => $<Perlito5::Grammar.full_ident>->flat() ) ] }
 
           # XXX Perl6
         | 'class' <.Perlito5::Grammar.ws> <Perlito5::Grammar.grammar>
-            { make [ 'term', $$<Perlito5::Grammar.grammar> ] }
+            { make [ 'term', $<Perlito5::Grammar.grammar>->flat() ] }
 
         | 'package' <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
             { make [ 'term',
                      Apply->new(
-                        code => 'package', arguments => [], namespace => $$<Perlito5::Grammar.full_ident> 
+                        code => 'package', arguments => [], namespace => $<Perlito5::Grammar.full_ident>->flat() 
                      )
                    ]
             }
 
         | <Perlito5::Grammar.declarator> <.Perlito5::Grammar.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
-            { make [ 'term', Decl->new( decl => $$<Perlito5::Grammar.declarator>, type => $$<Perlito5::Grammar.opt_type>, var => $$<Perlito5::Grammar.var_ident> ) ] }
+            { make [ 'term', Decl->new( decl => $<Perlito5::Grammar.declarator>->flat(), type => $<Perlito5::Grammar.opt_type>->flat(), var => $<Perlito5::Grammar.var_ident>->flat() ) ] }
 
         | [ '.'    # XXX Perl6
           | '->' 
@@ -456,8 +456,8 @@ package Perlito5::Expression;
           ]
 
         | <before <.Perlito5::Grammar.digit> >
-            [ <Perlito5::Grammar.val_num>    { make [ 'term', $$<Perlito5::Grammar.val_num> ]  }  # 123.456
-            | <Perlito5::Grammar.val_int>    { make [ 'term', $$<Perlito5::Grammar.val_int> ]  }  # 123
+            [ <Perlito5::Grammar.val_num>    { make [ 'term', $<Perlito5::Grammar.val_num>->flat() ]  }  # 123.456
+            | <Perlito5::Grammar.val_int>    { make [ 'term', $<Perlito5::Grammar.val_int>->flat() ]  }  # 123
             ]
 
         | <before <.Perlito5::Grammar.word> >
@@ -493,7 +493,7 @@ package Perlito5::Expression;
                      '' . $<Perlito5::Grammar.ident>                  ] }
           ]
 
-        | <Perlito5::Grammar.val_buf>    { make [ 'term', $$<Perlito5::Grammar.val_buf> ]  }  # 'moose'
+        | <Perlito5::Grammar.val_buf>    { make [ 'term', $<Perlito5::Grammar.val_buf>->flat() ]  }  # 'moose'
         | <.Perlito5::Grammar.ws>                      { make [ 'space',   ' '                             ] }
     }
 
@@ -751,12 +751,12 @@ package Perlito5::Expression;
     }
 
     token exp_stmt {
-        | <Perlito5::Grammar.if>     { make $$<Perlito5::Grammar.if>     }
-        | <Perlito5::Grammar.unless> { make $$<Perlito5::Grammar.unless> }
-        | <Perlito5::Grammar.when>   { make $$<Perlito5::Grammar.when>   }
-        | <Perlito5::Grammar.for>    { make $$<Perlito5::Grammar.for>    }
-        | <Perlito5::Grammar.while>  { make $$<Perlito5::Grammar.while>  }
-        | <Perlito5::Grammar.loop>   { make $$<Perlito5::Grammar.loop>   }
+        | <Perlito5::Grammar.if>     { make $<Perlito5::Grammar.if>->flat()     }
+        | <Perlito5::Grammar.unless> { make $<Perlito5::Grammar.unless>->flat() }
+        | <Perlito5::Grammar.when>   { make $<Perlito5::Grammar.when>->flat()   }
+        | <Perlito5::Grammar.for>    { make $<Perlito5::Grammar.for>->flat()    }
+        | <Perlito5::Grammar.while>  { make $<Perlito5::Grammar.while>->flat()  }
+        | <Perlito5::Grammar.loop>   { make $<Perlito5::Grammar.loop>->flat()   }
     }
 
     token statement_modifier {

@@ -91,12 +91,12 @@ token exp_stmts2 { <exp_stmts> { make $<exp_stmts>->flat() } }
 
 token exp {
     <Perlito5::Expression.exp_parse>
-        { make $$<Perlito5::Expression.exp_parse> }
+        { make $<Perlito5::Expression.exp_parse>->flat() }
 }
 
 token exp2 {
     <Perlito5::Expression.exp_parse>
-        { make $$<Perlito5::Expression.exp_parse> }
+        { make $<Perlito5::Expression.exp_parse>->flat() }
 }
 
 token opt_ident {
@@ -188,7 +188,7 @@ token double_quoted_unescape {
 token double_quoted_buf {
     | <before \$ >
         [ <before \$ <.ident> > <Perlito5::Expression.operator>
-            { make ($$<Perlito5::Expression.operator>)[1] }
+            { make ($<Perlito5::Expression.operator>->flat())[1] }
         | \$\{ <ident> \}
             { make Var->new(
                     sigil  => '$',
@@ -206,7 +206,7 @@ token double_quoted_buf {
                     code      => 'join',
                     arguments => [ 
                         Val::Buf->new( buf => ' ' ), 
-                        ($$<Perlito5::Expression.operator>)[1] 
+                        ($<Perlito5::Expression.operator>->flat())[1] 
                     ],
                 )
             }
@@ -287,7 +287,7 @@ token args_sig {
         # say ' positional: ', ($<>->flat()).perl;
         make Sig->new(
             invocant    => $<var_invocant>->flat(),
-            positional  => Perlito5::Expression::expand_list(($$<Perlito5::Expression.list_parse>){'exp'}),
+            positional  => Perlito5::Expression::expand_list(($<Perlito5::Expression.list_parse>->flat()){'exp'}),
             named       => { } );
     }
 }
@@ -318,7 +318,7 @@ token token {
         <Perlito5::Grammar::Regex.rule>
     \}
     {
-        #say 'Token was compiled into: ', ($$<Perlito5::Grammar::Regex.rule>)->perl;
+        #say 'Token was compiled into: ', ($<Perlito5::Grammar::Regex.rule>->flat())->perl;
         my $source = $<opt_name> 
             . '{ ' .
                 'my $grammar = $_[0]; ' .
@@ -326,7 +326,7 @@ token token {
                 'my $pos     = $_[2]; ' .
                 'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' .
                 '$MATCH->bool = ( ' .
-                    ($$<Perlito5::Grammar::Regex.rule>)->emit_perl5() .
+                    ($<Perlito5::Grammar::Regex.rule>->flat())->emit_perl5() .
                 '); ' .
                 '$MATCH; ' 
             . '}';
