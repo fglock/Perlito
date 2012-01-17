@@ -149,7 +149,7 @@ Perlito5::Grammar - Grammar for Perlito
 =head1 SYNOPSIS
 
     my $match = $source.parse;
-    ($$match).perl;    # generated Perlito AST
+    $match->flat();    # generated Perlito AST
 
 =head1 DESCRIPTION
 

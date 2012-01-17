@@ -32,6 +32,19 @@ package main;
                 return ('')
             }
         };
+        sub flat {
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $self) = $List__->[0]);
+            if (($self->{bool})) {
+                if ((defined($self->{capture}))) {
+                    return ($self->{capture})
+                };
+                return (substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))))
+            }
+            else {
+                return ('')
+            }
+        };
         sub string {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);

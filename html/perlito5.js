@@ -8243,7 +8243,7 @@ if (typeof Perlito5$Expression !== 'object') {
     return(List_a);
 })());;
             })(); };
-            (v_v = scalar(v_m));
+            (v_v = (typeof(v_m.__proto__) != 'undefined' && v_m.__proto__.hasOwnProperty("flat") ? v_m.__proto__.flat.call(v_m) : v_m.flat()));
             if ( bool((and(and(v_is_first_token, function () { return ((v_v[0] == 'op')); }), function () { return ( bool((Perlito5$Precedence.is_fixity_type(CallSub, 'prefix', v_v[1]))) ? false : true); }))) ) { (function () {
                 (function () { if (v_v == null) { v_v = [] }; if (v_v[0] == null) { v_v[0] = [] }; return (v_v[0]  = 'end'); })();;
             })(); };
@@ -8440,7 +8440,7 @@ if (typeof Perlito5$Expression !== 'object') {
         if ( bool((( bool(v_m) ? false : true))) ) { (function () {
             die((string('Expected closing delimiter: ')), ((v_delimiter)), ' near ', v_last_pos);;
         })(); };
-        (v_v = scalar(v_m));
+        (v_v = (typeof(v_m.__proto__) != 'undefined' && v_m.__proto__.hasOwnProperty("flat") ? v_m.__proto__.flat.call(v_m) : v_m.flat()));
         if ( bool(((v_v[0] != 'end'))) ) { (function () {
             (v_last_pos = (typeof(v_m.__proto__) != 'undefined' && v_m.__proto__.hasOwnProperty("to") ? v_m.__proto__.to.call(v_m) : v_m.to()));;
         })(); };
@@ -8728,7 +8728,7 @@ if (typeof Perlito5$Expression !== 'object') {
     return(List_a);
 })());;
             })(); };
-            (v_v = scalar(v_m));
+            (v_v = (typeof(v_m.__proto__) != 'undefined' && v_m.__proto__.hasOwnProperty("flat") ? v_m.__proto__.flat.call(v_m) : v_m.flat()));
             if ( bool(((v_v[0] != 'end'))) ) { (function () {
                 (v_last_pos = (typeof(v_m.__proto__) != 'undefined' && v_m.__proto__.hasOwnProperty("to") ? v_m.__proto__.to.call(v_m) : v_m.to()));;
             })(); };;
@@ -9379,43 +9379,43 @@ if (typeof Perlito5$Expression !== 'object') {
                     if ( bool((( bool((v_res)) ? false : true))) ) { (function () {
                         throw(v_res);;
                     })(); };
-                    if ( bool(isa((scalar(v_res))['exp'], 'Lit::Block')) ) { (function () {
-                        (function () { if ((scalar(v_res))['exp'] == null) { (scalar(v_res))['exp'] = {} }; return ((scalar(v_res))['exp']  = (function () { if (Do.hasOwnProperty("new") ) { return Do.new('block', (scalar(v_res))['exp']); } var tmp = {v_block: (scalar(v_res))['exp']}; tmp.__proto__ = Do; return tmp; })()); })();;
+                    if ( bool(isa(((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp'], 'Lit::Block')) ) { (function () {
+                        (function () { if (((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp'] == null) { ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp'] = {} }; return (((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']  = (function () { if (Do.hasOwnProperty("new") ) { return Do.new('block', ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']); } var tmp = {v_block: ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']}; tmp.__proto__ = Do; return tmp; })()); })();;
                     })(); };
-                    if ( bool((scalar(v_res))['end_block']) ) { (function () {
+                    if ( bool(((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['end_block']) ) { (function () {
                         die((string('Unexpected block after expression near ')), v_pos);;
                     })(); };
-                    if ( bool((scalar(v_res))['terminated']) ) { (function () {
-                        (v_res.v_capture = (scalar(v_res))['exp']);
+                    if ( bool(((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['terminated']) ) { (function () {
+                        (v_res.v_capture = ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
                         throw(v_res);;
                     })(); };
                     (v_modifier = (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("statement_modifier") ? v_self.__proto__.statement_modifier.call(v_self,v_str,(typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("to") ? v_res.__proto__.to.call(v_res) : v_res.to())) : v_self.statement_modifier(v_str, (typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("to") ? v_res.__proto__.to.call(v_res) : v_res.to()))));
                     if ( bool((( bool((v_modifier)) ? false : true))) ) { (function () {
-                        (v_res.v_capture = (scalar(v_res))['exp']);
+                        (v_res.v_capture = ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
                         throw(v_res);;
                     })(); };
                     (v_modifier_exp = (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("exp_parse") ? v_self.__proto__.exp_parse.call(v_self,v_str,(typeof(v_modifier.__proto__) != 'undefined' && v_modifier.__proto__.hasOwnProperty("to") ? v_modifier.__proto__.to.call(v_modifier) : v_modifier.to())) : v_self.exp_parse(v_str, (typeof(v_modifier.__proto__) != 'undefined' && v_modifier.__proto__.hasOwnProperty("to") ? v_modifier.__proto__.to.call(v_modifier) : v_modifier.to()))));
                     if ( bool((( bool((v_modifier_exp)) ? false : true))) ) { (function () {
                         die((string('Expected expression after ' + String.fromCharCode(39))), v_modifier, (string(String.fromCharCode(39))));;
                     })(); };
-                    if ( bool((scalar(v_modifier_exp))['end_block']) ) { (function () {
+                    if ( bool(((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['end_block']) ) { (function () {
                         die((string('Unexpected block after expression near ')), (typeof(v_modifier.__proto__) != 'undefined' && v_modifier.__proto__.hasOwnProperty("to") ? v_modifier.__proto__.to.call(v_modifier) : v_modifier.to()));;
                     })(); };
                     (v_modifier = (string('') + string(v_modifier)));
                     if ( bool(((v_modifier == 'if'))) ) { (function () {
-                        throw((function () { if (Perlito5$Match.hasOwnProperty("new") ) { return Perlito5$Match.new('str', v_str, 'from', v_pos, 'to', (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()), 'bool', 1, 'capture', (function () { if (If.hasOwnProperty("new") ) { return If.new('cond', (scalar(v_modifier_exp))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+                        throw((function () { if (Perlito5$Match.hasOwnProperty("new") ) { return Perlito5$Match.new('str', v_str, 'from', v_pos, 'to', (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()), 'bool', 1, 'capture', (function () { if (If.hasOwnProperty("new") ) { return If.new('cond', ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()}; tmp.__proto__ = Lit$Block; return tmp; })(), 'otherwise', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
@@ -9429,19 +9429,19 @@ if (typeof Perlito5$Expression !== 'object') {
     var List_v = [];
 
     return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: (scalar(v_modifier_exp))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()}; tmp.__proto__ = Lit$Block; return tmp; })(),v_otherwise: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
@@ -9455,19 +9455,19 @@ if (typeof Perlito5$Expression !== 'object') {
     var List_v = [];
 
     return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = If; return tmp; })()); } var tmp = {v_str: v_str,v_from: v_pos,v_to: (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()),v_bool: 1,v_capture: (function () { if (If.hasOwnProperty("new") ) { return If.new('cond', (scalar(v_modifier_exp))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = If; return tmp; })()); } var tmp = {v_str: v_str,v_from: v_pos,v_to: (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()),v_bool: 1,v_capture: (function () { if (If.hasOwnProperty("new") ) { return If.new('cond', ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()}; tmp.__proto__ = Lit$Block; return tmp; })(), 'otherwise', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
@@ -9481,19 +9481,19 @@ if (typeof Perlito5$Expression !== 'object') {
     var List_v = [];
 
     return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: (scalar(v_modifier_exp))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()}; tmp.__proto__ = Lit$Block; return tmp; })(),v_otherwise: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
@@ -9510,7 +9510,7 @@ if (typeof Perlito5$Expression !== 'object') {
 })()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = If; return tmp; })()}; tmp.__proto__ = Perlito5$Match; return tmp; })());;
                     })(); };
                     if ( bool(((v_modifier == 'unless'))) ) { (function () {
-                        throw((function () { if (Perlito5$Match.hasOwnProperty("new") ) { return Perlito5$Match.new('str', v_str, 'from', v_pos, 'to', (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()), 'bool', 1, 'capture', (function () { if (If.hasOwnProperty("new") ) { return If.new('cond', (scalar(v_modifier_exp))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+                        throw((function () { if (Perlito5$Match.hasOwnProperty("new") ) { return Perlito5$Match.new('str', v_str, 'from', v_pos, 'to', (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()), 'bool', 1, 'capture', (function () { if (If.hasOwnProperty("new") ) { return If.new('cond', ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -9527,16 +9527,16 @@ if (typeof Perlito5$Expression !== 'object') {
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: (scalar(v_modifier_exp))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -9553,16 +9553,16 @@ if (typeof Perlito5$Expression !== 'object') {
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = If; return tmp; })()); } var tmp = {v_str: v_str,v_from: v_pos,v_to: (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()),v_bool: 1,v_capture: (function () { if (If.hasOwnProperty("new") ) { return If.new('cond', (scalar(v_modifier_exp))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = If; return tmp; })()); } var tmp = {v_str: v_str,v_from: v_pos,v_to: (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()),v_bool: 1,v_capture: (function () { if (If.hasOwnProperty("new") ) { return If.new('cond', ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -9579,16 +9579,16 @@ if (typeof Perlito5$Expression !== 'object') {
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: (scalar(v_modifier_exp))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -9605,132 +9605,132 @@ if (typeof Perlito5$Expression !== 'object') {
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = If; return tmp; })()}; tmp.__proto__ = Perlito5$Match; return tmp; })());;
                     })(); };
                     if ( bool(((v_modifier == 'while'))) ) { (function () {
-                        throw((function () { if (Perlito5$Match.hasOwnProperty("new") ) { return Perlito5$Match.new('str', v_str, 'from', v_pos, 'to', (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()), 'bool', 1, 'capture', (function () { if (While.hasOwnProperty("new") ) { return While.new('cond', (scalar(v_modifier_exp))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+                        throw((function () { if (Perlito5$Match.hasOwnProperty("new") ) { return Perlito5$Match.new('str', v_str, 'from', v_pos, 'to', (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()), 'bool', 1, 'capture', (function () { if (While.hasOwnProperty("new") ) { return While.new('cond', ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: (scalar(v_modifier_exp))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
-    return(List_a);
-})()); } var tmp = {v_stmts: (function () { 
-    var List_a = [];
-
-    var List_v = [];
-
-    push(List_a, (scalar(v_res))['exp']);
-    return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = While; return tmp; })()); } var tmp = {v_str: v_str,v_from: v_pos,v_to: (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()),v_bool: 1,v_capture: (function () { if (While.hasOwnProperty("new") ) { return While.new('cond', (scalar(v_modifier_exp))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
-    var List_a = [];
-
-    var List_v = [];
-
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: (scalar(v_modifier_exp))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = While; return tmp; })()); } var tmp = {v_str: v_str,v_from: v_pos,v_to: (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()),v_bool: 1,v_capture: (function () { if (While.hasOwnProperty("new") ) { return While.new('cond', ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
+    return(List_a);
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
+    return(List_a);
+})()); } var tmp = {v_stmts: (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = While; return tmp; })()}; tmp.__proto__ = Perlito5$Match; return tmp; })());;
                     })(); };
                     if ( bool((or((v_modifier == 'for'), function () { return (v_modifier == 'foreach'); }))) ) { (function () {
-                        throw((function () { if (Perlito5$Match.hasOwnProperty("new") ) { return Perlito5$Match.new('str', v_str, 'from', v_pos, 'to', (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()), 'bool', 1, 'capture', (function () { if (For.hasOwnProperty("new") ) { return For.new('cond', (scalar(v_modifier_exp))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+                        throw((function () { if (Perlito5$Match.hasOwnProperty("new") ) { return Perlito5$Match.new('str', v_str, 'from', v_pos, 'to', (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()), 'bool', 1, 'capture', (function () { if (For.hasOwnProperty("new") ) { return For.new('cond', ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: (scalar(v_modifier_exp))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
-    return(List_a);
-})()); } var tmp = {v_stmts: (function () { 
-    var List_a = [];
-
-    var List_v = [];
-
-    push(List_a, (scalar(v_res))['exp']);
-    return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = For; return tmp; })()); } var tmp = {v_str: v_str,v_from: v_pos,v_to: (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()),v_bool: 1,v_capture: (function () { if (For.hasOwnProperty("new") ) { return For.new('cond', (scalar(v_modifier_exp))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
-    var List_a = [];
-
-    var List_v = [];
-
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
-})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: (scalar(v_modifier_exp))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = For; return tmp; })()); } var tmp = {v_str: v_str,v_from: v_pos,v_to: (typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("to") ? v_modifier_exp.__proto__.to.call(v_modifier_exp) : v_modifier_exp.to()),v_bool: 1,v_capture: (function () { if (For.hasOwnProperty("new") ) { return For.new('cond', ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'], 'body', (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()); } var tmp = {v_stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    push(List_a, (scalar(v_res))['exp']);
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
+    return(List_a);
+})()}; tmp.__proto__ = Lit$Block; return tmp; })()); } var tmp = {v_cond: ((typeof(v_modifier_exp.__proto__) != 'undefined' && v_modifier_exp.__proto__.hasOwnProperty("flat") ? v_modifier_exp.__proto__.flat.call(v_modifier_exp) : v_modifier_exp.flat()))['exp'],v_body: (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
+    return(List_a);
+})()); } var tmp = {v_stmts: (function () { 
+    var List_a = [];
+
+    var List_v = [];
+
+    push(List_a, ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']);
     return(List_a);
 })()}; tmp.__proto__ = Lit$Block; return tmp; })()}; tmp.__proto__ = For; return tmp; })()}; tmp.__proto__ = Perlito5$Match; return tmp; })());;
                     })(); };
@@ -16826,7 +16826,7 @@ if (typeof Perlito5$Grammar !== 'object') {
 
     (v_source = (string(v_MATCH['opt_name']) + string(String.fromCharCode(123) + ' ') + string('my ' + String.fromCharCode(36) + 'grammar ' + String.fromCharCode(61) + ' ' + String.fromCharCode(36) + '_[0]' + String.fromCharCode(59) + ' ') + string('my ' + String.fromCharCode(36) + 'str     ' + String.fromCharCode(61) + ' ' + String.fromCharCode(36) + '_[1]' + String.fromCharCode(59) + ' ') + string('my ' + String.fromCharCode(36) + 'pos     ' + String.fromCharCode(61) + ' ' + String.fromCharCode(36) + '_[2]' + String.fromCharCode(59) + ' ') + string('my ' + String.fromCharCode(36) + 'MATCH ' + String.fromCharCode(61) + ' Perlito5::Match->new( str ' + String.fromCharCode(61) + '> ' + String.fromCharCode(36) + 'str, from ' + String.fromCharCode(61) + '> ' + String.fromCharCode(36) + 'pos, to ' + String.fromCharCode(61) + '> ' + String.fromCharCode(36) + 'pos, bool ' + String.fromCharCode(61) + '> 1 )' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(36) + 'MATCH->bool ' + String.fromCharCode(61) + ' ( ') + string((typeof(((typeof(v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__) != 'undefined' && v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__.hasOwnProperty("flat") ? v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__.flat.call(v_MATCH['Perlito5::Grammar::Regex.rule']) : v_MATCH['Perlito5::Grammar::Regex.rule'].flat())).__proto__) != 'undefined' && ((typeof(v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__) != 'undefined' && v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__.hasOwnProperty("flat") ? v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__.flat.call(v_MATCH['Perlito5::Grammar::Regex.rule']) : v_MATCH['Perlito5::Grammar::Regex.rule'].flat())).__proto__.hasOwnProperty("emit_perl5") ? ((typeof(v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__) != 'undefined' && v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__.hasOwnProperty("flat") ? v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__.flat.call(v_MATCH['Perlito5::Grammar::Regex.rule']) : v_MATCH['Perlito5::Grammar::Regex.rule'].flat())).__proto__.emit_perl5.call(((typeof(v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__) != 'undefined' && v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__.hasOwnProperty("flat") ? v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__.flat.call(v_MATCH['Perlito5::Grammar::Regex.rule']) : v_MATCH['Perlito5::Grammar::Regex.rule'].flat()))) : ((typeof(v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__) != 'undefined' && v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__.hasOwnProperty("flat") ? v_MATCH['Perlito5::Grammar::Regex.rule'].__proto__.flat.call(v_MATCH['Perlito5::Grammar::Regex.rule']) : v_MATCH['Perlito5::Grammar::Regex.rule'].flat())).emit_perl5())) + string(')' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(36) + 'MATCH' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125))));
     (v_ast = (typeof(Perlito5$Grammar.__proto__) != 'undefined' && Perlito5$Grammar.__proto__.hasOwnProperty("sub_def") ? Perlito5$Grammar.__proto__.sub_def.call(Perlito5$Grammar,v_source,0) : Perlito5$Grammar.sub_def(v_source, 0)));
-    return((v_MATCH.v_capture = scalar(v_ast)));
+    return((v_MATCH.v_capture = (typeof(v_ast.__proto__) != 'undefined' && v_ast.__proto__.hasOwnProperty("flat") ? v_ast.__proto__.flat.call(v_ast) : v_ast.flat())));
 })()), function () { return 1; })); }));
 })()));
 })())));

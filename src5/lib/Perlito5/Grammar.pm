@@ -332,8 +332,8 @@ token token {
             . '}';
         #say 'Intermediate code: ', $source;
         my $ast = Perlito5::Grammar->sub_def( $source, 0 );
-        # say 'Intermediate ast: ', $$ast->perl;
-        make $$ast;
+        # say 'Intermediate ast: ', $ast->flat;
+        make $ast->flat();
     }
 }
 
@@ -346,7 +346,7 @@ Perlito5::Grammar - Grammar for Perlito
 =head1 SYNOPSIS
 
     my $match = $source.parse;
-    ($$match).perl;    # generated Perlito AST
+    $match->flat();    # generated Perlito AST
 
 =head1 DESCRIPTION
 
