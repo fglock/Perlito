@@ -373,7 +373,7 @@ package Perlito5::Expression;
         | <Perlito5::Grammar.var_sigil> '{' <curly_parse>   '}'
                     { make [ 'term',  
                             Apply->new( 
-                                'arguments' => [ $$<curly_parse> ],
+                                'arguments' => [ $<curly_parse>->flat() ],
                                 'code' => 'prefix:<' . $$<Perlito5::Grammar.var_sigil> . '>', 
                                 'namespace' => ''
                             )   
@@ -381,12 +381,12 @@ package Perlito5::Expression;
                     }
         | '->'
             [
-            | '(' <paren_parse>   ')'                   { make [ 'postfix_or_term',  '.( )',  $$<paren_parse>   ] }
-            | '[' <square_parse>  ']'                   { make [ 'postfix_or_term',  '.[ ]',  $$<square_parse>  ] }
-            | '{' <curly_parse>   '}'                   { make [ 'postfix_or_term',  '.{ }',  $$<curly_parse>   ] }
+            | '(' <paren_parse>   ')'                   { make [ 'postfix_or_term',  '.( )',  $<paren_parse>->flat()   ] }
+            | '[' <square_parse>  ']'                   { make [ 'postfix_or_term',  '.[ ]',  $<square_parse>->flat()  ] }
+            | '{' <curly_parse>   '}'                   { make [ 'postfix_or_term',  '.{ }',  $<curly_parse>->flat()   ] }
             ]
-        | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $$<paren_parse>   ] }
-        | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $$<square_parse>  ] }
+        | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $<paren_parse>->flat()   ] }
+        | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $<square_parse>->flat()  ] }
 
         # XXX Perl6
         | '<'  <Perlito5::Grammar.ident> '>'
@@ -402,7 +402,7 @@ package Perlito5::Expression;
         | 'token' <.Perlito5::Grammar.ws> <Perlito5::Grammar.token>
                     { make [ 'term', $$<Perlito5::Grammar.token>       ] }
         | 'do' <.Perlito5::Grammar.ws> <statement_parse>
-                    { make [ 'term', Do->new( block => $$<statement_parse> ) ] }
+                    { make [ 'term', Do->new( block => $<statement_parse>->flat() ) ] }
 
         | '?'  <ternary5_parse> ':'
                     { make [ 'op',          '?? !!', $$<ternary5_parse>  ] }
@@ -440,19 +440,19 @@ package Perlito5::Expression;
             <hyper_op> # XXX Perl6
             <Perlito5::Grammar.ident>
           [ ':' <.Perlito5::Grammar.ws>? <list_parse>
-            { make [ 'postfix_or_term', 'methcall',           '' . $<Perlito5::Grammar.ident>, $$<list_parse>, $$<hyper_op>  ] }
+            { make [ 'postfix_or_term', 'methcall',           '' . $<Perlito5::Grammar.ident>, $<list_parse>->flat(), $<hyper_op>->flat()  ] }
           | '(' <paren_parse> ')'
             { make [ 'postfix_or_term',
                      'methcall',
                      '' . $<Perlito5::Grammar.ident>,
                      { end_block => undef,
-                       exp       => $$<paren_parse>,
+                       exp       => $<paren_parse>->flat(),
                        terminated => 0,
                      },
-                     $$<hyper_op>
+                     $<hyper_op>->flat()
                    ]
             }
-          | { make [ 'postfix_or_term', 'methcall_no_params', '' . $<Perlito5::Grammar.ident>, $$<hyper_op>                  ] }
+          | { make [ 'postfix_or_term', 'methcall_no_params', '' . $<Perlito5::Grammar.ident>, $<hyper_op>->flat()                  ] }
           ]
 
         | <before <.Perlito5::Grammar.digit> >
@@ -477,7 +477,7 @@ package Perlito5::Expression;
             { make [ 'postfix_or_term', 'funcall',
                      '' . $<Perlito5::Grammar.optional_namespace_before_ident>,
                      '' . $<Perlito5::Grammar.ident>, 
-                     $$<list_parse>  
+                     $<list_parse>->flat()  
                    ] 
             }
           | <before '->' >
@@ -767,7 +767,7 @@ package Perlito5::Expression;
         <.Perlito5::Grammar.ws>?
         [ ';' <.Perlito5::Grammar.ws>?
         | <statement_parse> ';'? <.Perlito5::Grammar.ws>?
-            { make $$<statement_parse> }
+            { make $<statement_parse>->flat() }
         ]
     }
 
@@ -776,7 +776,7 @@ package Perlito5::Expression;
         [ ';' <.Perlito5::Grammar.ws>?
         | <!before 'package' <.Perlito5::Grammar.ws> >
           <statement_parse> ';'? <.Perlito5::Grammar.ws>?
-            { make $$<statement_parse> }
+            { make $<statement_parse>->flat() }
         ]
     }
 

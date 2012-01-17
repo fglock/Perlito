@@ -66,8 +66,8 @@ token grammar {
     '}'
     {
         make CompUnit->new(
-            name        => $$<full_ident>,
-            body        => $$<exp_stmts>,
+            name        => $<full_ident>->flat(),
+            body        => $<exp_stmts>->flat(),
         )
     }
 }
@@ -77,8 +77,8 @@ token package_body {
         <exp_stmts_no_package>
     {
         make CompUnit->new(
-            name        => $$<full_ident>,
-            body        => $$<exp_stmts_no_package>,
+            name        => $<full_ident>->flat(),
+            body        => $<exp_stmts_no_package>->flat(),
         )
     }
 }
@@ -87,7 +87,7 @@ token declarator {
      'my' | 'state' | 'has'
 }
 
-token exp_stmts2 { <exp_stmts> { make $$<exp_stmts> } }
+token exp_stmts2 { <exp_stmts> { make $<exp_stmts>->flat() } }
 
 token exp {
     <Perlito5::Expression.exp_parse>
@@ -100,12 +100,12 @@ token exp2 {
 }
 
 token opt_ident {
-    | <ident>  { make $$<ident> }
+    | <ident>  { make $<ident>->flat() }
     | ''       { make 'postcircumfix:<( )>' }
 }
 
 token opt_type {
-    |   '::'?  <full_ident>   { make $$<full_ident> }
+    |   '::'?  <full_ident>   { make $<full_ident>->flat() }
     |   ''                    { make '' }
 }
 
@@ -121,7 +121,7 @@ token var_ident {
         make Var->new(
             sigil       => '' . $<var_sigil>,
             twigil      => '' . $<var_twigil>,
-            namespace   => $$<optional_namespace_before_ident>,
+            namespace   => $<optional_namespace_before_ident>->flat(),
             name        => '' . $<var_name>,
         )
     }
@@ -193,7 +193,7 @@ token double_quoted_buf {
             { make Var->new(
                     sigil  => '$',
                     twigil => '',
-                    name   => $$<ident>,
+                    name   => $<ident>->flat(),
                    )
             }
         | <char_any>
@@ -216,7 +216,7 @@ token double_quoted_buf {
                     code      => 'join',
                     arguments => [ 
                         Val::Buf->new( buf => ' ' ), 
-                        ($$<exp_stmts>)[0] 
+                        ($<exp_stmts>->flat())[0] 
                     ],
                 )
             }
@@ -224,7 +224,7 @@ token double_quoted_buf {
             { make Val::Buf->new( buf => '' . $<char_any> ) }
         ]
     | <double_quoted_unescape>
-        { make Val::Buf->new( buf => $$<double_quoted_unescape> ) }
+        { make Val::Buf->new( buf => $<double_quoted_unescape>->flat() ) }
 }
 
 token val_buf {
@@ -243,7 +243,7 @@ token val_buf {
             }
         }
     | \' <single_quoted_unescape>  \'
-        { make Val::Buf->new( buf => $$<single_quoted_unescape> ) }
+        { make Val::Buf->new( buf => $<single_quoted_unescape>->flat() ) }
 }
 
 token digits {
@@ -268,7 +268,7 @@ token exp_stmts_no_package {
 token opt_name {  <ident>?  }
 
 token var_invocant {
-    |  <var_ident> \:    { make $$<var_ident> }
+    |  <var_ident> \:    { make $<var_ident>->flat() }
     |  { make Var->new(
             sigil  => '$',
             twigil => '',
@@ -283,10 +283,10 @@ token args_sig {
     # TODO - Perlito5::Expression.list_parse / exp_mapping == positional / named
     <Perlito5::Expression.list_parse>
     {
-        # say ' invocant: ', ($$<var_invocant>).perl;
-        # say ' positional: ', ($$<>).perl;
+        # say ' invocant: ', ($<var_invocant>->flat()).perl;
+        # say ' positional: ', ($<>->flat()).perl;
         make Sig->new(
-            invocant    => $$<var_invocant>,
+            invocant    => $<var_invocant>->flat(),
             positional  => Perlito5::Expression::expand_list(($$<Perlito5::Expression.list_parse>){'exp'}),
             named       => { } );
     }
@@ -294,7 +294,7 @@ token args_sig {
 
 token method_sig {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
-        { make $$<args_sig> }
+        { make $<args_sig>->flat() }
     |   { make Sig->new(
             invocant => Var->new(
                 sigil  => '$',
@@ -309,8 +309,8 @@ token sub_def {
     <method_sig>
     <.opt_ws> \{ <.opt_ws>
           <exp_stmts> <.opt_ws>
-    [   \}     | { die 'Syntax Error in sub \'', $$<name>, '\''; } ]
-    { make Sub->new( name => $$<opt_name>, sig => $$<method_sig>, block => $$<exp_stmts> ) }
+    [   \}     | { die 'Syntax Error in sub \'', $<name>->flat(), '\''; } ]
+    { make Sub->new( name => $<opt_name>->flat(), sig => $<method_sig>->flat(), block => $<exp_stmts>->flat() ) }
 }
 
 token token {

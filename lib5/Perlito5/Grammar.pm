@@ -656,7 +656,7 @@ package main;
     };
     1
 })->())) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (CompUnit->new(('name' => ${$MATCH->{'full_ident'}}), ('body' => ${$MATCH->{'exp_stmts'}}))))
+    ($MATCH->{capture} = (CompUnit->new(('name' => $MATCH->{'full_ident'}->flat()), ('body' => $MATCH->{'exp_stmts'}->flat()))))
 })->()) || 1)))
 })->())
 })->())));
@@ -707,7 +707,7 @@ package main;
         0
     }
 })->())) && ((((sub {
-    ($MATCH->{capture} = (CompUnit->new(('name' => ${$MATCH->{'full_ident'}}), ('body' => ${$MATCH->{'exp_stmts_no_package'}}))))
+    ($MATCH->{capture} = (CompUnit->new(('name' => $MATCH->{'full_ident'}->flat()), ('body' => $MATCH->{'exp_stmts_no_package'}->flat()))))
 })->()) || 1)))
 })->())
 })->())));
@@ -753,7 +753,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'exp_stmts'}}))
+    ($MATCH->{capture} = ($MATCH->{'exp_stmts'}->flat()))
 })->()) || 1)))
 })->())
 })->())));
@@ -831,7 +831,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'ident'}}))
+    ($MATCH->{capture} = ($MATCH->{'ident'}->flat()))
 })->()) || 1)))
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -870,7 +870,7 @@ package main;
         0
     }
 })->())) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'full_ident'}}))
+    ($MATCH->{capture} = ($MATCH->{'full_ident'}->flat()))
 })->()) || 1)))
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -1024,7 +1024,7 @@ package main;
         0
     }
 })->())) && ((((sub {
-    ($MATCH->{capture} = (Var->new(('sigil' => ('' . $MATCH->{'var_sigil'})), ('twigil' => ('' . $MATCH->{'var_twigil'})), ('namespace' => ${$MATCH->{'optional_namespace_before_ident'}}), ('name' => ('' . $MATCH->{'var_name'})))))
+    ($MATCH->{capture} = (Var->new(('sigil' => ('' . $MATCH->{'var_sigil'})), ('twigil' => ('' . $MATCH->{'var_twigil'})), ('namespace' => $MATCH->{'optional_namespace_before_ident'}->flat()), ('name' => ('' . $MATCH->{'var_name'})))))
 })->()) || 1)))
 })->())
 })->())));
@@ -1638,7 +1638,7 @@ package main;
         0
     }
 })->())) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => ${$MATCH->{'ident'}}))))
+    ($MATCH->{capture} = (Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => $MATCH->{'ident'}->flat()))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -1731,7 +1731,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Val::Buf->new(('buf' => ' ')) );
-    push( @{$List_a}, (${$MATCH->{'exp_stmts'}})->[0] );
+    push( @{$List_a}, ($MATCH->{'exp_stmts'}->flat())->[0] );
     $List_a
 })->()))))
 })->()) || 1))))
@@ -1765,7 +1765,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (Val::Buf->new(('buf' => ${$MATCH->{'double_quoted_unescape'}}))))
+    ($MATCH->{capture} = (Val::Buf->new(('buf' => $MATCH->{'double_quoted_unescape'}->flat()))))
 })->()) || 1))))
 })->()))
 })->())));
@@ -1836,7 +1836,7 @@ package main;
         0
     }
 })->())) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Val::Buf->new(('buf' => ${$MATCH->{'single_quoted_unescape'}}))))
+    ($MATCH->{capture} = (Val::Buf->new(('buf' => $MATCH->{'single_quoted_unescape'}->flat()))))
 })->()) || 1))))
 })->()))
 })->())));
@@ -2078,7 +2078,7 @@ package main;
         0
     }
 })->()) && (((':' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'var_ident'}}))
+    ($MATCH->{capture} = ($MATCH->{'var_ident'}->flat()))
 })->()) || 1)))
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -2128,7 +2128,7 @@ package main;
         0
     }
 })->())) && ((((sub {
-    ($MATCH->{capture} = (Sig->new(('invocant' => ${$MATCH->{'var_invocant'}}), ('positional' => Perlito5::Expression::expand_list((${$MATCH->{'Perlito5::Expression.list_parse'}})->{'exp'})), ('named' => (sub {
+    ($MATCH->{capture} = (Sig->new(('invocant' => $MATCH->{'var_invocant'}->flat()), ('positional' => Perlito5::Expression::expand_list((${$MATCH->{'Perlito5::Expression.list_parse'}})->{'exp'})), ('named' => (sub {
     (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 })->()))))
@@ -2184,7 +2184,7 @@ package main;
         0
     }
 })->())) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'args_sig'}}))
+    ($MATCH->{capture} = ($MATCH->{'args_sig'}->flat()))
 })->()) || 1)))
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -2284,11 +2284,11 @@ package main;
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
     (((((sub {
-    die('Syntax Error in sub ' . chr(39), ${$MATCH->{'name'}}, chr(39))
+    die('Syntax Error in sub ' . chr(39), $MATCH->{'name'}->flat(), chr(39))
 })->()) || 1)))
 })->()))
 })->())) && ((((sub {
-    ($MATCH->{capture} = (Sub->new(('name' => ${$MATCH->{'opt_name'}}), ('sig' => ${$MATCH->{'method_sig'}}), ('block' => ${$MATCH->{'exp_stmts'}}))))
+    ($MATCH->{capture} = (Sub->new(('name' => $MATCH->{'opt_name'}->flat()), ('sig' => $MATCH->{'method_sig'}->flat()), ('block' => $MATCH->{'exp_stmts'}->flat()))))
 })->()) || 1)))
 })->())
 })->())));

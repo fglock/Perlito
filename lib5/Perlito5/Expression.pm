@@ -476,7 +476,7 @@ package main;
     push( @{$List_a}, Apply->new(('arguments' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ${$MATCH->{'curly_parse'}} );
+    push( @{$List_a}, $MATCH->{'curly_parse'}->flat() );
     $List_a
 })->()), ('code' => ('prefix:<' . ${$MATCH->{'Perlito5::Grammar.var_sigil'}} . '>')), ('namespace' => '')) );
     $List_a
@@ -503,7 +503,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, '.( )' );
-    push( @{$List_a}, ${$MATCH->{'paren_parse'}} );
+    push( @{$List_a}, $MATCH->{'paren_parse'}->flat() );
     $List_a
 })->()))
 })->()) || 1)))
@@ -525,7 +525,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, '.[ ]' );
-    push( @{$List_a}, ${$MATCH->{'square_parse'}} );
+    push( @{$List_a}, $MATCH->{'square_parse'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -547,7 +547,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, '.' . chr(123) . ' ' . chr(125) );
-    push( @{$List_a}, ${$MATCH->{'curly_parse'}} );
+    push( @{$List_a}, $MATCH->{'curly_parse'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -571,7 +571,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, '( )' );
-    push( @{$List_a}, ${$MATCH->{'paren_parse'}} );
+    push( @{$List_a}, $MATCH->{'paren_parse'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -593,7 +593,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, '[ ]' );
-    push( @{$List_a}, ${$MATCH->{'square_parse'}} );
+    push( @{$List_a}, $MATCH->{'square_parse'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -762,7 +762,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Do->new(('block' => ${$MATCH->{'statement_parse'}})) );
+    push( @{$List_a}, Do->new(('block' => $MATCH->{'statement_parse'}->flat())) );
     $List_a
 })->()))
 })->()) || 1))))
@@ -1104,8 +1104,8 @@ package main;
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall' );
     push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
-    push( @{$List_a}, ${$MATCH->{'list_parse'}} );
-    push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
+    push( @{$List_a}, $MATCH->{'list_parse'}->flat() );
+    push( @{$List_a}, $MATCH->{'hyper_op'}->flat() );
     $List_a
 })->()))
 })->()) || 1)))
@@ -1131,11 +1131,11 @@ package main;
     push( @{$List_a}, (sub {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'end_block'} = undef());
-    ($Hash_a->{'exp'} = ${$MATCH->{'paren_parse'}});
+    ($Hash_a->{'exp'} = $MATCH->{'paren_parse'}->flat());
     ($Hash_a->{'terminated'} = 0);
     $Hash_a
 })->() );
-    push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
+    push( @{$List_a}, $MATCH->{'hyper_op'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -1148,7 +1148,7 @@ package main;
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall_no_params' );
     push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
-    push( @{$List_a}, ${$MATCH->{'hyper_op'}} );
+    push( @{$List_a}, $MATCH->{'hyper_op'}->flat() );
     $List_a
 })->()))
 })->()) || 1)))
@@ -1334,7 +1334,7 @@ package main;
     push( @{$List_a}, 'funcall' );
     push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}) );
     push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
-    push( @{$List_a}, ${$MATCH->{'list_parse'}} );
+    push( @{$List_a}, $MATCH->{'list_parse'}->flat() );
     $List_a
 })->()))
 })->()) || 1))))
@@ -2013,7 +2013,7 @@ package main;
     };
     1
 })->())) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'statement_parse'}}))
+    ($MATCH->{capture} = ($MATCH->{'statement_parse'}->flat()))
 })->()) || 1))))
 })->()))
 })->()))
@@ -2121,7 +2121,7 @@ package main;
     };
     1
 })->())) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'statement_parse'}}))
+    ($MATCH->{capture} = ($MATCH->{'statement_parse'}->flat()))
 })->()) || 1))))
 })->()))
 })->()))
