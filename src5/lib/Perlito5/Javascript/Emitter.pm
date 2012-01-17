@@ -604,8 +604,7 @@ class Apply {
 
         my $code = $.code;
 
-        if ($code->isa( 'Str' )) { }
-        else {
+        if (ref $code ne '') {
             return Javascript::tab($level) . '(' . $.code->emit_javascript() . ')->(' . join(',', @.arguments.>>emit) . ')';
         }
         if ($code eq 'infix:<=>>') {

@@ -619,10 +619,7 @@ package main;
                 return ($apply->emit_javascript_indented($level))
             };
             ((my  $code) = $self->{code});
-            if ((Main::isa($code, 'Str'))) {
-
-            }
-            else {
+            if ((ref(($code ne '')))) {
                 return ((Javascript::tab($level) . '(' . $self->{code}->emit_javascript() . ')->(' . join(',', @{[ map { $_->emit() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]}) . ')'))
             };
             if ((($code eq 'infix:<' . chr(61) . '>>'))) {

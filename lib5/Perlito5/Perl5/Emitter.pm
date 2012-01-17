@@ -447,10 +447,7 @@ package main;
                 ($ns = ($self->{namespace} . '::'))
             };
             ((my  $code) = ($ns . $self->{code}));
-            if ((Main::isa($code, 'Str'))) {
-
-            }
-            else {
+            if ((ref(($code ne '')))) {
                 return ((Perl5::tab($level) . '(' . $self->{code}->emit_perl5() . ')->(' . join(', ', @{[map($_->emit_perl5(), @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))})]}) . ')'))
             };
             if ((exists($Hash_op_infix_perl5->{$code}))) {

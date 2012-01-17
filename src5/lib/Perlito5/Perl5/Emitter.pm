@@ -401,8 +401,7 @@ class Apply {
         }
         my $code = $ns . $.code;
 
-        if ($code->isa( 'Str' )) { }
-        else {
+        if (ref $code ne '') {
             return Perl5::tab($level) . '(' . $.code->emit_perl5() . ')->(' . join(', ', map( $_->emit_perl5, @.arguments )) . ')';
         }
 

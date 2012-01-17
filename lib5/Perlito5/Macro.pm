@@ -267,10 +267,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $code) = $self->{code});
-            if (Main::isa($code, 'Str')) {
-
-            }
-            else {
+            if (ref($code)) {
                 return (0)
             };
             if ((exists($Hash_op->{$code}))) {

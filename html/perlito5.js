@@ -2506,10 +2506,7 @@ if (typeof Apply !== 'object') {
                         throw((typeof(v_apply.__proto__) != 'undefined' && v_apply.__proto__.hasOwnProperty("emit_javascript_indented") ? v_apply.__proto__.emit_javascript_indented.call(v_apply,v_level) : v_apply.emit_javascript_indented(v_level)));;
                     })(); };
                     (v_code = v_self.v_code);
-                    if ( bool((isa(v_code, 'Str'))) ) { (function () {
-                        null;
-                    })(); }
-                    else { (function () {
+                    if ( bool((ref((v_code != '')))) ) { (function () {
                         throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string((typeof(v_self.v_code.__proto__) != 'undefined' && v_self.v_code.__proto__.hasOwnProperty("emit_javascript") ? v_self.v_code.__proto__.emit_javascript.call(v_self.v_code) : v_self.v_code.emit_javascript())) + string(')->(') + string(join(',', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { out.push( a_[i].emit() ) }; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'infix:<' + String.fromCharCode(61) + '>>'))) ) { (function () {
@@ -5442,10 +5439,7 @@ if (typeof Apply !== 'object') {
                         (v_ns = (string(v_self.v_namespace) + string('::')));;
                     })(); };
                     (v_code = (string(v_ns) + string(v_self.v_code)));
-                    if ( bool((isa(v_code, 'Str'))) ) { (function () {
-                        null;
-                    })(); }
-                    else { (function () {
+                    if ( bool((ref((v_code != '')))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string((typeof(v_self.v_code.__proto__) != 'undefined' && v_self.v_code.__proto__.hasOwnProperty("emit_perl5") ? v_self.v_code.__proto__.emit_perl5.call(v_self.v_code) : v_self.v_code.emit_perl5())) + string(')->(') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { v__ = a_[i]; out.push((typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit_perl5") ? v__.__proto__.emit_perl5.call(v__) : v__.emit_perl5()))}; return out; })(v_self.v_arguments))) + string(')')));;
                     })(); };
                     if ( bool(((Hash_op_infix_perl5).hasOwnProperty(v_code))) ) { (function () {
@@ -21896,10 +21890,7 @@ if (typeof Apply !== 'object') {
 
                     (v_self = List__[0]);
                     (v_code = v_self.v_code);
-                    if ( bool(isa(v_code, 'Str')) ) { (function () {
-                        null;
-                    })(); }
-                    else { (function () {
+                    if ( bool(ref(v_code)) ) { (function () {
                         throw(0);;
                     })(); };
                     if ( bool(((Hash_op).hasOwnProperty(v_code))) ) { (function () {

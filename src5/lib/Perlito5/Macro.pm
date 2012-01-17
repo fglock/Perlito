@@ -264,7 +264,7 @@ class Apply {
         my $self = $_[0];
 
         my $code = $.code;
-        return 0 unless $code->isa( 'Str' );
+        return 0 if ref($code);
 
         if (exists( %op{$code} )) {
             return Apply->new(
