@@ -18,7 +18,8 @@ class Lit::Array {
         }
         for my $item ( @items ) {
             if  (   $item->isa( 'Var' )   && $item->sigil eq '@'
-                ||  $item->isa( 'Apply' ) && ( $item->code eq 'prefix:<@>' || $item->code eq 'infix:<..>' )
+                ||     $item->isa( 'Apply' ) 
+                    && ( $item->code eq 'prefix:<@>' || $item->code eq 'infix:<..>' || $item->code eq 'map' )
                 )
             {
                 $needs_interpolation = 1;
@@ -30,7 +31,8 @@ class Lit::Array {
         my @s;
         for my $item ( @items ) {
             if  (   $item->isa( 'Var' )   && $item->sigil eq '@'
-                ||  $item->isa( 'Apply' ) && ( $item->code eq 'prefix:<@>' || $item->code eq 'infix:<..>' )
+                ||     $item->isa( 'Apply' ) 
+                    && ( $item->code eq 'prefix:<@>' || $item->code eq 'infix:<..>' || $item->code eq 'map' )
                 )
             {
                 push @s,

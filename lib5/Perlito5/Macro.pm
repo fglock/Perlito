@@ -30,7 +30,7 @@ package main;
                 }
             };
             for my $item ( @{$List_items} ) {
-                if ((((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>'))))))) {
+                if ((((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && (((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')) || ($item->code() eq 'map'))))))) {
                     ($needs_interpolation = 1)
                 }
             };
@@ -39,7 +39,7 @@ package main;
             };
             (my  $List_s = bless [], 'ARRAY');
             for my $item ( @{$List_items} ) {
-                if ((((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && ((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>'))))))) {
+                if ((((Main::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Main::isa($item, 'Apply') && (((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')) || ($item->code() eq 'map'))))))) {
                     push( @{$List_s}, Apply->new(('arguments' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
