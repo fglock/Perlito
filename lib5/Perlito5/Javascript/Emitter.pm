@@ -271,7 +271,7 @@ package main;
                     ((my  $sig) = $decl->sig());
                     ((my  $pos) = $sig->positional());
                     ((my  $block) = Perlito5::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
-                    ($str = ($str . '  ' . chr(47) . chr(47) . ' sub ' . $decl->name() . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function (' . join(', ', @{[ map { $_->emit_javascript() } @{( $pos )} ]}) . ') ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . 'if (List__[0] instanceof CallSubClass) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.shift()' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.unshift(this)' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . (chr(10)) . '  ' . chr(125) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . (chr(10))))
+                    ($str = ($str . '  ' . chr(47) . chr(47) . ' sub ' . $decl->name() . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . ' ' . chr(61) . ' function (' . join(', ', @{[map($_->emit_javascript(), @{($pos)})]}) . ') ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . 'if (List__[0] instanceof CallSubClass) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.shift()' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.unshift(this)' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . (chr(10)) . '  ' . chr(125) . (chr(10)) . '  ' . $class_name . '.' . Javascript::escape_function($decl->name()) . chr(59) . '  ' . chr(47) . chr(47) . ' v8 bug workaround' . (chr(10))))
                 }
             };
             for my $decl ( @{$List_body} ) {
@@ -620,7 +620,7 @@ package main;
             };
             ((my  $code) = $self->{code});
             if ((ref(($code ne '')))) {
-                return ((Javascript::tab($level) . '(' . $self->{code}->emit_javascript() . ')->(' . join(',', @{[ map { $_->emit() } @{( (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))) )} ]}) . ')'))
+                return ((Javascript::tab($level) . '(' . $self->{code}->emit_javascript() . ')->(' . join(',', @{[map($_->emit(), @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))})]}) . ')'))
             };
             if ((($code eq 'infix:<' . chr(61) . '>>'))) {
                 return ((Javascript::tab($level) . join(', ', @{[map($_->emit_javascript(), @{(defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))})]})))
@@ -966,7 +966,7 @@ package main;
             ((my  $level) = shift());
             ((my  $sig) = $self->{sig});
             ((my  $pos) = $sig->positional());
-            ((my  $str) = join(', ', @{[ map { $_->emit_javascript() } @{( $pos )} ]}));
+            ((my  $str) = join(', ', @{[map($_->emit_javascript(), @{($pos)})]}));
             (Javascript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . 'if (List__[0] instanceof CallSubClass) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.shift()' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.unshift(this)' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => (defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125))
         }
     }

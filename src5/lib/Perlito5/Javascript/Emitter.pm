@@ -294,7 +294,7 @@ class CompUnit {
                 $str = $str
               . '  // sub ' . $decl->name() . "\n"
               . '  ' . $class_name . '.' . Javascript::escape_function( $decl->name() )
-                    . ' = function (' . join(', ', $pos.>>emit_javascript) . ') {' . "\n"
+                    . ' = function (' . join(', ', map( $_->emit_javascript(), @$pos )) . ') {' . "\n"
                 # create @_
               . Javascript::tab($level + 1) . 'var List__ = Array.prototype.slice.call(arguments);' . "\n"
               . Javascript::tab($level + 1) . 'if (List__[0] instanceof CallSubClass) {' . "\n"
@@ -605,7 +605,7 @@ class Apply {
         my $code = $.code;
 
         if (ref $code ne '') {
-            return Javascript::tab($level) . '(' . $.code->emit_javascript() . ')->(' . join(',', @.arguments.>>emit) . ')';
+            return Javascript::tab($level) . '(' . $.code->emit_javascript() . ')->(' . join(',', map( $_->emit(), @.arguments)) . ')';
         }
         if ($code eq 'infix:<=>>') {
             return Javascript::tab($level) . join(', ', map( $_->emit_javascript, @.arguments ))
@@ -957,7 +957,7 @@ class Sub {
         my $level = shift;
         my $sig = $.sig;
         my $pos = $sig->positional;
-        my $str = join( ', ', $pos.>>emit_javascript );
+        my $str = join( ', ', map( $_->emit_javascript(), @$pos ) );
           Javascript::tab($level) . 'function ' . $.name . '(' . $str . ') {' . "\n"
         . Javascript::tab($level + 1) . 'var List__ = Array.prototype.slice.call(arguments);' . "\n"
         . Javascript::tab($level + 1) . 'if (List__[0] instanceof CallSubClass) {' . "\n"
