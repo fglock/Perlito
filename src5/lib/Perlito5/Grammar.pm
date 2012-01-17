@@ -238,7 +238,7 @@ token val_buf {
                 make Apply->new(
                     namespace => '',
                     code => 'list:<.>',
-                    arguments => ($<double_quoted_buf>).>>capture,
+                    arguments => [ map( $_->capture, @{$<double_quoted_buf>} ) ],
                 )
             }
         }
