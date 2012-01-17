@@ -56,10 +56,10 @@ token parsed_code {
 }
 
 token named_capture_body {
-    | \(  <rule>        \)  { make { capturing_group => $$<rule> ,} }
-    | \[  <rule>        \]  { make $$<rule> }
+    | \(  <rule>        \)  { make { capturing_group => $<rule>->flat() ,} }
+    | \[  <rule>        \]  { make $<rule>->flat() }
     | \<  <metasyntax_exp>  \>
-            { make Rul::Subrule->new( metasyntax => $$<metasyntax_exp>, captures => 1 ) }
+            { make Rul::Subrule->new( metasyntax => $<metasyntax_exp>->flat(), captures => 1 ) }
     | { die 'invalid alias syntax' }
 }
 
@@ -89,23 +89,23 @@ token variables {
 token rule_terms {
     |   '('
         <rule> \)
-        { make Rul::Capture->new( rule_exp => $$<rule> ) }
+        { make Rul::Capture->new( rule_exp => $<rule>->flat() ) }
     |   '<('
         <rule>  ')>'
-        { make Rul::CaptureResult->new( rule_exp => $$<rule> ) }
+        { make Rul::CaptureResult->new( rule_exp => $<rule>->flat() ) }
     |   '<after'
         <.ws> <rule> \>
-        { make Rul::After->new( rule_exp => $$<rule> ) }
+        { make Rul::After->new( rule_exp => $<rule>->flat() ) }
     |   '<before'
         <.ws> <rule> \>
-        { make Rul::Before->new( rule_exp => $$<rule> ) }
+        { make Rul::Before->new( rule_exp => $<rule>->flat() ) }
     |   '<!before'
         <.ws> <rule> \>
-        { make Rul::NotBefore->new( rule_exp => $$<rule> ) }
+        { make Rul::NotBefore->new( rule_exp => $<rule>->flat() ) }
     |   '<!'
         # TODO
         <metasyntax_exp> \>
-        { make { negate  => { metasyntax => $$<metasyntax_exp> } } }
+        { make { negate  => { metasyntax => $<metasyntax_exp>->flat() } } }
     |   '<+'
         # TODO
         <char_class>  \>
@@ -116,36 +116,36 @@ token rule_terms {
         { make Rul::NegateCharClass->new( chars => '' . $<char_class> ) }
     |   \'
         <literal> \'
-        { make Rul::Constant->new( constant => $$<literal> ) }
+        { make Rul::Constant->new( constant => $<literal>->flat() ) }
     |   # XXX - obsolete syntax
         \< \'
         <literal> \' \>
-        { make Rul::Constant->new( constant => $$<literal> ) }
+        { make Rul::Constant->new( constant => $<literal>->flat() ) }
     |   \<
         [
             <variables>   \>
             # { say 'matching < variables ...' }
             {
                 # say 'found < hash-variable >';
-                make Rul::InterpolateVar->new( var => $$<variables> )
+                make Rul::InterpolateVar->new( var => $<variables>->flat() )
             }
         |
             \?
             # TODO
             <metasyntax_exp>  \>
-            { make Rul::Subrule->new( metasyntax => $$<metasyntax_exp>, captures => 0 ) }
+            { make Rul::Subrule->new( metasyntax => $<metasyntax_exp>->flat(), captures => 0 ) }
         |
             \.
             <metasyntax_exp>  \>
-            { make Rul::Subrule->new( metasyntax => $$<metasyntax_exp>, captures => 0 ) }
+            { make Rul::Subrule->new( metasyntax => $<metasyntax_exp>->flat(), captures => 0 ) }
         |
             # TODO
             <metasyntax_exp>  \>
-            { make Rul::Subrule->new( metasyntax => $$<metasyntax_exp>, captures => 1 ) }
+            { make Rul::Subrule->new( metasyntax => $<metasyntax_exp>->flat(), captures => 1 ) }
         ]
     |   \{
         <parsed_code>  \}
-        { make Rul::Block->new( closure => $$<parsed_code> ) }
+        { make Rul::Block->new( closure => $<parsed_code>->flat() ) }
     |   \\
         [
 # TODO
@@ -165,13 +165,13 @@ token rule_terms {
           { make Rul::Constant->new( constant => chr( $<Perlito5::Grammar.digits> ) ) }
         | <any>
           #  \e  \E
-          { make Rul::SpecialChar->new( char => $$<any> ) }
+          { make Rul::SpecialChar->new( char => $<any>->flat() ) }
         ]
     |   \.
         { make Rul::Dot->new() }
     |   '['
         <rule> ']'
-        { make $$<rule> }
+        { make $<rule>->flat() }
 
 }
 
@@ -182,23 +182,23 @@ token rule_term {
        [  <.ws>? '=' <.ws>? <named_capture_body>
           {
             make Rul::NamedCapture->new(
-                rule_exp =>  $$<named_capture_body>,
-                capture_ident => $$<variables>
+                rule_exp =>  $<named_capture_body>->flat(),
+                capture_ident => $<variables>->flat()
             );
           }
        |
           {
-            make $$<variables>
+            make $<variables>->flat()
           }
        ]
     |
         # { say 'matching terms'; }
         <rule_terms>
         {
-            make $$<rule_terms>
+            make $<rule_terms>->flat()
         }
     |  <!before \] | \} | \) | \> | \: | \? | \+ | \* | \| | \& | \/ > <any>   # TODO - <...>* - optimize!
-        { make Rul::Constant->new( constant => $$<any> ) }
+        { make Rul::Constant->new( constant => $<any>->flat() ) }
 }
 
 token quant_exp {

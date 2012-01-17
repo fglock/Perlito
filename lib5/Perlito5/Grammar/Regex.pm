@@ -411,7 +411,7 @@ package main;
 })->())) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
     ($MATCH->{capture} = ((sub {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'capturing_group'} = ${$MATCH->{'rule'}});
+    ($Hash_a->{'capturing_group'} = $MATCH->{'rule'}->flat());
     $Hash_a
 })->()))
 })->()) || 1)))
@@ -428,7 +428,7 @@ package main;
         0
     }
 })->())) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'rule'}}))
+    ($MATCH->{capture} = ($MATCH->{'rule'}->flat()))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -443,7 +443,7 @@ package main;
         0
     }
 })->())) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => ${$MATCH->{'metasyntax_exp'}}), ('captures' => 1))))
+    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{'metasyntax_exp'}->flat()), ('captures' => 1))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -560,7 +560,7 @@ package main;
         0
     }
 })->())) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::Capture->new(('rule_exp' => ${$MATCH->{'rule'}}))))
+    ($MATCH->{capture} = (Rul::Capture->new(('rule_exp' => $MATCH->{'rule'}->flat()))))
 })->()) || 1)))
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -575,7 +575,7 @@ package main;
         0
     }
 })->())) && (((')>' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::CaptureResult->new(('rule_exp' => ${$MATCH->{'rule'}}))))
+    ($MATCH->{capture} = (Rul::CaptureResult->new(('rule_exp' => $MATCH->{'rule'}->flat()))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -599,7 +599,7 @@ package main;
         0
     }
 })->())) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::After->new(('rule_exp' => ${$MATCH->{'rule'}}))))
+    ($MATCH->{capture} = (Rul::After->new(('rule_exp' => $MATCH->{'rule'}->flat()))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -623,7 +623,7 @@ package main;
         0
     }
 })->())) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::Before->new(('rule_exp' => ${$MATCH->{'rule'}}))))
+    ($MATCH->{capture} = (Rul::Before->new(('rule_exp' => $MATCH->{'rule'}->flat()))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -647,7 +647,7 @@ package main;
         0
     }
 })->())) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::NotBefore->new(('rule_exp' => ${$MATCH->{'rule'}}))))
+    ($MATCH->{capture} = (Rul::NotBefore->new(('rule_exp' => $MATCH->{'rule'}->flat()))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -666,7 +666,7 @@ package main;
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'negate'} = (sub {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'metasyntax'} = ${$MATCH->{'metasyntax_exp'}});
+    ($Hash_a->{'metasyntax'} = $MATCH->{'metasyntax_exp'}->flat());
     $Hash_a
 })->());
     $Hash_a
@@ -715,7 +715,7 @@ package main;
         0
     }
 })->())) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::Constant->new(('constant' => ${$MATCH->{'literal'}}))))
+    ($MATCH->{capture} = (Rul::Constant->new(('constant' => $MATCH->{'literal'}->flat()))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -730,7 +730,7 @@ package main;
         0
     }
 })->())) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::Constant->new(('constant' => ${$MATCH->{'literal'}}))))
+    ($MATCH->{capture} = (Rul::Constant->new(('constant' => $MATCH->{'literal'}->flat()))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -748,7 +748,7 @@ package main;
         0
     }
 })->()) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::InterpolateVar->new(('var' => ${$MATCH->{'variables'}}))))
+    ($MATCH->{capture} = (Rul::InterpolateVar->new(('var' => $MATCH->{'variables'}->flat()))))
 })->()) || 1)))
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -763,7 +763,7 @@ package main;
         0
     }
 })->())) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => ${$MATCH->{'metasyntax_exp'}}), ('captures' => 0))))
+    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{'metasyntax_exp'}->flat()), ('captures' => 0))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -778,7 +778,7 @@ package main;
         0
     }
 })->())) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => ${$MATCH->{'metasyntax_exp'}}), ('captures' => 0))))
+    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{'metasyntax_exp'}->flat()), ('captures' => 0))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -793,7 +793,7 @@ package main;
         0
     }
 })->()) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => ${$MATCH->{'metasyntax_exp'}}), ('captures' => 1))))
+    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{'metasyntax_exp'}->flat()), ('captures' => 1))))
 })->()) || 1))))
 })->()))
 })->())))
@@ -810,7 +810,7 @@ package main;
         0
     }
 })->())) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (Rul::Block->new(('closure' => ${$MATCH->{'parsed_code'}}))))
+    ($MATCH->{capture} = (Rul::Block->new(('closure' => $MATCH->{'parsed_code'}->flat()))))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -858,7 +858,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (Rul::SpecialChar->new(('char' => ${$MATCH->{'any'}}))))
+    ($MATCH->{capture} = (Rul::SpecialChar->new(('char' => $MATCH->{'any'}->flat()))))
 })->()) || 1))))
 })->()))
 })->())))
@@ -880,7 +880,7 @@ package main;
         0
     }
 })->())) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'rule'}}))
+    ($MATCH->{capture} = ($MATCH->{'rule'}->flat()))
 })->()) || 1))))
 })->()))
 })->())));
@@ -949,12 +949,12 @@ package main;
         0
     }
 })->())) && ((((sub {
-    ($MATCH->{capture} = (Rul::NamedCapture->new(('rule_exp' => ${$MATCH->{'named_capture_body'}}), ('capture_ident' => ${$MATCH->{'variables'}}))))
+    ($MATCH->{capture} = (Rul::NamedCapture->new(('rule_exp' => $MATCH->{'named_capture_body'}->flat()), ('capture_ident' => $MATCH->{'variables'}->flat()))))
 })->()) || 1)))
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
     (((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'variables'}}))
+    ($MATCH->{capture} = ($MATCH->{'variables'}->flat()))
 })->()) || 1)))
 })->()))
 })->()))
@@ -971,7 +971,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'rule_terms'}}))
+    ($MATCH->{capture} = ($MATCH->{'rule_terms'}->flat()))
 })->()) || 1))))
 })->())) || ((sub {
     (($MATCH)->{to} = $pos1);
@@ -1028,7 +1028,7 @@ package main;
         0
     }
 })->())) && ((((sub {
-    ($MATCH->{capture} = (Rul::Constant->new(('constant' => ${$MATCH->{'any'}}))))
+    ($MATCH->{capture} = (Rul::Constant->new(('constant' => $MATCH->{'any'}->flat()))))
 })->()) || 1))))
 })->()))
 })->())));
