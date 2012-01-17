@@ -207,7 +207,7 @@ token quant_exp {
         |  <Perlito5::Grammar.val_int>
            { make $$<Perlito5::Grammar.val_int> }
         |  <rule_term>
-           { make $$<rule_term> }
+           { make $<rule_term>->flat() }
         ]
     |   [  \? | \* | \+  ]
 }
@@ -222,16 +222,16 @@ token quantifier {
         <quant_exp> <greedy_exp>
         <.Perlito5::Grammar.opt_ws3>
         { make Rul::Quantifier->new(
-                term    => $$<rule_term>,
-                quant   => $$<quant_exp>,
-                greedy  => $$<greedy_exp>,
+                term    => $<rule_term>->flat(),
+                quant   => $<quant_exp>->flat(),
+                greedy  => $<greedy_exp>->flat(),
                 ws1     => $$<Perlito5::Grammar.opt_ws>,
                 ws2     => $$<Perlito5::Grammar.opt_ws2>,
                 ws3     => $$<Perlito5::Grammar.opt_ws3>,
             )
         }
     |
-        { make $$<rule_term> }
+        { make $<rule_term>->flat() }
     ]
 }
 
@@ -239,9 +239,9 @@ token concat_list {
     <quantifier>
     [
         <concat_list>
-        { make [ $$<quantifier>, @($$<concat_list>) ] }
+        { make [ $<quantifier>->flat(), @($<concat_list>->flat()) ] }
     |
-        { make [ $$<quantifier> ] }
+        { make [ $<quantifier>->flat() ] }
     ]
     |
         { make [] }
@@ -249,7 +249,7 @@ token concat_list {
 
 token concat_exp {
     <concat_list>
-    { make Rul::Concat->new( concat => $$<concat_list> ) }
+    { make Rul::Concat->new( concat => $<concat_list>->flat() ) }
 }
 
 token or_list_exp {
@@ -257,9 +257,9 @@ token or_list_exp {
     [
         '|'
         <or_list_exp>
-        { make [ $$<concat_exp>, @($$<or_list_exp>) ] }
+        { make [ $<concat_exp>->flat(), @($<or_list_exp>->flat()) ] }
     |
-        { make [ $$<concat_exp> ] }
+        { make [ $<concat_exp>->flat() ] }
     ]
     |
         { make [] }
@@ -271,7 +271,7 @@ token rule {
     <or_list_exp>
     {
         # say 'found Rule';
-        make Rul::Or->new( or_list => $$<or_list_exp> )
+        make Rul::Or->new( or_list => $<or_list_exp>->flat() )
     }
 }
 

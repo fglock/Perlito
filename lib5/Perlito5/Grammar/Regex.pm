@@ -1081,7 +1081,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'rule_term'}}))
+    ($MATCH->{capture} = ($MATCH->{'rule_term'}->flat()))
 })->()) || 1))))
 })->()))
 })->()))
@@ -1193,12 +1193,12 @@ package main;
         0
     }
 })->())) && ((((sub {
-    ($MATCH->{capture} = (Rul::Quantifier->new(('term' => ${$MATCH->{'rule_term'}}), ('quant' => ${$MATCH->{'quant_exp'}}), ('greedy' => ${$MATCH->{'greedy_exp'}}), ('ws1' => ${$MATCH->{'Perlito5::Grammar.opt_ws'}}), ('ws2' => ${$MATCH->{'Perlito5::Grammar.opt_ws2'}}), ('ws3' => ${$MATCH->{'Perlito5::Grammar.opt_ws3'}}))))
+    ($MATCH->{capture} = (Rul::Quantifier->new(('term' => $MATCH->{'rule_term'}->flat()), ('quant' => $MATCH->{'quant_exp'}->flat()), ('greedy' => $MATCH->{'greedy_exp'}->flat()), ('ws1' => ${$MATCH->{'Perlito5::Grammar.opt_ws'}}), ('ws2' => ${$MATCH->{'Perlito5::Grammar.opt_ws2'}}), ('ws3' => ${$MATCH->{'Perlito5::Grammar.opt_ws3'}}))))
 })->()) || 1)))
 })->()) || ((sub {
     (($MATCH)->{to} = $pos1);
     (((((sub {
-    ($MATCH->{capture} = (${$MATCH->{'rule_term'}}))
+    ($MATCH->{capture} = ($MATCH->{'rule_term'}->flat()))
 })->()) || 1)))
 })->()))
 })->()))
@@ -1242,8 +1242,8 @@ package main;
     ($MATCH->{capture} = ((sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ${$MATCH->{'quantifier'}} );
-    ($List_v = ((${$MATCH->{'concat_list'}})));
+    push( @{$List_a}, $MATCH->{'quantifier'}->flat() );
+    ($List_v = (($MATCH->{'concat_list'}->flat())));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
@@ -1256,7 +1256,7 @@ package main;
     ($MATCH->{capture} = ((sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ${$MATCH->{'quantifier'}} );
+    push( @{$List_a}, $MATCH->{'quantifier'}->flat() );
     $List_a
 })->()))
 })->()) || 1)))
@@ -1295,7 +1295,7 @@ package main;
         0
     }
 })->()) && ((((sub {
-    ($MATCH->{capture} = (Rul::Concat->new(('concat' => ${$MATCH->{'concat_list'}}))))
+    ($MATCH->{capture} = (Rul::Concat->new(('concat' => $MATCH->{'concat_list'}->flat()))))
 })->()) || 1)))
 })->())
 })->())));
@@ -1337,8 +1337,8 @@ package main;
     ($MATCH->{capture} = ((sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ${$MATCH->{'concat_exp'}} );
-    ($List_v = ((${$MATCH->{'or_list_exp'}})));
+    push( @{$List_a}, $MATCH->{'concat_exp'}->flat() );
+    ($List_v = (($MATCH->{'or_list_exp'}->flat())));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
@@ -1351,7 +1351,7 @@ package main;
     ($MATCH->{capture} = ((sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ${$MATCH->{'concat_exp'}} );
+    push( @{$List_a}, $MATCH->{'concat_exp'}->flat() );
     $List_a
 })->()))
 })->()) || 1)))
@@ -1413,7 +1413,7 @@ package main;
         0
     }
 })->())) && ((((sub {
-    ($MATCH->{capture} = (Rul::Or->new(('or_list' => ${$MATCH->{'or_list_exp'}}))))
+    ($MATCH->{capture} = (Rul::Or->new(('or_list' => $MATCH->{'or_list_exp'}->flat()))))
 })->()) || 1)))
 })->())
 })->())));
