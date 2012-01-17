@@ -263,6 +263,7 @@ class CompUnit {
             . '  ' . $class_name . ' = function() {};' . "\n"
             . '  ' . $class_name . ' = new ' . $class_name . ';' . "\n"
             . '  ' . $class_name . '.' . Javascript::escape_function('isa') . ' = function (s) { return s == \'' . $.name . '\'; };' . "\n"
+            . '  ' . $class_name . '.' . Javascript::escape_function('ref') . ' = function (s) { return \'' . $.name . '\'; };' . "\n"
             . '}' . "\n"
             . '(function () {' . "\n"
             . '  var v__NAMESPACE = ' . $class_name . ';' . "\n";
@@ -588,6 +589,7 @@ class Apply {
         'keys'    => 1,
         'values'  => 1,
         'length'  => 1,
+        'ref'     => 1,
     );
 
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }

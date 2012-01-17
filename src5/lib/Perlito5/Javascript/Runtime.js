@@ -170,6 +170,25 @@ chr = function(o) {
     return String.fromCharCode(num(o));
 };
 
+ref = function(o) {
+    if (o == null) {
+        return '';
+    }
+    if (typeof o.ref === 'function') {
+        return o.ref();
+    }
+    if (typeof o === 'object' && (o instanceof Array)) {
+        return 'ARRAY';
+    }
+    switch (typeof o) {
+        case "string": return '';
+        case "function": return 'CODE';
+        case "number": return '';
+        case "boolean": return '';
+    }
+    return 'HASH';
+};
+
 scalar = function(o) {
     if (o == null) {
         return 1;

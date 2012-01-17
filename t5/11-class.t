@@ -26,7 +26,7 @@ sub my_accessor { $_[0]->{'my_accessor'} }
 
 package Main;
     
-    say '1..4';
+    say '1..5';
 
     my $other = Other->new();
 
@@ -53,4 +53,7 @@ package Main;
 
     print 'not ' if $obj->my_accessor ne '123';
     say 'ok 4 - ', $obj->my_accessor;
+
+    print 'not ' if ref($obj) ne 'Other';
+    say 'ok 5 - ref # ', ref($obj);
 
