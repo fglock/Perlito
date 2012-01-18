@@ -6,7 +6,7 @@ class Lit::Array {
 
         my $needs_interpolation = 0;
         my @items;
-        for my $item ( @.array1 ) {
+        for my $item ( @{$.array1} ) {
             if ($item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
                 for my $arg ( @($item->arguments) ) {
                     push( @items, $arg);
@@ -116,7 +116,7 @@ class Lit::Hash {
         my $self = $_[0];
 
         my @items;
-        for my $item ( @.hash1 ) {
+        for my $item ( @{$.hash1} ) {
             if ($item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
                 for my $arg ( @($item->arguments) ) {
                     push( @items, $arg);
@@ -272,10 +272,10 @@ class Apply {
             return Apply->new(
                 code      => 'infix:<=>',
                 arguments => [
-                    @.arguments[0],
+                    $.arguments->[0],
                     Apply->new(
                         code      => %op{$code},
-                        arguments => @.arguments,
+                        arguments => $.arguments,
                     ),
                 ]
             );

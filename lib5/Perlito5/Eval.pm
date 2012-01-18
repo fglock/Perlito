@@ -31,7 +31,7 @@ package main;
     };
     $List_a
 })->());
-            for my $stmt ( @{(defined $self->{body} ? $self->{body} : ($self->{body} ||= bless([], 'ARRAY')))} ) {
+            for my $stmt ( @{($self->{body})} ) {
                 $stmt->eval($env1)
             }
         }
@@ -106,7 +106,7 @@ package main;
     };
     $List_a
 })->());
-            for my $stmt ( @{(defined $self->{stmts} ? $self->{stmts} : ($self->{stmts} ||= bless([], 'ARRAY')))} ) {
+            for my $stmt ( @{($self->{stmts})} ) {
                 $stmt->eval($env1)
             }
         }
@@ -121,7 +121,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             (my  $List_a = bless [], 'ARRAY');
-            for my $v ( @{(defined $self->{array1} ? $self->{array1} : ($self->{array1} ||= bless([], 'ARRAY')))} ) {
+            for my $v ( @{($self->{array1})} ) {
                 push( @{$List_a}, $v->eval($env) )
             };
             return ($List_a)
@@ -137,7 +137,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             (my  $Hash_h = bless {}, 'HASH');
-            for my $field ( @{(defined $self->{hash1} ? $self->{hash1} : ($self->{hash1} ||= bless([], 'ARRAY')))} ) {
+            for my $field ( @{($self->{hash1})} ) {
                 ((my  $pair) = $field->arguments());
                 ($Hash_h->{($pair->[0])->eval($env)} = ($pair->[1])->eval($env))
             };
@@ -259,7 +259,7 @@ package main;
             ((my  $code) = ($ns . $self->{code}));
             for my $e ( @{(($env))} ) {
                 if ((exists($e->{$code}))) {
-                    return ((($e->{$code})->($env, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))))
+                    return ((($e->{$code})->($env, ($self->{arguments}))))
                 }
             };
             warn(('Interpreter runtime error: subroutine ' . chr(39)), $code, ('()' . chr(39) . ' not found'))
@@ -435,7 +435,7 @@ package main;
     $List_a
 })->());
     (my  $r);
-    for my $stmt ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
+    for my $stmt ( @{($self->{block})} ) {
         ($r = $stmt->eval($env1))
     };
     return ($r)
@@ -468,7 +468,7 @@ package main;
     };
     $List_a
 })->());
-            for my $stmt ( @{(defined $self->{block} ? $self->{block} : ($self->{block} ||= bless([], 'ARRAY')))} ) {
+            for my $stmt ( @{($self->{block})} ) {
                 $stmt->eval($env1)
             }
         }

@@ -19,7 +19,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $needs_interpolation) = 0);
             (my  $List_items = bless [], 'ARRAY');
-            for my $item ( @{(defined $self->{array1} ? $self->{array1} : ($self->{array1} ||= bless([], 'ARRAY')))} ) {
+            for my $item ( @{($self->{array1})} ) {
                 if (((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
                     for my $arg ( @{(($item->arguments()))} ) {
                         push( @{$List_items}, $arg )
@@ -115,7 +115,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             (my  $List_items = bless [], 'ARRAY');
-            for my $item ( @{(defined $self->{hash1} ? $self->{hash1} : ($self->{hash1} ||= bless([], 'ARRAY')))} ) {
+            for my $item ( @{($self->{hash1})} ) {
                 if (((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
                     for my $arg ( @{(($item->arguments()))} ) {
                         push( @{$List_items}, $arg )
@@ -274,8 +274,8 @@ package main;
                 return (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => (sub {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY')))->[0] );
-    push( @{$List_a}, Apply->new(('code' => $Hash_op->{$code}), ('arguments' => (defined $self->{arguments} ? $self->{arguments} : ($self->{arguments} ||= bless([], 'ARRAY'))))) );
+    push( @{$List_a}, $self->{arguments}->[0] );
+    push( @{$List_a}, Apply->new(('code' => $Hash_op->{$code}), ('arguments' => $self->{arguments})) );
     $List_a
 })->())))
             };

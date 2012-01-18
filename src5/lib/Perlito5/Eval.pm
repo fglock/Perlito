@@ -6,7 +6,7 @@ class CompUnit {
         my $env = $_[1];
 
         my $env1 = [ {}, @$env ];
-        for my $stmt ( @.body ) {
+        for my $stmt ( @{$.body} ) {
             $stmt->eval($env1);
         }
     }
@@ -50,7 +50,7 @@ class Lit::Block {
         my $env = $_[1];
 
         my $env1 = [ {}, @$env ];
-        for my $stmt ( @.stmts ) {
+        for my $stmt ( @{$.stmts} ) {
             $stmt->eval($env1);
         }
     }
@@ -62,7 +62,7 @@ class Lit::Array {
         my $env = $_[1];
 
         my @a;
-        for my $v ( @.array1 ) {
+        for my $v ( @{$.array1} ) {
             push( @a, $v->eval($env) );
         }
         return @a;
@@ -75,7 +75,7 @@ class Lit::Hash {
         my $env = $_[1];
 
         my %h;
-        for my $field ( @.hash1 ) {
+        for my $field ( @{$.hash1} ) {
             my $pair = $field->arguments;
             %h{ ($pair->[0])->eval($env) } = ($pair->[1])->eval($env);
         };
@@ -165,7 +165,7 @@ class Call {
             # '[ map { $_' . $call . ' } @{ ' . $invocant . ' } ]';
         }
         else {
-            # $invocant.$meth( @.arguments );
+            # $invocant.$meth( @{$.arguments} );
         }
         warn "Interpreter runtime error: method '", $.method, "()' not found";
     }
@@ -184,7 +184,7 @@ class Apply {
         # warn "Apply ", $env->perl, " code: '", $code, "'";
         for my $e ( @($env) ) {
             if (exists( $e->{ $code } )) {
-                return (($e->{ $code })->( $env, @.arguments ));
+                return (($e->{ $code })->( $env, @{$.arguments} ));
             }
         }
         warn "Interpreter runtime error: subroutine '", $code, "()' not found";
@@ -287,7 +287,7 @@ class Sub {
                     }
                     my $env1 = [ %context, @$env ];
                     my $r;
-                    for my $stmt ( @.block ) {
+                    for my $stmt ( @{$.block} ) {
                         $r = $stmt->eval($env1);
                     }
                     return $r;
@@ -305,7 +305,7 @@ class Do {
         my $env = $_[1];
 
         my $env1 = [ {}, @$env ];
-        for my $stmt ( @.block ) {
+        for my $stmt ( @{$.block} ) {
             $stmt->eval($env1);
         }
     }

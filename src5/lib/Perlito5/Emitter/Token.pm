@@ -105,39 +105,39 @@ class Rul::Quantifier {
 }
 
 class Rul::Or {
-    has @.or_list;
+    has $.or_list;
     sub emit_perl5 {
         my $self = $_[0];
 
         '(do { '
             . 'my $pos1 = $MATCH->to; (do { '
             . join( '}) || (do { $MATCH->to = $pos1; ',
-                  map( $_->emit_perl5, @.or_list )
+                  map( $_->emit_perl5, @{$.or_list} )
                 )
         . '}) })';
     }
     sub set_captures_to_array {
         my $self = $_[0];
 
-        map( $_->set_captures_to_array, @.or_list );
+        map( $_->set_captures_to_array, @{$.or_list} );
     }
 }
 
 class Rul::Concat {
-    has @.concat;
+    has $.concat;
     sub emit_perl5 {
         my $self = $_[0];
 
         '('
             . join( ' && ',
-                    map( $_->emit_perl5, @.concat )
+                    map( $_->emit_perl5, @{$.concat} )
                   )
         . ')';
     }
     sub set_captures_to_array {
         my $self = $_[0];
 
-        map( $_->set_captures_to_array, @.concat );
+        map( $_->set_captures_to_array, @{$.concat} );
     }
 }
 
