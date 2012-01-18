@@ -82,7 +82,7 @@ package main;
             ((my  $ast) = shift());
             ((my  $type) = shift());
             if ((Main::isa($ast, 'Var'))) {
-                if ((((($type eq 'HASH') && ($ast->sigil() eq chr(36))) && ($ast->name() ne chr(47))))) {
+                if ((((($type eq 'HASH') && ($ast->sigil() eq chr(36))) && ($ast->name() ne 'MATCH')))) {
                     ($ast = Var->new(('sigil' => chr(37)), ('twigil' => $ast->twigil()), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
                     ((my  $var_js) = $ast->emit_javascript());
                     return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
@@ -94,7 +94,7 @@ package main;
                         return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
                     }
                     else {
-                        if ((((($type eq 'HASHREF') && ($ast->sigil() eq chr(36))) && ($ast->name() ne chr(47))))) {
+                        if ((((($type eq 'HASHREF') && ($ast->sigil() eq chr(36))) && ($ast->name() ne 'MATCH')))) {
                             ((my  $var_js) = $ast->emit_javascript());
                             return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
                         }
@@ -442,7 +442,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = shift());
             ((my  $level) = shift());
-            if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne chr(47))))) {
+            if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne 'MATCH')))) {
                 ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
                 return (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
             };
@@ -474,7 +474,7 @@ package main;
             if (($self->{namespace})) {
                 ($ns = (Main::to_javascript_namespace($self->{namespace}) . '.'))
             };
-            ((($self->{twigil} eq '.')) ? (('v_self.v_' . $self->{name} . '')) : (((($self->{name} eq chr(47))) ? (($table->{$self->{sigil}} . 'MATCH')) : (($table->{$self->{sigil}} . $ns . $self->{name})))))
+            ((($self->{twigil} eq '.')) ? (('v_self.v_' . $self->{name} . '')) : (((($self->{name} eq 'MATCH')) ? (($table->{$self->{sigil}} . 'MATCH')) : (($table->{$self->{sigil}} . $ns . $self->{name})))))
         };
         sub plain_name {
             my $List__ = bless \@_, "ARRAY";
@@ -721,7 +721,7 @@ package main;
                 ((my  $arg) = $self->{arguments}->[0]);
                 if ((Main::isa($arg, 'Lookup'))) {
                     ((my  $v) = $arg->obj());
-                    if ((((Main::isa($v, 'Var') && ($v->sigil() eq chr(36))) && ($v->name() ne chr(47))))) {
+                    if ((((Main::isa($v, 'Var') && ($v->sigil() eq chr(36))) && ($v->name() ne 'MATCH')))) {
                         ($v = Var->new(('sigil' => chr(37)), ('twigil' => $v->twigil()), ('namespace' => $v->namespace()), ('name' => $v->name())))
                     };
                     return (('(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
@@ -792,7 +792,7 @@ package main;
             if ((Main::isa($parameters, 'Lookup'))) {
                 ((my  $str) = '');
                 ((my  $var) = $parameters->obj());
-                if ((((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))) && ($var->name() ne chr(47))))) {
+                if ((((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))) && ($var->name() ne 'MATCH')))) {
                     ($var = Var->new(('sigil' => chr(37)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
                 };
                 ((my  $var_js) = $var->emit_javascript());

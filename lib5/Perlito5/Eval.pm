@@ -189,8 +189,8 @@ package main;
                     warn(('Interpreter TODO: ' . chr(36) . '.' . $self->{name}));
                     return ((chr(36) . 'self->' . chr(123) . $self->{name} . chr(125)))
                 };
-                if ((($self->{name} eq chr(47)))) {
-                    warn('Interpreter TODO: ' . chr(36) . chr(47));
+                if ((($self->{name} eq 'MATCH'))) {
+                    warn('Interpreter TODO: ' . chr(36) . 'MATCH');
                     return (($self->{sigil} . 'MATCH'))
                 }
             };

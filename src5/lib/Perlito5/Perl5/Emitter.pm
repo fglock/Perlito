@@ -207,7 +207,7 @@ class Lookup {
 
         if (  $.obj->isa('Var')
            && $.obj->sigil eq '$'
-           && $.obj->name ne '/'  # XXX $/ is the Perl6 match object
+           && $.obj->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
            )
         {
             my $v = Var->new( sigil => '%', twigil => $.obj->twigil, namespace => $.obj->namespace, name => $.obj->name );
@@ -257,9 +257,6 @@ class Var {
                 else {
                     return Perl5::tab($level) . '$self->{' . $.name . '}'
                 }
-            }
-            if ($.name eq '/') {
-                return Perl5::tab($level) . $table->{$.sigil} . 'MATCH'
             }
         }
         return Perl5::tab($level) . $table->{$.sigil} . $ns . $.name

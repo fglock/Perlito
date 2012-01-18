@@ -52,7 +52,7 @@ token parsed_code {
     # this subrule is overridden inside the perl6 compiler
     # XXX - call Perlito 'Statement List'
     <.string_code>
-    { make '' . $/ }
+    { make '' . $MATCH }
 }
 
 token named_capture_body {
@@ -67,7 +67,7 @@ token variables {
     |
         '$<'
         <rule_ident> \>
-        { make '$/{' . '\'' . $<rule_ident> . '\'' . '}' }
+        { make '$MATCH{' . '\'' . $<rule_ident> . '\'' . '}' }
     |
         # TODO
         <Perlito5::Grammar.var_sigil>
@@ -151,10 +151,10 @@ token rule_terms {
 # TODO
 #        | [ x | X ] <[ 0..9 a..f A..F ]]>+
 #          #  \x0021    \X0021
-#          { make Rul::SpecialChar->new( char => '\\' . $/ ) }
+#          { make Rul::SpecialChar->new( char => '\\' . $MATCH ) }
 #        | [ o | O ] <[ 0..7 ]>+
 #          #  \x0021    \X0021
-#          { make Rul::SpecialChar->new( char => '\\' . $/ ) }
+#          { make Rul::SpecialChar->new( char => '\\' . $MATCH ) }
 #        | ( x | X | o | O ) \[ (<-[ \] ]>*) \]
 #          #  \x[0021]  \X[0021]
 #          { make Rul::SpecialChar->new( char => '\\' . $0 . $1 ) }

@@ -66,7 +66,7 @@ class Javascript {
         if (  $ast->isa('Var') ) {
             if (  $type eq 'HASH'
                && $ast->sigil eq '$'
-               && $ast->name ne '/'  # XXX $/ is the Perl6 match object
+               && $ast->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
                )
             {
                 # $a in the expression $a{'x'}
@@ -85,7 +85,7 @@ class Javascript {
             }
             elsif (  $type eq 'HASHREF'
                && $ast->sigil eq '$'
-               && $ast->name ne '/'  # XXX $/ is the Perl6 match object
+               && $ast->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
                )
             {
                 # $a in the expression $a->{'x'}
@@ -422,7 +422,7 @@ class Lookup {
 
         if (  $.obj->isa('Var')
            && $.obj->sigil eq '$'
-           && $.obj->name ne '/'  # XXX $/ is the Perl6 match object
+           && $.obj->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
            )
         {
             my $v = Var->new( sigil => '%', twigil => $.obj->twigil, namespace => $.obj->namespace, name => $.obj->name );
@@ -449,7 +449,7 @@ class Var {
         }
            ( $.twigil eq '.' )
         ?  ( 'v_self.v_' . $.name . '' )
-        :  (    ( $.name eq '/' )
+        :  (    ( $.name eq 'MATCH' )
            ?    ( $table->{$.sigil} . 'MATCH' )
            :    ( $table->{$.sigil} . $ns . $.name )
            )
@@ -727,7 +727,7 @@ class Apply {
                 my $v = $arg->obj;
                 if (  $v->isa('Var')
                    && $v->sigil eq '$'
-                   && $v->name ne '/'  # XXX $/ is the Perl6 match object
+                   && $v->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
                    )
                 {
                     $v = Var->new( sigil => '%', twigil => $v->twigil, namespace => $v->namespace, name => $v->name );
@@ -808,7 +808,7 @@ class Apply {
 
             if (  $var->isa('Var')
                && $var->sigil eq '$'
-               && $var->name ne '/'  # XXX $/ is the Perl6 match object
+               && $var->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
                )
             {
                 $var = Var->new( sigil => '%', twigil => $var->twigil, namespace => $var->namespace, name => $var->name );

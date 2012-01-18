@@ -411,7 +411,7 @@ package Perlito5::Expression;
         # XXX Perl6
         | '$<' <capture_name> '>'
             { make [ 'term', Lookup->new(
-                obj   => Var->new( sigil => '$', twigil => '', name => '/' ),
+                obj   => Var->new( sigil => '$', twigil => '', name => 'MATCH' ),
                 index_exp => Val::Buf->new( buf => '' . $<capture_name> )
             ) ] }
         | <Perlito5::Precedence.op_parse>              { make $<Perlito5::Precedence.op_parse>->flat()             }

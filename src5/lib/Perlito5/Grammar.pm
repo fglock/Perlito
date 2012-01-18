@@ -113,7 +113,7 @@ token var_sigil     { \$ |\% |\@ |\& }
 
 token var_twigil    { [ \. | \! | \^ | \* ]? }
 
-token var_name      { <full_ident> | '/' | <digit> }
+token var_name      { <full_ident> | <digit> }
 
 token var_ident {
     <var_sigil> <var_twigil> <optional_namespace_before_ident> <var_name>
@@ -135,7 +135,7 @@ token val_num {
     [   \. \d+    <.exponent>?
     |   \d+     [ <.exponent>  |   \. \d+  <.exponent>? ]
     ]
-    { make Val::Num->new( num => '' . $/ ) }
+    { make Val::Num->new( num => '' . $MATCH ) }
 }
 
 token char_any {
@@ -252,7 +252,7 @@ token digits {
 
 token val_int {
     \d+
-    { make Val::Int->new( int => '' . $/ ) }
+    { make Val::Int->new( int => '' . $MATCH ) }
 }
 
 token exp_stmts {

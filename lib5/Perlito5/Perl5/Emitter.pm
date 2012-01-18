@@ -253,7 +253,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
-            if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne chr(47))))) {
+            if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne 'MATCH')))) {
                 ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
                 return (($v->emit_perl5_indented($level) . '->' . chr(123) . $self->{index_exp}->emit_perl5() . chr(125)))
             };
@@ -302,9 +302,6 @@ package main;
                             return ((Perl5::tab($level) . chr(36) . 'self->' . chr(123) . $self->{name} . chr(125)))
                         }
                     }
-                };
-                if ((($self->{name} eq chr(47)))) {
-                    return ((Perl5::tab($level) . $table->{$self->{sigil}} . 'MATCH'))
                 }
             };
             return ((Perl5::tab($level) . $table->{$self->{sigil}} . $ns . $self->{name}))

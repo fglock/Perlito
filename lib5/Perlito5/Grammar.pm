@@ -944,7 +944,7 @@ package main;
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = (((sub {
     ((my  $pos1) = $MATCH->to());
-    ((((sub {
+    (((sub {
     ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
     if (($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -955,9 +955,6 @@ package main;
         0
     }
 })->()) || ((sub {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(47) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
-})->())) || ((sub {
     (($MATCH)->{to} = $pos1);
     (((sub {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));

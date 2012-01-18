@@ -118,8 +118,8 @@ class Var {
                 warn 'Interpreter TODO: $.' . $.name;
                 return '$self->{' . $.name . '}'
             }
-            if ($.name eq '/') {
-                warn 'Interpreter TODO: $/';
+            if ($.name eq 'MATCH') {
+                warn 'Interpreter TODO: $MATCH';
                 return $.sigil . 'MATCH'
             }
         }
