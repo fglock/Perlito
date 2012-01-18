@@ -2,7 +2,7 @@ use v5;
 
 class CompUnit {
     has $.name;
-    has @.body;
+    has $.body;
 }
 
 class Val::Int {
@@ -23,15 +23,15 @@ class Val::Buf {
 
 class Lit::Block {
     has $.sig;
-    has @.stmts;
+    has $.stmts;
 }
 
 class Lit::Array {
-    has @.array1;
+    has $.array1;
 }
 
 class Lit::Hash {
-    has @.hash1;
+    has $.hash1;
 }
 
 class Index {
@@ -59,12 +59,12 @@ class Call {
     has $.invocant;
     has $.hyper;
     has $.method;
-    has @.arguments;
+    has $.arguments;
 }
 
 class Apply {
     has $.code;
-    has @.arguments;
+    has $.arguments;
     has $.namespace;
 }
 
@@ -101,7 +101,7 @@ class Sig {
 class Sub {
     has $.name;
     has $.sig;
-    has @.block;
+    has $.block;
 }
 
 class Do {
