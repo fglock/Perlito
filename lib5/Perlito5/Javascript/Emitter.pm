@@ -20,7 +20,7 @@ package main;
             ((my  $level) = shift());
             (('    ') x $level)
         };
-        ((my  $Hash_safe_char = bless {}, 'HASH') = (sub {
+        ((my  $Hash_safe_char = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'_'} = 1);
     ($Hash_a->{','} = 1);
@@ -37,7 +37,7 @@ package main;
     ($Hash_a->{'['} = 1);
     ($Hash_a->{']'} = 1);
     $Hash_a
-})->());
+}));
         sub escape_string {
             my $List__ = bless \@_, "ARRAY";
             ((my  $s) = shift());
@@ -64,11 +64,11 @@ package main;
             };
             return (join(' + ', @{$List_out}))
         };
-        ((my  $Hash_reserved = bless {}, 'HASH') = (sub {
+        ((my  $Hash_reserved = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'print'} = 1);
     $Hash_a
-})->());
+}));
         sub escape_function {
             my $List__ = bless \@_, "ARRAY";
             ((my  $s) = shift());
@@ -191,12 +191,12 @@ package main;
                     ((my  $body) = $last_statement->body());
                     ((my  $otherwise) = $last_statement->otherwise());
                     if (((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
-                        ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (sub {
+                        ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-})->())))
+}))))
                     };
                     ($body = Perlito5::Javascript::LexicalBlock->new(('block' => $body->stmts()), ('needs_return' => 1)));
                     push( @{$List_str}, (Javascript::tab($level) . 'if ( ' . Javascript::escape_function('bool') . '(' . $cond->emit_javascript() . ') ) ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) );
@@ -462,14 +462,14 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = shift());
             ((my  $level) = shift());
-            ((my  $table) = (sub {
+            ((my  $table) = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = 'v_');
     ($Hash_a->{chr(64)} = 'List_');
     ($Hash_a->{chr(37)} = 'Hash_');
     ($Hash_a->{chr(38)} = 'Code_');
     $Hash_a
-})->());
+}));
             ((my  $ns) = '');
             if (($self->{namespace})) {
                 ($ns = (Main::to_javascript_namespace($self->{namespace}) . '.'))
@@ -506,11 +506,11 @@ package main;
     {
     package Call;
         sub new { shift; bless { @_ }, "Call" }
-        ((my  $Hash_method_js = bless {}, 'HASH') = (sub {
+        ((my  $Hash_method_js = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'isa'} = 'isa');
     $Hash_a
-})->());
+}));
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -521,11 +521,11 @@ package main;
             ((my  $level) = shift());
             ((my  $invocant) = $self->{invocant}->emit_javascript());
             if ((($self->{method} eq 'new'))) {
-                ((my  $str) = (sub {
+                ((my  $str) = (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
-})->());
+}));
                 for my $field ( @{($self->{arguments})} ) {
                     if (((Main::isa($field, 'Apply') && ($field->code() eq 'infix:<' . chr(61) . '>>')))) {
                         push( @{($str)}, ('v_' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
@@ -552,12 +552,12 @@ package main;
             if ((($meth eq 'postcircumfix:<( )>'))) {
                 return (('(' . $invocant . ')(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')'))
             };
-            ((my  $List_args = bless [], 'ARRAY') = (sub {
+            ((my  $List_args = bless [], 'ARRAY') = (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $invocant );
     $List_a
-})->());
+}));
             for ( @{($self->{arguments})} ) {
                 push( @{$List_args}, $_->emit_javascript() )
             };
@@ -569,7 +569,7 @@ package main;
     {
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
-        ((my  $Hash_op_infix_js = bless {}, 'HASH') = (sub {
+        ((my  $Hash_op_infix_js = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'infix:<->'} = ' - ');
     ($Hash_a->{'infix:<*>'} = ' * ');
@@ -585,8 +585,8 @@ package main;
     ($Hash_a->{'infix:<' . chr(61) . chr(61) . '>'} = ' ' . chr(61) . chr(61) . ' ');
     ($Hash_a->{'infix:<' . chr(33) . chr(61) . '>'} = ' ' . chr(33) . chr(61) . ' ');
     $Hash_a
-})->());
-        ((my  $Hash_op_global_js = bless {}, 'HASH') = (sub {
+}));
+        ((my  $Hash_op_global_js = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'index'} = 1);
     ($Hash_a->{'die'} = 1);
@@ -605,7 +605,7 @@ package main;
     ($Hash_a->{'length'} = 1);
     ($Hash_a->{'ref'} = 1);
     $Hash_a
-})->());
+}));
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -754,12 +754,12 @@ package main;
                     return ((Javascript::tab($level) . $code . '(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')'))
                 }
             };
-            ((my  $List_args = bless [], 'ARRAY') = (sub {
+            ((my  $List_args = bless [], 'ARRAY') = (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'CallSub' );
     $List_a
-})->());
+}));
             for ( @{($self->{arguments})} ) {
                 push( @{$List_args}, $_->emit_javascript() )
             };
@@ -814,21 +814,21 @@ package main;
                 return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
             };
             if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64))))) {
-                ($arguments = Lit::Array->new(('array1' => (sub {
+                ($arguments = Lit::Array->new(('array1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
-})->())))
+}))))
             }
             else {
                 if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37))))) {
-                    ($arguments = Lit::Hash->new(('hash1' => (sub {
+                    ($arguments = Lit::Hash->new(('hash1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
-})->())))
+}))))
                 }
             };
             (Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')')
@@ -849,12 +849,12 @@ package main;
             ((my  $level) = shift());
             ((my  $cond) = $self->{cond});
             if (((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
-                ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (sub {
+                ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-})->())))
+}))))
             };
             ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0)));
             ((my  $s) = (Javascript::tab($level) . 'if ( ' . Javascript::escape_function('bool') . '(' . $cond->emit_javascript() . ') ) ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)));
@@ -897,12 +897,12 @@ package main;
             ((my  $level) = shift());
             ((my  $cond) = $self->{cond});
             if ((!(((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))))) {
-                ($cond = Lit::Array->new(('array1' => (sub {
+                ($cond = Lit::Array->new(('array1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-})->())))
+}))))
             };
             ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{body}->stmts()), ('needs_return' => 0)));
             ((my  $sig) = 'v__');

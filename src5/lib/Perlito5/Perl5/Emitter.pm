@@ -646,9 +646,9 @@ class Do {
         my $level = $_[1];
         
         my $block = $self->simplify->block;
-          Perl5::tab($level) . "(sub \{\n"
+          Perl5::tab($level) . "(do \{\n"
         .   join(";\n", map( $_->emit_perl5_indented( $level + 1 ), @$block )) . "\n"
-        . Perl5::tab($level) . "})->()"
+        . Perl5::tab($level) . "})"
     }
 }
 

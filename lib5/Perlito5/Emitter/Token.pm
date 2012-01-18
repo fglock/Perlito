@@ -148,14 +148,14 @@ package main;
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            ((my  $table) = (sub {
+            ((my  $table) = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = chr(36));
     ($Hash_a->{chr(64)} = chr(36) . 'List_');
     ($Hash_a->{chr(37)} = chr(36) . 'Hash_');
     ($Hash_a->{chr(38)} = chr(36) . 'Code_');
     $Hash_a
-})->());
+}));
             ($table->{$self->{sigil}} . $self->{name})
         }
     }

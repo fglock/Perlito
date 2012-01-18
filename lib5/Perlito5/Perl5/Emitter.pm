@@ -20,7 +20,7 @@ package main;
             ((my  $level) = shift());
             (('    ') x $level)
         };
-        ((my  $Hash_safe_char = bless {}, 'HASH') = (sub {
+        ((my  $Hash_safe_char = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'_'} = 1);
     ($Hash_a->{','} = 1);
@@ -37,7 +37,7 @@ package main;
     ($Hash_a->{'['} = 1);
     ($Hash_a->{']'} = 1);
     $Hash_a
-})->());
+}));
         sub escape_string {
             my $List__ = bless \@_, "ARRAY";
             ((my  $s) = shift());
@@ -274,14 +274,14 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
-            ((my  $table) = (sub {
+            ((my  $table) = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{chr(36)} = chr(36));
     ($Hash_a->{chr(64)} = chr(36) . 'List_');
     ($Hash_a->{chr(37)} = chr(36) . 'Hash_');
     ($Hash_a->{chr(38)} = chr(36) . 'Code_');
     $Hash_a
-})->());
+}));
             ((my  $ns) = '');
             if (($self->{namespace})) {
                 ($ns = ($self->{namespace} . '::'))
@@ -337,11 +337,11 @@ package main;
     {
     package Call;
         sub new { shift; bless { @_ }, "Call" }
-        ((my  $Hash_method_perl5 = bless {}, 'HASH') = (sub {
+        ((my  $Hash_method_perl5 = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'isa'} = 'Main::isa');
     $Hash_a
-})->());
+}));
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -382,7 +382,7 @@ package main;
     {
     package Apply;
         sub new { shift; bless { @_ }, "Apply" }
-        ((my  $Hash_op_prefix_perl5 = bless {}, 'HASH') = (sub {
+        ((my  $Hash_op_prefix_perl5 = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'say'} = 'Main::say');
     ($Hash_a->{'print'} = 'Main::print');
@@ -399,8 +399,8 @@ package main;
     ($Hash_a->{'prefix:<++>'} = '++');
     ($Hash_a->{'prefix:<-->'} = '--');
     $Hash_a
-})->());
-        ((my  $Hash_op_infix_perl5 = bless {}, 'HASH') = (sub {
+}));
+        ((my  $Hash_op_infix_perl5 = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'list:<.>'} = ' . ');
     ($Hash_a->{'infix:<+>'} = ' + ');
@@ -425,7 +425,7 @@ package main;
     ($Hash_a->{'infix:<' . chr(33) . chr(61) . '>'} = ' ' . chr(33) . chr(61) . ' ');
     ($Hash_a->{'infix:<' . chr(61) . '>>'} = ' ' . chr(61) . '> ');
     $Hash_a
-})->());
+}));
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -535,21 +535,21 @@ package main;
                 return (('((' . ($a->invocant())->emit_perl5() . ')->' . chr(123) . $a->method() . chr(125) . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')'))
             };
             if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64))))) {
-                ($arguments = Lit::Array->new(('array1' => (sub {
+                ($arguments = Lit::Array->new(('array1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
-})->())))
+}))))
             }
             else {
                 if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37))))) {
-                    ($arguments = Lit::Hash->new(('hash1' => (sub {
+                    ($arguments = Lit::Hash->new(('hash1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
-})->())))
+}))))
                 }
             };
             ('(' . $parameters->emit_perl5() . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')')
@@ -588,12 +588,12 @@ package main;
             ((my  $level) = $List__->[1]);
             ((my  $cond) = $self->{cond});
             if ((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64)))) {
-                ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (sub {
+                ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-})->())))
+}))))
             };
             (Perl5::tab($level) . 'for ( ' . (($self->{init} ? ($self->{init}->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($cond ? ($cond->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{continue} ? ($self->{continue}->emit_perl5() . ' ') : ' ')) . ') ' . chr(123) . (chr(10)) . join((chr(59) . chr(10)), @{[map($_->emit_perl5_indented(($level + 1)), @{$self->{body}->stmts()})]}) . (chr(10)) . Perl5::tab($level) . (chr(125)))
         }
@@ -614,12 +614,12 @@ package main;
             ((my  $level) = $List__->[1]);
             ((my  $cond) = $self->{cond});
             if ((!(((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))))) {
-                ($cond = Lit::Array->new(('array1' => (sub {
+                ($cond = Lit::Array->new(('array1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $cond );
     $List_a
-})->())))
+}))))
             };
             (my  $sig);
             if (($self->{body}->sig())) {
@@ -702,7 +702,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             ((my  $block) = $self->simplify()->block());
-            (Perl5::tab($level) . ('(sub ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), @{[map($_->emit_perl5_indented(($level + 1)), @{($block)})]}) . (chr(10)) . Perl5::tab($level) . (chr(125) . ')->()'))
+            (Perl5::tab($level) . ('(do ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), @{[map($_->emit_perl5_indented(($level + 1)), @{($block)})]}) . (chr(10)) . Perl5::tab($level) . (chr(125) . ')'))
         }
     }
 

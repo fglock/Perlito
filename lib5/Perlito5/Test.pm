@@ -61,11 +61,11 @@ package main;
         ((my  $todo) = shift());
         ((my  $depends) = shift());
         ((my  $test) = !((($got eq $expected))));
-        Perlito5::Test::proclaim($test, ('isnt' . chr(33) . ' ' . $desc), $todo, $got, $expected, $depends, (sub {
+        Perlito5::Test::proclaim($test, ('isnt' . chr(33) . ' ' . $desc), $todo, $got, $expected, $depends, (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'negate'} = 1);
     $Hash_a
-})->())
+}))
     };
     sub cmp_ok {
         my $List__ = bless \@_, "ARRAY";
