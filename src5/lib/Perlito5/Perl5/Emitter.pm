@@ -61,7 +61,7 @@ class CompUnit {
         my $level = $_[1];
 
         my @body;
-        for (@.body) {
+        for (@{$.body}) {
             if (defined($_)) {
                 push @body, $_
             }
@@ -144,7 +144,7 @@ class Lit::Block {
         my $level = $_[1];
         
           Perl5::tab($level) . "sub \{\n"
-        .   join(";\n", map( $_->emit_perl5_indented( $level + 1 ), @.stmts )) . "\n"
+        .   join(";\n", map( $_->emit_perl5_indented( $level + 1 ), @{$.stmts} )) . "\n"
         . Perl5::tab($level) . "}"
     }
 }
@@ -303,14 +303,14 @@ class Call {
 
         if (exists( $method_perl5{ $.method } )) {
             return Perl5::tab($level)
-                . $method_perl5{ $.method } . '(' . $invocant . ', ' . join(', ', map( $_->emit_perl5, @.arguments )) . ')';
+                . $method_perl5{ $.method } . '(' . $invocant . ', ' . join(', ', map( $_->emit_perl5, @{$.arguments} )) . ')';
         }
         
         if ( $.method eq 'postcircumfix:<[ ]>' ) {
-            return Perl5::tab($level) . $invocant . '->[' . @.arguments->emit_perl5() . ']'
+            return Perl5::tab($level) . $invocant . '->[' . $.arguments->emit_perl5() . ']'
         }
         if ( $.method eq 'postcircumfix:<{ }>' ) {
-            return Perl5::tab($level) . $invocant . '->{' . @.arguments->emit_perl5() . '}'
+            return Perl5::tab($level) . $invocant . '->{' . $.arguments->emit_perl5() . '}'
         }
 
         my $meth = $.method;
@@ -318,7 +318,7 @@ class Call {
              $meth = '';
         }
 
-        my $call = '->' . $meth . '(' . join(', ', map( $_->emit_perl5, @.arguments )) . ')';
+        my $call = '->' . $meth . '(' . join(', ', map( $_->emit_perl5, @{$.arguments} )) . ')';
         if ($.hyper) {
             if ( !(  $.invocant->isa( 'Apply' )
                   && $.invocant->code eq 'prefix:<@>' 
@@ -402,78 +402,78 @@ class Apply {
         my $code = $ns . $.code;
 
         if (ref $code ne '') {
-            return Perl5::tab($level) . '(' . $.code->emit_perl5() . ')->(' . join(', ', map( $_->emit_perl5, @.arguments )) . ')';
+            return Perl5::tab($level) . '(' . $.code->emit_perl5() . ')->(' . join(', ', map( $_->emit_perl5, @{$.arguments} )) . ')';
         }
 
         if (exists $op_infix_perl5{$code}) {
             return Perl5::tab($level) . '(' 
                 . join( $op_infix_perl5{$code},
-                        (map( $_->emit_perl5, @.arguments ))
+                        (map( $_->emit_perl5, @{$.arguments} ))
                       )
                 . ')'
         }
         if (exists $op_prefix_perl5{$code}) {
-            return Perl5::tab($level) . $op_prefix_perl5{$code} . '('   . join(', ', map( $_->emit_perl5, @.arguments )) . ')'
+            return Perl5::tab($level) . $op_prefix_perl5{$code} . '('   . join(', ', map( $_->emit_perl5, @{$.arguments} )) . ')'
         }
 
         if ($.code eq 'package')   { return Perl5::tab($level) . 'package ' . $.namespace }
         if ($code eq 'undef')      { return Perl5::tab($level) . 'undef()' }
 
-        if ($code eq 'make')       { return Perl5::tab($level) . '($MATCH->{capture} = ('   . join(', ', map( $_->emit_perl5, @.arguments )) . '))' }
+        if ($code eq 'make')       { return Perl5::tab($level) . '($MATCH->{capture} = ('   . join(', ', map( $_->emit_perl5, @{$.arguments} )) . '))' }
 
-        if ($code eq 'scalar')     { return Perl5::tab($level) . 'scalar( @{' . (@.arguments[0]->emit_perl5) . '} )' }
-        if ($code eq 'pop')        { return Perl5::tab($level) . 'pop( @{' . (@.arguments[0]->emit_perl5) . '} )' }
-        if ($code eq 'push')       { return Perl5::tab($level) . 'push( @{' . (@.arguments[0])->emit_perl5() . '}, ' . (@.arguments[1])->emit_perl5() . ' )' }
+        if ($code eq 'scalar')     { return Perl5::tab($level) . 'scalar( @{' . ($.arguments->[0]->emit_perl5) . '} )' }
+        if ($code eq 'pop')        { return Perl5::tab($level) . 'pop( @{' . ($.arguments->[0]->emit_perl5) . '} )' }
+        if ($code eq 'push')       { return Perl5::tab($level) . 'push( @{' . ($.arguments->[0])->emit_perl5() . '}, ' . ($.arguments->[1])->emit_perl5() . ' )' }
         if ($code eq 'shift')      { 
-            if ( @.arguments ) {
-                return Perl5::tab($level) . 'shift( @{' . join(' ', map( $_->emit_perl5, @.arguments ))    . '} )' 
+            if ( @{$.arguments} ) {
+                return Perl5::tab($level) . 'shift( @{' . join(' ', map( $_->emit_perl5, @{$.arguments} ))    . '} )' 
             }
             return 'shift()'
         }
-        if ($code eq 'unshift')    { return Perl5::tab($level) . 'unshift( @{' . @.arguments[0]->emit_perl5()  . '}, ' . @.arguments[1]->emit_perl5() . ' )' }
+        if ($code eq 'unshift')    { return Perl5::tab($level) . 'unshift( @{' . $.arguments->[0]->emit_perl5()  . '}, ' . $.arguments->[1]->emit_perl5() . ' )' }
 
         if ($code eq 'map')       {    
-            my $str = shift @.arguments;
-            return Perl5::tab($level) . '[map(' . $str->emit_perl5 . ', @{' . join(',', map( $_->emit_perl5, @.arguments )) . '})]'
+            my $str = shift @{$.arguments};
+            return Perl5::tab($level) . '[map(' . $str->emit_perl5 . ', @{' . join(',', map( $_->emit_perl5, @{$.arguments} )) . '})]'
         }
 
         if ($code eq 'join')       {    
-            my $str = shift @.arguments;
-            return Perl5::tab($level) . 'join(' . $str->emit_perl5 . ', @{' . join(',', map( $_->emit_perl5, @.arguments )) . '})'
+            my $str = shift @{$.arguments};
+            return Perl5::tab($level) . 'join(' . $str->emit_perl5 . ', @{' . join(',', map( $_->emit_perl5, @{$.arguments} )) . '})'
         }
 
         if ($code eq 'prefix:<\\>') { 
             # XXX currently a no-op
-            return Perl5::tab($level) . join(' ', map( $_->emit_perl5, @.arguments )) 
+            return Perl5::tab($level) . join(' ', map( $_->emit_perl5, @{$.arguments} )) 
         }
-        if ($code eq 'prefix:<$>') { return Perl5::tab($level) . '${' . join(' ', map( $_->emit_perl5, @.arguments ))     . '}' }
-        if ($code eq 'prefix:<@>') { return Perl5::tab($level) . '(' . join(' ', map( $_->emit_perl5, @.arguments ))     . ')' }
-        if ($code eq 'prefix:<%>') { return Perl5::tab($level) . '%{' . join(' ', map( $_->emit_perl5, @.arguments ))     . '}' }
+        if ($code eq 'prefix:<$>') { return Perl5::tab($level) . '${' . join(' ', map( $_->emit_perl5, @{$.arguments} ))     . '}' }
+        if ($code eq 'prefix:<@>') { return Perl5::tab($level) . '(' . join(' ', map( $_->emit_perl5, @{$.arguments} ))     . ')' }
+        if ($code eq 'prefix:<%>') { return Perl5::tab($level) . '%{' . join(' ', map( $_->emit_perl5, @{$.arguments} ))     . '}' }
 
-        if ($code eq 'postfix:<++>') { return Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @.arguments ))  . ')++' }
-        if ($code eq 'postfix:<-->') { return Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @.arguments ))  . ')--' }
+        if ($code eq 'postfix:<++>') { return Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @{$.arguments} ))  . ')++' }
+        if ($code eq 'postfix:<-->') { return Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @{$.arguments} ))  . ')--' }
 
-        if ($code eq 'infix:<..>') { return Perl5::tab($level) . '(bless ['  . join(' .. ', map( $_->emit_perl5, @.arguments ))  . "], 'ARRAY')" }
+        if ($code eq 'infix:<..>') { return Perl5::tab($level) . '(bless ['  . join(' .. ', map( $_->emit_perl5, @{$.arguments} ))  . "], 'ARRAY')" }
 
         if ($code eq 'ternary:<?? !!>') {
             return Perl5::tab($level)
-                .  '('  . @.arguments[0]->emit_perl5
-                . ' ? ' . @.arguments[1]->emit_perl5
-                . ' : ' . @.arguments[2]->emit_perl5
+                .  '('  . $.arguments->[0]->emit_perl5
+                . ' ? ' . $.arguments->[1]->emit_perl5
+                . ' : ' . $.arguments->[2]->emit_perl5
                 .  ')'
         }
 
         if ($code eq 'circumfix:<( )>') {
-            return Perl5::tab($level) . '(' . join(', ', map( $_->emit_perl5, @.arguments )) . ')';
+            return Perl5::tab($level) . '(' . join(', ', map( $_->emit_perl5, @{$.arguments} )) . ')';
         }
         if ($code eq 'infix:<=>') {
-            return Perl5::tab($level) . emit_perl5_bind( @.arguments[0], @.arguments[1] );
+            return Perl5::tab($level) . emit_perl5_bind( $.arguments->[0], $.arguments->[1] );
         }
         if ($code eq 'return') {
-            return Perl5::tab($level) . 'return (' . join(', ', map( $_->emit_perl5, @.arguments )) . ')';
+            return Perl5::tab($level) . 'return (' . join(', ', map( $_->emit_perl5, @{$.arguments} )) . ')';
         }
 
-        Perl5::tab($level) . $code . '(' . join(', ', map( $_->emit_perl5, @.arguments )) . ')';
+        Perl5::tab($level) . $code . '(' . join(', ', map( $_->emit_perl5, @{$.arguments} )) . ')';
     }
 
     sub emit_perl5_bind {
@@ -634,7 +634,7 @@ class Sub {
           Perl5::tab($level) . 'sub ' . $.name . " \{\n"
         . Perl5::tab( $level + 1 ) . 'my $List__ = bless \\@_, "ARRAY";' . "\n"
         .   $str
-        .   join(";\n", map( $_->emit_perl5_indented( $level + 1 ), @.block )) . "\n"
+        .   join(";\n", map( $_->emit_perl5_indented( $level + 1 ), @{$.block} )) . "\n"
         . Perl5::tab($level) . "}"
     }
 }

@@ -641,18 +641,18 @@ class Apply {
         }
 
         if ($code eq 'map') {
-            my @args = @.arguments;
-            my $fun = shift @args;
+            my $fun  = $.arguments->[0];
+            my $list = $.arguments->[1];
             return
                     '(function (a_) { '
                         . 'var out = []; '
                         . 'if ( a_ == null ) { return out; }; '
                         . 'for(var i = 0; i < a_.length; i++) { '
-                            . 'v__ = a_[i]; '
+                            . 'var v__ = a_[i]; '
                             . 'out.push(' . $fun->emit_javascript . ')'
                         . '}; '
                         . 'return out;'
-                    . ' })(' . $args[0]->emit_javascript() . ')'
+                    . ' })(' . $list->emit_javascript() . ')'
         }
 
         if ($code eq 'chr')        { return 'String.fromCharCode(' . Javascript::escape_function('num') . '(' . (@.arguments[0])->emit_javascript() . '))' }
