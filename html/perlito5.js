@@ -33,6 +33,24 @@ if (typeof CallSub !== 'object') {
     CallSub = new CallSubClass;
 }
 
+function HashRef(o) {
+    this._hash_ = o;
+    this.ref = function() { return 'HASH' };
+    this.bool = function() { return 1 };
+}
+
+function ArrayRef(o) {
+    this._array_ = o;
+    this.ref = function() { return 'ARRAY' };
+    this.bool = function() { return 1 };
+}
+
+function ScalarRef(o) {
+    this._scalar_ = o;
+    this.ref = function() { return 'SCALAR' };
+    this.bool = function() { return 1 };
+}
+
 // class IO
 if (typeof IO !== 'object') {
     IO = function() {};
@@ -71,21 +89,6 @@ if (typeof Main !== 'object') {
         return out.join(", ");
     };
 })();
-
-if (typeof Perlito5$Match !== 'object') {
-    Perlito5$Match = function() {};
-    Perlito5$Match = new Perlito5$Match;
-    Perlito5$Match.isa = function(s) {
-        return s == 'Perlito::Match';
-    };
-}
-
-v_MATCH = {};
-v_MATCH.__proto__ = Perlito5$Match;
-
-Perlito5$Match.hash = function() {
-    return this;
-};
 
 if (typeof f_print !== 'function') {
     var buf = "";
@@ -175,7 +178,12 @@ ref = function(o) {
     if (o == null) {
         return '';
     }
+    if (typeof o.__proto__.ref === 'function') {
+        // blessed reference
+        return o.__proto__.ref.call(o);
+    }
     if (typeof o.ref === 'function') {
+        // un-blessed reference
         return o.ref();
     }
     if (typeof o === 'object' && (o instanceof Array)) {
@@ -187,7 +195,7 @@ ref = function(o) {
         case "number": return '';
         case "boolean": return '';
     }
-    return 'HASH';
+    return '';
 };
 
 scalar = function(o) {
@@ -363,8 +371,11 @@ bool = function(o) {
     if (typeof o === 'string') {
         return o != '' && o != '0';
     }
+    if (typeof o.__proto__.bool === 'function') {
+        return o.__proto__.bool.call(o);
+    }
     if (typeof o.bool === 'function') {
-        return o.v_bool;
+        return o.bool();
     }
     if (typeof o.length === 'number') {
         return o.length;
