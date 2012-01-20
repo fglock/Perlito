@@ -841,11 +841,20 @@ class Apply {
             ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '@'
         {
             $arguments = Lit::Array->new( array1 => [$arguments] );
+            return Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' = (' . $arguments->emit_javascript() . ').slice())';
         }
         elsif   $parameters->isa( 'Var' ) && $parameters->sigil eq '%'
             ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '%'
         {
             $arguments = Lit::Hash->new( hash1 => [$arguments] );
+            return Javascript::tab($level) . '(' 
+                . $parameters->emit_javascript() . ' = (function (_h) { '
+                .   'var _tmp = {}; '
+                .   'for (var _i in _h) { '
+                .       '_tmp[_i] = _h[_i]; '
+                .   '}; '
+                .   'return _tmp; '
+                . '})( ' . $arguments->emit_javascript() . '))';
         }
         Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' = ' . $arguments->emit_javascript() . ')';
     }

@@ -819,7 +819,8 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
-}))))
+}))));
+                return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' (' . $arguments->emit_javascript() . ').slice())'))
             }
             else {
                 if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37))))) {
@@ -828,7 +829,8 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $arguments );
     $List_a
-}))))
+}))));
+                    return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' (function (_h) ' . chr(123) . ' ' . 'var _tmp ' . chr(61) . ' ' . chr(123) . chr(125) . chr(59) . ' ' . 'for (var _i in _h) ' . chr(123) . ' ' . '_tmp[_i] ' . chr(61) . ' _h[_i]' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'return _tmp' . chr(59) . ' ' . chr(125) . ')( ' . $arguments->emit_javascript() . '))'))
                 }
             };
             (Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')')
