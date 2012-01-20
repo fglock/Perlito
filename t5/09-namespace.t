@@ -1,3 +1,4 @@
+use v5;
 use strict;
 use feature 'say';
 
@@ -19,13 +20,13 @@ if ($x != 3) {
 };
 say 'ok 1 - ', $x;
 
-sub subr3 { $_[0][0] + $_[0][1] };
+sub subr3 { $_[0][0] + $_[0][1] }
 
 $x = 0;
 $x = subr3( [3, 4] );
 if ($x != 7) {
     print 'not '
-};
+}
 say 'ok 2 - ', $x;
 
 # we are in the Main namespace

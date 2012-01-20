@@ -1,4 +1,7 @@
-    
+use v5;
+use strict;
+use feature 'say';
+
     say '1..2';
 
     my $x = 0;

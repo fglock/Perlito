@@ -1,4 +1,6 @@
 use v5;
+use strict;
+use feature 'say';
 
 package Main;
 
@@ -37,7 +39,7 @@ package Main;
     say 'ok 8 - concat';
 
     my $undef;
-    if $undef {
+    if ($undef) {
         print 'not '
     };
     say 'ok 9 - undef to bool';

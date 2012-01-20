@@ -1,11 +1,13 @@
 use v5;
+use strict;
+use feature 'say';
 
 package Main;
     say '1..3';
     my $a = sub () { 
             do { 5 }
         };
-    if $a->() != 5 {
+    if ($a->() != 5) {
         print 'not '
     }
     say 'ok 1 - do inside function';

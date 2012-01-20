@@ -1,4 +1,6 @@
 use v5;
+use strict;
+use feature 'say';
 
 package Main;
     say '1..4';
@@ -18,4 +20,3 @@ package Main;
         print 'not '
     }
     say 'ok 4 - return function';
-}

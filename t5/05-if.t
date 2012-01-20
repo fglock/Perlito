@@ -1,3 +1,6 @@
+use v5;
+use strict;
+use feature 'say';
 
 say '1..9';
 

@@ -1,3 +1,6 @@
+use v5;
+use strict;
+use feature 'say';
 
 package Other;
 
