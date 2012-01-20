@@ -35,7 +35,12 @@ package main;
                 }
             };
             if ((($needs_interpolation && (scalar( @{$List_items} ) == 1)))) {
-                return ($List_items->[0])
+                return (Apply->new(('arguments' => (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, $List_items->[0] );
+    $List_a
+})), ('code' => 'prefix:<' . chr(92) . '>'), ('namespace' => '')))
             };
             (my  $List_s = bless [], 'ARRAY');
             for my $item ( @{$List_items} ) {
@@ -54,7 +59,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')) );
-    push( @{$List_a}, Index->new(('index_exp' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('obj' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')))) );
+    push( @{$List_a}, Index->new(('index_exp' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('obj' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')))) );
     $List_a
 })), ('code' => 'push'), ('namespace' => '')) );
     $List_a
@@ -101,7 +106,12 @@ package main;
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
+    push( @{$List_a}, Apply->new(('arguments' => (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')) );
+    $List_a
+})), ('code' => 'prefix:<' . chr(92) . '>'), ('namespace' => '')) );
     $List_a
 }))))))
         }
@@ -131,21 +141,25 @@ package main;
                     push( @{$List_s}, Apply->new(('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, Lookup->new(('index_exp' => $item->arguments()->[0]), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37)), ('twigil' => '')))) );
+    push( @{$List_a}, Lookup->new(('index_exp' => $item->arguments()->[0]), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')))) );
     push( @{$List_a}, $item->arguments()->[1] );
     $List_a
 })), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) )
                 }
                 else {
                     if ((((Main::isa($item, 'Var') && ($item->sigil() eq chr(37))) || (Main::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(37) . '>'))))) {
+                        ((my  $v) = $item);
+                        if (Main::isa($item, 'Var')) {
+                            ($v = Var->new(('sigil' => chr(36)), ('twigil' => $item->twigil()), ('namespace' => $item->namespace()), ('name' => $item->name())))
+                        };
                         push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Apply->new(('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, Lookup->new(('index_exp' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37)), ('twigil' => '')))) );
-    push( @{$List_a}, Lookup->new(('index_exp' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('obj' => $item)) );
+    push( @{$List_a}, Lookup->new(('index_exp' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')))) );
+    push( @{$List_a}, Lookup->new(('index_exp' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('obj' => $v)) );
     $List_a
 })), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
     $List_a
@@ -239,7 +253,12 @@ package main;
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
+    push( @{$List_a}, Apply->new(('arguments' => (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37)), ('twigil' => '')) );
+    $List_a
+})), ('code' => 'prefix:<' . chr(92) . '>'), ('namespace' => '')) );
     $List_a
 }))))))
         }

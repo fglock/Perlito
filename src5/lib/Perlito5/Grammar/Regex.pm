@@ -67,7 +67,7 @@ token variables {
     |
         '$<'
         <rule_ident> \>
-        { make '$MATCH{' . '\'' . $<rule_ident> . '\'' . '}' }
+        { make '$MATCH->{' . '\'' . $<rule_ident> . '\'' . '}' }
     |
         # TODO
         <Perlito5::Grammar.var_sigil>

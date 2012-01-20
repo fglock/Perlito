@@ -2281,7 +2281,7 @@ package main;
 })) || ((do {
     (($MATCH)->{to} = $pos1);
     (((((do {
-    die('Syntax Error in sub ' . chr(39), $MATCH->{'name'}->flat(), chr(39))
+    die('Syntax Error in sub ' . chr(39), $MATCH->{'opt_name'}->flat(), chr(39))
 })) || 1)))
 })))
 }))) && ((((do {

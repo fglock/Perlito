@@ -77,7 +77,7 @@ class Lit::Hash {
         my %h;
         for my $field ( @{$.hash1} ) {
             my $pair = $field->arguments;
-            %h{ ($pair->[0])->eval($env) } = ($pair->[1])->eval($env);
+            $h{ ($pair->[0])->eval($env) } = ($pair->[1])->eval($env);
         };
         return %h;
     }
@@ -280,9 +280,9 @@ class Sub {
                 sub ( $env, $args ) {
                     my %context;
                     my $n = 0;
-                    %context{'@_'} = $args;
+                    $context{'@_'} = $args;
                     for my $name ( @param_name ) {
-                        %context{$name} = ($args->[$n])->eval($env);
+                        $context{$name} = ($args->[$n])->eval($env);
                         $n = $n + 1;
                     }
                     my $env1 = [ %context, @$env ];

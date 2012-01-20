@@ -309,7 +309,7 @@ token sub_def {
     <method_sig>
     <.opt_ws> \{ <.opt_ws>
           <exp_stmts> <.opt_ws>
-    [   \}     | { die 'Syntax Error in sub \'', $<name>->flat(), '\''; } ]
+    [   \}     | { die 'Syntax Error in sub \'', $<opt_name>->flat(), '\''; } ]
     { make Sub->new( name => $<opt_name>->flat(), sig => $<method_sig>->flat(), block => $<exp_stmts>->flat() ) }
 }
 

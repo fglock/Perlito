@@ -826,7 +826,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Lookup->new(('obj' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'MATCH'))), ('index_exp' => Val::Buf->new(('buf' => ('' . $MATCH->{'capture_name'}))))) );
+    push( @{$List_a}, Call->new(('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'MATCH'))), ('arguments' => Val::Buf->new(('buf' => ('' . $MATCH->{'capture_name'})))), ('hyper' => '')) );
     $List_a
 })))
 })) || 1))))

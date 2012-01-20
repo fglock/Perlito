@@ -474,7 +474,7 @@ package main;
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = ((chr(36) . 'MATCH' . chr(123) . chr(39) . $MATCH->{'rule_ident'} . chr(39) . chr(125))))
+    ($MATCH->{capture} = ((chr(36) . 'MATCH->' . chr(123) . chr(39) . $MATCH->{'rule_ident'} . chr(39) . chr(125))))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);

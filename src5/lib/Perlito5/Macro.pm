@@ -26,7 +26,14 @@ class Lit::Array {
             }
         }
         if ($needs_interpolation && scalar(@items) == 1) {
-            return @items[0];
+            return
+                Apply->new(
+                    arguments => [
+                            $items[0]
+                        ],
+                    code => 'prefix:<\\>',
+                    namespace => '',
+                );
         }
         my @s;
         for my $item ( @items ) {
@@ -52,7 +59,7 @@ class Lit::Array {
                                 Apply->new(
                                     'arguments' => [
                                         Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
-                                        Index->new('index_exp' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'obj' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => ''))],
+                                        Index->new('index_exp' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'obj' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '$', 'twigil' => ''))],
                                     'code' => 'push',
                                     'namespace' => '')
                             ]
@@ -104,7 +111,13 @@ class Lit::Array {
                         'type' => '',
                         'var' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => '')),
                     @s,
-                    Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
+                    Apply->new(
+                        arguments => [
+                                Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
+                            ],
+                        code => 'prefix:<\\>',
+                        namespace => '',
+                    ),
                 ],
             ),
         );
@@ -134,7 +147,7 @@ class Lit::Hash {
                         'arguments' => [
                             Lookup->new(
                                 'index_exp' => $item->arguments[0],
-                                'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')),
+                                'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '')),
                             $item->arguments[1]
                         ],
                         'code' => 'infix:<=>',
@@ -144,6 +157,9 @@ class Lit::Hash {
                   ||  $item->isa( 'Apply' ) && $item->code eq 'prefix:<%>'
                   )
             {
+                my $v = $item;
+                $v = Var->new( sigil => '$', twigil => $item->twigil, namespace => $item->namespace, name => $item->name )
+                    if $item->isa( 'Var' );
                 push @s,
                     For->new(
                         'body' => Lit::Block->new(
@@ -152,11 +168,11 @@ class Lit::Hash {
                                             'arguments' => [
                                                 Lookup->new(
                                                         'index_exp' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
-                                                        'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')
+                                                        'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '')
                                                     ),
                                                 Lookup->new(
                                                         'index_exp' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
-                                                        'obj' => $item
+                                                        'obj' => $v
                                                     ),
                                             ],
                                             'code' => 'infix:<=>',
@@ -240,7 +256,13 @@ class Lit::Hash {
                         'type' => '',
                         'var' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')),
                     @s,
-                    Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''),
+                    Apply->new(
+                        arguments => [
+                                Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''),
+                            ],
+                        code => 'prefix:<\\>',
+                        namespace => '',
+                    ),
                 ],
             ),
         );
@@ -268,13 +290,13 @@ class Apply {
         my $code = $.code;
         return 0 if ref($code);
 
-        if (exists( %op{$code} )) {
+        if (exists( $op{$code} )) {
             return Apply->new(
                 code      => 'infix:<=>',
                 arguments => [
                     $.arguments->[0],
                     Apply->new(
-                        code      => %op{$code},
+                        code      => $op{$code},
                         arguments => $.arguments,
                     ),
                 ]

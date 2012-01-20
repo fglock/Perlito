@@ -82,7 +82,7 @@ sub op_parse {
 
     for my $len ( @Op_chars ) {
         my $op = substr($str, $pos, $len);
-        if (exists(@Op[$len]{$op})) {
+        if (exists($Op[$len]{$op})) {
             my $c1 = substr($str, $pos+$len-1, 1);
             my $c2 = substr($str, $pos+$len, 1);
             if (is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' )) {
@@ -118,13 +118,13 @@ sub add_op {
     $Precedence->{$name}        = $precedence;
     $Assoc->{$assoc}{$name}     = 1;
     $Allow_space_before->{$fixity}{$name} = $param->{'no_space_before'} ? 0 : 1;
-    @Op[ length($name) ]{$name} = 1;
+    $Op[ length($name) ]{$name} = 1;
 }
 
 
 # - no space allowed before postfix ops
 # - if there is both an infix and a postfix with the same name, then the infix requires space before
-# - @a[] inside string interpolation
+# - $a[] inside string interpolation
 # - parentheses vs. Parcel (x) (x,)
 # - pair vs. block, hash vs. closure
 # - function call without parentheses

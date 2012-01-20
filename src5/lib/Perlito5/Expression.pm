@@ -410,10 +410,15 @@ package Perlito5::Expression;
 
         # XXX Perl6
         | '$<' <capture_name> '>'
-            { make [ 'term', Lookup->new(
-                obj   => Var->new( sigil => '$', twigil => '', name => 'MATCH' ),
-                index_exp => Val::Buf->new( buf => '' . $<capture_name> )
-            ) ] }
+            { make [ 
+                    'term', 
+                    Call->new(
+                        method    => 'postcircumfix:<{ }>',
+                        invocant  => Var->new( sigil => '$', twigil => '', name => 'MATCH' ),
+                        arguments => Val::Buf->new( buf => '' . $<capture_name> ),
+                        hyper     => '',
+                    ) 
+                ] }
         | <Perlito5::Precedence.op_parse>              { make $<Perlito5::Precedence.op_parse>->flat()             }
 
         | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
