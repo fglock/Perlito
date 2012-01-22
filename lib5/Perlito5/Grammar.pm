@@ -1961,7 +1961,7 @@ package main;
     (($MATCH)->{to} = $last_pos);
     1
 })) && ((((do {
-    ($MATCH->{capture} = ([ map { $_->capture() } @{( $MATCH->{'Perlito5::Expression.delimited_statement'} )} ]))
+    ($MATCH->{capture} = ([map($_->capture(), @{($MATCH->{'Perlito5::Expression.delimited_statement'})})]))
 })) || 1)))
 }))
 }))));
@@ -2011,7 +2011,7 @@ package main;
     (($MATCH)->{to} = $last_pos);
     1
 })) && ((((do {
-    ($MATCH->{capture} = ([ map { $_->capture() } @{( $MATCH->{'Perlito5::Expression.delimited_statement_no_package'} )} ]))
+    ($MATCH->{capture} = ([map($_->capture(), @{($MATCH->{'Perlito5::Expression.delimited_statement_no_package'})})]))
 })) || 1)))
 }))
 }))));

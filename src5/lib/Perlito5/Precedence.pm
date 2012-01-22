@@ -63,22 +63,13 @@ sub op_parse {
             }
         }
     }
-    my $c01 = substr($str, $pos, 1);
-    my $c02 = substr($str, $pos, 2);
+
+    # XXX Perl6
     my $hyper_left = 0;
     my $hyper_right = 0;
-    if ($c02 eq '<<') || ($c02 eq '>>') {
-        $hyper_left = $c02;
-        $pos = $pos + 2;
-        $c02 = substr($str, $pos, 2);
-    }
 
     return Perlito5::Match->new( bool => 0 )
         if substr($str, $pos, 2) eq '->';
-
-    # XXX Perl6 hyper operator
-    return Perlito5::Match->new( bool => 0 )
-        if substr($str, $pos, 3) eq '.>>';
 
     for my $len ( @Op_chars ) {
         my $op = substr($str, $pos, $len);
@@ -91,10 +82,6 @@ sub op_parse {
                 $pos = $pos + $len;
                 my $c01 = substr($str, $pos, 1);
                 my $c02 = substr($str, $pos, 2);
-                if ($c02 eq '<<') || ($c02 eq '>>') {
-                    $hyper_right = $c02;
-                    $pos = $pos + 2;
-                }
                 return Perlito5::Match->new( 'str' => $str, 'from' => $from, 'to' => $pos, 'bool' => 1,
                     capture => [ 'op', $op, { 'hyper_left' => $hyper_left, 'hyper_right' => $hyper_right } ] );
             }

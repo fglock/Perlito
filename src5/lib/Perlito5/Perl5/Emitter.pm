@@ -315,20 +315,7 @@ class Call {
              $meth = '';
         }
 
-        my $call = '->' . $meth . '(' . join(', ', map( $_->emit_perl5, @{$.arguments} )) . ')';
-        if ($.hyper) {
-            if ( !(  $.invocant->isa( 'Apply' )
-                  && $.invocant->code eq 'prefix:<@>' 
-                  )
-               )
-            {
-                $invocant = '@{( ' . $invocant . ' )}';
-            }
-            return Perl5::tab($level) . '[ map { $_' . $call . ' } ' . $invocant . ' ]';
-        }
-        else {
-            Perl5::tab($level) . $invocant . $call;
-        }
+        Perl5::tab($level) . $invocant . '->' . $meth . '(' . join(', ', map( $_->emit_perl5, @{$.arguments} )) . ')';
     }
 }
 

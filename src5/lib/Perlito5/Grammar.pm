@@ -257,12 +257,16 @@ token val_int {
 
 token exp_stmts {
     <Perlito5::Expression.delimited_statement>*
-    { make $<Perlito5::Expression.delimited_statement>.>>capture }
+    { 
+        make [ map( $_->capture, @{ $<Perlito5::Expression.delimited_statement> } ) ]
+    }
 }
 
 token exp_stmts_no_package {
     <Perlito5::Expression.delimited_statement_no_package>*
-    { make $<Perlito5::Expression.delimited_statement_no_package>.>>capture }
+    { 
+        make [ map( $_->capture, @{ $<Perlito5::Expression.delimited_statement_no_package> } ) ]
+    }
 }
 
 token opt_name {  <ident>?  }

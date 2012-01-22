@@ -365,16 +365,7 @@ package main;
             if ((($meth eq 'postcircumfix:<( )>'))) {
                 ($meth = '')
             };
-            ((my  $call) = ('->' . $meth . '(' . join(', ', @{[map($_->emit_perl5(), @{($self->{arguments})})]}) . ')'));
-            if (($self->{hyper})) {
-                if ((!(((Main::isa($self->{invocant}, 'Apply') && ($self->{invocant}->code() eq 'prefix:<' . chr(64) . '>')))))) {
-                    ($invocant = (chr(64) . chr(123) . '( ' . $invocant . ' )' . chr(125)))
-                };
-                return ((Perl5::tab($level) . '[ map ' . chr(123) . ' ' . chr(36) . '_' . $call . ' ' . chr(125) . ' ' . $invocant . ' ]'))
-            }
-            else {
-                (Perl5::tab($level) . $invocant . $call)
-            }
+            (Perl5::tab($level) . $invocant . '->' . $meth . '(' . join(', ', @{[map($_->emit_perl5(), @{($self->{arguments})})]}) . ')')
         }
     }
 
