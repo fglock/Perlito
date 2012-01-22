@@ -79,7 +79,7 @@ package Perlito5::Expression;
             # say "# ** processing term ", $v->perl;
             if ($v->[1] eq 'methcall_no_params') {
                 # say "#   Call ", ($v->[2])->perl;
-                $v = Call->new( invocant => undef, method => $v->[2], arguments => [], hyper => $v->[3] );
+                $v = Call->new( invocant => undef, method => $v->[2], arguments => [] );
                 # say "#     ", $v->perl;
                 return $v;
             }
@@ -96,7 +96,7 @@ package Perlito5::Expression;
                     unshift( @$num_stack, ($v->[3]){'end_block'} );
                 }
                 my $param_list = expand_list( ($v->[3]){'exp'} );
-                $v = Call->new( invocant => undef, method => $v->[2], arguments => $param_list, hyper => $v->[4] );
+                $v = Call->new( invocant => undef, method => $v->[2], arguments => $param_list );
                 # say "#     ", $v->perl;
                 return $v;
             }
@@ -135,7 +135,7 @@ package Perlito5::Expression;
             if ($v->[1] eq '.( )') {
                 # say "#   Params ", ($v->[2])->perl;
                 # say "#     v:     ", $v->perl;
-                $v = Call->new( invocant => undef, method => 'postcircumfix:<( )>', arguments => $v->[2], hyper => 0 );
+                $v = Call->new( invocant => undef, method => 'postcircumfix:<( )>', arguments => $v->[2] );
                 return $v;
             }
             if ($v->[1] eq '.[ ]') {
@@ -171,7 +171,7 @@ package Perlito5::Expression;
         # say "#      v:     ", $v->perl;
         if ($v->[1] eq 'methcall_no_params') {
             # say "#   Call ", ($v->[2])->perl;
-            $v = Call->new( invocant => $value, method => $v->[2], arguments => [], hyper => $v->[3] );
+            $v = Call->new( invocant => $value, method => $v->[2], arguments => [] );
             return $v;
         }
         if ($v->[1] eq 'funcall_no_params') {
@@ -183,7 +183,7 @@ package Perlito5::Expression;
         if ($v->[1] eq 'methcall') {
             # say "#   Call ", ($v->[2])->perl;
             my $param_list = expand_list(($v->[3]){'exp'});
-            $v = Call->new( invocant => $value, method => $v->[2], arguments => $param_list, hyper => $v->[4] );
+            $v = Call->new( invocant => $value, method => $v->[2], arguments => $param_list );
             return $v;
         }
         if ($v->[1] eq 'funcall') {
@@ -203,7 +203,7 @@ package Perlito5::Expression;
                 $value->arguments = $param_list;
                 return $value;
             }
-            $v = Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list, hyper => 0 );
+            $v = Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list );
             return $v;
         }
         if ($v->[1] eq '[ ]') {
@@ -219,15 +219,15 @@ package Perlito5::Expression;
         }
         if ($v->[1] eq '.( )') {
             my $param_list = expand_list($v->[2]);
-            $v = Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list, hyper => 0 );
+            $v = Call->new( invocant => $value, method => 'postcircumfix:<( )>', arguments => $param_list );
             return $v;
         }
         if ($v->[1] eq '.[ ]') {
-            $v = Call->new( invocant => $value, method => 'postcircumfix:<[ ]>', arguments => $v->[2], hyper => 0 );
+            $v = Call->new( invocant => $value, method => 'postcircumfix:<[ ]>', arguments => $v->[2] );
             return $v;
         }
         if ($v->[1] eq '.{ }') {
-            $v = Call->new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v->[2], hyper => 0 );
+            $v = Call->new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v->[2] );
             return $v;
         }
         push $op, $value;
@@ -364,10 +364,6 @@ package Perlito5::Expression;
         <Perlito5::Grammar.full_ident> [ [ '.' | '->' ] <Perlito5::Grammar.ident> ]?
     }
 
-    token hyper_op {
-        '>>'?
-    }
-
     token operator {
 
         | <Perlito5::Grammar.var_sigil> '{' <curly_parse>   '}'
@@ -416,7 +412,6 @@ package Perlito5::Expression;
                         method    => 'postcircumfix:<{ }>',
                         invocant  => Var->new( sigil => '$', twigil => '', name => 'MATCH' ),
                         arguments => Val::Buf->new( buf => '' . $<capture_name> ),
-                        hyper     => '',
                     ) 
                 ] }
         | <Perlito5::Precedence.op_parse>              { make $<Perlito5::Precedence.op_parse>->flat()             }
@@ -442,10 +437,9 @@ package Perlito5::Expression;
         | [ '.'    # XXX Perl6
           | '->' 
           ] 
-            <hyper_op> # XXX Perl6
             <Perlito5::Grammar.ident>
           [ ':' <.Perlito5::Grammar.ws>? <list_parse>
-            { make [ 'postfix_or_term', 'methcall',           '' . $<Perlito5::Grammar.ident>, $<list_parse>->flat(), $<hyper_op>->flat()  ] }
+            { make [ 'postfix_or_term', 'methcall',           '' . $<Perlito5::Grammar.ident>, $<list_parse>->flat() ] }
           | '(' <paren_parse> ')'
             { make [ 'postfix_or_term',
                      'methcall',
@@ -454,10 +448,9 @@ package Perlito5::Expression;
                        exp       => $<paren_parse>->flat(),
                        terminated => 0,
                      },
-                     $<hyper_op>->flat()
                    ]
             }
-          | { make [ 'postfix_or_term', 'methcall_no_params', '' . $<Perlito5::Grammar.ident>, $<hyper_op>->flat()                  ] }
+          | { make [ 'postfix_or_term', 'methcall_no_params', '' . $<Perlito5::Grammar.ident> ] }
           ]
 
         | <before <.Perlito5::Grammar.digit> >

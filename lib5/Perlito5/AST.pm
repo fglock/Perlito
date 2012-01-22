@@ -106,7 +106,6 @@ package main;
     package Call;
         sub new { shift; bless { @_ }, "Call" }
         sub invocant { $_[0]->{invocant} };
-        sub hyper { $_[0]->{hyper} };
         sub method { $_[0]->{method} };
         sub arguments { $_[0]->{arguments} }
     }

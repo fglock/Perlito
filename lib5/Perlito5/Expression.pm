@@ -105,7 +105,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
-})), ('hyper' => $v->[3])));
+}))));
                 return ($v)
             };
             if ((($v->[1] eq 'funcall_no_params'))) {
@@ -117,7 +117,7 @@ package main;
                     unshift( @{($num_stack)}, ($v->[3])->{'end_block'} )
                 };
                 ((my  $param_list) = expand_list(($v->[3])->{'exp'}));
-                ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => $param_list), ('hyper' => $v->[4])));
+                ($v = Call->new(('invocant' => undef()), ('method' => $v->[2]), ('arguments' => $param_list)));
                 return ($v)
             };
             if ((($v->[1] eq 'funcall'))) {
@@ -144,7 +144,7 @@ package main;
                 return ($v)
             };
             if ((($v->[1] eq '.( )'))) {
-                ($v = Call->new(('invocant' => undef()), ('method' => 'postcircumfix:<( )>'), ('arguments' => $v->[2]), ('hyper' => 0)));
+                ($v = Call->new(('invocant' => undef()), ('method' => 'postcircumfix:<( )>'), ('arguments' => $v->[2])));
                 return ($v)
             };
             if ((($v->[1] eq '.[ ]'))) {
@@ -173,7 +173,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
-})), ('hyper' => $v->[3])));
+}))));
             return ($v)
         };
         if ((($v->[1] eq 'funcall_no_params'))) {
@@ -183,7 +183,7 @@ package main;
         };
         if ((($v->[1] eq 'methcall'))) {
             ((my  $param_list) = expand_list(($v->[3])->{'exp'}));
-            ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('arguments' => $param_list), ('hyper' => $v->[4])));
+            ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('arguments' => $param_list)));
             return ($v)
         };
         if ((($v->[1] eq 'funcall'))) {
@@ -201,7 +201,7 @@ package main;
                 (($value)->{arguments} = $param_list);
                 return ($value)
             };
-            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list), ('hyper' => 0)));
+            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list)));
             return ($v)
         };
         if ((($v->[1] eq '[ ]'))) {
@@ -214,15 +214,15 @@ package main;
         };
         if ((($v->[1] eq '.( )'))) {
             ((my  $param_list) = expand_list($v->[2]));
-            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list), ('hyper' => 0)));
+            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list)));
             return ($v)
         };
         if ((($v->[1] eq '.[ ]'))) {
-            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<[ ]>'), ('arguments' => $v->[2]), ('hyper' => 0)));
+            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<[ ]>'), ('arguments' => $v->[2])));
             return ($v)
         };
         if ((($v->[1] eq '.' . chr(123) . ' ' . chr(125)))) {
-            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('arguments' => $v->[2]), ('hyper' => 0)));
+            ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('arguments' => $v->[2])));
             return ($v)
         };
         push( @{$op}, $value );
@@ -415,26 +415,6 @@ package main;
     };
     1
 })))
-}))
-}))));
-        $MATCH
-    };
-    sub hyper_op {
-        my $List__ = bless \@_, "ARRAY";
-        ((my  $grammar) = $List__->[0]);
-        ((my  $str) = $List__->[1]);
-        ((my  $pos) = $List__->[2]);
-        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
-    ((my  $pos1) = $MATCH->to());
-    ((do {
-    ((my  $last_pos) = $MATCH->to());
-    if ((!(((do {
-    (('>>' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
-}))))) {
-        (($MATCH)->{to} = $last_pos)
-    };
-    1
 }))
 }))));
         $MATCH
@@ -826,7 +806,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Call->new(('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'MATCH'))), ('arguments' => Val::Buf->new(('buf' => ('' . $MATCH->{'capture_name'})))), ('hyper' => '')) );
+    push( @{$List_a}, Call->new(('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'MATCH'))), ('arguments' => Val::Buf->new(('buf' => ('' . $MATCH->{'capture_name'}))))) );
     $List_a
 })))
 })) || 1))))
@@ -1041,7 +1021,7 @@ package main;
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
-    ((((((do {
+    (((((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     (('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
@@ -1050,16 +1030,6 @@ package main;
     (((('->' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))))
 })))
 })) && ((do {
-    ((my  $m2) = $grammar->hyper_op($str, $MATCH->to()));
-    if (($m2)) {
-        (($MATCH)->{to} = $m2->to());
-        ($MATCH->{'hyper_op'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
     ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->to()));
     if (($m2)) {
         (($MATCH)->{to} = $m2->to());
@@ -1105,7 +1075,6 @@ package main;
     push( @{$List_a}, 'methcall' );
     push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
     push( @{$List_a}, $MATCH->{'list_parse'}->flat() );
-    push( @{$List_a}, $MATCH->{'hyper_op'}->flat() );
     $List_a
 })))
 })) || 1)))
@@ -1135,7 +1104,6 @@ package main;
     ($Hash_a->{'terminated'} = 0);
     $Hash_a
 }) );
-    push( @{$List_a}, $MATCH->{'hyper_op'}->flat() );
     $List_a
 })))
 })) || 1))))
@@ -1148,7 +1116,6 @@ package main;
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall_no_params' );
     push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
-    push( @{$List_a}, $MATCH->{'hyper_op'}->flat() );
     $List_a
 })))
 })) || 1)))

@@ -57,7 +57,6 @@ class Proto {
 
 class Call {
     has $.invocant;
-    has $.hyper;
     has $.method;
     has $.arguments;
 }

@@ -237,9 +237,6 @@ package main;
             if ((($invocant eq 'self'))) {
                 ($invocant = chr(36) . 'self')
             };
-            if (($self->{hyper})) {
-
-            };
             warn(('Interpreter runtime error: method ' . chr(39)), $self->{method}, ('()' . chr(39) . ' not found'))
         }
     }

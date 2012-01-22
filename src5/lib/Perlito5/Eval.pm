@@ -161,12 +161,7 @@ class Call {
         if ($invocant eq 'self') {
             $invocant = '$self';
         }
-        if ($.hyper) {
-            # '[ map { $_' . $call . ' } @{ ' . $invocant . ' } ]';
-        }
-        else {
-            # $invocant.$meth( @{$.arguments} );
-        }
+        # $invocant.$meth( @{$.arguments} );
         warn "Interpreter runtime error: method '", $.method, "()' not found";
     }
 }

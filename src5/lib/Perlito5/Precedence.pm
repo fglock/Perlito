@@ -64,10 +64,6 @@ sub op_parse {
         }
     }
 
-    # XXX Perl6
-    my $hyper_left = 0;
-    my $hyper_right = 0;
-
     return Perlito5::Match->new( bool => 0 )
         if substr($str, $pos, 2) eq '->';
 
@@ -83,7 +79,7 @@ sub op_parse {
                 my $c01 = substr($str, $pos, 1);
                 my $c02 = substr($str, $pos, 2);
                 return Perlito5::Match->new( 'str' => $str, 'from' => $from, 'to' => $pos, 'bool' => 1,
-                    capture => [ 'op', $op, { 'hyper_left' => $hyper_left, 'hyper_right' => $hyper_right } ] );
+                    capture => [ 'op', $op ] );
             }
         }
     }

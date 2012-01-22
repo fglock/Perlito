@@ -101,8 +101,6 @@ package main;
                 }
             }
         };
-        ((my  $hyper_left) = 0);
-        ((my  $hyper_right) = 0);
         if ((substr($str, $pos, 2) eq '->')) {
             return (Perlito5::Match->new(('bool' => 0)))
         };
@@ -123,12 +121,6 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'op' );
     push( @{$List_a}, $op );
-    push( @{$List_a}, (do {
-    (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'hyper_left'} = $hyper_left);
-    ($Hash_a->{'hyper_right'} = $hyper_right);
-    $Hash_a
-}) );
     $List_a
 }))))
                 }
