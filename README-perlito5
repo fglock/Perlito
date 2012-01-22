@@ -20,3 +20,7 @@ Running the tests using perlito5.js and v8:
 
 find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` ~/bin/d8 perlito5.js -- -Cjs $_ > x && ~/bin/d8 x  ` '
 
+Bootstrap using v8:
+
+~/bin/d8 perlito5.js -- -Cjs src5/util/perlito5.pl > perlito5-new.js
+
