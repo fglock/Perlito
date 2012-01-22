@@ -6499,7 +6499,7 @@ if (typeof Perlito5$Expression !== 'object') {
                     })(); };
                     if ( bool(((v_v[1] == 'funcall_no_params'))) ) { (function () {
                         die((string('unexpected function call')));
-                        push(v_v, v_value);
+                        push((v_v), v_value);
                         throw(v_v);;
                     })(); };
                     if ( bool(((v_v[1] == 'methcall'))) ) { (function () {
@@ -6511,7 +6511,7 @@ if (typeof Perlito5$Expression !== 'object') {
                     })(); };
                     if ( bool(((v_v[1] == 'funcall'))) ) { (function () {
                         die((string('unexpected function call')));
-                        push(v_v, v_value);
+                        push((v_v), v_value);
                         throw(v_v);;
                     })(); };
                     if ( bool(((v_v[1] == '( )'))) ) { (function () {
@@ -6552,7 +6552,7 @@ if (typeof Perlito5$Expression !== 'object') {
                         (v_v = (function () { if (Call.hasOwnProperty("new") ) { return Call.new('invocant', v_value, 'method', 'postcircumfix:<' + String.fromCharCode(123) + ' ' + String.fromCharCode(125) + '>', 'arguments', v_v[2]); } var tmp = {v_invocant: v_value,v_method: 'postcircumfix:<' + String.fromCharCode(123) + ' ' + String.fromCharCode(125) + '>',v_arguments: v_v[2]}; tmp.__proto__ = Call; return tmp; })());
                         throw(v_v);;
                     })(); };
-                    push(v_op, v_value);
+                    push((v_op), v_value);
                     throw(v_op);;
                 }
                 catch(err) {
@@ -9658,7 +9658,7 @@ if (typeof Perlito5$Expression !== 'object') {
 
         (v_last_op = shift((v_op_stack)));
         if ( bool(((v_last_op[0] == 'prefix'))) ) { return (function () {
-            return(push(v_num_stack, (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('prefix:<') + string(v_last_op[1]) + string('>')), 'arguments', (function () { 
+            return(push((v_num_stack), (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('prefix:<') + string(v_last_op[1]) + string('>')), 'arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -9676,7 +9676,7 @@ if (typeof Perlito5$Expression !== 'object') {
         })(); }
         else { return (function () {
             if ( bool(((v_last_op[0] == 'postfix'))) ) { return (function () {
-                return(push(v_num_stack, (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('postfix:<') + string(v_last_op[1]) + string('>')), 'arguments', (function () { 
+                return(push((v_num_stack), (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('postfix:<') + string(v_last_op[1]) + string('>')), 'arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -9761,7 +9761,7 @@ if (typeof Perlito5$Expression !== 'object') {
 })());;
                         })(); };
                         if ( bool((and(and((isa((v_arg[0]), 'Apply')), function () { return ((v_last_op[0] == 'infix')); }), function () { return (((typeof((v_arg[0]).__proto__) != 'undefined' && (v_arg[0]).__proto__.hasOwnProperty("code") ? (v_arg[0]).__proto__.code.call((v_arg[0])) : (v_arg[0]).code()) == ((string('list:<') + string(v_last_op[1]) + string('>'))))); }))) ) { (function () {
-                            push(v_num_stack, (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (typeof((v_arg[0]).__proto__) != 'undefined' && (v_arg[0]).__proto__.hasOwnProperty("code") ? (v_arg[0]).__proto__.code.call((v_arg[0])) : (v_arg[0]).code()), 'arguments', (function () { 
+                            push((v_num_stack), (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (typeof((v_arg[0]).__proto__) != 'undefined' && (v_arg[0]).__proto__.hasOwnProperty("code") ? (v_arg[0]).__proto__.code.call((v_arg[0])) : (v_arg[0]).code()), 'arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -9782,7 +9782,7 @@ if (typeof Perlito5$Expression !== 'object') {
 })()}; tmp.__proto__ = Apply; return tmp; })());
                             throw(null);;
                         })(); };
-                        return(push(v_num_stack, (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('list:<') + string(v_last_op[1]) + string('>')), 'arguments', v_arg); } var tmp = {v_namespace: '',v_code: (string('list:<') + string(v_last_op[1]) + string('>')),v_arguments: v_arg}; tmp.__proto__ = Apply; return tmp; })()));
+                        return(push((v_num_stack), (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('list:<') + string(v_last_op[1]) + string('>')), 'arguments', v_arg); } var tmp = {v_namespace: '',v_code: (string('list:<') + string(v_last_op[1]) + string('>')),v_arguments: v_arg}; tmp.__proto__ = Apply; return tmp; })()));
                     })(); }
                     else { return (function () {
                         if ( bool((Perlito5$Precedence.is_assoc_type(CallSub, 'chain', v_last_op[1]))) ) { return (function () {
@@ -9803,7 +9803,7 @@ if (typeof Perlito5$Expression !== 'object') {
     push(List_a, v_v2);
     return(List_a);
 })());
-                            return(push(v_num_stack, (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('infix:<') + string(v_last_op[1]) + string('>')), 'arguments', v_arg); } var tmp = {v_namespace: '',v_code: (string('infix:<') + string(v_last_op[1]) + string('>')),v_arguments: v_arg}; tmp.__proto__ = Apply; return tmp; })()));
+                            return(push((v_num_stack), (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('infix:<') + string(v_last_op[1]) + string('>')), 'arguments', v_arg); } var tmp = {v_namespace: '',v_code: (string('infix:<') + string(v_last_op[1]) + string('>')),v_arguments: v_arg}; tmp.__proto__ = Apply; return tmp; })()));
                         })(); }
                         else { return (function () {
                             if ( bool(((v_last_op[0] == 'ternary'))) ) { return (function () {
@@ -9813,7 +9813,7 @@ if (typeof Perlito5$Expression !== 'object') {
                                     die((string('Missing value after ternary operator')));;
                                 })(); };
                                 (v_v2 = v__NAMESPACE.pop_term(CallSub, v_num_stack));
-                                return(push(v_num_stack, (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('ternary:<') + string(v_last_op[1]) + string('>')), 'arguments', (function () { 
+                                return(push((v_num_stack), (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('ternary:<') + string(v_last_op[1]) + string('>')), 'arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -9840,7 +9840,7 @@ if (typeof Perlito5$Expression !== 'object') {
                                     die((string('missing value after operator ' + String.fromCharCode(39)) + string(v_last_op[1]) + string((string(String.fromCharCode(39))))));;
                                 })(); };
                                 (v_v2 = v__NAMESPACE.pop_term(CallSub, v_num_stack));
-                                return(push(v_num_stack, (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('infix:<') + string(v_last_op[1]) + string('>')), 'arguments', (function () { 
+                                return(push((v_num_stack), (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (string('infix:<') + string(v_last_op[1]) + string('>')), 'arguments', (function () { 
     var List_a = [];
 
     var List_v = [];

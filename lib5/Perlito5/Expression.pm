@@ -178,7 +178,7 @@ package main;
         };
         if ((($v->[1] eq 'funcall_no_params'))) {
             die(('unexpected function call'));
-            push( @{$v}, $value );
+            push( @{($v)}, $value );
             return ($v)
         };
         if ((($v->[1] eq 'methcall'))) {
@@ -188,7 +188,7 @@ package main;
         };
         if ((($v->[1] eq 'funcall'))) {
             die(('unexpected function call'));
-            push( @{$v}, $value );
+            push( @{($v)}, $value );
             return ($v)
         };
         if ((($v->[1] eq '( )'))) {
@@ -225,7 +225,7 @@ package main;
             ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('arguments' => $v->[2])));
             return ($v)
         };
-        push( @{$op}, $value );
+        push( @{($op)}, $value );
         return ($op)
     };
     ((my  $reduce_to_ast) = sub  {
@@ -234,7 +234,7 @@ package main;
     my $num_stack = $_[1];
     ((my  $last_op) = shift( @{($op_stack)} ));
     if ((($last_op->[0] eq 'prefix'))) {
-        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('prefix:<' . $last_op->[1] . '>')), ('arguments' => (do {
+        push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ('prefix:<' . $last_op->[1] . '>')), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, pop_term($num_stack) );
@@ -243,7 +243,7 @@ package main;
     }
     else {
         if ((($last_op->[0] eq 'postfix'))) {
-            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('postfix:<' . $last_op->[1] . '>')), ('arguments' => (do {
+            push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ('postfix:<' . $last_op->[1] . '>')), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, pop_term($num_stack) );
@@ -293,7 +293,7 @@ package main;
 }))
                     };
                     if (((((Main::isa(($arg->[0]), 'Apply')) && (($last_op->[0] eq 'infix'))) && ((($arg->[0])->code() eq (('list:<' . $last_op->[1] . '>'))))))) {
-                        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ($arg->[0])->code()), ('arguments' => (do {
+                        push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ($arg->[0])->code()), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     ($List_v = ((($arg->[0])->arguments())));
@@ -305,7 +305,7 @@ package main;
 }))) );
                         return ()
                     };
-                    push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('list:<' . $last_op->[1] . '>')), ('arguments' => $arg)) )
+                    push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ('list:<' . $last_op->[1] . '>')), ('arguments' => $arg)) )
                 }
                 else {
                     if ((Perlito5::Precedence::is_assoc_type('chain', $last_op->[1]))) {
@@ -320,7 +320,7 @@ package main;
     push( @{$List_a}, $v2 );
     $List_a
 }));
-                        push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('infix:<' . $last_op->[1] . '>')), ('arguments' => $arg)) )
+                        push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ('infix:<' . $last_op->[1] . '>')), ('arguments' => $arg)) )
                     }
                     else {
                         if ((($last_op->[0] eq 'ternary'))) {
@@ -328,7 +328,7 @@ package main;
                                 die(('Missing value after ternary operator'))
                             };
                             ((my  $v2) = pop_term($num_stack));
-                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('ternary:<' . $last_op->[1] . '>')), ('arguments' => (do {
+                            push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ('ternary:<' . $last_op->[1] . '>')), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, pop_term($num_stack) );
@@ -342,7 +342,7 @@ package main;
                                 die(('missing value after operator ' . chr(39) . $last_op->[1] . (chr(39))))
                             };
                             ((my  $v2) = pop_term($num_stack));
-                            push( @{$num_stack}, Apply->new(('namespace' => ''), ('code' => ('infix:<' . $last_op->[1] . '>')), ('arguments' => (do {
+                            push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ('infix:<' . $last_op->[1] . '>')), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, pop_term($num_stack) );

@@ -177,7 +177,7 @@ package Perlito5::Expression;
         if ($v->[1] eq 'funcall_no_params') {
             die "unexpected function call";
             # say "#   Apply ", ($v->[2])->perl;
-            push $v, $value;
+            push @$v, $value;
             return $v;
         }
         if ($v->[1] eq 'methcall') {
@@ -189,7 +189,7 @@ package Perlito5::Expression;
         if ($v->[1] eq 'funcall') {
             die "unexpected function call";
             # say "#   Apply ", ($v->[2])->perl;
-            push $v, $value;
+            push @$v, $value;
             return $v;
         }
         if ($v->[1] eq '( )') {
@@ -230,7 +230,7 @@ package Perlito5::Expression;
             $v = Call->new( invocant => $value, method => 'postcircumfix:<{ }>', arguments => $v->[2] );
             return $v;
         }
-        push $op, $value;
+        push @$op, $value;
         return $op;
     }
 
@@ -240,7 +240,7 @@ package Perlito5::Expression;
         # say "#     last_op: ", $last_op->perl;
         # say "#   num_stack: ", $num_stack;
         if ($last_op->[0] eq 'prefix') {
-            push $num_stack,
+            push @$num_stack,
                 Apply->new(
                     namespace => '',
                     code      => 'prefix:<' . $last_op->[1] . '>',
@@ -248,7 +248,7 @@ package Perlito5::Expression;
                   );
         }
         elsif ($last_op->[0] eq 'postfix') {
-            push $num_stack,
+            push @$num_stack,
                 Apply->new(
                     namespace => '',
                     code      => 'postfix:<' . $last_op->[1] . '>',
@@ -289,7 +289,7 @@ package Perlito5::Expression;
                 && (($arg->[0])->code eq ('list:<' . $last_op->[1] . '>'))
                 )
             {
-                push $num_stack,
+                push @$num_stack,
                     Apply->new(
                         namespace => '',
                         code      => ($arg->[0])->code,
@@ -297,7 +297,7 @@ package Perlito5::Expression;
                       );
                 return;
             }
-            push $num_stack,
+            push @$num_stack,
                 Apply->new(
                     namespace => '',
                     code      => 'list:<' . $last_op->[1] . '>',
@@ -316,7 +316,7 @@ package Perlito5::Expression;
             # if ($arg->[0])->isa('Apply')
             #     && Perlito5::Precedence::is_assoc_type('chain', ($arg->[1]){op} )
             # {
-            #     push $num_stack,
+            #     push @$num_stack,
             #         Apply->new(
             #             namespace => '',
             #             code      => 'infix:<' . $last_op->[1] . '>',
@@ -327,7 +327,7 @@ package Perlito5::Expression;
             #         );
             #     return;
             # }
-            push $num_stack,
+            push @$num_stack,
                     Apply->new(
                         namespace => '',
                         code      => 'infix:<' . $last_op->[1] . '>',
@@ -339,7 +339,7 @@ package Perlito5::Expression;
                 die "Missing value after ternary operator";
             }
             my $v2 = pop_term($num_stack);
-            push $num_stack,
+            push @$num_stack,
                 Apply->new(
                     namespace => '',
                     code      => 'ternary:<' . $last_op->[1] . '>',
@@ -351,7 +351,7 @@ package Perlito5::Expression;
                 die("missing value after operator '" . $last_op->[1] . "'");
             }
             my $v2 = pop_term($num_stack);
-            push $num_stack,
+            push @$num_stack,
                 Apply->new(
                     namespace => '',
                     code      => 'infix:<' . $last_op->[1] . '>',
