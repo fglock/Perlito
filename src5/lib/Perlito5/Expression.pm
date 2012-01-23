@@ -384,10 +384,6 @@ package Perlito5::Expression;
         | '('  <paren_parse>   ')'                      { make [ 'postfix_or_term',  '( )',   $MATCH->{"paren_parse"}->flat()   ] }
         | '['  <square_parse>  ']'                      { make [ 'postfix_or_term',  '[ ]',   $MATCH->{"square_parse"}->flat()  ] }
 
-        # XXX Perl6
-        | '<'  <Perlito5::Grammar.ident> '>'
-                    { make [ 'postfix_or_term',  'block', [Val::Buf->new('buf' => $MATCH->{"Perlito5::Grammar.ident"}->flat())] ] }
-
         | '{'  <.Perlito5::Grammar.ws>?
                <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.ws>? '}'
                     { make [ 'postfix_or_term', 'block', $MATCH->{"Perlito5::Grammar.exp_stmts"}->flat() ] }
@@ -424,9 +420,7 @@ package Perlito5::Expression;
         | <Perlito5::Grammar.declarator> <.Perlito5::Grammar.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
             { make [ 'term', Decl->new( decl => $MATCH->{"Perlito5::Grammar.declarator"}->flat(), type => $MATCH->{"Perlito5::Grammar.opt_type"}->flat(), var => $MATCH->{"Perlito5::Grammar.var_ident"}->flat() ) ] }
 
-        | [ '.'    # XXX Perl6
-          | '->' 
-          ] 
+        | '->' 
             <Perlito5::Grammar.ident>
           [ ':' <.Perlito5::Grammar.ws>? <list_parse>
             { make [ 'postfix_or_term', 'methcall',           '' . $MATCH->{"Perlito5::Grammar.ident"}, $MATCH->{"list_parse"}->flat() ] }
