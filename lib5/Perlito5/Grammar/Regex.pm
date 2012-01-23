@@ -411,7 +411,7 @@ package main;
 }))) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
     ($MATCH->{capture} = ((do {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'capturing_group'} = $MATCH->{'rule'}->flat());
+    ($Hash_a->{'capturing_group'} = $MATCH->{('rule')}->flat());
     $Hash_a
 })))
 })) || 1)))
@@ -428,7 +428,7 @@ package main;
         0
     }
 }))) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{'rule'}->flat()))
+    ($MATCH->{capture} = ($MATCH->{('rule')}->flat()))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -443,7 +443,7 @@ package main;
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{'metasyntax_exp'}->flat()), ('captures' => 1))))
+    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{('metasyntax_exp')}->flat()), ('captures' => 1))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -560,7 +560,7 @@ package main;
         0
     }
 }))) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::Capture->new(('rule_exp' => $MATCH->{'rule'}->flat()))))
+    ($MATCH->{capture} = (Rul::Capture->new(('rule_exp' => $MATCH->{('rule')}->flat()))))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -575,7 +575,7 @@ package main;
         0
     }
 }))) && (((')>' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::CaptureResult->new(('rule_exp' => $MATCH->{'rule'}->flat()))))
+    ($MATCH->{capture} = (Rul::CaptureResult->new(('rule_exp' => $MATCH->{('rule')}->flat()))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -599,7 +599,7 @@ package main;
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::After->new(('rule_exp' => $MATCH->{'rule'}->flat()))))
+    ($MATCH->{capture} = (Rul::After->new(('rule_exp' => $MATCH->{('rule')}->flat()))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -623,7 +623,7 @@ package main;
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::Before->new(('rule_exp' => $MATCH->{'rule'}->flat()))))
+    ($MATCH->{capture} = (Rul::Before->new(('rule_exp' => $MATCH->{('rule')}->flat()))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -647,7 +647,7 @@ package main;
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::NotBefore->new(('rule_exp' => $MATCH->{'rule'}->flat()))))
+    ($MATCH->{capture} = (Rul::NotBefore->new(('rule_exp' => $MATCH->{('rule')}->flat()))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -666,7 +666,7 @@ package main;
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'negate'} = (do {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'metasyntax'} = $MATCH->{'metasyntax_exp'}->flat());
+    ($Hash_a->{'metasyntax'} = $MATCH->{('metasyntax_exp')}->flat());
     $Hash_a
 }));
     $Hash_a
@@ -715,7 +715,7 @@ package main;
         0
     }
 }))) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::Constant->new(('constant' => $MATCH->{'literal'}->flat()))))
+    ($MATCH->{capture} = (Rul::Constant->new(('constant' => $MATCH->{('literal')}->flat()))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -730,7 +730,7 @@ package main;
         0
     }
 }))) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::Constant->new(('constant' => $MATCH->{'literal'}->flat()))))
+    ($MATCH->{capture} = (Rul::Constant->new(('constant' => $MATCH->{('literal')}->flat()))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -748,7 +748,7 @@ package main;
         0
     }
 })) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::InterpolateVar->new(('var' => $MATCH->{'variables'}->flat()))))
+    ($MATCH->{capture} = (Rul::InterpolateVar->new(('var' => $MATCH->{('variables')}->flat()))))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -763,7 +763,7 @@ package main;
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{'metasyntax_exp'}->flat()), ('captures' => 0))))
+    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{('metasyntax_exp')}->flat()), ('captures' => 0))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -778,7 +778,7 @@ package main;
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{'metasyntax_exp'}->flat()), ('captures' => 0))))
+    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{('metasyntax_exp')}->flat()), ('captures' => 0))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -793,7 +793,7 @@ package main;
         0
     }
 })) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{'metasyntax_exp'}->flat()), ('captures' => 1))))
+    ($MATCH->{capture} = (Rul::Subrule->new(('metasyntax' => $MATCH->{('metasyntax_exp')}->flat()), ('captures' => 1))))
 })) || 1))))
 })))
 }))))
@@ -810,7 +810,7 @@ package main;
         0
     }
 }))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::Block->new(('closure' => $MATCH->{'parsed_code'}->flat()))))
+    ($MATCH->{capture} = (Rul::Block->new(('closure' => $MATCH->{('parsed_code')}->flat()))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -858,7 +858,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = (Rul::SpecialChar->new(('char' => $MATCH->{'any'}->flat()))))
+    ($MATCH->{capture} = (Rul::SpecialChar->new(('char' => $MATCH->{('any')}->flat()))))
 })) || 1))))
 })))
 }))))
@@ -880,7 +880,7 @@ package main;
         0
     }
 }))) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{'rule'}->flat()))
+    ($MATCH->{capture} = ($MATCH->{('rule')}->flat()))
 })) || 1))))
 })))
 }))));
@@ -949,12 +949,12 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (Rul::NamedCapture->new(('rule_exp' => $MATCH->{'named_capture_body'}->flat()), ('capture_ident' => $MATCH->{'variables'}->flat()))))
+    ($MATCH->{capture} = (Rul::NamedCapture->new(('rule_exp' => $MATCH->{('named_capture_body')}->flat()), ('capture_ident' => $MATCH->{('variables')}->flat()))))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
     (((((do {
-    ($MATCH->{capture} = ($MATCH->{'variables'}->flat()))
+    ($MATCH->{capture} = ($MATCH->{('variables')}->flat()))
 })) || 1)))
 })))
 })))
@@ -971,7 +971,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{'rule_terms'}->flat()))
+    ($MATCH->{capture} = ($MATCH->{('rule_terms')}->flat()))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1028,7 +1028,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (Rul::Constant->new(('constant' => $MATCH->{'any'}->flat()))))
+    ($MATCH->{capture} = (Rul::Constant->new(('constant' => $MATCH->{('any')}->flat()))))
 })) || 1))))
 })))
 }))));
@@ -1066,7 +1066,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{'Perlito5::Grammar.val_int'}->flat()))
+    ($MATCH->{capture} = ($MATCH->{('Perlito5::Grammar.val_int')}->flat()))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1081,7 +1081,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{'rule_term'}->flat()))
+    ($MATCH->{capture} = ($MATCH->{('rule_term')}->flat()))
 })) || 1))))
 })))
 })))
@@ -1196,12 +1196,12 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (Rul::Quantifier->new(('term' => $MATCH->{'rule_term'}->flat()), ('quant' => $MATCH->{'quant_exp'}->flat()), ('greedy' => $MATCH->{'greedy_exp'}->flat()), ('ws1' => $MATCH->{'Perlito5::Grammar.opt_ws'}->flat()), ('ws2' => $MATCH->{'Perlito5::Grammar.opt_ws2'}->flat()), ('ws3' => $MATCH->{'Perlito5::Grammar.opt_ws3'}->flat()))))
+    ($MATCH->{capture} = (Rul::Quantifier->new(('term' => $MATCH->{('rule_term')}->flat()), ('quant' => $MATCH->{('quant_exp')}->flat()), ('greedy' => $MATCH->{('greedy_exp')}->flat()), ('ws1' => $MATCH->{('Perlito5::Grammar.opt_ws')}->flat()), ('ws2' => $MATCH->{('Perlito5::Grammar.opt_ws2')}->flat()), ('ws3' => $MATCH->{('Perlito5::Grammar.opt_ws3')}->flat()))))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
     (((((do {
-    ($MATCH->{capture} = ($MATCH->{'rule_term'}->flat()))
+    ($MATCH->{capture} = ($MATCH->{('rule_term')}->flat()))
 })) || 1)))
 })))
 })))
@@ -1245,8 +1245,8 @@ package main;
     ($MATCH->{capture} = ((do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $MATCH->{'quantifier'}->flat() );
-    ($List_v = (($MATCH->{'concat_list'}->flat())));
+    push( @{$List_a}, $MATCH->{('quantifier')}->flat() );
+    ($List_v = (($MATCH->{('concat_list')}->flat())));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
@@ -1259,7 +1259,7 @@ package main;
     ($MATCH->{capture} = ((do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $MATCH->{'quantifier'}->flat() );
+    push( @{$List_a}, $MATCH->{('quantifier')}->flat() );
     $List_a
 })))
 })) || 1)))
@@ -1298,7 +1298,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = (Rul::Concat->new(('concat' => $MATCH->{'concat_list'}->flat()))))
+    ($MATCH->{capture} = (Rul::Concat->new(('concat' => $MATCH->{('concat_list')}->flat()))))
 })) || 1)))
 }))
 }))));
@@ -1340,8 +1340,8 @@ package main;
     ($MATCH->{capture} = ((do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $MATCH->{'concat_exp'}->flat() );
-    ($List_v = (($MATCH->{'or_list_exp'}->flat())));
+    push( @{$List_a}, $MATCH->{('concat_exp')}->flat() );
+    ($List_v = (($MATCH->{('or_list_exp')}->flat())));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
@@ -1354,7 +1354,7 @@ package main;
     ($MATCH->{capture} = ((do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $MATCH->{'concat_exp'}->flat() );
+    push( @{$List_a}, $MATCH->{('concat_exp')}->flat() );
     $List_a
 })))
 })) || 1)))
@@ -1416,7 +1416,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (Rul::Or->new(('or_list' => $MATCH->{'or_list_exp'}->flat()))))
+    ($MATCH->{capture} = (Rul::Or->new(('or_list' => $MATCH->{('or_list_exp')}->flat()))))
 })) || 1)))
 }))
 }))));

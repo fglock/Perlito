@@ -56,10 +56,10 @@ token parsed_code {
 }
 
 token named_capture_body {
-    | \(  <rule>        \)  { make { capturing_group => $<rule>->flat() ,} }
-    | \[  <rule>        \]  { make $<rule>->flat() }
+    | \(  <rule>        \)  { make { capturing_group => $MATCH->{"rule"}->flat() ,} }
+    | \[  <rule>        \]  { make $MATCH->{"rule"}->flat() }
     | \<  <metasyntax_exp>  \>
-            { make Rul::Subrule->new( metasyntax => $<metasyntax_exp>->flat(), captures => 1 ) }
+            { make Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 1 ) }
     | { die 'invalid alias syntax' }
 }
 
@@ -89,23 +89,23 @@ token variables {
 token rule_terms {
     |   '('
         <rule> \)
-        { make Rul::Capture->new( rule_exp => $<rule>->flat() ) }
+        { make Rul::Capture->new( rule_exp => $MATCH->{"rule"}->flat() ) }
     |   '<('
         <rule>  ')>'
-        { make Rul::CaptureResult->new( rule_exp => $<rule>->flat() ) }
+        { make Rul::CaptureResult->new( rule_exp => $MATCH->{"rule"}->flat() ) }
     |   '<after'
         <.ws> <rule> \>
-        { make Rul::After->new( rule_exp => $<rule>->flat() ) }
+        { make Rul::After->new( rule_exp => $MATCH->{"rule"}->flat() ) }
     |   '<before'
         <.ws> <rule> \>
-        { make Rul::Before->new( rule_exp => $<rule>->flat() ) }
+        { make Rul::Before->new( rule_exp => $MATCH->{"rule"}->flat() ) }
     |   '<!before'
         <.ws> <rule> \>
-        { make Rul::NotBefore->new( rule_exp => $<rule>->flat() ) }
+        { make Rul::NotBefore->new( rule_exp => $MATCH->{"rule"}->flat() ) }
     |   '<!'
         # TODO
         <metasyntax_exp> \>
-        { make { negate  => { metasyntax => $<metasyntax_exp>->flat() } } }
+        { make { negate  => { metasyntax => $MATCH->{"metasyntax_exp"}->flat() } } }
     |   '<+'
         # TODO
         <char_class>  \>
@@ -116,36 +116,36 @@ token rule_terms {
         { make Rul::NegateCharClass->new( chars => '' . $<char_class> ) }
     |   \'
         <literal> \'
-        { make Rul::Constant->new( constant => $<literal>->flat() ) }
+        { make Rul::Constant->new( constant => $MATCH->{"literal"}->flat() ) }
     |   # XXX - obsolete syntax
         \< \'
         <literal> \' \>
-        { make Rul::Constant->new( constant => $<literal>->flat() ) }
+        { make Rul::Constant->new( constant => $MATCH->{"literal"}->flat() ) }
     |   \<
         [
             <variables>   \>
             # { say 'matching < variables ...' }
             {
                 # say 'found < hash-variable >';
-                make Rul::InterpolateVar->new( var => $<variables>->flat() )
+                make Rul::InterpolateVar->new( var => $MATCH->{"variables"}->flat() )
             }
         |
             \?
             # TODO
             <metasyntax_exp>  \>
-            { make Rul::Subrule->new( metasyntax => $<metasyntax_exp>->flat(), captures => 0 ) }
+            { make Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 0 ) }
         |
             \.
             <metasyntax_exp>  \>
-            { make Rul::Subrule->new( metasyntax => $<metasyntax_exp>->flat(), captures => 0 ) }
+            { make Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 0 ) }
         |
             # TODO
             <metasyntax_exp>  \>
-            { make Rul::Subrule->new( metasyntax => $<metasyntax_exp>->flat(), captures => 1 ) }
+            { make Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 1 ) }
         ]
     |   \{
         <parsed_code>  \}
-        { make Rul::Block->new( closure => $<parsed_code>->flat() ) }
+        { make Rul::Block->new( closure => $MATCH->{"parsed_code"}->flat() ) }
     |   \\
         [
 # TODO
@@ -165,13 +165,13 @@ token rule_terms {
           { make Rul::Constant->new( constant => chr( $<Perlito5::Grammar.digits> ) ) }
         | <any>
           #  \e  \E
-          { make Rul::SpecialChar->new( char => $<any>->flat() ) }
+          { make Rul::SpecialChar->new( char => $MATCH->{"any"}->flat() ) }
         ]
     |   \.
         { make Rul::Dot->new() }
     |   '['
         <rule> ']'
-        { make $<rule>->flat() }
+        { make $MATCH->{"rule"}->flat() }
 
 }
 
@@ -182,32 +182,32 @@ token rule_term {
        [  <.ws>? '=' <.ws>? <named_capture_body>
           {
             make Rul::NamedCapture->new(
-                rule_exp =>  $<named_capture_body>->flat(),
-                capture_ident => $<variables>->flat()
+                rule_exp =>  $MATCH->{"named_capture_body"}->flat(),
+                capture_ident => $MATCH->{"variables"}->flat()
             );
           }
        |
           {
-            make $<variables>->flat()
+            make $MATCH->{"variables"}->flat()
           }
        ]
     |
         # { say 'matching terms'; }
         <rule_terms>
         {
-            make $<rule_terms>->flat()
+            make $MATCH->{"rule_terms"}->flat()
         }
     |  <!before \] | \} | \) | \> | \: | \? | \+ | \* | \| | \& | \/ > <any>   # TODO - <...>* - optimize!
-        { make Rul::Constant->new( constant => $<any>->flat() ) }
+        { make Rul::Constant->new( constant => $MATCH->{"any"}->flat() ) }
 }
 
 token quant_exp {
     |   '**'  <.Perlito5::Grammar.opt_ws>
         [
         |  <Perlito5::Grammar.val_int>
-           { make $<Perlito5::Grammar.val_int>->flat() }
+           { make $MATCH->{"Perlito5::Grammar.val_int"}->flat() }
         |  <rule_term>
-           { make $<rule_term>->flat() }
+           { make $MATCH->{"rule_term"}->flat() }
         ]
     |   [  \? | \* | \+  ]
 }
@@ -222,16 +222,16 @@ token quantifier {
         <quant_exp> <greedy_exp>
         <Perlito5::Grammar.opt_ws3>
         { make Rul::Quantifier->new(
-                term    => $<rule_term>->flat(),
-                quant   => $<quant_exp>->flat(),
-                greedy  => $<greedy_exp>->flat(),
-                ws1     => $<Perlito5::Grammar.opt_ws>->flat(),
-                ws2     => $<Perlito5::Grammar.opt_ws2>->flat(),
-                ws3     => $<Perlito5::Grammar.opt_ws3>->flat(),
+                term    => $MATCH->{"rule_term"}->flat(),
+                quant   => $MATCH->{"quant_exp"}->flat(),
+                greedy  => $MATCH->{"greedy_exp"}->flat(),
+                ws1     => $MATCH->{"Perlito5::Grammar.opt_ws"}->flat(),
+                ws2     => $MATCH->{"Perlito5::Grammar.opt_ws2"}->flat(),
+                ws3     => $MATCH->{"Perlito5::Grammar.opt_ws3"}->flat(),
             )
         }
     |
-        { make $<rule_term>->flat() }
+        { make $MATCH->{"rule_term"}->flat() }
     ]
 }
 
@@ -239,9 +239,9 @@ token concat_list {
     <quantifier>
     [
         <concat_list>
-        { make [ $<quantifier>->flat(), @($<concat_list>->flat()) ] }
+        { make [ $MATCH->{"quantifier"}->flat(), @($MATCH->{"concat_list"}->flat()) ] }
     |
-        { make [ $<quantifier>->flat() ] }
+        { make [ $MATCH->{"quantifier"}->flat() ] }
     ]
     |
         { make [] }
@@ -249,7 +249,7 @@ token concat_list {
 
 token concat_exp {
     <concat_list>
-    { make Rul::Concat->new( concat => $<concat_list>->flat() ) }
+    { make Rul::Concat->new( concat => $MATCH->{"concat_list"}->flat() ) }
 }
 
 token or_list_exp {
@@ -257,9 +257,9 @@ token or_list_exp {
     [
         '|'
         <or_list_exp>
-        { make [ $<concat_exp>->flat(), @($<or_list_exp>->flat()) ] }
+        { make [ $MATCH->{"concat_exp"}->flat(), @($MATCH->{"or_list_exp"}->flat()) ] }
     |
-        { make [ $<concat_exp>->flat() ] }
+        { make [ $MATCH->{"concat_exp"}->flat() ] }
     ]
     |
         { make [] }
@@ -271,7 +271,7 @@ token rule {
     <or_list_exp>
     {
         # say 'found Rule';
-        make Rul::Or->new( or_list => $<or_list_exp>->flat() )
+        make Rul::Or->new( or_list => $MATCH->{"or_list_exp"}->flat() )
     }
 }
 

@@ -66,8 +66,8 @@ token grammar {
     '}'
     {
         make CompUnit->new(
-            name        => $<full_ident>->flat(),
-            body        => $<exp_stmts>->flat(),
+            name        => $MATCH->{"full_ident"}->flat(),
+            body        => $MATCH->{"exp_stmts"}->flat(),
         )
     }
 }
@@ -77,8 +77,8 @@ token package_body {
         <exp_stmts_no_package>
     {
         make CompUnit->new(
-            name        => $<full_ident>->flat(),
-            body        => $<exp_stmts_no_package>->flat(),
+            name        => $MATCH->{"full_ident"}->flat(),
+            body        => $MATCH->{"exp_stmts_no_package"}->flat(),
         )
     }
 }
@@ -87,25 +87,25 @@ token declarator {
      'my' | 'state' | 'has'
 }
 
-token exp_stmts2 { <exp_stmts> { make $<exp_stmts>->flat() } }
+token exp_stmts2 { <exp_stmts> { make $MATCH->{"exp_stmts"}->flat() } }
 
 token exp {
     <Perlito5::Expression.exp_parse>
-        { make $<Perlito5::Expression.exp_parse>->flat() }
+        { make $MATCH->{"Perlito5::Expression.exp_parse"}->flat() }
 }
 
 token exp2 {
     <Perlito5::Expression.exp_parse>
-        { make $<Perlito5::Expression.exp_parse>->flat() }
+        { make $MATCH->{"Perlito5::Expression.exp_parse"}->flat() }
 }
 
 token opt_ident {
-    | <ident>  { make $<ident>->flat() }
+    | <ident>  { make $MATCH->{"ident"}->flat() }
     | ''       { make 'postcircumfix:<( )>' }
 }
 
 token opt_type {
-    |   '::'?  <full_ident>   { make $<full_ident>->flat() }
+    |   '::'?  <full_ident>   { make $MATCH->{"full_ident"}->flat() }
     |   ''                    { make '' }
 }
 
@@ -121,7 +121,7 @@ token var_ident {
         make Var->new(
             sigil       => '' . $<var_sigil>,
             twigil      => '' . $<var_twigil>,
-            namespace   => $<optional_namespace_before_ident>->flat(),
+            namespace   => $MATCH->{"optional_namespace_before_ident"}->flat(),
             name        => '' . $<var_name>,
         )
     }
@@ -188,12 +188,12 @@ token double_quoted_unescape {
 token double_quoted_buf {
     | <before \$ >
         [ <before \$ <.ident> > <Perlito5::Expression.operator>
-            { make ($<Perlito5::Expression.operator>->flat())[1] }
+            { make ($MATCH->{"Perlito5::Expression.operator"}->flat())[1] }
         | \$\{ <ident> \}
             { make Var->new(
                     sigil  => '$',
                     twigil => '',
-                    name   => $<ident>->flat(),
+                    name   => $MATCH->{"ident"}->flat(),
                    )
             }
         | <char_any>
@@ -206,7 +206,7 @@ token double_quoted_buf {
                     code      => 'join',
                     arguments => [ 
                         Val::Buf->new( buf => ' ' ), 
-                        ($<Perlito5::Expression.operator>->flat())[1] 
+                        ($MATCH->{"Perlito5::Expression.operator"}->flat())[1] 
                     ],
                 )
             }
@@ -216,7 +216,7 @@ token double_quoted_buf {
                     code      => 'join',
                     arguments => [ 
                         Val::Buf->new( buf => ' ' ), 
-                        ($<exp_stmts>->flat())[0] 
+                        ($MATCH->{"exp_stmts"}->flat())[0] 
                     ],
                 )
             }
@@ -224,7 +224,7 @@ token double_quoted_buf {
             { make Val::Buf->new( buf => '' . $<char_any> ) }
         ]
     | <double_quoted_unescape>
-        { make Val::Buf->new( buf => $<double_quoted_unescape>->flat() ) }
+        { make Val::Buf->new( buf => $MATCH->{"double_quoted_unescape"}->flat() ) }
 }
 
 token val_buf {
@@ -243,7 +243,7 @@ token val_buf {
             }
         }
     | \' <single_quoted_unescape>  \'
-        { make Val::Buf->new( buf => $<single_quoted_unescape>->flat() ) }
+        { make Val::Buf->new( buf => $MATCH->{"single_quoted_unescape"}->flat() ) }
 }
 
 token digits {
@@ -272,7 +272,7 @@ token exp_stmts_no_package {
 token opt_name {  <ident>?  }
 
 token var_invocant {
-    |  <var_ident> \:    { make $<var_ident>->flat() }
+    |  <var_ident> \:    { make $MATCH->{"var_ident"}->flat() }
     |  { make Var->new(
             sigil  => '$',
             twigil => '',
@@ -287,18 +287,18 @@ token args_sig {
     # TODO - Perlito5::Expression.list_parse / exp_mapping == positional / named
     <Perlito5::Expression.list_parse>
     {
-        # say ' invocant: ', ($<var_invocant>->flat()).perl;
-        # say ' positional: ', ($<>->flat()).perl;
+        # say ' invocant: ', ($MATCH->{"var_invocant"}->flat()).perl;
+        # say ' positional: ', ($MATCH->{""}->flat()).perl;
         make Sig->new(
-            invocant    => $<var_invocant>->flat(),
-            positional  => Perlito5::Expression::expand_list(($<Perlito5::Expression.list_parse>->flat()){'exp'}),
+            invocant    => $MATCH->{"var_invocant"}->flat(),
+            positional  => Perlito5::Expression::expand_list(($MATCH->{"Perlito5::Expression.list_parse"}->flat()){'exp'}),
             named       => { } );
     }
 }
 
 token method_sig {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
-        { make $<args_sig>->flat() }
+        { make $MATCH->{"args_sig"}->flat() }
     |   { make Sig->new(
             invocant => Var->new(
                 sigil  => '$',
@@ -313,8 +313,8 @@ token sub_def {
     <method_sig>
     <.opt_ws> \{ <.opt_ws>
           <exp_stmts> <.opt_ws>
-    [   \}     | { die 'Syntax Error in sub \'', $<opt_name>->flat(), '\''; } ]
-    { make Sub->new( name => $<opt_name>->flat(), sig => $<method_sig>->flat(), block => $<exp_stmts>->flat() ) }
+    [   \}     | { die 'Syntax Error in sub \'', $MATCH->{"opt_name"}->flat(), '\''; } ]
+    { make Sub->new( name => $MATCH->{"opt_name"}->flat(), sig => $MATCH->{"method_sig"}->flat(), block => $MATCH->{"exp_stmts"}->flat() ) }
 }
 
 token token {
@@ -322,7 +322,7 @@ token token {
         <Perlito5::Grammar::Regex.rule>
     \}
     {
-        #say 'Token was compiled into: ', ($<Perlito5::Grammar::Regex.rule>->flat())->perl;
+        #say 'Token was compiled into: ', ($MATCH->{"Perlito5::Grammar::Regex.rule"}->flat())->perl;
         my $source = $<opt_name> 
             . '{ ' .
                 'my $grammar = $_[0]; ' .
@@ -330,7 +330,7 @@ token token {
                 'my $pos     = $_[2]; ' .
                 'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' .
                 '$MATCH->bool = ( ' .
-                    ($<Perlito5::Grammar::Regex.rule>->flat())->emit_perl5() .
+                    ($MATCH->{"Perlito5::Grammar::Regex.rule"}->flat())->emit_perl5() .
                 '); ' .
                 '$MATCH; ' 
             . '}';
