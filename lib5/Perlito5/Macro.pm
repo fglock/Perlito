@@ -21,7 +21,7 @@ package main;
             (my  $List_items = bless [], 'ARRAY');
             for my $item ( @{($self->{array1})} ) {
                 if (((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
-                    for my $arg ( @{(($item->arguments()))} ) {
+                    for my $arg ( @{($item->arguments())} ) {
                         push( @{$List_items}, $arg )
                     }
                 }
@@ -127,7 +127,7 @@ package main;
             (my  $List_items = bless [], 'ARRAY');
             for my $item ( @{($self->{hash1})} ) {
                 if (((Main::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
-                    for my $arg ( @{(($item->arguments()))} ) {
+                    for my $arg ( @{($item->arguments())} ) {
                         push( @{$List_items}, $arg )
                     }
                 }

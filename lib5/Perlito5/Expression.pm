@@ -23,7 +23,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 }));
-            for my $v ( @{(($param_list->arguments()))} ) {
+            for my $v ( @{($param_list->arguments())} ) {
                 if ((defined($v))) {
                     push( @{($args)}, $v )
                 }
@@ -88,7 +88,7 @@ package main;
         if ((($stmt->code()) ne 'list:<,>')) {
             return ($o)
         };
-        for my $item ( @{(($stmt->arguments()))} ) {
+        for my $item ( @{($stmt->arguments())} ) {
             if (((Main::isa($item, 'Apply') && (($item->code()) eq 'infix:<' . chr(61) . '>>')))) {
                 return (Lit::Hash->new(('hash1' => expand_list($stmt))))
             }
@@ -296,7 +296,7 @@ package main;
                         push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ($arg->[0])->code()), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    ($List_v = ((($arg->[0])->arguments())));
+    ($List_v = (($arg->[0])->arguments()));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
@@ -1494,7 +1494,7 @@ package main;
     my $List__ = bless \@_, "ARRAY";
     ((my  $m) = $self->operator($str, $last_pos));
     if ((!($m))) {
-        die(('Expected closing delimiter: '), (($delimiter)), ' near ', $last_pos)
+        die(('Expected closing delimiter: '), ($delimiter), ' near ', $last_pos)
     };
     ((my  $v) = $m->flat());
     if ((($v->[0] ne 'end'))) {

@@ -195,7 +195,7 @@ package main;
                 }
             };
             ((my  $name) = ($self->{sigil} . $ns . $self->{name}));
-            for my $e ( @{(($env))} ) {
+            for my $e ( @{($env)} ) {
                 if ((exists($e->{$name}))) {
                     return ($e->{$name})
                 }
@@ -254,7 +254,7 @@ package main;
                 ($ns = ($self->{namespace} . '::'))
             };
             ((my  $code) = ($ns . $self->{code}));
-            for my $e ( @{(($env))} ) {
+            for my $e ( @{($env)} ) {
                 if ((exists($e->{$code}))) {
                     return ((($e->{$code})->($env, ($self->{arguments}))))
                 }
@@ -286,7 +286,7 @@ package main;
     };
     $List_a
 }));
-                for my $stmt ( @{((($self->{body})->stmts()))} ) {
+                for my $stmt ( @{(($self->{body})->stmts())} ) {
                     $stmt->eval($env1)
                 }
             }
@@ -304,7 +304,7 @@ package main;
     };
     $List_a
 }));
-                for my $stmt ( @{((($self->{otherwise})->stmts()))} ) {
+                for my $stmt ( @{(($self->{otherwise})->stmts())} ) {
                     $stmt->eval($env1)
                 }
             };
@@ -335,13 +335,13 @@ package main;
     };
     $List_a
 }));
-            for my $topic ( @{(($cond->eval($env)))} ) {
+            for my $topic ( @{($cond->eval($env))} ) {
                 ($env1->[0] = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{$topic_name} = $topic);
     $Hash_a
 }));
-                for my $stmt ( @{((($self->{body})->stmts()))} ) {
+                for my $stmt ( @{(($self->{body})->stmts())} ) {
                     $stmt->eval($env1)
                 }
             };
@@ -407,7 +407,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             (my  $List_param_name = bless [], 'ARRAY');
-            for my $field ( @{(($self->{sig}->positional()))} ) {
+            for my $field ( @{($self->{sig}->positional())} ) {
                 push( @{$List_param_name}, $field->plain_name() )
             };
             ((my  $sub) = sub  {

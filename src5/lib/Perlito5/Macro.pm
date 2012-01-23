@@ -8,7 +8,7 @@ class Lit::Array {
         my @items;
         for my $item ( @{$.array1} ) {
             if ($item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
-                for my $arg ( @($item->arguments) ) {
+                for my $arg ( @{$item->arguments} ) {
                     push( @items, $arg);
                 }
             }
@@ -131,7 +131,7 @@ class Lit::Hash {
         my @items;
         for my $item ( @{$.hash1} ) {
             if ($item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
-                for my $arg ( @($item->arguments) ) {
+                for my $arg ( @{$item->arguments} ) {
                     push( @items, $arg);
                 }
             }

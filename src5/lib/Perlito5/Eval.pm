@@ -125,7 +125,7 @@ class Var {
         }
 
         my $name = $.sigil . $ns . $.name;
-        for my $e ( @($env) ) {
+        for my $e ( @{$env} ) {
             if (exists( $e->{ $name } )) {
                 return $e->{ $name };
             }
@@ -177,7 +177,7 @@ class Apply {
         }
         my $code = $ns . $.code;
         # warn "Apply ", $env->perl, " code: '", $code, "'";
-        for my $e ( @($env) ) {
+        for my $e ( @{$env} ) {
             if (exists( $e->{ $code } )) {
                 return (($e->{ $code })->( $env, @{$.arguments} ));
             }
@@ -194,13 +194,13 @@ class If {
         my $cond = $.cond;
         if ($cond->eval($env)) {
             my $env1 = [ {}, @$env ];
-            for my $stmt ( @(($.body)->stmts) ) {
+            for my $stmt ( @{($.body)->stmts} ) {
                 $stmt->eval($env1);
             }
         }
         else {
             my $env1 = [ {}, @$env ];
-            for my $stmt ( @(($.otherwise)->stmts) ) {
+            for my $stmt ( @{($.otherwise)->stmts} ) {
                 $stmt->eval($env1);
             }
         }
@@ -216,9 +216,9 @@ class For {
         my $cond = $.cond;
         my $topic_name = (($.body)->sig)->plain_name;
         my $env1 = [ {}, @$env ];
-        for my $topic (@( $cond->eval($env) )) {
+        for my $topic (@{ $cond->eval($env) }) {
             $env1->[0] = { $topic_name => $topic };
-            for my $stmt ( @(($.body)->stmts) ) {
+            for my $stmt ( @{($.body)->stmts} ) {
                 $stmt->eval($env1);
             }
         }
@@ -268,7 +268,7 @@ class Sub {
         my $env = $_[1];
 
         my @param_name;
-        for my $field (@( $.sig->positional )) {
+        for my $field (@{ $.sig->positional }) {
             push( @param_name, $field->plain_name );
         }
         my $sub =

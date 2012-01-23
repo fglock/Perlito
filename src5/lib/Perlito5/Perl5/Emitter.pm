@@ -85,7 +85,7 @@ class CompUnit {
             . "use Perlito5::Perl5::Runtime;\n"
             . "use Perlito5::Perl5::Prelude;\n"
             . "our \$MATCH = Perlito5::Match->new();\n";
-        for my $comp_unit (@($comp_units)) {
+        for my $comp_unit (@{$comp_units}) {
             $str .= $comp_unit->emit_perl5_indented(0)
         }
         $str .= "1;\n";

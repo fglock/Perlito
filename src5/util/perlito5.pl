@@ -33,7 +33,7 @@ my %module_seen;
 
 token module_name {
     <Perlito5::Grammar.ident>
-    [   '::' <module_name>  { $MATCH->capture = [ '' . $MATCH->{"Perlito5::Grammar.ident"}, @( $MATCH->{"module_name"}->flat() ) ] }
+    [   '::' <module_name>  { $MATCH->capture = [ '' . $MATCH->{"Perlito5::Grammar.ident"}, @{ $MATCH->{"module_name"}->flat() } ] }
     |   ''                  { $MATCH->capture = [ '' . $MATCH->{"Perlito5::Grammar.ident"} ] }
     ]
 }
@@ -92,7 +92,7 @@ sub add_comp_unit {
             if ($verbose) {
                 warn "parsed comp_unit: '", $comp_unit->name, "'";
             }
-            for my $stmt (@( $comp_unit->body )) {
+            for my $stmt (@{ $comp_unit->body }) {
                 if ($expand_use && $stmt->isa('Use')) {
                     expand_use($stmt);
                 }

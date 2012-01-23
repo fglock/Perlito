@@ -77,7 +77,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
-    ($List_v = (($MATCH->{('module_name')}->flat())));
+    ($List_v = ($MATCH->{('module_name')}->flat()));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
@@ -147,7 +147,7 @@ package main;
                     if (($verbose)) {
                         warn(('parsed comp_unit: ' . chr(39)), $comp_unit->name(), (chr(39)))
                     };
-                    for my $stmt ( @{(($comp_unit->body()))} ) {
+                    for my $stmt ( @{($comp_unit->body())} ) {
                         if ((($expand_use && Main::isa($stmt, 'Use')))) {
                             expand_use($stmt)
                         }

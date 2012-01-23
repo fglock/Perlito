@@ -239,7 +239,7 @@ token concat_list {
     <quantifier>
     [
         <concat_list>
-        { $MATCH->capture = [ $MATCH->{"quantifier"}->flat(), @($MATCH->{"concat_list"}->flat()) ] }
+        { $MATCH->capture = [ $MATCH->{"quantifier"}->flat(), @{$MATCH->{"concat_list"}->flat()} ] }
     |
         { $MATCH->capture = [ $MATCH->{"quantifier"}->flat() ] }
     ]
@@ -257,7 +257,7 @@ token or_list_exp {
     [
         '|'
         <or_list_exp>
-        { $MATCH->capture = [ $MATCH->{"concat_exp"}->flat(), @($MATCH->{"or_list_exp"}->flat()) ] }
+        { $MATCH->capture = [ $MATCH->{"concat_exp"}->flat(), @{$MATCH->{"or_list_exp"}->flat()} ] }
     |
         { $MATCH->capture = [ $MATCH->{"concat_exp"}->flat() ] }
     ]

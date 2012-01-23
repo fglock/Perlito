@@ -81,7 +81,7 @@ package main;
         ((my  $str) = shift());
         ((my  $pos) = shift());
         ((my  $from) = $pos);
-        for my $tok ( @{(($End_token))} ) {
+        for my $tok ( @{($End_token)} ) {
             ((my  $l) = length($tok));
             ((my  $s) = substr($str, $pos, $l));
             if ((($s eq $tok))) {

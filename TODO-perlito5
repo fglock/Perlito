@@ -20,8 +20,6 @@ TODO list for Perlito5
 
 -- "class", "has", "token", $.accessor
 
--- @($v) --> @{$v}
-
 -- for @x {...} --> for (@x) {...}
 
 

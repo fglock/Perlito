@@ -9,7 +9,7 @@ package Perlito5::Expression;
         # say "# expand_list: ", $param_list->perl;
         if ($param_list->isa('Apply')) && (($param_list->code) eq 'list:<,>') {
             my $args = [];
-            for my $v ( @($param_list->arguments) ) {
+            for my $v ( @{$param_list->arguments} ) {
                 if (defined($v)) {
                     push( @$args, $v);
                 }
@@ -60,7 +60,7 @@ package Perlito5::Expression;
             return $o
         }
         # the argument is a list -- check that it contains a pair
-        for my $item ( @($stmt->arguments) ) {
+        for my $item ( @{$stmt->arguments} ) {
             # say "#  item: ", $item->perl;
             if ($item->isa('Apply') && ($item->code) eq 'infix:<=>>') {
                 # argument is a pair
@@ -293,7 +293,7 @@ package Perlito5::Expression;
                     Apply->new(
                         namespace => '',
                         code      => ($arg->[0])->code,
-                        arguments => [ @( ($arg->[0])->arguments ), $arg->[1] ],
+                        arguments => [ @{ ($arg->[0])->arguments }, $arg->[1] ],
                       );
                 return;
             }
@@ -599,7 +599,7 @@ package Perlito5::Expression;
         my $get_token = sub {
             my $m = $self->operator($str, $last_pos);
             if (!$m) {
-                die "Expected closing delimiter: ", @($delimiter), ' near ', $last_pos;
+                die "Expected closing delimiter: ", @{$delimiter}, ' near ', $last_pos;
             }
             my $v = $m->flat();
             if ($v->[0] ne 'end') {

@@ -1246,7 +1246,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $MATCH->{('quantifier')}->flat() );
-    ($List_v = (($MATCH->{('concat_list')}->flat())));
+    ($List_v = ($MATCH->{('concat_list')}->flat()));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };
@@ -1341,7 +1341,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $MATCH->{('concat_exp')}->flat() );
-    ($List_v = (($MATCH->{('or_list_exp')}->flat())));
+    ($List_v = ($MATCH->{('or_list_exp')}->flat()));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
     };

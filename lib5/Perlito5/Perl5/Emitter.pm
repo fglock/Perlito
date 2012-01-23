@@ -90,7 +90,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $comp_units) = $List__->[0]);
             ((my  $str) = ('' . ('use v5' . chr(59) . chr(10)) . ('use utf8' . chr(59) . chr(10)) . ('use strict' . chr(59) . chr(10)) . ('use warnings' . chr(59) . chr(10)) . ('no warnings (' . chr(39) . 'redefine' . chr(39) . ', ' . chr(39) . 'once' . chr(39) . ', ' . chr(39) . 'void' . chr(39) . ', ' . chr(39) . 'uninitialized' . chr(39) . ', ' . chr(39) . 'misc' . chr(39) . ', ' . chr(39) . 'recursion' . chr(39) . ')' . chr(59) . chr(10)) . ('use Perlito5::Perl5::Runtime' . chr(59) . chr(10)) . ('use Perlito5::Perl5::Prelude' . chr(59) . chr(10)) . ('our ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new()' . chr(59) . chr(10))));
-            for my $comp_unit ( @{(($comp_units))} ) {
+            for my $comp_unit ( @{($comp_units)} ) {
                 ($str = ($str . $comp_unit->emit_perl5_indented(0)))
             };
             ($str = ($str . ('1' . chr(59) . chr(10))));
