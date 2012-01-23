@@ -723,9 +723,6 @@ package main;
             if ((($code eq 'undef'))) {
                 return ((Javascript::tab($level) . 'null'))
             };
-            if ((($code eq 'make'))) {
-                return ((Javascript::tab($level) . '(v_MATCH.v_capture ' . chr(61) . ' ' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')'))
-            };
             if ((($code eq 'defined'))) {
                 return ((Javascript::tab($level) . '(' . join(' ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ' ' . chr(33) . chr(61) . ' null)'))
             };

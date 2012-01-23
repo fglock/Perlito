@@ -18,11 +18,11 @@ TODO list for Perlito5
 
 * source code - remove Perl 6 code 
 
--- "class", "has", "token"
+-- "class", "has", "token", $.accessor
 
--- $.term
+-- @($v) --> @{$v}
 
--- "match" special variables: $<..>, $/
+-- for @x {...} --> for (@x) {...}
 
 
 * libraries

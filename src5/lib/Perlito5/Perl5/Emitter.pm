@@ -403,8 +403,6 @@ class Apply {
         if ($.code eq 'package')   { return Perl5::tab($level) . 'package ' . $.namespace }
         if ($code eq 'undef')      { return Perl5::tab($level) . 'undef()' }
 
-        if ($code eq 'make')       { return Perl5::tab($level) . '($MATCH->{capture} = ('   . join(', ', map( $_->emit_perl5, @{$.arguments} )) . '))' }
-
         if ($code eq 'scalar')     { return Perl5::tab($level) . 'scalar( @{' . ($.arguments->[0]->emit_perl5) . '} )' }
         if ($code eq 'pop')        { return Perl5::tab($level) . 'pop( @{' . ($.arguments->[0]->emit_perl5) . '} )' }
         if ($code eq 'push')       { return Perl5::tab($level) . 'push( @{' . ($.arguments->[0])->emit_perl5() . '}, ' . ($.arguments->[1])->emit_perl5() . ' )' }

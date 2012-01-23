@@ -659,7 +659,6 @@ class Apply {
         }
 
         if ($code eq 'undef')      { return Javascript::tab($level) . 'null' }
-        if ($code eq 'make')       { return Javascript::tab($level) . '(v_MATCH.v_capture = ' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . ')' }
         if ($code eq 'defined')    { return Javascript::tab($level) . '('  . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ' != null)' }
         if ($code eq 'substr') {
             return '(' . ($.arguments->[0])->emit_javascript()

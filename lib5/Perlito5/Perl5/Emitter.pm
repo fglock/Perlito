@@ -450,9 +450,6 @@ package main;
             if ((($code eq 'undef'))) {
                 return ((Perl5::tab($level) . 'undef()'))
             };
-            if ((($code eq 'make'))) {
-                return ((Perl5::tab($level) . '(' . chr(36) . 'MATCH->' . chr(123) . 'capture' . chr(125) . ' ' . chr(61) . ' (' . join(', ', @{[map($_->emit_perl5(), @{($self->{arguments})})]}) . '))'))
-            };
             if ((($code eq 'scalar'))) {
                 return ((Perl5::tab($level) . 'scalar( ' . chr(64) . chr(123) . ($self->{arguments}->[0]->emit_perl5()) . chr(125) . ' )'))
             };

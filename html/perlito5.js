@@ -2669,9 +2669,6 @@ if (typeof Apply !== 'object') {
                     if ( bool(((v_code == 'undef'))) ) { (function () {
                         throw((string(Javascript.tab(CallSub, v_level)) + string('null')));;
                     })(); };
-                    if ( bool(((v_code == 'make'))) ) { (function () {
-                        throw((string(Javascript.tab(CallSub, v_level)) + string('(v_MATCH.v_capture ' + String.fromCharCode(61) + ' ') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push((typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit_javascript") ? v__.__proto__.emit_javascript.call(v__) : v__.emit_javascript()))}; return out; })((v_self.v_arguments)))) + string(')')));;
-                    })(); };
                     if ( bool(((v_code == 'defined'))) ) { (function () {
                         throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string(join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push((typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit_javascript") ? v__.__proto__.emit_javascript.call(v__) : v__.emit_javascript()))}; return out; })((v_self.v_arguments)))) + string(' ' + String.fromCharCode(33) + String.fromCharCode(61) + ' null)')));;
                     })(); };
@@ -5570,9 +5567,6 @@ if (typeof Apply !== 'object') {
                     })(); };
                     if ( bool(((v_code == 'undef'))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('undef()')));;
-                    })(); };
-                    if ( bool(((v_code == 'make'))) ) { (function () {
-                        throw((string(Perl5.tab(CallSub, v_level)) + string('(' + String.fromCharCode(36) + 'MATCH->' + String.fromCharCode(123) + 'capture' + String.fromCharCode(125) + ' ' + String.fromCharCode(61) + ' (') + string(join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push((typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit_perl5") ? v__.__proto__.emit_perl5.call(v__) : v__.emit_perl5()))}; return out; })((v_self.v_arguments)))) + string('))')));;
                     })(); };
                     if ( bool(((v_code == 'scalar'))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('scalar( ' + String.fromCharCode(64) + String.fromCharCode(123)) + string(((typeof(v_self.v_arguments[0].__proto__) != 'undefined' && v_self.v_arguments[0].__proto__.hasOwnProperty("emit_perl5") ? v_self.v_arguments[0].__proto__.emit_perl5.call(v_self.v_arguments[0]) : v_self.v_arguments[0].emit_perl5()))) + string(String.fromCharCode(125) + ' )')));;
