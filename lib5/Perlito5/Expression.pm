@@ -356,69 +356,6 @@ package main;
         }
     }
 });
-    sub capture_name {
-        my $List__ = bless \@_, "ARRAY";
-        ((my  $grammar) = $List__->[0]);
-        ((my  $str) = $List__->[1]);
-        ((my  $pos) = $List__->[2]);
-        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
-    ((my  $pos1) = $MATCH->to());
-    ((do {
-    (((do {
-    ((my  $m2) = Perlito5::Grammar->full_ident($str, $MATCH->to()));
-    if (($m2)) {
-        (($MATCH)->{to} = $m2->to());
-        ($MATCH->{'Perlito5::Grammar.full_ident'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ((my  $last_pos) = $MATCH->to());
-    if ((!(((do {
-    ((my  $pos1) = $MATCH->to());
-    ((do {
-    (((do {
-    ((my  $pos1) = $MATCH->to());
-    (((do {
-    (('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
-})) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((('->' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))))
-})))
-})) && ((do {
-    ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->to()));
-    if (($m2)) {
-        (($MATCH)->{to} = $m2->to());
-        if ((exists($MATCH->{'Perlito5::Grammar.ident'}))) {
-            push( @{($MATCH->{'Perlito5::Grammar.ident'})}, $m2 )
-        }
-        else {
-            ($MATCH->{'Perlito5::Grammar.ident'} = (do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $m2 );
-    $List_a
-}))
-        };
-        1
-    }
-    else {
-        0
-    }
-})))
-}))
-}))))) {
-        (($MATCH)->{to} = $last_pos)
-    };
-    1
-})))
-}))
-}))));
-        $MATCH
-    };
     sub operator {
         my $List__ = bless \@_, "ARRAY";
         ((my  $grammar) = $List__->[0]);

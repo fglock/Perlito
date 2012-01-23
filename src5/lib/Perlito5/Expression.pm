@@ -360,10 +360,6 @@ package Perlito5::Expression;
         }
     };
 
-    token capture_name {
-        <Perlito5::Grammar.full_ident> [ [ '.' | '->' ] <Perlito5::Grammar.ident> ]?
-    }
-
     token operator {
 
         | <Perlito5::Grammar.var_sigil> '{' <curly_parse>   '}'
