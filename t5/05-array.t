@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..13';
+say '1..15';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -61,4 +61,13 @@ my $s13 = join('#', @x13);
 print 'not '
     unless $s13 eq '3#4';
 say "ok 13 - join # '$s13'";
+
+my @x14 = @x13;
+$x14[1] = 5;
+print 'not '
+    unless $x13[1] == 4;
+say "ok 14 - array copy";
+print 'not '
+    unless $x14[1] == 5;
+say "ok 15 - array copy";
 
