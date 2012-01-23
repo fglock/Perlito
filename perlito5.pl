@@ -73,7 +73,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = ((do {
+    (($MATCH)->{capture} = (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
@@ -82,17 +82,17 @@ package main;
         push( @{$List_a}, $List_v->[$x] )
     };
     $List_a
-})))
+}))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
     ((1 && ((((do {
-    ($MATCH->{capture} = ((do {
+    (($MATCH)->{capture} = (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
     $List_a
-})))
+}))
 })) || 1))))
 })))
 })))

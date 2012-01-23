@@ -7,7 +7,7 @@ token unless {
             if (!(defined($body))) {
                 die "Missing code block in 'unless'";
             }
-            make If->new(
+            $MATCH->capture = If->new(
                 cond => ($MATCH->{"exp"}->flat()){'exp'},
                 body => Lit::Block->new(stmts => [ ]),
                 otherwise => $body,
@@ -32,7 +32,7 @@ token if {
             if ($otherwise->isa('Lit::Hash')) {
                 $otherwise = Lit::Block->new( stmts => $otherwise->hash1 );
             }
-            make If->new(
+            $MATCH->capture = If->new(
                 cond      => ($MATCH->{"exp"}->flat()){'exp'},
                 body      => $body,
                 otherwise => $otherwise,
@@ -46,7 +46,7 @@ token if {
             if (!(defined($body))) {
                 die "Missing code block in 'if'";
             }
-            make If->new(
+            $MATCH->capture = If->new(
                 cond => ($MATCH->{"exp"}->flat()){'exp'},
                 body => $body,
                 otherwise => Lit::Block->new( stmts => [ $MATCH->{"if"}->flat() ] ),
@@ -58,7 +58,7 @@ token if {
             if (!(defined($body))) {
                 die "Missing code block in 'if'";
             }
-            make If->new(
+            $MATCH->capture = If->new(
                 cond => ($MATCH->{"exp"}->flat()){'exp'},
                 body => $body,
                 otherwise => Lit::Block->new(stmts => [ ]),
@@ -74,7 +74,7 @@ token when {
         if (!(defined($body))) {
             die "Missing code block in 'when'";
         }
-        make When->new(
+        $MATCH->capture = When->new(
                 parameters => ($MATCH->{"exp"}->flat()){'exp'},
                 body       => $body )
     }
@@ -90,7 +90,7 @@ token for {
                 <.opt_ws>
             '}'
         {
-            make For->new( 
+            $MATCH->capture = For->new( 
                     cond  => $MATCH->{"Perlito5::Expression.paren_parse"}->flat(), 
                     topic => undef, 
                     body  => Lit::Block->new( stmts => $MATCH->{"Perlito5::Grammar.exp_stmts"}->flat(), sig => $MATCH->{"Perlito5::Grammar.var_ident"}->flat() )
@@ -103,7 +103,7 @@ token for {
             if (!(defined($body))) {
                 die "Missing code block in 'when'";
             }
-            make For->new( cond => ($MATCH->{"exp"}->flat()){'exp'}, topic => undef, body => $body )
+            $MATCH->capture = For->new( cond => ($MATCH->{"exp"}->flat()){'exp'}, topic => undef, body => $body )
         }
     ]
 }
@@ -115,7 +115,7 @@ token while {
         if (!(defined($body))) {
             die "Missing code block in 'while'";
         }
-        make While->new(
+        $MATCH->capture = While->new(
                 cond => ($MATCH->{"exp"}->flat()){'exp'},
                 body => $body )
     }
@@ -128,7 +128,7 @@ token loop {
         if (!(defined($body))) {
             $body = ($MATCH->{"exp"}->flat()){'exp'};
             if ($body->isa( 'Lit::Block' )) {
-                make While->new( cond => Val::Bit->new( bit => 1 ), body => $body )
+                $MATCH->capture = While->new( cond => Val::Bit->new( bit => 1 ), body => $body )
             }
             else {
                 die "Missing code block in 'loop'";

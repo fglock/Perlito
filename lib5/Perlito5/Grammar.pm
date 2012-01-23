@@ -284,12 +284,12 @@ package main;
         0
     }
 })) && ((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (('' . $MATCH->{('namespace_before_ident')})))
+    (($MATCH)->{capture} = ('' . $MATCH->{('namespace_before_ident')}))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
     ((1 && ((((do {
-    ($MATCH->{capture} = (''))
+    (($MATCH)->{capture} = '')
 })) || 1))))
 })))
 }))));
@@ -656,7 +656,7 @@ package main;
     };
     1
 }))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (CompUnit->new(('name' => $MATCH->{('full_ident')}->flat()), ('body' => $MATCH->{('exp_stmts')}->flat()))))
+    (($MATCH)->{capture} = CompUnit->new(('name' => $MATCH->{('full_ident')}->flat()), ('body' => $MATCH->{('exp_stmts')}->flat())))
 })) || 1)))
 }))
 }))));
@@ -707,7 +707,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (CompUnit->new(('name' => $MATCH->{('full_ident')}->flat()), ('body' => $MATCH->{('exp_stmts_no_package')}->flat()))))
+    (($MATCH)->{capture} = CompUnit->new(('name' => $MATCH->{('full_ident')}->flat()), ('body' => $MATCH->{('exp_stmts_no_package')}->flat())))
 })) || 1)))
 }))
 }))));
@@ -753,7 +753,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{('exp_stmts')}->flat()))
+    (($MATCH)->{capture} = $MATCH->{('exp_stmts')}->flat())
 })) || 1)))
 }))
 }))));
@@ -779,7 +779,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{('Perlito5::Expression.exp_parse')}->flat()))
+    (($MATCH)->{capture} = $MATCH->{('Perlito5::Expression.exp_parse')}->flat())
 })) || 1)))
 }))
 }))));
@@ -805,7 +805,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{('Perlito5::Expression.exp_parse')}->flat()))
+    (($MATCH)->{capture} = $MATCH->{('Perlito5::Expression.exp_parse')}->flat())
 })) || 1)))
 }))
 }))));
@@ -831,12 +831,12 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{('ident')}->flat()))
+    (($MATCH)->{capture} = $MATCH->{('ident')}->flat())
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
     ((1 && ((((do {
-    ($MATCH->{capture} = ('postcircumfix:<( )>'))
+    (($MATCH)->{capture} = 'postcircumfix:<( )>')
 })) || 1))))
 })))
 }))));
@@ -870,12 +870,12 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{('full_ident')}->flat()))
+    (($MATCH)->{capture} = $MATCH->{('full_ident')}->flat())
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
     ((1 && ((((do {
-    ($MATCH->{capture} = (''))
+    (($MATCH)->{capture} = '')
 })) || 1))))
 })))
 }))));
@@ -1021,7 +1021,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (Var->new(('sigil' => ('' . $MATCH->{('var_sigil')})), ('twigil' => ('' . $MATCH->{('var_twigil')})), ('namespace' => $MATCH->{('optional_namespace_before_ident')}->flat()), ('name' => ('' . $MATCH->{('var_name')})))))
+    (($MATCH)->{capture} = Var->new(('sigil' => ('' . $MATCH->{('var_sigil')})), ('twigil' => ('' . $MATCH->{('var_twigil')})), ('namespace' => $MATCH->{('optional_namespace_before_ident')}->flat()), ('name' => ('' . $MATCH->{('var_name')}))))
 })) || 1)))
 }))
 }))));
@@ -1223,7 +1223,7 @@ package main;
 }))))
 })))
 })) && ((((do {
-    ($MATCH->{capture} = (Val::Num->new(('num' => ('' . $MATCH)))))
+    (($MATCH)->{capture} = Val::Num->new(('num' => ('' . $MATCH))))
 })) || 1)))
 }))
 }))));
@@ -1326,7 +1326,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = ((chr(92) . $MATCH->{('single_quoted_unescape')})))
+    (($MATCH)->{capture} = (chr(92) . $MATCH->{('single_quoted_unescape')}))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1341,7 +1341,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = ((chr(39) . $MATCH->{('single_quoted_unescape')})))
+    (($MATCH)->{capture} = (chr(39) . $MATCH->{('single_quoted_unescape')}))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1356,7 +1356,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = ((chr(92) . $MATCH->{('single_quoted_unescape')})))
+    (($MATCH)->{capture} = (chr(92) . $MATCH->{('single_quoted_unescape')}))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1381,7 +1381,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (($MATCH->{('char_any_single_quote')} . $MATCH->{('single_quoted_unescape')})))
+    (($MATCH)->{capture} = ($MATCH->{('char_any_single_quote')} . $MATCH->{('single_quoted_unescape')}))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1494,7 +1494,7 @@ package main;
         0
     }
 }))) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (chr($MATCH->{('digits')})))
+    (($MATCH)->{capture} = chr($MATCH->{('digits')}))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1509,24 +1509,24 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = (chr($MATCH->{('digits')})))
+    (($MATCH)->{capture} = chr($MATCH->{('digits')}))
 })) || 1))))
 })))
 })))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
     ((((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((((do {
-    ($MATCH->{capture} = (chr(27)))
+    (($MATCH)->{capture} = chr(27))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
     ((((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((((do {
-    ($MATCH->{capture} = ((chr(10))))
+    (($MATCH)->{capture} = (chr(10)))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
     ((((('t' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((((do {
-    ($MATCH->{capture} = (chr(9)))
+    (($MATCH)->{capture} = chr(9))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1541,7 +1541,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = (('' . $MATCH->{('char_any')})))
+    (($MATCH)->{capture} = ('' . $MATCH->{('char_any')}))
 })) || 1))))
 })))
 })))
@@ -1558,7 +1558,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = (('' . $MATCH->{('char_any_double_quote')})))
+    (($MATCH)->{capture} = ('' . $MATCH->{('char_any_double_quote')}))
 })) || 1))))
 })))
 }))));
@@ -1620,7 +1620,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (($MATCH->{('Perlito5::Expression.operator')}->flat())->[1]))
+    (($MATCH)->{capture} = ($MATCH->{('Perlito5::Expression.operator')}->flat())->[1])
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1635,7 +1635,7 @@ package main;
         0
     }
 }))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => $MATCH->{('ident')}->flat()))))
+    (($MATCH)->{capture} = Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => $MATCH->{('ident')}->flat())))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1650,7 +1650,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = (Val::Buf->new(('buf' => ('' . $MATCH->{('char_any')})))))
+    (($MATCH)->{capture} = Val::Buf->new(('buf' => ('' . $MATCH->{('char_any')}))))
 })) || 1))))
 })))
 })))
@@ -1703,13 +1703,13 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => (do {
+    (($MATCH)->{capture} = Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Val::Buf->new(('buf' => ' ')) );
     push( @{$List_a}, ($MATCH->{('Perlito5::Expression.operator')}->flat())->[1] );
     $List_a
-})))))
+}))))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1724,13 +1724,13 @@ package main;
         0
     }
 }))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => (do {
+    (($MATCH)->{capture} = Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Val::Buf->new(('buf' => ' ')) );
     push( @{$List_a}, ($MATCH->{('exp_stmts')}->flat())->[0] );
     $List_a
-})))))
+}))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1745,7 +1745,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = (Val::Buf->new(('buf' => ('' . $MATCH->{('char_any')})))))
+    (($MATCH)->{capture} = Val::Buf->new(('buf' => ('' . $MATCH->{('char_any')}))))
 })) || 1))))
 })))
 }))))
@@ -1762,7 +1762,7 @@ package main;
         0
     }
 })) && ((((do {
-    ($MATCH->{capture} = (Val::Buf->new(('buf' => $MATCH->{('double_quoted_unescape')}->flat()))))
+    (($MATCH)->{capture} = Val::Buf->new(('buf' => $MATCH->{('double_quoted_unescape')}->flat())))
 })) || 1))))
 })))
 }))));
@@ -1814,10 +1814,10 @@ package main;
 }))) && (((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
     ((my  $args) = $MATCH->{('double_quoted_buf')});
     if ((!($args))) {
-        ($MATCH->{capture} = (Val::Buf->new(('buf' => ''))))
+        (($MATCH)->{capture} = Val::Buf->new(('buf' => '')))
     }
     else {
-        ($MATCH->{capture} = (Apply->new(('namespace' => ''), ('code' => 'list:<.>'), ('arguments' => [map($_->capture(), @{($MATCH->{('double_quoted_buf')})})]))))
+        (($MATCH)->{capture} = Apply->new(('namespace' => ''), ('code' => 'list:<.>'), ('arguments' => [map($_->capture(), @{($MATCH->{('double_quoted_buf')})})])))
     }
 })) || 1)))
 })) || ((do {
@@ -1833,7 +1833,7 @@ package main;
         0
     }
 }))) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Val::Buf->new(('buf' => $MATCH->{('single_quoted_unescape')}->flat()))))
+    (($MATCH)->{capture} = Val::Buf->new(('buf' => $MATCH->{('single_quoted_unescape')}->flat())))
 })) || 1))))
 })))
 }))));
@@ -1911,7 +1911,7 @@ package main;
     (($MATCH)->{to} = $last_pos);
     ($count > 0)
 })) && ((((do {
-    ($MATCH->{capture} = (Val::Int->new(('int' => ('' . $MATCH)))))
+    (($MATCH)->{capture} = Val::Int->new(('int' => ('' . $MATCH))))
 })) || 1)))
 }))
 }))));
@@ -1961,7 +1961,7 @@ package main;
     (($MATCH)->{to} = $last_pos);
     1
 })) && ((((do {
-    ($MATCH->{capture} = ([map($_->capture(), @{($MATCH->{('Perlito5::Expression.delimited_statement')})})]))
+    (($MATCH)->{capture} = [map($_->capture(), @{($MATCH->{('Perlito5::Expression.delimited_statement')})})])
 })) || 1)))
 }))
 }))));
@@ -2011,7 +2011,7 @@ package main;
     (($MATCH)->{to} = $last_pos);
     1
 })) && ((((do {
-    ($MATCH->{capture} = ([map($_->capture(), @{($MATCH->{('Perlito5::Expression.delimited_statement_no_package')})})]))
+    (($MATCH)->{capture} = [map($_->capture(), @{($MATCH->{('Perlito5::Expression.delimited_statement_no_package')})})])
 })) || 1)))
 }))
 }))));
@@ -2075,12 +2075,12 @@ package main;
         0
     }
 })) && (((':' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{('var_ident')}->flat()))
+    (($MATCH)->{capture} = $MATCH->{('var_ident')}->flat())
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
     (((((do {
-    ($MATCH->{capture} = (Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self'))))
+    (($MATCH)->{capture} = Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self')))
 })) || 1)))
 })))
 }))));
@@ -2125,10 +2125,10 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (Sig->new(('invocant' => $MATCH->{('var_invocant')}->flat()), ('positional' => Perlito5::Expression::expand_list(($MATCH->{('Perlito5::Expression.list_parse')}->flat())->{'exp'})), ('named' => (do {
+    (($MATCH)->{capture} = Sig->new(('invocant' => $MATCH->{('var_invocant')}->flat()), ('positional' => Perlito5::Expression::expand_list(($MATCH->{('Perlito5::Expression.list_parse')}->flat())->{'exp'})), ('named' => (do {
     (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
-})))))
+}))))
 })) || 1)))
 }))
 }))));
@@ -2181,19 +2181,19 @@ package main;
         0
     }
 }))) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = ($MATCH->{('args_sig')}->flat()))
+    (($MATCH)->{capture} = $MATCH->{('args_sig')}->flat())
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
     (((((do {
-    ($MATCH->{capture} = (Sig->new(('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self'))), ('positional' => (do {
+    (($MATCH)->{capture} = Sig->new(('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self'))), ('positional' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 })), ('named' => (do {
     (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
-})))))
+}))))
 })) || 1)))
 })))
 }))));
@@ -2285,7 +2285,7 @@ package main;
 })) || 1)))
 })))
 }))) && ((((do {
-    ($MATCH->{capture} = (Sub->new(('name' => $MATCH->{('opt_name')}->flat()), ('sig' => $MATCH->{('method_sig')}->flat()), ('block' => $MATCH->{('exp_stmts')}->flat()))))
+    (($MATCH)->{capture} = Sub->new(('name' => $MATCH->{('opt_name')}->flat()), ('sig' => $MATCH->{('method_sig')}->flat()), ('block' => $MATCH->{('exp_stmts')}->flat())))
 })) || 1)))
 }))
 }))));
@@ -2332,7 +2332,7 @@ package main;
 }))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
     ((my  $source) = ($MATCH->{('opt_name')} . chr(123) . ' ' . 'my ' . chr(36) . 'grammar ' . chr(61) . ' ' . chr(36) . '_[0]' . chr(59) . ' ' . 'my ' . chr(36) . 'str     ' . chr(61) . ' ' . chr(36) . '_[1]' . chr(59) . ' ' . 'my ' . chr(36) . 'pos     ' . chr(61) . ' ' . chr(36) . '_[2]' . chr(59) . ' ' . 'my ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( str ' . chr(61) . '> ' . chr(36) . 'str, from ' . chr(61) . '> ' . chr(36) . 'pos, to ' . chr(61) . '> ' . chr(36) . 'pos, bool ' . chr(61) . '> 1 )' . chr(59) . ' ' . chr(36) . 'MATCH->bool ' . chr(61) . ' ( ' . ($MATCH->{('Perlito5::Grammar::Regex.rule')}->flat())->emit_perl5() . ')' . chr(59) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125)));
     ((my  $ast) = Perlito5::Grammar->sub_def($source, 0));
-    ($MATCH->{capture} = ($ast->flat()))
+    (($MATCH)->{capture} = $ast->flat())
 })) || 1)))
 }))
 }))));
