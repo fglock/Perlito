@@ -629,9 +629,6 @@ package main;
                 return ((Javascript::escape_function($self->{method}) . '(' . $invocant . ((($self->{arguments}) ? (', ' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]})) : '')) . ')'))
             };
             ((my  $meth) = $self->{method});
-            if (($self->{hyper})) {
-                return (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'out.push( a_[i].' . Javascript::escape_function($meth) . '(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ') ) ' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . ')(' . $invocant . ')'))
-            };
             if ((($self->{method} eq 'postcircumfix:<[ ]>'))) {
                 return ((Javascript::tab($level) . $invocant . '[' . $self->{arguments}->emit_javascript() . ']'))
             };

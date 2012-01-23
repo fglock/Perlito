@@ -550,17 +550,6 @@ class Call {
         }
 
         my $meth = $.method;
-        if ($.hyper) {
-            return
-                    '(function (a_) { '
-                        . 'var out = []; '
-                        . 'if ( a_ == null ) { return out; }; '
-                        . 'for(var i = 0; i < a_.length; i++) { '
-                            . 'out.push( a_[i].' . Javascript::escape_function( $meth ) . '(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . ') ) '
-                        . '}; '
-                        . 'return out;'
-                    . ' })(' . $invocant . ')'
-        }
 
         if ( $.method eq 'postcircumfix:<[ ]>' ) {
             return Javascript::tab($level) . $invocant . '[' . $.arguments->emit_javascript() . ']'
