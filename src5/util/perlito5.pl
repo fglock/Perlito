@@ -33,8 +33,8 @@ my %module_seen;
 
 token module_name {
     <Perlito5::Grammar.ident>
-    [   '::' <module_name>  { make [ '' . $<Perlito5::Grammar.ident>, @( $MATCH->{"module_name"}->flat() ) ] }
-    |   ''                  { make [ '' . $<Perlito5::Grammar.ident> ] }
+    [   '::' <module_name>  { make [ '' . $MATCH->{"Perlito5::Grammar.ident"}, @( $MATCH->{"module_name"}->flat() ) ] }
+    |   ''                  { make [ '' . $MATCH->{"Perlito5::Grammar.ident"} ] }
     ]
 }
 sub modulename_to_filename {

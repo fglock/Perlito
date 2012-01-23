@@ -474,7 +474,7 @@ package main;
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = ((chr(36) . 'MATCH->' . chr(123) . chr(39) . $MATCH->{'rule_ident'} . chr(39) . chr(125))))
+    ($MATCH->{capture} = ((chr(36) . 'MATCH->' . chr(123) . chr(39) . $MATCH->{('rule_ident')} . chr(39) . chr(125))))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -499,7 +499,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (($MATCH->{'Perlito5::Grammar.var_sigil'} . chr(47) . '[' . $MATCH->{'Perlito5::Grammar.val_int'} . ']')))
+    ($MATCH->{capture} = (($MATCH->{('Perlito5::Grammar.var_sigil')} . chr(47) . '[' . $MATCH->{('Perlito5::Grammar.val_int')} . ']')))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -534,7 +534,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (Rul::Var->new(('sigil' => ('' . $MATCH->{'Perlito5::Grammar.var_sigil'})), ('twigil' => ('' . $MATCH->{'Perlito5::Grammar.var_twigil'})), ('name' => ('' . $MATCH->{'Perlito5::Grammar.full_ident'})))))
+    ($MATCH->{capture} = (Rul::Var->new(('sigil' => ('' . $MATCH->{('Perlito5::Grammar.var_sigil')})), ('twigil' => ('' . $MATCH->{('Perlito5::Grammar.var_twigil')})), ('name' => ('' . $MATCH->{('Perlito5::Grammar.full_ident')})))))
 })) || 1))))
 })))
 }))));
@@ -685,7 +685,7 @@ package main;
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::CharClass->new(('chars' => ('' . $MATCH->{'char_class'})))))
+    ($MATCH->{capture} = (Rul::CharClass->new(('chars' => ('' . $MATCH->{('char_class')})))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -700,7 +700,7 @@ package main;
         0
     }
 }))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::NegateCharClass->new(('chars' => ('' . $MATCH->{'char_class'})))))
+    ($MATCH->{capture} = (Rul::NegateCharClass->new(('chars' => ('' . $MATCH->{('char_class')})))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -828,7 +828,7 @@ package main;
         0
     }
 }))) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = (Rul::Constant->new(('constant' => chr($MATCH->{'Perlito5::Grammar.digits'})))))
+    ($MATCH->{capture} = (Rul::Constant->new(('constant' => chr($MATCH->{('Perlito5::Grammar.digits')})))))
 })) || 1)))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -843,7 +843,7 @@ package main;
         0
     }
 }))) && ((((do {
-    ($MATCH->{capture} = (Rul::Constant->new(('constant' => chr($MATCH->{'Perlito5::Grammar.digits'})))))
+    ($MATCH->{capture} = (Rul::Constant->new(('constant' => chr($MATCH->{('Perlito5::Grammar.digits')})))))
 })) || 1))))
 }))) || ((do {
     (($MATCH)->{to} = $pos1);

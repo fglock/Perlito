@@ -67,21 +67,21 @@ token variables {
     |
         '$<'
         <rule_ident> \>
-        { make '$MATCH->{' . '\'' . $<rule_ident> . '\'' . '}' }
+        { make '$MATCH->{' . '\'' . $MATCH->{"rule_ident"} . '\'' . '}' }
     |
         # TODO
         <Perlito5::Grammar.var_sigil>
         <Perlito5::Grammar.val_int>
-        { make $<Perlito5::Grammar.var_sigil> . '/[' . $<Perlito5::Grammar.val_int> . ']' }
+        { make $MATCH->{"Perlito5::Grammar.var_sigil"} . '/[' . $MATCH->{"Perlito5::Grammar.val_int"} . ']' }
     |
         <Perlito5::Grammar.var_sigil>
         <Perlito5::Grammar.var_twigil>
         <Perlito5::Grammar.full_ident>
         {
             make Rul::Var->new(
-                    sigil  => '' . $<Perlito5::Grammar.var_sigil>,
-                    twigil => '' . $<Perlito5::Grammar.var_twigil>,
-                    name   => '' . $<Perlito5::Grammar.full_ident>
+                    sigil  => '' . $MATCH->{"Perlito5::Grammar.var_sigil"},
+                    twigil => '' . $MATCH->{"Perlito5::Grammar.var_twigil"},
+                    name   => '' . $MATCH->{"Perlito5::Grammar.full_ident"}
                    )
         }
 }
@@ -109,11 +109,11 @@ token rule_terms {
     |   '<+'
         # TODO
         <char_class>  \>
-        { make Rul::CharClass->new( chars => '' . $<char_class> ) }
+        { make Rul::CharClass->new( chars => '' . $MATCH->{"char_class"} ) }
     |   '<-'
         # TODO
         <char_class> \>
-        { make Rul::NegateCharClass->new( chars => '' . $<char_class> ) }
+        { make Rul::NegateCharClass->new( chars => '' . $MATCH->{"char_class"} ) }
     |   \'
         <literal> \'
         { make Rul::Constant->new( constant => $MATCH->{"literal"}->flat() ) }
@@ -160,9 +160,9 @@ token rule_terms {
 #          { make Rul::SpecialChar->new( char => '\\' . $0 . $1 ) }
 
         | c \[ <Perlito5::Grammar.digits> \]
-          { make Rul::Constant->new( constant => chr( $<Perlito5::Grammar.digits> ) ) }
+          { make Rul::Constant->new( constant => chr( $MATCH->{"Perlito5::Grammar.digits"} ) ) }
         | c <Perlito5::Grammar.digits>
-          { make Rul::Constant->new( constant => chr( $<Perlito5::Grammar.digits> ) ) }
+          { make Rul::Constant->new( constant => chr( $MATCH->{"Perlito5::Grammar.digits"} ) ) }
         | <any>
           #  \e  \E
           { make Rul::SpecialChar->new( char => $MATCH->{"any"}->flat() ) }

@@ -411,7 +411,7 @@ package Perlito5::Expression;
                     Call->new(
                         method    => 'postcircumfix:<{ }>',
                         invocant  => Var->new( sigil => '$', twigil => '', name => 'MATCH' ),
-                        arguments => Val::Buf->new( buf => '' . $<capture_name> ),
+                        arguments => Val::Buf->new( buf => '' . $MATCH->{"capture_name"} ),
                     ) 
                 ] }
         | <Perlito5::Precedence.op_parse>              { make $MATCH->{"Perlito5::Precedence.op_parse"}->flat()             }
@@ -439,18 +439,18 @@ package Perlito5::Expression;
           ] 
             <Perlito5::Grammar.ident>
           [ ':' <.Perlito5::Grammar.ws>? <list_parse>
-            { make [ 'postfix_or_term', 'methcall',           '' . $<Perlito5::Grammar.ident>, $MATCH->{"list_parse"}->flat() ] }
+            { make [ 'postfix_or_term', 'methcall',           '' . $MATCH->{"Perlito5::Grammar.ident"}, $MATCH->{"list_parse"}->flat() ] }
           | '(' <paren_parse> ')'
             { make [ 'postfix_or_term',
                      'methcall',
-                     '' . $<Perlito5::Grammar.ident>,
+                     '' . $MATCH->{"Perlito5::Grammar.ident"},
                      { end_block => undef,
                        exp       => $MATCH->{"paren_parse"}->flat(),
                        terminated => 0,
                      },
                    ]
             }
-          | { make [ 'postfix_or_term', 'methcall_no_params', '' . $<Perlito5::Grammar.ident> ] }
+          | { make [ 'postfix_or_term', 'methcall_no_params', '' . $MATCH->{"Perlito5::Grammar.ident"} ] }
           ]
 
         | <before <.Perlito5::Grammar.digit> >
@@ -463,8 +463,8 @@ package Perlito5::Expression;
 
           [
             <before <.Perlito5::Grammar.ws>? '=>' >   # autoquote
-            { my $namespace = '' . $<Perlito5::Grammar.optional_namespace_before_ident>;
-              my $name      = '' . $<Perlito5::Grammar.ident>;
+            { my $namespace = '' . $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"};
+              my $name      = '' . $MATCH->{"Perlito5::Grammar.ident"};
               if ($namespace) {
                 $name = $namespace . '::' . $name;
               }
@@ -473,22 +473,22 @@ package Perlito5::Expression;
 
           | <.Perlito5::Grammar.ws> <list_parse>
             { make [ 'postfix_or_term', 'funcall',
-                     '' . $<Perlito5::Grammar.optional_namespace_before_ident>,
-                     '' . $<Perlito5::Grammar.ident>, 
+                     '' . $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"},
+                     '' . $MATCH->{"Perlito5::Grammar.ident"}, 
                      $MATCH->{"list_parse"}->flat()  
                    ] 
             }
           | <before '->' >
-            { my $namespace = '' . $<Perlito5::Grammar.optional_namespace_before_ident>;
-              my $name      = '' . $<Perlito5::Grammar.ident>;
+            { my $namespace = '' . $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"};
+              my $name      = '' . $MATCH->{"Perlito5::Grammar.ident"};
               if ($namespace) {
                 $name = $namespace . '::' . $name;
               }
               make [ 'term', Proto->new( name => $name )            ]
             }
           | { make [ 'postfix_or_term', 'funcall_no_params',
-                     '' . $<Perlito5::Grammar.optional_namespace_before_ident>,
-                     '' . $<Perlito5::Grammar.ident>                  ] }
+                     '' . $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"},
+                     '' . $MATCH->{"Perlito5::Grammar.ident"}                  ] }
           ]
 
         | <Perlito5::Grammar.val_buf>    { make [ 'term', $MATCH->{"Perlito5::Grammar.val_buf"}->flat() ]  }  # 'moose'

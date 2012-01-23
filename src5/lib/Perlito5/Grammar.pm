@@ -26,7 +26,7 @@ token namespace_before_ident {
 }
 token optional_namespace_before_ident {
     | <namespace_before_ident> '::'
-        { make '' . $<namespace_before_ident> }
+        { make '' . $MATCH->{"namespace_before_ident"} }
     | ''
         { make '' }
 }
@@ -119,10 +119,10 @@ token var_ident {
     <var_sigil> <var_twigil> <optional_namespace_before_ident> <var_name>
     {
         make Var->new(
-            sigil       => '' . $<var_sigil>,
-            twigil      => '' . $<var_twigil>,
+            sigil       => '' . $MATCH->{"var_sigil"},
+            twigil      => '' . $MATCH->{"var_twigil"},
             namespace   => $MATCH->{"optional_namespace_before_ident"}->flat(),
-            name        => '' . $<var_name>,
+            name        => '' . $MATCH->{"var_name"},
         )
     }
 }
@@ -149,13 +149,13 @@ token char_any_single_quote {
 
 token single_quoted_unescape {
     |  \\ \\  <single_quoted_unescape>
-        { make "\\" . $<single_quoted_unescape> }
+        { make "\\" . $MATCH->{"single_quoted_unescape"} }
     |  \\ \'  <single_quoted_unescape>
-        { make '\'' . $<single_quoted_unescape> }
+        { make '\'' . $MATCH->{"single_quoted_unescape"} }
     |  \\   <single_quoted_unescape>
-        { make "\\" . $<single_quoted_unescape> }
+        { make "\\" . $MATCH->{"single_quoted_unescape"} }
     |  <char_any_single_quote> <single_quoted_unescape>
-        { make $<char_any_single_quote> . $<single_quoted_unescape> }
+        { make $MATCH->{"char_any_single_quote"} . $MATCH->{"single_quoted_unescape"} }
     |  ''
 }
 
@@ -168,9 +168,9 @@ token double_quoted_unescape {
     |  \\
         [  c
             [   \[ <digits> \]
-                { make chr( $<digits> ) }
+                { make chr( $MATCH->{"digits"} ) }
             |  <digits>
-                { make chr( $<digits> ) }
+                { make chr( $MATCH->{"digits"} ) }
             ]
         |  e
             { make chr(27) }
@@ -179,10 +179,10 @@ token double_quoted_unescape {
         |  t
             { make chr(9) }
         |  <char_any>
-            { make '' . $<char_any> }
+            { make '' . $MATCH->{"char_any"} }
         ]
     |  <char_any_double_quote>
-        { make '' . $<char_any_double_quote> }
+        { make '' . $MATCH->{"char_any_double_quote"} }
 }
 
 token double_quoted_buf {
@@ -197,7 +197,7 @@ token double_quoted_buf {
                    )
             }
         | <char_any>
-            { make Val::Buf->new( buf => '' . $<char_any> ) }
+            { make Val::Buf->new( buf => '' . $MATCH->{"char_any"} ) }
         ]
     | <before \@ >
         [ <before \@ <.ident> > <Perlito5::Expression.operator> 
@@ -221,7 +221,7 @@ token double_quoted_buf {
                 )
             }
         | <char_any>
-            { make Val::Buf->new( buf => '' . $<char_any> ) }
+            { make Val::Buf->new( buf => '' . $MATCH->{"char_any"} ) }
         ]
     | <double_quoted_unescape>
         { make Val::Buf->new( buf => $MATCH->{"double_quoted_unescape"}->flat() ) }
@@ -230,7 +230,7 @@ token double_quoted_buf {
 token val_buf {
     | \" <double_quoted_buf>*      \"
         {
-            my $args = $<double_quoted_buf>;
+            my $args = $MATCH->{"double_quoted_buf"};
             if (!$args) {
                 make Val::Buf->new( buf => '' )
             }
@@ -238,7 +238,7 @@ token val_buf {
                 make Apply->new(
                     namespace => '',
                     code => 'list:<.>',
-                    arguments => [ map( $_->capture, @{$<double_quoted_buf>} ) ],
+                    arguments => [ map( $_->capture, @{$MATCH->{"double_quoted_buf"}} ) ],
                 )
             }
         }
@@ -258,14 +258,14 @@ token val_int {
 token exp_stmts {
     <Perlito5::Expression.delimited_statement>*
     { 
-        make [ map( $_->capture, @{ $<Perlito5::Expression.delimited_statement> } ) ]
+        make [ map( $_->capture, @{ $MATCH->{"Perlito5::Expression.delimited_statement"} } ) ]
     }
 }
 
 token exp_stmts_no_package {
     <Perlito5::Expression.delimited_statement_no_package>*
     { 
-        make [ map( $_->capture, @{ $<Perlito5::Expression.delimited_statement_no_package> } ) ]
+        make [ map( $_->capture, @{ $MATCH->{"Perlito5::Expression.delimited_statement_no_package"} } ) ]
     }
 }
 
@@ -323,7 +323,7 @@ token token {
     \}
     {
         #say 'Token was compiled into: ', ($MATCH->{"Perlito5::Grammar::Regex.rule"}->flat())->perl;
-        my $source = $<opt_name> 
+        my $source = $MATCH->{"opt_name"} 
             . '{ ' .
                 'my $grammar = $_[0]; ' .
                 'my $str     = $_[1]; ' .

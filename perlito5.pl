@@ -76,7 +76,7 @@ package main;
     ($MATCH->{capture} = ((do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
     ($List_v = (($MATCH->{('module_name')}->flat())));
     for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
         push( @{$List_a}, $List_v->[$x] )
@@ -90,7 +90,7 @@ package main;
     ($MATCH->{capture} = ((do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
     $List_a
 })))
 })) || 1))))

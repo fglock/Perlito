@@ -806,7 +806,7 @@ package main;
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
-    push( @{$List_a}, Call->new(('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'MATCH'))), ('arguments' => Val::Buf->new(('buf' => ('' . $MATCH->{'capture_name'}))))) );
+    push( @{$List_a}, Call->new(('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'MATCH'))), ('arguments' => Val::Buf->new(('buf' => ('' . $MATCH->{('capture_name')}))))) );
     $List_a
 })))
 })) || 1))))
@@ -1073,7 +1073,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall' );
-    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
     push( @{$List_a}, $MATCH->{('list_parse')}->flat() );
     $List_a
 })))
@@ -1096,7 +1096,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall' );
-    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
     push( @{$List_a}, (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'end_block'} = undef());
@@ -1115,7 +1115,7 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'methcall_no_params' );
-    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
     $List_a
 })))
 })) || 1)))
@@ -1259,8 +1259,8 @@ package main;
     ($MATCH = $tmp);
     ($MATCH ? 1 : 0)
 })) && ((((do {
-    ((my  $namespace) = ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}));
-    ((my  $name) = ('' . $MATCH->{'Perlito5::Grammar.ident'}));
+    ((my  $namespace) = ('' . $MATCH->{('Perlito5::Grammar.optional_namespace_before_ident')}));
+    ((my  $name) = ('' . $MATCH->{('Perlito5::Grammar.ident')}));
     if (($namespace)) {
         ($name = ($namespace . '::' . $name))
     };
@@ -1299,8 +1299,8 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'funcall' );
-    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}) );
-    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.optional_namespace_before_ident')}) );
+    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
     push( @{$List_a}, $MATCH->{('list_parse')}->flat() );
     $List_a
 })))
@@ -1320,8 +1320,8 @@ package main;
     ($MATCH = $tmp);
     ($MATCH ? 1 : 0)
 })) && ((((do {
-    ((my  $namespace) = ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}));
-    ((my  $name) = ('' . $MATCH->{'Perlito5::Grammar.ident'}));
+    ((my  $namespace) = ('' . $MATCH->{('Perlito5::Grammar.optional_namespace_before_ident')}));
+    ((my  $name) = ('' . $MATCH->{('Perlito5::Grammar.ident')}));
     if (($namespace)) {
         ($name = ($namespace . '::' . $name))
     };
@@ -1341,8 +1341,8 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'postfix_or_term' );
     push( @{$List_a}, 'funcall_no_params' );
-    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}) );
-    push( @{$List_a}, ('' . $MATCH->{'Perlito5::Grammar.ident'}) );
+    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.optional_namespace_before_ident')}) );
+    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
     $List_a
 })))
 })) || 1)))
