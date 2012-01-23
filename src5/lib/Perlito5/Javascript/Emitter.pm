@@ -64,16 +64,21 @@ class Javascript {
         my $ast = shift;
         my $type = shift;
 
+        my $str_init = "''";
+        $str_init = '{}' if $type eq 'HASH';
+        $str_init = '[]' if $type eq 'ARRAY';
+        $str_init = '{}' if $type eq 'HASHREF';  # TODO use "real" reference
+        $str_init = '[]' if $type eq 'ARRAYREF'; # TODO use "real" references
+
         if (  $ast->isa('Var') ) {
             if (  $type eq 'HASH'
                && $ast->sigil eq '$'
-               && $ast->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
                )
             {
                 # $a in the expression $a{'x'}
                 $ast = Var->new( sigil => '%', twigil => $ast->twigil, namespace => $ast->namespace, name => $ast->name );
                 my $var_js = $ast->emit_javascript;
-                return 'if (' . $var_js . ' == null) { ' . $var_js . ' = {} }; ';
+                return [ 'if (' . $var_js . ' == null) { ' . $var_js . ' = ' . $str_init . ' }; ' ];
             }
             elsif ( $type eq 'ARRAY'
                && $ast->sigil eq '$'
@@ -82,16 +87,15 @@ class Javascript {
                 # $a in the expression $a[3]
                 $ast = Var->new( sigil => '@', twigil => $ast->twigil, namespace => $ast->namespace, name => $ast->name );
                 my $var_js = $ast->emit_javascript;
-                return 'if (' . $var_js . ' == null) { ' . $var_js . ' = [] }; ';
+                return [ 'if (' . $var_js . ' == null) { ' . $var_js . ' = ' . $str_init . ' }; ' ];
             }
             elsif (  $type eq 'HASHREF'
                && $ast->sigil eq '$'
-               && $ast->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
                )
             {
                 # $a in the expression $a->{'x'}
                 my $var_js = $ast->emit_javascript;
-                return 'if (' . $var_js . ' == null) { ' . $var_js . ' = {} }; ';
+                return [ 'if (' . $var_js . ' == null) { ' . $var_js . ' = ' . $str_init . ' }; ' ];
             }
             elsif ( $type eq 'ARRAYREF'
                && $ast->sigil eq '$'
@@ -99,35 +103,67 @@ class Javascript {
             {
                 # $a in the expression $a->[3]
                 my $var_js = $ast->emit_javascript;
-                return 'if (' . $var_js . ' == null) { ' . $var_js . ' = [] }; ';
+                return [ 'if (' . $var_js . ' == null) { ' . $var_js . ' = ' . $str_init . ' }; ' ];
             }
         }
         elsif ($ast->isa( 'Call' )) {
             my $var_js = $ast->emit_javascript;
             if  (  $ast->method eq 'postcircumfix:<[ ]>' ) {
                 # $a->[3]
-                return autovivify( $ast->invocant, 'ARRAYREF' )
-                 . 'if (' . $var_js . ' == null) { ' . $var_js . ' = [] }; ';
+                return [ @{ autovivify( $ast->invocant, 'ARRAYREF' ) },
+                         'if (' . $var_js . ' == null) { ' . $var_js . ' = ' . $str_init . ' }; '
+                       ];
             }
             elsif  (  $ast->method eq 'postcircumfix:<{ }>' ) {
                 # $a->{x}
-                return autovivify( $ast->invocant, 'HASHREF' )
-                 . 'if (' . $var_js . ' == null) { ' . $var_js . ' = {} }; ';
+                return [ @{ autovivify( $ast->invocant, 'HASHREF' ) },
+                         'if (' . $var_js . ' == null) { ' . $var_js . ' = ' . $str_init . ' }; '
+                       ];
             }
         }
         elsif ($ast->isa( 'Index' )) {
             my $var_js = $ast->emit_javascript;
             # $a[3][4]
-            return autovivify( $ast->obj, 'ARRAY' )
-                 . 'if (' . $var_js . ' == null) { ' . $var_js . ' = [] }; ';
+
+            my $type;
+            my $var = $ast->obj;
+
+            if (  $var->isa('Var')
+               && $var->sigil eq '$'
+               )
+            {
+                $type = 'ARRAY';
+            }
+            else {
+                $type = 'ARRAYREF';
+            }
+
+            return [ @{ autovivify( $ast->obj, $type ) },
+                     'if (' . $var_js . ' == null) { ' . $var_js . ' = ' . $str_init . ' }; '
+                   ]
         }
         elsif ($ast->isa( 'Lookup' )) {
             my $var_js = $ast->emit_javascript;
             # $a{'x'}{'y'}
-            return autovivify( $ast->obj, 'HASH' )
-                 . 'if (' . $var_js . ' == null) { ' . $var_js . ' = {} }; ';
+
+            my $type;
+            my $var = $ast->obj;
+
+            if (  $var->isa('Var')
+               && $var->sigil eq '$'
+               )
+            {
+                $type = 'HASH';
+            }
+            else {
+                $type = 'HASHREF';
+            }
+
+            return [ @{ autovivify( $var, $type ) },
+                     'if (' . $var_js . ' == null) { ' . $var_js . ' = ' . $str_init . ' }; '
+                   ]
         }
-        return '';
+        return [];
     }
 
 }
@@ -783,7 +819,9 @@ class Apply {
             if  (  $parameters->method eq 'postcircumfix:<[ ]>' ) {
                 my $str = '';
                 my $var_js = $parameters->invocant->emit_javascript;
-                $str = $str . Javascript::autovivify( $parameters, 'ARRAYREF' );
+                my $auto = Javascript::autovivify( $parameters, 'ARRAYREF' );
+                pop @$auto;
+                $str = $str . join( '', @$auto );
                 my $index_js = $parameters->arguments->emit_javascript;
                 $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
                 return Javascript::tab($level) . '(function () { ' . $str . '})()';
@@ -793,7 +831,9 @@ class Apply {
             if  (  $parameters->method eq 'postcircumfix:<{ }>' ) {
                 my $str = '';
                 my $var_js = $parameters->invocant->emit_javascript;
-                $str = $str . Javascript::autovivify( $parameters, 'HASHREF' );
+                my $auto = Javascript::autovivify( $parameters, 'ARRAYREF' );
+                pop @$auto;
+                $str = $str . join( '', @$auto );
                 my $index_js = $parameters->arguments->emit_javascript;
                 $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
                 return Javascript::tab($level) . '(function () { ' . $str . '})()';
@@ -815,7 +855,9 @@ class Apply {
             }
 
             my $var_js = $var->emit_javascript;
-            $str = $str . Javascript::autovivify( $parameters, 'HASH' );
+            my $auto = Javascript::autovivify( $parameters, 'ARRAYREF' );
+            pop @$auto;
+            $str = $str . join( '', @$auto );
             my $index_js = $parameters->index_exp->emit_javascript;
             $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
             return Javascript::tab($level) . '(function () { ' . $str . '})()';
@@ -832,7 +874,9 @@ class Apply {
             }
 
             my $var_js = $var->emit_javascript;
-            $str = $str . Javascript::autovivify( $parameters, 'ARRAY' );
+            my $auto = Javascript::autovivify( $parameters, 'ARRAYREF' );
+            pop @$auto;
+            $str = $str . join( '', @$auto );
             my $index_js = $parameters->index_exp->emit_javascript;
             $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
             return Javascript::tab($level) . '(function () { ' . $str . '})()';

@@ -81,27 +81,60 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $ast) = shift());
             ((my  $type) = shift());
+            ((my  $str_init) = (chr(39) . chr(39)));
+            if (($type eq 'HASH')) {
+                ($str_init = chr(123) . chr(125))
+            };
+            if (($type eq 'ARRAY')) {
+                ($str_init = '[]')
+            };
+            if (($type eq 'HASHREF')) {
+                ($str_init = chr(123) . chr(125))
+            };
+            if (($type eq 'ARRAYREF')) {
+                ($str_init = '[]')
+            };
             if ((Main::isa($ast, 'Var'))) {
-                if ((((($type eq 'HASH') && ($ast->sigil() eq chr(36))) && ($ast->name() ne 'MATCH')))) {
+                if (((($type eq 'HASH') && ($ast->sigil() eq chr(36))))) {
                     ($ast = Var->new(('sigil' => chr(37)), ('twigil' => $ast->twigil()), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
                     ((my  $var_js) = $ast->emit_javascript());
-                    return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                    return ((do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
+    $List_a
+}))
                 }
                 else {
                     if (((($type eq 'ARRAY') && ($ast->sigil() eq chr(36))))) {
                         ($ast = Var->new(('sigil' => chr(64)), ('twigil' => $ast->twigil()), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
                         ((my  $var_js) = $ast->emit_javascript());
-                        return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                        return ((do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
+    $List_a
+}))
                     }
                     else {
-                        if ((((($type eq 'HASHREF') && ($ast->sigil() eq chr(36))) && ($ast->name() ne 'MATCH')))) {
+                        if (((($type eq 'HASHREF') && ($ast->sigil() eq chr(36))))) {
                             ((my  $var_js) = $ast->emit_javascript());
-                            return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                            return ((do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
+    $List_a
+}))
                         }
                         else {
                             if (((($type eq 'ARRAYREF') && ($ast->sigil() eq chr(36))))) {
                                 ((my  $var_js) = $ast->emit_javascript());
-                                return (('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                                return ((do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
+    $List_a
+}))
                             }
                         }
                     }
@@ -111,28 +144,84 @@ package main;
                 if ((Main::isa($ast, 'Call'))) {
                     ((my  $var_js) = $ast->emit_javascript());
                     if ((($ast->method() eq 'postcircumfix:<[ ]>'))) {
-                        return ((autovivify($ast->invocant(), 'ARRAYREF') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                        return ((do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    ($List_v = (autovivify($ast->invocant(), 'ARRAYREF')));
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
+        push( @{$List_a}, $List_v->[$x] )
+    };
+    push( @{$List_a}, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
+    $List_a
+}))
                     }
                     else {
                         if ((($ast->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-                            return ((autovivify($ast->invocant(), 'HASHREF') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                            return ((do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    ($List_v = (autovivify($ast->invocant(), 'HASHREF')));
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
+        push( @{$List_a}, $List_v->[$x] )
+    };
+    push( @{$List_a}, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
+    $List_a
+}))
                         }
                     }
                 }
                 else {
                     if ((Main::isa($ast, 'Index'))) {
                         ((my  $var_js) = $ast->emit_javascript());
-                        return ((autovivify($ast->obj(), 'ARRAY') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' [] ' . chr(125) . chr(59) . ' '))
+                        (my  $type);
+                        ((my  $var) = $ast->obj());
+                        if (((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
+                            ($type = 'ARRAY')
+                        }
+                        else {
+                            ($type = 'ARRAYREF')
+                        };
+                        return ((do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    ($List_v = (autovivify($ast->obj(), $type)));
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
+        push( @{$List_a}, $List_v->[$x] )
+    };
+    push( @{$List_a}, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
+    $List_a
+}))
                     }
                     else {
                         if ((Main::isa($ast, 'Lookup'))) {
                             ((my  $var_js) = $ast->emit_javascript());
-                            return ((autovivify($ast->obj(), 'HASH') . 'if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . chr(123) . chr(125) . ' ' . chr(125) . chr(59) . ' '))
+                            (my  $type);
+                            ((my  $var) = $ast->obj());
+                            if (((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
+                                ($type = 'HASH')
+                            }
+                            else {
+                                ($type = 'HASHREF')
+                            };
+                            return ((do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    ($List_v = (autovivify($var, $type)));
+    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
+        push( @{$List_a}, $List_v->[$x] )
+    };
+    push( @{$List_a}, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
+    $List_a
+}))
                         }
                     }
                 }
             };
-            return ('')
+            return ((do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    $List_a
+}))
         }
     }
 
@@ -777,7 +866,9 @@ package main;
                 if ((($parameters->method() eq 'postcircumfix:<[ ]>'))) {
                     ((my  $str) = '');
                     ((my  $var_js) = $parameters->invocant()->emit_javascript());
-                    ($str = ($str . Javascript::autovivify($parameters, 'ARRAYREF')));
+                    ((my  $auto) = Javascript::autovivify($parameters, 'ARRAYREF'));
+                    pop( @{($auto)} );
+                    ($str = ($str . join('', @{($auto)})));
                     ((my  $index_js) = $parameters->arguments()->emit_javascript());
                     ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                     return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
@@ -785,7 +876,9 @@ package main;
                 if ((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
                     ((my  $str) = '');
                     ((my  $var_js) = $parameters->invocant()->emit_javascript());
-                    ($str = ($str . Javascript::autovivify($parameters, 'HASHREF')));
+                    ((my  $auto) = Javascript::autovivify($parameters, 'ARRAYREF'));
+                    pop( @{($auto)} );
+                    ($str = ($str . join('', @{($auto)})));
                     ((my  $index_js) = $parameters->arguments()->emit_javascript());
                     ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                     return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
@@ -799,7 +892,9 @@ package main;
                     ($var = Var->new(('sigil' => chr(37)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
                 };
                 ((my  $var_js) = $var->emit_javascript());
-                ($str = ($str . Javascript::autovivify($parameters, 'HASH')));
+                ((my  $auto) = Javascript::autovivify($parameters, 'ARRAYREF'));
+                pop( @{($auto)} );
+                ($str = ($str . join('', @{($auto)})));
                 ((my  $index_js) = $parameters->index_exp()->emit_javascript());
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                 return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
@@ -811,7 +906,9 @@ package main;
                     ($var = Var->new(('sigil' => chr(64)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
                 };
                 ((my  $var_js) = $var->emit_javascript());
-                ($str = ($str . Javascript::autovivify($parameters, 'ARRAY')));
+                ((my  $auto) = Javascript::autovivify($parameters, 'ARRAYREF'));
+                pop( @{($auto)} );
+                ($str = ($str . join('', @{($auto)})));
                 ((my  $index_js) = $parameters->index_exp()->emit_javascript());
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                 return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
