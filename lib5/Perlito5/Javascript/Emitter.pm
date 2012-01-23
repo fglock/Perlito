@@ -48,7 +48,7 @@ package main;
             };
             for my $i ( @{(bless [0 .. (length($s) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
-                if (((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c}))) {
+                if ((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c})))) {
                     ($tmp = ($tmp . $c))
                 }
                 else {
@@ -275,7 +275,7 @@ package main;
                 }
             };
             for my $decl ( @{$List_body} ) {
-                if (((defined($decl) && (!(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my'))))))))) && (!((Main::isa($decl, 'Sub')))))) {
+                if ((((defined($decl) && (!(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my'))))))))) && (!((Main::isa($decl, 'Sub'))))))) {
                     ($str = ($str . ($decl)->emit_javascript_indented(($level + 1)) . (chr(59) . chr(10))))
                 }
             };
@@ -285,7 +285,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $comp_units) = shift());
             ((my  $str) = '');
-            for my $comp_unit ( @{(($comp_units))} ) {
+            for my $comp_unit ( @{($comp_units)} ) {
                 ($str = ($str . $comp_unit->emit_javascript() . (chr(10))))
             };
             return ($str)
@@ -474,7 +474,7 @@ package main;
             if (($self->{namespace})) {
                 ($ns = (Main::to_javascript_namespace($self->{namespace}) . '.'))
             };
-            ((($self->{twigil} eq '.')) ? (('v_self.v_' . $self->{name} . '')) : (((($self->{name} eq 'MATCH')) ? (($table->{$self->{sigil}} . 'MATCH')) : (($table->{$self->{sigil}} . $ns . $self->{name})))))
+            ((($self->{twigil} eq '.')) ? (('v_self.v_' . $self->{name} . '')) : (($table->{$self->{sigil}} . $ns . $self->{name})))
         };
         sub plain_name {
             my $List__ = bless \@_, "ARRAY";
@@ -704,6 +704,9 @@ package main;
             };
             if ((($code eq 'infix:<+>'))) {
                 return ((Javascript::escape_function('add') . '(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')'))
+            };
+            if ((($code eq 'prefix:<+>'))) {
+                return (('(' . $self->{arguments}->[0]->emit_javascript() . ')'))
             };
             if ((($code eq 'infix:<..>'))) {
                 return (('(function (a) ' . chr(123) . ' ' . 'for (var i' . chr(61) . $self->{arguments}->[0]->emit_javascript() . ', l' . chr(61) . $self->{arguments}->[1]->emit_javascript() . chr(59) . ' ' . 'i<' . chr(61) . 'l' . chr(59) . ' ++i)' . chr(123) . ' ' . 'a.push(i) ' . chr(125) . chr(59) . ' ' . 'return a ' . chr(125) . ')([])'))

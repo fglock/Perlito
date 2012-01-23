@@ -22,7 +22,7 @@ sub new {
     say +( "1"   ? "" : "not " ), "ok 8";
     say +( "aaa" ? "" : "not " ), "ok 9";
 
-    say +( []    ? "" : "not" ), "ok 10 - array";
+    say +( []    ? "" : "not " ), "ok 10 - array";
     say +( ["x"] ? "" : "not " ), "ok 11";
     do {
         my @a;
@@ -35,7 +35,7 @@ sub new {
         my $b;
         say +( $b    ? "not " : "" ), "ok 14 - scalar";
         $b = [];
-        say +( $b    ? "" : "not" ), "ok 15";
+        say +( $b    ? "" : "not " ), "ok 15";
         $b = ["aaa"];
         say +( $b    ? "" : "not " ), "ok 16";
     }
@@ -71,7 +71,7 @@ sub new {
     say "ok 28" or die "not ok 28";
 
     my $h = {}; 
-    say +( $h ? "" : "not" ), "ok 29 - hash in scalar";
+    say +( $h ? "" : "not " ), "ok 29 - hash in scalar";
     $h->{'x'} = 0;
     say +( $h ? "" : "not " ), "ok 30";
 

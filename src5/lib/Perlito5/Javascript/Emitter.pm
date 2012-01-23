@@ -32,10 +32,11 @@ class Javascript {
         return "''" if $s eq '';
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
-            if     (($c ge 'a') && ($c le 'z'))
+            if  (  (($c ge 'a') && ($c le 'z'))
                 || (($c ge 'A') && ($c le 'Z'))
                 || (($c ge '0') && ($c le '9'))
-                || exists( %safe_char{$c} )
+                || exists( $safe_char{$c} )
+                )
             {
                 $tmp = $tmp . $c;
             }
@@ -55,7 +56,7 @@ class Javascript {
 
     sub escape_function {
         my $s = shift;
-        return 'f_' . $s if exists %reserved{$s};
+        return 'f_' . $s if exists $reserved{$s};
         return $s;
     }
 
@@ -248,7 +249,7 @@ class CompUnit {
                     push @stmts, $.body->[$i];
                     $i++;
                 }
-                push @body, CompUnit->new( name => $name, body => @stmts );
+                push @body, CompUnit->new( name => $name, body => \@stmts );
             }
             else {
                 push @body, $stmt;
@@ -310,9 +311,10 @@ class CompUnit {
             }
         }
         for my $decl ( @body ) {
-            if    defined( $decl )
+            if (  defined( $decl )
                && (!( $decl->isa( 'Decl' ) && (( $decl->decl eq 'has' ) || ( $decl->decl eq 'my' )) ))
                && (!( $decl->isa( 'Sub')))
+               )
             {
                 $str = $str . ($decl)->emit_javascript_indented( $level + 1 ) . ";\n";
             }
@@ -323,7 +325,7 @@ class CompUnit {
     sub emit_javascript_program {
         my $comp_units = shift;
         my $str = '';
-        for my $comp_unit ( @($comp_units) ) {
+        for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_javascript() . "\n";
         }
         return $str;
@@ -449,10 +451,7 @@ class Var {
         }
            ( $.twigil eq '.' )
         ?  ( 'v_self.v_' . $.name . '' )
-        :  (    ( $.name eq 'MATCH' )
-           ?    ( $table->{$.sigil} . 'MATCH' )
-           :    ( $table->{$.sigil} . $ns . $.name )
-           )
+        :  ( $table->{$.sigil} . $ns . $.name )
     }
     sub plain_name {
         my $self = shift;
@@ -610,7 +609,7 @@ class Apply {
         if ($code eq 'infix:<=>>') {
             return Javascript::tab($level) . join(', ', map( $_->emit_javascript, @{$.arguments} ))
         }
-        if (exists %op_infix_js{$code}) {
+        if (exists $op_infix_js{$code}) {
             return Javascript::tab($level) . '(' 
                 . join( $op_infix_js{$code}, map( $_->emit_javascript, @{$.arguments} ))
                 . ')'
@@ -689,6 +688,7 @@ class Apply {
         }
 
         if ($code eq 'infix:<+>')  { return Javascript::escape_function('add') . '('  . join(', ', map( $_->emit_javascript, @{$.arguments} ))  . ')' }
+        if ($code eq 'prefix:<+>') { return '('  . $.arguments->[0]->emit_javascript()  . ')' }
 
         if ($code eq 'infix:<..>') {
             return '(function (a) { '
@@ -760,7 +760,7 @@ class Apply {
         if ($.namespace) {
             $code = Main::to_javascript_namespace($.namespace) . '.' . Javascript::escape_function( $code );
         }
-        elsif (!exists( %op_global_js{$code} )) {
+        elsif (!exists( $op_global_js{$code} )) {
             $code = 'v__NAMESPACE.' . Javascript::escape_function( $code );
         }
         else {
