@@ -404,16 +404,6 @@ package Perlito5::Expression;
                     { make [ 'op',          '?? !!', $MATCH->{"ternary5_parse"}->flat()  ] }
         | <Perlito5::Grammar.var_ident>                { make [ 'term', $MATCH->{"Perlito5::Grammar.var_ident"}->flat()   ] }
 
-        # XXX Perl6
-        | '$<' <capture_name> '>'
-            { make [ 
-                    'term', 
-                    Call->new(
-                        method    => 'postcircumfix:<{ }>',
-                        invocant  => Var->new( sigil => '$', twigil => '', name => 'MATCH' ),
-                        arguments => Val::Buf->new( buf => '' . $MATCH->{"capture_name"} ),
-                    ) 
-                ] }
         | <Perlito5::Precedence.op_parse>              { make $MATCH->{"Perlito5::Precedence.op_parse"}->flat()             }
 
         | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>

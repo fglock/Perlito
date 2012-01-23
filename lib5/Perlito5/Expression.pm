@@ -427,7 +427,7 @@ package main;
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = (((do {
     ((my  $pos1) = $MATCH->to());
-    (((((((((((((((((((((((do {
+    ((((((((((((((((((((((do {
     ((((((do {
     ((my  $m2) = Perlito5::Grammar->var_sigil($str, $MATCH->to()));
     if (($m2)) {
@@ -786,27 +786,6 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
     push( @{$List_a}, $MATCH->{('Perlito5::Grammar.var_ident')}->flat() );
-    $List_a
-})))
-})) || 1))))
-}))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((((((chr(36) . '<' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && ((do {
-    ((my  $m2) = $grammar->capture_name($str, $MATCH->to()));
-    if (($m2)) {
-        (($MATCH)->{to} = $m2->to());
-        ($MATCH->{'capture_name'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((('>' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((((do {
-    ($MATCH->{capture} = ((do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, 'term' );
-    push( @{$List_a}, Call->new(('method' => 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'MATCH'))), ('arguments' => Val::Buf->new(('buf' => ('' . $MATCH->{('capture_name')}))))) );
     $List_a
 })))
 })) || 1))))
