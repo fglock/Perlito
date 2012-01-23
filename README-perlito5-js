@@ -1,0 +1,42 @@
+Perlito5 Data model Overview
+
+method call
+- native
+
+subroutine call 
+- same as a method call, but the first argument is set to "CallSub"
+- TODO move "CallSub" to last argument 
+
+Hash
+- native {}
+
+Array
+- native []
+
+Scalar
+- native
+
+HashRef
+- native {} with prototype "HashRef"
+
+ArrayRef
+- TODO
+
+Object
+- native {} with prototype set to the class
+
+Class
+- TODO
+
+Namespace
+- TODO
+
+Calling context ("wantarray", caller)
+- TODO
+
+Alias
+- TODO
+
+List (eg. subroutine return value)
+- native []
+
