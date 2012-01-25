@@ -28,19 +28,19 @@ if (typeof CallSub !== 'object') {
 
 function HashRef(o) {
     this._hash_ = o;
-    this.ref = function() { return 'HASH' };
+    this._ref_ = 'HASH';
     this.bool = function() { return 1 };
 }
 
 function ArrayRef(o) {
     this._array_ = o;
-    this.ref = function() { return 'ARRAY' };
+    this._ref_ = 'ARRAY';
     this.bool = function() { return 1 };
 }
 
 function ScalarRef(o) {
     this._scalar_ = o;
-    this.ref = function() { return 'SCALAR' };
+    this._ref_ = 'SCALAR';
     this.bool = function() { return 1 };
 }
 
@@ -91,16 +91,22 @@ if (typeof Perlito5$Runtime !== 'object') {
 
 // TODO - this belongs to the CORE package
 ref = function(o) {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
     if (o == null) {
         return '';
     }
-    if (typeof o.__proto__.ref === 'function') {
+    var vv = o.__proto__.ref;
+    if (typeof vv === 'string') {
         // blessed reference
-        return o.__proto__.ref.call(o);
+        return vv;
     }
-    if (typeof o.ref === 'function') {
+    if (typeof o._ref_ === 'string') {
         // un-blessed reference
-        return o.ref();
+        return o._ref_;
     }
     if (typeof o === 'object' && (o instanceof Array)) {
         return 'ARRAY';

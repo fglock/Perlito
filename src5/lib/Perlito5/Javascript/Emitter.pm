@@ -290,8 +290,8 @@ class CompUnit {
             . 'if (typeof ' . $class_name . ' !== \'object\') {' . "\n"
             . '  ' . $class_name . ' = function() {};' . "\n"
             . '  ' . $class_name . ' = new ' . $class_name . ';' . "\n"
-            . '  ' . $class_name . '.' . ('isa') . ' = function (s) { return s == \'' . $.name . '\'; };' . "\n"
-            . '  ' . $class_name . '.' . ('ref') . ' = function (s) { return \'' . $.name . '\'; };' . "\n"
+            . '  ' . $class_name . '.isa = function (s) { return s == \'' . $.name . '\'; };' . "\n"
+            . '  ' . $class_name . '._ref_ = \'' . $.name . '\';' . "\n"
             . '}' . "\n"
             . '(function () {' . "\n"
             . '  var v__NAMESPACE = ' . $class_name . ';' . "\n";
