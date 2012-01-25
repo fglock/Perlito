@@ -655,7 +655,6 @@ package main;
 }));
         ((my  $Hash_op_global_js = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'bless'} = 1);
     ($Hash_a->{'ref'} = 1);
     $Hash_a
 }));

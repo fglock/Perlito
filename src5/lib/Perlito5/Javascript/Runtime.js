@@ -157,7 +157,7 @@ CORE.warn = function() {
     CORE.print("Warning: " + s + "\n");
 };
 
-bless = function(o, class_name) {
+CORE.bless = function(callsub, o, class_name) {
     try {
         o.__proto__ = eval(class_name);
     }

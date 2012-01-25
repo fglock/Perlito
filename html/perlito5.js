@@ -158,7 +158,7 @@ CORE.warn = function() {
     CORE.print("Warning: " + s + "\n");
 };
 
-bless = function(o, class_name) {
+CORE.bless = function(callsub, o, class_name) {
     try {
         o.__proto__ = eval(class_name);
     }
@@ -2994,7 +2994,6 @@ if (typeof Apply !== 'object') {
                 (Hash_op_global_js = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( (function () { 
     var Hash_a = {};
 
-    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['bless']  = 1); })();
     (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['ref']  = 1); })();
     return(Hash_a);
 })()));
@@ -3591,7 +3590,7 @@ if (typeof Perlito5$Precedence !== 'object') {
                     var v_class = null;
 
                     (v_class = CORE.shift(List__));
-                    return(bless((function () { 
+                    return((v__NAMESPACE.hasOwnProperty("bless") ? v__NAMESPACE.bless : CORE.bless)(CallSub, (function () { 
     var Hash_a = {};
 
     (function () { 

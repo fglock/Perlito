@@ -578,21 +578,6 @@ class Apply {
     );
 
     my %op_global_js = (
-        #'index'   => 1,
-        #'die'     => 1,
-        #'unshift' => 1,
-        #'push'    => 1,
-        #'pop'     => 1,
-        #'join'    => 1,
-        #'chr'     => 1,
-        # 'say'     => 1,
-        'bless'   => 1,
-        # 'print'   => 1,
-        #'warn'    => 1,
-        #'scalar'  => 1,
-        #'keys'    => 1,
-        #'values'  => 1,
-        #'length'  => 1,
         'ref'     => 1,
     );
 
