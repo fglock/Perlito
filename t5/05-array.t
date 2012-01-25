@@ -2,7 +2,7 @@ use v5;
 use strict;
 use feature 'say';
 
-say '1..15';
+say '1..17';
 my @a;
 say 'ok 1 - create array';
 $a[1] = 3;
@@ -71,3 +71,11 @@ print 'not '
     unless $x14[1] == 5;
 say "ok 15 - array copy";
 
+push @x14, 7;
+print 'not '
+    unless $x14[2] == 7;
+say "ok 16 - array push";
+
+print 'not '
+    unless ref( \@x14 ) eq 'ARRAY';
+say "ok 17 - ref is ARRAY";
