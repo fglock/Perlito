@@ -113,7 +113,7 @@ package main;
     if ((!((defined($otherwise))))) {
         die(('Missing code block in ' . chr(39) . 'else' . chr(39)))
     };
-    if ((Main::isa($otherwise, 'Lit::Hash'))) {
+    if (((ref($otherwise) eq 'Lit::Hash'))) {
         ($otherwise = Lit::Block->new(('stmts' => $otherwise->hash1())))
     };
     (($MATCH)->{capture} = If->new(('cond' => ($MATCH->{('exp')}->flat())->{'exp'}), ('body' => $body), ('otherwise' => $otherwise)))

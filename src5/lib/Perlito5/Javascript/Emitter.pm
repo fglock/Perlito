@@ -263,13 +263,13 @@ class CompUnit {
         my $i = 0;
         while ( $i <= scalar @{$.body} ) {
             my $stmt = $.body->[$i];
-            if ( $stmt->isa( 'Apply' ) && $stmt->code eq 'package' ) {
+            if ( ref($stmt) eq 'Apply' && $stmt->code eq 'package' ) {
                 # found an inner package
                 my $name = $stmt->namespace;
                 my @stmts;
                 $i++;
                 while (  $i <= scalar( @{$.body} )
-                      && !( $.body->[$i]->isa( 'Apply' ) && $.body->[$i]->code eq 'package' )
+                      && !( ref($.body->[$i]) eq 'Apply' && $.body->[$i]->code eq 'package' )
                       )
                 {
                     push @stmts, $.body->[$i];
@@ -278,7 +278,8 @@ class CompUnit {
                 push @body, CompUnit->new( name => $name, body => \@stmts );
             }
             else {
-                push @body, $stmt;
+                push @body, $stmt
+                    if defined $stmt;  # TODO find where undefined stmts come from
                 $i++;
             }
         }
@@ -499,10 +500,6 @@ class Proto {
 
 class Call {
 
-    my %method_js = (
-        'isa'    => 'isa',
-    );
-
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -530,13 +527,6 @@ class Call {
                 .   'tmp.__proto__ = ' . Main::to_javascript_namespace($invocant) . '; '
                 .   'return tmp; '
                 . '})()'
-        }
-
-        if (exists( %method_js{ $.method } )) {
-            return ( $.method ) . '('
-                    . $invocant
-                    . ( @{$.arguments} ? ', ' . join(', ', map( $_->emit_javascript, @{$.arguments} )) : '' )
-                . ')';
         }
 
         my $meth = $.method;

@@ -29,7 +29,7 @@ token if {
             if (!(defined($otherwise))) {
                 die "Missing code block in 'else'";
             }
-            if ($otherwise->isa('Lit::Hash')) {
+            if (ref($otherwise) eq 'Lit::Hash') {
                 $otherwise = Lit::Block->new( stmts => $otherwise->hash1 );
             }
             $MATCH->capture = If->new(

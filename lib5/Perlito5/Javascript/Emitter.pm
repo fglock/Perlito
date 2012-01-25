@@ -311,18 +311,20 @@ package main;
             ((my  $i) = 0);
             for ( ; (($i <= scalar( @{($self->{body})} )));  ) {
                 ((my  $stmt) = $self->{body}->[$i]);
-                if (((Main::isa($stmt, 'Apply') && ($stmt->code() eq 'package')))) {
+                if ((((ref($stmt) eq 'Apply') && ($stmt->code() eq 'package')))) {
                     ((my  $name) = $stmt->namespace());
                     (my  $List_stmts = bless [], 'ARRAY');
                     ($i)++;
-                    for ( ; ((($i <= scalar( @{($self->{body})} )) && !(((Main::isa($self->{body}->[$i], 'Apply') && ($self->{body}->[$i]->code() eq 'package'))))));  ) {
+                    for ( ; ((($i <= scalar( @{($self->{body})} )) && !((((ref($self->{body}->[$i]) eq 'Apply') && ($self->{body}->[$i]->code() eq 'package'))))));  ) {
                         push( @{$List_stmts}, $self->{body}->[$i] );
                         ($i)++
                     };
                     push( @{$List_body}, CompUnit->new(('name' => $name), ('body' => $List_stmts)) )
                 }
                 else {
-                    push( @{$List_body}, $stmt );
+                    if (defined($stmt)) {
+                        push( @{$List_body}, $stmt )
+                    };
                     ($i)++
                 }
             };
@@ -582,11 +584,6 @@ package main;
     {
     package Call;
         sub new { shift; bless { @_ }, "Call" }
-        ((my  $Hash_method_js = bless {}, 'HASH') = (do {
-    (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'isa'} = 'isa');
-    $Hash_a
-}));
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -611,9 +608,6 @@ package main;
                     }
                 };
                 return (('(function () ' . chr(123) . ' ' . 'if (' . Main::to_javascript_namespace($invocant) . '.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ) ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . join(',', @{($str)}) . chr(125) . chr(59) . ' ' . 'tmp.__proto__ ' . chr(61) . ' ' . Main::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
-            };
-            if ((exists($Hash_method_js->{$self->{method}}))) {
-                return ((($self->{method}) . '(' . $invocant . ((($self->{arguments}) ? (', ' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]})) : '')) . ')'))
             };
             ((my  $meth) = $self->{method});
             if ((($self->{method} eq 'postcircumfix:<[ ]>'))) {

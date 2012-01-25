@@ -323,23 +323,6 @@ perl = function(o) {
     return '{' + out.join(", ") + '}';
 };
 
-isa = function(o, s) {
-    if (o == null) {
-        return false;
-    }
-    if (typeof o.isa === 'function') {
-        return o.isa(s);
-    }
-    switch (typeof o) {
-        case "string": return (s == 'Str');
-        case "number": return (s == 'Num');
-    }
-    if (s == 'Array' && typeof o === 'object' && (o instanceof Array)) {
-        return (1);
-    }
-    return false;
-};
-
 string = function(o) {
     if (o == null) {
         return "";
