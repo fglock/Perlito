@@ -13,8 +13,6 @@ TODO list for Perlito5
 
 -- add "require"
 
--- add "CORE" namespace
-
 
 * source code - remove Perl 6 code 
 
@@ -47,9 +45,11 @@ TODO list for Perlito5
 
 -- scalar references not implemented
 
--- bug: autovivification generates more code than needed
-
 -- generate more compact code; maybe use more subroutines instead of inlining
+
+-- TODO move "CallSub" to last argument in order to get some more compatibility with native js
+
+-- TODO move ref() to the CORE package
 
 
 * Python backend

@@ -5,7 +5,6 @@ method call
 
 subroutine call 
 - same as a method call, but the first argument is set to "CallSub"
-- TODO move "CallSub" to last argument 
 
 Hash
 - native {}
@@ -22,11 +21,13 @@ HashRef
 ArrayRef
 - TODO
 
+ScalarRef
+- TODO
+
 Object
 - native {} with prototype set to the class
 
 Class
-- _ref_ is string containing the class name
 - TODO
 
 Namespace
