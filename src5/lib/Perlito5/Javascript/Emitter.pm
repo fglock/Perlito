@@ -577,10 +577,6 @@ class Apply {
         'infix:<!=>' => ' != ',
     );
 
-    my %op_global_js = (
-        'ref'     => 1,
-    );
-
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -749,17 +745,12 @@ class Apply {
         if ($.namespace) {
             $code = Perlito5::Runtime::to_javascript_namespace($.namespace) . '.' . ( $code );
         }
-        elsif (!exists( $op_global_js{$code} )) {
+        else {
             $code = 
                   '(v__NAMESPACE.hasOwnProperty("' . ( $code ) . '") '
                 . '? v__NAMESPACE.' . ( $code ) . ' '
                 . ': CORE.' . ( $code )
                 . ')'
-        }
-        else {
-            # XXX Obsolete - %op_global_js should go away
-            $code = ( $.code );
-            return Javascript::tab($level) . $code . '(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . ')';
         }
         my @args = 'CallSub';
         push @args, $_->emit_javascript

@@ -653,11 +653,6 @@ package main;
     ($Hash_a->{'infix:<' . chr(33) . chr(61) . '>'} = ' ' . chr(33) . chr(61) . ' ');
     $Hash_a
 }));
-        ((my  $Hash_op_global_js = bless {}, 'HASH') = (do {
-    (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'ref'} = 1);
-    $Hash_a
-}));
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -798,13 +793,7 @@ package main;
                 ($code = (Perlito5::Runtime::to_javascript_namespace($self->{namespace}) . '.' . ($code)))
             }
             else {
-                if ((!(exists($Hash_op_global_js->{$code})))) {
-                    ($code = ('(v__NAMESPACE.hasOwnProperty(' . chr(34) . ($code) . chr(34) . ') ' . chr(63) . ' v__NAMESPACE.' . ($code) . ' ' . ': CORE.' . ($code) . ')'))
-                }
-                else {
-                    ($code = ($self->{code}));
-                    return ((Javascript::tab($level) . $code . '(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')'))
-                }
+                ($code = ('(v__NAMESPACE.hasOwnProperty(' . chr(34) . ($code) . chr(34) . ') ' . chr(63) . ' v__NAMESPACE.' . ($code) . ' ' . ': CORE.' . ($code) . ')'))
             };
             ((my  $List_args = bless [], 'ARRAY') = (do {
     (my  $List_a = bless [], 'ARRAY');

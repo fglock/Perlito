@@ -29,19 +29,19 @@ if (typeof CallSub !== 'object') {
 
 function HashRef(o) {
     this._hash_ = o;
-    this.ref = function() { return 'HASH' };
+    this._ref_ = 'HASH';
     this.bool = function() { return 1 };
 }
 
 function ArrayRef(o) {
     this._array_ = o;
-    this.ref = function() { return 'ARRAY' };
+    this._ref_ = 'ARRAY';
     this.bool = function() { return 1 };
 }
 
 function ScalarRef(o) {
     this._scalar_ = o;
-    this.ref = function() { return 'SCALAR' };
+    this._ref_ = 'SCALAR';
     this.bool = function() { return 1 };
 }
 
@@ -89,31 +89,6 @@ if (typeof Perlito5$Runtime !== 'object') {
         return out.join(", ");
     };
 })();
-
-// TODO - this belongs to the CORE package
-ref = function(o) {
-    if (o == null) {
-        return '';
-    }
-    if (typeof o.__proto__.ref === 'function') {
-        // blessed reference
-        return o.__proto__.ref.call(o);
-    }
-    if (typeof o.ref === 'function') {
-        // un-blessed reference
-        return o.ref();
-    }
-    if (typeof o === 'object' && (o instanceof Array)) {
-        return 'ARRAY';
-    }
-    switch (typeof o) {
-        case "string": return '';
-        case "function": return 'CODE';
-        case "number": return '';
-        case "boolean": return '';
-    }
-    return '';
-};
 
 // XXX this doesn't belong here
 Array.prototype.grep = function grep(f) {
@@ -567,6 +542,35 @@ CORE.length = function() {
     return o.length;
 };
 
+CORE.ref = function(o) {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
+    if (o == null) {
+        return '';
+    }
+    var vv = o.__proto__.ref;
+    if (typeof vv === 'string') {
+        // blessed reference
+        return vv;
+    }
+    if (typeof o._ref_ === 'string') {
+        // un-blessed reference
+        return o._ref_;
+    }
+    if (typeof o === 'object' && (o instanceof Array)) {
+        return 'ARRAY';
+    }
+    switch (typeof o) {
+        case "string": return '';
+        case "function": return 'CODE';
+        case "number": return '';
+        case "boolean": return '';
+    }
+    return '';
+};
 
 
 // class main
@@ -574,7 +578,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -585,7 +589,7 @@ if (typeof Perlito5$Match !== 'object') {
   Perlito5$Match = function() {};
   Perlito5$Match = new Perlito5$Match;
   Perlito5$Match.isa = function (s) { return s == 'Perlito5::Match'; };
-  Perlito5$Match.ref = function (s) { return 'Perlito5::Match'; };
+  Perlito5$Match._ref_ = 'Perlito5::Match';
 }
 (function () {
   var v__NAMESPACE = Perlito5$Match;
@@ -710,7 +714,7 @@ if (typeof Perlito5 !== 'object') {
   Perlito5 = function() {};
   Perlito5 = new Perlito5;
   Perlito5.isa = function (s) { return s == 'Perlito5'; };
-  Perlito5.ref = function (s) { return 'Perlito5'; };
+  Perlito5._ref_ = 'Perlito5';
 }
 (function () {
   var v__NAMESPACE = Perlito5;
@@ -747,7 +751,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -758,7 +762,7 @@ if (typeof CompUnit !== 'object') {
   CompUnit = function() {};
   CompUnit = new CompUnit;
   CompUnit.isa = function (s) { return s == 'CompUnit'; };
-  CompUnit.ref = function (s) { return 'CompUnit'; };
+  CompUnit._ref_ = 'CompUnit';
 }
 (function () {
   var v__NAMESPACE = CompUnit;
@@ -775,7 +779,7 @@ if (typeof Val$Int !== 'object') {
   Val$Int = function() {};
   Val$Int = new Val$Int;
   Val$Int.isa = function (s) { return s == 'Val::Int'; };
-  Val$Int.ref = function (s) { return 'Val::Int'; };
+  Val$Int._ref_ = 'Val::Int';
 }
 (function () {
   var v__NAMESPACE = Val$Int;
@@ -789,7 +793,7 @@ if (typeof Val$Bit !== 'object') {
   Val$Bit = function() {};
   Val$Bit = new Val$Bit;
   Val$Bit.isa = function (s) { return s == 'Val::Bit'; };
-  Val$Bit.ref = function (s) { return 'Val::Bit'; };
+  Val$Bit._ref_ = 'Val::Bit';
 }
 (function () {
   var v__NAMESPACE = Val$Bit;
@@ -803,7 +807,7 @@ if (typeof Val$Num !== 'object') {
   Val$Num = function() {};
   Val$Num = new Val$Num;
   Val$Num.isa = function (s) { return s == 'Val::Num'; };
-  Val$Num.ref = function (s) { return 'Val::Num'; };
+  Val$Num._ref_ = 'Val::Num';
 }
 (function () {
   var v__NAMESPACE = Val$Num;
@@ -817,7 +821,7 @@ if (typeof Val$Buf !== 'object') {
   Val$Buf = function() {};
   Val$Buf = new Val$Buf;
   Val$Buf.isa = function (s) { return s == 'Val::Buf'; };
-  Val$Buf.ref = function (s) { return 'Val::Buf'; };
+  Val$Buf._ref_ = 'Val::Buf';
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
@@ -831,7 +835,7 @@ if (typeof Lit$Block !== 'object') {
   Lit$Block = function() {};
   Lit$Block = new Lit$Block;
   Lit$Block.isa = function (s) { return s == 'Lit::Block'; };
-  Lit$Block.ref = function (s) { return 'Lit::Block'; };
+  Lit$Block._ref_ = 'Lit::Block';
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
@@ -848,7 +852,7 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
-  Lit$Array.ref = function (s) { return 'Lit::Array'; };
+  Lit$Array._ref_ = 'Lit::Array';
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -862,7 +866,7 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
-  Lit$Hash.ref = function (s) { return 'Lit::Hash'; };
+  Lit$Hash._ref_ = 'Lit::Hash';
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -876,7 +880,7 @@ if (typeof Index !== 'object') {
   Index = function() {};
   Index = new Index;
   Index.isa = function (s) { return s == 'Index'; };
-  Index.ref = function (s) { return 'Index'; };
+  Index._ref_ = 'Index';
 }
 (function () {
   var v__NAMESPACE = Index;
@@ -893,7 +897,7 @@ if (typeof Lookup !== 'object') {
   Lookup = function() {};
   Lookup = new Lookup;
   Lookup.isa = function (s) { return s == 'Lookup'; };
-  Lookup.ref = function (s) { return 'Lookup'; };
+  Lookup._ref_ = 'Lookup';
 }
 (function () {
   var v__NAMESPACE = Lookup;
@@ -910,7 +914,7 @@ if (typeof Var !== 'object') {
   Var = function() {};
   Var = new Var;
   Var.isa = function (s) { return s == 'Var'; };
-  Var.ref = function (s) { return 'Var'; };
+  Var._ref_ = 'Var';
 }
 (function () {
   var v__NAMESPACE = Var;
@@ -933,7 +937,7 @@ if (typeof Proto !== 'object') {
   Proto = function() {};
   Proto = new Proto;
   Proto.isa = function (s) { return s == 'Proto'; };
-  Proto.ref = function (s) { return 'Proto'; };
+  Proto._ref_ = 'Proto';
 }
 (function () {
   var v__NAMESPACE = Proto;
@@ -947,7 +951,7 @@ if (typeof Call !== 'object') {
   Call = function() {};
   Call = new Call;
   Call.isa = function (s) { return s == 'Call'; };
-  Call.ref = function (s) { return 'Call'; };
+  Call._ref_ = 'Call';
 }
 (function () {
   var v__NAMESPACE = Call;
@@ -967,7 +971,7 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
-  Apply.ref = function (s) { return 'Apply'; };
+  Apply._ref_ = 'Apply';
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -987,7 +991,7 @@ if (typeof If !== 'object') {
   If = function() {};
   If = new If;
   If.isa = function (s) { return s == 'If'; };
-  If.ref = function (s) { return 'If'; };
+  If._ref_ = 'If';
 }
 (function () {
   var v__NAMESPACE = If;
@@ -1007,7 +1011,7 @@ if (typeof While !== 'object') {
   While = function() {};
   While = new While;
   While.isa = function (s) { return s == 'While'; };
-  While.ref = function (s) { return 'While'; };
+  While._ref_ = 'While';
 }
 (function () {
   var v__NAMESPACE = While;
@@ -1030,7 +1034,7 @@ if (typeof For !== 'object') {
   For = function() {};
   For = new For;
   For.isa = function (s) { return s == 'For'; };
-  For.ref = function (s) { return 'For'; };
+  For._ref_ = 'For';
 }
 (function () {
   var v__NAMESPACE = For;
@@ -1047,7 +1051,7 @@ if (typeof Decl !== 'object') {
   Decl = function() {};
   Decl = new Decl;
   Decl.isa = function (s) { return s == 'Decl'; };
-  Decl.ref = function (s) { return 'Decl'; };
+  Decl._ref_ = 'Decl';
 }
 (function () {
   var v__NAMESPACE = Decl;
@@ -1067,7 +1071,7 @@ if (typeof Sig !== 'object') {
   Sig = function() {};
   Sig = new Sig;
   Sig.isa = function (s) { return s == 'Sig'; };
-  Sig.ref = function (s) { return 'Sig'; };
+  Sig._ref_ = 'Sig';
 }
 (function () {
   var v__NAMESPACE = Sig;
@@ -1087,7 +1091,7 @@ if (typeof Sub !== 'object') {
   Sub = function() {};
   Sub = new Sub;
   Sub.isa = function (s) { return s == 'Sub'; };
-  Sub.ref = function (s) { return 'Sub'; };
+  Sub._ref_ = 'Sub';
 }
 (function () {
   var v__NAMESPACE = Sub;
@@ -1107,7 +1111,7 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
-  Do.ref = function (s) { return 'Do'; };
+  Do._ref_ = 'Do';
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -1121,7 +1125,7 @@ if (typeof Use !== 'object') {
   Use = function() {};
   Use = new Use;
   Use.isa = function (s) { return s == 'Use'; };
-  Use.ref = function (s) { return 'Use'; };
+  Use._ref_ = 'Use';
 }
 (function () {
   var v__NAMESPACE = Use;
@@ -1137,7 +1141,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -1150,7 +1154,7 @@ if (typeof Javascript !== 'object') {
   Javascript = function() {};
   Javascript = new Javascript;
   Javascript.isa = function (s) { return s == 'Javascript'; };
-  Javascript.ref = function (s) { return 'Javascript'; };
+  Javascript._ref_ = 'Javascript';
 }
 (function () {
   var v__NAMESPACE = Javascript;
@@ -1455,7 +1459,7 @@ if (typeof Perlito5$Javascript$LexicalBlock !== 'object') {
   Perlito5$Javascript$LexicalBlock = function() {};
   Perlito5$Javascript$LexicalBlock = new Perlito5$Javascript$LexicalBlock;
   Perlito5$Javascript$LexicalBlock.isa = function (s) { return s == 'Perlito5::Javascript::LexicalBlock'; };
-  Perlito5$Javascript$LexicalBlock.ref = function (s) { return 'Perlito5::Javascript::LexicalBlock'; };
+  Perlito5$Javascript$LexicalBlock._ref_ = 'Perlito5::Javascript::LexicalBlock';
 }
 (function () {
   var v__NAMESPACE = Perlito5$Javascript$LexicalBlock;
@@ -1604,7 +1608,7 @@ if (typeof CompUnit !== 'object') {
   CompUnit = function() {};
   CompUnit = new CompUnit;
   CompUnit.isa = function (s) { return s == 'CompUnit'; };
-  CompUnit.ref = function (s) { return 'CompUnit'; };
+  CompUnit._ref_ = 'CompUnit';
 }
 (function () {
   var v__NAMESPACE = CompUnit;
@@ -1661,14 +1665,14 @@ if (typeof CompUnit !== 'object') {
                     for ( ; bool(((v_i <= (v__NAMESPACE.hasOwnProperty("scalar") ? v__NAMESPACE.scalar : CORE.scalar)(CallSub, (v_self.v_body)))));  ) { (function () {                         var v_stmt = null;
 
                         (v_stmt = v_self.v_body[v_i]);
-                        if ( bool((and((ref(v_stmt) == 'Apply'), function () { return ((typeof(v_stmt.__proto__) != 'undefined' && v_stmt.__proto__.hasOwnProperty("code") ? v_stmt.__proto__.code.call(v_stmt) : v_stmt.code()) == 'package'); }))) ) { (function () {
+                        if ( bool((and(((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_stmt) == 'Apply'), function () { return ((typeof(v_stmt.__proto__) != 'undefined' && v_stmt.__proto__.hasOwnProperty("code") ? v_stmt.__proto__.code.call(v_stmt) : v_stmt.code()) == 'package'); }))) ) { (function () {
                             var v_name = null;
 
                             var List_stmts = [];
 
                             (v_name = (typeof(v_stmt.__proto__) != 'undefined' && v_stmt.__proto__.hasOwnProperty("namespace") ? v_stmt.__proto__.namespace.call(v_stmt) : v_stmt.namespace()));
 (v_i)++;
-                            for ( ; bool((and((v_i <= (v__NAMESPACE.hasOwnProperty("scalar") ? v__NAMESPACE.scalar : CORE.scalar)(CallSub, (v_self.v_body))), function () { return ( bool((and((ref(v_self.v_body[v_i]) == 'Apply'), function () { return ((typeof(v_self.v_body[v_i].__proto__) != 'undefined' && v_self.v_body[v_i].__proto__.hasOwnProperty("code") ? v_self.v_body[v_i].__proto__.code.call(v_self.v_body[v_i]) : v_self.v_body[v_i].code()) == 'package'); }))) ? false : true); })));  ) { (function () {                                 (v__NAMESPACE.hasOwnProperty("push") ? v__NAMESPACE.push : CORE.push)(CallSub, List_stmts, v_self.v_body[v_i]);
+                            for ( ; bool((and((v_i <= (v__NAMESPACE.hasOwnProperty("scalar") ? v__NAMESPACE.scalar : CORE.scalar)(CallSub, (v_self.v_body))), function () { return ( bool((and(((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_self.v_body[v_i]) == 'Apply'), function () { return ((typeof(v_self.v_body[v_i].__proto__) != 'undefined' && v_self.v_body[v_i].__proto__.hasOwnProperty("code") ? v_self.v_body[v_i].__proto__.code.call(v_self.v_body[v_i]) : v_self.v_body[v_i].code()) == 'package'); }))) ? false : true); })));  ) { (function () {                                 (v__NAMESPACE.hasOwnProperty("push") ? v__NAMESPACE.push : CORE.push)(CallSub, List_stmts, v_self.v_body[v_i]);
 (v_i)++;; })() };
                             (v__NAMESPACE.hasOwnProperty("push") ? v__NAMESPACE.push : CORE.push)(CallSub, List_body, (function () { if (CompUnit.hasOwnProperty("new") ) { return CompUnit.new('name', v_name, 'body', List_stmts); } var tmp = {v_name: v_name,v_body: List_stmts}; tmp.__proto__ = CompUnit; return tmp; })());;
                         })(); }
@@ -1679,7 +1683,7 @@ if (typeof CompUnit !== 'object') {
 (v_i)++;;
                         })(); };; })() };
                     (v_class_name = Perlito5$Runtime.to_javascript_namespace(CallSub, v_self.v_name));
-                    (v_str = (string(String.fromCharCode(47) + String.fromCharCode(47) + ' class ') + string(v_self.v_name) + string((string(String.fromCharCode(10)))) + string('if (typeof ') + string(v_class_name) + string(' ' + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39) + 'object' + String.fromCharCode(39) + ') ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' function() ' + String.fromCharCode(123) + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' new ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(('isa')) + string(' ' + String.fromCharCode(61) + ' function (s) ' + String.fromCharCode(123) + ' return s ' + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(('ref')) + string(' ' + String.fromCharCode(61) + ' function (s) ' + String.fromCharCode(123) + ' return ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string(String.fromCharCode(125)) + string((string(String.fromCharCode(10)))) + string('(function () ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  var v__NAMESPACE ' + String.fromCharCode(61) + ' ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10))))));
+                    (v_str = (string(String.fromCharCode(47) + String.fromCharCode(47) + ' class ') + string(v_self.v_name) + string((string(String.fromCharCode(10)))) + string('if (typeof ') + string(v_class_name) + string(' ' + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39) + 'object' + String.fromCharCode(39) + ') ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' function() ' + String.fromCharCode(123) + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' new ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.isa ' + String.fromCharCode(61) + ' function (s) ' + String.fromCharCode(123) + ' return s ' + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('._ref_ ' + String.fromCharCode(61) + ' ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string(String.fromCharCode(125)) + string((string(String.fromCharCode(10)))) + string('(function () ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  var v__NAMESPACE ' + String.fromCharCode(61) + ' ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10))))));
                     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {                         if ( bool((and((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("isa") ? v_decl.__proto__.isa.call(v_decl,'Decl') : v_decl.isa('Decl')), function () { return (((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("decl") ? v_decl.__proto__.decl.call(v_decl) : v_decl.decl()) == 'my')); }))) ) { (function () {
                             (v_str = (string(v_str) + string('  ') + string((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("emit_javascript_init") ? v_decl.__proto__.emit_javascript_init.call(v_decl) : v_decl.emit_javascript_init()))));;
                         })(); };
@@ -1757,7 +1761,7 @@ if (typeof Val$Int !== 'object') {
   Val$Int = function() {};
   Val$Int = new Val$Int;
   Val$Int.isa = function (s) { return s == 'Val::Int'; };
-  Val$Int.ref = function (s) { return 'Val::Int'; };
+  Val$Int._ref_ = 'Val::Int';
 }
 (function () {
   var v__NAMESPACE = Val$Int;
@@ -1818,7 +1822,7 @@ if (typeof Val$Bit !== 'object') {
   Val$Bit = function() {};
   Val$Bit = new Val$Bit;
   Val$Bit.isa = function (s) { return s == 'Val::Bit'; };
-  Val$Bit.ref = function (s) { return 'Val::Bit'; };
+  Val$Bit._ref_ = 'Val::Bit';
 }
 (function () {
   var v__NAMESPACE = Val$Bit;
@@ -1879,7 +1883,7 @@ if (typeof Val$Num !== 'object') {
   Val$Num = function() {};
   Val$Num = new Val$Num;
   Val$Num.isa = function (s) { return s == 'Val::Num'; };
-  Val$Num.ref = function (s) { return 'Val::Num'; };
+  Val$Num._ref_ = 'Val::Num';
 }
 (function () {
   var v__NAMESPACE = Val$Num;
@@ -1940,7 +1944,7 @@ if (typeof Val$Buf !== 'object') {
   Val$Buf = function() {};
   Val$Buf = new Val$Buf;
   Val$Buf.isa = function (s) { return s == 'Val::Buf'; };
-  Val$Buf.ref = function (s) { return 'Val::Buf'; };
+  Val$Buf._ref_ = 'Val::Buf';
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
@@ -2001,7 +2005,7 @@ if (typeof Lit$Block !== 'object') {
   Lit$Block = function() {};
   Lit$Block = new Lit$Block;
   Lit$Block.isa = function (s) { return s == 'Lit::Block'; };
-  Lit$Block.ref = function (s) { return 'Lit::Block'; };
+  Lit$Block._ref_ = 'Lit::Block';
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
@@ -2068,7 +2072,7 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
-  Lit$Array.ref = function (s) { return 'Lit::Array'; };
+  Lit$Array._ref_ = 'Lit::Array';
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -2132,7 +2136,7 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
-  Lit$Hash.ref = function (s) { return 'Lit::Hash'; };
+  Lit$Hash._ref_ = 'Lit::Hash';
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -2196,7 +2200,7 @@ if (typeof Index !== 'object') {
   Index = function() {};
   Index = new Index;
   Index.isa = function (s) { return s == 'Index'; };
-  Index.ref = function (s) { return 'Index'; };
+  Index._ref_ = 'Index';
 }
 (function () {
   var v__NAMESPACE = Index;
@@ -2263,7 +2267,7 @@ if (typeof Lookup !== 'object') {
   Lookup = function() {};
   Lookup = new Lookup;
   Lookup.isa = function (s) { return s == 'Lookup'; };
-  Lookup.ref = function (s) { return 'Lookup'; };
+  Lookup._ref_ = 'Lookup';
 }
 (function () {
   var v__NAMESPACE = Lookup;
@@ -2330,7 +2334,7 @@ if (typeof Var !== 'object') {
   Var = function() {};
   Var = new Var;
   Var.isa = function (s) { return s == 'Var'; };
-  Var.ref = function (s) { return 'Var'; };
+  Var._ref_ = 'Var';
 }
 (function () {
   var v__NAMESPACE = Var;
@@ -2436,7 +2440,7 @@ if (typeof Proto !== 'object') {
   Proto = function() {};
   Proto = new Proto;
   Proto.isa = function (s) { return s == 'Proto'; };
-  Proto.ref = function (s) { return 'Proto'; };
+  Proto._ref_ = 'Proto';
 }
 (function () {
   var v__NAMESPACE = Proto;
@@ -2497,7 +2501,7 @@ if (typeof Call !== 'object') {
   Call = function() {};
   Call = new Call;
   Call.isa = function (s) { return s == 'Call'; };
-  Call.ref = function (s) { return 'Call'; };
+  Call._ref_ = 'Call';
 }
 (function () {
   var v__NAMESPACE = Call;
@@ -2602,12 +2606,11 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
-  Apply.ref = function (s) { return 'Apply'; };
+  Apply._ref_ = 'Apply';
 }
 (function () {
   var v__NAMESPACE = Apply;
   var Hash_op_infix_js = {};
-  var Hash_op_global_js = {};
   // sub emit_javascript
   Apply.emit_javascript = function () {
                 var List__ = Array.prototype.slice.call(arguments);
@@ -2657,7 +2660,7 @@ if (typeof Apply !== 'object') {
                         throw((typeof(v_apply.__proto__) != 'undefined' && v_apply.__proto__.hasOwnProperty("emit_javascript_indented") ? v_apply.__proto__.emit_javascript_indented.call(v_apply,v_level) : v_apply.emit_javascript_indented(v_level)));;
                     })(); };
                     (v_code = v_self.v_code);
-                    if ( bool((ref((v_code != '')))) ) { (function () {
+                    if ( bool(((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, (v_code != '')))) ) { (function () {
                         throw((string(Javascript.tab(CallSub, v_level)) + string('(') + string((typeof(v_self.v_code.__proto__) != 'undefined' && v_self.v_code.__proto__.hasOwnProperty("emit_javascript") ? v_self.v_code.__proto__.emit_javascript.call(v_self.v_code) : v_self.v_code.emit_javascript())) + string(')->(') + string((v__NAMESPACE.hasOwnProperty("join") ? v__NAMESPACE.join : CORE.join)(CallSub, ',', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push((typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit") ? v__.__proto__.emit.call(v__) : v__.emit()))}; return out; })((v_self.v_arguments)))) + string(')')));;
                     })(); };
                     if ( bool(((v_code == 'infix:<' + String.fromCharCode(61) + '>>'))) ) { (function () {
@@ -2792,13 +2795,7 @@ if (typeof Apply !== 'object') {
                         (v_code = (string(Perlito5$Runtime.to_javascript_namespace(CallSub, v_self.v_namespace)) + string('.') + string((v_code))));;
                     })(); }
                     else { (function () {
-                        if ( bool((( bool((Hash_op_global_js).hasOwnProperty(v_code)) ? false : true))) ) { (function () {
-                            (v_code = (string('(v__NAMESPACE.hasOwnProperty(' + String.fromCharCode(34)) + string((v_code)) + string(String.fromCharCode(34) + ') ') + string(String.fromCharCode(63) + ' v__NAMESPACE.') + string((v_code)) + string(' ') + string(': CORE.') + string((v_code)) + string(')')));;
-                        })(); }
-                        else { (function () {
-                            (v_code = (v_self.v_code));
-                            throw((string(Javascript.tab(CallSub, v_level)) + string(v_code) + string('(') + string((v__NAMESPACE.hasOwnProperty("join") ? v__NAMESPACE.join : CORE.join)(CallSub, ', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push((typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit_javascript") ? v__.__proto__.emit_javascript.call(v__) : v__.emit_javascript()))}; return out; })((v_self.v_arguments)))) + string(')')));;
-                        })(); };;
+                        (v_code = (string('(v__NAMESPACE.hasOwnProperty(' + String.fromCharCode(34)) + string((v_code)) + string(String.fromCharCode(34) + ') ') + string(String.fromCharCode(63) + ' v__NAMESPACE.') + string((v_code)) + string(' ') + string(': CORE.') + string((v_code)) + string(')')));;
                     })(); };
                     (List_args = ((function () { 
     var List_a = [];
@@ -2995,12 +2992,6 @@ if (typeof Apply !== 'object') {
     (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['infix:<' + String.fromCharCode(33) + String.fromCharCode(61) + '>']  = ' ' + String.fromCharCode(33) + String.fromCharCode(61) + ' '); })();
     return(Hash_a);
 })()));
-                (Hash_op_global_js = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( (function () { 
-    var Hash_a = {};
-
-    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['ref']  = 1); })();
-    return(Hash_a);
-})()));
 })()
 ;
 // class If
@@ -3008,7 +2999,7 @@ if (typeof If !== 'object') {
   If = function() {};
   If = new If;
   If.isa = function (s) { return s == 'If'; };
-  If.ref = function (s) { return 'If'; };
+  If._ref_ = 'If';
 }
 (function () {
   var v__NAMESPACE = If;
@@ -3101,7 +3092,7 @@ if (typeof While !== 'object') {
   While = function() {};
   While = new While;
   While.isa = function (s) { return s == 'While'; };
-  While.ref = function (s) { return 'While'; };
+  While._ref_ = 'While';
 }
 (function () {
   var v__NAMESPACE = While;
@@ -3165,7 +3156,7 @@ if (typeof For !== 'object') {
   For = function() {};
   For = new For;
   For.isa = function (s) { return s == 'For'; };
-  For.ref = function (s) { return 'For'; };
+  For._ref_ = 'For';
 }
 (function () {
   var v__NAMESPACE = For;
@@ -3255,7 +3246,7 @@ if (typeof Decl !== 'object') {
   Decl = function() {};
   Decl = new Decl;
   Decl.isa = function (s) { return s == 'Decl'; };
-  Decl.ref = function (s) { return 'Decl'; };
+  Decl._ref_ = 'Decl';
 }
 (function () {
   var v__NAMESPACE = Decl;
@@ -3361,7 +3352,7 @@ if (typeof Sub !== 'object') {
   Sub = function() {};
   Sub = new Sub;
   Sub.isa = function (s) { return s == 'Sub'; };
-  Sub.ref = function (s) { return 'Sub'; };
+  Sub._ref_ = 'Sub';
 }
 (function () {
   var v__NAMESPACE = Sub;
@@ -3431,7 +3422,7 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
-  Do.ref = function (s) { return 'Do'; };
+  Do._ref_ = 'Do';
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -3495,7 +3486,7 @@ if (typeof Use !== 'object') {
   Use = function() {};
   Use = new Use;
   Use.isa = function (s) { return s == 'Use'; };
-  Use.ref = function (s) { return 'Use'; };
+  Use._ref_ = 'Use';
 }
 (function () {
   var v__NAMESPACE = Use;
@@ -3560,7 +3551,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -3569,7 +3560,7 @@ if (typeof Perlito5$Precedence !== 'object') {
   Perlito5$Precedence = function() {};
   Perlito5$Precedence = new Perlito5$Precedence;
   Perlito5$Precedence.isa = function (s) { return s == 'Perlito5::Precedence'; };
-  Perlito5$Precedence.ref = function (s) { return 'Perlito5::Precedence'; };
+  Perlito5$Precedence._ref_ = 'Perlito5::Precedence';
 }
 (function () {
   var v__NAMESPACE = Perlito5$Precedence;
@@ -4391,7 +4382,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -4404,7 +4395,7 @@ if (typeof Perl5 !== 'object') {
   Perl5 = function() {};
   Perl5 = new Perl5;
   Perl5.isa = function (s) { return s == 'Perl5'; };
-  Perl5.ref = function (s) { return 'Perl5'; };
+  Perl5._ref_ = 'Perl5';
 }
 (function () {
   var v__NAMESPACE = Perl5;
@@ -4509,7 +4500,7 @@ if (typeof CompUnit !== 'object') {
   CompUnit = function() {};
   CompUnit = new CompUnit;
   CompUnit.isa = function (s) { return s == 'CompUnit'; };
-  CompUnit.ref = function (s) { return 'CompUnit'; };
+  CompUnit._ref_ = 'CompUnit';
 }
 (function () {
   var v__NAMESPACE = CompUnit;
@@ -4605,7 +4596,7 @@ if (typeof Val$Int !== 'object') {
   Val$Int = function() {};
   Val$Int = new Val$Int;
   Val$Int.isa = function (s) { return s == 'Val::Int'; };
-  Val$Int.ref = function (s) { return 'Val::Int'; };
+  Val$Int._ref_ = 'Val::Int';
 }
 (function () {
   var v__NAMESPACE = Val$Int;
@@ -4669,7 +4660,7 @@ if (typeof Val$Bit !== 'object') {
   Val$Bit = function() {};
   Val$Bit = new Val$Bit;
   Val$Bit.isa = function (s) { return s == 'Val::Bit'; };
-  Val$Bit.ref = function (s) { return 'Val::Bit'; };
+  Val$Bit._ref_ = 'Val::Bit';
 }
 (function () {
   var v__NAMESPACE = Val$Bit;
@@ -4733,7 +4724,7 @@ if (typeof Val$Num !== 'object') {
   Val$Num = function() {};
   Val$Num = new Val$Num;
   Val$Num.isa = function (s) { return s == 'Val::Num'; };
-  Val$Num.ref = function (s) { return 'Val::Num'; };
+  Val$Num._ref_ = 'Val::Num';
 }
 (function () {
   var v__NAMESPACE = Val$Num;
@@ -4797,7 +4788,7 @@ if (typeof Val$Buf !== 'object') {
   Val$Buf = function() {};
   Val$Buf = new Val$Buf;
   Val$Buf.isa = function (s) { return s == 'Val::Buf'; };
-  Val$Buf.ref = function (s) { return 'Val::Buf'; };
+  Val$Buf._ref_ = 'Val::Buf';
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
@@ -4861,7 +4852,7 @@ if (typeof Lit$Block !== 'object') {
   Lit$Block = function() {};
   Lit$Block = new Lit$Block;
   Lit$Block.isa = function (s) { return s == 'Lit::Block'; };
-  Lit$Block.ref = function (s) { return 'Lit::Block'; };
+  Lit$Block._ref_ = 'Lit::Block';
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
@@ -4925,7 +4916,7 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
-  Lit$Array.ref = function (s) { return 'Lit::Array'; };
+  Lit$Array._ref_ = 'Lit::Array';
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -4992,7 +4983,7 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
-  Lit$Hash.ref = function (s) { return 'Lit::Hash'; };
+  Lit$Hash._ref_ = 'Lit::Hash';
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -5059,7 +5050,7 @@ if (typeof Index !== 'object') {
   Index = function() {};
   Index = new Index;
   Index.isa = function (s) { return s == 'Index'; };
-  Index.ref = function (s) { return 'Index'; };
+  Index._ref_ = 'Index';
 }
 (function () {
   var v__NAMESPACE = Index;
@@ -5129,7 +5120,7 @@ if (typeof Lookup !== 'object') {
   Lookup = function() {};
   Lookup = new Lookup;
   Lookup.isa = function (s) { return s == 'Lookup'; };
-  Lookup.ref = function (s) { return 'Lookup'; };
+  Lookup._ref_ = 'Lookup';
 }
 (function () {
   var v__NAMESPACE = Lookup;
@@ -5199,7 +5190,7 @@ if (typeof Var !== 'object') {
   Var = function() {};
   Var = new Var;
   Var.isa = function (s) { return s == 'Var'; };
-  Var.ref = function (s) { return 'Var'; };
+  Var._ref_ = 'Var';
 }
 (function () {
   var v__NAMESPACE = Var;
@@ -5326,7 +5317,7 @@ if (typeof Proto !== 'object') {
   Proto = function() {};
   Proto = new Proto;
   Proto.isa = function (s) { return s == 'Proto'; };
-  Proto.ref = function (s) { return 'Proto'; };
+  Proto._ref_ = 'Proto';
 }
 (function () {
   var v__NAMESPACE = Proto;
@@ -5390,7 +5381,7 @@ if (typeof Call !== 'object') {
   Call = function() {};
   Call = new Call;
   Call.isa = function (s) { return s == 'Call'; };
-  Call.ref = function (s) { return 'Call'; };
+  Call._ref_ = 'Call';
 }
 (function () {
   var v__NAMESPACE = Call;
@@ -5479,7 +5470,7 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
-  Apply.ref = function (s) { return 'Apply'; };
+  Apply._ref_ = 'Apply';
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -5541,7 +5532,7 @@ if (typeof Apply !== 'object') {
                         (v_ns = (string(v_self.v_namespace) + string('::')));;
                     })(); };
                     (v_code = (string(v_ns) + string(v_self.v_code)));
-                    if ( bool((ref((v_code != '')))) ) { (function () {
+                    if ( bool(((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, (v_code != '')))) ) { (function () {
                         throw((string(Perl5.tab(CallSub, v_level)) + string('(') + string((typeof(v_self.v_code.__proto__) != 'undefined' && v_self.v_code.__proto__.hasOwnProperty("emit_perl5") ? v_self.v_code.__proto__.emit_perl5.call(v_self.v_code) : v_self.v_code.emit_perl5())) + string(')->(') + string((v__NAMESPACE.hasOwnProperty("join") ? v__NAMESPACE.join : CORE.join)(CallSub, ', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push((typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit_perl5") ? v__.__proto__.emit_perl5.call(v__) : v__.emit_perl5()))}; return out; })((v_self.v_arguments)))) + string(')')));;
                     })(); };
                     if ( bool(((Hash_op_infix_perl5).hasOwnProperty(v_code))) ) { (function () {
@@ -5757,7 +5748,7 @@ if (typeof If !== 'object') {
   If = function() {};
   If = new If;
   If.isa = function (s) { return s == 'If'; };
-  If.ref = function (s) { return 'If'; };
+  If._ref_ = 'If';
 }
 (function () {
   var v__NAMESPACE = If;
@@ -5821,7 +5812,7 @@ if (typeof While !== 'object') {
   While = function() {};
   While = new While;
   While.isa = function (s) { return s == 'While'; };
-  While.ref = function (s) { return 'While'; };
+  While._ref_ = 'While';
 }
 (function () {
   var v__NAMESPACE = While;
@@ -5905,7 +5896,7 @@ if (typeof For !== 'object') {
   For = function() {};
   For = new For;
   For.isa = function (s) { return s == 'For'; };
-  For.ref = function (s) { return 'For'; };
+  For._ref_ = 'For';
 }
 (function () {
   var v__NAMESPACE = For;
@@ -5994,7 +5985,7 @@ if (typeof Decl !== 'object') {
   Decl = function() {};
   Decl = new Decl;
   Decl.isa = function (s) { return s == 'Decl'; };
-  Decl.ref = function (s) { return 'Decl'; };
+  Decl._ref_ = 'Decl';
 }
 (function () {
   var v__NAMESPACE = Decl;
@@ -6081,7 +6072,7 @@ if (typeof Sub !== 'object') {
   Sub = function() {};
   Sub = new Sub;
   Sub.isa = function (s) { return s == 'Sub'; };
-  Sub.ref = function (s) { return 'Sub'; };
+  Sub._ref_ = 'Sub';
 }
 (function () {
   var v__NAMESPACE = Sub;
@@ -6159,7 +6150,7 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
-  Do.ref = function (s) { return 'Do'; };
+  Do._ref_ = 'Do';
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -6226,7 +6217,7 @@ if (typeof Use !== 'object') {
   Use = function() {};
   Use = new Use;
   Use.isa = function (s) { return s == 'Use'; };
-  Use.ref = function (s) { return 'Use'; };
+  Use._ref_ = 'Use';
 }
 (function () {
   var v__NAMESPACE = Use;
@@ -6295,7 +6286,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -6304,7 +6295,7 @@ if (typeof Perlito5$Expression !== 'object') {
   Perlito5$Expression = function() {};
   Perlito5$Expression = new Perlito5$Expression;
   Perlito5$Expression.isa = function (s) { return s == 'Perlito5::Expression'; };
-  Perlito5$Expression.ref = function (s) { return 'Perlito5::Expression'; };
+  Perlito5$Expression._ref_ = 'Perlito5::Expression';
 }
 (function () {
   var v__NAMESPACE = Perlito5$Expression;
@@ -6322,7 +6313,7 @@ if (typeof Perlito5$Expression !== 'object') {
                     var v_param_list = null;
 
                     (v_param_list = CORE.shift(List__));
-                    if ( bool((and((ref(v_param_list) == 'Apply'), function () { return ((typeof(v_param_list.__proto__) != 'undefined' && v_param_list.__proto__.hasOwnProperty("code") ? v_param_list.__proto__.code.call(v_param_list) : v_param_list.code()) == 'list:<,>'); }))) ) { return (function () {
+                    if ( bool((and(((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_param_list) == 'Apply'), function () { return ((typeof(v_param_list.__proto__) != 'undefined' && v_param_list.__proto__.hasOwnProperty("code") ? v_param_list.__proto__.code.call(v_param_list) : v_param_list.code()) == 'list:<,>'); }))) ) { return (function () {
                         var v_args = null;
 
                         (v_args = (function () { 
@@ -6409,7 +6400,7 @@ if (typeof Perlito5$Expression !== 'object') {
                         throw(v_o);;
                     })(); };
                     (v_stmt = v_stmts[0]);
-                    if ( bool((((ref(v_stmt) == 'Var')))) ) { (function () {
+                    if ( bool(((((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_stmt) == 'Var')))) ) { (function () {
                         throw((function () { if (Lit$Hash.hasOwnProperty("new") ) { return Lit$Hash.new('hash1', (function () { 
     var List_a = [];
 
@@ -6426,7 +6417,7 @@ if (typeof Perlito5$Expression !== 'object') {
     return(List_a);
 })()}; tmp.__proto__ = Lit$Hash; return tmp; })());;
                     })(); };
-                    if ( bool((( bool((((ref(v_stmt) == 'Apply')))) ? false : true))) ) { (function () {
+                    if ( bool((( bool(((((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_stmt) == 'Apply')))) ? false : true))) ) { (function () {
                         throw(v_o);;
                     })(); };
                     if ( bool((((typeof(v_stmt.__proto__) != 'undefined' && v_stmt.__proto__.hasOwnProperty("code") ? v_stmt.__proto__.code.call(v_stmt) : v_stmt.code())) == 'infix:<' + String.fromCharCode(61) + '>>')) ) { (function () {
@@ -6449,7 +6440,7 @@ if (typeof Perlito5$Expression !== 'object') {
                     if ( bool((((typeof(v_stmt.__proto__) != 'undefined' && v_stmt.__proto__.hasOwnProperty("code") ? v_stmt.__proto__.code.call(v_stmt) : v_stmt.code())) != 'list:<,>')) ) { (function () {
                         throw(v_o);;
                     })(); };
-                    (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {                         if ( bool((and(((ref(v_item) == 'Apply')), function () { return (((typeof(v_item.__proto__) != 'undefined' && v_item.__proto__.hasOwnProperty("code") ? v_item.__proto__.code.call(v_item) : v_item.code())) == 'infix:<' + String.fromCharCode(61) + '>>'); }))) ) { (function () {
+                    (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {                         if ( bool((and((((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_item) == 'Apply')), function () { return (((typeof(v_item.__proto__) != 'undefined' && v_item.__proto__.hasOwnProperty("code") ? v_item.__proto__.code.call(v_item) : v_item.code())) == 'infix:<' + String.fromCharCode(61) + '>>'); }))) ) { (function () {
                             throw((function () { if (Lit$Hash.hasOwnProperty("new") ) { return Lit$Hash.new('hash1', (v__NAMESPACE.hasOwnProperty("expand_list") ? v__NAMESPACE.expand_list : CORE.expand_list)(CallSub, v_stmt)); } var tmp = {v_hash1: (v__NAMESPACE.hasOwnProperty("expand_list") ? v__NAMESPACE.expand_list : CORE.expand_list)(CallSub, v_stmt)}; tmp.__proto__ = Lit$Hash; return tmp; })());;
                         })(); };; })(a_[i_]) } })(((typeof(v_stmt.__proto__) != 'undefined' && v_stmt.__proto__.hasOwnProperty("arguments") ? v_stmt.__proto__.arguments.call(v_stmt) : v_stmt.arguments())));
                     throw(v_o);;
@@ -6480,7 +6471,7 @@ if (typeof Perlito5$Expression !== 'object') {
 
                     (v_num_stack = CORE.shift(List__));
                     (v_v = (v__NAMESPACE.hasOwnProperty("pop") ? v__NAMESPACE.pop : CORE.pop)(CallSub, (v_num_stack)));
-                    if ( bool(((ref(v_v) == 'ARRAY'))) ) { (function () {
+                    if ( bool((((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_v) == 'ARRAY'))) ) { (function () {
                         if ( bool(((v_v[1] == 'methcall_no_params'))) ) { (function () {
                             (v_v = (function () { if (Call.hasOwnProperty("new") ) { return Call.new('invocant', null, 'method', v_v[2], 'arguments', (function () { 
     var List_a = [];
@@ -6552,7 +6543,7 @@ if (typeof Perlito5$Expression !== 'object') {
                             (v_v = (function () { if (Lookup.hasOwnProperty("new") ) { return Lookup.new('obj', null, 'index_exp', v_v[2]); } var tmp = {v_obj: null,v_index_exp: v_v[2]}; tmp.__proto__ = Lookup; return tmp; })());
                             throw(v_v);;
                         })(); };
-                        if ( bool((and((ref(v_v[1]) == 'ARRAY'), function () { return ((v__NAMESPACE.hasOwnProperty("scalar") ? v__NAMESPACE.scalar : CORE.scalar)(CallSub, v_v[1]) == 2); }))) ) { (function () {
+                        if ( bool((and(((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_v[1]) == 'ARRAY'), function () { return ((v__NAMESPACE.hasOwnProperty("scalar") ? v__NAMESPACE.scalar : CORE.scalar)(CallSub, v_v[1]) == 2); }))) ) { (function () {
                             (v_v = (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('code', 'pair', 'arguments', v_v[1], 'namespace', ''); } var tmp = {v_code: 'pair',v_arguments: v_v[1],v_namespace: ''}; tmp.__proto__ = Apply; return tmp; })());
                             throw(v_v);;
                         })(); };
@@ -6626,11 +6617,11 @@ if (typeof Perlito5$Expression !== 'object') {
                         var v_param_list = null;
 
                         (v_param_list = (v__NAMESPACE.hasOwnProperty("expand_list") ? v__NAMESPACE.expand_list : CORE.expand_list)(CallSub, v_v[2]));
-                        if ( bool((and((ref(v_value) == 'Apply'), function () { return ( bool((((typeof(v_value.__proto__) != 'undefined' && v_value.__proto__.hasOwnProperty("arguments") ? v_value.__proto__.arguments.call(v_value) : v_value.arguments()) != null))) ? false : true); }))) ) { (function () {
+                        if ( bool((and(((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_value) == 'Apply'), function () { return ( bool((((typeof(v_value.__proto__) != 'undefined' && v_value.__proto__.hasOwnProperty("arguments") ? v_value.__proto__.arguments.call(v_value) : v_value.arguments()) != null))) ? false : true); }))) ) { (function () {
                             (v_value.v_arguments = v_param_list);
                             throw(v_value);;
                         })(); };
-                        if ( bool((and((ref(v_value) == 'Call'), function () { return ( bool((((typeof(v_value.__proto__) != 'undefined' && v_value.__proto__.hasOwnProperty("arguments") ? v_value.__proto__.arguments.call(v_value) : v_value.arguments()) != null))) ? false : true); }))) ) { (function () {
+                        if ( bool((and(((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_value) == 'Call'), function () { return ( bool((((typeof(v_value.__proto__) != 'undefined' && v_value.__proto__.hasOwnProperty("arguments") ? v_value.__proto__.arguments.call(v_value) : v_value.arguments()) != null))) ? false : true); }))) ) { (function () {
                             (v_value.v_arguments = v_param_list);
                             throw(v_value);;
                         })(); };
@@ -8563,7 +8554,7 @@ if (typeof Perlito5$Expression !== 'object') {
                 (v_last_pos = (typeof(v_m.__proto__) != 'undefined' && v_m.__proto__.hasOwnProperty("to") ? v_m.__proto__.to.call(v_m) : v_m.to()));;
             })(); };;
         })(); };
-        if ( bool((or(or(or((and((((v_v[0]) == 'postfix_or_term')), function () { return (((v_v[1]) == 'block')); })), function () { return (and((((v_v[0]) == 'term')), function () { return (ref(v_v[1]) == 'Sub'); })); }), function () { return (and((((v_v[0]) == 'term')), function () { return (ref(v_v[1]) == 'Do'); })); }), function () { return (and((((v_v[0]) == 'term')), function () { return (ref(v_v[1]) == 'CompUnit'); })); }))) ) { (function () {
+        if ( bool((or(or(or((and((((v_v[0]) == 'postfix_or_term')), function () { return (((v_v[1]) == 'block')); })), function () { return (and((((v_v[0]) == 'term')), function () { return ((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_v[1]) == 'Sub'); })); }), function () { return (and((((v_v[0]) == 'term')), function () { return ((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_v[1]) == 'Do'); })); }), function () { return (and((((v_v[0]) == 'term')), function () { return ((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_v[1]) == 'CompUnit'); })); }))) ) { (function () {
             if ( bool(((typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)))) ) { (function () {
                 (v_terminated = 1);
                 (v__NAMESPACE.hasOwnProperty("push") ? v__NAMESPACE.push : CORE.push)(CallSub, (v_lexer_stack), (function () { 
@@ -8638,7 +8629,7 @@ if (typeof Perlito5$Expression !== 'object') {
                     (v_result = (v__NAMESPACE.hasOwnProperty("pop_term") ? v__NAMESPACE.pop_term : CORE.pop_term)(CallSub, v_res));
                     if ( bool((((v__NAMESPACE.hasOwnProperty("scalar") ? v__NAMESPACE.scalar : CORE.scalar)(CallSub, (v_res)) > 0))) ) { (function () {
                         (v_block = (v__NAMESPACE.hasOwnProperty("pop") ? v__NAMESPACE.pop : CORE.pop)(CallSub, (v_res)));
-                        if ( bool((( bool(((ref(v_block) == 'Lit::Block'))) ? false : true))) ) { (function () {
+                        if ( bool((( bool((((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_block) == 'Lit::Block'))) ? false : true))) ) { (function () {
                             (v_block = (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', v_block[2], 'sig', v_block[3]); } var tmp = {v_stmts: v_block[2],v_sig: v_block[3]}; tmp.__proto__ = Lit$Block; return tmp; })());;
                         })(); };;
                     })(); };
@@ -9209,7 +9200,7 @@ if (typeof Perlito5$Expression !== 'object') {
                     if ( bool((( bool((v_res)) ? false : true))) ) { (function () {
                         throw(v_res);;
                     })(); };
-                    if ( bool(((ref((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat())['exp']) == 'Lit::Block'))) ) { (function () {
+                    if ( bool((((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, (typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat())['exp']) == 'Lit::Block'))) ) { (function () {
                         (function () { return (((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']  = (function () { if (Do.hasOwnProperty("new") ) { return Do.new('block', ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']); } var tmp = {v_block: ((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['exp']}; tmp.__proto__ = Do; return tmp; })()); })();;
                     })(); };
                     if ( bool(((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat()))['end_block']) ) { (function () {
@@ -9641,7 +9632,7 @@ if (typeof Perlito5$Expression !== 'object') {
                             var v_v2 = null;
 
                             (v_v2 = (v__NAMESPACE.hasOwnProperty("pop_term") ? v__NAMESPACE.pop_term : CORE.pop_term)(CallSub, v_num_stack));
-                            if ( bool((and((ref(v_v2) == 'Apply'), function () { return ((typeof(v_v2.__proto__) != 'undefined' && v_v2.__proto__.hasOwnProperty("code") ? v_v2.__proto__.code.call(v_v2) : v_v2.code()) == ((string('list:<') + string(v_last_op[1]) + string('>')))); }))) ) { (function () {
+                            if ( bool((and(((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_v2) == 'Apply'), function () { return ((typeof(v_v2.__proto__) != 'undefined' && v_v2.__proto__.hasOwnProperty("code") ? v_v2.__proto__.code.call(v_v2) : v_v2.code()) == ((string('list:<') + string(v_last_op[1]) + string('>')))); }))) ) { (function () {
                                 (v__NAMESPACE.hasOwnProperty("push") ? v__NAMESPACE.push : CORE.push)(CallSub, (v_num_stack), (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', (typeof(v_v2.__proto__) != 'undefined' && v_v2.__proto__.hasOwnProperty("namespace") ? v_v2.__proto__.namespace.call(v_v2) : v_v2.namespace()), 'code', (typeof(v_v2.__proto__) != 'undefined' && v_v2.__proto__.hasOwnProperty("code") ? v_v2.__proto__.code.call(v_v2) : v_v2.code()), 'arguments', (function () { 
     var List_a = [];
 
@@ -9697,7 +9688,7 @@ if (typeof Perlito5$Expression !== 'object') {
     return(List_a);
 })());;
                         })(); };
-                        if ( bool((and(and(((ref(v_arg[0]) == 'Apply')), function () { return ((v_last_op[0] == 'infix')); }), function () { return (((typeof((v_arg[0]).__proto__) != 'undefined' && (v_arg[0]).__proto__.hasOwnProperty("code") ? (v_arg[0]).__proto__.code.call((v_arg[0])) : (v_arg[0]).code()) == ((string('list:<') + string(v_last_op[1]) + string('>'))))); }))) ) { (function () {
+                        if ( bool((and(and((((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_arg[0]) == 'Apply')), function () { return ((v_last_op[0] == 'infix')); }), function () { return (((typeof((v_arg[0]).__proto__) != 'undefined' && (v_arg[0]).__proto__.hasOwnProperty("code") ? (v_arg[0]).__proto__.code.call((v_arg[0])) : (v_arg[0]).code()) == ((string('list:<') + string(v_last_op[1]) + string('>'))))); }))) ) { (function () {
                             (v__NAMESPACE.hasOwnProperty("push") ? v__NAMESPACE.push : CORE.push)(CallSub, (v_num_stack), (function () { if (Apply.hasOwnProperty("new") ) { return Apply.new('namespace', '', 'code', (typeof((v_arg[0]).__proto__) != 'undefined' && (v_arg[0]).__proto__.hasOwnProperty("code") ? (v_arg[0]).__proto__.code.call((v_arg[0])) : (v_arg[0]).code()), 'arguments', (function () { 
     var List_a = [];
 
@@ -9820,7 +9811,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -9829,7 +9820,7 @@ if (typeof Perlito5$Grammar$Regex !== 'object') {
   Perlito5$Grammar$Regex = function() {};
   Perlito5$Grammar$Regex = new Perlito5$Grammar$Regex;
   Perlito5$Grammar$Regex.isa = function (s) { return s == 'Perlito5::Grammar::Regex'; };
-  Perlito5$Grammar$Regex.ref = function (s) { return 'Perlito5::Grammar::Regex'; };
+  Perlito5$Grammar$Regex._ref_ = 'Perlito5::Grammar::Regex';
 }
 (function () {
   var v__NAMESPACE = Perlito5$Grammar$Regex;
@@ -12018,7 +12009,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -12027,7 +12018,7 @@ if (typeof Perlito5$Grammar !== 'object') {
   Perlito5$Grammar = function() {};
   Perlito5$Grammar = new Perlito5$Grammar;
   Perlito5$Grammar.isa = function (s) { return s == 'Perlito5::Grammar'; };
-  Perlito5$Grammar.ref = function (s) { return 'Perlito5::Grammar'; };
+  Perlito5$Grammar._ref_ = 'Perlito5::Grammar';
 }
 (function () {
   var v__NAMESPACE = Perlito5$Grammar;
@@ -12219,7 +12210,7 @@ if (typeof Perlito5$Grammar !== 'object') {
     if ( bool((( bool(((v_otherwise != null))) ? false : true))) ) { (function () {
         (v__NAMESPACE.hasOwnProperty("die") ? v__NAMESPACE.die : CORE.die)(CallSub, (string('Missing code block in ' + String.fromCharCode(39) + 'else' + String.fromCharCode(39))));;
     })(); };
-    if ( bool(((ref(v_otherwise) == 'Lit::Hash'))) ) { (function () {
+    if ( bool((((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_otherwise) == 'Lit::Hash'))) ) { (function () {
         (v_otherwise = (function () { if (Lit$Block.hasOwnProperty("new") ) { return Lit$Block.new('stmts', (typeof(v_otherwise.__proto__) != 'undefined' && v_otherwise.__proto__.hasOwnProperty("hash1") ? v_otherwise.__proto__.hash1.call(v_otherwise) : v_otherwise.hash1())); } var tmp = {v_stmts: (typeof(v_otherwise.__proto__) != 'undefined' && v_otherwise.__proto__.hasOwnProperty("hash1") ? v_otherwise.__proto__.hash1.call(v_otherwise) : v_otherwise.hash1())}; tmp.__proto__ = Lit$Block; return tmp; })());;
     })(); };
     return((v_MATCH.v_capture = (function () { if (If.hasOwnProperty("new") ) { return If.new('cond', ((typeof(v_MATCH[(string('exp'))].__proto__) != 'undefined' && v_MATCH[(string('exp'))].__proto__.hasOwnProperty("flat") ? v_MATCH[(string('exp'))].__proto__.flat.call(v_MATCH[(string('exp'))]) : v_MATCH[(string('exp'))].flat()))['exp'], 'body', v_body, 'otherwise', v_otherwise); } var tmp = {v_cond: ((typeof(v_MATCH[(string('exp'))].__proto__) != 'undefined' && v_MATCH[(string('exp'))].__proto__.hasOwnProperty("flat") ? v_MATCH[(string('exp'))].__proto__.flat.call(v_MATCH[(string('exp'))]) : v_MATCH[(string('exp'))].flat()))['exp'],v_body: v_body,v_otherwise: v_otherwise}; tmp.__proto__ = If; return tmp; })()));
@@ -12759,7 +12750,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -12768,7 +12759,7 @@ if (typeof Perlito5$Grammar !== 'object') {
   Perlito5$Grammar = function() {};
   Perlito5$Grammar = new Perlito5$Grammar;
   Perlito5$Grammar.isa = function (s) { return s == 'Perlito5::Grammar'; };
-  Perlito5$Grammar.ref = function (s) { return 'Perlito5::Grammar'; };
+  Perlito5$Grammar._ref_ = 'Perlito5::Grammar';
 }
 (function () {
   var v__NAMESPACE = Perlito5$Grammar;
@@ -16693,7 +16684,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -16704,7 +16695,7 @@ if (typeof Rul !== 'object') {
   Rul = function() {};
   Rul = new Rul;
   Rul.isa = function (s) { return s == 'Rul'; };
-  Rul.ref = function (s) { return 'Rul'; };
+  Rul._ref_ = 'Rul';
 }
 (function () {
   var v__NAMESPACE = Rul;
@@ -16754,7 +16745,7 @@ if (typeof Rul$Quantifier !== 'object') {
   Rul$Quantifier = function() {};
   Rul$Quantifier = new Rul$Quantifier;
   Rul$Quantifier.isa = function (s) { return s == 'Rul::Quantifier'; };
-  Rul$Quantifier.ref = function (s) { return 'Rul::Quantifier'; };
+  Rul$Quantifier._ref_ = 'Rul::Quantifier';
 }
 (function () {
   var v__NAMESPACE = Rul$Quantifier;
@@ -16849,7 +16840,7 @@ if (typeof Rul$Or !== 'object') {
   Rul$Or = function() {};
   Rul$Or = new Rul$Or;
   Rul$Or.isa = function (s) { return s == 'Rul::Or'; };
-  Rul$Or.ref = function (s) { return 'Rul::Or'; };
+  Rul$Or._ref_ = 'Rul::Or';
 }
 (function () {
   var v__NAMESPACE = Rul$Or;
@@ -16913,7 +16904,7 @@ if (typeof Rul$Concat !== 'object') {
   Rul$Concat = function() {};
   Rul$Concat = new Rul$Concat;
   Rul$Concat.isa = function (s) { return s == 'Rul::Concat'; };
-  Rul$Concat.ref = function (s) { return 'Rul::Concat'; };
+  Rul$Concat._ref_ = 'Rul::Concat';
 }
 (function () {
   var v__NAMESPACE = Rul$Concat;
@@ -16977,7 +16968,7 @@ if (typeof Rul$Subrule !== 'object') {
   Rul$Subrule = function() {};
   Rul$Subrule = new Rul$Subrule;
   Rul$Subrule.isa = function (s) { return s == 'Rul::Subrule'; };
-  Rul$Subrule.ref = function (s) { return 'Rul::Subrule'; };
+  Rul$Subrule._ref_ = 'Rul::Subrule';
 }
 (function () {
   var v__NAMESPACE = Rul$Subrule;
@@ -17065,7 +17056,7 @@ if (typeof Rul$Var !== 'object') {
   Rul$Var = function() {};
   Rul$Var = new Rul$Var;
   Rul$Var.isa = function (s) { return s == 'Rul::Var'; };
-  Rul$Var.ref = function (s) { return 'Rul::Var'; };
+  Rul$Var._ref_ = 'Rul::Var';
 }
 (function () {
   var v__NAMESPACE = Rul$Var;
@@ -17121,7 +17112,7 @@ if (typeof Rul$Constant !== 'object') {
   Rul$Constant = function() {};
   Rul$Constant = new Rul$Constant;
   Rul$Constant.isa = function (s) { return s == 'Rul::Constant'; };
-  Rul$Constant.ref = function (s) { return 'Rul::Constant'; };
+  Rul$Constant._ref_ = 'Rul::Constant';
 }
 (function () {
   var v__NAMESPACE = Rul$Constant;
@@ -17187,7 +17178,7 @@ if (typeof Rul$Dot !== 'object') {
   Rul$Dot = function() {};
   Rul$Dot = new Rul$Dot;
   Rul$Dot.isa = function (s) { return s == 'Rul::Dot'; };
-  Rul$Dot.ref = function (s) { return 'Rul::Dot'; };
+  Rul$Dot._ref_ = 'Rul::Dot';
 }
 (function () {
   var v__NAMESPACE = Rul$Dot;
@@ -17247,7 +17238,7 @@ if (typeof Rul$SpecialChar !== 'object') {
   Rul$SpecialChar = function() {};
   Rul$SpecialChar = new Rul$SpecialChar;
   Rul$SpecialChar.isa = function (s) { return s == 'Rul::SpecialChar'; };
-  Rul$SpecialChar.ref = function (s) { return 'Rul::SpecialChar'; };
+  Rul$SpecialChar._ref_ = 'Rul::SpecialChar';
 }
 (function () {
   var v__NAMESPACE = Rul$SpecialChar;
@@ -17328,7 +17319,7 @@ if (typeof Rul$Block !== 'object') {
   Rul$Block = function() {};
   Rul$Block = new Rul$Block;
   Rul$Block.isa = function (s) { return s == 'Rul::Block'; };
-  Rul$Block.ref = function (s) { return 'Rul::Block'; };
+  Rul$Block._ref_ = 'Rul::Block';
 }
 (function () {
   var v__NAMESPACE = Rul$Block;
@@ -17391,7 +17382,7 @@ if (typeof Rul$InterpolateVar !== 'object') {
   Rul$InterpolateVar = function() {};
   Rul$InterpolateVar = new Rul$InterpolateVar;
   Rul$InterpolateVar.isa = function (s) { return s == 'Rul::InterpolateVar'; };
-  Rul$InterpolateVar.ref = function (s) { return 'Rul::InterpolateVar'; };
+  Rul$InterpolateVar._ref_ = 'Rul::InterpolateVar';
 }
 (function () {
   var v__NAMESPACE = Rul$InterpolateVar;
@@ -17455,7 +17446,7 @@ if (typeof Rul$NamedCapture !== 'object') {
   Rul$NamedCapture = function() {};
   Rul$NamedCapture = new Rul$NamedCapture;
   Rul$NamedCapture.isa = function (s) { return s == 'Rul::NamedCapture'; };
-  Rul$NamedCapture.ref = function (s) { return 'Rul::NamedCapture'; };
+  Rul$NamedCapture._ref_ = 'Rul::NamedCapture';
 }
 (function () {
   var v__NAMESPACE = Rul$NamedCapture;
@@ -17523,7 +17514,7 @@ if (typeof Rul$Before !== 'object') {
   Rul$Before = function() {};
   Rul$Before = new Rul$Before;
   Rul$Before.isa = function (s) { return s == 'Rul::Before'; };
-  Rul$Before.ref = function (s) { return 'Rul::Before'; };
+  Rul$Before._ref_ = 'Rul::Before';
 }
 (function () {
   var v__NAMESPACE = Rul$Before;
@@ -17586,7 +17577,7 @@ if (typeof Rul$NotBefore !== 'object') {
   Rul$NotBefore = function() {};
   Rul$NotBefore = new Rul$NotBefore;
   Rul$NotBefore.isa = function (s) { return s == 'Rul::NotBefore'; };
-  Rul$NotBefore.ref = function (s) { return 'Rul::NotBefore'; };
+  Rul$NotBefore._ref_ = 'Rul::NotBefore';
 }
 (function () {
   var v__NAMESPACE = Rul$NotBefore;
@@ -17657,7 +17648,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -17668,7 +17659,7 @@ if (typeof Lit$Array !== 'object') {
   Lit$Array = function() {};
   Lit$Array = new Lit$Array;
   Lit$Array.isa = function (s) { return s == 'Lit::Array'; };
-  Lit$Array.ref = function (s) { return 'Lit::Array'; };
+  Lit$Array._ref_ = 'Lit::Array';
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
@@ -18408,7 +18399,7 @@ if (typeof Lit$Hash !== 'object') {
   Lit$Hash = function() {};
   Lit$Hash = new Lit$Hash;
   Lit$Hash.isa = function (s) { return s == 'Lit::Hash'; };
-  Lit$Hash.ref = function (s) { return 'Lit::Hash'; };
+  Lit$Hash._ref_ = 'Lit::Hash';
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
@@ -21864,7 +21855,7 @@ if (typeof Apply !== 'object') {
   Apply = function() {};
   Apply = new Apply;
   Apply.isa = function (s) { return s == 'Apply'; };
-  Apply.ref = function (s) { return 'Apply'; };
+  Apply._ref_ = 'Apply';
 }
 (function () {
   var v__NAMESPACE = Apply;
@@ -21885,7 +21876,7 @@ if (typeof Apply !== 'object') {
 
                     (v_self = List__[0]);
                     (v_code = v_self.v_code);
-                    if ( bool(ref(v_code)) ) { (function () {
+                    if ( bool((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_code)) ) { (function () {
                         throw(0);;
                     })(); };
                     if ( bool(((Hash_op).hasOwnProperty(v_code))) ) { (function () {
@@ -21941,7 +21932,7 @@ if (typeof Do !== 'object') {
   Do = function() {};
   Do = new Do;
   Do.isa = function (s) { return s == 'Do'; };
-  Do.ref = function (s) { return 'Do'; };
+  Do._ref_ = 'Do';
 }
 (function () {
   var v__NAMESPACE = Do;
@@ -22010,7 +22001,7 @@ if (typeof main !== 'object') {
   main = function() {};
   main = new main;
   main.isa = function (s) { return s == 'main'; };
-  main.ref = function (s) { return 'main'; };
+  main._ref_ = 'main';
 }
 (function () {
   var v__NAMESPACE = main;
@@ -22019,7 +22010,7 @@ if (typeof Perlito5$Runtime !== 'object') {
   Perlito5$Runtime = function() {};
   Perlito5$Runtime = new Perlito5$Runtime;
   Perlito5$Runtime.isa = function (s) { return s == 'Perlito5::Runtime'; };
-  Perlito5$Runtime.ref = function (s) { return 'Perlito5::Runtime'; };
+  Perlito5$Runtime._ref_ = 'Perlito5::Runtime';
 }
 (function () {
   var v__NAMESPACE = Perlito5$Runtime;

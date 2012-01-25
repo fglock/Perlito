@@ -89,37 +89,6 @@ if (typeof Perlito5$Runtime !== 'object') {
     };
 })();
 
-// TODO - this belongs to the CORE package
-ref = function(o) {
-    var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
-    var o = List__[0];
-    if (o == null) {
-        return '';
-    }
-    var vv = o.__proto__.ref;
-    if (typeof vv === 'string') {
-        // blessed reference
-        return vv;
-    }
-    if (typeof o._ref_ === 'string') {
-        // un-blessed reference
-        return o._ref_;
-    }
-    if (typeof o === 'object' && (o instanceof Array)) {
-        return 'ARRAY';
-    }
-    switch (typeof o) {
-        case "string": return '';
-        case "function": return 'CODE';
-        case "number": return '';
-        case "boolean": return '';
-    }
-    return '';
-};
-
 // XXX this doesn't belong here
 Array.prototype.grep = function grep(f) {
     var res = new Array()
