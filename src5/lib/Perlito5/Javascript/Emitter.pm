@@ -648,9 +648,9 @@ class Apply {
 
         if ($code eq 'shift')      {
             if ( @{$.arguments} ) {
-                return 'shift(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . ')'
+                return 'CORE.shift(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . ')'
             }
-            return 'shift(List__)'
+            return 'CORE.shift(List__)'
         }
 
         if ($code eq 'map') {
