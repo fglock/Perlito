@@ -7,7 +7,7 @@ package Perlito5::Expression;
     sub expand_list {
         my $param_list = shift;
         # say "# expand_list: ", $param_list->perl;
-        if ($param_list->isa('Apply')) && (($param_list->code) eq 'list:<,>') {
+        if ( ref( $param_list ) eq 'Apply' && $param_list->code eq 'list:<,>') {
             my $args = [];
             for my $v ( @{$param_list->arguments} ) {
                 if (defined($v)) {
@@ -32,21 +32,21 @@ package Perlito5::Expression;
             return $o
         }
         my $stmts = $o->stmts;
-        if (!(defined $stmts)) || ((scalar(@$stmts)) == 0) {
+        if (!(defined $stmts) || (scalar(@$stmts)) == 0) {
             # say "#  no contents -- empty hash";
             return Lit::Hash->new(hash1 => [])
         }
-        if (scalar(@$stmts)) != 1 {
+        if (scalar(@$stmts) != 1) {
             # say "#  more statements -- not hash";
             return $o
         }
         my $stmt = $stmts->[0];
-        if ($stmt->isa('Var')) {
+        if (( ref($stmt) eq 'Var' )) {
             # the argument is a single variable
             # say "#  single var -- is hash";
             return Lit::Hash->new(hash1 => [ $stmt ])
         }
-        if (!($stmt->isa('Apply'))) {
+        if (!(( ref($stmt) eq 'Apply' ))) {
             # say "#  not Apply -- not hash";
             return $o
         }
@@ -62,7 +62,7 @@ package Perlito5::Expression;
         # the argument is a list -- check that it contains a pair
         for my $item ( @{$stmt->arguments} ) {
             # say "#  item: ", $item->perl;
-            if ($item->isa('Apply') && ($item->code) eq 'infix:<=>>') {
+            if (( ref($item) eq 'Apply' ) && ($item->code) eq 'infix:<=>>') {
                 # argument is a pair
                 # say "#  block: ", $o->perl;
                 # say "#  hash with args: ", ( expand_list($stmt->arguments) )->perl;
@@ -195,11 +195,11 @@ package Perlito5::Expression;
         if ($v->[1] eq '( )') {
             # say "#   Params ", ($v->[2])->perl;
             my $param_list = expand_list($v->[2]);
-            if ($value->isa('Apply') && !(defined($value->arguments))) {
+            if ( ref($value) eq 'Apply' && !(defined($value->arguments))) {
                 $value->arguments = $param_list;
                 return $value;
             }
-            if ($value->isa('Call') && !(defined($value->arguments))) {
+            if ( ref($value) eq 'Call' && !(defined($value->arguments))) {
                 $value->arguments = $param_list;
                 return $value;
             }
@@ -262,7 +262,7 @@ package Perlito5::Expression;
             my $arg;
             if (scalar(@$num_stack) < 2) {
                 my $v2 = pop_term($num_stack);
-                if ($v2->isa('Apply')) && ($v2->code eq ('list:<' . $last_op->[1] . '>')) {
+                if ( ref($v2) eq 'Apply' && $v2->code eq ('list:<' . $last_op->[1] . '>')) {
                     push @$num_stack,
                         Apply->new(
                             namespace => $v2->namespace,
@@ -284,7 +284,7 @@ package Perlito5::Expression;
                 my $v2 = pop_term($num_stack);
                 $arg = [ pop_term($num_stack), $v2 ];
             }
-            if  (  (($arg->[0])->isa('Apply'))
+            if  (  ( ref($arg->[0]) eq 'Apply' )
                 && ($last_op->[0] eq 'infix')
                 && (($arg->[0])->code eq ('list:<' . $last_op->[1] . '>'))
                 )
@@ -679,9 +679,9 @@ package Perlito5::Expression;
             # say "# exp_lexer got " . $v->perl;
 
             if  (  ( (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block') )
-                || ( (($v->[0]) eq 'term') && (($v->[1])->isa('Sub')) )
-                || ( (($v->[0]) eq 'term') && (($v->[1])->isa('Do')) )
-                || ( (($v->[0]) eq 'term') && (($v->[1])->isa('CompUnit')) )
+                || ( (($v->[0]) eq 'term') && ref($v->[1]) eq 'Sub' )
+                || ( (($v->[0]) eq 'term') && ref($v->[1]) eq 'Do' )
+                || ( (($v->[0]) eq 'term') && ref($v->[1]) eq 'CompUnit' )
                 )
             {
                 # a block followed by newline terminates the expression
@@ -714,7 +714,7 @@ package Perlito5::Expression;
         my $result = pop_term($res);
         if (scalar(@$res) > 0) {
             $block = pop @$res; # pop_term($res);
-            if (!($block->isa('Lit::Block'))) {
+            if (!( ref($block) eq 'Lit::Block' )) {
                 $block = Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
             }
             # say "# exp terminated with a block (2): ", $block->perl;
@@ -778,7 +778,7 @@ package Perlito5::Expression;
             # say "# not a statement or expression";
             return $res;
         }
-        if ($res->flat()){'exp'}->isa('Lit::Block') {
+        if ( ref( $res->flat()->{'exp'} ) eq 'Lit::Block' ) {
             # standalone block
             ($res->flat()){'exp'} = Do->new(block => ($res->flat()){'exp'});
         }
