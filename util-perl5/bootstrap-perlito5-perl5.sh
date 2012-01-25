@@ -35,6 +35,7 @@ perl perlito5.pl -Cperl5 src5/util/perlito5.pl                > ./perlito5-new.p
 # other files we use for cross-compilation
 
 cp src5/lib/Perlito5/Javascript/Runtime.js lib5-new/Perlito5/Javascript/Runtime.js
+cp src5/lib/Perlito5/Javascript/CORE.js    lib5-new/Perlito5/Javascript/CORE.js
 
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Javascript/Prelude.pm   > lib5-new/Perlito5/Javascript/Prelude.pm
 

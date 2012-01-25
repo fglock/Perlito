@@ -251,6 +251,12 @@ package main;
             };
             ((my  $source) = IO::slurp($filename));
             Main::say($source);
+            ((my  $filename) = ($perl5lib . chr(47) . 'Perlito5' . chr(47) . 'Javascript' . chr(47) . 'CORE.js'));
+            if (($verbose)) {
+                warn((chr(47) . chr(47) . ' now loading: '), $filename)
+            };
+            ((my  $source) = IO::slurp($filename));
+            Main::say($source);
             Main::print(CompUnit::emit_javascript_program($comp_units))
         };
         if ((($backend eq 'java'))) {
