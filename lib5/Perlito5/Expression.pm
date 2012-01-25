@@ -17,7 +17,7 @@ package main;
     sub expand_list {
         my $List__ = bless \@_, "ARRAY";
         ((my  $param_list) = shift());
-        if (((Main::isa($param_list, 'Apply')) && ((($param_list->code()) eq 'list:<,>')))) {
+        if ((((ref($param_list) eq 'Apply') && ($param_list->code() eq 'list:<,>')))) {
             ((my  $args) = (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -55,18 +55,18 @@ package main;
             return ($o)
         };
         ((my  $stmts) = $o->stmts());
-        if (((!((defined($stmts)))) || (((scalar( @{($stmts)} )) == 0)))) {
+        if (((!((defined($stmts))) || ((scalar( @{($stmts)} )) == 0)))) {
             return (Lit::Hash->new(('hash1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 }))))
         };
-        if (((scalar( @{($stmts)} )) != 1)) {
+        if (((scalar( @{($stmts)} ) != 1))) {
             return ($o)
         };
         ((my  $stmt) = $stmts->[0]);
-        if ((Main::isa($stmt, 'Var'))) {
+        if ((((ref($stmt) eq 'Var')))) {
             return (Lit::Hash->new(('hash1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -74,7 +74,7 @@ package main;
     $List_a
 }))))
         };
-        if ((!((Main::isa($stmt, 'Apply'))))) {
+        if ((!((((ref($stmt) eq 'Apply')))))) {
             return ($o)
         };
         if ((($stmt->code()) eq 'infix:<' . chr(61) . '>>')) {
@@ -89,7 +89,7 @@ package main;
             return ($o)
         };
         for my $item ( @{($stmt->arguments())} ) {
-            if (((Main::isa($item, 'Apply') && (($item->code()) eq 'infix:<' . chr(61) . '>>')))) {
+            if (((((ref($item) eq 'Apply')) && (($item->code()) eq 'infix:<' . chr(61) . '>>')))) {
                 return (Lit::Hash->new(('hash1' => expand_list($stmt))))
             }
         };
@@ -193,11 +193,11 @@ package main;
         };
         if ((($v->[1] eq '( )'))) {
             ((my  $param_list) = expand_list($v->[2]));
-            if (((Main::isa($value, 'Apply') && !((defined($value->arguments())))))) {
+            if ((((ref($value) eq 'Apply') && !((defined($value->arguments())))))) {
                 (($value)->{arguments} = $param_list);
                 return ($value)
             };
-            if (((Main::isa($value, 'Call') && !((defined($value->arguments())))))) {
+            if ((((ref($value) eq 'Call') && !((defined($value->arguments())))))) {
                 (($value)->{arguments} = $param_list);
                 return ($value)
             };
@@ -259,7 +259,7 @@ package main;
                     (my  $arg);
                     if (((scalar( @{($num_stack)} ) < 2))) {
                         ((my  $v2) = pop_term($num_stack));
-                        if (((Main::isa($v2, 'Apply')) && (($v2->code() eq (('list:<' . $last_op->[1] . '>')))))) {
+                        if ((((ref($v2) eq 'Apply') && ($v2->code() eq (('list:<' . $last_op->[1] . '>')))))) {
                             push( @{($num_stack)}, Apply->new(('namespace' => $v2->namespace()), ('code' => $v2->code()), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -292,7 +292,7 @@ package main;
     $List_a
 }))
                     };
-                    if (((((Main::isa(($arg->[0]), 'Apply')) && (($last_op->[0] eq 'infix'))) && ((($arg->[0])->code() eq (('list:<' . $last_op->[1] . '>'))))))) {
+                    if ((((((ref($arg->[0]) eq 'Apply')) && (($last_op->[0] eq 'infix'))) && ((($arg->[0])->code() eq (('list:<' . $last_op->[1] . '>'))))))) {
                         push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ($arg->[0])->code()), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1593,7 +1593,7 @@ package main;
             ($last_pos = $m->to())
         }
     };
-    if (((((((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block')))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'Sub'))))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'Do'))))) || ((((($v->[0]) eq 'term')) && (Main::isa(($v->[1]), 'CompUnit'))))))) {
+    if (((((((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block')))) || ((((($v->[0]) eq 'term')) && (ref($v->[1]) eq 'Sub')))) || ((((($v->[0]) eq 'term')) && (ref($v->[1]) eq 'Do')))) || ((((($v->[0]) eq 'term')) && (ref($v->[1]) eq 'CompUnit')))))) {
         if (($self->has_newline_after($str, $last_pos))) {
             ($terminated = 1);
             push( @{($lexer_stack)}, (do {
@@ -1637,7 +1637,7 @@ package main;
         ((my  $result) = pop_term($res));
         if (((scalar( @{($res)} ) > 0))) {
             ($block = pop( @{($res)} ));
-            if ((!((Main::isa($block, 'Lit::Block'))))) {
+            if ((!(((ref($block) eq 'Lit::Block'))))) {
                 ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
             }
         };
@@ -1998,7 +1998,7 @@ package main;
         if ((!(($res)))) {
             return ($res)
         };
-        if (Main::isa(($res->flat())->{'exp'}, 'Lit::Block')) {
+        if (((ref($res->flat()->{'exp'}) eq 'Lit::Block'))) {
             (($res->flat())->{'exp'} = Do->new(('block' => ($res->flat())->{'exp'})))
         };
         if (($res->flat())->{'end_block'}) {

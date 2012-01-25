@@ -661,19 +661,7 @@ package main;
 }));
         ((my  $Hash_op_global_js = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{'index'} = 1);
-    ($Hash_a->{'die'} = 1);
-    ($Hash_a->{'unshift'} = 1);
-    ($Hash_a->{'push'} = 1);
-    ($Hash_a->{'pop'} = 1);
-    ($Hash_a->{'join'} = 1);
-    ($Hash_a->{'chr'} = 1);
     ($Hash_a->{'bless'} = 1);
-    ($Hash_a->{'warn'} = 1);
-    ($Hash_a->{'scalar'} = 1);
-    ($Hash_a->{'keys'} = 1);
-    ($Hash_a->{'values'} = 1);
-    ($Hash_a->{'length'} = 1);
     ($Hash_a->{'ref'} = 1);
     $Hash_a
 }));
@@ -713,9 +701,9 @@ package main;
             };
             if ((($code eq 'shift'))) {
                 if ((($self->{arguments}))) {
-                    return (('shift(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')'))
+                    return (('CORE.shift(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')'))
                 };
-                return ('shift(List__)')
+                return ('CORE.shift(List__)')
             };
             if ((($code eq 'map'))) {
                 ((my  $fun) = $self->{arguments}->[0]);

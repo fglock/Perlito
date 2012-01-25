@@ -50,7 +50,7 @@ function ScalarRef(o) {
     this.bool = function() { return 1 };
 }
 
-// class CORE
+// namespace CORE
 if (typeof CORE !== 'object') {
   CORE = function() {};
   CORE = new CORE;
@@ -97,69 +97,65 @@ if (typeof Main !== 'object') {
 
 var _print_buf = "";
 CORE.print = function() {
-        var List__ = Array.prototype.slice.call(arguments);
-        if (List__[0] instanceof CallSubClass) {
-            List__.shift()
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var i;
+    for (i = 0; i < List__.length; i++) {
+        var s = string(List__[i]);
+        if (s.substr(s.length - 2, 2) == "\n") {
+            print(_print_buf + s.substr(0, s.length - 2));
+            _print_buf = "";
         }
-        var i;
-        for (i = 0; i < List__.length; i++) {
-            var s = string(List__[i]);
-            if (s.substr(s.length - 2, 2) == "\n") {
-                print(_print_buf + s.substr(0, s.length - 2));
-                _print_buf = "";
-            }
-            else if (s.substr(s.length - 1, 1) == "\n") {
-                print(_print_buf + s.substr(0, s.length - 1));
-                _print_buf = "";
-            }
-            else {
-                _print_buf = _print_buf + s;
-            }
-        }
-        return true;
-    };
-
-CORE.say = function() {
-        var List__ = Array.prototype.slice.call(arguments);
-        if (List__[0] instanceof CallSubClass) {
-            List__.shift()
-        }
-        var i;
-        for (i = 0; i < List__.length; i++) {
-            CORE.print(List__[i]);
-        }
-        return CORE.print("\n");
-    };
-
-if (typeof die !== 'function') {
-    die = function() {
-        var i;
-        var s = '';
-        for (i = 0; i < die.arguments.length; i++) {
-            s = s + die.arguments[i];
-        }
-        CORE.print("Died: " + s + "\n");
-    };
-}
-
-if (typeof warn !== 'function') {
-    warn = function() {
-        var List__ = Array.prototype.slice.call(arguments);
-        if (List__[0] instanceof CallSubClass) {
-            List__.shift()
+        else if (s.substr(s.length - 1, 1) == "\n") {
+            print(_print_buf + s.substr(0, s.length - 1));
+            _print_buf = "";
         }
         else {
-            List__.unshift(this)
+            _print_buf = _print_buf + s;
         }
+    }
+    return true;
+};
 
-        var i;
-        var s = '';
-        for (i = 0; i < List__.length; i++) {
-            s = s + List__[i];
-        }
-        CORE.print("Warning: " + s + "\n");
-    };
-}
+CORE.say = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var i;
+    for (i = 0; i < List__.length; i++) {
+        CORE.print(List__[i]);
+    }
+    return CORE.print("\n");
+};
+
+CORE.die = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var i;
+    var s = '';
+    for (i = 0; i < List__.length; i++) {
+        s = s + string(List__[i]);
+    }
+    CORE.print("Died: " + s + "\n");
+};
+
+CORE.warn = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var i;
+    var s = '';
+    for (i = 0; i < List__.length; i++) {
+        s = s + string(List__[i]);
+    }
+    CORE.print("Warning: " + s + "\n");
+};
 
 bless = function(o, class_name) {
     try {
@@ -177,8 +173,12 @@ bless = function(o, class_name) {
     return o;
 };
 
-chr = function(o) {
-    return String.fromCharCode(num(o));
+CORE.chr = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    return String.fromCharCode(num(List__[0]));
 };
 
 ref = function(o) {
@@ -205,7 +205,12 @@ ref = function(o) {
     return '';
 };
 
-scalar = function(o) {
+CORE.scalar = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
     if (o == null) {
         return 1;
     };
@@ -228,7 +233,12 @@ scalar = function(o) {
     return l;
 };
 
-values = function(o) {
+CORE.values = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
     if (o == null) {
         return [];
     };
@@ -251,7 +261,12 @@ values = function(o) {
     return out;
 };
 
-keys = function(o) {
+CORE.keys = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
     if (o == null) {
         return [];
     }
@@ -414,33 +429,67 @@ defined_or = function(a, fb) {
     return a;
 };
 
-pop = function(o) {
+CORE.pop = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
     if (o.length == null) {
         return null;
     }
     return o.pop();
 };
 
-shift = function(o) {
+CORE.shift = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
     if (o.length == null) {
         return null;
     }
     return o.shift();
 };
 
-push = function(o, v) {
+CORE.push = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
+    var v = List__[1];
     return o.push(v);
 };
 
-unshift = function(o, v) {
+CORE.unshift = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
+    var v = List__[1];
     return o.unshift(v);
 };
 
-join = function(s, o) {
+CORE.join = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var s = List__[0];
+    var o = List__[1];
     return o.join(s);
 };
 
-index = function(o, s) {
+CORE.index = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
+    var s = List__[1];
     try {
         return o.indexOf(s);
     }
@@ -449,7 +498,12 @@ index = function(o, s) {
     }
 };
 
-length = function(o) {
+CORE.length = function() {
+    var List__ = Array.prototype.slice.call(arguments);
+    if (List__[0] instanceof CallSubClass) {
+        List__.shift()
+    }
+    var o = List__[0];
     if (typeof o.string === 'function') {
         return o.string().length;
     }
@@ -508,9 +562,9 @@ function perl5_to_js( source ) {
     var tmp = {v_block: block};
     tmp.__proto__ = Do;   
     ast = tmp;
-    // say( "ast: [" + perl(ast) + "]" );
+    // CORE.say( "ast: [" + perl(ast) + "]" );
     js_code = ast.emit_javascript();
-    // say( "js-source: [" + js_code + "]" );
+    // CORE.say( "js-source: [" + js_code + "]" );
     return js_code;
 }
 
