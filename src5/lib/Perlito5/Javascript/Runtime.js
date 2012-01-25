@@ -50,6 +50,12 @@ function ScalarRef(o) {
     this.bool = function() { return 1 };
 }
 
+// class CORE
+if (typeof CORE !== 'object') {
+  CORE = function() {};
+  CORE = new CORE;
+}
+
 // class IO
 if (typeof IO !== 'object') {
     IO = function() {};
@@ -89,39 +95,41 @@ if (typeof Main !== 'object') {
     };
 })();
 
-if (typeof f_print !== 'function') {
-    var buf = "";
-    f_print = function() {
+var _print_buf = "";
+CORE.print = function() {
         var List__ = Array.prototype.slice.call(arguments);
+        if (List__[0] instanceof CallSubClass) {
+            List__.shift()
+        }
         var i;
         for (i = 0; i < List__.length; i++) {
             var s = string(List__[i]);
             if (s.substr(s.length - 2, 2) == "\n") {
-                print(buf + s.substr(0, s.length - 2));
-                buf = "";
+                print(_print_buf + s.substr(0, s.length - 2));
+                _print_buf = "";
             }
             else if (s.substr(s.length - 1, 1) == "\n") {
-                print(buf + s.substr(0, s.length - 1));
-                buf = "";
+                print(_print_buf + s.substr(0, s.length - 1));
+                _print_buf = "";
             }
             else {
-                buf = buf + s;
+                _print_buf = _print_buf + s;
             }
         }
         return true;
     };
-}
 
-if (typeof say !== 'function') {
-    say = function() {
+CORE.say = function() {
         var List__ = Array.prototype.slice.call(arguments);
+        if (List__[0] instanceof CallSubClass) {
+            List__.shift()
+        }
         var i;
         for (i = 0; i < List__.length; i++) {
-            f_print(List__[i]);
+            CORE.print(List__[i]);
         }
-        return f_print("\n");
+        return CORE.print("\n");
     };
-}
 
 if (typeof die !== 'function') {
     die = function() {
@@ -130,7 +138,7 @@ if (typeof die !== 'function') {
         for (i = 0; i < die.arguments.length; i++) {
             s = s + die.arguments[i];
         }
-        f_print("Died: " + s + "\n");
+        CORE.print("Died: " + s + "\n");
     };
 }
 
@@ -149,7 +157,7 @@ if (typeof warn !== 'function') {
         for (i = 0; i < List__.length; i++) {
             s = s + List__[i];
         }
-        f_print("Warning: " + s + "\n");
+        CORE.print("Warning: " + s + "\n");
     };
 }
 
