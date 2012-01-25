@@ -60,13 +60,6 @@ package main;
         }
     }
 
-;
-    {
-    package Main;
-        sub new { shift; bless { @_ }, "Main" }
-        1
-    }
-
 
 }
 

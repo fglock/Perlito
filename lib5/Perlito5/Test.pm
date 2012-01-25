@@ -21,7 +21,7 @@ package main;
         ((my  $number_of_tests) = shift());
         ($testing_started = 1);
         ($num_of_tests_planned = $number_of_tests);
-        Main::say(('1..' . $number_of_tests))
+        Perlito5::Runtime::say(('1..' . $number_of_tests))
     };
     sub ok {
         my $List__ = bless \@_, "ARRAY";
@@ -75,39 +75,39 @@ package main;
         ((my  $desc) = shift());
         ((my  $todo) = shift());
         ((my  $depends) = shift());
-        Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::cmp_ok not implemented'))
+        Perlito5::Runtime::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::cmp_ok not implemented'))
     };
     sub like {
         my $List__ = bless \@_, "ARRAY";
-        Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::like not implemented'))
+        Perlito5::Runtime::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::like not implemented'))
     };
     sub unlike {
         my $List__ = bless \@_, "ARRAY";
-        Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::unlike not implemented'))
+        Perlito5::Runtime::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::unlike not implemented'))
     };
     sub eval_dies_ok {
         my $List__ = bless \@_, "ARRAY";
-        Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::eval_dies_ok not implemented'))
+        Perlito5::Runtime::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::eval_dies_ok not implemented'))
     };
     sub isa_ok {
         my $List__ = bless \@_, "ARRAY";
-        Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::isa_ok not implemented'))
+        Perlito5::Runtime::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::isa_ok not implemented'))
     };
     sub use_ok {
         my $List__ = bless \@_, "ARRAY";
-        Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::use_ok not implemented'))
+        Perlito5::Runtime::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::use_ok not implemented'))
     };
     sub throws_ok {
         my $List__ = bless \@_, "ARRAY";
-        Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::throws_ok not implemented'))
+        Perlito5::Runtime::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::throws_ok not implemented'))
     };
     sub dies_ok {
         my $List__ = bless \@_, "ARRAY";
-        Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::dies_ok not implemented'))
+        Perlito5::Runtime::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::dies_ok not implemented'))
     };
     sub lives_ok {
         my $List__ = bless \@_, "ARRAY";
-        Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::lives_ok not implemented'))
+        Perlito5::Runtime::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::lives_ok not implemented'))
     };
     sub skip {
         my $List__ = bless \@_, "ARRAY";
@@ -139,10 +139,10 @@ package main;
         ($testing_started = 1);
         ($num_of_tests_run = ($num_of_tests_run + 1));
         if (($cond)) {
-            Main::say(('ok '), $num_of_tests_run)
+            Perlito5::Runtime::say(('ok '), $num_of_tests_run)
         }
         else {
-            Main::say(('not ok '), $num_of_tests_run);
+            Perlito5::Runtime::say(('not ok '), $num_of_tests_run);
             Perlito5::Test::report_failure($todo, $got, $expected, $negate)
         };
         return ($cond)
@@ -153,7 +153,7 @@ package main;
         ((my  $got) = shift());
         ((my  $expected) = shift());
         ((my  $negate) = shift());
-        Main::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::report_failure not implemented'))
+        Perlito5::Runtime::say((chr(35) . chr(35) . chr(35) . ' Perlito5::Test::report_failure not implemented'))
     };
     sub test_ends {
         my $List__ = bless \@_, "ARRAY";
@@ -161,13 +161,13 @@ package main;
             return ()
         };
         if ((!($num_of_tests_planned))) {
-            Main::say(('1..' . $num_of_tests_run))
+            Perlito5::Runtime::say(('1..' . $num_of_tests_run))
         };
         if ((($num_of_tests_planned != $num_of_tests_run))) {
-            Main::say((chr(35) . ' Looks like you planned ' . $num_of_tests_planned . (' tests, but ran ') . $num_of_tests_run))
+            Perlito5::Runtime::say((chr(35) . ' Looks like you planned ' . $num_of_tests_planned . (' tests, but ran ') . $num_of_tests_run))
         };
         if (($num_of_tests_failed)) {
-            Main::say((chr(35) . ' Looks like you failed ' . $num_of_tests_failed . (' tests of ') . $num_of_tests_run))
+            Perlito5::Runtime::say((chr(35) . ' Looks like you failed ' . $num_of_tests_failed . (' tests of ') . $num_of_tests_run))
         };
         ($num_of_tests_run = 0);
         ($num_of_tests_failed = 0);

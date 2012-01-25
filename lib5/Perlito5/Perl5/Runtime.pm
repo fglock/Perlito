@@ -122,7 +122,7 @@ package ARRAY;
     }
 
     sub Str {
-        join( " ", CORE::map { Main::Str($_) } @{$_[0]} )
+        join( " ", CORE::map { Perlito5::Runtime::Str($_) } @{$_[0]} )
     }
 
 package HASH;
@@ -133,10 +133,10 @@ package HASH;
     );
 
     sub Str {
-        join( "\n", map { $_ . "\t" . Main::Str($_[0]{$_}) } CORE::keys %{$_[0]} )
+        join( "\n", map { $_ . "\t" . Perlito5::Runtime::Str($_[0]{$_}) } CORE::keys %{$_[0]} )
     }
 
-package Main;
+package Perlito5::Runtime;
 
     sub map  { bless [ CORE::map(  $_[0]($_), @{$_[1]} ) ], 'ARRAY' }
     sub grep { bless [ CORE::grep( $_[0]($_), @{$_[1]} ) ], 'ARRAY' }
@@ -159,14 +159,14 @@ package Main;
         local $_;
         for (@_) {
             if ( ref($_) ) {
-                CORE::print Main::Str($_);
+                CORE::print Perlito5::Runtime::Str($_);
                 next;
             }
             CORE::print $_
         }
         return 1;
     }
-    sub say   { Main::print( @_, "\n" ) }
+    sub say   { Perlito5::Runtime::print( @_, "\n" ) }
     sub isa {
         my $ref = ref($_[0]);
            (  $ref eq 'ARRAY'
@@ -195,12 +195,12 @@ package Main;
     sub perl {
         return 'undef' unless defined $_[0];
         local $_;
-        local %Main::_seen = %Main::_seen;
+        local %Perlito5::Runtime::_seen = %Perlito5::Runtime::_seen;
         my $o = shift;
         if ( ref($o) ) {
             my $key = "$o";
-            return "'!!! Recursive structure !!!' at $key" if ($Main::_seen{$key} || 0) > 3;
-            $Main::_seen{$key}++;
+            return "'!!! Recursive structure !!!' at $key" if ($Perlito5::Runtime::_seen{$key} || 0) > 3;
+            $Perlito5::Runtime::_seen{$key}++;
             return '[' . join( ", ", map { perl($_) } @$o ) . ']'
                 if ref($o) eq 'ARRAY';
             return '{' . join( ", ", map { perl($_) . ' => ' . perl($o->{$_}) } sort {$a cmp $b} CORE::keys(%$o) ) . '}'
@@ -217,7 +217,7 @@ package Main;
         my $ref = ref($o);
         return perl($$o) if $ref eq 'SCALAR';
         return $ref . "->new("
-            . join( ", ", map { Main::perl($_) . ' => ' . Main::perl($o->{$_}) } sort {$a cmp $b} CORE::keys(%$o) )
+            . join( ", ", map { Perlito5::Runtime::perl($_) . ' => ' . Perlito5::Runtime::perl($o->{$_}) } sort {$a cmp $b} CORE::keys(%$o) )
             . ")";
     }
 

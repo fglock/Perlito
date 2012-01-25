@@ -68,14 +68,14 @@ IO.slurp = function(v_callsub, filename) {
     die("IO.slurp() not implemented");
 };
 
-// class Main
-if (typeof Main !== 'object') {
-    Main = function() {};
-    Main = new Main;
+// class Perlito5$Runtime
+if (typeof Perlito5$Runtime !== 'object') {
+    Perlito5$Runtime = function() {};
+    Perlito5$Runtime = new Perlito5$Runtime;
 }
 
 (function() {
-    Main._dump = function(o) {
+    Perlito5$Runtime._dump = function(o) {
         var out = [];
         for (var i in o) {
             if (i.match(/^v_/)) {
@@ -139,7 +139,7 @@ perl = function(o) {
         return "[" + out.join(", ") + "]";
     }
     switch (typeof o) {
-        case "string": return '"' + Main.lisp_escape_string(o) + '"';
+        case "string": return '"' + Perlito5$Runtime.lisp_escape_string(o) + '"';
         case "function": return "function";
         case "number": return o;
         case "boolean": return o;
@@ -703,18 +703,6 @@ if (typeof Perlito5$Match !== 'object') {
         }
   }
   Perlito5$Match.string;  // v8 bug workaround
-})()
-;
-// class Main
-if (typeof Main !== 'object') {
-  Main = function() {};
-  Main = new Main;
-  Main.isa = function (s) { return s == 'Main'; };
-  Main.ref = function (s) { return 'Main'; };
-}
-(function () {
-  var v__NAMESPACE = Main;
-        1;
 })()
 ;
 // class Perlito5
@@ -1690,7 +1678,7 @@ if (typeof CompUnit !== 'object') {
                             })(); };
 (v_i)++;;
                         })(); };; })() };
-                    (v_class_name = Main.to_javascript_namespace(CallSub, v_self.v_name));
+                    (v_class_name = Perlito5$Runtime.to_javascript_namespace(CallSub, v_self.v_name));
                     (v_str = (string(String.fromCharCode(47) + String.fromCharCode(47) + ' class ') + string(v_self.v_name) + string((string(String.fromCharCode(10)))) + string('if (typeof ') + string(v_class_name) + string(' ' + String.fromCharCode(33) + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39) + 'object' + String.fromCharCode(39) + ') ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' function() ' + String.fromCharCode(123) + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string(' ' + String.fromCharCode(61) + ' new ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(('isa')) + string(' ' + String.fromCharCode(61) + ' function (s) ' + String.fromCharCode(123) + ' return s ' + String.fromCharCode(61) + String.fromCharCode(61) + ' ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(('ref')) + string(' ' + String.fromCharCode(61) + ' function (s) ' + String.fromCharCode(123) + ' return ' + String.fromCharCode(39)) + string(v_self.v_name) + string(String.fromCharCode(39) + String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string(String.fromCharCode(125)) + string((string(String.fromCharCode(10)))) + string('(function () ' + String.fromCharCode(123)) + string((string(String.fromCharCode(10)))) + string('  var v__NAMESPACE ' + String.fromCharCode(61) + ' ') + string(v_class_name) + string(String.fromCharCode(59)) + string((string(String.fromCharCode(10))))));
                     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {                         if ( bool((and((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("isa") ? v_decl.__proto__.isa.call(v_decl,'Decl') : v_decl.isa('Decl')), function () { return (((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("decl") ? v_decl.__proto__.decl.call(v_decl) : v_decl.decl()) == 'my')); }))) ) { (function () {
                             (v_str = (string(v_str) + string('  ') + string((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("emit_javascript_init") ? v_decl.__proto__.emit_javascript_init.call(v_decl) : v_decl.emit_javascript_init()))));;
@@ -2399,7 +2387,7 @@ if (typeof Var !== 'object') {
 })());
                     (v_ns = '');
                     if ( bool((v_self.v_namespace)) ) { (function () {
-                        (v_ns = (string(Main.to_javascript_namespace(CallSub, v_self.v_namespace)) + string('.')));;
+                        (v_ns = (string(Perlito5$Runtime.to_javascript_namespace(CallSub, v_self.v_namespace)) + string('.')));;
                     })(); };
                     return(( bool(((v_self.v_twigil == '.'))) ? ((string('v_self.v_') + string(v_self.v_name) + string(''))) : ((string(v_table[v_self.v_sigil]) + string(v_ns) + string(v_self.v_name)))));;
                 }
@@ -2490,7 +2478,7 @@ if (typeof Proto !== 'object') {
 
                     (v_self = CORE.shift(List__));
                     (v_level = CORE.shift(List__));
-                    return((string(Javascript.tab(CallSub, v_level)) + string(Main.to_javascript_namespace(CallSub, v_self.v_name))));;
+                    return((string(Javascript.tab(CallSub, v_level)) + string(Perlito5$Runtime.to_javascript_namespace(CallSub, v_self.v_name))));;
                 }
                 catch(err) {
                     if ( err instanceof Error ) {
@@ -2574,7 +2562,7 @@ if (typeof Call !== 'object') {
                             else { (function () {
                                 (v__NAMESPACE.hasOwnProperty("die") ? v__NAMESPACE.die : CORE.die)(CallSub, 'Error in constructor, field: ', v_field);;
                             })(); };; })(a_[i_]) } })((v_self.v_arguments));
-                        throw((string('(function () ' + String.fromCharCode(123) + ' ') + string('if (') + string(Main.to_javascript_namespace(CallSub, v_invocant)) + string('.hasOwnProperty(' + String.fromCharCode(34) + 'new' + String.fromCharCode(34) + ') ) ' + String.fromCharCode(123) + ' ') + string('return ') + string(v_invocant) + string('.new(') + string((v__NAMESPACE.hasOwnProperty("join") ? v__NAMESPACE.join : CORE.join)(CallSub, ', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push((typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit_javascript") ? v__.__proto__.emit_javascript.call(v__) : v__.emit_javascript()))}; return out; })((v_self.v_arguments)))) + string(')' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + ' ') + string('var tmp ' + String.fromCharCode(61) + ' ' + String.fromCharCode(123)) + string((v__NAMESPACE.hasOwnProperty("join") ? v__NAMESPACE.join : CORE.join)(CallSub, ',', (v_str))) + string(String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('tmp.__proto__ ' + String.fromCharCode(61) + ' ') + string(Main.to_javascript_namespace(CallSub, v_invocant)) + string(String.fromCharCode(59) + ' ') + string('return tmp' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + ')()')));;
+                        throw((string('(function () ' + String.fromCharCode(123) + ' ') + string('if (') + string(Perlito5$Runtime.to_javascript_namespace(CallSub, v_invocant)) + string('.hasOwnProperty(' + String.fromCharCode(34) + 'new' + String.fromCharCode(34) + ') ) ' + String.fromCharCode(123) + ' ') + string('return ') + string(v_invocant) + string('.new(') + string((v__NAMESPACE.hasOwnProperty("join") ? v__NAMESPACE.join : CORE.join)(CallSub, ', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push((typeof(v__.__proto__) != 'undefined' && v__.__proto__.hasOwnProperty("emit_javascript") ? v__.__proto__.emit_javascript.call(v__) : v__.emit_javascript()))}; return out; })((v_self.v_arguments)))) + string(')' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + ' ') + string('var tmp ' + String.fromCharCode(61) + ' ' + String.fromCharCode(123)) + string((v__NAMESPACE.hasOwnProperty("join") ? v__NAMESPACE.join : CORE.join)(CallSub, ',', (v_str))) + string(String.fromCharCode(125) + String.fromCharCode(59) + ' ') + string('tmp.__proto__ ' + String.fromCharCode(61) + ' ') + string(Perlito5$Runtime.to_javascript_namespace(CallSub, v_invocant)) + string(String.fromCharCode(59) + ' ') + string('return tmp' + String.fromCharCode(59) + ' ') + string(String.fromCharCode(125) + ')()')));;
                     })(); };
                     (v_meth = v_self.v_method);
                     if ( bool(((v_self.v_method == 'postcircumfix:<[ ]>'))) ) { (function () {
@@ -2801,7 +2789,7 @@ if (typeof Apply !== 'object') {
                         throw((string(Javascript.tab(CallSub, v_level)) + string('throw(') + string((( bool((v_self.v_arguments)) ? (typeof(v_self.v_arguments[0].__proto__) != 'undefined' && v_self.v_arguments[0].__proto__.hasOwnProperty("emit_javascript") ? v_self.v_arguments[0].__proto__.emit_javascript.call(v_self.v_arguments[0]) : v_self.v_arguments[0].emit_javascript()) : 'null'))) + string(')')));;
                     })(); };
                     if ( bool((v_self.v_namespace)) ) { (function () {
-                        (v_code = (string(Main.to_javascript_namespace(CallSub, v_self.v_namespace)) + string('.') + string((v_code))));;
+                        (v_code = (string(Perlito5$Runtime.to_javascript_namespace(CallSub, v_self.v_namespace)) + string('.') + string((v_code))));;
                     })(); }
                     else { (function () {
                         if ( bool((( bool((Hash_op_global_js).hasOwnProperty(v_code)) ? false : true))) ) { (function () {
@@ -5481,7 +5469,7 @@ if (typeof Call !== 'object') {
                 (Hash_method_perl5 = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( (function () { 
     var Hash_a = {};
 
-    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['isa']  = 'Main::isa'); })();
+    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['isa']  = 'Perlito5::Runtime::isa'); })();
     return(Hash_a);
 })()));
 })()
@@ -5719,12 +5707,12 @@ if (typeof Apply !== 'object') {
                 (Hash_op_prefix_perl5 = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( (function () { 
     var Hash_a = {};
 
-    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['say']  = 'Main::say'); })();
-    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['print']  = 'Main::print'); })();
-    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['grep']  = 'Main::grep'); })();
-    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['sort']  = 'Main::sort'); })();
-    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['keys']  = 'Main::keys'); })();
-    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['values']  = 'Main::values'); })();
+    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['say']  = 'Perlito5::Runtime::say'); })();
+    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['print']  = 'Perlito5::Runtime::print'); })();
+    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['grep']  = 'Perlito5::Runtime::grep'); })();
+    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['sort']  = 'Perlito5::Runtime::sort'); })();
+    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['keys']  = 'Perlito5::Runtime::keys'); })();
+    (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['values']  = 'Perlito5::Runtime::values'); })();
     (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['warn']  = 'warn'); })();
     (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['Int']  = '0+'); })();
     (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a['Num']  = '0+'); })();
@@ -17016,7 +17004,7 @@ if (typeof Rul$Subrule !== 'object') {
                     var v_code = null;
 
                     (v_self = List__[0]);
-                    (v_meth = ( bool((add(1, (v__NAMESPACE.hasOwnProperty("index") ? v__NAMESPACE.index : CORE.index)(CallSub, v_self.v_metasyntax, '.')))) ? Main._replace(CallSub, v_self.v_metasyntax, '.', '->') : ((string(String.fromCharCode(36) + 'grammar->') + string(v_self.v_metasyntax)))));
+                    (v_meth = ( bool((add(1, (v__NAMESPACE.hasOwnProperty("index") ? v__NAMESPACE.index : CORE.index)(CallSub, v_self.v_metasyntax, '.')))) ? Perlito5$Runtime._replace(CallSub, v_self.v_metasyntax, '.', '->') : ((string(String.fromCharCode(36) + 'grammar->') + string(v_self.v_metasyntax)))));
                     if ( bool(((v_self.v_captures == 1))) ) { (function () {
                         (v_code = (string('if (' + String.fromCharCode(36) + 'm2) ' + String.fromCharCode(123) + ' ' + String.fromCharCode(36) + 'MATCH->to ' + String.fromCharCode(61) + ' ' + String.fromCharCode(36) + 'm2->to' + String.fromCharCode(59) + ' ' + String.fromCharCode(36) + 'MATCH->' + String.fromCharCode(123) + String.fromCharCode(39)) + string(v_self.v_metasyntax) + string(String.fromCharCode(39) + String.fromCharCode(125) + ' ' + String.fromCharCode(61) + ' ' + String.fromCharCode(36) + 'm2' + String.fromCharCode(59) + ' 1 ' + String.fromCharCode(125) + ' else ' + String.fromCharCode(123) + ' 0 ' + String.fromCharCode(125) + String.fromCharCode(59) + ' ')));;
                     })(); }
@@ -22026,17 +22014,17 @@ if (typeof main !== 'object') {
 }
 (function () {
   var v__NAMESPACE = main;
-// class Main
-if (typeof Main !== 'object') {
-  Main = function() {};
-  Main = new Main;
-  Main.isa = function (s) { return s == 'Main'; };
-  Main.ref = function (s) { return 'Main'; };
+// class Perlito5::Runtime
+if (typeof Perlito5$Runtime !== 'object') {
+  Perlito5$Runtime = function() {};
+  Perlito5$Runtime = new Perlito5$Runtime;
+  Perlito5$Runtime.isa = function (s) { return s == 'Perlito5::Runtime'; };
+  Perlito5$Runtime.ref = function (s) { return 'Perlito5::Runtime'; };
 }
 (function () {
-  var v__NAMESPACE = Main;
+  var v__NAMESPACE = Perlito5$Runtime;
   // sub _replace
-  Main._replace = function () {
+  Perlito5$Runtime._replace = function () {
                 var List__ = Array.prototype.slice.call(arguments);
                 if (List__[0] instanceof CallSubClass) {
                     List__.shift()
@@ -22068,9 +22056,9 @@ if (typeof Main !== 'object') {
                     }
                 }
   }
-  Main._replace;  // v8 bug workaround
+  Perlito5$Runtime._replace;  // v8 bug workaround
   // sub lisp_escape_string
-  Main.lisp_escape_string = function () {
+  Perlito5$Runtime.lisp_escape_string = function () {
                 var List__ = Array.prototype.slice.call(arguments);
                 if (List__[0] instanceof CallSubClass) {
                     List__.shift()
@@ -22093,9 +22081,9 @@ if (typeof Main !== 'object') {
                     }
                 }
   }
-  Main.lisp_escape_string;  // v8 bug workaround
+  Perlito5$Runtime.lisp_escape_string;  // v8 bug workaround
   // sub to_javascript_namespace
-  Main.to_javascript_namespace = function () {
+  Perlito5$Runtime.to_javascript_namespace = function () {
                 var List__ = Array.prototype.slice.call(arguments);
                 if (List__[0] instanceof CallSubClass) {
                     List__.shift()
@@ -22118,9 +22106,9 @@ if (typeof Main !== 'object') {
                     }
                 }
   }
-  Main.to_javascript_namespace;  // v8 bug workaround
+  Perlito5$Runtime.to_javascript_namespace;  // v8 bug workaround
   // sub to_go_namespace
-  Main.to_go_namespace = function () {
+  Perlito5$Runtime.to_go_namespace = function () {
                 var List__ = Array.prototype.slice.call(arguments);
                 if (List__[0] instanceof CallSubClass) {
                     List__.shift()
@@ -22143,7 +22131,7 @@ if (typeof Main !== 'object') {
                     }
                 }
   }
-  Main.to_go_namespace;  // v8 bug workaround
+  Perlito5$Runtime.to_go_namespace;  // v8 bug workaround
                 1;
 })()
 ;

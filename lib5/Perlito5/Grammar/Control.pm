@@ -412,7 +412,7 @@ package main;
     ((my  $body) = ($MATCH->{('exp')}->flat())->{'end_block'});
     if ((!((defined($body))))) {
         ($body = ($MATCH->{('exp')}->flat())->{'exp'});
-        if ((Main::isa($body, 'Lit::Block'))) {
+        if ((Perlito5::Runtime::isa($body, 'Lit::Block'))) {
             (($MATCH)->{capture} = While->new(('cond' => Val::Bit->new(('bit' => 1))), ('body' => $body)))
         }
         else {

@@ -81,7 +81,7 @@ package main;
             if (($type eq 'ARRAYREF')) {
                 ($str_init = '[]')
             };
-            if ((Main::isa($ast, 'Var'))) {
+            if ((Perlito5::Runtime::isa($ast, 'Var'))) {
                 if (((($type eq 'HASH') && ($ast->sigil() eq chr(36))))) {
                     ($ast = Var->new(('sigil' => chr(37)), ('twigil' => $ast->twigil()), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
                     ((my  $var_js) = $ast->emit_javascript());
@@ -128,7 +128,7 @@ package main;
                 }
             }
             else {
-                if ((Main::isa($ast, 'Call'))) {
+                if ((Perlito5::Runtime::isa($ast, 'Call'))) {
                     ((my  $var_js) = $ast->emit_javascript());
                     if ((($ast->method() eq 'postcircumfix:<[ ]>'))) {
                         return ((do {
@@ -158,11 +158,11 @@ package main;
                     }
                 }
                 else {
-                    if ((Main::isa($ast, 'Index'))) {
+                    if ((Perlito5::Runtime::isa($ast, 'Index'))) {
                         ((my  $var_js) = $ast->emit_javascript());
                         (my  $type);
                         ((my  $var) = $ast->obj());
-                        if (((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
+                        if (((Perlito5::Runtime::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
                             ($type = 'ARRAY')
                         }
                         else {
@@ -180,11 +180,11 @@ package main;
 }))
                     }
                     else {
-                        if ((Main::isa($ast, 'Lookup'))) {
+                        if ((Perlito5::Runtime::isa($ast, 'Lookup'))) {
                             ((my  $var_js) = $ast->emit_javascript());
                             (my  $type);
                             ((my  $var) = $ast->obj());
-                            if (((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
+                            if (((Perlito5::Runtime::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
                                 ($type = 'HASH')
                             }
                             else {
@@ -242,12 +242,12 @@ package main;
             };
             (my  $List_str = bless [], 'ARRAY');
             for my $decl ( @{$List_block} ) {
-                if (((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my')))) {
+                if (((Perlito5::Runtime::isa($decl, 'Decl') && ($decl->decl() eq 'my')))) {
                     push( @{$List_str}, (Javascript::tab($level) . $decl->emit_javascript_init()) )
                 };
-                if (((Main::isa($decl, 'Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')))) {
+                if (((Perlito5::Runtime::isa($decl, 'Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')))) {
                     ((my  $var) = $decl->arguments()->[0]);
-                    if (((Main::isa($var, 'Decl') && ($var->decl() eq 'my')))) {
+                    if (((Perlito5::Runtime::isa($var, 'Decl') && ($var->decl() eq 'my')))) {
                         push( @{$List_str}, (Javascript::tab($level) . $var->emit_javascript_init()) )
                     }
                 }
@@ -257,16 +257,16 @@ package main;
                 ($last_statement = pop( @{$List_block} ))
             };
             for my $decl ( @{$List_block} ) {
-                if ((!(((Main::isa($decl, 'Decl') && ($decl->decl() eq 'my')))))) {
+                if ((!(((Perlito5::Runtime::isa($decl, 'Decl') && ($decl->decl() eq 'my')))))) {
                     push( @{$List_str}, ($decl->emit_javascript_indented($level) . chr(59)) )
                 }
             };
             if ((($self->{needs_return} && $last_statement))) {
-                if ((Main::isa($last_statement, 'If'))) {
+                if ((Perlito5::Runtime::isa($last_statement, 'If'))) {
                     ((my  $cond) = $last_statement->cond());
                     ((my  $body) = $last_statement->body());
                     ((my  $otherwise) = $last_statement->otherwise());
-                    if (((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
+                    if (((Perlito5::Runtime::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                         ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -282,7 +282,7 @@ package main;
                     }
                 }
                 else {
-                    if ((((Main::isa($last_statement, 'Apply') && ($last_statement->code() eq 'return')) || Main::isa($last_statement, 'For')) || Main::isa($last_statement, 'While'))) {
+                    if ((((Perlito5::Runtime::isa($last_statement, 'Apply') && ($last_statement->code() eq 'return')) || Perlito5::Runtime::isa($last_statement, 'For')) || Perlito5::Runtime::isa($last_statement, 'While'))) {
                         push( @{$List_str}, $last_statement->emit_javascript_indented($level) )
                     }
                     else {
@@ -328,24 +328,24 @@ package main;
                     ($i)++
                 }
             };
-            ((my  $class_name) = Main::to_javascript_namespace($self->{name}));
+            ((my  $class_name) = Perlito5::Runtime::to_javascript_namespace($self->{name}));
             ((my  $str) = (chr(47) . chr(47) . ' class ' . $self->{name} . (chr(10)) . 'if (typeof ' . $class_name . ' ' . chr(33) . chr(61) . chr(61) . ' ' . chr(39) . 'object' . chr(39) . ') ' . chr(123) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' function() ' . chr(123) . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . ' ' . chr(61) . ' new ' . $class_name . chr(59) . (chr(10)) . '  ' . $class_name . '.' . ('isa') . ' ' . chr(61) . ' function (s) ' . chr(123) . ' return s ' . chr(61) . chr(61) . ' ' . chr(39) . $self->{name} . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . '  ' . $class_name . '.' . ('ref') . ' ' . chr(61) . ' function (s) ' . chr(123) . ' return ' . chr(39) . $self->{name} . chr(39) . chr(59) . ' ' . chr(125) . chr(59) . (chr(10)) . chr(125) . (chr(10)) . '(function () ' . chr(123) . (chr(10)) . '  var v__NAMESPACE ' . chr(61) . ' ' . $class_name . chr(59) . (chr(10))));
             for my $decl ( @{$List_body} ) {
-                if (((Main::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
+                if (((Perlito5::Runtime::isa($decl, 'Decl') && (($decl->decl() eq 'my'))))) {
                     ($str = ($str . '  ' . $decl->emit_javascript_init()))
                 };
-                if (((Main::isa($decl, 'Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')))) {
+                if (((Perlito5::Runtime::isa($decl, 'Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')))) {
                     ((my  $var) = $decl->arguments()->[0]);
-                    if (((Main::isa($var, 'Decl') && ($var->decl() eq 'my')))) {
+                    if (((Perlito5::Runtime::isa($var, 'Decl') && ($var->decl() eq 'my')))) {
                         ($str = ($str . '  ' . $var->emit_javascript_init()))
                     }
                 }
             };
             for my $decl ( @{$List_body} ) {
-                if (((Main::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
+                if (((Perlito5::Runtime::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
                     ($str = ($str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . (chr(10)) . '  ' . $class_name . '.v_' . $decl->var()->name() . ' ' . chr(61) . ' null' . chr(59) . (chr(10)) . '  ' . $class_name . '.' . ($decl->var()->name()) . ' ' . chr(61) . ' function () ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . (chr(10))))
                 };
-                if ((Main::isa($decl, 'Sub'))) {
+                if ((Perlito5::Runtime::isa($decl, 'Sub'))) {
                     ((my  $sig) = $decl->sig());
                     ((my  $pos) = $sig->positional());
                     ((my  $block) = Perlito5::Javascript::LexicalBlock->new(('block' => $decl->block()), ('needs_return' => 1), ('top_level' => 1)));
@@ -353,7 +353,7 @@ package main;
                 }
             };
             for my $decl ( @{$List_body} ) {
-                if ((((defined($decl) && (!(((Main::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my'))))))))) && (!((Main::isa($decl, 'Sub'))))))) {
+                if ((((defined($decl) && (!(((Perlito5::Runtime::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my'))))))))) && (!((Perlito5::Runtime::isa($decl, 'Sub'))))))) {
                     ($str = ($str . ($decl)->emit_javascript_indented(($level + 1)) . (chr(59) . chr(10))))
                 }
             };
@@ -500,7 +500,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = shift());
             ((my  $level) = shift());
-            if (((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))))) {
+            if (((Perlito5::Runtime::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))))) {
                 ((my  $v) = Var->new(('sigil' => chr(64)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
                 return (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
             };
@@ -520,7 +520,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = shift());
             ((my  $level) = shift());
-            if ((((Main::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne 'MATCH')))) {
+            if ((((Perlito5::Runtime::isa($self->{obj}, 'Var') && ($self->{obj}->sigil() eq chr(36))) && ($self->{obj}->name() ne 'MATCH')))) {
                 ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{obj}->twigil()), ('namespace' => $self->{obj}->namespace()), ('name' => $self->{obj}->name())));
                 return (($v->emit_javascript_indented($level) . '[' . $self->{index_exp}->emit_javascript() . ']'))
             };
@@ -550,7 +550,7 @@ package main;
 }));
             ((my  $ns) = '');
             if (($self->{namespace})) {
-                ($ns = (Main::to_javascript_namespace($self->{namespace}) . '.'))
+                ($ns = (Perlito5::Runtime::to_javascript_namespace($self->{namespace}) . '.'))
             };
             ((($self->{twigil} eq '.')) ? (('v_self.v_' . $self->{name} . '')) : (($table->{$self->{sigil}} . $ns . $self->{name})))
         };
@@ -576,7 +576,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = shift());
             ((my  $level) = shift());
-            (Javascript::tab($level) . Main::to_javascript_namespace($self->{name}))
+            (Javascript::tab($level) . Perlito5::Runtime::to_javascript_namespace($self->{name}))
         }
     }
 
@@ -600,14 +600,14 @@ package main;
     $List_a
 }));
                 for my $field ( @{($self->{arguments})} ) {
-                    if (((Main::isa($field, 'Apply') && ($field->code() eq 'infix:<' . chr(61) . '>>')))) {
+                    if (((Perlito5::Runtime::isa($field, 'Apply') && ($field->code() eq 'infix:<' . chr(61) . '>>')))) {
                         push( @{($str)}, ('v_' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
                     }
                     else {
                         die('Error in constructor, field: ', $field)
                     }
                 };
-                return (('(function () ' . chr(123) . ' ' . 'if (' . Main::to_javascript_namespace($invocant) . '.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ) ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . join(',', @{($str)}) . chr(125) . chr(59) . ' ' . 'tmp.__proto__ ' . chr(61) . ' ' . Main::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
+                return (('(function () ' . chr(123) . ' ' . 'if (' . Perlito5::Runtime::to_javascript_namespace($invocant) . '.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ) ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . join(',', @{($str)}) . chr(125) . chr(59) . ' ' . 'tmp.__proto__ ' . chr(61) . ' ' . Perlito5::Runtime::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
             };
             ((my  $meth) = $self->{method});
             if ((($self->{method} eq 'postcircumfix:<[ ]>'))) {
@@ -771,14 +771,14 @@ package main;
             };
             if ((($code eq 'exists'))) {
                 ((my  $arg) = $self->{arguments}->[0]);
-                if ((Main::isa($arg, 'Lookup'))) {
+                if ((Perlito5::Runtime::isa($arg, 'Lookup'))) {
                     ((my  $v) = $arg->obj());
-                    if ((((Main::isa($v, 'Var') && ($v->sigil() eq chr(36))) && ($v->name() ne 'MATCH')))) {
+                    if ((((Perlito5::Runtime::isa($v, 'Var') && ($v->sigil() eq chr(36))) && ($v->name() ne 'MATCH')))) {
                         ($v = Var->new(('sigil' => chr(37)), ('twigil' => $v->twigil()), ('namespace' => $v->namespace()), ('name' => $v->name())))
                     };
                     return (('(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
                 };
-                if (((Main::isa($arg, 'Call') && ($arg->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>')))) {
+                if (((Perlito5::Runtime::isa($arg, 'Call') && ($arg->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>')))) {
                     return (('(' . $arg->invocant()->emit_javascript() . ').hasOwnProperty(' . $arg->arguments()->emit_javascript() . ')'))
                 }
             };
@@ -795,7 +795,7 @@ package main;
                 return ((Javascript::tab($level) . 'throw(' . ((($self->{arguments}) ? $self->{arguments}->[0]->emit_javascript() : 'null')) . ')'))
             };
             if (($self->{namespace})) {
-                ($code = (Main::to_javascript_namespace($self->{namespace}) . '.' . ($code)))
+                ($code = (Perlito5::Runtime::to_javascript_namespace($self->{namespace}) . '.' . ($code)))
             }
             else {
                 if ((!(exists($Hash_op_global_js->{$code})))) {
@@ -822,7 +822,7 @@ package main;
             ((my  $parameters) = shift());
             ((my  $arguments) = shift());
             ((my  $level) = shift());
-            if ((Main::isa($parameters, 'Call'))) {
+            if ((Perlito5::Runtime::isa($parameters, 'Call'))) {
                 if ((($parameters->method() eq 'postcircumfix:<[ ]>'))) {
                     ((my  $str) = '');
                     ((my  $var_js) = $parameters->invocant()->emit_javascript());
@@ -845,10 +845,10 @@ package main;
                 };
                 return ((Javascript::tab($level) . '(' . ($parameters->invocant())->emit_javascript() . '.v_' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
             };
-            if ((Main::isa($parameters, 'Lookup'))) {
+            if ((Perlito5::Runtime::isa($parameters, 'Lookup'))) {
                 ((my  $str) = '');
                 ((my  $var) = $parameters->obj());
-                if ((((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))) && ($var->name() ne 'MATCH')))) {
+                if ((((Perlito5::Runtime::isa($var, 'Var') && ($var->sigil() eq chr(36))) && ($var->name() ne 'MATCH')))) {
                     ($var = Var->new(('sigil' => chr(37)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
                 };
                 ((my  $var_js) = $var->emit_javascript());
@@ -859,10 +859,10 @@ package main;
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                 return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
             };
-            if ((Main::isa($parameters, 'Index'))) {
+            if ((Perlito5::Runtime::isa($parameters, 'Index'))) {
                 ((my  $str) = '');
                 ((my  $var) = $parameters->obj());
-                if (((Main::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
+                if (((Perlito5::Runtime::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
                     ($var = Var->new(('sigil' => chr(64)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
                 };
                 ((my  $var_js) = $var->emit_javascript());
@@ -873,7 +873,7 @@ package main;
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                 return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
             };
-            if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64))))) {
+            if (((Perlito5::Runtime::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Perlito5::Runtime::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64))))) {
                 ($arguments = Lit::Array->new(('array1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -883,7 +883,7 @@ package main;
                 return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' (' . $arguments->emit_javascript() . ').slice())'))
             }
             else {
-                if (((Main::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Main::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37))))) {
+                if (((Perlito5::Runtime::isa($parameters, 'Var') && ($parameters->sigil() eq chr(37))) || (Perlito5::Runtime::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(37))))) {
                     ($arguments = Lit::Hash->new(('hash1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -910,7 +910,7 @@ package main;
             ((my  $self) = shift());
             ((my  $level) = shift());
             ((my  $cond) = $self->{cond});
-            if (((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
+            if (((Perlito5::Runtime::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))) {
                 ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -958,7 +958,7 @@ package main;
             ((my  $self) = shift());
             ((my  $level) = shift());
             ((my  $cond) = $self->{cond});
-            if ((!(((Main::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))))) {
+            if ((!(((Perlito5::Runtime::isa($cond, 'Var') && ($cond->sigil() eq chr(64))))))) {
                 ($cond = Lit::Array->new(('array1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');

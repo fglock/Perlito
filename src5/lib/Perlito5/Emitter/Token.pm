@@ -148,7 +148,7 @@ class Rul::Subrule {
         my $self = $_[0];
 
         my $meth = ( 1 + index( $.metasyntax, '.' ) )
-            ? Main::_replace( $.metasyntax, '.', '->' )
+            ? Perlito5::Runtime::_replace( $.metasyntax, '.', '->' )
             : ( '$grammar->' . $.metasyntax );
 
         my $code;

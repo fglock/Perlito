@@ -1,4 +1,4 @@
-package Main;
+package Perlito5::Runtime;
 
 sub _replace {
     my $s = shift;

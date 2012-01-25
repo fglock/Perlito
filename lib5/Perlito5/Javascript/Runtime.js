@@ -67,14 +67,14 @@ IO.slurp = function(v_callsub, filename) {
     die("IO.slurp() not implemented");
 };
 
-// class Main
-if (typeof Main !== 'object') {
-    Main = function() {};
-    Main = new Main;
+// class Perlito5$Runtime
+if (typeof Perlito5$Runtime !== 'object') {
+    Perlito5$Runtime = function() {};
+    Perlito5$Runtime = new Perlito5$Runtime;
 }
 
 (function() {
-    Main._dump = function(o) {
+    Perlito5$Runtime._dump = function(o) {
         var out = [];
         for (var i in o) {
             if (i.match(/^v_/)) {
@@ -138,7 +138,7 @@ perl = function(o) {
         return "[" + out.join(", ") + "]";
     }
     switch (typeof o) {
-        case "string": return '"' + Main.lisp_escape_string(o) + '"';
+        case "string": return '"' + Perlito5$Runtime.lisp_escape_string(o) + '"';
         case "function": return "function";
         case "number": return o;
         case "boolean": return o;

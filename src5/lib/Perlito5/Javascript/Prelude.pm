@@ -51,32 +51,15 @@ class Perlito5::Match {
     }
 }
 
-class Main {
-    1;
-}
-
 =begin
 
 =head1 NAME
 
-Perlito5::Javascript::Prelude - Runtime for Perlito-in-Javascript
-
-=head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-This module contains Perlito code for the Perlito-in-Lisp runtime.
+Perlito5::Javascript::Prelude - Runtime for Perlito Perl5-in-Javascript
 
 =head1 AUTHORS
 
 Flavio Soibelmann Glock <fglock@gmail.com>.
-The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
-
-=head1 SEE ALSO
-
-The Perl 6 homepage at L<http://dev.perl.org/perl6>.
-
-The Pugs homepage at L<http://pugscode.org/>.
 
 =head1 COPYRIGHT
 

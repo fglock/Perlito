@@ -286,7 +286,7 @@ class Proto {
 class Call {
 
     my %method_perl5 = (
-        'isa'    => 'Main::isa',
+        'isa'    => 'Perlito5::Runtime::isa',
     );
 
     sub emit_perl5 {
@@ -322,13 +322,13 @@ class Call {
 class Apply {
 
     my %op_prefix_perl5 = (
-        say     => 'Main::say',
-        print   => 'Main::print',
-        # map     => 'Main::map',
-        grep    => 'Main::grep',
-        sort    => 'Main::sort',
-        keys    => 'Main::keys',
-        values  => 'Main::values',
+        say     => 'Perlito5::Runtime::say',
+        print   => 'Perlito5::Runtime::print',
+        # map     => 'Perlito5::Runtime::map',
+        grep    => 'Perlito5::Runtime::grep',
+        sort    => 'Perlito5::Runtime::sort',
+        keys    => 'Perlito5::Runtime::keys',
+        values  => 'Perlito5::Runtime::values',
         warn    => 'warn',
         Int     => '0+',
         Num     => '0+',

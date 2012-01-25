@@ -10,7 +10,7 @@ our $MATCH = Perlito5::Match->new();
 {
 package main;
     sub new { shift; bless { @_ }, "main" }
-    package Main;
+    package Perlito5::Runtime;
     sub _replace {
         my $List__ = bless \@_, "ARRAY";
         ((my  $s) = shift());

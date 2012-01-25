@@ -478,9 +478,9 @@ package main;
                     else {
                         if ((is_term($token))) {
                             if ((is_term($last))) {
-                                Main::say((chr(35) . '      last:  '), $last);
-                                Main::say((chr(35) . '      token: '), $token);
-                                Main::say((chr(35) . '      space: '), $last_has_space);
+                                Perlito5::Runtime::say((chr(35) . '      last:  '), $last);
+                                Perlito5::Runtime::say((chr(35) . '      token: '), $token);
+                                Perlito5::Runtime::say((chr(35) . '      space: '), $last_has_space);
                                 die(('Value tokens must be separated by an operator'))
                             };
                             ($token->[0] = 'term');

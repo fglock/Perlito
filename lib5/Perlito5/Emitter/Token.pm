@@ -114,7 +114,7 @@ package main;
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            ((my  $meth) = (((1 + index($self->{metasyntax}, '.'))) ? Main::_replace($self->{metasyntax}, '.', '->') : ((chr(36) . 'grammar->' . $self->{metasyntax}))));
+            ((my  $meth) = (((1 + index($self->{metasyntax}, '.'))) ? Perlito5::Runtime::_replace($self->{metasyntax}, '.', '->') : ((chr(36) . 'grammar->' . $self->{metasyntax}))));
             (my  $code);
             if ((($self->{captures} == 1))) {
                 ($code = ('if (' . chr(36) . 'm2) ' . chr(123) . ' ' . chr(36) . 'MATCH->to ' . chr(61) . ' ' . chr(36) . 'm2->to' . chr(59) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(39) . $self->{metasyntax} . chr(39) . chr(125) . ' ' . chr(61) . ' ' . chr(36) . 'm2' . chr(59) . ' 1 ' . chr(125) . ' else ' . chr(123) . ' 0 ' . chr(125) . chr(59) . ' '))
@@ -248,7 +248,7 @@ package main;
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            Main::say((chr(35) . ' TODO: interpolate var ' . $self->{var}->emit_perl5() . ''));
+            Perlito5::Runtime::say((chr(35) . ' TODO: interpolate var ' . $self->{var}->emit_perl5() . ''));
             die()
         };
         sub set_captures_to_array {
@@ -266,13 +266,13 @@ package main;
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            Main::say((chr(35) . ' TODO: named capture ' . $self->{capture_ident} . ' ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl5() . ''));
+            Perlito5::Runtime::say((chr(35) . ' TODO: named capture ' . $self->{capture_ident} . ' ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl5() . ''));
             die()
         };
         sub set_captures_to_array {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            Main::say(chr(35) . ' TODO: named capture ')
+            Perlito5::Runtime::say(chr(35) . ' TODO: named capture ')
         }
     }
 

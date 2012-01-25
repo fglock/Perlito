@@ -1,6 +1,6 @@
 use v5;
 
-package Main;
+package Perlito;
 use Perlito5::Emitter::Token;
 use Perlito5::Expression;
 use Perlito5::Grammar::Control;
@@ -39,7 +39,7 @@ token module_name {
 }
 sub modulename_to_filename {
     my $s = shift;
-    my $ident = Main->module_name( $s, 0 );
+    my $ident = Perlito->module_name( $s, 0 );
     return join("/", $ident->flat());
 }
 
