@@ -419,18 +419,18 @@ package Perlito5::Expression;
         | '->' 
             <Perlito5::Grammar.ident>
           [ ':' <.Perlito5::Grammar.ws>? <list_parse>
-            { $MATCH->capture = [ 'postfix_or_term', 'methcall',           '' . $MATCH->{"Perlito5::Grammar.ident"}, $MATCH->{"list_parse"}->flat() ] }
+            { $MATCH->capture = [ 'postfix_or_term', 'methcall', $MATCH->{"Perlito5::Grammar.ident"}->flat(), $MATCH->{"list_parse"}->flat() ] }
           | '(' <paren_parse> ')'
             { $MATCH->capture = [ 'postfix_or_term',
                      'methcall',
-                     '' . $MATCH->{"Perlito5::Grammar.ident"},
+                     $MATCH->{"Perlito5::Grammar.ident"}->flat(),
                      { end_block => undef,
                        exp       => $MATCH->{"paren_parse"}->flat(),
                        terminated => 0,
                      },
                    ]
             }
-          | { $MATCH->capture = [ 'postfix_or_term', 'methcall_no_params', '' . $MATCH->{"Perlito5::Grammar.ident"} ] }
+          | { $MATCH->capture = [ 'postfix_or_term', 'methcall_no_params', $MATCH->{"Perlito5::Grammar.ident"}->flat() ] }
           ]
 
         | <before <.Perlito5::Grammar.digit> >
@@ -443,8 +443,8 @@ package Perlito5::Expression;
 
           [
             <before <.Perlito5::Grammar.ws>? '=>' >   # autoquote
-            { my $namespace = '' . $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"};
-              my $name      = '' . $MATCH->{"Perlito5::Grammar.ident"};
+            { my $namespace = $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat();
+              my $name      = $MATCH->{"Perlito5::Grammar.ident"}->flat();
               if ($namespace) {
                 $name = $namespace . '::' . $name;
               }
@@ -453,22 +453,22 @@ package Perlito5::Expression;
 
           | <.Perlito5::Grammar.ws> <list_parse>
             { $MATCH->capture = [ 'postfix_or_term', 'funcall',
-                     '' . $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"},
-                     '' . $MATCH->{"Perlito5::Grammar.ident"}, 
+                     $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
+                     $MATCH->{"Perlito5::Grammar.ident"}->flat(), 
                      $MATCH->{"list_parse"}->flat()  
                    ] 
             }
           | <before '->' >
-            { my $namespace = '' . $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"};
-              my $name      = '' . $MATCH->{"Perlito5::Grammar.ident"};
+            { my $namespace = $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat();
+              my $name      = $MATCH->{"Perlito5::Grammar.ident"}->flat();
               if ($namespace) {
                 $name = $namespace . '::' . $name;
               }
               $MATCH->capture = [ 'term', Proto->new( name => $name )            ]
             }
           | { $MATCH->capture = [ 'postfix_or_term', 'funcall_no_params',
-                     '' . $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"},
-                     '' . $MATCH->{"Perlito5::Grammar.ident"}                  ] }
+                     $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
+                     $MATCH->{"Perlito5::Grammar.ident"}->flat()                  ] }
           ]
 
         | <Perlito5::Grammar.val_buf>    { $MATCH->capture = [ 'term', $MATCH->{"Perlito5::Grammar.val_buf"}->flat() ]  }  # 'moose'
@@ -598,7 +598,7 @@ package Perlito5::Expression;
         my $last_pos = $pos;
         my $get_token = sub {
             my $m = $self->operator($str, $last_pos);
-            if (!$m) {
+            if (!$m->bool) {
                 die "Expected closing delimiter: ", @{$delimiter}, ' near ', $last_pos;
             }
             my $v = $m->flat();
@@ -668,7 +668,7 @@ package Perlito5::Expression;
             else {
                 my $m = $self->operator($str, $last_pos);
                 # say "# exp lexer got: " . $m->perl;
-                if (!$m) {
+                if (!$m->bool) {
                     return [ 'end', '*end*' ];
                 }
                 $v = $m->flat();
@@ -774,7 +774,7 @@ package Perlito5::Expression;
             return $res;
         }
         $res = $self->exp_parse($str, $pos);
-        if (!($res)) {
+        if (!($res->bool)) {
             # say "# not a statement or expression";
             return $res;
         }
@@ -801,7 +801,7 @@ package Perlito5::Expression;
         }
         my $modifier_exp = $self->exp_parse($str, $modifier->to);
         # say "# statement modifier [", $modifier, "] exp: ", $modifier_exp->perl;
-        if (!($modifier_exp)) {
+        if (!($modifier_exp->bool)) {
             die "Expected expression after '", $modifier, "'";
         }
         if ($modifier_exp->flat()){'end_block'} {

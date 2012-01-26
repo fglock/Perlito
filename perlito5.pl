@@ -51,7 +51,7 @@ package main;
     ((do {
     (((do {
     ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Grammar.ident'} = $m2);
         1
@@ -64,7 +64,7 @@ package main;
     (((do {
     ((((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->module_name($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'module_name'} = $m2);
         1

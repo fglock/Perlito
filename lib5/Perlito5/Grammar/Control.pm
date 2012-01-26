@@ -22,7 +22,7 @@ package main;
     ((do {
     ((((((((((('u' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -31,7 +31,7 @@ package main;
     }
 }))) && ((do {
     ((my  $m2) = $grammar->exp($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -65,7 +65,7 @@ package main;
     ((do {
     ((((((('i' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('f' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -74,7 +74,7 @@ package main;
     }
 }))) && ((do {
     ((my  $m2) = $grammar->exp($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -87,7 +87,7 @@ package main;
     ((((do {
     ((((((((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -96,7 +96,7 @@ package main;
     }
 })) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->exp2($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp2'} = $m2);
         1
@@ -122,7 +122,7 @@ package main;
     (($MATCH)->{to} = $pos1);
     ((((((((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -131,7 +131,7 @@ package main;
     }
 })) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('s' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->if($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'if'} = $m2);
         1
@@ -181,7 +181,7 @@ package main;
     ((do {
     ((((((((('w' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('h' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -190,7 +190,7 @@ package main;
     }
 }))) && ((do {
     ((my  $m2) = $grammar->exp($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -228,7 +228,7 @@ package main;
     1
 }))) && ((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -240,7 +240,7 @@ package main;
     (((do {
     ((((((((((((((((('m' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('y' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -249,7 +249,7 @@ package main;
     }
 }))) && ((do {
     ((my  $m2) = Perlito5::Grammar->var_ident($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Grammar.var_ident'} = $m2);
         1
@@ -259,7 +259,7 @@ package main;
     }
 }))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -268,7 +268,7 @@ package main;
     }
 }))) && ((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = Perlito5::Expression->paren_parse($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Expression.paren_parse'} = $m2);
         1
@@ -278,7 +278,7 @@ package main;
     }
 }))) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -287,7 +287,7 @@ package main;
     }
 }))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -296,7 +296,7 @@ package main;
     }
 }))) && ((do {
     ((my  $m2) = Perlito5::Grammar->exp_stmts($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'Perlito5::Grammar.exp_stmts'} = $m2);
         1
@@ -306,7 +306,7 @@ package main;
     }
 }))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -320,7 +320,7 @@ package main;
     (($MATCH)->{to} = $pos1);
     ((((do {
     ((my  $m2) = $grammar->exp($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -352,7 +352,7 @@ package main;
     ((do {
     (((((((((('w' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('h' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('i' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -361,7 +361,7 @@ package main;
     }
 }))) && ((do {
     ((my  $m2) = $grammar->exp($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1
@@ -391,7 +391,7 @@ package main;
     ((do {
     ((((((((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('p' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         1
     }
@@ -400,7 +400,7 @@ package main;
     }
 }))) && ((do {
     ((my  $m2) = $grammar->exp($str, $MATCH->to()));
-    if (($m2)) {
+    if (($m2->bool())) {
         (($MATCH)->{to} = $m2->to());
         ($MATCH->{'exp'} = $m2);
         1

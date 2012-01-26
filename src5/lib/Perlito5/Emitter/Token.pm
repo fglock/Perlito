@@ -153,11 +153,11 @@ class Rul::Subrule {
 
         my $code;
         if ($.captures == 1) {
-            $code = 'if ($m2) { $MATCH->to = $m2->to; $MATCH->{\'' . $.metasyntax . '\'} = $m2; 1 } else { 0 }; '
+            $code = 'if ($m2->bool) { $MATCH->to = $m2->to; $MATCH->{\'' . $.metasyntax . '\'} = $m2; 1 } else { 0 }; '
         }
         elsif ($.captures > 1) {
             # TODO: capture level > 2
-            $code = 'if ($m2) { '
+            $code = 'if ($m2->bool) { '
                     .   '$MATCH->to = $m2->to; '
                     .   'if (exists $MATCH->{\'' . $.metasyntax . '\'}) { '
                     .       'push @{ $MATCH->{\'' . $.metasyntax . '\'} }, $m2; '
@@ -169,7 +169,7 @@ class Rul::Subrule {
                     . '} else { 0 }; '
         }
         else {
-            $code = 'if ($m2) { $MATCH->to = $m2->to; 1 } else { 0 }; '
+            $code = 'if ($m2->bool) { $MATCH->to = $m2->to; 1 } else { 0 }; '
         }
 
         '(do { '
@@ -314,9 +314,9 @@ class Rul::Before {
             '$MATCH->bool = ' .
                 $.rule_exp->emit_perl5() .
             '; ' .
-            '$tmp->bool = $MATCH ? 1 : 0; ' .
+            '$tmp->bool = $MATCH->bool ? 1 : 0; ' .
             '$MATCH = $tmp; ' .
-            '$MATCH ? 1 : 0; ' .
+            '$MATCH->bool ? 1 : 0; ' .
         '})'
     }
     sub set_captures_to_array {
@@ -335,9 +335,9 @@ class Rul::NotBefore {
             '$MATCH->bool = ' .
                 $.rule_exp->emit_perl5() .
             '; ' .
-            '$tmp->bool = !$MATCH; ' .
+            '$tmp->bool = !$MATCH->bool; ' .
             '$MATCH = $tmp; ' .
-            '$MATCH ? 1 : 0; ' .
+            '$MATCH->bool ? 1 : 0; ' .
         '})'
     }
     sub set_captures_to_array {
