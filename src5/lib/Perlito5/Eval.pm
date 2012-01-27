@@ -20,14 +20,6 @@ class Val::Int {
     }
 }
 
-class Val::Bit {
-    sub eval {
-        my $self = $_[0];
-        my $env = $_[1];
-        $.bit 
-    }
-}
-
 class Val::Num {
     sub eval {
         my $self = $_[0];

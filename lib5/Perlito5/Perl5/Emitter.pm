@@ -117,23 +117,6 @@ package main;
 
 ;
     {
-    package Val::Bit;
-        sub new { shift; bless { @_ }, "Val::Bit" }
-        sub emit_perl5 {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            $self->emit_perl5_indented(0)
-        };
-        sub emit_perl5_indented {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $level) = $List__->[1]);
-            (Perl5::tab($level) . $self->{bit})
-        }
-    }
-
-;
-    {
     package Val::Num;
         sub new { shift; bless { @_ }, "Val::Num" }
         sub emit_perl5 {

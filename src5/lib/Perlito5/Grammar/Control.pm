@@ -121,25 +121,6 @@ token while {
     }
 }
 
-token loop {
-    loop <.ws> <exp>
-    {
-        my $body = ($MATCH->{"exp"}->flat()){'end_block'};
-        if (!(defined($body))) {
-            $body = ($MATCH->{"exp"}->flat()){'exp'};
-            if ($body->isa( 'Lit::Block' )) {
-                $MATCH->capture = While->new( cond => Val::Bit->new( bit => 1 ), body => $body )
-            }
-            else {
-                die "Missing code block in 'loop'";
-            }
-        }
-        else {
-            die "'loop' with parameters is not implemented";
-        }
-    }
-}
-
 =begin
 
 =head1 NAME

@@ -1451,7 +1451,6 @@ package main;
     push( @{$List_a}, 'foreach' );
     push( @{$List_a}, 'for' );
     push( @{$List_a}, 'while' );
-    push( @{$List_a}, 'loop' );
     $List_a
 }))));
         ((my  $res) = $prec->precedence_parse());
@@ -1622,7 +1621,6 @@ package main;
     push( @{$List_a}, 'foreach' );
     push( @{$List_a}, 'for' );
     push( @{$List_a}, 'while' );
-    push( @{$List_a}, 'loop' );
     $List_a
 }))));
         ((my  $res) = $prec->precedence_parse());
@@ -1657,7 +1655,7 @@ package main;
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = (((do {
     ((my  $pos1) = $MATCH->to());
-    (((((((do {
+    ((((((do {
     (((do {
     ((my  $m2) = Perlito5::Grammar->if($str, $MATCH->to()));
     if (($m2->bool())) {
@@ -1731,21 +1729,6 @@ package main;
 })) && ((((do {
     (($MATCH)->{capture} = $MATCH->{('Perlito5::Grammar.while')}->flat())
 })) || 1))))
-}))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((do {
-    ((my  $m2) = Perlito5::Grammar->loop($str, $MATCH->to()));
-    if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
-        ($MATCH->{'Perlito5::Grammar.loop'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((((do {
-    (($MATCH)->{capture} = $MATCH->{('Perlito5::Grammar.loop')}->flat())
-})) || 1))))
 })))
 }))));
         $MATCH
@@ -1758,7 +1741,7 @@ package main;
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         (($MATCH)->{bool} = (((do {
     ((my  $pos1) = $MATCH->to());
-    ((((((((do {
+    (((((((do {
     (('if' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
 })) || ((do {
     (($MATCH)->{to} = $pos1);
@@ -1775,9 +1758,6 @@ package main;
 }))) || ((do {
     (($MATCH)->{to} = $pos1);
     (((('while' eq substr($str, $MATCH->to(), 5)) && ((($MATCH)->{to} = (5 + $MATCH->to()))))))
-}))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((('loop' eq substr($str, $MATCH->to(), 4)) && ((($MATCH)->{to} = (4 + $MATCH->to()))))))
 })))
 }))));
         $MATCH

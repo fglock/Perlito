@@ -379,53 +379,6 @@ package main;
 }))
 }))));
         $MATCH
-    };
-    sub loop {
-        my $List__ = bless \@_, "ARRAY";
-        ((my  $grammar) = $List__->[0]);
-        ((my  $str) = $List__->[1]);
-        ((my  $pos) = $List__->[2]);
-        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
-    ((my  $pos1) = $MATCH->to());
-    ((do {
-    ((((((((('l' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('o' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((('p' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    ((my  $m2) = $grammar->ws($str, $MATCH->to()));
-    if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ((my  $m2) = $grammar->exp($str, $MATCH->to()));
-    if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
-        ($MATCH->{'exp'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((((do {
-    ((my  $body) = ($MATCH->{('exp')}->flat())->{'end_block'});
-    if ((!((defined($body))))) {
-        ($body = ($MATCH->{('exp')}->flat())->{'exp'});
-        if ((Perlito5::Runtime::isa($body, 'Lit::Block'))) {
-            (($MATCH)->{capture} = While->new(('cond' => Val::Bit->new(('bit' => 1))), ('body' => $body)))
-        }
-        else {
-            die(('Missing code block in ' . chr(39) . 'loop' . chr(39)))
-        }
-    }
-    else {
-        die((chr(39) . 'loop' . chr(39) . ' with parameters is not implemented'))
-    }
-})) || 1)))
-}))
-}))));
-        $MATCH
     }
 }
 

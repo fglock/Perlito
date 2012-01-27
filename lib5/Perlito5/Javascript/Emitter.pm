@@ -388,22 +388,6 @@ package main;
 
 ;
     {
-    package Val::Bit;
-        sub new { shift; bless { @_ }, "Val::Bit" }
-        sub emit_javascript {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->emit_javascript_indented(0)
-        };
-        sub emit_javascript_indented {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = shift());
-            ((my  $level) = shift());
-            (Javascript::tab($level) . (($self->{bit} ? 'true' : 'false')))
-        }
-    }
-
-;
-    {
     package Val::Num;
         sub new { shift; bless { @_ }, "Val::Num" }
         sub emit_javascript {

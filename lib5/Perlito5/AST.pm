@@ -27,13 +27,6 @@ package main;
 
 ;
     {
-    package Val::Bit;
-        sub new { shift; bless { @_ }, "Val::Bit" }
-        sub bit { $_[0]->{bit} }
-    }
-
-;
-    {
     package Val::Num;
         sub new { shift; bless { @_ }, "Val::Num" }
         sub num { $_[0]->{num} }

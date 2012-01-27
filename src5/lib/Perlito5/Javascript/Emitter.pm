@@ -366,13 +366,6 @@ class Val::Int {
         my $level = shift; Javascript::tab($level) . $.int }
 }
 
-class Val::Bit {
-    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
-    sub emit_javascript_indented {
-        my $self = shift;
-        my $level = shift; Javascript::tab($level) . ($.bit ? 'true' : 'false') }
-}
-
 class Val::Num {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {

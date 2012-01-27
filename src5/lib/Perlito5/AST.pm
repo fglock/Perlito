@@ -9,10 +9,6 @@ class Val::Int {
     has $.int;
 }
 
-class Val::Bit {
-    has $.bit;
-}
-
 class Val::Num {
     has $.num;
 }

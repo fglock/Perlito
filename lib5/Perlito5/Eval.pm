@@ -51,18 +51,6 @@ package main;
 
 ;
     {
-    package Val::Bit;
-        sub new { shift; bless { @_ }, "Val::Bit" }
-        sub eval {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $env) = $List__->[1]);
-            $self->{bit}
-        }
-    }
-
-;
-    {
     package Val::Num;
         sub new { shift; bless { @_ }, "Val::Num" }
         sub eval {

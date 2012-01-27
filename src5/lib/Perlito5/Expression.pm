@@ -553,7 +553,7 @@ package Perlito5::Expression;
         };
         my $prec = Perlito5::Precedence->new(get_token => $get_token, reduce => $reduce_to_ast,
             end_token => [ 'and', 'or', ':', ']', ')', '}', ';', 
-                           'if', 'else', 'elsif', 'unless', 'when', 'foreach', 'for', 'while', 'loop' 
+                           'if', 'else', 'elsif', 'unless', 'when', 'foreach', 'for', 'while'
                          ] 
         );
         my $res = $prec->precedence_parse;
@@ -695,7 +695,7 @@ package Perlito5::Expression;
         };
         my $prec = Perlito5::Precedence->new(get_token => $get_token, reduce => $reduce_to_ast,
             end_token => [ ']', ')', '}', ';', 
-                           'if', 'else', 'elsif', 'unless', 'when', 'foreach', 'for', 'while', 'loop' 
+                           'if', 'else', 'elsif', 'unless', 'when', 'foreach', 'for', 'while'
                          ] 
         );
         my $res = $prec->precedence_parse;
@@ -734,11 +734,10 @@ package Perlito5::Expression;
         | <Perlito5::Grammar.when>   { $MATCH->capture = $MATCH->{"Perlito5::Grammar.when"}->flat()   }
         | <Perlito5::Grammar.for>    { $MATCH->capture = $MATCH->{"Perlito5::Grammar.for"}->flat()    }
         | <Perlito5::Grammar.while>  { $MATCH->capture = $MATCH->{"Perlito5::Grammar.while"}->flat()  }
-        | <Perlito5::Grammar.loop>   { $MATCH->capture = $MATCH->{"Perlito5::Grammar.loop"}->flat()   }
     }
 
     token statement_modifier {
-        'if' | 'unless' | 'when' | 'foreach' | 'for' | 'while' | 'loop'
+        'if' | 'unless' | 'when' | 'foreach' | 'for' | 'while'
     }
 
     token delimited_statement {

@@ -103,16 +103,6 @@ class Val::Int {
          Perl5::tab($level) . $.int }
 }
 
-class Val::Bit {
-    sub emit_perl5 {
-        my $self = $_[0];
-        $self->emit_perl5_indented(0) }
-    sub emit_perl5_indented {
-        my $self = $_[0];
-        my $level = $_[1];
-         Perl5::tab($level) . $.bit }
-}
-
 class Val::Num {
     sub emit_perl5 {
         my $self = $_[0];
