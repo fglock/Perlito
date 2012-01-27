@@ -1,7 +1,6 @@
 package Perlito5;
 
-# use Perlito5::Javascript::Runtime;
-# use Perlito5::Javascript::Prelude;
+use Perlito5::Match;
 use Perlito5::Javascript::Emitter;
 use Perlito5::Grammar;
 use Perlito5::Grammar::Control;

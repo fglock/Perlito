@@ -5,38 +5,33 @@ class Perlito5::Match {
     has $.to;
     has $.str;
     has $.bool;
+    has $.capture;
 
-    sub scalar {
+    sub flat {
         my $self = $_[0];
 
-        substr( $.str, $.from, ( $.to - $.from ) );
+        if ($.bool) {
+            if (defined($.capture)) {
+                return $.capture;
+            }
+            return substr( $.str, $.from, ( $.to - $.from ) );
+        }
+        else {
+            return '';
+        }
     }
-}
 
-1;
+}
 
 =begin
 
 =head1 NAME
 
-Perlito5::Perl5::Prelude - Runtime for Perlito-in-Perl5
-
-=head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-This module contains Perlito code for the Perlito-in-Perl5 runtime.
+Perlito5::Match - Runtime for Perlito Perl5-in-Javascript grammars
 
 =head1 AUTHORS
 
 Flavio Soibelmann Glock <fglock@gmail.com>.
-The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
-
-=head1 SEE ALSO
-
-The Perl 6 homepage at L<http://dev.perl.org/perl6>.
-
-The Pugs homepage at L<http://pugscode.org/>.
 
 =head1 COPYRIGHT
 

@@ -5,13 +5,13 @@ use strict;
 use warnings;
 no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');
 use Perlito5::Perl5::Runtime;
-use Perlito5::Perl5::Prelude;
 our $MATCH = Perlito5::Match->new();
 {
 package main;
     sub new { shift; bless { @_ }, "main" }
     use v5;
     package Perlito;
+    use Perlito5::Match;
     use Perlito5::Emitter::Token;
     use Perlito5::Expression;
     use Perlito5::Grammar::Control;
@@ -137,18 +137,6 @@ package main;
         shift( @{(\@ARGV)} )
     };
     if ((($backend && (\@ARGV)))) {
-        (my  $prelude_filename);
-        if ((($backend eq 'js'))) {
-            ($prelude_filename = ($perl5lib . chr(47) . 'Perlito5' . chr(47) . 'Javascript' . chr(47) . 'Prelude.pm'))
-        };
-        if (($prelude_filename)) {
-            if (($verbose)) {
-                warn((chr(47) . chr(47) . ' loading lib: '), $prelude_filename)
-            };
-            ($source = IO::slurp($prelude_filename));
-            ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
-            add_comp_unit($m->flat())
-        };
         if ((((\@ARGV)->[0] eq '-e'))) {
             shift( @{(\@ARGV)} );
             if (($verbose)) {

@@ -5,7 +5,6 @@ use strict;
 use warnings;
 no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');
 use Perlito5::Perl5::Runtime;
-use Perlito5::Perl5::Prelude;
 our $MATCH = Perlito5::Match->new();
 {
 package main;

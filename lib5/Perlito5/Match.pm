@@ -5,7 +5,6 @@ use strict;
 use warnings;
 no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');
 use Perlito5::Perl5::Runtime;
-use Perlito5::Perl5::Prelude;
 our $MATCH = Perlito5::Match->new();
 {
 package main;
@@ -18,15 +17,23 @@ package main;
         sub to { $_[0]->{to} };
         sub str { $_[0]->{str} };
         sub bool { $_[0]->{bool} };
-        sub scalar {
+        sub capture { $_[0]->{capture} };
+        sub flat {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            substr($self->{str}, $self->{from}, (($self->{to} - $self->{from})))
+            if (($self->{bool})) {
+                if ((defined($self->{capture}))) {
+                    return ($self->{capture})
+                };
+                return (substr($self->{str}, $self->{from}, (($self->{to} - $self->{from}))))
+            }
+            else {
+                return ('')
+            }
         }
     }
 
-;
-    1
+
 }
 
 1;

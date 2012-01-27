@@ -1,35 +1,7 @@
 
 use v5;
 
-{
-    package Perlito5::Match;
-
-    use strict;
-    use warnings;
-    no warnings 'recursion';
-
-    sub new {
-        my ($class, %data) = @_;
-        return bless \%data, $class;
-    }
-
-    sub from { $_[0]{from} }
-    sub to   { $_[0]{to} }
-    sub bool { $_[0]{bool} }
-    sub capture { $_[0]{capture} }
-
-    sub flat {
-        my $obj = $_[0];
-        my $cap = $obj->{capture};
-        #print ref $cap;
-        return $cap
-            if defined $cap;
-        return '' unless $obj->{bool};
-        return '' if $_[0]->from > length( $obj->{str} );
-        return substr( $obj->{str}, $_[0]->from, $_[0]->to - $_[0]->from );
-    }
-
-}
+use Perlito5::Match;
 
 package Perlito5::Grammar;
     sub space {

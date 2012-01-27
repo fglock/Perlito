@@ -1,6 +1,7 @@
 use v5;
 
 package Perlito;
+use Perlito5::Match;
 use Perlito5::Emitter::Token;
 use Perlito5::Expression;
 use Perlito5::Grammar::Control;
@@ -145,18 +146,6 @@ perlito5 [switches] [programfile]
         shift @ARGV;
     }
     if ($backend && @ARGV) {
-        my $prelude_filename;
-        if ($backend eq 'js') {
-            $prelude_filename = $perl5lib . '/Perlito5/Javascript/Prelude.pm';
-        }
-        if ($prelude_filename) {
-            if ($verbose) {
-                warn "// loading lib: ", $prelude_filename;
-            }
-            $source = IO::slurp( $prelude_filename );
-            my $m = Perlito5::Grammar->exp_stmts($source, 0);
-            add_comp_unit($m->flat());
-        }
         if ($ARGV[0] eq '-e') {
             shift @ARGV;
             if ($verbose) {

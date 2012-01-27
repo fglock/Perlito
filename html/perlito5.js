@@ -582,67 +582,6 @@ if (typeof main !== 'object') {
 }
 (function () {
   var v__NAMESPACE = main;
-    // use v5
-;
-// class Perlito5::Match
-if (typeof Perlito5$Match !== 'object') {
-  Perlito5$Match = function() {};
-  Perlito5$Match = new Perlito5$Match;
-  Perlito5$Match.isa = function (s) { return s == 'Perlito5::Match'; };
-  Perlito5$Match._ref_ = 'Perlito5::Match';
-}
-(function () {
-  var v__NAMESPACE = Perlito5$Match;
-  // accessor from
-  Perlito5$Match.v_from = null;
-  Perlito5$Match.from = function () { return this.v_from; };
-  // accessor to
-  Perlito5$Match.v_to = null;
-  Perlito5$Match.to = function () { return this.v_to; };
-  // accessor str
-  Perlito5$Match.v_str = null;
-  Perlito5$Match.str = function () { return this.v_str; };
-  // accessor bool
-  Perlito5$Match.v_bool = null;
-  Perlito5$Match.bool = function () { return this.v_bool; };
-  // accessor capture
-  Perlito5$Match.v_capture = null;
-  Perlito5$Match.capture = function () { return this.v_capture; };
-  // sub flat
-  Perlito5$Match.flat = function () {
-        var List__ = Array.prototype.slice.call(arguments);
-        if (List__[0] instanceof CallSubClass) {
-            List__.shift()
-        }
-        else {
-            List__.unshift(this)
-        }
-        try {
-            var v_self = null;
-
-            (v_self = List__[0]);
-            if ( bool((v_self.v_bool)) ) { return (function () {
-                if ( bool(((v_self.v_capture != null))) ) { (function () {
-                    throw(v_self.v_capture);;
-                })(); };
-                throw((v_self.v_str || "").substr(v_self.v_from, ((v_self.v_to - v_self.v_from))));
-            })(); }
-            else { return (function () {
-                throw('');
-            })(); };;
-        }
-        catch(err) {
-            if ( err instanceof Error ) {
-                throw(err);
-            }
-            else {
-                return(err);
-            }
-        }
-  }
-  Perlito5$Match.flat;  // v8 bug workaround
-})()
-;
 // class Perlito5
 if (typeof Perlito5 !== 'object') {
   Perlito5 = function() {};
@@ -680,6 +619,80 @@ if (typeof Perlito5 !== 'object') {
         }
   }
   Perlito5.compile_p5_to_js;  // v8 bug workaround
+// class main
+if (typeof main !== 'object') {
+  main = function() {};
+  main = new main;
+  main.isa = function (s) { return s == 'main'; };
+  main._ref_ = 'main';
+}
+(function () {
+  var v__NAMESPACE = main;
+            // use v5
+;
+// class Perlito5::Match
+if (typeof Perlito5$Match !== 'object') {
+  Perlito5$Match = function() {};
+  Perlito5$Match = new Perlito5$Match;
+  Perlito5$Match.isa = function (s) { return s == 'Perlito5::Match'; };
+  Perlito5$Match._ref_ = 'Perlito5::Match';
+}
+(function () {
+  var v__NAMESPACE = Perlito5$Match;
+  // accessor from
+  Perlito5$Match.v_from = null;
+  Perlito5$Match.from = function () { return this.v_from; };
+  // accessor to
+  Perlito5$Match.v_to = null;
+  Perlito5$Match.to = function () { return this.v_to; };
+  // accessor str
+  Perlito5$Match.v_str = null;
+  Perlito5$Match.str = function () { return this.v_str; };
+  // accessor bool
+  Perlito5$Match.v_bool = null;
+  Perlito5$Match.bool = function () { return this.v_bool; };
+  // accessor capture
+  Perlito5$Match.v_capture = null;
+  Perlito5$Match.capture = function () { return this.v_capture; };
+  // sub flat
+  Perlito5$Match.flat = function () {
+                var List__ = Array.prototype.slice.call(arguments);
+                if (List__[0] instanceof CallSubClass) {
+                    List__.shift()
+                }
+                else {
+                    List__.unshift(this)
+                }
+                try {
+                    var v_self = null;
+
+                    (v_self = List__[0]);
+                    if ( bool((v_self.v_bool)) ) { return (function () {
+                        if ( bool(((v_self.v_capture != null))) ) { (function () {
+                            throw(v_self.v_capture);;
+                        })(); };
+                        throw((v_self.v_str || "").substr(v_self.v_from, ((v_self.v_to - v_self.v_from))));
+                    })(); }
+                    else { return (function () {
+                        throw('');
+                    })(); };;
+                }
+                catch(err) {
+                    if ( err instanceof Error ) {
+                        throw(err);
+                    }
+                    else {
+                        return(err);
+                    }
+                }
+  }
+  Perlito5$Match.flat;  // v8 bug workaround
+})()
+;
+})()
+;
+        // use Perlito5::Match
+;
 // class main
 if (typeof main !== 'object') {
   main = function() {};
@@ -4418,7 +4431,7 @@ if (typeof CompUnit !== 'object') {
                     var v_str = null;
 
                     (v_comp_units = List__[0]);
-                    (v_str = (string('') + string((string('use v5' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('use utf8' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('use strict' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('use warnings' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('no warnings (' + String.fromCharCode(39) + 'redefine' + String.fromCharCode(39) + ', ' + String.fromCharCode(39) + 'once' + String.fromCharCode(39) + ', ' + String.fromCharCode(39) + 'void' + String.fromCharCode(39) + ', ' + String.fromCharCode(39) + 'uninitialized' + String.fromCharCode(39) + ', ' + String.fromCharCode(39) + 'misc' + String.fromCharCode(39) + ', ' + String.fromCharCode(39) + 'recursion' + String.fromCharCode(39) + ')' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('use Perlito5::Perl5::Runtime' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('use Perlito5::Perl5::Prelude' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('our ') + string(String.fromCharCode(36)) + string('MATCH ' + String.fromCharCode(61) + ' Perlito5::Match->new()' + String.fromCharCode(59)) + string(String.fromCharCode(10))))));
+                    (v_str = (string('') + string((string('use v5' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('use utf8' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('use strict' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('use warnings' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('no warnings (' + String.fromCharCode(39) + 'redefine' + String.fromCharCode(39) + ', ' + String.fromCharCode(39) + 'once' + String.fromCharCode(39) + ', ' + String.fromCharCode(39) + 'void' + String.fromCharCode(39) + ', ' + String.fromCharCode(39) + 'uninitialized' + String.fromCharCode(39) + ', ' + String.fromCharCode(39) + 'misc' + String.fromCharCode(39) + ', ' + String.fromCharCode(39) + 'recursion' + String.fromCharCode(39) + ')' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('use Perlito5::Perl5::Runtime' + String.fromCharCode(59)) + string(String.fromCharCode(10)))) + string((string('our ') + string(String.fromCharCode(36)) + string('MATCH ' + String.fromCharCode(61) + ' Perlito5::Match->new()' + String.fromCharCode(59)) + string(String.fromCharCode(10))))));
                     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_comp_unit) {                         (v_str = (string(v_str) + string((typeof(v_comp_unit.__proto__) != 'undefined' && v_comp_unit.__proto__.hasOwnProperty("emit_perl5_indented") ? v_comp_unit.__proto__.emit_perl5_indented.call(v_comp_unit,0) : v_comp_unit.emit_perl5_indented(0)))));; })(a_[i_]) } })((v_comp_units));
                     (v_str = (string(v_str) + string((string('1' + String.fromCharCode(59)) + string(String.fromCharCode(10))))));
                     throw(v_str);;
