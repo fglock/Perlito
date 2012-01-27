@@ -52,7 +52,7 @@ token parsed_code {
     # this subrule is overridden inside the perl6 compiler
     # XXX - call Perlito 'Statement List'
     <.string_code>
-    { $MATCH->capture = '' . $MATCH }
+    { $MATCH->capture = $MATCH->flat() }
 }
 
 token named_capture_body {
@@ -61,29 +61,6 @@ token named_capture_body {
     | \<  <metasyntax_exp>  \>
             { $MATCH->capture = Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 1 ) }
     | { die 'invalid alias syntax' }
-}
-
-token variables {
-    |
-        '$<'
-        <rule_ident> \>
-        { $MATCH->capture = '$MATCH->{' . '\'' . $MATCH->{"rule_ident"} . '\'' . '}' }
-    |
-        # TODO
-        <Perlito5::Grammar.var_sigil>
-        <Perlito5::Grammar.val_int>
-        { $MATCH->capture = $MATCH->{"Perlito5::Grammar.var_sigil"} . '/[' . $MATCH->{"Perlito5::Grammar.val_int"} . ']' }
-    |
-        <Perlito5::Grammar.var_sigil>
-        <Perlito5::Grammar.var_twigil>
-        <Perlito5::Grammar.full_ident>
-        {
-            $MATCH->capture = Rul::Var->new(
-                    sigil  => '' . $MATCH->{"Perlito5::Grammar.var_sigil"},
-                    twigil => '' . $MATCH->{"Perlito5::Grammar.var_twigil"},
-                    name   => '' . $MATCH->{"Perlito5::Grammar.full_ident"}
-                   )
-        }
 }
 
 token rule_terms {
@@ -123,23 +100,10 @@ token rule_terms {
         { $MATCH->capture = Rul::Constant->new( constant => $MATCH->{"literal"}->flat() ) }
     |   \<
         [
-            <variables>   \>
-            # { say 'matching < variables ...' }
-            {
-                # say 'found < hash-variable >';
-                $MATCH->capture = Rul::InterpolateVar->new( var => $MATCH->{"variables"}->flat() )
-            }
-        |
-            \?
-            # TODO
-            <metasyntax_exp>  \>
-            { $MATCH->capture = Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 0 ) }
-        |
             \.
             <metasyntax_exp>  \>
             { $MATCH->capture = Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 0 ) }
         |
-            # TODO
             <metasyntax_exp>  \>
             { $MATCH->capture = Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 1 ) }
         ]
@@ -148,17 +112,6 @@ token rule_terms {
         { $MATCH->capture = Rul::Block->new( closure => $MATCH->{"parsed_code"}->flat() ) }
     |   \\
         [
-# TODO
-#        | [ x | X ] <[ 0..9 a..f A..F ]]>+
-#          #  \x0021    \X0021
-#          { $MATCH->capture = Rul::SpecialChar->new( char => '\\' . $MATCH ) }
-#        | [ o | O ] <[ 0..7 ]>+
-#          #  \x0021    \X0021
-#          { $MATCH->capture = Rul::SpecialChar->new( char => '\\' . $MATCH ) }
-#        | ( x | X | o | O ) \[ (<-[ \] ]>*) \]
-#          #  \x[0021]  \X[0021]
-#          { $MATCH->capture = Rul::SpecialChar->new( char => '\\' . $0 . $1 ) }
-
         | c \[ <Perlito5::Grammar.digits> \]
           { $MATCH->capture = Rul::Constant->new( constant => chr( $MATCH->{"Perlito5::Grammar.digits"}->flat() ) ) }
         | c <Perlito5::Grammar.digits>
@@ -176,21 +129,6 @@ token rule_terms {
 }
 
 token rule_term {
-    |
-       # { say 'matching variables' }
-       <variables>
-       [  <.ws>? '=' <.ws>? <named_capture_body>
-          {
-            $MATCH->capture = Rul::NamedCapture->new(
-                rule_exp =>  $MATCH->{"named_capture_body"}->flat(),
-                capture_ident => $MATCH->{"variables"}->flat()
-            );
-          }
-       |
-          {
-            $MATCH->capture = $MATCH->{"variables"}->flat()
-          }
-       ]
     |
         # { say 'matching terms'; }
         <rule_terms>
