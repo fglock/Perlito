@@ -30,9 +30,7 @@ TODO list for Perlito5
 
 * Perl5 backend
 
--- remove "Match" overloads
-
--- remove *all* runtime (everything should work natively)
+-- remove all CORE runtime (everything should work natively)
 
 
 * Javascript backend

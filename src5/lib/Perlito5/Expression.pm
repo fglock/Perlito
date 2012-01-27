@@ -512,7 +512,7 @@ package Perlito5::Expression;
             else {
                 my $m = $self->operator($str, $last_pos);
                 # say "# list lexer got: " . $m->perl;
-                if (!$m) {
+                if (!$m->bool) {
                     return [ 'end', '*end*' ];
                 }
                 $v = $m->flat();
@@ -535,12 +535,12 @@ package Perlito5::Expression;
             if (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block')
                 && $last_token_was_space
             {
-                if ($self->has_newline_after($str, $last_pos)) {
+                if ($self->has_newline_after($str, $last_pos)->bool) {
                     # a block followed by newline terminates the expression
                     $terminated = 1;
                     push( @$lexer_stack,  [ 'end', '*end*' ] );
                 }
-                elsif ($self->has_no_comma_or_colon_after($str, $last_pos)) {
+                elsif ($self->has_no_comma_or_colon_after($str, $last_pos)->bool) {
                     # a sequence ( block - space - not_comma_or_colon ) terminates the list
                     $terminated = 1;
                     push( @$lexer_stack,  [ 'end', '*end*' ] );
@@ -685,7 +685,7 @@ package Perlito5::Expression;
                 )
             {
                 # a block followed by newline terminates the expression
-                if ($self->has_newline_after($str, $last_pos)) {
+                if ($self->has_newline_after($str, $last_pos)->bool) {
                     $terminated = 1;
                     push( @$lexer_stack,  [ 'end', '*end*' ] );
                 }
@@ -759,12 +759,12 @@ package Perlito5::Expression;
         my $lexer_stack = [];
         my $res;
         $res = $self->exp_stmt($str, $pos);
-        if ($res) {
+        if ($res->bool) {
             # say "# statement result: ", $res->perl;
             return $res;
         }
         $res = $self->exp_parse($str, $pos);
-        if (!($res->bool)) {
+        if (!$res->bool) {
             # say "# not a statement or expression";
             return $res;
         }

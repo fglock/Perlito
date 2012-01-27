@@ -7858,7 +7858,7 @@ if (typeof Perlito5$Expression !== 'object') {
             var v_m = null;
 
             (v_m = (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("operator") ? v_self.__proto__.operator.call(v_self,v_str,v_last_pos) : v_self.operator(v_str, v_last_pos)));
-            if ( bool((( bool(v_m) ? false : true))) ) { (function () {
+            if ( bool((( bool((typeof(v_m.__proto__) != 'undefined' && v_m.__proto__.hasOwnProperty("bool") ? v_m.__proto__.bool.call(v_m) : v_m.bool())) ? false : true))) ) { (function () {
                 throw((function () { 
     var List_a = [];
 
@@ -7878,7 +7878,7 @@ if (typeof Perlito5$Expression !== 'object') {
             })(); };;
         })(); };
         if ( bool(and(and((((v_v[0]) == 'postfix_or_term')), function () { return (((v_v[1]) == 'block')); }), function () { return v_last_token_was_space; })) ) { (function () {
-            if ( bool(((typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)))) ) { (function () {
+            if ( bool(((typeof((typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)).__proto__) != 'undefined' && (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)).__proto__.hasOwnProperty("bool") ? (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)).__proto__.bool.call((typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos))) : (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)).bool()))) ) { (function () {
                 (v_terminated = 1);
                 (v__NAMESPACE.hasOwnProperty("push") ? v__NAMESPACE.push : CORE.push)(CallSub, (v_lexer_stack), (function () { 
     var List_a = [];
@@ -7891,7 +7891,7 @@ if (typeof Perlito5$Expression !== 'object') {
 })());;
             })(); }
             else { (function () {
-                if ( bool(((typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_no_comma_or_colon_after") ? v_self.__proto__.has_no_comma_or_colon_after.call(v_self,v_str,v_last_pos) : v_self.has_no_comma_or_colon_after(v_str, v_last_pos)))) ) { (function () {
+                if ( bool(((typeof((typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_no_comma_or_colon_after") ? v_self.__proto__.has_no_comma_or_colon_after.call(v_self,v_str,v_last_pos) : v_self.has_no_comma_or_colon_after(v_str, v_last_pos)).__proto__) != 'undefined' && (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_no_comma_or_colon_after") ? v_self.__proto__.has_no_comma_or_colon_after.call(v_self,v_str,v_last_pos) : v_self.has_no_comma_or_colon_after(v_str, v_last_pos)).__proto__.hasOwnProperty("bool") ? (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_no_comma_or_colon_after") ? v_self.__proto__.has_no_comma_or_colon_after.call(v_self,v_str,v_last_pos) : v_self.has_no_comma_or_colon_after(v_str, v_last_pos)).__proto__.bool.call((typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_no_comma_or_colon_after") ? v_self.__proto__.has_no_comma_or_colon_after.call(v_self,v_str,v_last_pos) : v_self.has_no_comma_or_colon_after(v_str, v_last_pos))) : (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_no_comma_or_colon_after") ? v_self.__proto__.has_no_comma_or_colon_after.call(v_self,v_str,v_last_pos) : v_self.has_no_comma_or_colon_after(v_str, v_last_pos)).bool()))) ) { (function () {
                     (v_terminated = 1);
                     (v__NAMESPACE.hasOwnProperty("push") ? v__NAMESPACE.push : CORE.push)(CallSub, (v_lexer_stack), (function () { 
     var List_a = [];
@@ -8358,7 +8358,7 @@ if (typeof Perlito5$Expression !== 'object') {
             })(); };;
         })(); };
         if ( bool((or(or(or((and((((v_v[0]) == 'postfix_or_term')), function () { return (((v_v[1]) == 'block')); })), function () { return (and((((v_v[0]) == 'term')), function () { return ((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_v[1]) == 'Sub'); })); }), function () { return (and((((v_v[0]) == 'term')), function () { return ((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_v[1]) == 'Do'); })); }), function () { return (and((((v_v[0]) == 'term')), function () { return ((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, v_v[1]) == 'CompUnit'); })); }))) ) { (function () {
-            if ( bool(((typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)))) ) { (function () {
+            if ( bool(((typeof((typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)).__proto__) != 'undefined' && (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)).__proto__.hasOwnProperty("bool") ? (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)).__proto__.bool.call((typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos))) : (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("has_newline_after") ? v_self.__proto__.has_newline_after.call(v_self,v_str,v_last_pos) : v_self.has_newline_after(v_str, v_last_pos)).bool()))) ) { (function () {
                 (v_terminated = 1);
                 (v__NAMESPACE.hasOwnProperty("push") ? v__NAMESPACE.push : CORE.push)(CallSub, (v_lexer_stack), (function () { 
     var List_a = [];
@@ -8820,11 +8820,11 @@ if (typeof Perlito5$Expression !== 'object') {
     return(List_a);
 })());
                     (v_res = (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("exp_stmt") ? v_self.__proto__.exp_stmt.call(v_self,v_str,v_pos) : v_self.exp_stmt(v_str, v_pos)));
-                    if ( bool((v_res)) ) { (function () {
+                    if ( bool(((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("bool") ? v_res.__proto__.bool.call(v_res) : v_res.bool()))) ) { (function () {
                         throw(v_res);;
                     })(); };
                     (v_res = (typeof(v_self.__proto__) != 'undefined' && v_self.__proto__.hasOwnProperty("exp_parse") ? v_self.__proto__.exp_parse.call(v_self,v_str,v_pos) : v_self.exp_parse(v_str, v_pos)));
-                    if ( bool((( bool(((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("bool") ? v_res.__proto__.bool.call(v_res) : v_res.bool()))) ? false : true))) ) { (function () {
+                    if ( bool((( bool((typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("bool") ? v_res.__proto__.bool.call(v_res) : v_res.bool())) ? false : true))) ) { (function () {
                         throw(v_res);;
                     })(); };
                     if ( bool((((v__NAMESPACE.hasOwnProperty("ref") ? v__NAMESPACE.ref : CORE.ref)(CallSub, (typeof(v_res.__proto__) != 'undefined' && v_res.__proto__.hasOwnProperty("flat") ? v_res.__proto__.flat.call(v_res) : v_res.flat())['exp']) == 'Lit::Block'))) ) { (function () {

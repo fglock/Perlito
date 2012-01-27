@@ -1416,7 +1416,7 @@ package main;
     }
     else {
         ((my  $m) = $self->operator($str, $last_pos));
-        if ((!($m))) {
+        if ((!($m->bool()))) {
             return ((do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1434,7 +1434,7 @@ package main;
         }
     };
     if (((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block'))) && $last_token_was_space)) {
-        if (($self->has_newline_after($str, $last_pos))) {
+        if (($self->has_newline_after($str, $last_pos)->bool())) {
             ($terminated = 1);
             push( @{($lexer_stack)}, (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1445,7 +1445,7 @@ package main;
 }) )
         }
         else {
-            if (($self->has_no_comma_or_colon_after($str, $last_pos))) {
+            if (($self->has_no_comma_or_colon_after($str, $last_pos)->bool())) {
                 ($terminated = 1);
                 push( @{($lexer_stack)}, (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1621,7 +1621,7 @@ package main;
         }
     };
     if (((((((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block')))) || ((((($v->[0]) eq 'term')) && (ref($v->[1]) eq 'Sub')))) || ((((($v->[0]) eq 'term')) && (ref($v->[1]) eq 'Do')))) || ((((($v->[0]) eq 'term')) && (ref($v->[1]) eq 'CompUnit')))))) {
-        if (($self->has_newline_after($str, $last_pos))) {
+        if (($self->has_newline_after($str, $last_pos)->bool())) {
             ($terminated = 1);
             push( @{($lexer_stack)}, (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1897,11 +1897,11 @@ package main;
 }));
         (my  $res);
         ($res = $self->exp_stmt($str, $pos));
-        if (($res)) {
+        if (($res->bool())) {
             return ($res)
         };
         ($res = $self->exp_parse($str, $pos));
-        if ((!(($res->bool())))) {
+        if ((!($res->bool()))) {
             return ($res)
         };
         if (((ref($res->flat()->{'exp'}) eq 'Lit::Block'))) {

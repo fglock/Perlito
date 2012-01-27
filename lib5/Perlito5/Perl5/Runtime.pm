@@ -8,10 +8,6 @@ use v5;
     use warnings;
     no warnings 'recursion';
 
-    use overload (
-        bool     => \&bool,
-    );
-
     sub new {
         my ($class, %data) = @_;
         return bless \%data, $class;
