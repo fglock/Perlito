@@ -8,6 +8,8 @@ TODO list for Perlito5
 
 -- add regexes
 
+-- add "local", "our"
+
 
 * extensibility
 
@@ -32,8 +34,6 @@ TODO list for Perlito5
 
 -- remove *all* runtime (everything should work natively)
 
--- broken test in t5/05-anon-sub-lex-block.t
-
 
 * Javascript backend
 
@@ -49,8 +49,6 @@ TODO list for Perlito5
 
 -- TODO move "CallSub" to last argument in order to get some more compatibility with native js
 
--- TODO move ref() to the CORE package
-
 
 * Python backend
 
@@ -61,6 +59,8 @@ TODO list for Perlito5
 
 * Nice to Have
 
+-- run the "perl" test suite
+
 -- wantarray()
 
 -- require plain perl5 syntax (any perl6 is a syntax error)
@@ -69,7 +69,7 @@ TODO list for Perlito5
 
 -- use the same error messages and warnings as 'perl'
 
--- __PACKAGE__, __END__
+-- __PACKAGE__,  __END__
 
--- BEGIN{}
+-- BEGIN{}, INIT{}, END{}
 
