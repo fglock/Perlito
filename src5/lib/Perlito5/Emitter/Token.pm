@@ -267,7 +267,7 @@ class Rul::Block {
     sub emit_perl5 {
         my $self = $_[0];
 
-        '((do { ' . $.closure . ' }) || 1)'
+        '(do { ' . $.closure . '; 1 })'
     }
     sub set_captures_to_array {
         my $self = $_[0];

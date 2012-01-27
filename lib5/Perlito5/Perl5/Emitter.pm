@@ -670,7 +670,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             ((my  $block) = $self->simplify()->block());
-            (Perl5::tab($level) . ('(do ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), @{[map($_->emit_perl5_indented(($level + 1)), @{($block)})]}) . (chr(10)) . Perl5::tab($level) . (chr(125) . ')'))
+            (Perl5::tab($level) . ('(do ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), @{[map((defined($_) && $_->emit_perl5_indented(($level + 1))), @{($block)})]}) . (chr(10)) . Perl5::tab($level) . (chr(125) . ')'))
         }
     }
 

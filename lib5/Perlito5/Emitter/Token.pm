@@ -232,7 +232,7 @@ package main;
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            ('((do ' . chr(123) . ' ' . $self->{closure} . ' ' . chr(125) . ') ' . chr(124) . chr(124) . ' 1)')
+            ('(do ' . chr(123) . ' ' . $self->{closure} . chr(59) . ' 1 ' . chr(125) . ')')
         };
         sub set_captures_to_array {
             my $List__ = bless \@_, "ARRAY";
