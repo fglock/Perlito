@@ -324,19 +324,15 @@ class Apply {
     my %op_prefix_perl5 = (
         say     => 'Perlito5::Runtime::say',
         print   => 'Perlito5::Runtime::print',
-        # map     => 'Perlito5::Runtime::map',
         grep    => 'Perlito5::Runtime::grep',
         sort    => 'Perlito5::Runtime::sort',
         keys    => 'Perlito5::Runtime::keys',
         values  => 'Perlito5::Runtime::values',
         warn    => 'warn',
-        Int     => '0+',
-        Num     => '0+',
-        bool    => '!!',
         'prefix:<!>'    => '!',
-        'prefix:<?>'    => '!!',  # XXX Perl6
         'prefix:<++>'   => '++',
         'prefix:<-->'   => '--',
+        'prefix:<+>'    => '+',
     );
 
     my %op_infix_perl5 = (

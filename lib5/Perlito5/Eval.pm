@@ -45,7 +45,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            0+($self->{int})
+            (0 + $self->{int})
         }
     }
 
@@ -69,7 +69,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            0+($self->{num})
+            (0 + $self->{num})
         }
     }
 

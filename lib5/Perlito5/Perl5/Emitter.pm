@@ -382,13 +382,10 @@ package main;
     ($Hash_a->{'keys'} = 'Perlito5::Runtime::keys');
     ($Hash_a->{'values'} = 'Perlito5::Runtime::values');
     ($Hash_a->{'warn'} = 'warn');
-    ($Hash_a->{'Int'} = '0+');
-    ($Hash_a->{'Num'} = '0+');
-    ($Hash_a->{'bool'} = chr(33) . chr(33));
     ($Hash_a->{'prefix:<' . chr(33) . '>'} = chr(33));
-    ($Hash_a->{'prefix:<' . chr(63) . '>'} = chr(33) . chr(33));
     ($Hash_a->{'prefix:<++>'} = '++');
     ($Hash_a->{'prefix:<-->'} = '--');
+    ($Hash_a->{'prefix:<+>'} = '+');
     $Hash_a
 }));
         ((my  $Hash_op_infix_perl5 = bless {}, 'HASH') = (do {

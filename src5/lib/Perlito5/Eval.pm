@@ -16,7 +16,7 @@ class Val::Int {
     sub eval {
         my $self = $_[0];
         my $env = $_[1];
-        Int( $.int ) 
+        0 + $.int 
     }
 }
 
@@ -32,7 +32,7 @@ class Val::Num {
     sub eval {
         my $self = $_[0];
         my $env = $_[1];
-        Num( $.num ) 
+        0 + $.num 
     }
 }
 

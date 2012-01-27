@@ -704,17 +704,8 @@ package main;
             if ((($code eq 'ord'))) {
                 return (('(' . ($self->{arguments}->[0])->emit_javascript() . ').charCodeAt(0)'))
             };
-            if ((($code eq 'Int'))) {
-                return (('parseInt(' . ($self->{arguments}->[0])->emit_javascript() . ')'))
-            };
-            if ((($code eq 'Num'))) {
-                return (('parseFloat(' . ($self->{arguments}->[0])->emit_javascript() . ')'))
-            };
             if ((($code eq 'prefix:<' . chr(33) . '>'))) {
                 return (('( ' . ('bool') . '(' . join(' ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ') ' . chr(63) . ' false : true)'))
-            };
-            if ((($code eq 'prefix:<' . chr(63) . '>'))) {
-                return (('( ' . ('bool') . '(' . join(' ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ') ' . chr(63) . ' true : false)'))
             };
             if ((($code eq 'prefix:<' . chr(36) . '>'))) {
                 return ((('scalar') . '(' . join(' ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')'))
