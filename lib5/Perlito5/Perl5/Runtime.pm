@@ -23,17 +23,6 @@ use v5;
     sub bool { $_[0]{bool} }
     sub capture { $_[0]{capture} }
 
-    sub hash  {
-        $_[0]
-    }
-
-    sub keys   {
-        bless [ CORE::keys %{$_[0]} ], 'ARRAY';
-    }
-    sub values {
-        bless [ CORE::values %{$_[0]} ], 'ARRAY';
-    }
-
     sub flat {
         my $obj = $_[0];
         my $cap = $obj->{capture};
@@ -43,14 +32,6 @@ use v5;
         return '' unless $obj->{bool};
         return '' if $_[0]->from > length( $obj->{str} );
         return substr( $obj->{str}, $_[0]->from, $_[0]->to - $_[0]->from );
-    }
-
-    sub str {
-        "" . $_[0]->flat;
-    }
-
-    sub scalar {
-        return \( $_[0]->flat );
     }
 
 }

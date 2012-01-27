@@ -608,39 +608,6 @@ if (typeof Perlito5$Match !== 'object') {
   // accessor capture
   Perlito5$Match.v_capture = null;
   Perlito5$Match.capture = function () { return this.v_capture; };
-  // sub scalar
-  Perlito5$Match.scalar = function () {
-        var List__ = Array.prototype.slice.call(arguments);
-        if (List__[0] instanceof CallSubClass) {
-            List__.shift()
-        }
-        else {
-            List__.unshift(this)
-        }
-        try {
-            var v_self = null;
-
-            (v_self = List__[0]);
-            if ( bool((v_self.v_bool)) ) { return (function () {
-                if ( bool(((v_self.v_capture != null))) ) { (function () {
-                    throw(v_self.v_capture);;
-                })(); };
-                throw((v_self.v_str || "").substr(v_self.v_from, ((v_self.v_to - v_self.v_from))));
-            })(); }
-            else { return (function () {
-                throw('');
-            })(); };;
-        }
-        catch(err) {
-            if ( err instanceof Error ) {
-                throw(err);
-            }
-            else {
-                return(err);
-            }
-        }
-  }
-  Perlito5$Match.scalar;  // v8 bug workaround
   // sub flat
   Perlito5$Match.flat = function () {
         var List__ = Array.prototype.slice.call(arguments);
@@ -684,18 +651,7 @@ if (typeof Perlito5$Match !== 'object') {
             List__.unshift(this)
         }
         try {
-            var v_self = null;
-
-            (v_self = List__[0]);
-            if ( bool((v_self.v_bool)) ) { return (function () {
-                if ( bool(((v_self.v_capture != null))) ) { (function () {
-                    throw(v_self.v_capture);;
-                })(); };
-                throw((v_self.v_str || "").substr(v_self.v_from, ((v_self.v_to - v_self.v_from))));
-            })(); }
-            else { return (function () {
-                throw('');
-            })(); };;
+            return((typeof(List__[0].__proto__) != 'undefined' && List__[0].__proto__.hasOwnProperty("flat") ? List__[0].__proto__.flat.call(List__[0]) : List__[0].flat()));;
         }
         catch(err) {
             if ( err instanceof Error ) {
