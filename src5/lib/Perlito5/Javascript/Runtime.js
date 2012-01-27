@@ -1,7 +1,7 @@
 //
 // lib/Perlito/Javascript/Runtime.js
 //
-// Runtime for "Perlito" Perlito5-in-Javascript
+// Runtime for "Perlito" Perl5-in-Javascript
 //
 // AUTHORS
 //
@@ -73,21 +73,11 @@ if (typeof Perlito5$Runtime !== 'object') {
     Perlito5$Runtime = new Perlito5$Runtime;
 }
 
-(function() {
-    Perlito5$Runtime._dump = function(o) {
-        var out = [];
-        for (var i in o) {
-            if (i.match(/^v_/)) {
-                out.push(i.substr(2) + " => " + perl(o[i]));
-            }
-            // else if (i.match(/^/)) {
-            // } else {
-            //    out.push(i + " => " + perl(o[i]));
-            // }
-        }
-        return out.join(", ");
-    };
-})();
+// class for grammar primitives
+if (typeof Perlito5$Grammar !== 'object') {
+    Perlito5$Grammar = function() {};
+    Perlito5$Grammar = new Perlito5$Grammar;
+}
 
 // XXX this doesn't belong here
 Array.prototype.grep = function grep(f) {
@@ -214,15 +204,10 @@ defined_or = function(a, fb) {
     return a;
 };
 
-str_replicate = function(o, num) {
-    return num ? Array(num + 1).join(o) : "";
+str_replicate = function(o, n) {
+    n = num(n);
+    return n ? Array(n + 1).join(o) : "";
 };
-
-// regex primitives
-if (typeof Perlito5$Grammar !== 'object') {
-    Perlito5$Grammar = function() {};
-    Perlito5$Grammar = new Perlito5$Grammar;
-}
 
 Perlito5$Grammar.word = function(v_str, v_pos) {
     var tmp = {

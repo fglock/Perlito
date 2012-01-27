@@ -25,6 +25,10 @@ TODO list for Perlito5
 
 * libraries
 
+-- these should probably go into namespace Perlito5X::*
+
+-- Test
+
 -- Data::Dumper
 
 
@@ -70,4 +74,8 @@ TODO list for Perlito5
 -- __PACKAGE__,  __END__
 
 -- BEGIN{}, INIT{}, END{}
+
+-- finish "overload" implementation
+
+-- much more!
 
