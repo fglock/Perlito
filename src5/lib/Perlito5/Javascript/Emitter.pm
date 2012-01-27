@@ -223,7 +223,7 @@ class Perlito5::Javascript::LexicalBlock {
                 }
                 $body      = Perlito5::Javascript::LexicalBlock->new( block => $body->stmts, needs_return => 1 );
                 push @str, Javascript::tab($level) .
-                        'if ( ' . ('bool') . '(' . $cond->emit_javascript() . ') ) { return (function () {' . "\n"
+                        'if ( ' . 'bool' . '(' . $cond->emit_javascript() . ') ) { return (function () {' . "\n"
                         .       $body->emit_javascript_indented($level+1) . "\n"
                         . Javascript::tab($level) . '})(); }';
                 if ($otherwise) {
@@ -444,7 +444,6 @@ class Lookup {
 
         if (  $.obj->isa('Var')
            && $.obj->sigil eq '$'
-           && $.obj->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
            )
         {
             my $v = Var->new( sigil => '%', twigil => $.obj->twigil, namespace => $.obj->namespace, name => $.obj->name );
@@ -597,7 +596,7 @@ class Apply {
         if ($code eq 'eval') {
             return
                 'eval(perl5_to_js(' 
-                    . ('string') . '(' . ($.arguments->[0])->emit_javascript() . ')'
+                    . 'string' . '(' . ($.arguments->[0])->emit_javascript() . ')'
                 . '))'
         }
 
@@ -632,13 +631,10 @@ class Apply {
                     . ' })(' . $list->emit_javascript() . ')'
         }
 
-        if ($code eq 'chr')        { return 'String.fromCharCode(' . ('num') . '(' . ($.arguments->[0])->emit_javascript() . '))' }
-        if ($code eq 'ord')        { return '(' . ($.arguments->[0])->emit_javascript() . ').charCodeAt(0)' }
-
-        if ($code eq 'prefix:<!>') { return '( ' . ('bool') . '(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ') ? false : true)' }
-        if ($code eq 'prefix:<$>') { return ('scalar') . '(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ')' }
+        if ($code eq 'prefix:<!>') { return '( ' . 'bool' . '(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ') ? false : true)' }
+        if ($code eq 'prefix:<$>') { return 'scalar' . '(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ')' }
         if ($code eq 'prefix:<@>') { return '(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ')' }
-        if ($code eq 'prefix:<%>') { return '(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ').' . ('hash') . '()' }
+        if ($code eq 'prefix:<%>') { return '(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ').' . 'hash' . '()' }
 
         if ($code eq 'prefix:<\\>') { 
             # XXX currently a no-op
@@ -654,14 +650,14 @@ class Apply {
 
         if ($code eq 'list:<.>')
         { 
-            return '(' . ('string') . '('
-                . join( ') + ' . ('string') . '(',
+            return '(' . 'string' . '('
+                . join( ') + ' . 'string' . '(',
                         map( $_->emit_javascript, @{$.arguments} )
                       )
                 . '))' 
         }
 
-        if ($code eq 'infix:<+>')  { return ('add') . '('  . join(', ', map( $_->emit_javascript, @{$.arguments} ))  . ')' }
+        if ($code eq 'infix:<+>')  { return 'add' . '('  . join(', ', map( $_->emit_javascript, @{$.arguments} ))  . ')' }
         if ($code eq 'prefix:<+>') { return '('  . $.arguments->[0]->emit_javascript()  . ')' }
 
         if ($code eq 'infix:<..>') {
@@ -679,14 +675,14 @@ class Apply {
         if   $code eq 'infix:<&&>'
           || $code eq 'infix:<and>'
         {
-            return ('and') . '('
+            return 'and' . '('
                 . $.arguments->[0]->emit_javascript() . ', '
                 . 'function () { return ' . $.arguments->[1]->emit_javascript() . '; })'
         }
         if   $code eq 'infix:<||>'
           || $code eq 'infix:<or>'
         {
-            return ('or') . '('
+            return 'or' . '('
                 . $.arguments->[0]->emit_javascript() . ', '
                 . 'function () { return ' . $.arguments->[1]->emit_javascript() . '; })'
         }
@@ -701,7 +697,6 @@ class Apply {
                 my $v = $arg->obj;
                 if (  $v->isa('Var')
                    && $v->sigil eq '$'
-                   && $v->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
                    )
                 {
                     $v = Var->new( sigil => '%', twigil => $v->twigil, namespace => $v->namespace, name => $v->name );
@@ -714,7 +709,7 @@ class Apply {
         }
         if ($code eq 'ternary:<?? !!>') {
             return Javascript::tab($level) 
-                 . '( ' . ('bool') . '(' . ($.arguments->[0])->emit_javascript() . ')'
+                 . '( ' . 'bool' . '(' . ($.arguments->[0])->emit_javascript() . ')'
                  . ' ? ' . ($.arguments->[1])->emit_javascript()
                  . ' : ' . ($.arguments->[2])->emit_javascript()
                  . ')'
@@ -786,7 +781,6 @@ class Apply {
 
             if (  $var->isa('Var')
                && $var->sigil eq '$'
-               && $var->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
                )
             {
                 $var = Var->new( sigil => '%', twigil => $var->twigil, namespace => $var->namespace, name => $var->name );
@@ -855,7 +849,7 @@ class If {
             $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
         }
         my $body      = Perlito5::Javascript::LexicalBlock->new( block => $.body->stmts, needs_return => 0 );
-        my $s = Javascript::tab($level) . 'if ( ' . ('bool') . '(' . $cond->emit_javascript() . ') ) { '
+        my $s = Javascript::tab($level) . 'if ( ' . 'bool' . '(' . $cond->emit_javascript() . ') ) { '
             . '(function () {' . "\n"
             .       $body->emit_javascript_indented( $level + 1 ) . "\n"
             . Javascript::tab($level) . '})(); }';
@@ -882,7 +876,7 @@ class While {
         return
            Javascript::tab($level) . 'for ( '
         .  ( $.init     ? $.init->emit_javascript()             . '; '  : '; ' )
-        .  ( $.cond     ? ('bool') . '(' . $.cond->emit_javascript() . '); ' : '; ' )
+        .  ( $.cond     ? 'bool' . '(' . $.cond->emit_javascript() . '); ' : '; ' )
         .  ( $.continue ? $.continue->emit_javascript()         . ' '   : ' '  )
         .  ') { '
             . '(function () { ' . $body->emit_javascript_indented( $level + 1 )      . ' })()'
@@ -988,7 +982,7 @@ class Use {
 
 =head1 NAME
 
-Perlito5::Javascript::Emit - Code generator for Perlito-in-Javascript
+Perlito5::Javascript::Emit - Code generator for Perlito Perl5-in-Javascript
 
 =head1 SYNOPSIS
 

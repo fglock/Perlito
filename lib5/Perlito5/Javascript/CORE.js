@@ -94,12 +94,12 @@ CORE.bless = function(callsub, o, class_name) {
     return o;
 };
 
-CORE.chr = function() {
-    var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
-    return String.fromCharCode(num(List__[0]));
+CORE.chr = function(callsub, o) {
+    return String.fromCharCode(num(o));
+};
+
+CORE.ord = function(callsub, o) {
+    return string(o).charCodeAt(0);
 };
 
 CORE.scalar = function() {
