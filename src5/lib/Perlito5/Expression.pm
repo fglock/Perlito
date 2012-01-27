@@ -748,15 +748,6 @@ package Perlito5::Expression;
         ]
     }
 
-    token delimited_statement_no_package {
-        <.Perlito5::Grammar.ws>?
-        [ ';' <.Perlito5::Grammar.ws>?
-        | <!before 'package' <.Perlito5::Grammar.ws> >
-          <statement_parse> ';'? <.Perlito5::Grammar.ws>?
-            { $MATCH->capture = $MATCH->{"statement_parse"}->flat() }
-        ]
-    }
-
     sub statement_parse {
         my $self = $_[0];
         my $str = $_[1];

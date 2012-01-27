@@ -72,17 +72,6 @@ token grammar {
     }
 }
 
-token package_body {
-    <full_ident> <.ws>?
-        <exp_stmts_no_package>
-    {
-        $MATCH->capture = CompUnit->new(
-            name        => $MATCH->{"full_ident"}->flat(),
-            body        => $MATCH->{"exp_stmts_no_package"}->flat(),
-        )
-    }
-}
-
 token declarator {
      'my' | 'state' | 'has'
 }
@@ -259,13 +248,6 @@ token exp_stmts {
     <Perlito5::Expression.delimited_statement>*
     { 
         $MATCH->capture = [ map( $_->capture, @{ $MATCH->{"Perlito5::Expression.delimited_statement"} } ) ]
-    }
-}
-
-token exp_stmts_no_package {
-    <Perlito5::Expression.delimited_statement_no_package>*
-    { 
-        $MATCH->capture = [ map( $_->capture, @{ $MATCH->{"Perlito5::Expression.delimited_statement_no_package"} } ) ]
     }
 }
 
