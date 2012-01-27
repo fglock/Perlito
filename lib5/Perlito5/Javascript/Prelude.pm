@@ -21,9 +21,6 @@ class Perlito5::Match {
         }
     }
 
-    sub string {
-        $_[0]->flat
-    }
 }
 
 =begin

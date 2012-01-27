@@ -10,7 +10,6 @@ use v5;
 
     use overload (
         bool     => \&bool,
-        '""'     => \&flat,
     );
 
     sub new {

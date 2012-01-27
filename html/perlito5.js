@@ -641,28 +641,6 @@ if (typeof Perlito5$Match !== 'object') {
         }
   }
   Perlito5$Match.flat;  // v8 bug workaround
-  // sub string
-  Perlito5$Match.string = function () {
-        var List__ = Array.prototype.slice.call(arguments);
-        if (List__[0] instanceof CallSubClass) {
-            List__.shift()
-        }
-        else {
-            List__.unshift(this)
-        }
-        try {
-            return((typeof(List__[0].__proto__) != 'undefined' && List__[0].__proto__.hasOwnProperty("flat") ? List__[0].__proto__.flat.call(List__[0]) : List__[0].flat()));;
-        }
-        catch(err) {
-            if ( err instanceof Error ) {
-                throw(err);
-            }
-            else {
-                return(err);
-            }
-        }
-  }
-  Perlito5$Match.string;  // v8 bug workaround
 })()
 ;
 // class Perlito5
