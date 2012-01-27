@@ -40,73 +40,10 @@ package main;
         warn((chr(47) . chr(47) . ' ARGV: ' . join(' ', @{(\@ARGV)})))
     };
     (my  $Hash_module_seen = bless {}, 'HASH');
-    sub module_name {
-        my $List__ = bless \@_, "ARRAY";
-        ((my  $grammar) = $List__->[0]);
-        ((my  $str) = $List__->[1]);
-        ((my  $pos) = $List__->[2]);
-        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
-    ((my  $pos1) = $MATCH->to());
-    ((do {
-    (((do {
-    ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->to()));
-    if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
-        ($MATCH->{'Perlito5::Grammar.ident'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ((my  $pos1) = $MATCH->to());
-    (((do {
-    ((((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && ((do {
-    ((my  $m2) = $grammar->module_name($str, $MATCH->to()));
-    if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
-        ($MATCH->{'module_name'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    (($MATCH)->{capture} = (do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
-    ($List_v = ($MATCH->{('module_name')}->flat()));
-    for my $x ( @{(bless [0 .. ((scalar( @{$List_v} ) - 1))], 'ARRAY')} ) {
-        push( @{$List_a}, $List_v->[$x] )
-    };
-    $List_a
-}));
-    1
-})))
-})) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((1 && ((do {
-    (($MATCH)->{capture} = (do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ('' . $MATCH->{('Perlito5::Grammar.ident')}) );
-    $List_a
-}));
-    1
-}))))
-})))
-})))
-}))
-}))));
-        $MATCH
-    };
     sub modulename_to_filename {
         my $List__ = bless \@_, "ARRAY";
         ((my  $s) = shift());
-        ((my  $ident) = Perlito->module_name($s, 0));
-        return (join((chr(47)), @{$ident->flat()}))
+        return (Perlito5::Runtime::_replace($s, '::', chr(47)))
     };
     sub expand_use {
         my $List__ = bless \@_, "ARRAY";

@@ -1319,7 +1319,7 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = (chr(92) . $MATCH->{('single_quoted_unescape')}));
+    (($MATCH)->{capture} = (chr(92) . $MATCH->{('single_quoted_unescape')}->flat()));
     1
 }))))
 }))) || ((do {
@@ -1345,7 +1345,7 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = ($MATCH->{('char_any_single_quote')} . $MATCH->{('single_quoted_unescape')}));
+    (($MATCH)->{capture} = ($MATCH->{('char_any_single_quote')}->flat() . $MATCH->{('single_quoted_unescape')}->flat()));
     1
 }))))
 }))) || ((do {
@@ -2273,7 +2273,7 @@ package main;
         0
     }
 }))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    ((my  $source) = ($MATCH->{('opt_name')} . chr(123) . ' ' . 'my ' . chr(36) . 'grammar ' . chr(61) . ' ' . chr(36) . '_[0]' . chr(59) . ' ' . 'my ' . chr(36) . 'str     ' . chr(61) . ' ' . chr(36) . '_[1]' . chr(59) . ' ' . 'my ' . chr(36) . 'pos     ' . chr(61) . ' ' . chr(36) . '_[2]' . chr(59) . ' ' . 'my ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( str ' . chr(61) . '> ' . chr(36) . 'str, from ' . chr(61) . '> ' . chr(36) . 'pos, to ' . chr(61) . '> ' . chr(36) . 'pos, bool ' . chr(61) . '> 1 )' . chr(59) . ' ' . chr(36) . 'MATCH->bool ' . chr(61) . ' ( ' . ($MATCH->{('Perlito5::Grammar::Regex.rule')}->flat())->emit_perl5() . ')' . chr(59) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125)));
+    ((my  $source) = ($MATCH->{('opt_name')}->flat() . chr(123) . ' ' . 'my ' . chr(36) . 'grammar ' . chr(61) . ' ' . chr(36) . '_[0]' . chr(59) . ' ' . 'my ' . chr(36) . 'str     ' . chr(61) . ' ' . chr(36) . '_[1]' . chr(59) . ' ' . 'my ' . chr(36) . 'pos     ' . chr(61) . ' ' . chr(36) . '_[2]' . chr(59) . ' ' . 'my ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( str ' . chr(61) . '> ' . chr(36) . 'str, from ' . chr(61) . '> ' . chr(36) . 'pos, to ' . chr(61) . '> ' . chr(36) . 'pos, bool ' . chr(61) . '> 1 )' . chr(59) . ' ' . chr(36) . 'MATCH->bool ' . chr(61) . ' ( ' . ($MATCH->{('Perlito5::Grammar::Regex.rule')}->flat())->emit_perl5() . ')' . chr(59) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125)));
     ((my  $ast) = Perlito5::Grammar->sub_def($source, 0));
     (($MATCH)->{capture} = $ast->flat());
 ;

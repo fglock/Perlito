@@ -783,16 +783,16 @@ package Perlito5::Expression;
         }
         # say "# look for a statement modifier";
         my $modifier = $self->statement_modifier($str, $res->to);
-        if (!($modifier)) {
+        if (!$modifier->bool) {
             # say "# statement expression no modifier result: ", $res->perl;
             # TODO - require a statement terminator
             $res->capture = ($res->flat()){'exp'};
             return $res;
         }
         my $modifier_exp = $self->exp_parse($str, $modifier->to);
-        # say "# statement modifier [", $modifier, "] exp: ", $modifier_exp->perl;
+        # say "# statement modifier [", $modifier->flat(), "] exp: ", $modifier_exp->perl;
         if (!($modifier_exp->bool)) {
-            die "Expected expression after '", $modifier, "'";
+            die "Expected expression after '", $modifier->flat(), "'";
         }
         if ($modifier_exp->flat()){'end_block'} {
             # warn "Block: ", (($modifier_exp->flat()){'end_block'})->perl;
@@ -801,7 +801,7 @@ package Perlito5::Expression;
         # TODO - require a statement terminator
         # say "# statement_parse modifier result: ", $modifier_exp->perl;
 
-        $modifier = '' . $modifier;
+        $modifier = $modifier->flat();
 
         if ($modifier eq 'if') {
             return Perlito5::Match->new(

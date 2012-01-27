@@ -142,9 +142,9 @@ token single_quoted_unescape {
     |  \\ \'  <single_quoted_unescape>
         { $MATCH->capture = '\'' . $MATCH->{"single_quoted_unescape"}->flat() }
     |  \\   <single_quoted_unescape>
-        { $MATCH->capture = "\\" . $MATCH->{"single_quoted_unescape"} }
+        { $MATCH->capture = "\\" . $MATCH->{"single_quoted_unescape"}->flat() }
     |  <char_any_single_quote> <single_quoted_unescape>
-        { $MATCH->capture = $MATCH->{"char_any_single_quote"} . $MATCH->{"single_quoted_unescape"} }
+        { $MATCH->capture = $MATCH->{"char_any_single_quote"}->flat() . $MATCH->{"single_quoted_unescape"}->flat() }
     |  ''
 }
 
@@ -305,7 +305,7 @@ token token {
     \}
     {
         #say 'Token was compiled into: ', ($MATCH->{"Perlito5::Grammar::Regex.rule"}->flat())->perl;
-        my $source = $MATCH->{"opt_name"} 
+        my $source = $MATCH->{"opt_name"}->flat()
             . '{ ' .
                 'my $grammar = $_[0]; ' .
                 'my $str     = $_[1]; ' .

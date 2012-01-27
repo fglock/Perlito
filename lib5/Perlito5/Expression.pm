@@ -1915,18 +1915,18 @@ package main;
             return ($res)
         };
         ((my  $modifier) = $self->statement_modifier($str, $res->to()));
-        if ((!(($modifier)))) {
+        if ((!($modifier->bool()))) {
             (($res)->{capture} = ($res->flat())->{'exp'});
             return ($res)
         };
         ((my  $modifier_exp) = $self->exp_parse($str, $modifier->to()));
         if ((!(($modifier_exp->bool())))) {
-            die(('Expected expression after ' . chr(39)), $modifier, (chr(39)))
+            die(('Expected expression after ' . chr(39)), $modifier->flat(), (chr(39)))
         };
         if (($modifier_exp->flat())->{'end_block'}) {
             die(('Unexpected block after expression near '), $modifier->to())
         };
-        ($modifier = ('' . $modifier));
+        ($modifier = $modifier->flat());
         if ((($modifier eq 'if'))) {
             return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => ($modifier_exp->flat())->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');

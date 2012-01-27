@@ -31,16 +31,9 @@ if ($verbose) {
 
 my %module_seen;
 
-token module_name {
-    <Perlito5::Grammar.ident>
-    [   '::' <module_name>  { $MATCH->capture = [ '' . $MATCH->{"Perlito5::Grammar.ident"}, @{ $MATCH->{"module_name"}->flat() } ] }
-    |   ''                  { $MATCH->capture = [ '' . $MATCH->{"Perlito5::Grammar.ident"} ] }
-    ]
-}
 sub modulename_to_filename {
     my $s = shift;
-    my $ident = Perlito->module_name( $s, 0 );
-    return join("/", $ident->flat());
+    return Perlito5::Runtime::_replace( $s, '::', '/' );
 }
 
 sub expand_use {
