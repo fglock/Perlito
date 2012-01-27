@@ -157,9 +157,9 @@ token double_quoted_unescape {
     |  \\
         [  c
             [   \[ <digits> \]
-                { $MATCH->capture = chr( $MATCH->{"digits"} ) }
+                { $MATCH->capture = chr( $MATCH->{"digits"}->flat() ) }
             |  <digits>
-                { $MATCH->capture = chr( $MATCH->{"digits"} ) }
+                { $MATCH->capture = chr( $MATCH->{"digits"}->flat() ) }
             ]
         |  e
             { $MATCH->capture = chr(27) }

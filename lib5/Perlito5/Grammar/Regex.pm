@@ -851,7 +851,7 @@ package main;
         0
     }
 }))) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    (($MATCH)->{capture} = Rul::Constant->new(('constant' => chr($MATCH->{('Perlito5::Grammar.digits')}))));
+    (($MATCH)->{capture} = Rul::Constant->new(('constant' => chr($MATCH->{('Perlito5::Grammar.digits')}->flat()))));
     1
 })))
 })) || ((do {
@@ -867,7 +867,7 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = Rul::Constant->new(('constant' => chr($MATCH->{('Perlito5::Grammar.digits')}))));
+    (($MATCH)->{capture} = Rul::Constant->new(('constant' => chr($MATCH->{('Perlito5::Grammar.digits')}->flat()))));
     1
 }))))
 }))) || ((do {

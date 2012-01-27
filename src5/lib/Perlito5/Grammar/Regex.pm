@@ -160,9 +160,9 @@ token rule_terms {
 #          { $MATCH->capture = Rul::SpecialChar->new( char => '\\' . $0 . $1 ) }
 
         | c \[ <Perlito5::Grammar.digits> \]
-          { $MATCH->capture = Rul::Constant->new( constant => chr( $MATCH->{"Perlito5::Grammar.digits"} ) ) }
+          { $MATCH->capture = Rul::Constant->new( constant => chr( $MATCH->{"Perlito5::Grammar.digits"}->flat() ) ) }
         | c <Perlito5::Grammar.digits>
-          { $MATCH->capture = Rul::Constant->new( constant => chr( $MATCH->{"Perlito5::Grammar.digits"} ) ) }
+          { $MATCH->capture = Rul::Constant->new( constant => chr( $MATCH->{"Perlito5::Grammar.digits"}->flat() ) ) }
         | <any>
           #  \e  \E
           { $MATCH->capture = Rul::SpecialChar->new( char => $MATCH->{"any"}->flat() ) }

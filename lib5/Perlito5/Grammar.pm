@@ -1459,7 +1459,7 @@ package main;
         0
     }
 }))) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    (($MATCH)->{capture} = chr($MATCH->{('digits')}));
+    (($MATCH)->{capture} = chr($MATCH->{('digits')}->flat()));
     1
 })))
 })) || ((do {
@@ -1475,7 +1475,7 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = chr($MATCH->{('digits')}));
+    (($MATCH)->{capture} = chr($MATCH->{('digits')}->flat()));
     1
 }))))
 })))

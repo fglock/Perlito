@@ -10,10 +10,7 @@ use v5;
 
     use overload (
         bool     => \&bool,
-        '${}'    => \&scalar,
         '""'     => \&flat,
-        '0+'     => \&flat,
-        'eq'     => sub { "$_[0]" eq "$_[1]" },
     );
 
     sub new {
