@@ -530,7 +530,10 @@ class Call {
         }
 
         if  ($meth eq 'postcircumfix:<( )>')  {
-            return '(' . $invocant . ')(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . ')';
+            my @args = 'CallSub';
+            push @args, $_->emit_javascript
+                for @{$.arguments};
+            return Javascript::tab($level) . '(' . $invocant . ')(' . join(',', @args) . ')';
         }
 
         # try to call a method on the prototype; if that fails, then call a method on $self.
@@ -581,7 +584,10 @@ class Apply {
         my $code = $.code;
 
         if (ref $code ne '') {
-            return Javascript::tab($level) . '(' . $.code->emit_javascript() . ')->(' . join(',', map( $_->emit(), @{$.arguments})) . ')';
+            my @args = 'CallSub';
+            push @args, $_->emit_javascript
+                for @{$.arguments};
+            return Javascript::tab($level) . '(' . $.code->emit_javascript() . ')(' . join(',', @args) . ')';
         }
         if ($code eq 'infix:<=>>') {
             return Javascript::tab($level) . join(', ', map( $_->emit_javascript, @{$.arguments} ))
@@ -939,10 +945,13 @@ class Sub {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $sig = $.sig;
-        my $pos = $sig->positional;
-        my $str = join( ', ', map( $_->emit_javascript(), @$pos ) );
-          Javascript::tab($level) . 'function ' . $.name . '(' . $str . ') {' . "\n"
+
+          Javascript::tab($level) . ''
+        .                           ( $.name
+                                      ? 'v__NAMESPACE.["' . $.name . '"] = '
+                                      : ''
+                                    )
+        .                           'function () {' . "\n"
         . Javascript::tab($level + 1) . 'var List__ = Array.prototype.slice.call(arguments);' . "\n"
         . Javascript::tab($level + 1) . 'if (List__[0] instanceof CallSubClass) {' . "\n"
         . Javascript::tab($level + 2) .   'List__.shift()' . "\n"

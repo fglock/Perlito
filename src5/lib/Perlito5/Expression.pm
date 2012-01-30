@@ -234,7 +234,10 @@ package Perlito5::Expression;
         return $op;
     }
 
-    my $reduce_to_ast = sub ($op_stack, $num_stack) {
+    my $reduce_to_ast = sub {
+        my $op_stack = shift;
+        my $num_stack = shift;
+
         my $last_op = shift @$op_stack;
         # say "# reduce_to_ast ";
         # say "#     last_op: ", $last_op->perl;

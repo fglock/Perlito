@@ -229,8 +229,8 @@ package main;
     };
     ((my  $reduce_to_ast) = sub  {
     my $List__ = bless \@_, "ARRAY";
-    my $op_stack = $_[0];
-    my $num_stack = $_[1];
+    ((my  $op_stack) = shift());
+    ((my  $num_stack) = shift());
     ((my  $last_op) = shift( @{($op_stack)} ));
     if ((($last_op->[0] eq 'prefix'))) {
         push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ('prefix:<' . $last_op->[1] . '>')), ('arguments' => (do {

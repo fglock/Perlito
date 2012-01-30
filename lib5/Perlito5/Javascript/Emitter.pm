@@ -600,7 +600,16 @@ package main;
                 return ((Javascript::tab($level) . $invocant . '[' . $self->{arguments}->emit_javascript() . ']'))
             };
             if ((($meth eq 'postcircumfix:<( )>'))) {
-                return (('(' . $invocant . ')(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')'))
+                ((my  $List_args = bless [], 'ARRAY') = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'CallSub' );
+    $List_a
+}));
+                for ( @{($self->{arguments})} ) {
+                    push( @{$List_args}, $_->emit_javascript() )
+                };
+                return ((Javascript::tab($level) . '(' . $invocant . ')(' . join(',', @{$List_args}) . ')'))
             };
             ((my  $List_args = bless [], 'ARRAY') = (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -650,7 +659,16 @@ package main;
             };
             ((my  $code) = $self->{code});
             if ((ref(($code ne '')))) {
-                return ((Javascript::tab($level) . '(' . $self->{code}->emit_javascript() . ')->(' . join(',', @{[map($_->emit(), @{($self->{arguments})})]}) . ')'))
+                ((my  $List_args = bless [], 'ARRAY') = (do {
+    (my  $List_a = bless [], 'ARRAY');
+    (my  $List_v = bless [], 'ARRAY');
+    push( @{$List_a}, 'CallSub' );
+    $List_a
+}));
+                for ( @{($self->{arguments})} ) {
+                    push( @{$List_args}, $_->emit_javascript() )
+                };
+                return ((Javascript::tab($level) . '(' . $self->{code}->emit_javascript() . ')(' . join(',', @{$List_args}) . ')'))
             };
             if ((($code eq 'infix:<' . chr(61) . '>>'))) {
                 return ((Javascript::tab($level) . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]})))
@@ -983,10 +1001,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = shift());
             ((my  $level) = shift());
-            ((my  $sig) = $self->{sig});
-            ((my  $pos) = $sig->positional());
-            ((my  $str) = join(', ', @{[map($_->emit_javascript(), @{($pos)})]}));
-            (Javascript::tab($level) . 'function ' . $self->{name} . '(' . $str . ') ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . 'if (List__[0] instanceof CallSubClass) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.shift()' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.unshift(this)' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125))
+            (Javascript::tab($level) . '' . (($self->{name} ? ('v__NAMESPACE.[' . chr(34) . $self->{name} . chr(34) . '] ' . chr(61) . ' ') : '')) . 'function () ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . 'if (List__[0] instanceof CallSubClass) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.shift()' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.unshift(this)' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{block}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125))
         }
     }
 
