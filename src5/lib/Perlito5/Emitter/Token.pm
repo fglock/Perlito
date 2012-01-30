@@ -1,8 +1,5 @@
 use v5;
 
-# no <after .. > - so it doesn't need to match backwards
-# no backtracking on quantifiers
-
 class Rul {
 
     sub constant {
@@ -186,28 +183,6 @@ class Rul::Subrule {
     }
 }
 
-class Rul::Var {
-    has $.sigil;
-    has $.twigil;
-    has $.name;
-    sub emit_perl5 {
-        my $self = $_[0];
-
-        # Normalize the sigil here into $
-        # $x    => $x
-        # @x    => $List_x
-        # %x    => $Hash_x
-        # &x    => $Code_x
-        my $table = {
-            '$' => '$',
-            '@' => '$List_',
-            '%' => '$Hash_',
-            '&' => '$Code_',
-        };
-        $table->{$.sigil} . $.name
-    }
-}
-
 class Rul::Constant {
     has $.constant;
     sub emit_perl5 {
@@ -274,35 +249,6 @@ class Rul::Block {
  }
 }
 
-class Rul::InterpolateVar {
-    has $.var;
-    sub emit_perl5 {
-        my $self = $_[0];
-
-        say '# TODO: interpolate var ' . $.var->emit_perl5() . '';
-        die();
-    };
-    sub set_captures_to_array {
-        my $self = $_[0];
- }
-}
-
-class Rul::NamedCapture {
-    has $.rule_exp;
-    has $.capture_ident;
-    sub emit_perl5 {
-        my $self = $_[0];
-
-        say '# TODO: named capture ' . $.capture_ident . ' = ' . $.rule_exp->emit_perl5() . '';
-        die();
-    }
-    sub set_captures_to_array {
-        my $self = $_[0];
-
-        say '# TODO: named capture ';
-    }
-}
-
 class Rul::Before {
     has $.rule_exp;
     sub emit_perl5 {
@@ -349,7 +295,7 @@ class Rul::NotBefore {
 
 =head1 NAME
 
-Perlito5::Emitter::Token - Code generator for Perlito Regex
+Perlito5::Emitter::Token - Code generator for Perlito Perl 5 grammar
 
 =head1 SYNOPSIS
 
@@ -358,18 +304,11 @@ Perlito5::Emitter::Token - Code generator for Perlito Regex
 
 =head1 DESCRIPTION
 
-This module generates Perlito code for the Regex compiler.
+This module generates Perl 5 code for the Regex compiler.
 
 =head1 AUTHORS
 
 Flavio Soibelmann Glock <fglock@gmail.com>.
-The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
-
-=head1 SEE ALSO
-
-The Perl 6 homepage at L<http://dev.perl.org/perl6>.
-
-The Pugs homepage at L<http://pugscode.org/>.
 
 =head1 COPYRIGHT
 

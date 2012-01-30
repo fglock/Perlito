@@ -139,28 +139,6 @@ package main;
 
 ;
     {
-    package Rul::Var;
-        sub new { shift; bless { @_ }, "Rul::Var" }
-        sub sigil { $_[0]->{sigil} };
-        sub twigil { $_[0]->{twigil} };
-        sub name { $_[0]->{name} };
-        sub emit_perl5 {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $table) = (do {
-    (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{chr(36)} = chr(36));
-    ($Hash_a->{chr(64)} = chr(36) . 'List_');
-    ($Hash_a->{chr(37)} = chr(36) . 'Hash_');
-    ($Hash_a->{chr(38)} = chr(36) . 'Code_');
-    $Hash_a
-}));
-            ($table->{$self->{sigil}} . $self->{name})
-        }
-    }
-
-;
-    {
     package Rul::Constant;
         sub new { shift; bless { @_ }, "Rul::Constant" }
         sub constant { $_[0]->{constant} };
@@ -236,42 +214,6 @@ package main;
         sub set_captures_to_array {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0])
-        }
-    }
-
-;
-    {
-    package Rul::InterpolateVar;
-        sub new { shift; bless { @_ }, "Rul::InterpolateVar" }
-        sub var { $_[0]->{var} };
-        sub emit_perl5 {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            Perlito5::Runtime::say((chr(35) . ' TODO: interpolate var ' . $self->{var}->emit_perl5() . ''));
-            die()
-        };
-        sub set_captures_to_array {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0])
-        }
-    }
-
-;
-    {
-    package Rul::NamedCapture;
-        sub new { shift; bless { @_ }, "Rul::NamedCapture" }
-        sub rule_exp { $_[0]->{rule_exp} };
-        sub capture_ident { $_[0]->{capture_ident} };
-        sub emit_perl5 {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            Perlito5::Runtime::say((chr(35) . ' TODO: named capture ' . $self->{capture_ident} . ' ' . chr(61) . ' ' . $self->{rule_exp}->emit_perl5() . ''));
-            die()
-        };
-        sub set_captures_to_array {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            Perlito5::Runtime::say(chr(35) . ' TODO: named capture ')
         }
     }
 

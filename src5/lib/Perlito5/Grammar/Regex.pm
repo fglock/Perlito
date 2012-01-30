@@ -1,10 +1,6 @@
 package Perlito5::Grammar::Regex;
 
-my %rule_terms;
-
 token ws {  <.Perlito5::Grammar.ws>  }
-
-token rule_ident {  <.Perlito5::Grammar.full_ident> | <digit> }
 
 token any { . }
 
@@ -25,21 +21,7 @@ token metasyntax_exp {
     ]+
 }
 
-token char_range {
-    [
-    |  \\ .
-    |  <!before \] > .
-    ]+
-}
-
-token char_class {
-    |  <.rule_ident>
-    |  \[  <.char_range>  \]
-}
-
-# XXX - not needed
 token string_code {
-    # bootstrap 'code'
     [
     |  \\ .
     |  \'  <.literal>     \'
@@ -49,54 +31,19 @@ token string_code {
 }
 
 token parsed_code {
-    # this subrule is overridden inside the perl6 compiler
-    # XXX - call Perlito 'Statement List'
     <.string_code>
     { $MATCH->capture = $MATCH->flat() }
 }
 
-token named_capture_body {
-    | \(  <rule>        \)  { $MATCH->capture = { capturing_group => $MATCH->{"rule"}->flat() ,} }
-    | \[  <rule>        \]  { $MATCH->capture = $MATCH->{"rule"}->flat() }
-    | \<  <metasyntax_exp>  \>
-            { $MATCH->capture = Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 1 ) }
-    | { die 'invalid alias syntax' }
-}
-
 token rule_terms {
-    |   '('
-        <rule> \)
-        { $MATCH->capture = Rul::Capture->new( rule_exp => $MATCH->{"rule"}->flat() ) }
-    |   '<('
-        <rule>  ')>'
-        { $MATCH->capture = Rul::CaptureResult->new( rule_exp => $MATCH->{"rule"}->flat() ) }
-    |   '<after'
-        <.ws> <rule> \>
-        { $MATCH->capture = Rul::After->new( rule_exp => $MATCH->{"rule"}->flat() ) }
     |   '<before'
         <.ws> <rule> \>
         { $MATCH->capture = Rul::Before->new( rule_exp => $MATCH->{"rule"}->flat() ) }
     |   '<!before'
         <.ws> <rule> \>
         { $MATCH->capture = Rul::NotBefore->new( rule_exp => $MATCH->{"rule"}->flat() ) }
-    |   '<!'
-        # TODO
-        <metasyntax_exp> \>
-        { $MATCH->capture = { negate  => { metasyntax => $MATCH->{"metasyntax_exp"}->flat() } } }
-    |   '<+'
-        # TODO
-        <char_class>  \>
-        { $MATCH->capture = Rul::CharClass->new( chars => '' . $MATCH->{"char_class"} ) }
-    |   '<-'
-        # TODO
-        <char_class> \>
-        { $MATCH->capture = Rul::NegateCharClass->new( chars => '' . $MATCH->{"char_class"} ) }
     |   \'
         <literal> \'
-        { $MATCH->capture = Rul::Constant->new( constant => $MATCH->{"literal"}->flat() ) }
-    |   # XXX - obsolete syntax
-        \< \'
-        <literal> \' \>
         { $MATCH->capture = Rul::Constant->new( constant => $MATCH->{"literal"}->flat() ) }
     |   \<
         [
@@ -139,16 +86,7 @@ token rule_term {
         { $MATCH->capture = Rul::Constant->new( constant => $MATCH->{"any"}->flat() ) }
 }
 
-token quant_exp {
-    |   '**'  <.Perlito5::Grammar.opt_ws>
-        [
-        |  <Perlito5::Grammar.val_int>
-           { $MATCH->capture = $MATCH->{"Perlito5::Grammar.val_int"}->flat() }
-        |  <rule_term>
-           { $MATCH->capture = $MATCH->{"rule_term"}->flat() }
-        ]
-    |   [  \? | \* | \+  ]
-}
+token quant_exp  {   \? | \* | \+  }
 
 token greedy_exp {   \?  |  \+  |  ''  }
 
@@ -217,7 +155,7 @@ token rule {
 
 =head1 NAME
 
-Perlito5::Grammar::Regex - Grammar for Perlito Regex
+Perlito5::Grammar::Regex - Grammar for Perlito Grammar
 
 =head1 SYNOPSIS
 
