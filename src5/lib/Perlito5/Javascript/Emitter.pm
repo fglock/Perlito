@@ -315,25 +315,7 @@ class CompUnit {
                     . ' = function () { return this.v_' . $decl->var->name() . '; };' . "\n";
             }
             if ($decl->isa( 'Sub' )) {
-                my $sig      = $decl->sig;
-                my $pos      = $sig->positional;
-                my $block    = Perlito5::Javascript::LexicalBlock->new( block => $decl->block, needs_return => 1, top_level => 1 );
-                $str = $str
-              . '  // sub ' . $decl->name() . "\n"
-              . '  ' . $class_name . '.' . ( $decl->name() )
-                    . ' = function (' . join(', ', map( $_->emit_javascript(), @$pos )) . ') {' . "\n"
-                # create @_
-              . Javascript::tab($level + 1) . 'var List__ = Array.prototype.slice.call(arguments);' . "\n"
-              . Javascript::tab($level + 1) . 'if (List__[0] instanceof CallSubClass) {' . "\n"
-              . Javascript::tab($level + 2) .   'List__.shift()' . "\n"
-              . Javascript::tab($level + 1) . '}' . "\n"
-              . Javascript::tab($level + 1) . 'else {' . "\n"
-              . Javascript::tab($level + 2) .   'List__.unshift(this)' . "\n"
-              . Javascript::tab($level + 1) . '}' . "\n"
-
-              .         $block->emit_javascript_indented( $level + 1 ) . "\n"
-              . '  }' . "\n"
-              . '  ' . $class_name . '.' . ( $decl->name() ) . ';  // v8 bug workaround' . "\n";
+                $str = $str . ($decl)->emit_javascript_indented( $level + 1 ) . ";\n";
             }
         }
         for my $decl ( @body ) {
@@ -948,7 +930,7 @@ class Sub {
 
           Javascript::tab($level) . ''
         .                           ( $.name
-                                      ? 'v__NAMESPACE.["' . $.name . '"] = '
+                                      ? 'v__NAMESPACE["' . $.name . '"] = '
                                       : ''
                                     )
         .                           'function () {' . "\n"
