@@ -311,7 +311,6 @@ class CompUnit {
             if ($decl->isa( 'Decl' ) && ( $decl->decl eq 'has' )) {
                 $str = $str
               . '  // accessor ' . $decl->var->name() . "\n"
-              . '  ' . $class_name . '.v_' . $decl->var->name() . ' = null;' . "\n"
               . '  ' . $class_name . '.' . ( $decl->var->name() )
                     . ' = function () { return this.v_' . $decl->var->name() . '; };' . "\n";
             }

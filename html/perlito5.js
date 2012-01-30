@@ -625,19 +625,14 @@ if (typeof Perlito5$Match !== 'object') {
 (function () {
   var v__NAMESPACE = Perlito5$Match;
   // accessor from
-  Perlito5$Match.v_from = null;
   Perlito5$Match.from = function () { return this.v_from; };
   // accessor to
-  Perlito5$Match.v_to = null;
   Perlito5$Match.to = function () { return this.v_to; };
   // accessor str
-  Perlito5$Match.v_str = null;
   Perlito5$Match.str = function () { return this.v_str; };
   // accessor bool
-  Perlito5$Match.v_bool = null;
   Perlito5$Match.bool = function () { return this.v_bool; };
   // accessor capture
-  Perlito5$Match.v_capture = null;
   Perlito5$Match.capture = function () { return this.v_capture; };
   // sub flat
   Perlito5$Match.flat = function () {
@@ -699,10 +694,8 @@ if (typeof CompUnit !== 'object') {
 (function () {
   var v__NAMESPACE = CompUnit;
   // accessor name
-  CompUnit.v_name = null;
   CompUnit.name = function () { return this.v_name; };
   // accessor body
-  CompUnit.v_body = null;
   CompUnit.body = function () { return this.v_body; };
 })()
 ;
@@ -716,7 +709,6 @@ if (typeof Val$Int !== 'object') {
 (function () {
   var v__NAMESPACE = Val$Int;
   // accessor int
-  Val$Int.v_int = null;
   Val$Int.int = function () { return this.v_int; };
 })()
 ;
@@ -730,7 +722,6 @@ if (typeof Val$Num !== 'object') {
 (function () {
   var v__NAMESPACE = Val$Num;
   // accessor num
-  Val$Num.v_num = null;
   Val$Num.num = function () { return this.v_num; };
 })()
 ;
@@ -744,7 +735,6 @@ if (typeof Val$Buf !== 'object') {
 (function () {
   var v__NAMESPACE = Val$Buf;
   // accessor buf
-  Val$Buf.v_buf = null;
   Val$Buf.buf = function () { return this.v_buf; };
 })()
 ;
@@ -758,10 +748,8 @@ if (typeof Lit$Block !== 'object') {
 (function () {
   var v__NAMESPACE = Lit$Block;
   // accessor sig
-  Lit$Block.v_sig = null;
   Lit$Block.sig = function () { return this.v_sig; };
   // accessor stmts
-  Lit$Block.v_stmts = null;
   Lit$Block.stmts = function () { return this.v_stmts; };
 })()
 ;
@@ -775,7 +763,6 @@ if (typeof Lit$Array !== 'object') {
 (function () {
   var v__NAMESPACE = Lit$Array;
   // accessor array1
-  Lit$Array.v_array1 = null;
   Lit$Array.array1 = function () { return this.v_array1; };
 })()
 ;
@@ -789,7 +776,6 @@ if (typeof Lit$Hash !== 'object') {
 (function () {
   var v__NAMESPACE = Lit$Hash;
   // accessor hash1
-  Lit$Hash.v_hash1 = null;
   Lit$Hash.hash1 = function () { return this.v_hash1; };
 })()
 ;
@@ -803,10 +789,8 @@ if (typeof Index !== 'object') {
 (function () {
   var v__NAMESPACE = Index;
   // accessor obj
-  Index.v_obj = null;
   Index.obj = function () { return this.v_obj; };
   // accessor index_exp
-  Index.v_index_exp = null;
   Index.index_exp = function () { return this.v_index_exp; };
 })()
 ;
@@ -820,10 +804,8 @@ if (typeof Lookup !== 'object') {
 (function () {
   var v__NAMESPACE = Lookup;
   // accessor obj
-  Lookup.v_obj = null;
   Lookup.obj = function () { return this.v_obj; };
   // accessor index_exp
-  Lookup.v_index_exp = null;
   Lookup.index_exp = function () { return this.v_index_exp; };
 })()
 ;
@@ -837,16 +819,12 @@ if (typeof Var !== 'object') {
 (function () {
   var v__NAMESPACE = Var;
   // accessor sigil
-  Var.v_sigil = null;
   Var.sigil = function () { return this.v_sigil; };
   // accessor twigil
-  Var.v_twigil = null;
   Var.twigil = function () { return this.v_twigil; };
   // accessor namespace
-  Var.v_namespace = null;
   Var.namespace = function () { return this.v_namespace; };
   // accessor name
-  Var.v_name = null;
   Var.name = function () { return this.v_name; };
 })()
 ;
@@ -860,7 +838,6 @@ if (typeof Proto !== 'object') {
 (function () {
   var v__NAMESPACE = Proto;
   // accessor name
-  Proto.v_name = null;
   Proto.name = function () { return this.v_name; };
 })()
 ;
@@ -874,13 +851,10 @@ if (typeof Call !== 'object') {
 (function () {
   var v__NAMESPACE = Call;
   // accessor invocant
-  Call.v_invocant = null;
   Call.invocant = function () { return this.v_invocant; };
   // accessor method
-  Call.v_method = null;
   Call.method = function () { return this.v_method; };
   // accessor arguments
-  Call.v_arguments = null;
   Call.arguments = function () { return this.v_arguments; };
 })()
 ;
@@ -894,13 +868,10 @@ if (typeof Apply !== 'object') {
 (function () {
   var v__NAMESPACE = Apply;
   // accessor code
-  Apply.v_code = null;
   Apply.code = function () { return this.v_code; };
   // accessor arguments
-  Apply.v_arguments = null;
   Apply.arguments = function () { return this.v_arguments; };
   // accessor namespace
-  Apply.v_namespace = null;
   Apply.namespace = function () { return this.v_namespace; };
 })()
 ;
@@ -914,13 +885,10 @@ if (typeof If !== 'object') {
 (function () {
   var v__NAMESPACE = If;
   // accessor cond
-  If.v_cond = null;
   If.cond = function () { return this.v_cond; };
   // accessor body
-  If.v_body = null;
   If.body = function () { return this.v_body; };
   // accessor otherwise
-  If.v_otherwise = null;
   If.otherwise = function () { return this.v_otherwise; };
 })()
 ;
@@ -934,16 +902,12 @@ if (typeof While !== 'object') {
 (function () {
   var v__NAMESPACE = While;
   // accessor init
-  While.v_init = null;
   While.init = function () { return this.v_init; };
   // accessor cond
-  While.v_cond = null;
   While.cond = function () { return this.v_cond; };
   // accessor continue
-  While.v_continue = null;
   While.continue = function () { return this.v_continue; };
   // accessor body
-  While.v_body = null;
   While.body = function () { return this.v_body; };
 })()
 ;
@@ -957,10 +921,8 @@ if (typeof For !== 'object') {
 (function () {
   var v__NAMESPACE = For;
   // accessor cond
-  For.v_cond = null;
   For.cond = function () { return this.v_cond; };
   // accessor body
-  For.v_body = null;
   For.body = function () { return this.v_body; };
 })()
 ;
@@ -974,13 +936,10 @@ if (typeof Decl !== 'object') {
 (function () {
   var v__NAMESPACE = Decl;
   // accessor decl
-  Decl.v_decl = null;
   Decl.decl = function () { return this.v_decl; };
   // accessor type
-  Decl.v_type = null;
   Decl.type = function () { return this.v_type; };
   // accessor var
-  Decl.v_var = null;
   Decl.var = function () { return this.v_var; };
 })()
 ;
@@ -994,13 +953,10 @@ if (typeof Sig !== 'object') {
 (function () {
   var v__NAMESPACE = Sig;
   // accessor invocant
-  Sig.v_invocant = null;
   Sig.invocant = function () { return this.v_invocant; };
   // accessor positional
-  Sig.v_positional = null;
   Sig.positional = function () { return this.v_positional; };
   // accessor named
-  Sig.v_named = null;
   Sig.named = function () { return this.v_named; };
 })()
 ;
@@ -1014,13 +970,10 @@ if (typeof Sub !== 'object') {
 (function () {
   var v__NAMESPACE = Sub;
   // accessor name
-  Sub.v_name = null;
   Sub.name = function () { return this.v_name; };
   // accessor sig
-  Sub.v_sig = null;
   Sub.sig = function () { return this.v_sig; };
   // accessor block
-  Sub.v_block = null;
   Sub.block = function () { return this.v_block; };
 })()
 ;
@@ -1034,7 +987,6 @@ if (typeof Do !== 'object') {
 (function () {
   var v__NAMESPACE = Do;
   // accessor block
-  Do.v_block = null;
   Do.block = function () { return this.v_block; };
 })()
 ;
@@ -1048,7 +1000,6 @@ if (typeof Use !== 'object') {
 (function () {
   var v__NAMESPACE = Use;
   // accessor mod
-  Use.v_mod = null;
   Use.mod = function () { return this.v_mod; };
 })()
 ;
@@ -1382,13 +1333,10 @@ if (typeof Perlito5$Javascript$LexicalBlock !== 'object') {
 (function () {
   var v__NAMESPACE = Perlito5$Javascript$LexicalBlock;
   // accessor block
-  Perlito5$Javascript$LexicalBlock.v_block = null;
   Perlito5$Javascript$LexicalBlock.block = function () { return this.v_block; };
   // accessor needs_return
-  Perlito5$Javascript$LexicalBlock.v_needs_return = null;
   Perlito5$Javascript$LexicalBlock.needs_return = function () { return this.v_needs_return; };
   // accessor top_level
-  Perlito5$Javascript$LexicalBlock.v_top_level = null;
   Perlito5$Javascript$LexicalBlock.top_level = function () { return this.v_top_level; };
   // sub emit_javascript
   Perlito5$Javascript$LexicalBlock.emit_javascript = function () {
@@ -1614,7 +1562,7 @@ if (typeof CompUnit !== 'object') {
                             })(); };;
                         })(); };; })(a_[i_]) } })(List_body);
                     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {                         if ( bool((and((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("isa") ? v_decl.__proto__.isa.call(v_decl,'Decl') : v_decl.isa('Decl')), function () { return (((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("decl") ? v_decl.__proto__.decl.call(v_decl) : v_decl.decl()) == 'has')); }))) ) { (function () {
-                            (v_str = (string(v_str) + string('  ' + String.fromCharCode(47) + String.fromCharCode(47) + ' accessor ') + string((typeof((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__) != 'undefined' && (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.hasOwnProperty("name") ? (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.name.call((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var())) : (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).name())) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.v_') + string((typeof((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__) != 'undefined' && (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.hasOwnProperty("name") ? (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.name.call((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var())) : (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).name())) + string(' ' + String.fromCharCode(61) + ' null' + String.fromCharCode(59)) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(((typeof((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__) != 'undefined' && (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.hasOwnProperty("name") ? (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.name.call((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var())) : (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).name()))) + string(' ' + String.fromCharCode(61) + ' function () ' + String.fromCharCode(123) + ' return this.v_') + string((typeof((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__) != 'undefined' && (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.hasOwnProperty("name") ? (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.name.call((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var())) : (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).name())) + string(String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10))))));;
+                            (v_str = (string(v_str) + string('  ' + String.fromCharCode(47) + String.fromCharCode(47) + ' accessor ') + string((typeof((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__) != 'undefined' && (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.hasOwnProperty("name") ? (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.name.call((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var())) : (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).name())) + string((string(String.fromCharCode(10)))) + string('  ') + string(v_class_name) + string('.') + string(((typeof((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__) != 'undefined' && (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.hasOwnProperty("name") ? (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.name.call((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var())) : (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).name()))) + string(' ' + String.fromCharCode(61) + ' function () ' + String.fromCharCode(123) + ' return this.v_') + string((typeof((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__) != 'undefined' && (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.hasOwnProperty("name") ? (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).__proto__.name.call((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var())) : (typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("var") ? v_decl.__proto__.var.call(v_decl) : v_decl.var()).name())) + string(String.fromCharCode(59) + ' ' + String.fromCharCode(125) + String.fromCharCode(59)) + string((string(String.fromCharCode(10))))));;
                         })(); };
                         if ( bool(((typeof(v_decl.__proto__) != 'undefined' && v_decl.__proto__.hasOwnProperty("isa") ? v_decl.__proto__.isa.call(v_decl,'Sub') : v_decl.isa('Sub')))) ) { (function () {
                             var v_sig = null;
@@ -15441,22 +15389,16 @@ if (typeof Rul$Quantifier !== 'object') {
 (function () {
   var v__NAMESPACE = Rul$Quantifier;
   // accessor term
-  Rul$Quantifier.v_term = null;
   Rul$Quantifier.term = function () { return this.v_term; };
   // accessor quant
-  Rul$Quantifier.v_quant = null;
   Rul$Quantifier.quant = function () { return this.v_quant; };
   // accessor greedy
-  Rul$Quantifier.v_greedy = null;
   Rul$Quantifier.greedy = function () { return this.v_greedy; };
   // accessor ws1
-  Rul$Quantifier.v_ws1 = null;
   Rul$Quantifier.ws1 = function () { return this.v_ws1; };
   // accessor ws2
-  Rul$Quantifier.v_ws2 = null;
   Rul$Quantifier.ws2 = function () { return this.v_ws2; };
   // accessor ws3
-  Rul$Quantifier.v_ws3 = null;
   Rul$Quantifier.ws3 = function () { return this.v_ws3; };
   // sub emit_perl5
   Rul$Quantifier.emit_perl5 = function () {
@@ -15536,7 +15478,6 @@ if (typeof Rul$Or !== 'object') {
 (function () {
   var v__NAMESPACE = Rul$Or;
   // accessor or_list
-  Rul$Or.v_or_list = null;
   Rul$Or.or_list = function () { return this.v_or_list; };
   // sub emit_perl5
   Rul$Or.emit_perl5 = function () {
@@ -15600,7 +15541,6 @@ if (typeof Rul$Concat !== 'object') {
 (function () {
   var v__NAMESPACE = Rul$Concat;
   // accessor concat
-  Rul$Concat.v_concat = null;
   Rul$Concat.concat = function () { return this.v_concat; };
   // sub emit_perl5
   Rul$Concat.emit_perl5 = function () {
@@ -15664,10 +15604,8 @@ if (typeof Rul$Subrule !== 'object') {
 (function () {
   var v__NAMESPACE = Rul$Subrule;
   // accessor metasyntax
-  Rul$Subrule.v_metasyntax = null;
   Rul$Subrule.metasyntax = function () { return this.v_metasyntax; };
   // accessor captures
-  Rul$Subrule.v_captures = null;
   Rul$Subrule.captures = function () { return this.v_captures; };
   // sub emit_perl5
   Rul$Subrule.emit_perl5 = function () {
@@ -15752,7 +15690,6 @@ if (typeof Rul$Constant !== 'object') {
 (function () {
   var v__NAMESPACE = Rul$Constant;
   // accessor constant
-  Rul$Constant.v_constant = null;
   Rul$Constant.constant = function () { return this.v_constant; };
   // sub emit_perl5
   Rul$Constant.emit_perl5 = function () {
@@ -15878,7 +15815,6 @@ if (typeof Rul$SpecialChar !== 'object') {
 (function () {
   var v__NAMESPACE = Rul$SpecialChar;
   // accessor char
-  Rul$SpecialChar.v_char = null;
   Rul$SpecialChar.char = function () { return this.v_char; };
   // sub emit_perl5
   Rul$SpecialChar.emit_perl5 = function () {
@@ -15959,7 +15895,6 @@ if (typeof Rul$Block !== 'object') {
 (function () {
   var v__NAMESPACE = Rul$Block;
   // accessor closure
-  Rul$Block.v_closure = null;
   Rul$Block.closure = function () { return this.v_closure; };
   // sub emit_perl5
   Rul$Block.emit_perl5 = function () {
@@ -16022,7 +15957,6 @@ if (typeof Rul$Before !== 'object') {
 (function () {
   var v__NAMESPACE = Rul$Before;
   // accessor rule_exp
-  Rul$Before.v_rule_exp = null;
   Rul$Before.rule_exp = function () { return this.v_rule_exp; };
   // sub emit_perl5
   Rul$Before.emit_perl5 = function () {
@@ -16085,7 +16019,6 @@ if (typeof Rul$NotBefore !== 'object') {
 (function () {
   var v__NAMESPACE = Rul$NotBefore;
   // accessor rule_exp
-  Rul$NotBefore.v_rule_exp = null;
   Rul$NotBefore.rule_exp = function () { return this.v_rule_exp; };
   // sub emit_perl5
   Rul$NotBefore.emit_perl5 = function () {

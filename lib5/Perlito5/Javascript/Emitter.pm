@@ -342,7 +342,7 @@ package main;
             };
             for my $decl ( @{$List_body} ) {
                 if (((Perlito5::Runtime::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
-                    ($str = ($str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . (chr(10)) . '  ' . $class_name . '.v_' . $decl->var()->name() . ' ' . chr(61) . ' null' . chr(59) . (chr(10)) . '  ' . $class_name . '.' . ($decl->var()->name()) . ' ' . chr(61) . ' function () ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . (chr(10))))
+                    ($str = ($str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . (chr(10)) . '  ' . $class_name . '.' . ($decl->var()->name()) . ' ' . chr(61) . ' function () ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . (chr(10))))
                 };
                 if ((Perlito5::Runtime::isa($decl, 'Sub'))) {
                     ((my  $sig) = $decl->sig());
