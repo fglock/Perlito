@@ -21,10 +21,15 @@ package main;
         };
         ((my  $Hash_safe_char = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{chr(36)} = 1);
+    ($Hash_a->{chr(37)} = 1);
+    ($Hash_a->{chr(64)} = 1);
+    ($Hash_a->{chr(38)} = 1);
     ($Hash_a->{'_'} = 1);
     ($Hash_a->{','} = 1);
     ($Hash_a->{'.'} = 1);
     ($Hash_a->{':'} = 1);
+    ($Hash_a->{chr(59)} = 1);
     ($Hash_a->{'-'} = 1);
     ($Hash_a->{'+'} = 1);
     ($Hash_a->{'*'} = 1);
@@ -32,9 +37,13 @@ package main;
     ($Hash_a->{'('} = 1);
     ($Hash_a->{')'} = 1);
     ($Hash_a->{'<'} = 1);
+    ($Hash_a->{chr(61)} = 1);
     ($Hash_a->{'>'} = 1);
     ($Hash_a->{'['} = 1);
     ($Hash_a->{']'} = 1);
+    ($Hash_a->{chr(123)} = 1);
+    ($Hash_a->{chr(124)} = 1);
+    ($Hash_a->{chr(125)} = 1);
     $Hash_a
 }));
         sub escape_string {
@@ -704,7 +713,7 @@ package main;
                 return ((Javascript::tab($level) . '(' . join($Hash_op_infix_js->{$code}, @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')'))
             };
             if ((($code eq 'eval'))) {
-                return (('eval(perl5_to_js(' . to_str($self->{arguments}->[0]) . '))'))
+                return (('eval(perl5_to_js(' . Javascript::to_str($self->{arguments}->[0]) . '))'))
             };
             if ((($code eq 'undef'))) {
                 return ((Javascript::tab($level) . 'null'))
