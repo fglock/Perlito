@@ -10,48 +10,46 @@ our $MATCH = Perlito5::Match->new();
 package main;
     sub new { shift; bless { @_ }, "main" }
     use v5;
-    {
     package Lit::Array;
-        sub new { shift; bless { @_ }, "Lit::Array" }
-        sub expand_interpolation {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $needs_interpolation) = 0);
-            (my  $List_items = bless [], 'ARRAY');
-            for my $item ( @{($self->{('array1')})} ) {
-                if (((Perlito5::Runtime::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
-                    for my $arg ( @{($item->arguments())} ) {
-                        push( @{$List_items}, $arg )
-                    }
+    sub expand_interpolation {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        ((my  $needs_interpolation) = 0);
+        (my  $List_items = bless [], 'ARRAY');
+        for my $item ( @{($self->{('array1')})} ) {
+            if (((Perlito5::Runtime::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
+                for my $arg ( @{($item->arguments())} ) {
+                    push( @{$List_items}, $arg )
                 }
-                else {
-                    push( @{$List_items}, $item )
-                }
-            };
-            for my $item ( @{$List_items} ) {
-                if ((((Perlito5::Runtime::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Perlito5::Runtime::isa($item, 'Apply') && (((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')) || ($item->code() eq 'map'))))))) {
-                    ($needs_interpolation = 1)
-                }
-            };
-            if ((($needs_interpolation && (scalar( @{$List_items} ) == 1)))) {
-                return (Apply->new(('arguments' => (do {
+            }
+            else {
+                push( @{$List_items}, $item )
+            }
+        };
+        for my $item ( @{$List_items} ) {
+            if ((((Perlito5::Runtime::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Perlito5::Runtime::isa($item, 'Apply') && (((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')) || ($item->code() eq 'map'))))))) {
+                ($needs_interpolation = 1)
+            }
+        };
+        if ((($needs_interpolation && (scalar( @{$List_items} ) == 1)))) {
+            return (Apply->new(('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $List_items->[0] );
     $List_a
 })), ('code' => 'prefix:<' . chr(92) . '>'), ('namespace' => '')))
-            };
-            (my  $List_s = bless [], 'ARRAY');
-            for my $item ( @{$List_items} ) {
-                if ((((Perlito5::Runtime::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Perlito5::Runtime::isa($item, 'Apply') && (((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')) || ($item->code() eq 'map'))))))) {
-                    push( @{$List_s}, Apply->new(('arguments' => (do {
+        };
+        (my  $List_s = bless [], 'ARRAY');
+        for my $item ( @{$List_items} ) {
+            if ((((Perlito5::Runtime::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Perlito5::Runtime::isa($item, 'Apply') && (((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')) || ($item->code() eq 'map'))))))) {
+                push( @{$List_s}, Apply->new(('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')) );
     push( @{$List_a}, $item );
     $List_a
 })), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
-                    push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => (do {
+                push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Apply->new(('arguments' => (do {
@@ -85,18 +83,18 @@ package main;
 })), ('code' => 'circumfix:<( )>'), ('namespace' => '')) );
     $List_a
 })), ('code' => 'infix:<..>'), ('namespace' => ''))), ('topic' => undef())) )
-                }
-                else {
-                    push( @{$List_s}, Apply->new(('arguments' => (do {
+            }
+            else {
+                push( @{$List_s}, Apply->new(('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')) );
     push( @{$List_a}, $item );
     $List_a
 })), ('code' => 'push'), ('namespace' => '')) )
-                }
-            };
-            return (Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => (do {
+            }
+        };
+        return (Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)), ('twigil' => '')))) );
@@ -113,45 +111,40 @@ package main;
 })), ('code' => 'prefix:<' . chr(92) . '>'), ('namespace' => '')) );
     $List_a
 }))))))
-        }
-    }
-
-;
-    {
+    };
     package Lit::Hash;
-        sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub expand_interpolation {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            (my  $List_items = bless [], 'ARRAY');
-            for my $item ( @{($self->{('hash1')})} ) {
-                if (((Perlito5::Runtime::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
-                    for my $arg ( @{($item->arguments())} ) {
-                        push( @{$List_items}, $arg )
-                    }
+    sub expand_interpolation {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        (my  $List_items = bless [], 'ARRAY');
+        for my $item ( @{($self->{('hash1')})} ) {
+            if (((Perlito5::Runtime::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
+                for my $arg ( @{($item->arguments())} ) {
+                    push( @{$List_items}, $arg )
                 }
-                else {
-                    push( @{$List_items}, $item )
-                }
-            };
-            (my  $List_s = bless [], 'ARRAY');
-            for my $item ( @{$List_items} ) {
-                if (((Perlito5::Runtime::isa($item, 'Apply') && ($item->code() eq 'infix:<' . chr(61) . '>>')))) {
-                    push( @{$List_s}, Apply->new(('arguments' => (do {
+            }
+            else {
+                push( @{$List_items}, $item )
+            }
+        };
+        (my  $List_s = bless [], 'ARRAY');
+        for my $item ( @{$List_items} ) {
+            if (((Perlito5::Runtime::isa($item, 'Apply') && ($item->code() eq 'infix:<' . chr(61) . '>>')))) {
+                push( @{$List_s}, Apply->new(('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Lookup->new(('index_exp' => $item->arguments()->[0]), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => '')))) );
     push( @{$List_a}, $item->arguments()->[1] );
     $List_a
 })), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) )
-                }
-                else {
-                    if ((((Perlito5::Runtime::isa($item, 'Var') && ($item->sigil() eq chr(37))) || (Perlito5::Runtime::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(37) . '>'))))) {
-                        ((my  $v) = $item);
-                        if (Perlito5::Runtime::isa($item, 'Var')) {
-                            ($v = Var->new(('sigil' => chr(36)), ('twigil' => $item->twigil()), ('namespace' => $item->namespace()), ('name' => $item->name())))
-                        };
-                        push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => (do {
+            }
+            else {
+                if ((((Perlito5::Runtime::isa($item, 'Var') && ($item->sigil() eq chr(37))) || (Perlito5::Runtime::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(37) . '>'))))) {
+                    ((my  $v) = $item);
+                    if (Perlito5::Runtime::isa($item, 'Var')) {
+                        ($v = Var->new(('sigil' => chr(36)), ('twigil' => $item->twigil()), ('namespace' => $item->namespace()), ('name' => $item->name())))
+                    };
+                    push( @{$List_s}, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)), ('twigil' => ''))), ('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Apply->new(('arguments' => (do {
@@ -168,10 +161,10 @@ package main;
     push( @{$List_a}, $item );
     $List_a
 })), ('code' => 'keys'), ('namespace' => ''))), ('topic' => undef())) )
-                    }
-                    else {
-                        if ((((Perlito5::Runtime::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Perlito5::Runtime::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(64) . '>'))))) {
-                            push( @{$List_s}, Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => (do {
+                }
+                else {
+                    if ((((Perlito5::Runtime::isa($item, 'Var') && ($item->sigil() eq chr(64))) || (Perlito5::Runtime::isa($item, 'Apply') && ($item->code() eq 'prefix:<' . chr(64) . '>'))))) {
+                        push( @{$List_s}, Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Apply->new(('arguments' => (do {
@@ -237,14 +230,14 @@ package main;
 })), ('code' => 'circumfix:<( )>'), ('namespace' => '')))) );
     $List_a
 }))))) )
-                        }
-                        else {
-                            die('Error in hash composer: ', $item)
-                        }
+                    }
+                    else {
+                        die('Error in hash composer: ', $item)
                     }
                 }
-            };
-            return (Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => (do {
+            }
+        };
+        return (Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37)), ('twigil' => '')))) );
@@ -260,14 +253,9 @@ package main;
 })), ('code' => 'prefix:<' . chr(92) . '>'), ('namespace' => '')) );
     $List_a
 }))))))
-        }
-    }
-
-;
-    {
+    };
     package Apply;
-        sub new { shift; bless { @_ }, "Apply" }
-        ((my  $Hash_op = bless {}, 'HASH') = (do {
+    ((my  $Hash_op = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'infix:<+' . chr(61) . '>'} = 'infix:<+>');
     ($Hash_a->{'infix:<-' . chr(61) . '>'} = 'infix:<->');
@@ -281,60 +269,52 @@ package main;
     ($Hash_a->{'infix:<.' . chr(61) . '>'} = 'list:<.>');
     $Hash_a
 }));
-        sub op_assign {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            ((my  $code) = $self->{('code')});
-            if (ref($code)) {
-                return (0)
-            };
-            if ((exists($Hash_op->{$code}))) {
-                return (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => (do {
+    sub op_assign {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        ((my  $code) = $self->{('code')});
+        if (ref($code)) {
+            return (0)
+        };
+        if ((exists($Hash_op->{$code}))) {
+            return (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{('arguments')}->[0] );
     push( @{$List_a}, Apply->new(('code' => $Hash_op->{$code}), ('arguments' => $self->{('arguments')})) );
     $List_a
 }))))
-            };
-            return (0)
-        }
-    }
-
-;
-    {
+        };
+        return (0)
+    };
     package Do;
-        sub new { shift; bless { @_ }, "Do" }
-        sub simplify {
-            my $List__ = bless \@_, "ARRAY";
-            ((my  $self) = $List__->[0]);
-            (my  $block);
-            if ((Perlito5::Runtime::isa($self->{('block')}, 'Lit::Block'))) {
-                ($block = $self->{('block')}->stmts())
-            }
-            else {
-                ($block = (do {
+    sub simplify {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $self) = $List__->[0]);
+        (my  $block);
+        if ((Perlito5::Runtime::isa($self->{('block')}, 'Lit::Block'))) {
+            ($block = $self->{('block')}->stmts())
+        }
+        else {
+            ($block = (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $self->{('block')} );
     $List_a
 }))
+        };
+        if (((scalar( @{($block)} ) == 1))) {
+            ((my  $stmt) = $block->[0]);
+            if (((Perlito5::Runtime::isa($stmt, 'Apply') && ($stmt->code() eq 'circumfix:<( )>')))) {
+                ((my  $args) = $stmt->arguments());
+                return (Do->new(('block' => $args->[0]))->simplify())
             };
-            if (((scalar( @{($block)} ) == 1))) {
-                ((my  $stmt) = $block->[0]);
-                if (((Perlito5::Runtime::isa($stmt, 'Apply') && ($stmt->code() eq 'circumfix:<( )>')))) {
-                    ((my  $args) = $stmt->arguments());
-                    return (Do->new(('block' => $args->[0]))->simplify())
-                };
-                if ((Perlito5::Runtime::isa($stmt, 'Do'))) {
-                    return ($stmt->simplify())
-                }
-            };
-            return (Do->new(('block' => $block)))
-        }
+            if ((Perlito5::Runtime::isa($stmt, 'Do'))) {
+                return ($stmt->simplify())
+            }
+        };
+        return (Do->new(('block' => $block)))
     }
-
-
 }
 
 1;
