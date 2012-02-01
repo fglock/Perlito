@@ -10,308 +10,539 @@ our $MATCH = Perlito5::Match->new();
 package main;
     sub new { shift; bless { @_ }, "main" }
     use v5;
-    {
     package CompUnit;
-        sub new { shift; bless { @_ }, "CompUnit" }
-        sub name {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'name'}
-        };
-        sub body {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'body'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub name {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'name'}
+    };
+    sub body {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'body'}
+    };
     package Val::Int;
-        sub new { shift; bless { @_ }, "Val::Int" }
-        sub int {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'int'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub int {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'int'}
+    };
     package Val::Num;
-        sub new { shift; bless { @_ }, "Val::Num" }
-        sub num {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'num'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub num {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'num'}
+    };
     package Val::Buf;
-        sub new { shift; bless { @_ }, "Val::Buf" }
-        sub buf {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'buf'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub buf {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'buf'}
+    };
     package Lit::Block;
-        sub new { shift; bless { @_ }, "Lit::Block" }
-        sub sig {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'sig'}
-        };
-        sub stmts {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'stmts'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub sig {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'sig'}
+    };
+    sub stmts {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'stmts'}
+    };
     package Lit::Array;
-        sub new { shift; bless { @_ }, "Lit::Array" }
-        sub array1 {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'array1'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub array1 {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'array1'}
+    };
     package Lit::Hash;
-        sub new { shift; bless { @_ }, "Lit::Hash" }
-        sub hash1 {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'hash1'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub hash1 {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'hash1'}
+    };
     package Index;
-        sub new { shift; bless { @_ }, "Index" }
-        sub obj {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'obj'}
-        };
-        sub index_exp {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'index_exp'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub obj {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'obj'}
+    };
+    sub index_exp {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'index_exp'}
+    };
     package Lookup;
-        sub new { shift; bless { @_ }, "Lookup" }
-        sub obj {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'obj'}
-        };
-        sub index_exp {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'index_exp'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub obj {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'obj'}
+    };
+    sub index_exp {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'index_exp'}
+    };
     package Var;
-        sub new { shift; bless { @_ }, "Var" }
-        sub sigil {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'sigil'}
-        };
-        sub twigil {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'twigil'}
-        };
-        sub namespace {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'namespace'}
-        };
-        sub name {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'name'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub sigil {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'sigil'}
+    };
+    sub twigil {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'twigil'}
+    };
+    sub namespace {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'namespace'}
+    };
+    sub name {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'name'}
+    };
     package Proto;
-        sub new { shift; bless { @_ }, "Proto" }
-        sub name {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'name'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub name {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'name'}
+    };
     package Call;
-        sub new { shift; bless { @_ }, "Call" }
-        sub invocant {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'invocant'}
-        };
-        sub method {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'method'}
-        };
-        sub arguments {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'arguments'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub invocant {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'invocant'}
+    };
+    sub method {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'method'}
+    };
+    sub arguments {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'arguments'}
+    };
     package Apply;
-        sub new { shift; bless { @_ }, "Apply" }
-        sub code {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'code'}
-        };
-        sub arguments {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'arguments'}
-        };
-        sub namespace {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'namespace'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub code {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'code'}
+    };
+    sub arguments {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'arguments'}
+    };
+    sub namespace {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'namespace'}
+    };
     package If;
-        sub new { shift; bless { @_ }, "If" }
-        sub cond {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'cond'}
-        };
-        sub body {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'body'}
-        };
-        sub otherwise {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'otherwise'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub cond {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'cond'}
+    };
+    sub body {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'body'}
+    };
+    sub otherwise {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'otherwise'}
+    };
     package While;
-        sub new { shift; bless { @_ }, "While" }
-        sub init {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'init'}
-        };
-        sub cond {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'cond'}
-        };
-        sub continue {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'continue'}
-        };
-        sub body {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'body'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub init {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'init'}
+    };
+    sub cond {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'cond'}
+    };
+    sub continue {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'continue'}
+    };
+    sub body {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'body'}
+    };
     package For;
-        sub new { shift; bless { @_ }, "For" }
-        sub cond {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'cond'}
-        };
-        sub body {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'body'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub cond {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'cond'}
+    };
+    sub body {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'body'}
+    };
     package Decl;
-        sub new { shift; bless { @_ }, "Decl" }
-        sub decl {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'decl'}
-        };
-        sub type {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'type'}
-        };
-        sub var {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'var'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub decl {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'decl'}
+    };
+    sub type {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'type'}
+    };
+    sub var {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'var'}
+    };
     package Sig;
-        sub new { shift; bless { @_ }, "Sig" }
-        sub invocant {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'invocant'}
-        };
-        sub positional {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'positional'}
-        };
-        sub named {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'named'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub invocant {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'invocant'}
+    };
+    sub positional {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'positional'}
+    };
+    sub named {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'named'}
+    };
     package Sub;
-        sub new { shift; bless { @_ }, "Sub" }
-        sub name {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'name'}
-        };
-        sub sig {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'sig'}
-        };
-        sub block {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'block'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub name {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'name'}
+    };
+    sub sig {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'sig'}
+    };
+    sub block {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'block'}
+    };
     package Do;
-        sub new { shift; bless { @_ }, "Do" }
-        sub block {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'block'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
-    }
-
-;
-    {
+    });
+    $Hash_a
+}), $class)
+    };
+    sub block {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'block'}
+    };
     package Use;
-        sub new { shift; bless { @_ }, "Use" }
-        sub mod {
-            my $List__ = bless \@_, "ARRAY";
-            $List__->[0]->{'mod'}
+    sub new {
+        my $List__ = bless \@_, "ARRAY";
+        ((my  $class) = shift());
+        bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
         }
+    });
+    $Hash_a
+}), $class)
+    };
+    sub mod {
+        my $List__ = bless \@_, "ARRAY";
+        $List__->[0]->{'mod'}
     }
-
-
 }
 
 1;

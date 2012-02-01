@@ -815,6 +815,43 @@ if (typeof CompUnit !== 'object') {
 }
 (function () {
   var v__NAMESPACE = CompUnit;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["name"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -866,6 +903,43 @@ if (typeof Val$Int !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Val$Int;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["int"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -897,6 +971,43 @@ if (typeof Val$Num !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Val$Num;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["num"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -928,6 +1039,43 @@ if (typeof Val$Buf !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["buf"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -959,6 +1107,43 @@ if (typeof Lit$Block !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["sig"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1010,6 +1195,43 @@ if (typeof Lit$Array !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["array1"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1041,6 +1263,43 @@ if (typeof Lit$Hash !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["hash1"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1072,6 +1331,43 @@ if (typeof Index !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Index;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["obj"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1123,6 +1419,43 @@ if (typeof Lookup !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Lookup;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["obj"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1174,6 +1507,43 @@ if (typeof Var !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Var;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["sigil"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1265,6 +1635,43 @@ if (typeof Proto !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Proto;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["name"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1296,6 +1703,43 @@ if (typeof Call !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Call;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["invocant"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1367,6 +1811,43 @@ if (typeof Apply !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Apply;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["code"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1438,6 +1919,43 @@ if (typeof If !== 'object') {
 }
 (function () {
   var v__NAMESPACE = If;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["cond"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1509,6 +2027,43 @@ if (typeof While !== 'object') {
 }
 (function () {
   var v__NAMESPACE = While;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["init"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1600,6 +2155,43 @@ if (typeof For !== 'object') {
 }
 (function () {
   var v__NAMESPACE = For;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["cond"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1651,6 +2243,43 @@ if (typeof Decl !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Decl;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["decl"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1722,6 +2351,43 @@ if (typeof Sig !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Sig;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["invocant"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1793,6 +2459,43 @@ if (typeof Sub !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Sub;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["name"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1864,6 +2567,43 @@ if (typeof Do !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Do;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["block"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1895,6 +2635,43 @@ if (typeof Use !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Use;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["mod"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16007,6 +16784,43 @@ if (typeof Rul !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["constant"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16055,6 +16869,43 @@ if (typeof Rul$Quantifier !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Quantifier;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["term"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16248,6 +17099,43 @@ if (typeof Rul$Or !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Or;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["or_list"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16325,6 +17213,43 @@ if (typeof Rul$Concat !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Concat;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["concat"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16402,6 +17327,43 @@ if (typeof Rul$Subrule !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Subrule;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["metasyntax"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16520,6 +17482,43 @@ if (typeof Rul$Constant !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Constant;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["constant"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16599,6 +17598,43 @@ if (typeof Rul$Dot !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Dot;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_perl5"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16655,6 +17691,43 @@ if (typeof Rul$SpecialChar !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$SpecialChar;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["char"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16749,6 +17822,43 @@ if (typeof Rul$Block !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Block;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["closure"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16825,6 +17935,43 @@ if (typeof Rul$Before !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Before;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["rule_exp"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -16901,6 +18048,43 @@ if (typeof Rul$NotBefore !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$NotBefore;
+                v__NAMESPACE["new"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        var v_class = null;
+
+                        (v_class = CORE.shift(List__));
+                        return((v__NAMESPACE.bless || CORE.bless)(CallSub, (function () { 
+    var Hash_a = {};
+
+    (function () { 
+        var v__i = null;
+
+        var List__a = [];
+
+        (v__i = 0);
+        (List__a = (List__).slice());
+        for ( ; bool(((v__i < (v__NAMESPACE.scalar || CORE.scalar)(CallSub, List__a))));  ) { (function () {             (function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[List__a[v__i]]  = List__a[add(v__i, 1)]); })();
+            (v__i = add(v__i, 2));; })() };
+    })();
+    return(Hash_a);
+})(), v_class));;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["rule_exp"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
