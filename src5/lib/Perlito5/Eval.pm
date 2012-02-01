@@ -6,7 +6,7 @@ class CompUnit {
         my $env = $_[1];
 
         my $env1 = [ {}, @$env ];
-        for my $stmt ( @{$.body} ) {
+        for my $stmt ( @{$self->{"body"}} ) {
             $stmt->eval($env1);
         }
     }
@@ -16,7 +16,7 @@ class Val::Int {
     sub eval {
         my $self = $_[0];
         my $env = $_[1];
-        0 + $.int 
+        0 + $self->{"int"} 
     }
 }
 
@@ -24,7 +24,7 @@ class Val::Num {
     sub eval {
         my $self = $_[0];
         my $env = $_[1];
-        0 + $.num 
+        0 + $self->{"num"} 
     }
 }
 
@@ -32,7 +32,7 @@ class Val::Buf {
     sub eval {
         my $self = $_[0];
         my $env = $_[1];
-        $.buf 
+        $self->{"buf"} 
     }
 }
 
@@ -42,7 +42,7 @@ class Lit::Block {
         my $env = $_[1];
 
         my $env1 = [ {}, @$env ];
-        for my $stmt ( @{$.stmts} ) {
+        for my $stmt ( @{$self->{"stmts"}} ) {
             $stmt->eval($env1);
         }
     }
@@ -54,7 +54,7 @@ class Lit::Array {
         my $env = $_[1];
 
         my @a;
-        for my $v ( @{$.array1} ) {
+        for my $v ( @{$self->{"array1"}} ) {
             push( @a, $v->eval($env) );
         }
         return @a;
@@ -67,7 +67,7 @@ class Lit::Hash {
         my $env = $_[1];
 
         my %h;
-        for my $field ( @{$.hash1} ) {
+        for my $field ( @{$self->{"hash1"}} ) {
             my $pair = $field->arguments;
             $h{ ($pair->[0])->eval($env) } = ($pair->[1])->eval($env);
         };
@@ -80,7 +80,7 @@ class Index {
         my $self = $_[0];
         my $env = $_[1];
 
-        ( $.obj->eval($env) )[ $.index_exp->eval($env) ];
+        ( $self->{"obj"}->eval($env) )[ $self->{"index_exp"}->eval($env) ];
     }
 }
 
@@ -89,7 +89,7 @@ class Lookup {
         my $self = $_[0];
         my $env = $_[1];
 
-        ( $.obj->eval($env) ){ $.index_exp->eval($env) };
+        ( $self->{"obj"}->eval($env) ){ $self->{"index_exp"}->eval($env) };
     }
 }
 
@@ -99,24 +99,24 @@ class Var {
         my $env = $_[1];
 
         my $ns = '';
-        if ($.namespace) {
-            $ns = $.namespace . '::';
+        if ($self->{"namespace"}) {
+            $ns = $self->{"namespace"} . '::';
         }
         else {
-            if ($.sigil eq '@') && ($.name eq 'ARGV') {
+            if ($self->{"sigil"} eq '@') && ($self->{"name"} eq 'ARGV') {
                 return @ARGV
             }
-            if ($.twigil eq '.') {
-                warn 'Interpreter TODO: $.' . $.name;
-                return '$self->{' . $.name . '}'
+            if ($self->{"twigil"} eq '.') {
+                warn 'Interpreter TODO: $.' . $self->{"name"};
+                return '$self->{' . $self->{"name"} . '}'
             }
-            if ($.name eq 'MATCH') {
+            if ($self->{"name"} eq 'MATCH') {
                 warn 'Interpreter TODO: $MATCH';
-                return $.sigil . 'MATCH'
+                return $self->{"sigil"} . 'MATCH'
             }
         }
 
-        my $name = $.sigil . $ns . $.name;
+        my $name = $self->{"sigil"} . $ns . $self->{"name"};
         for my $e ( @{$env} ) {
             if (exists( $e->{ $name } )) {
                 return $e->{ $name };
@@ -127,10 +127,10 @@ class Var {
     sub plain_name {
         my $self = $_[0];
 
-        if ($.namespace) {
-            return $.sigil . $.namespace . '::' . $.name
+        if ($self->{"namespace"}) {
+            return $self->{"sigil"} . $self->{"namespace"} . '::' . $self->{"name"}
         }
-        return $.sigil . $.name
+        return $self->{"sigil"} . $self->{"name"}
     };
 }
 
@@ -139,7 +139,7 @@ class Proto {
         my $self = $_[0];
         my $env = $_[1];
 
-        '' . $.name
+        '' . $self->{"name"}
     }
 }
 
@@ -149,12 +149,12 @@ class Call {
         my $env = $_[1];
 
         warn "Interpreter TODO: Call";
-        my $invocant = $.invocant->eval($env);
+        my $invocant = $self->{"invocant"}->eval($env);
         if ($invocant eq 'self') {
             $invocant = '$self';
         }
-        # $invocant.$meth( @{$.arguments} );
-        warn "Interpreter runtime error: method '", $.method, "()' not found";
+        # $invocant.$meth( @{$self->{"arguments"}} );
+        warn "Interpreter runtime error: method '", $self->{"method"}, "()' not found";
     }
 }
 
@@ -164,14 +164,14 @@ class Apply {
         my $env = $_[1];
 
         my $ns = '';
-        if ($.namespace) {
-            $ns = $.namespace . '::';
+        if ($self->{"namespace"}) {
+            $ns = $self->{"namespace"} . '::';
         }
-        my $code = $ns . $.code;
+        my $code = $ns . $self->{"code"};
         # warn "Apply ", $env->perl, " code: '", $code, "'";
         for my $e ( @{$env} ) {
             if (exists( $e->{ $code } )) {
-                return (($e->{ $code })->( $env, @{$.arguments} ));
+                return (($e->{ $code })->( $env, @{$self->{"arguments"}} ));
             }
         }
         warn "Interpreter runtime error: subroutine '", $code, "()' not found";
@@ -183,16 +183,16 @@ class If {
         my $self = $_[0];
         my $env = $_[1];
 
-        my $cond = $.cond;
+        my $cond = $self->{"cond"};
         if ($cond->eval($env)) {
             my $env1 = [ {}, @$env ];
-            for my $stmt ( @{($.body)->stmts} ) {
+            for my $stmt ( @{($self->{"body"})->stmts} ) {
                 $stmt->eval($env1);
             }
         }
         else {
             my $env1 = [ {}, @$env ];
-            for my $stmt ( @{($.otherwise)->stmts} ) {
+            for my $stmt ( @{($self->{"otherwise"})->stmts} ) {
                 $stmt->eval($env1);
             }
         }
@@ -205,12 +205,12 @@ class For {
         my $self = $_[0];
         my $env = $_[1];
 
-        my $cond = $.cond;
-        my $topic_name = (($.body)->sig)->plain_name;
+        my $cond = $self->{"cond"};
+        my $topic_name = (($self->{"body"})->sig)->plain_name;
         my $env1 = [ {}, @$env ];
         for my $topic (@{ $cond->eval($env) }) {
             $env1->[0] = { $topic_name => $topic };
-            for my $stmt ( @{($.body)->stmts} ) {
+            for my $stmt ( @{($self->{"body"})->stmts} ) {
                 $stmt->eval($env1);
             }
         }
@@ -237,8 +237,8 @@ class Decl {
         my $self = $_[0];
         my $env = $_[1];
 
-        my $decl = $.decl;
-        my $name = $.var->plain_name;
+        my $decl = $self->{"decl"};
+        my $name = $self->{"var"}->plain_name;
         if ($decl eq 'has') {
             warn "Interpreter TODO: has";
         }
@@ -250,7 +250,7 @@ class Decl {
     sub plain_name {
         my $self = $_[0];
 
-        $.var->plain_name;
+        $self->{"var"}->plain_name;
     }
 }
 
@@ -260,7 +260,7 @@ class Sub {
         my $env = $_[1];
 
         my @param_name;
-        for my $field (@{ $.sig->positional }) {
+        for my $field (@{ $self->{"sig"}->positional }) {
             push( @param_name, $field->plain_name );
         }
         my $sub =
@@ -274,13 +274,13 @@ class Sub {
                     }
                     my $env1 = [ %context, @$env ];
                     my $r;
-                    for my $stmt ( @{$.block} ) {
+                    for my $stmt ( @{$self->{"block"}} ) {
                         $r = $stmt->eval($env1);
                     }
                     return $r;
                 };
-        if ($.name) {
-            ($env->[0]){$.name} = $sub;
+        if ($self->{"name"}) {
+            ($env->[0]){$self->{"name"}} = $sub;
         }
         return $sub;
     }
@@ -292,7 +292,7 @@ class Do {
         my $env = $_[1];
 
         my $env1 = [ {}, @$env ];
-        for my $stmt ( @{$.block} ) {
+        for my $stmt ( @{$self->{"block"}} ) {
             $stmt->eval($env1);
         }
     }
@@ -304,7 +304,7 @@ class Use {
         my $env = $_[1];
 
         warn "Interpreter TODO: Use";
-        'use ' . $.mod
+        'use ' . $self->{"mod"}
     }
 }
 

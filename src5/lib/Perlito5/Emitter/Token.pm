@@ -32,17 +32,17 @@ class Rul::Quantifier {
     sub emit_perl5 {
         my $self = $_[0];
 
-        if (($.quant eq '') && ($.greedy eq '')) {
-            return $.term->emit_perl5;
+        if (($self->{"quant"} eq '') && ($self->{"greedy"} eq '')) {
+            return $self->{"term"}->emit_perl5;
         }
-        if (($.quant eq '+') && ($.greedy eq '')) {
-            $.term->set_captures_to_array;
+        if (($self->{"quant"} eq '+') && ($self->{"greedy"} eq '')) {
+            $self->{"term"}->set_captures_to_array;
             return
                 '(do { '
                 .   'my $last_match_null = 0; '
                 .   'my $last_pos = $MATCH->to; '
                 .   'my $count = 0; '
-                .   'while (' . $.term->emit_perl5() . ' && ($last_match_null < 2)) '
+                .   'while (' . $self->{"term"}->emit_perl5() . ' && ($last_match_null < 2)) '
                 .   '{ '
                 .       'if ($last_pos == $MATCH->to()) { '
                 .           '$last_match_null = $last_match_null + 1; '
@@ -57,13 +57,13 @@ class Rul::Quantifier {
                 .   '$count > 0; '
                 . '})';
         }
-        if (($.quant eq '*') && ($.greedy eq '')) {
-            $.term->set_captures_to_array;
+        if (($self->{"quant"} eq '*') && ($self->{"greedy"} eq '')) {
+            $self->{"term"}->set_captures_to_array;
             return
                 '(do { '
                 .   'my $last_match_null = 0; '
                 .   'my $last_pos = $MATCH->to; '
-                .   'while (' . $.term->emit_perl5() . ' && ($last_match_null < 2)) '
+                .   'while (' . $self->{"term"}->emit_perl5() . ' && ($last_match_null < 2)) '
                 .   '{ '
                 .       'if ($last_pos == $MATCH->to()) { '
                 .           '$last_match_null = $last_match_null + 1; '
@@ -77,12 +77,12 @@ class Rul::Quantifier {
                 .   '1 '
                 . '})';
         }
-        if (($.quant eq '?') && ($.greedy eq '')) {
-            $.term->set_captures_to_array;
+        if (($self->{"quant"} eq '?') && ($self->{"greedy"} eq '')) {
+            $self->{"term"}->set_captures_to_array;
             return
                 '(do { '
                 .   'my $last_pos = $MATCH->to; '
-                .   'if (!(do {' . $.term->emit_perl5() . '})) '
+                .   'if (!(do {' . $self->{"term"}->emit_perl5() . '})) '
                 .   '{ '
                 .       '$MATCH->{"to"} = $last_pos; '
                 .   '}; '
@@ -92,12 +92,12 @@ class Rul::Quantifier {
 
         # TODO
         warn "Rul::Quantifier:  not implemented";
-        $.term->emit_perl5;
+        $self->{"term"}->emit_perl5;
     }
     sub set_captures_to_array {
         my $self = $_[0];
 
-        $.term->set_captures_to_array;
+        $self->{"term"}->set_captures_to_array;
     }
 }
 
@@ -109,14 +109,14 @@ class Rul::Or {
         '(do { '
             . 'my $pos1 = $MATCH->to; (do { '
             . join( '}) || (do { $MATCH->{"to"} = $pos1; ',
-                  map( $_->emit_perl5, @{$.or_list} )
+                  map( $_->emit_perl5, @{$self->{"or_list"}} )
                 )
         . '}) })';
     }
     sub set_captures_to_array {
         my $self = $_[0];
 
-        map( $_->set_captures_to_array, @{$.or_list} );
+        map( $_->set_captures_to_array, @{$self->{"or_list"}} );
     }
 }
 
@@ -127,14 +127,14 @@ class Rul::Concat {
 
         '('
             . join( ' && ',
-                    map( $_->emit_perl5, @{$.concat} )
+                    map( $_->emit_perl5, @{$self->{"concat"}} )
                   )
         . ')';
     }
     sub set_captures_to_array {
         my $self = $_[0];
 
-        map( $_->set_captures_to_array, @{$.concat} );
+        map( $_->set_captures_to_array, @{$self->{"concat"}} );
     }
 }
 
@@ -144,23 +144,23 @@ class Rul::Subrule {
     sub emit_perl5 {
         my $self = $_[0];
 
-        my $meth = ( 1 + index( $.metasyntax, '.' ) )
-            ? Perlito5::Runtime::_replace( $.metasyntax, '.', '->' )
-            : ( '$grammar->' . $.metasyntax );
+        my $meth = ( 1 + index( $self->{"metasyntax"}, '.' ) )
+            ? Perlito5::Runtime::_replace( $self->{"metasyntax"}, '.', '->' )
+            : ( '$grammar->' . $self->{"metasyntax"} );
 
         my $code;
-        if ($.captures == 1) {
-            $code = 'if ($m2->bool) { $MATCH->{"to"} = $m2->to; $MATCH->{\'' . $.metasyntax . '\'} = $m2; 1 } else { 0 }; '
+        if ($self->{"captures"} == 1) {
+            $code = 'if ($m2->bool) { $MATCH->{"to"} = $m2->to; $MATCH->{\'' . $self->{"metasyntax"} . '\'} = $m2; 1 } else { 0 }; '
         }
-        elsif ($.captures > 1) {
+        elsif ($self->{"captures"} > 1) {
             # TODO: capture level > 2
             $code = 'if ($m2->bool) { '
                     .   '$MATCH->{"to"} = $m2->to; '
-                    .   'if (exists $MATCH->{\'' . $.metasyntax . '\'}) { '
-                    .       'push @{ $MATCH->{\'' . $.metasyntax . '\'} }, $m2; '
+                    .   'if (exists $MATCH->{\'' . $self->{"metasyntax"} . '\'}) { '
+                    .       'push @{ $MATCH->{\'' . $self->{"metasyntax"} . '\'} }, $m2; '
                     .   '} '
                     .   'else { '
-                    .       '$MATCH->{\'' . $.metasyntax . '\'} = [ $m2 ]; '
+                    .       '$MATCH->{\'' . $self->{"metasyntax"} . '\'} = [ $m2 ]; '
                     .   '}; '
                     .   '1 '
                     . '} else { 0 }; '
@@ -177,8 +177,8 @@ class Rul::Subrule {
     sub set_captures_to_array {
         my $self = $_[0];
 
-        if ($.captures > 0) {
-            $.captures = $.captures + 1;
+        if ($self->{"captures"} > 0) {
+            $self->{"captures"} = $self->{"captures"} + 1;
         }
     }
 }
@@ -188,7 +188,7 @@ class Rul::Constant {
     sub emit_perl5 {
         my $self = $_[0];
 
-        my $str = $.constant;
+        my $str = $self->{"constant"};
         Rul::constant( $str );
     }
     sub set_captures_to_array {
@@ -214,7 +214,7 @@ class Rul::SpecialChar {
     sub emit_perl5 {
         my $self = $_[0];
 
-        my $char = $.char;
+        my $char = $self->{"char"};
         if ($char eq 'n') {
             return Rul::Subrule->new( metasyntax => 'is_newline', captures => 0 )->emit_perl5;
         }
@@ -242,7 +242,7 @@ class Rul::Block {
     sub emit_perl5 {
         my $self = $_[0];
 
-        '(do { ' . $.closure . '; 1 })'
+        '(do { ' . $self->{"closure"} . '; 1 })'
     }
     sub set_captures_to_array {
         my $self = $_[0];
@@ -258,7 +258,7 @@ class Rul::Before {
             'my $tmp = $MATCH; ' .
             '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
             '$MATCH->{"bool"} = ' .
-                $.rule_exp->emit_perl5() .
+                $self->{"rule_exp"}->emit_perl5() .
             '; ' .
             '$tmp->{"bool"} = $MATCH->bool ? 1 : 0; ' .
             '$MATCH = $tmp; ' .
@@ -279,7 +279,7 @@ class Rul::NotBefore {
             'my $tmp = $MATCH; ' .
             '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
             '$MATCH->{"bool"} = ' .
-                $.rule_exp->emit_perl5() .
+                $self->{"rule_exp"}->emit_perl5() .
             '; ' .
             '$tmp->{"bool"} = !$MATCH->bool; ' .
             '$MATCH = $tmp; ' .

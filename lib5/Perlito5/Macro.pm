@@ -18,7 +18,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $needs_interpolation) = 0);
             (my  $List_items = bless [], 'ARRAY');
-            for my $item ( @{($self->{array1})} ) {
+            for my $item ( @{($self->{('array1')})} ) {
                 if (((Perlito5::Runtime::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
                     for my $arg ( @{($item->arguments())} ) {
                         push( @{$List_items}, $arg )
@@ -124,7 +124,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             (my  $List_items = bless [], 'ARRAY');
-            for my $item ( @{($self->{hash1})} ) {
+            for my $item ( @{($self->{('hash1')})} ) {
                 if (((Perlito5::Runtime::isa($item, 'Apply') && ((($item->code() eq 'circumfix:<( )>') || ($item->code() eq 'list:<,>')))))) {
                     for my $arg ( @{($item->arguments())} ) {
                         push( @{$List_items}, $arg )
@@ -284,7 +284,7 @@ package main;
         sub op_assign {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            ((my  $code) = $self->{code});
+            ((my  $code) = $self->{('code')});
             if (ref($code)) {
                 return (0)
             };
@@ -292,8 +292,8 @@ package main;
                 return (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{arguments}->[0] );
-    push( @{$List_a}, Apply->new(('code' => $Hash_op->{$code}), ('arguments' => $self->{arguments})) );
+    push( @{$List_a}, $self->{('arguments')}->[0] );
+    push( @{$List_a}, Apply->new(('code' => $Hash_op->{$code}), ('arguments' => $self->{('arguments')})) );
     $List_a
 }))))
             };
@@ -309,14 +309,14 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             (my  $block);
-            if ((Perlito5::Runtime::isa($self->{block}, 'Lit::Block'))) {
-                ($block = $self->{block}->stmts())
+            if ((Perlito5::Runtime::isa($self->{('block')}, 'Lit::Block'))) {
+                ($block = $self->{('block')}->stmts())
             }
             else {
                 ($block = (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, $self->{block} );
+    push( @{$List_a}, $self->{('block')} );
     $List_a
 }))
             };

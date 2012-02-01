@@ -30,7 +30,7 @@ package main;
     };
     $List_a
 }));
-            for my $stmt ( @{($self->{body})} ) {
+            for my $stmt ( @{($self->{('body')})} ) {
                 $stmt->eval($env1)
             }
         }
@@ -44,7 +44,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            (0 + $self->{int})
+            (0 + $self->{('int')})
         }
     }
 
@@ -56,7 +56,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            (0 + $self->{num})
+            (0 + $self->{('num')})
         }
     }
 
@@ -68,7 +68,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            $self->{buf}
+            $self->{('buf')}
         }
     }
 
@@ -93,7 +93,7 @@ package main;
     };
     $List_a
 }));
-            for my $stmt ( @{($self->{stmts})} ) {
+            for my $stmt ( @{($self->{('stmts')})} ) {
                 $stmt->eval($env1)
             }
         }
@@ -108,7 +108,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             (my  $List_a = bless [], 'ARRAY');
-            for my $v ( @{($self->{array1})} ) {
+            for my $v ( @{($self->{('array1')})} ) {
                 push( @{$List_a}, $v->eval($env) )
             };
             return ($List_a)
@@ -124,7 +124,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             (my  $Hash_h = bless {}, 'HASH');
-            for my $field ( @{($self->{hash1})} ) {
+            for my $field ( @{($self->{('hash1')})} ) {
                 ((my  $pair) = $field->arguments());
                 ($Hash_h->{($pair->[0])->eval($env)} = ($pair->[1])->eval($env))
             };
@@ -140,7 +140,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            ($self->{obj}->eval($env))->[$self->{index_exp}->eval($env)]
+            ($self->{('obj')}->eval($env))->[$self->{('index_exp')}->eval($env)]
         }
     }
 
@@ -152,7 +152,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            ($self->{obj}->eval($env))->{$self->{index_exp}->eval($env)}
+            ($self->{('obj')}->eval($env))->{$self->{('index_exp')}->eval($env)}
         }
     }
 
@@ -165,23 +165,23 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             ((my  $ns) = '');
-            if (($self->{namespace})) {
-                ($ns = ($self->{namespace} . '::'))
+            if (($self->{('namespace')})) {
+                ($ns = ($self->{('namespace')} . '::'))
             }
             else {
-                if (((($self->{sigil} eq chr(64))) && (($self->{name} eq 'ARGV')))) {
+                if (((($self->{('sigil')} eq chr(64))) && (($self->{('name')} eq 'ARGV')))) {
                     return ((\@ARGV))
                 };
-                if ((($self->{twigil} eq '.'))) {
-                    warn(('Interpreter TODO: ' . chr(36) . '.' . $self->{name}));
-                    return ((chr(36) . 'self->' . chr(123) . $self->{name} . chr(125)))
+                if ((($self->{('twigil')} eq '.'))) {
+                    warn(('Interpreter TODO: ' . chr(36) . '.' . $self->{('name')}));
+                    return ((chr(36) . 'self->' . chr(123) . $self->{('name')} . chr(125)))
                 };
-                if ((($self->{name} eq 'MATCH'))) {
+                if ((($self->{('name')} eq 'MATCH'))) {
                     warn('Interpreter TODO: ' . chr(36) . 'MATCH');
-                    return (($self->{sigil} . 'MATCH'))
+                    return (($self->{('sigil')} . 'MATCH'))
                 }
             };
-            ((my  $name) = ($self->{sigil} . $ns . $self->{name}));
+            ((my  $name) = ($self->{('sigil')} . $ns . $self->{('name')}));
             for my $e ( @{($env)} ) {
                 if ((exists($e->{$name}))) {
                     return ($e->{$name})
@@ -192,10 +192,10 @@ package main;
         sub plain_name {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            if (($self->{namespace})) {
-                return (($self->{sigil} . $self->{namespace} . '::' . $self->{name}))
+            if (($self->{('namespace')})) {
+                return (($self->{('sigil')} . $self->{('namespace')} . '::' . $self->{('name')}))
             };
-            return (($self->{sigil} . $self->{name}))
+            return (($self->{('sigil')} . $self->{('name')}))
         }
     }
 
@@ -207,7 +207,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            ('' . $self->{name})
+            ('' . $self->{('name')})
         }
     }
 
@@ -220,11 +220,11 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             warn(('Interpreter TODO: Call'));
-            ((my  $invocant) = $self->{invocant}->eval($env));
+            ((my  $invocant) = $self->{('invocant')}->eval($env));
             if ((($invocant eq 'self'))) {
                 ($invocant = chr(36) . 'self')
             };
-            warn(('Interpreter runtime error: method ' . chr(39)), $self->{method}, ('()' . chr(39) . ' not found'))
+            warn(('Interpreter runtime error: method ' . chr(39)), $self->{('method')}, ('()' . chr(39) . ' not found'))
         }
     }
 
@@ -237,13 +237,13 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             ((my  $ns) = '');
-            if (($self->{namespace})) {
-                ($ns = ($self->{namespace} . '::'))
+            if (($self->{('namespace')})) {
+                ($ns = ($self->{('namespace')} . '::'))
             };
-            ((my  $code) = ($ns . $self->{code}));
+            ((my  $code) = ($ns . $self->{('code')}));
             for my $e ( @{($env)} ) {
                 if ((exists($e->{$code}))) {
-                    return ((($e->{$code})->($env, ($self->{arguments}))))
+                    return ((($e->{$code})->($env, ($self->{('arguments')}))))
                 }
             };
             warn(('Interpreter runtime error: subroutine ' . chr(39)), $code, ('()' . chr(39) . ' not found'))
@@ -258,7 +258,7 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            ((my  $cond) = $self->{cond});
+            ((my  $cond) = $self->{('cond')});
             if (($cond->eval($env))) {
                 ((my  $env1) = (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -273,7 +273,7 @@ package main;
     };
     $List_a
 }));
-                for my $stmt ( @{(($self->{body})->stmts())} ) {
+                for my $stmt ( @{(($self->{('body')})->stmts())} ) {
                     $stmt->eval($env1)
                 }
             }
@@ -291,7 +291,7 @@ package main;
     };
     $List_a
 }));
-                for my $stmt ( @{(($self->{otherwise})->stmts())} ) {
+                for my $stmt ( @{(($self->{('otherwise')})->stmts())} ) {
                     $stmt->eval($env1)
                 }
             };
@@ -307,8 +307,8 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            ((my  $cond) = $self->{cond});
-            ((my  $topic_name) = (($self->{body})->sig())->plain_name());
+            ((my  $cond) = $self->{('cond')});
+            ((my  $topic_name) = (($self->{('body')})->sig())->plain_name());
             ((my  $env1) = (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -328,7 +328,7 @@ package main;
     ($Hash_a->{$topic_name} = $topic);
     $Hash_a
 }));
-                for my $stmt ( @{(($self->{body})->stmts())} ) {
+                for my $stmt ( @{(($self->{('body')})->stmts())} ) {
                     $stmt->eval($env1)
                 }
             };
@@ -368,8 +368,8 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
-            ((my  $decl) = $self->{decl});
-            ((my  $name) = $self->{var}->plain_name());
+            ((my  $decl) = $self->{('decl')});
+            ((my  $name) = $self->{('var')}->plain_name());
             if ((($decl eq 'has'))) {
                 warn(('Interpreter TODO: has'))
             };
@@ -381,7 +381,7 @@ package main;
         sub plain_name {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
-            $self->{var}->plain_name()
+            $self->{('var')}->plain_name()
         }
     }
 
@@ -394,7 +394,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             (my  $List_param_name = bless [], 'ARRAY');
-            for my $field ( @{($self->{sig}->positional())} ) {
+            for my $field ( @{($self->{('sig')}->positional())} ) {
                 push( @{$List_param_name}, $field->plain_name() )
             };
             ((my  $sub) = sub  {
@@ -419,13 +419,13 @@ package main;
     $List_a
 }));
     (my  $r);
-    for my $stmt ( @{($self->{block})} ) {
+    for my $stmt ( @{($self->{('block')})} ) {
         ($r = $stmt->eval($env1))
     };
     return ($r)
 });
-            if (($self->{name})) {
-                (($env->[0])->{$self->{name}} = $sub)
+            if (($self->{('name')})) {
+                (($env->[0])->{$self->{('name')}} = $sub)
             };
             return ($sub)
         }
@@ -452,7 +452,7 @@ package main;
     };
     $List_a
 }));
-            for my $stmt ( @{($self->{block})} ) {
+            for my $stmt ( @{($self->{('block')})} ) {
                 $stmt->eval($env1)
             }
         }
@@ -467,7 +467,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $env) = $List__->[1]);
             warn(('Interpreter TODO: Use'));
-            ('use ' . $self->{mod})
+            ('use ' . $self->{('mod')})
         }
     }
 

@@ -210,7 +210,7 @@ class Perlito5::Javascript::LexicalBlock {
         my $self = shift;
         my $level = shift;
 
-        if ($.top_level) {
+        if ($self->{"top_level"}) {
             my $block = Perlito5::Javascript::LexicalBlock->new( block => $self->block, needs_return => $self->needs_return, top_level => 0 );
             return
                   Javascript::tab($level)   . 'try {' . "\n"
@@ -227,7 +227,7 @@ class Perlito5::Javascript::LexicalBlock {
         }
 
         my @block;
-        for (@{$.block}) {
+        for (@{$self->{"block"}}) {
             if (defined($_)) {
                 push @block, $_
             }
@@ -248,7 +248,7 @@ class Perlito5::Javascript::LexicalBlock {
             }
         }
         my $last_statement;
-        if ($.needs_return) {
+        if ($self->{"needs_return"}) {
             $last_statement = pop @block;
         }
         for my $decl ( @block ) {
@@ -256,7 +256,7 @@ class Perlito5::Javascript::LexicalBlock {
                 push @str, $decl->emit_javascript_indented($level) . ';';
             }
         }
-        if ($.needs_return && $last_statement) {
+        if ($self->{"needs_return"} && $last_statement) {
             if ($last_statement->isa( 'If' )) {
                 my $cond      = $last_statement->cond;
                 my $body      = $last_statement->body;
@@ -304,18 +304,18 @@ class CompUnit {
         # process 'package' statements
         my @body;
         my $i = 0;
-        while ( $i <= scalar @{$.body} ) {
-            my $stmt = $.body->[$i];
+        while ( $i <= scalar @{$self->{"body"}} ) {
+            my $stmt = $self->{"body"}->[$i];
             if ( ref($stmt) eq 'Apply' && $stmt->code eq 'package' ) {
                 # found an inner package
                 my $name = $stmt->namespace;
                 my @stmts;
                 $i++;
-                while (  $i <= scalar( @{$.body} )
-                      && !( ref($.body->[$i]) eq 'Apply' && $.body->[$i]->code eq 'package' )
+                while (  $i <= scalar( @{$self->{"body"}} )
+                      && !( ref($self->{"body"}->[$i]) eq 'Apply' && $self->{"body"}->[$i]->code eq 'package' )
                       )
                 {
-                    push @stmts, $.body->[$i];
+                    push @stmts, $self->{"body"}->[$i];
                     $i++;
                 }
                 push @body, CompUnit->new( name => $name, body => \@stmts );
@@ -327,14 +327,14 @@ class CompUnit {
             }
         }
 
-        my $class_name = Perlito5::Runtime::to_javascript_namespace($.name);
+        my $class_name = Perlito5::Runtime::to_javascript_namespace($self->{"name"});
         my $str =
-              '// class ' . $.name . "\n"
+              '// class ' . $self->{"name"} . "\n"
             . 'if (typeof ' . $class_name . ' !== \'object\') {' . "\n"
             . '  ' . $class_name . ' = function() {};' . "\n"
             . '  ' . $class_name . ' = new ' . $class_name . ';' . "\n"
-            . '  ' . $class_name . '.isa = function (s) { return s == \'' . $.name . '\'; };' . "\n"
-            . '  ' . $class_name . '._ref_ = \'' . $.name . '\';' . "\n"
+            . '  ' . $class_name . '.isa = function (s) { return s == \'' . $self->{"name"} . '\'; };' . "\n"
+            . '  ' . $class_name . '._ref_ = \'' . $self->{"name"} . '\';' . "\n"
             . '}' . "\n"
             . '(function () {' . "\n"
             . '  var v__NAMESPACE = ' . $class_name . ';' . "\n";
@@ -388,21 +388,21 @@ class Val::Int {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
-        my $level = shift; Javascript::tab($level) . $.int }
+        my $level = shift; Javascript::tab($level) . $self->{"int"} }
 }
 
 class Val::Num {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
-        my $level = shift; Javascript::tab($level) . $.num }
+        my $level = shift; Javascript::tab($level) . $self->{"num"} }
 }
 
 class Val::Buf {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
-        my $level = shift; Javascript::tab($level) . Javascript::escape_string($.buf) }
+        my $level = shift; Javascript::tab($level) . Javascript::escape_string($self->{"buf"}) }
 }
 
 class Lit::Block {
@@ -411,12 +411,12 @@ class Lit::Block {
         my $self = shift;
         my $level = shift;
         my $sig = 'v__';
-        if ($.sig) {
-            $sig = $.sig->emit_javascript_indented( $level + 1 );
+        if ($self->{"sig"}) {
+            $sig = $self->{"sig"}->emit_javascript_indented( $level + 1 );
         }
         return
               Javascript::tab($level) . "(function ($sig) \{\n"
-            .   (Perlito5::Javascript::LexicalBlock->new( block => $.stmts, needs_return => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
+            .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"stmts"}, needs_return => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
             . Javascript::tab($level) . '})'
     }
 }
@@ -447,15 +447,15 @@ class Index {
         my $self = shift;
         my $level = shift;
 
-        if (  $.obj->isa('Var')
-           && $.obj->sigil eq '$'
+        if (  $self->{"obj"}->isa('Var')
+           && $self->{"obj"}->sigil eq '$'
            )
         {
-            my $v = Var->new( sigil => '@', twigil => $.obj->twigil, namespace => $.obj->namespace, name => $.obj->name );
-            return $v->emit_javascript_indented($level) . '[' . $.index_exp->emit_javascript() . ']';
+            my $v = Var->new( sigil => '@', twigil => $self->{"obj"}->twigil, namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
+            return $v->emit_javascript_indented($level) . '[' . $self->{"index_exp"}->emit_javascript() . ']';
         }
 
-        Javascript::tab($level) . $.obj->emit_javascript() . '[' . $.index_exp->emit_javascript() . ']';
+        Javascript::tab($level) . $self->{"obj"}->emit_javascript() . '[' . $self->{"index_exp"}->emit_javascript() . ']';
     }
 }
 
@@ -464,17 +464,17 @@ class Lookup {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        # my $var = $.obj->emit_javascript;
-        # return $var . '[' . $.index_exp->emit_javascript() . ']'
+        # my $var = $self->{"obj"}->emit_javascript;
+        # return $var . '[' . $self->{"index_exp"}->emit_javascript() . ']'
 
-        if (  $.obj->isa('Var')
-           && $.obj->sigil eq '$'
+        if (  $self->{"obj"}->isa('Var')
+           && $self->{"obj"}->sigil eq '$'
            )
         {
-            my $v = Var->new( sigil => '%', twigil => $.obj->twigil, namespace => $.obj->namespace, name => $.obj->name );
-            return $v->emit_javascript_indented($level) . '[' . $.index_exp->emit_javascript() . ']';
+            my $v = Var->new( sigil => '%', twigil => $self->{"obj"}->twigil, namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
+            return $v->emit_javascript_indented($level) . '[' . $self->{"index_exp"}->emit_javascript() . ']';
         }
-        return $.obj->emit_javascript_indented($level) . '[' . $.index_exp->emit_javascript() . ']';
+        return $self->{"obj"}->emit_javascript_indented($level) . '[' . $self->{"index_exp"}->emit_javascript() . ']';
     }
 }
 
@@ -490,13 +490,13 @@ class Var {
             '&' => 'Code_',
         }
         my $ns = '';
-        if ($.namespace) {
-            $ns = Perlito5::Runtime::to_javascript_namespace($.namespace) . '.';
+        if ($self->{"namespace"}) {
+            $ns = Perlito5::Runtime::to_javascript_namespace($self->{"namespace"}) . '.';
         }
-           ( $.twigil eq '.' )
+           ( $self->{"twigil"} eq '.' )
             # XXX Perl 6
-        ?  ( 'v_self.' . $.name . '' )
-        :  ( $table->{$.sigil} . $ns . $.name )
+        ?  ( 'v_self.' . $self->{"name"} . '' )
+        :  ( $table->{$self->{"sigil"}} . $ns . $self->{"name"} )
     }
     sub plain_name {
         my $self = shift;
@@ -512,7 +512,7 @@ class Proto {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        Javascript::tab($level) . Perlito5::Runtime::to_javascript_namespace($.name)
+        Javascript::tab($level) . Perlito5::Runtime::to_javascript_namespace($self->{"name"})
     }
 }
 
@@ -522,16 +522,16 @@ class Call {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $invocant = $.invocant->emit_javascript;
-        my $meth = $.method;
+        my $invocant = $self->{"invocant"}->emit_javascript;
+        my $meth = $self->{"method"};
 
         # XXX Perl6
-        if (  $.method eq 'new'
-           && $.invocant->isa( 'Proto' ) 
+        if (  $self->{"method"} eq 'new'
+           && $self->{"invocant"}->isa( 'Proto' ) 
            )
         {
             my $str = [];
-            for my $field ( @{$.arguments} ) {
+            for my $field ( @{$self->{"arguments"}} ) {
                 if ($field->isa('Apply') && $field->code eq 'infix:<=>>') {
                     # XXX Perl6 autogenerated constructor
                     push( @$str, '' . $field->arguments[0]->buf() . ': ' . $field->arguments[1]->emit_javascript() );
@@ -545,7 +545,7 @@ class Call {
                 .   'if (' 
                 .       Perlito5::Runtime::to_javascript_namespace($invocant) . '.new '
                 .   ') { '
-                .       'return ' . $invocant . '.new(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . '); '
+                .       'return ' . $invocant . '.new(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . '); '
                 .   '} '
                     # XXX Perl6 autogenerated constructor
                 .   'var tmp = {' . join(',', @$str) . '}; '
@@ -554,23 +554,23 @@ class Call {
                 . '})()'
         }
 
-        if ( $.method eq 'postcircumfix:<[ ]>' ) {
-            return Javascript::tab($level) . $invocant . '[' . $.arguments->emit_javascript() . ']'
+        if ( $self->{"method"} eq 'postcircumfix:<[ ]>' ) {
+            return Javascript::tab($level) . $invocant . '[' . $self->{"arguments"}->emit_javascript() . ']'
         }
-        if ( $.method eq 'postcircumfix:<{ }>' ) {
-            return Javascript::tab($level) . $invocant . '[' . $.arguments->emit_javascript() . ']'
+        if ( $self->{"method"} eq 'postcircumfix:<{ }>' ) {
+            return Javascript::tab($level) . $invocant . '[' . $self->{"arguments"}->emit_javascript() . ']'
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
             my @args = 'CallSub';
             push @args, $_->emit_javascript
-                for @{$.arguments};
+                for @{$self->{"arguments"}};
             return Javascript::tab($level) . '(' . $invocant . ')(' . join(',', @args) . ')';
         }
 
         # try to call a method on the class; if that fails, then call a 'native js' method
         my @args = ($invocant);
         push @args, $_->emit_javascript
-            for @{$.arguments};
+            for @{$self->{"arguments"}};
         return Javascript::tab($level) 
             . '(' 
             .  '('   . $invocant . '._class_ ' . '&& ' . $invocant . '._class_.' . $meth . ')' 
@@ -609,49 +609,49 @@ class Apply {
             return $apply->emit_javascript_indented( $level );
         }
 
-        my $code = $.code;
+        my $code = $self->{"code"};
 
         if (ref $code ne '') {
             my @args = 'CallSub';
             push @args, $_->emit_javascript
-                for @{$.arguments};
-            return Javascript::tab($level) . '(' . $.code->emit_javascript() . ')(' . join(',', @args) . ')';
+                for @{$self->{"arguments"}};
+            return Javascript::tab($level) . '(' . $self->{"code"}->emit_javascript() . ')(' . join(',', @args) . ')';
         }
         if ($code eq 'infix:<=>>') {
-            return Javascript::tab($level) . join(', ', map( $_->emit_javascript, @{$.arguments} ))
+            return Javascript::tab($level) . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} ))
         }
         if (exists $op_infix_js{$code}) {
             return Javascript::tab($level) . '(' 
-                . join( $op_infix_js{$code}, map( $_->emit_javascript, @{$.arguments} ))
+                . join( $op_infix_js{$code}, map( $_->emit_javascript, @{$self->{"arguments"}} ))
                 . ')'
         }
 
         if ($code eq 'eval') {
             return
                 'eval(perl5_to_js(' 
-                    . Javascript::to_str($.arguments->[0])
+                    . Javascript::to_str($self->{"arguments"}->[0])
                 . '))'
         }
 
         if ($code eq 'undef')      { return Javascript::tab($level) . 'null' }
-        if ($code eq 'defined')    { return Javascript::tab($level) . '('  . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ' != null)' }
+        if ($code eq 'defined')    { return Javascript::tab($level) . '('  . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ' != null)' }
         if ($code eq 'substr') {
-            return '(' . ($.arguments->[0])->emit_javascript()
-                 . ' || "").substr(' . ($.arguments->[1])->emit_javascript()
-                 . ( defined($.arguments->[2]) ? ', ' . ($.arguments->[2])->emit_javascript() : '' )
+            return '(' . ($self->{"arguments"}->[0])->emit_javascript()
+                 . ' || "").substr(' . ($self->{"arguments"}->[1])->emit_javascript()
+                 . ( defined($self->{"arguments"}->[2]) ? ', ' . ($self->{"arguments"}->[2])->emit_javascript() : '' )
                  . ')'
         }
 
         if ($code eq 'shift')      {
-            if ( @{$.arguments} ) {
-                return 'CORE.shift(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . ')'
+            if ( @{$self->{"arguments"}} ) {
+                return 'CORE.shift(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . ')'
             }
             return 'CORE.shift(List__)'
         }
 
         if ($code eq 'map') {
-            my $fun  = $.arguments->[0];
-            my $list = $.arguments->[1];
+            my $fun  = $self->{"arguments"}->[0];
+            my $list = $self->{"arguments"}->[1];
             return
                     '(function (a_) { '
                         . 'var out = []; '
@@ -664,39 +664,39 @@ class Apply {
                     . ' })(' . $list->emit_javascript() . ')'
         }
 
-        if ($code eq 'prefix:<!>') { return '( ' . Javascript::to_bool( $.arguments->[0] ) . ' ? false : true)' }
-        if ($code eq 'prefix:<$>') { return 'scalar' . '(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ')' }
-        if ($code eq 'prefix:<@>') { return '(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ')' }
-        if ($code eq 'prefix:<%>') { return '(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))    . ').' . 'hash' . '()' }
+        if ($code eq 'prefix:<!>') { return '( ' . Javascript::to_bool( $self->{"arguments"}->[0] ) . ' ? false : true)' }
+        if ($code eq 'prefix:<$>') { return 'scalar' . '(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ')' }
+        if ($code eq 'prefix:<@>') { return '(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ')' }
+        if ($code eq 'prefix:<%>') { return '(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ').' . 'hash' . '()' }
 
         if ($code eq 'prefix:<\\>') { 
             # XXX currently a no-op
-            return join(' ', map( $_->emit_javascript, @{$.arguments} )) 
+            return join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} )) 
         }
 
-        if ($code eq 'postfix:<++>') { return '('   . join(' ', map( $_->emit_javascript, @{$.arguments} ))  . ')++' }
-        if ($code eq 'postfix:<-->') { return '('   . join(' ', map( $_->emit_javascript, @{$.arguments} ))  . ')--' }
-        if ($code eq 'prefix:<++>')  { return '++(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))  . ')' }
-        if ($code eq 'prefix:<-->')  { return '--(' . join(' ', map( $_->emit_javascript, @{$.arguments} ))  . ')' }
+        if ($code eq 'postfix:<++>') { return '('   . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')++' }
+        if ($code eq 'postfix:<-->') { return '('   . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')--' }
+        if ($code eq 'prefix:<++>')  { return '++(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
+        if ($code eq 'prefix:<-->')  { return '--(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
 
-        if ($code eq 'infix:<x>')  { return 'str_replicate(' . join(', ', map( $_->emit_javascript, @{$.arguments} ))  . ')' }
+        if ($code eq 'infix:<x>')  { return 'str_replicate(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
 
         if ($code eq 'list:<.>')
         { 
             return '('  
                 . join( ' + ',
-                        map( Javascript::to_str($_), @{$.arguments} )
+                        map( Javascript::to_str($_), @{$self->{"arguments"}} )
                       )
                 . ')' 
         }
 
-        if ($code eq 'infix:<+>')  { return 'add' . '('  . join(', ', map( $_->emit_javascript, @{$.arguments} ))  . ')' }
-        if ($code eq 'prefix:<+>') { return '('  . $.arguments->[0]->emit_javascript()  . ')' }
+        if ($code eq 'infix:<+>')  { return 'add' . '('  . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
+        if ($code eq 'prefix:<+>') { return '('  . $self->{"arguments"}->[0]->emit_javascript()  . ')' }
 
         if ($code eq 'infix:<..>') {
             return '(function (a) { '
-                    . 'for (var i=' . $.arguments->[0]->emit_javascript()
-                           . ', l=' . $.arguments->[1]->emit_javascript() . '; '
+                    . 'for (var i=' . $self->{"arguments"}->[0]->emit_javascript()
+                           . ', l=' . $self->{"arguments"}->[1]->emit_javascript() . '; '
                        . 'i<=l; ++i)'
                     . '{ '
                         . 'a.push(i) '
@@ -709,23 +709,23 @@ class Apply {
           || $code eq 'infix:<and>'
         {
             return 'and' . '('
-                . $.arguments->[0]->emit_javascript() . ', '
-                . 'function () { return ' . $.arguments->[1]->emit_javascript() . '; })'
+                . $self->{"arguments"}->[0]->emit_javascript() . ', '
+                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript() . '; })'
         }
         if   $code eq 'infix:<||>'
           || $code eq 'infix:<or>'
         {
             return 'or' . '('
-                . $.arguments->[0]->emit_javascript() . ', '
-                . 'function () { return ' . $.arguments->[1]->emit_javascript() . '; })'
+                . $self->{"arguments"}->[0]->emit_javascript() . ', '
+                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript() . '; })'
         }
         if ($code eq 'infix:<//>') { return ('defined_or') . '('
-                . $.arguments->[0]->emit_javascript() . ', '
-                . 'function () { return ' . $.arguments->[1]->emit_javascript() . '; })'
+                . $self->{"arguments"}->[0]->emit_javascript() . ', '
+                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript() . '; })'
         }
 
         if ($code eq 'exists')     {
-            my $arg = $.arguments->[0];
+            my $arg = $self->{"arguments"}->[0];
             if ($arg->isa( 'Lookup' )) {
                 my $v = $arg->obj;
                 if (  $v->isa('Var')
@@ -742,25 +742,25 @@ class Apply {
         }
         if ($code eq 'ternary:<?? !!>') {
             return Javascript::tab($level) 
-                 . '( ' . Javascript::to_bool( $.arguments->[0] )
-                 . ' ? ' . ($.arguments->[1])->emit_javascript()
-                 . ' : ' . ($.arguments->[2])->emit_javascript()
+                 . '( ' . Javascript::to_bool( $self->{"arguments"}->[0] )
+                 . ' ? ' . ($self->{"arguments"}->[1])->emit_javascript()
+                 . ' : ' . ($self->{"arguments"}->[2])->emit_javascript()
                  . ')'
         }
         if ($code eq 'circumfix:<( )>') {
-            return Javascript::tab($level) . '(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . ')';
+            return Javascript::tab($level) . '(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . ')';
         }
         if ($code eq 'infix:<=>') {
-            return emit_javascript_bind( $.arguments->[0], $.arguments->[1], $level );
+            return emit_javascript_bind( $self->{"arguments"}->[0], $self->{"arguments"}->[1], $level );
         }
         if ($code eq 'return') {
             return Javascript::tab($level) . 'throw('
-                .   (@{$.arguments} ? $.arguments->[0]->emit_javascript() : 'null')
+                .   (@{$self->{"arguments"}} ? $self->{"arguments"}->[0]->emit_javascript() : 'null')
                 . ')'
         }
 
-        if ($.namespace) {
-            $code = Perlito5::Runtime::to_javascript_namespace($.namespace) . '.' . ( $code );
+        if ($self->{"namespace"}) {
+            $code = Perlito5::Runtime::to_javascript_namespace($self->{"namespace"}) . '.' . ( $code );
         }
         else {
             $code = 
@@ -770,7 +770,7 @@ class Apply {
         }
         my @args = 'CallSub';
         push @args, $_->emit_javascript
-            for @{$.arguments};
+            for @{$self->{"arguments"}};
         Javascript::tab($level) . $code . '(' . join(', ', @args) . ')';
     }
 
@@ -871,20 +871,20 @@ class If {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $cond = $.cond;
+        my $cond = $self->{"cond"};
         if (  $cond->isa( 'Var' )
            && $cond->sigil eq '@'
            )
         {
             $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
         }
-        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $.body->stmts, needs_return => 0 );
+        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         my $s = Javascript::tab($level) . 'if ( ' . Javascript::to_bool( $cond ) . ' ) { '
             . '(function () {' . "\n"
             .       $body->emit_javascript_indented( $level + 1 ) . "\n"
             . Javascript::tab($level) . '})(); }';
-        if ( $.otherwise->stmts ) {
-            my $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $.otherwise->stmts, needs_return => 0 );
+        if ( $self->{"otherwise"}->stmts ) {
+            my $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $self->{"otherwise"}->stmts, needs_return => 0 );
             $s = $s
                 . "\n"
                 . Javascript::tab($level) . 'else { '
@@ -902,12 +902,12 @@ class While {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $.body->stmts, needs_return => 0 );
+        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         return
            Javascript::tab($level) . 'for ( '
-        .  ( $.init     ? $.init->emit_javascript()             . '; '  : '; ' )
-        .  ( $.cond     ? Javascript::to_bool( $.cond )                     . '; '  : '; ' )
-        .  ( $.continue ? $.continue->emit_javascript()         . ' '   : ' '  )
+        .  ( $self->{"init"}     ? $self->{"init"}->emit_javascript()             . '; '  : '; ' )
+        .  ( $self->{"cond"}     ? Javascript::to_bool( $self->{"cond"} )                     . '; '  : '; ' )
+        .  ( $self->{"continue"} ? $self->{"continue"}->emit_javascript()         . ' '   : ' '  )
         .  ') { '
             . '(function () { ' . $body->emit_javascript_indented( $level + 1 )      . ' })()'
         . ' }'
@@ -919,14 +919,14 @@ class For {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $cond = $.cond;
+        my $cond = $self->{"cond"};
         if (!( $cond->isa( 'Var' ) && $cond->sigil eq '@' )) {
             $cond = Lit::Array->new( array1 => [$cond] )
         }
-        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $.body->stmts, needs_return => 0 );
+        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         my $sig = 'v__';
-        if ($.body->sig()) {
-            $sig = $.body->sig->emit_javascript_indented( $level + 1 );
+        if ($self->{"body"}->sig()) {
+            $sig = $self->{"body"}->sig->emit_javascript_indented( $level + 1 );
         }
         Javascript::tab($level) . '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { '
             . "(function ($sig) \{ "
@@ -941,17 +941,17 @@ class Decl {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        Javascript::tab($level) . $.var->emit_javascript;
+        Javascript::tab($level) . $self->{"var"}->emit_javascript;
     }
     sub emit_javascript_init {
         my $self = shift;
-        if ($.decl eq 'my') {
+        if ($self->{"decl"} eq 'my') {
             my $str = "";
-            $str = $str . 'var ' . ($.var)->emit_javascript() . ' = ';
-            if ($.var)->sigil eq '%' {
+            $str = $str . 'var ' . ($self->{"var"})->emit_javascript() . ' = ';
+            if ($self->{"var"})->sigil eq '%' {
                 $str = $str . '{};' . "\n";
             }
-            elsif ($.var)->sigil eq '@' {
+            elsif ($self->{"var"})->sigil eq '@' {
                 $str = $str . '[];' . "\n";
             }
             else {
@@ -960,7 +960,7 @@ class Decl {
             return $str;
         }
         else {
-            die "not implemented: Decl '" . $.decl . "'";
+            die "not implemented: Decl '" . $self->{"decl"} . "'";
         }
     }
 }
@@ -972,8 +972,8 @@ class Sub {
         my $level = shift;
 
           Javascript::tab($level) . ''
-        .                           ( $.name
-                                      ? 'v__NAMESPACE["' . $.name . '"] = '
+        .                           ( $self->{"name"}
+                                      ? 'v__NAMESPACE["' . $self->{"name"} . '"] = '
                                       : ''
                                     )
         .                           'function () {' . "\n"
@@ -984,7 +984,7 @@ class Sub {
         . Javascript::tab($level + 1) . 'else {' . "\n"
         . Javascript::tab($level + 2) .   'List__.unshift(this)' . "\n"
         . Javascript::tab($level + 1) . '}' . "\n"
-        .   (Perlito5::Javascript::LexicalBlock->new( block => $.block, needs_return => 1, top_level => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
+        .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"block"}, needs_return => 1, top_level => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
         . Javascript::tab($level) . '}'
     }
 }
@@ -1007,7 +1007,7 @@ class Use {
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        Javascript::tab($level) . '// use ' . $.mod . "\n"
+        Javascript::tab($level) . '// use ' . $self->{"mod"} . "\n"
     }
 }
 
