@@ -39,11 +39,11 @@ package main;
         0
     }
 }))) && ((do {
-    ((my  $body) = ($MATCH->{('exp')}->flat())->{'end_block'});
-    if ((!((defined($body))))) {
+    ((my  $body) = $MATCH->{('exp')}->flat()->{'end_block'});
+    if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'unless' . chr(39)))
     };
-    ($MATCH->{('capture')} = If->new(('cond' => ($MATCH->{('exp')}->flat())->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
+    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
@@ -105,9 +105,9 @@ package main;
         0
     }
 }))) && ((do {
-    ((my  $body) = ($MATCH->{('exp')}->flat())->{'end_block'});
+    ((my  $body) = $MATCH->{('exp')}->flat()->{'end_block'});
     ((my  $otherwise) = ($MATCH->{('exp2')}->flat())->{'exp'});
-    if ((!((defined($body))))) {
+    if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'if' . chr(39)))
     };
     if ((!((defined($otherwise))))) {
@@ -116,7 +116,7 @@ package main;
     if (((ref($otherwise) eq 'Lit::Hash'))) {
         ($otherwise = Lit::Block->new(('stmts' => $otherwise->hash1())))
     };
-    ($MATCH->{('capture')} = If->new(('cond' => ($MATCH->{('exp')}->flat())->{'exp'}), ('body' => $body), ('otherwise' => $otherwise)));
+    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body), ('otherwise' => $otherwise)));
     1
 })))
 })) || ((do {
@@ -141,11 +141,11 @@ package main;
         0
     }
 }))) && ((do {
-    ((my  $body) = ($MATCH->{('exp')}->flat())->{'end_block'});
-    if ((!((defined($body))))) {
+    ((my  $body) = $MATCH->{('exp')}->flat()->{'end_block'});
+    if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'if' . chr(39)))
     };
-    ($MATCH->{('capture')} = If->new(('cond' => ($MATCH->{('exp')}->flat())->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => (do {
+    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, $MATCH->{('if')}->flat() );
@@ -156,11 +156,11 @@ package main;
 }))) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((do {
-    ((my  $body) = ($MATCH->{('exp')}->flat())->{'end_block'});
-    if ((!((defined($body))))) {
+    ((my  $body) = $MATCH->{('exp')}->flat()->{'end_block'});
+    if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'if' . chr(39)))
     };
-    ($MATCH->{('capture')} = If->new(('cond' => ($MATCH->{('exp')}->flat())->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => (do {
+    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
@@ -202,11 +202,11 @@ package main;
         0
     }
 }))) && ((do {
-    ((my  $body) = ($MATCH->{('exp')}->flat())->{'end_block'});
-    if ((!((defined($body))))) {
+    ((my  $body) = $MATCH->{('exp')}->flat()->{'end_block'});
+    if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'when' . chr(39)))
     };
-    ($MATCH->{('capture')} = When->new(('parameters' => ($MATCH->{('exp')}->flat())->{'exp'}), ('body' => $body)));
+    ($MATCH->{('capture')} = When->new(('parameters' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body)));
     1
 })))
 }))
@@ -334,11 +334,11 @@ package main;
         0
     }
 })) && ((do {
-    ((my  $body) = ($MATCH->{('exp')}->flat())->{'end_block'});
-    if ((!((defined($body))))) {
+    ((my  $body) = $MATCH->{('exp')}->flat()->{'end_block'});
+    if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'when' . chr(39)))
     };
-    ($MATCH->{('capture')} = For->new(('cond' => ($MATCH->{('exp')}->flat())->{'exp'}), ('topic' => undef()), ('body' => $body)));
+    ($MATCH->{('capture')} = For->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('topic' => undef()), ('body' => $body)));
     1
 }))))
 })))
@@ -376,11 +376,11 @@ package main;
         0
     }
 }))) && ((do {
-    ((my  $body) = ($MATCH->{('exp')}->flat())->{'end_block'});
-    if ((!((defined($body))))) {
+    ((my  $body) = $MATCH->{('exp')}->flat()->{'end_block'});
+    if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'while' . chr(39)))
     };
-    ($MATCH->{('capture')} = While->new(('cond' => ($MATCH->{('exp')}->flat())->{'exp'}), ('body' => $body)));
+    ($MATCH->{('capture')} = While->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body)));
     1
 })))
 }))

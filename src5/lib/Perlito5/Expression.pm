@@ -41,28 +41,28 @@ package Perlito5::Expression;
             return $o
         }
         my $stmt = $stmts->[0];
-        if (( ref($stmt) eq 'Var' )) {
+        if ( ref($stmt) eq 'Var' ) {
             # the argument is a single variable
             # say "#  single var -- is hash";
             return Lit::Hash->new(hash1 => [ $stmt ])
         }
-        if (!(( ref($stmt) eq 'Apply' ))) {
+        if ( ref($stmt) ne 'Apply' ) {
             # say "#  not Apply -- not hash";
             return $o
         }
-        if ($stmt->code) eq 'infix:<=>>' {
+        if ($stmt->code eq 'infix:<=>>') {
             # the argument is a single pair
             # say "#  single pair -- is hash";
             return Lit::Hash->new(hash1 => [ $stmt ])
         }
-        if ($stmt->code) ne 'list:<,>' {
+        if ($stmt->code ne 'list:<,>') {
             # say "#  not a list -- not hash";
             return $o
         }
         # the argument is a list -- check that it contains a pair
         for my $item ( @{$stmt->arguments} ) {
             # say "#  item: ", $item->perl;
-            if (( ref($item) eq 'Apply' ) && ($item->code) eq 'infix:<=>>') {
+            if ( ref($item) eq 'Apply' && $item->code eq 'infix:<=>>' ) {
                 # argument is a pair
                 # say "#  block: ", $o->perl;
                 # say "#  hash with args: ", ( expand_list($stmt->arguments) )->perl;
@@ -182,7 +182,7 @@ package Perlito5::Expression;
         }
         if ($v->[1] eq 'methcall') {
             # say "#   Call ", ($v->[2])->perl;
-            my $param_list = expand_list(($v->[3]){'exp'});
+            my $param_list = expand_list($v->[3]{'exp'});
             $v = Call->new( invocant => $value, method => $v->[2], arguments => $param_list );
             return $v;
         }
@@ -287,9 +287,9 @@ package Perlito5::Expression;
                 my $v2 = pop_term($num_stack);
                 $arg = [ pop_term($num_stack), $v2 ];
             }
-            if  (  ( ref($arg->[0]) eq 'Apply' )
-                && ($last_op->[0] eq 'infix')
-                && (($arg->[0])->code eq ('list:<' . $last_op->[1] . '>'))
+            if  (  ref($arg->[0]) eq 'Apply'
+                && $last_op->[0] eq 'infix'
+                && ($arg->[0]->code eq 'list:<' . $last_op->[1] . '>')
                 )
             {
                 push @$num_stack,
@@ -531,8 +531,10 @@ package Perlito5::Expression;
 
             # say "# list_lexer " . $v->perl;
 
-            if (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block')
+            if (   $v->[0] eq 'postfix_or_term'
+                && $v->[1] eq 'block'
                 && $last_token_was_space
+               )
             {
                 if ($self->has_newline_after($str, $last_pos)->bool) {
                     # a block followed by newline terminates the expression
@@ -677,10 +679,10 @@ package Perlito5::Expression;
             }
             # say "# exp_lexer got " . $v->perl;
 
-            if  (  ( (($v->[0]) eq 'postfix_or_term') && (($v->[1]) eq 'block') )
-                || ( (($v->[0]) eq 'term') && ref($v->[1]) eq 'Sub' )
-                || ( (($v->[0]) eq 'term') && ref($v->[1]) eq 'Do' )
-                || ( (($v->[0]) eq 'term') && ref($v->[1]) eq 'CompUnit' )
+            if  (  ( $v->[0] eq 'postfix_or_term' && $v->[1] eq 'block' )
+                || ( $v->[0] eq 'term' && ref($v->[1]) eq 'Sub' )
+                || ( $v->[0] eq 'term' && ref($v->[1]) eq 'Do' )
+                || ( $v->[0] eq 'term' && ref($v->[1]) eq 'CompUnit' )
                 )
             {
                 # a block followed by newline terminates the expression
@@ -772,7 +774,7 @@ package Perlito5::Expression;
             ($res->flat()){'exp'} = Do->new(block => ($res->flat()){'exp'});
         }
         if ($res->flat()){'end_block'} {
-            # warn "Block: ", (($res->flat()){'end_block'})->perl;
+            # warn "Block: ", $res->flat()->{'end_block'}->perl;
             die "Unexpected block after expression near ", $pos;
         }
         if ($res->flat()){'terminated'} {
@@ -790,11 +792,11 @@ package Perlito5::Expression;
         }
         my $modifier_exp = $self->exp_parse($str, $modifier->to);
         # say "# statement modifier [", $modifier->flat(), "] exp: ", $modifier_exp->perl;
-        if (!($modifier_exp->bool)) {
+        if (!$modifier_exp->bool) {
             die "Expected expression after '", $modifier->flat(), "'";
         }
         if ($modifier_exp->flat()){'end_block'} {
-            # warn "Block: ", (($modifier_exp->flat()){'end_block'})->perl;
+            # warn "Block: ", $modifier_exp->flat()->{'end_block'}->perl;
             die "Unexpected block after expression near ", $modifier->to;
         }
         # TODO - require a statement terminator

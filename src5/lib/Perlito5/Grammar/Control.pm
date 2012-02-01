@@ -3,12 +3,12 @@ package Perlito5::Grammar;
 token unless {
     unless <.ws> <exp>
         {
-            my $body = ($MATCH->{"exp"}->flat()){'end_block'};
-            if (!(defined($body))) {
+            my $body = $MATCH->{"exp"}->flat()->{'end_block'};
+            if (!defined($body)) {
                 die "Missing code block in 'unless'";
             }
             $MATCH->{"capture"} = If->new(
-                cond => ($MATCH->{"exp"}->flat()){'exp'},
+                cond => $MATCH->{"exp"}->flat()->{'exp'},
                 body => Lit::Block->new(stmts => [ ]),
                 otherwise => $body,
              )
@@ -21,9 +21,9 @@ token if {
         <.opt_ws>
         else <exp2>
         {
-            my $body = ($MATCH->{"exp"}->flat()){'end_block'};
+            my $body = $MATCH->{"exp"}->flat()->{'end_block'};
             my $otherwise = ($MATCH->{"exp2"}->flat()){'exp'};
-            if (!(defined($body))) {
+            if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
             if (!(defined($otherwise))) {
@@ -33,7 +33,7 @@ token if {
                 $otherwise = Lit::Block->new( stmts => $otherwise->hash1 );
             }
             $MATCH->{"capture"} = If->new(
-                cond      => ($MATCH->{"exp"}->flat()){'exp'},
+                cond      => $MATCH->{"exp"}->flat()->{'exp'},
                 body      => $body,
                 otherwise => $otherwise,
             )
@@ -42,24 +42,24 @@ token if {
         <.opt_ws>
         els <if>
         {
-            my $body = ($MATCH->{"exp"}->flat()){'end_block'};
-            if (!(defined($body))) {
+            my $body = $MATCH->{"exp"}->flat()->{'end_block'};
+            if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
             $MATCH->{"capture"} = If->new(
-                cond => ($MATCH->{"exp"}->flat()){'exp'},
+                cond => $MATCH->{"exp"}->flat()->{'exp'},
                 body => $body,
                 otherwise => Lit::Block->new( stmts => [ $MATCH->{"if"}->flat() ] ),
             )
         }
     |
         {
-            my $body = ($MATCH->{"exp"}->flat()){'end_block'};
-            if (!(defined($body))) {
+            my $body = $MATCH->{"exp"}->flat()->{'end_block'};
+            if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
             $MATCH->{"capture"} = If->new(
-                cond => ($MATCH->{"exp"}->flat()){'exp'},
+                cond => $MATCH->{"exp"}->flat()->{'exp'},
                 body => $body,
                 otherwise => Lit::Block->new(stmts => [ ]),
              )
@@ -70,12 +70,12 @@ token if {
 token when {
     when <.ws> <exp>
     {
-        my $body = ($MATCH->{"exp"}->flat()){'end_block'};
-        if (!(defined($body))) {
+        my $body = $MATCH->{"exp"}->flat()->{'end_block'};
+        if (!defined($body)) {
             die "Missing code block in 'when'";
         }
         $MATCH->{"capture"} = When->new(
-                parameters => ($MATCH->{"exp"}->flat()){'exp'},
+                parameters => $MATCH->{"exp"}->flat()->{'exp'},
                 body       => $body )
     }
 }
@@ -99,11 +99,11 @@ token for {
     |
         <exp>
         {
-            my $body = ($MATCH->{"exp"}->flat()){'end_block'};
-            if (!(defined($body))) {
+            my $body = $MATCH->{"exp"}->flat()->{'end_block'};
+            if (!defined($body)) {
                 die "Missing code block in 'when'";
             }
-            $MATCH->{"capture"} = For->new( cond => ($MATCH->{"exp"}->flat()){'exp'}, topic => undef, body => $body )
+            $MATCH->{"capture"} = For->new( cond => $MATCH->{"exp"}->flat()->{'exp'}, topic => undef, body => $body )
         }
     ]
 }
@@ -111,12 +111,12 @@ token for {
 token while {
     while <.ws> <exp>
     {
-        my $body = ($MATCH->{"exp"}->flat()){'end_block'};
-        if (!(defined($body))) {
+        my $body = $MATCH->{"exp"}->flat()->{'end_block'};
+        if (!defined($body)) {
             die "Missing code block in 'while'";
         }
         $MATCH->{"capture"} = While->new(
-                cond => ($MATCH->{"exp"}->flat()){'exp'},
+                cond => $MATCH->{"exp"}->flat()->{'exp'},
                 body => $body )
     }
 }

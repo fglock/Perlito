@@ -16,13 +16,6 @@ TODO list for Perlito5
 -- add "require"
 
 
-* source code - remove Perl 6 code 
-
--- "token"
-
--- for @x {...} --> for (@x) {...}
-
-
 * libraries
 
 -- these should probably go into namespace Perlito5X::*
@@ -51,6 +44,8 @@ TODO list for Perlito5
 
 -- TODO move "CallSub" to last argument in order to get some more compatibility with native js
 
+-- in the browser: implement "use" with XMLHttpRequest
+
 
 * Python backend
 
@@ -76,6 +71,8 @@ TODO list for Perlito5
 -- BEGIN{}, INIT{}, END{}
 
 -- finish "overload" implementation
+
+-- source code - remove Perl 6 code such as "token"
 
 -- much more!
 

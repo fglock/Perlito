@@ -36,10 +36,10 @@ sub ws3 { $_[0]->{'ws3'} }
 sub emit_perl5 {
     my $self = $_[0];
 
-    if (($self->{"quant"} eq '') && ($self->{"greedy"} eq '')) {
+    if ($self->{"quant"} eq '' && $self->{"greedy"} eq '') {
         return $self->{"term"}->emit_perl5;
     }
-    if (($self->{"quant"} eq '+') && ($self->{"greedy"} eq '')) {
+    if ($self->{"quant"} eq '+' && $self->{"greedy"} eq '') {
         $self->{"term"}->set_captures_to_array;
         return
             '(do { '
@@ -61,7 +61,7 @@ sub emit_perl5 {
             .   '$count > 0; '
             . '})';
     }
-    if (($self->{"quant"} eq '*') && ($self->{"greedy"} eq '')) {
+    if ($self->{"quant"} eq '*' && $self->{"greedy"} eq '') {
         $self->{"term"}->set_captures_to_array;
         return
             '(do { '
@@ -81,7 +81,7 @@ sub emit_perl5 {
             .   '1 '
             . '})';
     }
-    if (($self->{"quant"} eq '?') && ($self->{"greedy"} eq '')) {
+    if ($self->{"quant"} eq '?' && $self->{"greedy"} eq '') {
         $self->{"term"}->set_captures_to_array;
         return
             '(do { '

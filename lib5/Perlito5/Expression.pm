@@ -65,7 +65,7 @@ package main;
             return ($o)
         };
         ((my  $stmt) = $stmts->[0]);
-        if ((((ref($stmt) eq 'Var')))) {
+        if (((ref($stmt) eq 'Var'))) {
             return (Lit::Hash->new(('hash1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -73,10 +73,10 @@ package main;
     $List_a
 }))))
         };
-        if ((!((((ref($stmt) eq 'Apply')))))) {
+        if (((ref($stmt) ne 'Apply'))) {
             return ($o)
         };
-        if ((($stmt->code()) eq 'infix:<' . chr(61) . '>>')) {
+        if ((($stmt->code() eq 'infix:<' . chr(61) . '>>'))) {
             return (Lit::Hash->new(('hash1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -84,11 +84,11 @@ package main;
     $List_a
 }))))
         };
-        if ((($stmt->code()) ne 'list:<,>')) {
+        if ((($stmt->code() ne 'list:<,>'))) {
             return ($o)
         };
         for my $item ( @{($stmt->arguments())} ) {
-            if (((((ref($item) eq 'Apply')) && (($item->code()) eq 'infix:<' . chr(61) . '>>')))) {
+            if ((((ref($item) eq 'Apply') && ($item->code() eq 'infix:<' . chr(61) . '>>')))) {
                 return (Lit::Hash->new(('hash1' => expand_list($stmt))))
             }
         };
@@ -181,7 +181,7 @@ package main;
             return ($v)
         };
         if ((($v->[1] eq 'methcall'))) {
-            ((my  $param_list) = expand_list(($v->[3])->{'exp'}));
+            ((my  $param_list) = expand_list($v->[3]->{'exp'}));
             ($v = Call->new(('invocant' => $value), ('method' => $v->[2]), ('arguments' => $param_list)));
             return ($v)
         };
@@ -291,7 +291,7 @@ package main;
     $List_a
 }))
                     };
-                    if ((((((ref($arg->[0]) eq 'Apply')) && (($last_op->[0] eq 'infix'))) && ((($arg->[0])->code() eq (('list:<' . $last_op->[1] . '>'))))))) {
+                    if (((((ref($arg->[0]) eq 'Apply') && ($last_op->[0] eq 'infix')) && (($arg->[0]->code() eq ('list:<' . $last_op->[1] . '>')))))) {
                         push( @{($num_stack)}, Apply->new(('namespace' => ''), ('code' => ($arg->[0])->code()), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1401,7 +1401,7 @@ package main;
             ($last_pos = $m->to())
         }
     };
-    if (((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block'))) && $last_token_was_space)) {
+    if ((((($v->[0] eq 'postfix_or_term') && ($v->[1] eq 'block')) && $last_token_was_space))) {
         if (($self->has_newline_after($str, $last_pos)->bool())) {
             ($terminated = 1);
             push( @{($lexer_stack)}, (do {
@@ -1588,7 +1588,7 @@ package main;
             ($last_pos = $m->to())
         }
     };
-    if (((((((((($v->[0]) eq 'postfix_or_term')) && ((($v->[1]) eq 'block')))) || ((((($v->[0]) eq 'term')) && (ref($v->[1]) eq 'Sub')))) || ((((($v->[0]) eq 'term')) && (ref($v->[1]) eq 'Do')))) || ((((($v->[0]) eq 'term')) && (ref($v->[1]) eq 'CompUnit')))))) {
+    if (((((((($v->[0] eq 'postfix_or_term') && ($v->[1] eq 'block'))) || ((($v->[0] eq 'term') && (ref($v->[1]) eq 'Sub')))) || ((($v->[0] eq 'term') && (ref($v->[1]) eq 'Do')))) || ((($v->[0] eq 'term') && (ref($v->[1]) eq 'CompUnit')))))) {
         if (($self->has_newline_after($str, $last_pos)->bool())) {
             ($terminated = 1);
             push( @{($lexer_stack)}, (do {
@@ -1888,7 +1888,7 @@ package main;
             return ($res)
         };
         ((my  $modifier_exp) = $self->exp_parse($str, $modifier->to()));
-        if ((!(($modifier_exp->bool())))) {
+        if ((!($modifier_exp->bool()))) {
             die(('Expected expression after ' . chr(39)), $modifier->flat(), (chr(39)))
         };
         if (($modifier_exp->flat())->{'end_block'}) {

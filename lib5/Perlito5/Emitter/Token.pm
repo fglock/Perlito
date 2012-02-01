@@ -88,18 +88,18 @@ package main;
     sub emit_perl5 {
         my $List__ = bless \@_, "ARRAY";
         ((my  $self) = $List__->[0]);
-        if ((((($self->{('quant')} eq '')) && (($self->{('greedy')} eq ''))))) {
+        if (((($self->{('quant')} eq '') && ($self->{('greedy')} eq '')))) {
             return ($self->{('term')}->emit_perl5())
         };
-        if ((((($self->{('quant')} eq '+')) && (($self->{('greedy')} eq ''))))) {
+        if (((($self->{('quant')} eq '+') && ($self->{('greedy')} eq '')))) {
             $self->{('term')}->set_captures_to_array();
             return (('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH->to' . chr(59) . ' ' . 'my ' . chr(36) . 'count ' . chr(61) . ' 0' . chr(59) . ' ' . 'while (' . $self->{('term')}->emit_perl5() . ' ' . chr(38) . chr(38) . ' (' . chr(36) . 'last_match_null < 2)) ' . chr(123) . ' ' . 'if (' . chr(36) . 'last_pos ' . chr(61) . chr(61) . ' ' . chr(36) . 'MATCH->to()) ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' ' . chr(36) . 'last_match_null + 1' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH->to' . chr(59) . ' ' . chr(36) . 'count ' . chr(61) . ' ' . chr(36) . 'count + 1' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(34) . 'to' . chr(34) . chr(125) . ' ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(36) . 'count > 0' . chr(59) . ' ' . chr(125) . ')'))
         };
-        if ((((($self->{('quant')} eq '*')) && (($self->{('greedy')} eq ''))))) {
+        if (((($self->{('quant')} eq '*') && ($self->{('greedy')} eq '')))) {
             $self->{('term')}->set_captures_to_array();
             return (('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH->to' . chr(59) . ' ' . 'while (' . $self->{('term')}->emit_perl5() . ' ' . chr(38) . chr(38) . ' (' . chr(36) . 'last_match_null < 2)) ' . chr(123) . ' ' . 'if (' . chr(36) . 'last_pos ' . chr(61) . chr(61) . ' ' . chr(36) . 'MATCH->to()) ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' ' . chr(36) . 'last_match_null + 1' . chr(59) . ' ' . chr(125) . ' ' . 'else ' . chr(123) . ' ' . chr(36) . 'last_match_null ' . chr(61) . ' 0' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH->to' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(34) . 'to' . chr(34) . chr(125) . ' ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . '1 ' . chr(125) . ')'))
         };
-        if ((((($self->{('quant')} eq chr(63))) && (($self->{('greedy')} eq ''))))) {
+        if (((($self->{('quant')} eq chr(63)) && ($self->{('greedy')} eq '')))) {
             $self->{('term')}->set_captures_to_array();
             return (('(do ' . chr(123) . ' ' . 'my ' . chr(36) . 'last_pos ' . chr(61) . ' ' . chr(36) . 'MATCH->to' . chr(59) . ' ' . 'if (' . chr(33) . '(do ' . chr(123) . $self->{('term')}->emit_perl5() . chr(125) . ')) ' . chr(123) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(34) . 'to' . chr(34) . chr(125) . ' ' . chr(61) . ' ' . chr(36) . 'last_pos' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . '1 ' . chr(125) . ')'))
         };
