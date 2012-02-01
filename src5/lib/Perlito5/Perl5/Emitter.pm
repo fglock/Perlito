@@ -457,9 +457,6 @@ class Apply {
                 return '(' . $parameters->emit_perl5() . ' = ' . $arguments->emit_perl5() . ')';
             }
 
-            # $obj->a = 3
-            my $a = $parameters;
-            return '((' . ($a->invocant)->emit_perl5() . ')->{' . $a->method() . '} = ' . $arguments->emit_perl5() . ')';
         }
         if      $parameters->isa( 'Var' ) && $parameters->sigil eq '@'
             ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '@'

@@ -193,11 +193,11 @@ package main;
         if ((($v->[1] eq '( )'))) {
             ((my  $param_list) = expand_list($v->[2]));
             if ((((ref($value) eq 'Apply') && !((defined($value->arguments())))))) {
-                (($value)->{arguments} = $param_list);
+                ($value->{'arguments'} = $param_list);
                 return ($value)
             };
             if ((((ref($value) eq 'Call') && !((defined($value->arguments())))))) {
-                (($value)->{arguments} = $param_list);
+                ($value->{'arguments'} = $param_list);
                 return ($value)
             };
             ($v = Call->new(('invocant' => $value), ('method' => 'postcircumfix:<( )>'), ('arguments' => $param_list)));

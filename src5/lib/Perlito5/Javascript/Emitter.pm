@@ -804,9 +804,6 @@ class Apply {
                 return Javascript::tab($level) . '(function () { ' . $str . '})()';
             }
 
-            # $var->attr = 3;
-            # XXX Perl 6
-            return Javascript::tab($level) . '(' . ($parameters->invocant)->emit_javascript() . '.' . $parameters->method() . ' = ' . $arguments->emit_javascript() . ')';
         }
         if ($parameters->isa( 'Lookup' )) {
             my $str = '';

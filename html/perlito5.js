@@ -2824,8 +2824,7 @@ if (typeof Apply !== 'object') {
                                 (v_index_js = ((((v_parameters._class_ && v_parameters._class_.arguments) || v_parameters.arguments).call(v_parameters)._class_ && ((v_parameters._class_ && v_parameters._class_.arguments) || v_parameters.arguments).call(v_parameters)._class_.emit_javascript) || ((v_parameters._class_ && v_parameters._class_.arguments) || v_parameters.arguments).call(v_parameters).emit_javascript).call(((v_parameters._class_ && v_parameters._class_.arguments) || v_parameters.arguments).call(v_parameters)));
                                 (v_str = (string(v_str) + 'return (' + string(v_var_js) + '[' + string(v_index_js) + '] ' + ' = ' + string(((v_arguments._class_ && v_arguments._class_.emit_javascript) || v_arguments.emit_javascript).call(v_arguments)) + '); '));
                                 throw((string(Javascript.tab(CallSub, v_level)) + '(function () { ' + string(v_str) + '})()'));;
-                            })(); };
-                            throw((string(Javascript.tab(CallSub, v_level)) + '(' + string((((((v_parameters._class_ && v_parameters._class_.invocant) || v_parameters.invocant).call(v_parameters))._class_ && (((v_parameters._class_ && v_parameters._class_.invocant) || v_parameters.invocant).call(v_parameters))._class_.emit_javascript) || (((v_parameters._class_ && v_parameters._class_.invocant) || v_parameters.invocant).call(v_parameters)).emit_javascript).call((((v_parameters._class_ && v_parameters._class_.invocant) || v_parameters.invocant).call(v_parameters)))) + '.' + string(((v_parameters._class_ && v_parameters._class_.method) || v_parameters.method).call(v_parameters)) + ' = ' + string(((v_arguments._class_ && v_arguments._class_.emit_javascript) || v_arguments.emit_javascript).call(v_arguments)) + ')'));;
+                            })(); };;
                         })(); };
                         if ( bool((((v_parameters._class_ && v_parameters._class_.isa) || v_parameters.isa).call(v_parameters,'Lookup'))) ) { (function () {
                             var v_str = null;
@@ -5409,13 +5408,9 @@ if (typeof Apply !== 'object') {
                         (v_parameters = CORE.shift(List__));
                         (v_arguments = CORE.shift(List__));
                         if ( bool((((v_parameters._class_ && v_parameters._class_.isa) || v_parameters.isa).call(v_parameters,'Call'))) ) { (function () {
-                            var v_a = null;
-
                             if ( bool((or((((v_parameters._class_ && v_parameters._class_.method) || v_parameters.method).call(v_parameters) == 'postcircumfix:<{ }>'), function () { return (((v_parameters._class_ && v_parameters._class_.method) || v_parameters.method).call(v_parameters) == 'postcircumfix:<[ ]>'); }))) ) { (function () {
                                 throw(('(' + string(((v_parameters._class_ && v_parameters._class_.emit_perl5) || v_parameters.emit_perl5).call(v_parameters)) + ' = ' + string(((v_arguments._class_ && v_arguments._class_.emit_perl5) || v_arguments.emit_perl5).call(v_arguments)) + ')'));;
-                            })(); };
-                            (v_a = v_parameters);
-                            throw(('((' + string((((((v_a._class_ && v_a._class_.invocant) || v_a.invocant).call(v_a))._class_ && (((v_a._class_ && v_a._class_.invocant) || v_a.invocant).call(v_a))._class_.emit_perl5) || (((v_a._class_ && v_a._class_.invocant) || v_a.invocant).call(v_a)).emit_perl5).call((((v_a._class_ && v_a._class_.invocant) || v_a.invocant).call(v_a)))) + ')->{' + string(((v_a._class_ && v_a._class_.method) || v_a.method).call(v_a)) + '} = ' + string(((v_arguments._class_ && v_arguments._class_.emit_perl5) || v_arguments.emit_perl5).call(v_arguments)) + ')'));;
+                            })(); };;
                         })(); };
                         if ( or(and(((v_parameters._class_ && v_parameters._class_.isa) || v_parameters.isa).call(v_parameters,'Var'), function () { return (((v_parameters._class_ && v_parameters._class_.sigil) || v_parameters.sigil).call(v_parameters) == '@'); }), function () { return and(((v_parameters._class_ && v_parameters._class_.isa) || v_parameters.isa).call(v_parameters,'Decl'), function () { return (((((v_parameters._class_ && v_parameters._class_.var) || v_parameters.var).call(v_parameters)._class_ && ((v_parameters._class_ && v_parameters._class_.var) || v_parameters.var).call(v_parameters)._class_.sigil) || ((v_parameters._class_ && v_parameters._class_.var) || v_parameters.var).call(v_parameters).sigil).call(((v_parameters._class_ && v_parameters._class_.var) || v_parameters.var).call(v_parameters)) == '@'); }); }) ) { (function () {
                             (v_arguments = (function () { if (Lit$Array.new ) { return Lit$Array.new('array1', (function () { 
@@ -6349,11 +6344,11 @@ if (typeof Perlito5$Expression !== 'object') {
 
                             (v_param_list = (v__NAMESPACE.expand_list || CORE.expand_list)(CallSub, v_v[2]));
                             if ( bool((and(((v__NAMESPACE.ref || CORE.ref)(CallSub, v_value) == 'Apply'), function () { return ( bool(((((v_value._class_ && v_value._class_.arguments) || v_value.arguments).call(v_value) != null))) ? false : true); }))) ) { (function () {
-                                (v_value.arguments = v_param_list);
+                                (function () { if (v_value == null) { v_value = {} }; return (v_value['arguments']  = v_param_list); })();
                                 throw(v_value);;
                             })(); };
                             if ( bool((and(((v__NAMESPACE.ref || CORE.ref)(CallSub, v_value) == 'Call'), function () { return ( bool(((((v_value._class_ && v_value._class_.arguments) || v_value.arguments).call(v_value) != null))) ? false : true); }))) ) { (function () {
-                                (v_value.arguments = v_param_list);
+                                (function () { if (v_value == null) { v_value = {} }; return (v_value['arguments']  = v_param_list); })();
                                 throw(v_value);;
                             })(); };
                             (v_v = (function () { if (Call.new ) { return Call.new('invocant', v_value, 'method', 'postcircumfix:<( )>', 'arguments', v_param_list); } var tmp = {invocant: v_value,method: 'postcircumfix:<( )>',arguments: v_param_list}; tmp._class_ = Call; return tmp; })());

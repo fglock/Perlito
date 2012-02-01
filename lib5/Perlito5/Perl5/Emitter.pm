@@ -497,9 +497,7 @@ package main;
             if ((Perlito5::Runtime::isa($parameters, 'Call'))) {
                 if (((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>') || ($parameters->method() eq 'postcircumfix:<[ ]>')))) {
                     return (('(' . $parameters->emit_perl5() . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')'))
-                };
-                ((my  $a) = $parameters);
-                return (('((' . ($a->invocant())->emit_perl5() . ')->' . chr(123) . $a->method() . chr(125) . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')'))
+                }
             };
             if (((Perlito5::Runtime::isa($parameters, 'Var') && ($parameters->sigil() eq chr(64))) || (Perlito5::Runtime::isa($parameters, 'Decl') && ($parameters->var()->sigil() eq chr(64))))) {
                 ($arguments = Lit::Array->new(('array1' => (do {

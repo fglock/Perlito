@@ -853,8 +853,7 @@ package main;
                     ((my  $index_js) = $parameters->arguments()->emit_javascript());
                     ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                     return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
-                };
-                return ((Javascript::tab($level) . '(' . ($parameters->invocant())->emit_javascript() . '.' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
+                }
             };
             if ((Perlito5::Runtime::isa($parameters, 'Lookup'))) {
                 ((my  $str) = '');
