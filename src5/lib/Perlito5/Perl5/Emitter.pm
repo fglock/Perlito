@@ -560,9 +560,6 @@ class Decl {
         
         my $decl = $self->{"decl"};
         my $name = $self->{"var"}->plain_name;
-        if ($decl eq 'has') {
-            return Perl5::tab($level) . 'sub ' . $name . ' { $_[0]->{' . $name . '} }';
-        }
         my $str =
             '(' . $self->{"decl"} . ' ' . $self->{"type"} . ' ' . $self->{"var"}->emit_perl5();
         if ($self->{"var"})->sigil eq '%' {

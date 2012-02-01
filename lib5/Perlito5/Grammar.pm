@@ -672,14 +672,11 @@ package main;
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
-    ((((do {
+    (((do {
     (('my' eq substr($str, $MATCH->to(), 2)) && (($MATCH->{('to')} = (2 + $MATCH->to()))))
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((('state' eq substr($str, $MATCH->to(), 5)) && (($MATCH->{('to')} = (5 + $MATCH->to()))))))
-}))) || ((do {
-    ($MATCH->{('to')} = $pos1);
-    (((('has' eq substr($str, $MATCH->to(), 3)) && (($MATCH->{('to')} = (3 + $MATCH->to()))))))
 })))
 }))));
         $MATCH

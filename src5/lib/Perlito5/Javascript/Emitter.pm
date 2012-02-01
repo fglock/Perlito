@@ -202,9 +202,10 @@ class Javascript {
 }
 
 class Perlito5::Javascript::LexicalBlock {
-    has $.block;
-    has $.needs_return;
-    has $.top_level;
+    sub block { $_[0]->{'block'} }
+    sub needs_return { $_[0]->{'needs_return'} }
+    sub top_level { $_[0]->{'top_level'} }
+
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -351,20 +352,13 @@ class CompUnit {
             }
         }
         for my $decl ( @body ) {
-            if ($decl->isa( 'Decl' ) && ( $decl->decl eq 'has' )) {
-              # XXX Perl 6
-                $str = $str
-              . '  // accessor ' . $decl->var->name() . "\n"
-              . '  ' . $class_name . '.' . ( $decl->var->name() )
-                    . ' = function () { return this.' . $decl->var->name() . '; };' . "\n";
-            }
             if ($decl->isa( 'Sub' )) {
                 $str = $str . ($decl)->emit_javascript_indented( $level + 1 ) . ";\n";
             }
         }
         for my $decl ( @body ) {
             if (  defined( $decl )
-               && (!( $decl->isa( 'Decl' ) && (( $decl->decl eq 'has' ) || ( $decl->decl eq 'my' )) ))
+               && (!( $decl->isa( 'Decl' ) && $decl->decl eq 'my' ))
                && (!( $decl->isa( 'Sub')))
                )
             {

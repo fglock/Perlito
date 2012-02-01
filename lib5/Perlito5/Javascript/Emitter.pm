@@ -254,9 +254,18 @@ package main;
     {
     package Perlito5::Javascript::LexicalBlock;
         sub new { shift; bless { @_ }, "Perlito5::Javascript::LexicalBlock" }
-        sub block { $_[0]->{block} };
-        sub needs_return { $_[0]->{needs_return} };
-        sub top_level { $_[0]->{top_level} };
+        sub block {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'block'}
+        };
+        sub needs_return {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'needs_return'}
+        };
+        sub top_level {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'top_level'}
+        };
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -380,15 +389,12 @@ package main;
                 }
             };
             for my $decl ( @{$List_body} ) {
-                if (((Perlito5::Runtime::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
-                    ($str = ($str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . (chr(10)) . '  ' . $class_name . '.' . ($decl->var()->name()) . ' ' . chr(61) . ' function () ' . chr(123) . ' return this.' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . (chr(10))))
-                };
                 if ((Perlito5::Runtime::isa($decl, 'Sub'))) {
                     ($str = ($str . ($decl)->emit_javascript_indented(($level + 1)) . (chr(59) . chr(10))))
                 }
             };
             for my $decl ( @{$List_body} ) {
-                if ((((defined($decl) && (!(((Perlito5::Runtime::isa($decl, 'Decl') && (((($decl->decl() eq 'has')) || (($decl->decl() eq 'my'))))))))) && (!((Perlito5::Runtime::isa($decl, 'Sub'))))))) {
+                if ((((defined($decl) && (!(((Perlito5::Runtime::isa($decl, 'Decl') && ($decl->decl() eq 'my')))))) && (!((Perlito5::Runtime::isa($decl, 'Sub'))))))) {
                     ($str = ($str . ($decl)->emit_javascript_indented(($level + 1)) . (chr(59) . chr(10))))
                 }
             };

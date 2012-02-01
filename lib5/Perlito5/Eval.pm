@@ -370,9 +370,6 @@ package main;
             ((my  $env) = $List__->[1]);
             ((my  $decl) = $self->{('decl')});
             ((my  $name) = $self->{('var')}->plain_name());
-            if ((($decl eq 'has'))) {
-                warn(('Interpreter TODO: has'))
-            };
             if ((!((exists(($env->[0])->{$name}))))) {
                 (($env->[0])->{$name} = undef())
             };

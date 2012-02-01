@@ -609,9 +609,6 @@ package main;
             ((my  $level) = $List__->[1]);
             ((my  $decl) = $self->{('decl')});
             ((my  $name) = $self->{('var')}->plain_name());
-            if ((($decl eq 'has'))) {
-                return ((Perl5::tab($level) . 'sub ' . $name . ' ' . chr(123) . ' ' . chr(36) . '_[0]->' . chr(123) . $name . chr(125) . ' ' . chr(125)))
-            };
             ((my  $str) = ('(' . $self->{('decl')} . ' ' . $self->{('type')} . ' ' . $self->{('var')}->emit_perl5()));
             if ((($self->{('var')})->sigil() eq chr(37))) {
                 ($str = ($str . ' ' . chr(61) . ' bless ' . chr(123) . chr(125) . ', ' . chr(39) . 'HASH' . chr(39) . ')'))

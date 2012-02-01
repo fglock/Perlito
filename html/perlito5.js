@@ -815,10 +815,46 @@ if (typeof CompUnit !== 'object') {
 }
 (function () {
   var v__NAMESPACE = CompUnit;
-  // accessor name
-  CompUnit.name = function () { return this.name; };
-  // accessor body
-  CompUnit.body = function () { return this.body; };
+                v__NAMESPACE["name"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['name']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["body"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['body']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Val::Int
@@ -830,8 +866,26 @@ if (typeof Val$Int !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Val$Int;
-  // accessor int
-  Val$Int.int = function () { return this.int; };
+                v__NAMESPACE["int"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['int']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Val::Num
@@ -843,8 +897,26 @@ if (typeof Val$Num !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Val$Num;
-  // accessor num
-  Val$Num.num = function () { return this.num; };
+                v__NAMESPACE["num"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['num']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Val::Buf
@@ -856,8 +928,26 @@ if (typeof Val$Buf !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Val$Buf;
-  // accessor buf
-  Val$Buf.buf = function () { return this.buf; };
+                v__NAMESPACE["buf"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['buf']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Lit::Block
@@ -869,10 +959,46 @@ if (typeof Lit$Block !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Lit$Block;
-  // accessor sig
-  Lit$Block.sig = function () { return this.sig; };
-  // accessor stmts
-  Lit$Block.stmts = function () { return this.stmts; };
+                v__NAMESPACE["sig"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['sig']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["stmts"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['stmts']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Lit::Array
@@ -884,8 +1010,26 @@ if (typeof Lit$Array !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Lit$Array;
-  // accessor array1
-  Lit$Array.array1 = function () { return this.array1; };
+                v__NAMESPACE["array1"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['array1']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Lit::Hash
@@ -897,8 +1041,26 @@ if (typeof Lit$Hash !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Lit$Hash;
-  // accessor hash1
-  Lit$Hash.hash1 = function () { return this.hash1; };
+                v__NAMESPACE["hash1"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['hash1']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Index
@@ -910,10 +1072,46 @@ if (typeof Index !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Index;
-  // accessor obj
-  Index.obj = function () { return this.obj; };
-  // accessor index_exp
-  Index.index_exp = function () { return this.index_exp; };
+                v__NAMESPACE["obj"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['obj']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["index_exp"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['index_exp']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Lookup
@@ -925,10 +1123,46 @@ if (typeof Lookup !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Lookup;
-  // accessor obj
-  Lookup.obj = function () { return this.obj; };
-  // accessor index_exp
-  Lookup.index_exp = function () { return this.index_exp; };
+                v__NAMESPACE["obj"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['obj']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["index_exp"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['index_exp']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Var
@@ -940,14 +1174,86 @@ if (typeof Var !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Var;
-  // accessor sigil
-  Var.sigil = function () { return this.sigil; };
-  // accessor twigil
-  Var.twigil = function () { return this.twigil; };
-  // accessor namespace
-  Var.namespace = function () { return this.namespace; };
-  // accessor name
-  Var.name = function () { return this.name; };
+                v__NAMESPACE["sigil"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['sigil']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["twigil"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['twigil']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["namespace"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['namespace']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["name"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['name']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Proto
@@ -959,8 +1265,26 @@ if (typeof Proto !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Proto;
-  // accessor name
-  Proto.name = function () { return this.name; };
+                v__NAMESPACE["name"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['name']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Call
@@ -972,12 +1296,66 @@ if (typeof Call !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Call;
-  // accessor invocant
-  Call.invocant = function () { return this.invocant; };
-  // accessor method
-  Call.method = function () { return this.method; };
-  // accessor arguments
-  Call.arguments = function () { return this.arguments; };
+                v__NAMESPACE["invocant"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['invocant']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["method"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['method']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["arguments"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['arguments']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Apply
@@ -989,12 +1367,66 @@ if (typeof Apply !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Apply;
-  // accessor code
-  Apply.code = function () { return this.code; };
-  // accessor arguments
-  Apply.arguments = function () { return this.arguments; };
-  // accessor namespace
-  Apply.namespace = function () { return this.namespace; };
+                v__NAMESPACE["code"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['code']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["arguments"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['arguments']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["namespace"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['namespace']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class If
@@ -1006,12 +1438,66 @@ if (typeof If !== 'object') {
 }
 (function () {
   var v__NAMESPACE = If;
-  // accessor cond
-  If.cond = function () { return this.cond; };
-  // accessor body
-  If.body = function () { return this.body; };
-  // accessor otherwise
-  If.otherwise = function () { return this.otherwise; };
+                v__NAMESPACE["cond"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['cond']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["body"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['body']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["otherwise"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['otherwise']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class While
@@ -1023,14 +1509,86 @@ if (typeof While !== 'object') {
 }
 (function () {
   var v__NAMESPACE = While;
-  // accessor init
-  While.init = function () { return this.init; };
-  // accessor cond
-  While.cond = function () { return this.cond; };
-  // accessor continue
-  While.continue = function () { return this.continue; };
-  // accessor body
-  While.body = function () { return this.body; };
+                v__NAMESPACE["init"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['init']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["cond"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['cond']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["continue"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['continue']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["body"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['body']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class For
@@ -1042,10 +1600,46 @@ if (typeof For !== 'object') {
 }
 (function () {
   var v__NAMESPACE = For;
-  // accessor cond
-  For.cond = function () { return this.cond; };
-  // accessor body
-  For.body = function () { return this.body; };
+                v__NAMESPACE["cond"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['cond']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["body"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['body']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Decl
@@ -1057,12 +1651,66 @@ if (typeof Decl !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Decl;
-  // accessor decl
-  Decl.decl = function () { return this.decl; };
-  // accessor type
-  Decl.type = function () { return this.type; };
-  // accessor var
-  Decl.var = function () { return this.var; };
+                v__NAMESPACE["decl"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['decl']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["type"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['type']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["var"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['var']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Sig
@@ -1074,12 +1722,66 @@ if (typeof Sig !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Sig;
-  // accessor invocant
-  Sig.invocant = function () { return this.invocant; };
-  // accessor positional
-  Sig.positional = function () { return this.positional; };
-  // accessor named
-  Sig.named = function () { return this.named; };
+                v__NAMESPACE["invocant"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['invocant']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["positional"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['positional']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["named"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['named']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Sub
@@ -1091,12 +1793,66 @@ if (typeof Sub !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Sub;
-  // accessor name
-  Sub.name = function () { return this.name; };
-  // accessor sig
-  Sub.sig = function () { return this.sig; };
-  // accessor block
-  Sub.block = function () { return this.block; };
+                v__NAMESPACE["name"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['name']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["sig"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['sig']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["block"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['block']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Do
@@ -1108,8 +1864,26 @@ if (typeof Do !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Do;
-  // accessor block
-  Do.block = function () { return this.block; };
+                v__NAMESPACE["block"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['block']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 // class Use
@@ -1121,8 +1895,26 @@ if (typeof Use !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Use;
-  // accessor mod
-  Use.mod = function () { return this.mod; };
+                v__NAMESPACE["mod"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['mod']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
 })()
 ;
 })()
@@ -1541,12 +2333,66 @@ if (typeof Perlito5$Javascript$LexicalBlock !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Perlito5$Javascript$LexicalBlock;
-  // accessor block
-  Perlito5$Javascript$LexicalBlock.block = function () { return this.block; };
-  // accessor needs_return
-  Perlito5$Javascript$LexicalBlock.needs_return = function () { return this.needs_return; };
-  // accessor top_level
-  Perlito5$Javascript$LexicalBlock.top_level = function () { return this.top_level; };
+                v__NAMESPACE["block"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['block']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["needs_return"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['needs_return']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["top_level"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['top_level']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_javascript"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -1763,13 +2609,10 @@ if (typeof CompUnit !== 'object') {
                                     (v_str = (string(v_str) + '  ' + string(((v_var._class_ && v_var._class_.emit_javascript_init) || v_var.emit_javascript_init).call(v_var))));;
                                 })(); };;
                             })(); };; })(a_[i_]) } })(List_body);
-                        (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {                             if ( bool((and(((v_decl._class_ && v_decl._class_.isa) || v_decl.isa).call(v_decl,'Decl'), function () { return ((((v_decl._class_ && v_decl._class_.decl) || v_decl.decl).call(v_decl) == 'has')); }))) ) { (function () {
-                                (v_str = (string(v_str) + '  ' + String.fromCharCode(47) + String.fromCharCode(47) + ' accessor ' + string(((((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl)._class_ && ((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl)._class_.name) || ((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl).name).call(((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl))) + string((String.fromCharCode(10))) + '  ' + string(v_class_name) + '.' + string((((((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl)._class_ && ((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl)._class_.name) || ((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl).name).call(((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl)))) + ' = function () { return this.' + string(((((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl)._class_ && ((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl)._class_.name) || ((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl).name).call(((v_decl._class_ && v_decl._class_.var) || v_decl.var).call(v_decl))) + '; };' + string((String.fromCharCode(10)))));;
-                            })(); };
-                            if ( bool((((v_decl._class_ && v_decl._class_.isa) || v_decl.isa).call(v_decl,'Sub'))) ) { (function () {
+                        (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {                             if ( bool((((v_decl._class_ && v_decl._class_.isa) || v_decl.isa).call(v_decl,'Sub'))) ) { (function () {
                                 (v_str = (string(v_str) + string((((v_decl)._class_ && (v_decl)._class_.emit_javascript_indented) || (v_decl).emit_javascript_indented).call((v_decl),add(v_level, 1))) + string((';' + String.fromCharCode(10)))));;
                             })(); };; })(a_[i_]) } })(List_body);
-                        (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {                             if ( bool((and(and((v_decl != null), function () { return (( bool((and(((v_decl._class_ && v_decl._class_.isa) || v_decl.isa).call(v_decl,'Decl'), function () { return (or(((((v_decl._class_ && v_decl._class_.decl) || v_decl.decl).call(v_decl) == 'has')), function () { return ((((v_decl._class_ && v_decl._class_.decl) || v_decl.decl).call(v_decl) == 'my')); })); }))) ? false : true)); }), function () { return (( bool((((v_decl._class_ && v_decl._class_.isa) || v_decl.isa).call(v_decl,'Sub'))) ? false : true)); }))) ) { (function () {
+                        (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {                             if ( bool((and(and((v_decl != null), function () { return (( bool((and(((v_decl._class_ && v_decl._class_.isa) || v_decl.isa).call(v_decl,'Decl'), function () { return (((v_decl._class_ && v_decl._class_.decl) || v_decl.decl).call(v_decl) == 'my'); }))) ? false : true)); }), function () { return (( bool((((v_decl._class_ && v_decl._class_.isa) || v_decl.isa).call(v_decl,'Sub'))) ? false : true)); }))) ) { (function () {
                                 (v_str = (string(v_str) + string((((v_decl)._class_ && (v_decl)._class_.emit_javascript_indented) || (v_decl).emit_javascript_indented).call((v_decl),add(v_level, 1))) + string((';' + String.fromCharCode(10)))));;
                             })(); };; })(a_[i_]) } })(List_body);
                         return((v_str = (string(v_str) + '}' + ')()' + string((String.fromCharCode(10))))));;
@@ -5784,9 +6627,6 @@ if (typeof Decl !== 'object') {
                         (v_level = List__[1]);
                         (v_decl = v_self[('decl')]);
                         (v_name = ((v_self[('var')]._class_ && v_self[('var')]._class_.plain_name) || v_self[('var')].plain_name).call(v_self[('var')]));
-                        if ( bool(((v_decl == 'has'))) ) { (function () {
-                            throw((string(Perl5.tab(CallSub, v_level)) + 'sub ' + string(v_name) + ' { $_[0]->{' + string(v_name) + '} }'));;
-                        })(); };
                         (v_str = ('(' + string(v_self[('decl')]) + ' ' + string(v_self[('type')]) + ' ' + string(((v_self[('var')]._class_ && v_self[('var')]._class_.emit_perl5) || v_self[('var')].emit_perl5).call(v_self[('var')]))));
                         if ( bool(((((v_self[('var')])._class_ && (v_self[('var')])._class_.sigil) || (v_self[('var')]).sigil).call((v_self[('var')])) == '%')) ) { (function () {
                             (v_str = (string(v_str) + ' = bless {}, ' + String.fromCharCode(39) + 'HASH' + String.fromCharCode(39) + ')'));;
@@ -12543,14 +13383,11 @@ if (typeof Perlito5$Grammar !== 'object') {
     var v_pos1 = null;
 
     (v_pos1 = ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH));
-    return(or(or(((function () { 
+    return(or(((function () { 
     return(and(('my' == (v_str || "").substr(((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH), 2)), function () { return ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = add(2, ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH))); })()); }));
 })()), function () { return ((function () { 
     (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = v_pos1); })();
     return(((and(('state' == (v_str || "").substr(((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH), 5)), function () { return ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = add(5, ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH))); })()); }))));
-})()); }), function () { return ((function () { 
-    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = v_pos1); })();
-    return(((and(('has' == (v_str || "").substr(((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH), 3)), function () { return ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = add(3, ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH))); })()); }))));
 })()); }));
 })()))); })();
                         return(v_MATCH);;
@@ -15218,18 +16055,126 @@ if (typeof Rul$Quantifier !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Quantifier;
-  // accessor term
-  Rul$Quantifier.term = function () { return this.term; };
-  // accessor quant
-  Rul$Quantifier.quant = function () { return this.quant; };
-  // accessor greedy
-  Rul$Quantifier.greedy = function () { return this.greedy; };
-  // accessor ws1
-  Rul$Quantifier.ws1 = function () { return this.ws1; };
-  // accessor ws2
-  Rul$Quantifier.ws2 = function () { return this.ws2; };
-  // accessor ws3
-  Rul$Quantifier.ws3 = function () { return this.ws3; };
+                v__NAMESPACE["term"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['term']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["quant"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['quant']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["greedy"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['greedy']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["ws1"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['ws1']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["ws2"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['ws2']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["ws3"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['ws3']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_perl5"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -15303,8 +16248,26 @@ if (typeof Rul$Or !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Or;
-  // accessor or_list
-  Rul$Or.or_list = function () { return this.or_list; };
+                v__NAMESPACE["or_list"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['or_list']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_perl5"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -15362,8 +16325,26 @@ if (typeof Rul$Concat !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Concat;
-  // accessor concat
-  Rul$Concat.concat = function () { return this.concat; };
+                v__NAMESPACE["concat"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['concat']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_perl5"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -15421,10 +16402,46 @@ if (typeof Rul$Subrule !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Subrule;
-  // accessor metasyntax
-  Rul$Subrule.metasyntax = function () { return this.metasyntax; };
-  // accessor captures
-  Rul$Subrule.captures = function () { return this.captures; };
+                v__NAMESPACE["metasyntax"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['metasyntax']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
+                v__NAMESPACE["captures"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['captures']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_perl5"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -15503,8 +16520,26 @@ if (typeof Rul$Constant !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Constant;
-  // accessor constant
-  Rul$Constant.constant = function () { return this.constant; };
+                v__NAMESPACE["constant"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['constant']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_perl5"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -15620,8 +16655,26 @@ if (typeof Rul$SpecialChar !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$SpecialChar;
-  // accessor char
-  Rul$SpecialChar.char = function () { return this.char; };
+                v__NAMESPACE["char"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['char']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_perl5"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -15696,8 +16749,26 @@ if (typeof Rul$Block !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Block;
-  // accessor closure
-  Rul$Block.closure = function () { return this.closure; };
+                v__NAMESPACE["closure"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['closure']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_perl5"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -15754,8 +16825,26 @@ if (typeof Rul$Before !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$Before;
-  // accessor rule_exp
-  Rul$Before.rule_exp = function () { return this.rule_exp; };
+                v__NAMESPACE["rule_exp"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['rule_exp']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_perl5"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -15812,8 +16901,26 @@ if (typeof Rul$NotBefore !== 'object') {
 }
 (function () {
   var v__NAMESPACE = Rul$NotBefore;
-  // accessor rule_exp
-  Rul$NotBefore.rule_exp = function () { return this.rule_exp; };
+                v__NAMESPACE["rule_exp"] = function () {
+                    var List__ = Array.prototype.slice.call(arguments);
+                    if (List__[0] instanceof CallSubClass) {
+                        List__.shift()
+                    }
+                    else {
+                        List__.unshift(this)
+                    }
+                    try {
+                        return(List__[0]['rule_exp']);;
+                    }
+                    catch(err) {
+                        if ( err instanceof Error ) {
+                            throw(err);
+                        }
+                        else {
+                            return(err);
+                        }
+                    }
+                };
                 v__NAMESPACE["emit_perl5"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {

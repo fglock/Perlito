@@ -1,110 +1,110 @@
 use v5;
 
 class CompUnit {
-    has $.name;
-    has $.body;
+    sub name { $_[0]->{'name'} }
+    sub body { $_[0]->{'body'} }
 }
 
 class Val::Int {
-    has $.int;
+    sub int { $_[0]->{'int'} }
 }
 
 class Val::Num {
-    has $.num;
+    sub num { $_[0]->{'num'} }
 }
 
 class Val::Buf {
-    has $.buf;
+    sub buf { $_[0]->{'buf'} }
 }
 
 class Lit::Block {
-    has $.sig;
-    has $.stmts;
+    sub sig { $_[0]->{'sig'} }
+    sub stmts { $_[0]->{'stmts'} }
 }
 
 class Lit::Array {
-    has $.array1;
+    sub array1 { $_[0]->{'array1'} }
 }
 
 class Lit::Hash {
-    has $.hash1;
+    sub hash1 { $_[0]->{'hash1'} }
 }
 
 class Index {
-    has $.obj;
-    has $.index_exp;
+    sub obj { $_[0]->{'obj'} }
+    sub index_exp { $_[0]->{'index_exp'} }
 }
 
 class Lookup {
-    has $.obj;
-    has $.index_exp;
+    sub obj { $_[0]->{'obj'} }
+    sub index_exp { $_[0]->{'index_exp'} }
 }
 
 class Var {
-    has $.sigil;
-    has $.twigil;
-    has $.namespace;
-    has $.name;
+    sub sigil { $_[0]->{'sigil'} }
+    sub twigil { $_[0]->{'twigil'} }
+    sub namespace { $_[0]->{'namespace'} }
+    sub name { $_[0]->{'name'} }
 }
 
 class Proto {
-    has $.name;
+    sub name { $_[0]->{'name'} }
 }
 
 class Call {
-    has $.invocant;
-    has $.method;
-    has $.arguments;
+    sub invocant { $_[0]->{'invocant'} }
+    sub method { $_[0]->{'method'} }
+    sub arguments { $_[0]->{'arguments'} }
 }
 
 class Apply {
-    has $.code;
-    has $.arguments;
-    has $.namespace;
+    sub code { $_[0]->{'code'} }
+    sub arguments { $_[0]->{'arguments'} }
+    sub namespace { $_[0]->{'namespace'} }
 }
 
 class If {
-    has $.cond;
-    has $.body;
-    has $.otherwise;
+    sub cond { $_[0]->{'cond'} }
+    sub body { $_[0]->{'body'} }
+    sub otherwise { $_[0]->{'otherwise'} }
 }
 
 class While {
-    has $.init;
-    has $.cond;
-    has $.continue;
-    has $.body;
+    sub init { $_[0]->{'init'} }
+    sub cond { $_[0]->{'cond'} }
+    sub continue { $_[0]->{'continue'} }
+    sub body { $_[0]->{'body'} }
 }
 
 class For {
-    has $.cond;
-    has $.body;
+    sub cond { $_[0]->{'cond'} }
+    sub body { $_[0]->{'body'} }
 }
 
 class Decl {
-    has $.decl;
-    has $.type;
-    has $.var;
+    sub decl { $_[0]->{'decl'} }
+    sub type { $_[0]->{'type'} }
+    sub var { $_[0]->{'var'} }
 }
 
 class Sig {
-    has $.invocant;
-    has $.positional;
-    has $.named;
+    sub invocant { $_[0]->{'invocant'} }
+    sub positional { $_[0]->{'positional'} }
+    sub named { $_[0]->{'named'} }
 }
 
 class Sub {
-    has $.name;
-    has $.sig;
-    has $.block;
+    sub name { $_[0]->{'name'} }
+    sub sig { $_[0]->{'sig'} }
+    sub block { $_[0]->{'block'} }
 }
 
 class Do {
-    has $.block;
+    sub block { $_[0]->{'block'} }
 }
 
 class Use {
-    has $.mod;
+    sub mod { $_[0]->{'mod'} }
 }
 
 =begin

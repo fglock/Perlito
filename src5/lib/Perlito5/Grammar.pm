@@ -73,7 +73,7 @@ token grammar {
 }
 
 token declarator {
-     'my' | 'state' | 'has'
+     'my' | 'state'
 }
 
 token exp_stmts2 { <exp_stmts> { $MATCH->{"capture"} = $MATCH->{"exp_stmts"}->flat() } }

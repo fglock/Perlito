@@ -36,12 +36,30 @@ package main;
     {
     package Rul::Quantifier;
         sub new { shift; bless { @_ }, "Rul::Quantifier" }
-        sub term { $_[0]->{term} };
-        sub quant { $_[0]->{quant} };
-        sub greedy { $_[0]->{greedy} };
-        sub ws1 { $_[0]->{ws1} };
-        sub ws2 { $_[0]->{ws2} };
-        sub ws3 { $_[0]->{ws3} };
+        sub term {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'term'}
+        };
+        sub quant {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'quant'}
+        };
+        sub greedy {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'greedy'}
+        };
+        sub ws1 {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'ws1'}
+        };
+        sub ws2 {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'ws2'}
+        };
+        sub ws3 {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'ws3'}
+        };
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -74,7 +92,10 @@ package main;
     {
     package Rul::Or;
         sub new { shift; bless { @_ }, "Rul::Or" }
-        sub or_list { $_[0]->{or_list} };
+        sub or_list {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'or_list'}
+        };
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -91,7 +112,10 @@ package main;
     {
     package Rul::Concat;
         sub new { shift; bless { @_ }, "Rul::Concat" }
-        sub concat { $_[0]->{concat} };
+        sub concat {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'concat'}
+        };
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -108,8 +132,14 @@ package main;
     {
     package Rul::Subrule;
         sub new { shift; bless { @_ }, "Rul::Subrule" }
-        sub metasyntax { $_[0]->{metasyntax} };
-        sub captures { $_[0]->{captures} };
+        sub metasyntax {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'metasyntax'}
+        };
+        sub captures {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'captures'}
+        };
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -141,7 +171,10 @@ package main;
     {
     package Rul::Constant;
         sub new { shift; bless { @_ }, "Rul::Constant" }
-        sub constant { $_[0]->{constant} };
+        sub constant {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'constant'}
+        };
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -173,7 +206,10 @@ package main;
     {
     package Rul::SpecialChar;
         sub new { shift; bless { @_ }, "Rul::SpecialChar" }
-        sub char { $_[0]->{char} };
+        sub char {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'char'}
+        };
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -205,7 +241,10 @@ package main;
     {
     package Rul::Block;
         sub new { shift; bless { @_ }, "Rul::Block" }
-        sub closure { $_[0]->{closure} };
+        sub closure {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'closure'}
+        };
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -221,7 +260,10 @@ package main;
     {
     package Rul::Before;
         sub new { shift; bless { @_ }, "Rul::Before" }
-        sub rule_exp { $_[0]->{rule_exp} };
+        sub rule_exp {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'rule_exp'}
+        };
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -237,7 +279,10 @@ package main;
     {
     package Rul::NotBefore;
         sub new { shift; bless { @_ }, "Rul::NotBefore" }
-        sub rule_exp { $_[0]->{rule_exp} };
+        sub rule_exp {
+            my $List__ = bless \@_, "ARRAY";
+            $List__->[0]->{'rule_exp'}
+        };
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
