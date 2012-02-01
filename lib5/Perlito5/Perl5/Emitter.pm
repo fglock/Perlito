@@ -11,9 +11,8 @@ package main;
     sub new { shift; bless { @_ }, "main" }
     use v5;
     use Perlito5::AST;
-    {
     package Perl5;
-        sub new { shift; bless { @_ }, "Perl5" }
+    (do {
         sub tab {
             my $List__ = bless \@_, "ARRAY";
             ((my  $level) = shift());
@@ -63,12 +62,9 @@ package main;
             };
             return (join(' . ', @{$List_out}))
         }
-    }
-
-;
-    {
+    });
     package CompUnit;
-        sub new { shift; bless { @_ }, "CompUnit" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_perl5_indented(0)
@@ -95,12 +91,9 @@ package main;
             ($str = ($str . ('1' . chr(59) . chr(10))));
             return ($str)
         }
-    }
-
-;
-    {
+    });
     package Val::Int;
-        sub new { shift; bless { @_ }, "Val::Int" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -112,12 +105,9 @@ package main;
             ((my  $level) = $List__->[1]);
             (Perl5::tab($level) . $self->{('int')})
         }
-    }
-
-;
-    {
+    });
     package Val::Num;
-        sub new { shift; bless { @_ }, "Val::Num" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -129,12 +119,9 @@ package main;
             ((my  $level) = $List__->[1]);
             (Perl5::tab($level) . $self->{('num')})
         }
-    }
-
-;
-    {
+    });
     package Val::Buf;
-        sub new { shift; bless { @_ }, "Val::Buf" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -146,12 +133,9 @@ package main;
             ((my  $level) = $List__->[1]);
             (Perl5::tab($level) . Perl5::escape_string($self->{('buf')}))
         }
-    }
-
-;
-    {
+    });
     package Lit::Block;
-        sub new { shift; bless { @_ }, "Lit::Block" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -163,12 +147,9 @@ package main;
             ((my  $level) = $List__->[1]);
             (Perl5::tab($level) . ('sub ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), @{[map($_->emit_perl5_indented(($level + 1)), @{($self->{('stmts')})})]}) . (chr(10)) . Perl5::tab($level) . (chr(125)))
         }
-    }
-
-;
-    {
+    });
     package Lit::Array;
-        sub new { shift; bless { @_ }, "Lit::Array" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -181,12 +162,9 @@ package main;
             ((my  $ast) = $self->expand_interpolation());
             return ($ast->emit_perl5_indented($level))
         }
-    }
-
-;
-    {
+    });
     package Lit::Hash;
-        sub new { shift; bless { @_ }, "Lit::Hash" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -199,12 +177,9 @@ package main;
             ((my  $ast) = $self->expand_interpolation());
             return ($ast->emit_perl5_indented($level))
         }
-    }
-
-;
-    {
+    });
     package Index;
-        sub new { shift; bless { @_ }, "Index" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -220,12 +195,9 @@ package main;
             };
             ($self->{('obj')}->emit_perl5_indented($level) . '->[' . $self->{('index_exp')}->emit_perl5() . ']')
         }
-    }
-
-;
-    {
+    });
     package Lookup;
-        sub new { shift; bless { @_ }, "Lookup" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -241,12 +213,9 @@ package main;
             };
             ($self->{('obj')}->emit_perl5_indented($level) . '->' . chr(123) . $self->{('index_exp')}->emit_perl5() . chr(125))
         }
-    }
-
-;
-    {
+    });
     package Var;
-        sub new { shift; bless { @_ }, "Var" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -296,12 +265,9 @@ package main;
             };
             return ($self->{('name')})
         }
-    }
-
-;
-    {
+    });
     package Proto;
-        sub new { shift; bless { @_ }, "Proto" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -313,12 +279,9 @@ package main;
             ((my  $level) = $List__->[1]);
             (Perl5::tab($level) . $self->{('name')})
         }
-    }
-
-;
-    {
+    });
     package Call;
-        sub new { shift; bless { @_ }, "Call" }
+    (do {
         ((my  $Hash_method_perl5 = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'isa'} = 'Perlito5::Runtime::isa');
@@ -349,12 +312,9 @@ package main;
             };
             (Perl5::tab($level) . $invocant . '->' . $meth . '(' . join(', ', @{[map($_->emit_perl5(), @{($self->{('arguments')})})]}) . ')')
         }
-    }
-
-;
-    {
+    });
     package Apply;
-        sub new { shift; bless { @_ }, "Apply" }
+    (do {
         ((my  $Hash_op_prefix_perl5 = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'say'} = 'Perlito5::Runtime::say');
@@ -519,12 +479,9 @@ package main;
             };
             ('(' . $parameters->emit_perl5() . ' ' . chr(61) . ' ' . $arguments->emit_perl5() . ')')
         }
-    }
-
-;
-    {
+    });
     package If;
-        sub new { shift; bless { @_ }, "If" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -536,12 +493,9 @@ package main;
             ((my  $level) = $List__->[1]);
             return ((Perl5::tab($level) . 'if (' . $self->{('cond')}->emit_perl5() . (') ' . chr(123) . chr(10)) . (($self->{('body')} ? (join((chr(59) . chr(10)), @{[map($_->emit_perl5_indented(($level + 1)), @{$self->{('body')}->stmts()})]}) . (chr(10))) : '')) . Perl5::tab($level) . (chr(125)) . ((($self->{('otherwise')} && scalar( @{($self->{('otherwise')}->stmts())} )) ? ((chr(10) . Perl5::tab($level) . ('else ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), @{[map($_->emit_perl5_indented(($level + 1)), @{$self->{('otherwise')}->stmts()})]}) . (chr(10)) . Perl5::tab($level) . (chr(125)))) : ''))))
         }
-    }
-
-;
-    {
+    });
     package While;
-        sub new { shift; bless { @_ }, "While" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -562,12 +516,9 @@ package main;
             };
             (Perl5::tab($level) . 'for ( ' . (($self->{('init')} ? ($self->{('init')}->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($cond ? ($cond->emit_perl5() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('continue')} ? ($self->{('continue')}->emit_perl5() . ' ') : ' ')) . ') ' . chr(123) . (chr(10)) . join((chr(59) . chr(10)), @{[map($_->emit_perl5_indented(($level + 1)), @{$self->{('body')}->stmts()})]}) . (chr(10)) . Perl5::tab($level) . (chr(125)))
         }
-    }
-
-;
-    {
+    });
     package For;
-        sub new { shift; bless { @_ }, "For" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -592,12 +543,9 @@ package main;
             };
             return ((Perl5::tab($level) . 'for ' . $sig . '( ' . chr(64) . chr(123) . $cond->emit_perl5() . chr(125) . ' ) ' . chr(123) . (chr(10)) . join((chr(59) . chr(10)), @{[map($_->emit_perl5_indented(($level + 1)), @{$self->{('body')}->stmts()})]}) . (chr(10)) . Perl5::tab($level) . (chr(125))))
         }
-    }
-
-;
-    {
+    });
     package Decl;
-        sub new { shift; bless { @_ }, "Decl" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -623,12 +571,9 @@ package main;
             };
             return ((Perl5::tab($level) . $str))
         }
-    }
-
-;
-    {
+    });
     package Sub;
-        sub new { shift; bless { @_ }, "Sub" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -648,12 +593,9 @@ package main;
             };
             (Perl5::tab($level) . 'sub ' . $self->{('name')} . (' ' . chr(123) . chr(10)) . Perl5::tab(($level + 1)) . 'my ' . chr(36) . 'List__ ' . chr(61) . ' bless ' . chr(92) . chr(64) . '_, ' . chr(34) . 'ARRAY' . chr(34) . chr(59) . (chr(10)) . $str . join((chr(59) . chr(10)), @{[map($_->emit_perl5_indented(($level + 1)), @{($self->{('block')})})]}) . (chr(10)) . Perl5::tab($level) . (chr(125)))
         }
-    }
-
-;
-    {
+    });
     package Do;
-        sub new { shift; bless { @_ }, "Do" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -666,12 +608,9 @@ package main;
             ((my  $block) = $self->simplify()->block());
             (Perl5::tab($level) . ('(do ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), @{[map((defined($_) && $_->emit_perl5_indented(($level + 1))), @{($block)})]}) . (chr(10)) . Perl5::tab($level) . (chr(125) . ')'))
         }
-    }
-
-;
-    {
+    });
     package Use;
-        sub new { shift; bless { @_ }, "Use" }
+    (do {
         sub emit_perl5 {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -686,9 +625,7 @@ package main;
             };
             (Perl5::tab($level) . 'use ' . $self->{('mod')})
         }
-    }
-
-
+    })
 }
 
 1;

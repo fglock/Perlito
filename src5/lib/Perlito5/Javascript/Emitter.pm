@@ -2,7 +2,8 @@ use v5;
 
 use Perlito5::AST;
 
-class Javascript {
+package Javascript;
+{
     sub tab {
         my $level = shift;
         "    " x $level
@@ -201,7 +202,9 @@ class Javascript {
 
 }
 
-class Perlito5::Javascript::LexicalBlock {
+package Perlito5::Javascript::LexicalBlock;
+{
+    sub new { my $class = shift; bless {@_}, $class }
     sub block { $_[0]->{'block'} }
     sub needs_return { $_[0]->{'needs_return'} }
     sub top_level { $_[0]->{'top_level'} }
@@ -293,7 +296,8 @@ class Perlito5::Javascript::LexicalBlock {
     }
 }
 
-class CompUnit {
+package CompUnit;
+{
     sub emit_javascript { 
         my $self = $_[0];
         $self->emit_javascript_indented(0) 
@@ -378,28 +382,32 @@ class CompUnit {
     }
 }
 
-class Val::Int {
+package Val::Int;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift; Javascript::tab($level) . $self->{"int"} }
 }
 
-class Val::Num {
+package Val::Num;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift; Javascript::tab($level) . $self->{"num"} }
 }
 
-class Val::Buf {
+package Val::Buf;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift; Javascript::tab($level) . Javascript::escape_string($self->{"buf"}) }
 }
 
-class Lit::Block {
+package Lit::Block;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -415,7 +423,8 @@ class Lit::Block {
     }
 }
 
-class Lit::Array {
+package Lit::Array;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -425,7 +434,8 @@ class Lit::Array {
     }
 }
 
-class Lit::Hash {
+package Lit::Hash;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -435,7 +445,8 @@ class Lit::Hash {
     }
 }
 
-class Index {
+package Index;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -453,7 +464,8 @@ class Index {
     }
 }
 
-class Lookup {
+package Lookup;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -472,7 +484,8 @@ class Lookup {
     }
 }
 
-class Var {
+package Var;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -501,7 +514,8 @@ class Var {
     }
 }
 
-class Proto {
+package Proto;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -510,7 +524,8 @@ class Proto {
     }
 }
 
-class Call {
+package Call;
+{
 
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -573,7 +588,8 @@ class Call {
     }
 }
 
-class Apply {
+package Apply;
+{
 
     my %op_infix_js = (
         'infix:<->'  => ' - ',
@@ -860,7 +876,8 @@ class Apply {
     }
 }
 
-class If {
+package If;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -891,7 +908,8 @@ class If {
 }
 
 
-class While {
+package While;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -908,7 +926,8 @@ class While {
     }
 }
 
-class For {
+package For;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -930,7 +949,8 @@ class For {
     }
 }
 
-class Decl {
+package Decl;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -959,7 +979,8 @@ class Decl {
     }
 }
 
-class Sub {
+package Sub;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -983,7 +1004,8 @@ class Sub {
     }
 }
 
-class Do {
+package Do;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
@@ -996,7 +1018,8 @@ class Do {
     }
 }
 
-class Use {
+package Use;
+{
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;

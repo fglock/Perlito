@@ -2,7 +2,8 @@ use v5;
 
 use Perlito5::AST;
 
-class Perl5 {
+package Perl5;
+{
     sub tab {
         my $level = shift;
         "    " x $level
@@ -52,7 +53,8 @@ class Perl5 {
 
 }
 
-class CompUnit {
+package CompUnit;
+{
     sub emit_perl5 {
         $_[0]->emit_perl5_indented(0)
     }
@@ -92,7 +94,8 @@ class CompUnit {
     }
 }
 
-class Val::Int {
+package Val::Int;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -102,7 +105,8 @@ class Val::Int {
          Perl5::tab($level) . $self->{"int"} }
 }
 
-class Val::Num {
+package Val::Num;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -112,7 +116,8 @@ class Val::Num {
          Perl5::tab($level) . $self->{"num"} }
 }
 
-class Val::Buf {
+package Val::Buf;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -124,7 +129,8 @@ class Val::Buf {
     }
 }
 
-class Lit::Block {
+package Lit::Block;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -138,7 +144,8 @@ class Lit::Block {
     }
 }
 
-class Lit::Array {
+package Lit::Array;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -151,7 +158,8 @@ class Lit::Array {
     }
 }
 
-class Lit::Hash {
+package Lit::Hash;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -164,7 +172,8 @@ class Lit::Hash {
     }
 }
 
-class Index {
+package Index;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -185,7 +194,8 @@ class Index {
     }
 }
 
-class Lookup {
+package Lookup;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -207,7 +217,8 @@ class Lookup {
     }
 }
 
-class Var {
+package Var;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -260,7 +271,8 @@ class Var {
     }
 }
 
-class Proto {
+package Proto;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -272,7 +284,8 @@ class Proto {
     }
 }
 
-class Call {
+package Call;
+{
 
     my %method_perl5 = (
         'isa'    => 'Perlito5::Runtime::isa',
@@ -308,7 +321,8 @@ class Call {
     }
 }
 
-class Apply {
+package Apply;
+{
 
     my %op_prefix_perl5 = (
         say     => 'Perlito5::Runtime::say',
@@ -472,7 +486,8 @@ class Apply {
     }
 }
 
-class If {
+package If;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -501,7 +516,8 @@ class If {
     }
 }
 
-class While {
+package While;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -527,7 +543,8 @@ class While {
     }
 }
 
-class For {
+package For;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) }
@@ -549,7 +566,8 @@ class For {
     }
 }
 
-class Decl {
+package Decl;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) 
@@ -575,7 +593,8 @@ class Decl {
     }
 }
 
-class Sub {
+package Sub;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) 
@@ -600,7 +619,8 @@ class Sub {
     }
 }
 
-class Do {
+package Do;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) 
@@ -616,7 +636,8 @@ class Do {
     }
 }
 
-class Use {
+package Use;
+{
     sub emit_perl5 {
         my $self = $_[0];
         $self->emit_perl5_indented(0) 

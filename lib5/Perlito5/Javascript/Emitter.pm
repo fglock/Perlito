@@ -11,9 +11,8 @@ package main;
     sub new { shift; bless { @_ }, "main" }
     use v5;
     use Perlito5::AST;
-    {
     package Javascript;
-        sub new { shift; bless { @_ }, "Javascript" }
+    (do {
         sub tab {
             my $List__ = bless \@_, "ARRAY";
             ((my  $level) = shift());
@@ -248,12 +247,25 @@ package main;
                 return (('bool(' . $cond->emit_javascript() . ')'))
             }
         }
-    }
-
-;
-    {
+    });
     package Perlito5::Javascript::LexicalBlock;
-        sub new { shift; bless { @_ }, "Perlito5::Javascript::LexicalBlock" }
+    (do {
+        sub new {
+            my $List__ = bless \@_, "ARRAY";
+            ((my  $class) = shift());
+            bless((do {
+    (my  $Hash_a = bless {}, 'HASH');
+    (do {
+        ((my  $_i) = 0);
+        ((my  $List__a = bless [], 'ARRAY') = $List__);
+        for ( ; (($_i < scalar( @{$List__a} )));  ) {
+            ($Hash_a->{$List__a->[$_i]} = $List__a->[($_i + 1)]);
+            ($_i = ($_i + 2))
+        }
+    });
+    $Hash_a
+}), $class)
+        };
         sub block {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->{'block'}
@@ -339,12 +351,9 @@ package main;
             };
             return ((join((chr(10)), @{$List_str}) . chr(59)))
         }
-    }
-
-;
-    {
+    });
     package CompUnit;
-        sub new { shift; bless { @_ }, "CompUnit" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = $List__->[0]);
@@ -409,12 +418,9 @@ package main;
             };
             return ($str)
         }
-    }
-
-;
-    {
+    });
     package Val::Int;
-        sub new { shift; bless { @_ }, "Val::Int" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -425,12 +431,9 @@ package main;
             ((my  $level) = shift());
             (Javascript::tab($level) . $self->{('int')})
         }
-    }
-
-;
-    {
+    });
     package Val::Num;
-        sub new { shift; bless { @_ }, "Val::Num" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -441,12 +444,9 @@ package main;
             ((my  $level) = shift());
             (Javascript::tab($level) . $self->{('num')})
         }
-    }
-
-;
-    {
+    });
     package Val::Buf;
-        sub new { shift; bless { @_ }, "Val::Buf" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -457,12 +457,9 @@ package main;
             ((my  $level) = shift());
             (Javascript::tab($level) . Javascript::escape_string($self->{('buf')}))
         }
-    }
-
-;
-    {
+    });
     package Lit::Block;
-        sub new { shift; bless { @_ }, "Lit::Block" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -477,12 +474,9 @@ package main;
             };
             return ((Javascript::tab($level) . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('stmts')}), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')'))
         }
-    }
-
-;
-    {
+    });
     package Lit::Array;
-        sub new { shift; bless { @_ }, "Lit::Array" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -494,12 +488,9 @@ package main;
             ((my  $ast) = $self->expand_interpolation());
             return ($ast->emit_javascript_indented($level))
         }
-    }
-
-;
-    {
+    });
     package Lit::Hash;
-        sub new { shift; bless { @_ }, "Lit::Hash" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -511,12 +502,9 @@ package main;
             ((my  $ast) = $self->expand_interpolation());
             return ($ast->emit_javascript_indented($level))
         }
-    }
-
-;
-    {
+    });
     package Index;
-        sub new { shift; bless { @_ }, "Index" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -531,12 +519,9 @@ package main;
             };
             (Javascript::tab($level) . $self->{('obj')}->emit_javascript() . '[' . $self->{('index_exp')}->emit_javascript() . ']')
         }
-    }
-
-;
-    {
+    });
     package Lookup;
-        sub new { shift; bless { @_ }, "Lookup" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -551,12 +536,9 @@ package main;
             };
             return (($self->{('obj')}->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
         }
-    }
-
-;
-    {
+    });
     package Var;
-        sub new { shift; bless { @_ }, "Var" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -587,12 +569,9 @@ package main;
             };
             return ($self->name())
         }
-    }
-
-;
-    {
+    });
     package Proto;
-        sub new { shift; bless { @_ }, "Proto" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -603,12 +582,9 @@ package main;
             ((my  $level) = shift());
             (Javascript::tab($level) . Perlito5::Runtime::to_javascript_namespace($self->{('name')}))
         }
-    }
-
-;
-    {
+    });
     package Call;
-        sub new { shift; bless { @_ }, "Call" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -664,12 +640,9 @@ package main;
             };
             return ((Javascript::tab($level) . '(' . '(' . $invocant . '._class_ ' . chr(38) . chr(38) . ' ' . $invocant . '._class_.' . $meth . ')' . ' ' . chr(124) . chr(124) . ' ' . $invocant . '.' . $meth . ').call(' . join(',', @{$List_args}) . ')'))
         }
-    }
-
-;
-    {
+    });
     package Apply;
-        sub new { shift; bless { @_ }, "Apply" }
+    (do {
         ((my  $Hash_op_infix_js = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');
     ($Hash_a->{'infix:<->'} = ' - ');
@@ -911,12 +884,9 @@ package main;
             };
             (Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')')
         }
-    }
-
-;
-    {
+    });
     package If;
-        sub new { shift; bless { @_ }, "If" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -942,12 +912,9 @@ package main;
             };
             return ($s)
         }
-    }
-
-;
-    {
+    });
     package While;
-        sub new { shift; bless { @_ }, "While" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -959,12 +926,9 @@ package main;
             ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
             return ((Javascript::tab($level) . 'for ( ' . (($self->{('init')} ? ($self->{('init')}->emit_javascript() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('cond')} ? (Javascript::to_bool($self->{('cond')}) . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('continue')} ? ($self->{('continue')}->emit_javascript() . ' ') : ' ')) . ') ' . chr(123) . ' ' . '(function () ' . chr(123) . ' ' . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')()' . ' ' . chr(125)))
         }
-    }
-
-;
-    {
+    });
     package For;
-        sub new { shift; bless { @_ }, "For" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -989,12 +953,9 @@ package main;
             };
             (Javascript::tab($level) . '(function (a_) ' . chr(123) . ' for (var i_ ' . chr(61) . ' 0' . chr(59) . ' i_ < a_.length ' . chr(59) . ' i_++) ' . chr(123) . ' ' . ('(function (' . $sig . ') ' . chr(123) . ' ') . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')(a_[i_]) ' . chr(125) . ' ' . chr(125) . ')' . '(' . $cond->emit_javascript() . ')')
         }
-    }
-
-;
-    {
+    });
     package Decl;
-        sub new { shift; bless { @_ }, "Decl" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -1028,12 +989,9 @@ package main;
                 die(('not implemented: Decl ' . chr(39) . $self->{('decl')} . (chr(39))))
             }
         }
-    }
-
-;
-    {
+    });
     package Sub;
-        sub new { shift; bless { @_ }, "Sub" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -1044,12 +1002,9 @@ package main;
             ((my  $level) = shift());
             (Javascript::tab($level) . '' . (($self->{('name')} ? ('v__NAMESPACE[' . chr(34) . $self->{('name')} . chr(34) . '] ' . chr(61) . ' ') : '')) . 'function () ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . 'if (List__[0] instanceof CallSubClass) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.shift()' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.unshift(this)' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125))
         }
-    }
-
-;
-    {
+    });
     package Do;
-        sub new { shift; bless { @_ }, "Do" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -1061,12 +1016,9 @@ package main;
             ((my  $block) = $self->simplify()->block());
             return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()'))
         }
-    }
-
-;
-    {
+    });
     package Use;
-        sub new { shift; bless { @_ }, "Use" }
+    (do {
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -1077,9 +1029,7 @@ package main;
             ((my  $level) = shift());
             (Javascript::tab($level) . chr(47) . chr(47) . ' use ' . $self->{('mod')} . (chr(10)))
         }
-    }
-
-
+    })
 }
 
 1;
