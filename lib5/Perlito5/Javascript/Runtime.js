@@ -246,9 +246,9 @@ function perl5_to_js( source ) {
     // say( "source: [" + source + "]" );
     match = Perlito5$Grammar.exp_stmts(source, 0);
     ast = match._class_.flat.call(match);
-    var block = {v_stmts: ast};
+    var block = {stmts: ast};
     block._class_ = Lit$Block;
-    var tmp = {v_block: block};
+    var tmp = {block: block};
     tmp._class_ = Do;   
     ast = tmp;
     // CORE.say( "ast: [" + perl(ast) + "]" );

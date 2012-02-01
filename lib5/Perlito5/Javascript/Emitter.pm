@@ -381,7 +381,7 @@ package main;
             };
             for my $decl ( @{$List_body} ) {
                 if (((Perlito5::Runtime::isa($decl, 'Decl') && (($decl->decl() eq 'has'))))) {
-                    ($str = ($str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . (chr(10)) . '  ' . $class_name . '.' . ($decl->var()->name()) . ' ' . chr(61) . ' function () ' . chr(123) . ' return this.v_' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . (chr(10))))
+                    ($str = ($str . '  ' . chr(47) . chr(47) . ' accessor ' . $decl->var()->name() . (chr(10)) . '  ' . $class_name . '.' . ($decl->var()->name()) . ' ' . chr(61) . ' function () ' . chr(123) . ' return this.' . $decl->var()->name() . chr(59) . ' ' . chr(125) . chr(59) . (chr(10))))
                 };
                 if ((Perlito5::Runtime::isa($decl, 'Sub'))) {
                     ($str = ($str . ($decl)->emit_javascript_indented(($level + 1)) . (chr(59) . chr(10))))
@@ -571,7 +571,7 @@ package main;
             if (($self->{namespace})) {
                 ($ns = (Perlito5::Runtime::to_javascript_namespace($self->{namespace}) . '.'))
             };
-            ((($self->{twigil} eq '.')) ? (('v_self.v_' . $self->{name} . '')) : (($table->{$self->{sigil}} . $ns . $self->{name})))
+            ((($self->{twigil} eq '.')) ? (('v_self.' . $self->{name} . '')) : (($table->{$self->{sigil}} . $ns . $self->{name})))
         };
         sub plain_name {
             my $List__ = bless \@_, "ARRAY";
@@ -621,7 +621,7 @@ package main;
 }));
                 for my $field ( @{($self->{arguments})} ) {
                     if (((Perlito5::Runtime::isa($field, 'Apply') && ($field->code() eq 'infix:<' . chr(61) . '>>')))) {
-                        push( @{($str)}, ('v_' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
+                        push( @{($str)}, ('' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
                     }
                     else {
                         die('Error in constructor, field: ', $field)
@@ -854,7 +854,7 @@ package main;
                     ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                     return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
                 };
-                return ((Javascript::tab($level) . '(' . ($parameters->invocant())->emit_javascript() . '.v_' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
+                return ((Javascript::tab($level) . '(' . ($parameters->invocant())->emit_javascript() . '.' . $parameters->method() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')'))
             };
             if ((Perlito5::Runtime::isa($parameters, 'Lookup'))) {
                 ((my  $str) = '');
