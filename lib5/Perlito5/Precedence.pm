@@ -62,7 +62,7 @@ package main;
     sub is_ident_middle {
         my $List__ = bless \@_, "ARRAY";
         ((my  $c) = shift());
-        (((((($c ge 'a')) && (($c le 'z')))) || (((($c ge '0')) && (($c le '9'))))) || (($c eq '_')))
+        ((((($c ge 'a') && ($c le 'z'))) || ((($c ge '0') && ($c le '9')))) || (($c eq '_')))
     };
     (my  $List_Op = bless [], 'ARRAY');
     (my  $End_token);

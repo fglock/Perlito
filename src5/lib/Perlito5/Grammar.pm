@@ -253,7 +253,7 @@ token args_sig {
         # say ' positional: ', ($MATCH->{""}->flat()).perl;
         $MATCH->{"capture"} = Sig->new(
             invocant    => $MATCH->{"var_invocant"}->flat(),
-            positional  => Perlito5::Expression::expand_list(($MATCH->{"Perlito5::Expression.list_parse"}->flat()){'exp'}),
+            positional  => Perlito5::Expression::expand_list($MATCH->{"Perlito5::Expression.list_parse"}->flat()->{'exp'}),
             named       => { } );
     }
 }
@@ -291,7 +291,7 @@ token token {
                 'my $pos     = $_[2]; ' .
                 'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' .
                 '$MATCH->{"bool"} = ( ' .
-                    ($MATCH->{"Perlito5::Grammar::Regex.rule"}->flat())->emit_perl5() .
+                    $MATCH->{"Perlito5::Grammar::Regex.rule"}->flat()->emit_perl5() .
                 '); ' .
                 '$MATCH; ' 
             . '}';

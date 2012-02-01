@@ -1933,7 +1933,7 @@ package main;
         0
     }
 }))) && ((do {
-    ($MATCH->{('capture')} = Sig->new(('invocant' => $MATCH->{('var_invocant')}->flat()), ('positional' => Perlito5::Expression::expand_list(($MATCH->{('Perlito5::Expression.list_parse')}->flat())->{'exp'})), ('named' => (do {
+    ($MATCH->{('capture')} = Sig->new(('invocant' => $MATCH->{('var_invocant')}->flat()), ('positional' => Perlito5::Expression::expand_list($MATCH->{('Perlito5::Expression.list_parse')}->flat()->{'exp'})), ('named' => (do {
     (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 }))));
@@ -2145,7 +2145,7 @@ package main;
         0
     }
 }))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
-    ((my  $source) = ($MATCH->{('opt_name')}->flat() . chr(123) . ' ' . 'my ' . chr(36) . 'grammar ' . chr(61) . ' ' . chr(36) . '_[0]' . chr(59) . ' ' . 'my ' . chr(36) . 'str     ' . chr(61) . ' ' . chr(36) . '_[1]' . chr(59) . ' ' . 'my ' . chr(36) . 'pos     ' . chr(61) . ' ' . chr(36) . '_[2]' . chr(59) . ' ' . 'my ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( str ' . chr(61) . '> ' . chr(36) . 'str, from ' . chr(61) . '> ' . chr(36) . 'pos, to ' . chr(61) . '> ' . chr(36) . 'pos, bool ' . chr(61) . '> 1 )' . chr(59) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(34) . 'bool' . chr(34) . chr(125) . ' ' . chr(61) . ' ( ' . ($MATCH->{('Perlito5::Grammar::Regex.rule')}->flat())->emit_perl5() . ')' . chr(59) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125)));
+    ((my  $source) = ($MATCH->{('opt_name')}->flat() . chr(123) . ' ' . 'my ' . chr(36) . 'grammar ' . chr(61) . ' ' . chr(36) . '_[0]' . chr(59) . ' ' . 'my ' . chr(36) . 'str     ' . chr(61) . ' ' . chr(36) . '_[1]' . chr(59) . ' ' . 'my ' . chr(36) . 'pos     ' . chr(61) . ' ' . chr(36) . '_[2]' . chr(59) . ' ' . 'my ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( str ' . chr(61) . '> ' . chr(36) . 'str, from ' . chr(61) . '> ' . chr(36) . 'pos, to ' . chr(61) . '> ' . chr(36) . 'pos, bool ' . chr(61) . '> 1 )' . chr(59) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(34) . 'bool' . chr(34) . chr(125) . ' ' . chr(61) . ' ( ' . $MATCH->{('Perlito5::Grammar::Regex.rule')}->flat()->emit_perl5() . ')' . chr(59) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125)));
     ((my  $ast) = Perlito5::Grammar->sub_def($source, 0));
     ($MATCH->{('capture')} = $ast->flat());
 ;

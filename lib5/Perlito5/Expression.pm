@@ -54,7 +54,7 @@ package main;
             return ($o)
         };
         ((my  $stmts) = $o->stmts());
-        if (((!((defined($stmts))) || ((scalar( @{($stmts)} )) == 0)))) {
+        if (((!((defined($stmts))) || (scalar( @{($stmts)} ) == 0)))) {
             return (Lit::Hash->new(('hash1' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
@@ -1873,33 +1873,33 @@ package main;
             return ($res)
         };
         if (((ref($res->flat()->{'exp'}) eq 'Lit::Block'))) {
-            (($res->flat())->{'exp'} = Do->new(('block' => ($res->flat())->{'exp'})))
+            ($res->flat()->{'exp'} = Do->new(('block' => $res->flat()->{'exp'})))
         };
-        if (($res->flat())->{'end_block'}) {
+        if (($res->flat()->{'end_block'})) {
             die(('Unexpected block after expression near '), $pos)
         };
-        if (($res->flat())->{'terminated'}) {
-            ($res->{('capture')} = ($res->flat())->{'exp'});
+        if (($res->flat()->{'terminated'})) {
+            ($res->{('capture')} = $res->flat()->{'exp'});
             return ($res)
         };
         ((my  $modifier) = $self->statement_modifier($str, $res->to()));
         if ((!($modifier->bool()))) {
-            ($res->{('capture')} = ($res->flat())->{'exp'});
+            ($res->{('capture')} = $res->flat()->{'exp'});
             return ($res)
         };
         ((my  $modifier_exp) = $self->exp_parse($str, $modifier->to()));
         if ((!($modifier_exp->bool()))) {
             die(('Expected expression after ' . chr(39)), $modifier->flat(), (chr(39)))
         };
-        if (($modifier_exp->flat())->{'end_block'}) {
+        if (($modifier_exp->flat()->{'end_block'})) {
             die(('Unexpected block after expression near '), $modifier->to())
         };
         ($modifier = $modifier->flat());
         if ((($modifier eq 'if'))) {
-            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => ($modifier_exp->flat())->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
+            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => $modifier_exp->flat()->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ($res->flat())->{'exp'} );
+    push( @{$List_a}, $res->flat()->{'exp'} );
     $List_a
 })))), ('otherwise' => Lit::Block->new(('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
@@ -1908,30 +1908,30 @@ package main;
 }))))))))
         };
         if ((($modifier eq 'unless'))) {
-            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => ($modifier_exp->flat())->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
+            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => If->new(('cond' => $modifier_exp->flat()->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
 })))), ('otherwise' => Lit::Block->new(('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ($res->flat())->{'exp'} );
+    push( @{$List_a}, $res->flat()->{'exp'} );
     $List_a
 }))))))))
         };
         if ((($modifier eq 'while'))) {
-            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => While->new(('cond' => ($modifier_exp->flat())->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
+            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => While->new(('cond' => $modifier_exp->flat()->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ($res->flat())->{'exp'} );
+    push( @{$List_a}, $res->flat()->{'exp'} );
     $List_a
 }))))))))
         };
         if (((($modifier eq 'for') || ($modifier eq 'foreach')))) {
-            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => For->new(('cond' => ($modifier_exp->flat())->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
+            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->to()), ('bool' => 1), ('capture' => For->new(('cond' => $modifier_exp->flat()->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, ($res->flat())->{'exp'} );
+    push( @{$List_a}, $res->flat()->{'exp'} );
     $List_a
 }))))))))
         };

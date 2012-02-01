@@ -46,7 +46,7 @@ package main;
             };
             for my $i ( @{(bless [0 .. (length($s) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
-                if ((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c})))) {
+                if (((((((($c ge 'a') && ($c le 'z'))) || ((($c ge 'A') && ($c le 'Z')))) || ((($c ge '0') && ($c le '9')))) || exists($Hash_safe_char->{$c})))) {
                     ($tmp = ($tmp . $c))
                 }
                 else {

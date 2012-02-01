@@ -33,9 +33,9 @@ package Perl5;
         return "''" if $s eq '';
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
-            if  (  (($c ge 'a') && ($c le 'z'))
-                || (($c ge 'A') && ($c le 'Z'))
-                || (($c ge '0') && ($c le '9'))
+            if  (  ($c ge 'a' && $c le 'z')
+                || ($c ge 'A' && $c le 'Z')
+                || ($c ge '0' && $c le '9')
                 || exists( $safe_char{$c} )
                 )
             {

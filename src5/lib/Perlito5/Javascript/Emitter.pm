@@ -42,9 +42,9 @@ package Javascript;
         return "''" if $s eq '';
         for my $i (0 .. length($s) - 1) {
             my $c = substr($s, $i, 1);
-            if  (  (($c ge 'a') && ($c le 'z'))
-                || (($c ge 'A') && ($c le 'Z'))
-                || (($c ge '0') && ($c le '9'))
+            if  (  ($c ge 'a' && $c le 'z')
+                || ($c ge 'A' && $c le 'Z')
+                || ($c ge '0' && $c le '9')
                 || exists( $safe_char{$c} )
                 )
             {
@@ -188,9 +188,9 @@ package Javascript;
             my $cond = shift;
             if  (  ($cond->isa( 'Val::Int' ))
                 || ($cond->isa( 'Val::Num' ))
-                || (($cond->isa( 'Apply' )) && ($cond->code eq 'infix:<||>'))
-                || (($cond->isa( 'Apply' )) && ($cond->code eq 'infix:<&&>'))
-                || (($cond->isa( 'Apply' )) && ($cond->code eq 'prefix:<!>'))
+                || ($cond->isa( 'Apply' ) && $cond->code eq 'infix:<||>')
+                || ($cond->isa( 'Apply' ) && $cond->code eq 'infix:<&&>')
+                || ($cond->isa( 'Apply' ) && $cond->code eq 'prefix:<!>')
                 )
             {
                 return $cond->emit_javascript;

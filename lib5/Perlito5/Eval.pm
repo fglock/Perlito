@@ -173,7 +173,7 @@ package main;
         ((my  $code) = ($ns . $self->{('code')}));
         for my $e ( @{($env)} ) {
             if ((exists($e->{$code}))) {
-                return ((($e->{$code})->($env, ($self->{('arguments')}))))
+                return (($e->{$code}->($env, ($self->{('arguments')}))))
             }
         };
         warn(('Interpreter runtime error: subroutine ' . chr(39)), $code, ('()' . chr(39) . ' not found'))
@@ -228,7 +228,7 @@ package main;
         ((my  $self) = $List__->[0]);
         ((my  $env) = $List__->[1]);
         ((my  $cond) = $self->{('cond')});
-        ((my  $topic_name) = (($self->{('body')})->sig())->plain_name());
+        ((my  $topic_name) = $self->{('body')}->sig()->plain_name());
         ((my  $env1) = (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');

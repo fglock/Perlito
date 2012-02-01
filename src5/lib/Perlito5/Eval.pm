@@ -161,7 +161,7 @@ sub eval {
     # warn "Apply ", $env->perl, " code: '", $code, "'";
     for my $e ( @{$env} ) {
         if (exists( $e->{ $code } )) {
-            return (($e->{ $code })->( $env, @{$self->{"arguments"}} ));
+            return ($e->{ $code }->( $env, @{$self->{"arguments"}} ));
         }
     }
     warn "Interpreter runtime error: subroutine '", $code, "()' not found";
@@ -196,7 +196,7 @@ sub eval {
     my $env = $_[1];
 
     my $cond = $self->{"cond"};
-    my $topic_name = (($self->{"body"})->sig)->plain_name;
+    my $topic_name = $self->{"body"}->sig->plain_name;
     my $env1 = [ {}, @$env ];
     for my $topic (@{ $cond->eval($env) }) {
         $env1->[0] = { $topic_name => $topic };

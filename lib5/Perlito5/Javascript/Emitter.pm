@@ -55,7 +55,7 @@ package main;
             };
             for my $i ( @{(bless [0 .. (length($s) - 1)], 'ARRAY')} ) {
                 ((my  $c) = substr($s, $i, 1));
-                if ((((((((($c ge 'a')) && (($c le 'z')))) || (((($c ge 'A')) && (($c le 'Z'))))) || (((($c ge '0')) && (($c le '9'))))) || exists($Hash_safe_char->{$c})))) {
+                if (((((((($c ge 'a') && ($c le 'z'))) || ((($c ge 'A') && ($c le 'Z')))) || ((($c ge '0') && ($c le '9')))) || exists($Hash_safe_char->{$c})))) {
                     ($tmp = ($tmp . $c))
                 }
                 else {
@@ -240,7 +240,7 @@ package main;
         sub to_bool {
             my $List__ = bless \@_, "ARRAY";
             ((my  $cond) = shift());
-            if (((((((Perlito5::Runtime::isa($cond, 'Val::Int')) || (Perlito5::Runtime::isa($cond, 'Val::Num'))) || (((Perlito5::Runtime::isa($cond, 'Apply')) && (($cond->code() eq 'infix:<' . chr(124) . chr(124) . '>'))))) || (((Perlito5::Runtime::isa($cond, 'Apply')) && (($cond->code() eq 'infix:<' . chr(38) . chr(38) . '>'))))) || (((Perlito5::Runtime::isa($cond, 'Apply')) && (($cond->code() eq 'prefix:<' . chr(33) . '>'))))))) {
+            if (((((((Perlito5::Runtime::isa($cond, 'Val::Int')) || (Perlito5::Runtime::isa($cond, 'Val::Num'))) || ((Perlito5::Runtime::isa($cond, 'Apply') && ($cond->code() eq 'infix:<' . chr(124) . chr(124) . '>')))) || ((Perlito5::Runtime::isa($cond, 'Apply') && ($cond->code() eq 'infix:<' . chr(38) . chr(38) . '>')))) || ((Perlito5::Runtime::isa($cond, 'Apply') && ($cond->code() eq 'prefix:<' . chr(33) . '>')))))) {
                 return ($cond->emit_javascript())
             }
             else {

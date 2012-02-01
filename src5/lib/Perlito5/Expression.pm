@@ -32,7 +32,7 @@ package Perlito5::Expression;
             return $o
         }
         my $stmts = $o->stmts;
-        if (!(defined $stmts) || (scalar(@$stmts)) == 0) {
+        if (!(defined $stmts) || scalar(@$stmts) == 0) {
             # say "#  no contents -- empty hash";
             return Lit::Hash->new(hash1 => [])
         }
@@ -771,15 +771,15 @@ package Perlito5::Expression;
         }
         if ( ref( $res->flat()->{'exp'} ) eq 'Lit::Block' ) {
             # standalone block
-            ($res->flat()){'exp'} = Do->new(block => ($res->flat()){'exp'});
+            $res->flat()->{'exp'} = Do->new(block => $res->flat()->{'exp'});
         }
-        if ($res->flat()){'end_block'} {
+        if ($res->flat()->{'end_block'}) {
             # warn "Block: ", $res->flat()->{'end_block'}->perl;
             die "Unexpected block after expression near ", $pos;
         }
-        if ($res->flat()){'terminated'} {
+        if ($res->flat()->{'terminated'}) {
             # say "# statement expression terminated result: ", $res->perl;
-            $res->{"capture"} = ($res->flat()){'exp'};
+            $res->{"capture"} = $res->flat()->{'exp'};
             return $res;
         }
         # say "# look for a statement modifier";
@@ -787,7 +787,7 @@ package Perlito5::Expression;
         if (!$modifier->bool) {
             # say "# statement expression no modifier result: ", $res->perl;
             # TODO - require a statement terminator
-            $res->{"capture"} = ($res->flat()){'exp'};
+            $res->{"capture"} = $res->flat()->{'exp'};
             return $res;
         }
         my $modifier_exp = $self->exp_parse($str, $modifier->to);
@@ -795,7 +795,7 @@ package Perlito5::Expression;
         if (!$modifier_exp->bool) {
             die "Expected expression after '", $modifier->flat(), "'";
         }
-        if ($modifier_exp->flat()){'end_block'} {
+        if ($modifier_exp->flat()->{'end_block'}) {
             # warn "Block: ", $modifier_exp->flat()->{'end_block'}->perl;
             die "Unexpected block after expression near ", $modifier->to;
         }
@@ -808,24 +808,24 @@ package Perlito5::Expression;
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
                 capture => If->new(
-                    cond      => ($modifier_exp->flat()){'exp'},
-                    body      => Lit::Block->new(stmts => [ ($res->flat()){'exp'} ]),
+                    cond      => $modifier_exp->flat()->{'exp'},
+                    body      => Lit::Block->new(stmts => [ $res->flat()->{'exp'} ]),
                     otherwise => Lit::Block->new(stmts => [ ]) ) );
         }
         if ($modifier eq 'unless') {
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
                 capture => If->new(
-                    cond      => ($modifier_exp->flat()){'exp'},
+                    cond      => $modifier_exp->flat()->{'exp'},
                     body      => Lit::Block->new(stmts => [ ]),
-                    otherwise => Lit::Block->new(stmts => [ ($res->flat()){'exp'} ]) ) );
+                    otherwise => Lit::Block->new(stmts => [ $res->flat()->{'exp'} ]) ) );
         }
         if ($modifier eq 'while') {
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
                 capture => While->new(
-                    cond    => ($modifier_exp->flat()){'exp'},
-                    body    => Lit::Block->new(stmts => [ ($res->flat()){'exp'} ] ) ) );
+                    cond    => $modifier_exp->flat()->{'exp'},
+                    body    => Lit::Block->new(stmts => [ $res->flat()->{'exp'} ] ) ) );
         }
         if  (  $modifier eq 'for'
             || $modifier eq 'foreach'
@@ -834,8 +834,8 @@ package Perlito5::Expression;
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
                 capture => For->new(
-                    cond    => ($modifier_exp->flat()){'exp'},
-                    body    => Lit::Block->new(stmts => [ ($res->flat()){'exp'} ] ) ) );
+                    cond    => $modifier_exp->flat()->{'exp'},
+                    body    => Lit::Block->new(stmts => [ $res->flat()->{'exp'} ] ) ) );
         }
         die "Unexpected statement modifier '$modifier'";
     }
