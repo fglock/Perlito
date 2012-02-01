@@ -18,7 +18,7 @@ TODO list for Perlito5
 
 * source code - remove Perl 6 code 
 
--- "class", "token"
+-- "token"
 
 -- for @x {...} --> for (@x) {...}
 

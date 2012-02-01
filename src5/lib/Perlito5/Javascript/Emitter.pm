@@ -76,7 +76,7 @@ package Javascript;
                )
             {
                 # $a in the expression $a{'x'}
-                $ast = Var->new( sigil => '%', twigil => $ast->twigil, namespace => $ast->namespace, name => $ast->name );
+                $ast = Var->new( sigil => '%', namespace => $ast->namespace, name => $ast->name );
                 my $var_js = $ast->emit_javascript;
                 return [ 'if (' . $var_js . ' == null) { ' . $var_js . ' = ' . $str_init . ' }; ' ];
             }
@@ -85,7 +85,7 @@ package Javascript;
                )
             {
                 # $a in the expression $a[3]
-                $ast = Var->new( sigil => '@', twigil => $ast->twigil, namespace => $ast->namespace, name => $ast->name );
+                $ast = Var->new( sigil => '@', namespace => $ast->namespace, name => $ast->name );
                 my $var_js = $ast->emit_javascript;
                 return [ 'if (' . $var_js . ' == null) { ' . $var_js . ' = ' . $str_init . ' }; ' ];
             }
@@ -456,7 +456,7 @@ package Index;
            && $self->{"obj"}->sigil eq '$'
            )
         {
-            my $v = Var->new( sigil => '@', twigil => $self->{"obj"}->twigil, namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
+            my $v = Var->new( sigil => '@', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
             return $v->emit_javascript_indented($level) . '[' . $self->{"index_exp"}->emit_javascript() . ']';
         }
 
@@ -477,7 +477,7 @@ package Lookup;
            && $self->{"obj"}->sigil eq '$'
            )
         {
-            my $v = Var->new( sigil => '%', twigil => $self->{"obj"}->twigil, namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
+            my $v = Var->new( sigil => '%', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
             return $v->emit_javascript_indented($level) . '[' . $self->{"index_exp"}->emit_javascript() . ']';
         }
         return $self->{"obj"}->emit_javascript_indented($level) . '[' . $self->{"index_exp"}->emit_javascript() . ']';
@@ -500,10 +500,7 @@ package Var;
         if ($self->{"namespace"}) {
             $ns = Perlito5::Runtime::to_javascript_namespace($self->{"namespace"}) . '.';
         }
-           ( $self->{"twigil"} eq '.' )
-            # XXX Perl 6
-        ?  ( 'v_self.' . $self->{"name"} . '' )
-        :  ( $table->{$self->{"sigil"}} . $ns . $self->{"name"} )
+        $table->{$self->{"sigil"}} . $ns . $self->{"name"}
     }
     sub plain_name {
         my $self = shift;
@@ -742,7 +739,7 @@ package Apply;
                    && $v->sigil eq '$'
                    )
                 {
-                    $v = Var->new( sigil => '%', twigil => $v->twigil, namespace => $v->namespace, name => $v->name );
+                    $v = Var->new( sigil => '%', namespace => $v->namespace, name => $v->name );
                 }
                 return '(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp)->emit_javascript() . ')';
             }
@@ -823,7 +820,7 @@ package Apply;
                && $var->sigil eq '$'
                )
             {
-                $var = Var->new( sigil => '%', twigil => $var->twigil, namespace => $var->namespace, name => $var->name );
+                $var = Var->new( sigil => '%', namespace => $var->namespace, name => $var->name );
             }
 
             my $var_js = $var->emit_javascript;
@@ -842,7 +839,7 @@ package Apply;
                && $var->sigil eq '$'
                )
             {
-                $var = Var->new( sigil => '@', twigil => $var->twigil, namespace => $var->namespace, name => $var->name );
+                $var = Var->new( sigil => '@', namespace => $var->namespace, name => $var->name );
             }
 
             my $var_js = $var->emit_javascript;

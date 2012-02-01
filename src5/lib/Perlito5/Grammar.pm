@@ -85,16 +85,13 @@ token opt_type {
 
 token var_sigil     { \$ |\% |\@ |\& }
 
-token var_twigil    { [ \. | \! | \^ | \* ]? }
-
 token var_name      { <full_ident> | <digit> }
 
 token var_ident {
-    <var_sigil> <var_twigil> <optional_namespace_before_ident> <var_name>
+    <var_sigil> <optional_namespace_before_ident> <var_name>
     {
         $MATCH->{"capture"} = Var->new(
             sigil       => $MATCH->{"var_sigil"}->flat(),
-            twigil      => $MATCH->{"var_twigil"}->flat(),
             namespace   => $MATCH->{"optional_namespace_before_ident"}->flat(),
             name        => $MATCH->{"var_name"}->flat(),
         )
@@ -166,7 +163,6 @@ token double_quoted_buf {
         | \$\{ <ident> \}
             { $MATCH->{"capture"} = Var->new(
                     sigil  => '$',
-                    twigil => '',
                     name   => $MATCH->{"ident"}->flat(),
                    )
             }
@@ -242,7 +238,6 @@ token var_invocant {
     |  <var_ident> \:    { $MATCH->{"capture"} = $MATCH->{"var_ident"}->flat() }
     |  { $MATCH->{"capture"} = Var->new(
             sigil  => '$',
-            twigil => '',
             name   => 'self',
          )
        }
@@ -269,7 +264,6 @@ token method_sig {
     |   { $MATCH->{"capture"} = Sig->new(
             invocant => Var->new(
                 sigil  => '$',
-                twigil => '',
                 name   => 'self' ),
             positional => [ ],
             named => { } ) }

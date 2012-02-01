@@ -236,10 +236,6 @@ package main;
         my $List__ = bless \@_, "ARRAY";
         $List__->[0]->{'sigil'}
     };
-    sub twigil {
-        my $List__ = bless \@_, "ARRAY";
-        $List__->[0]->{'twigil'}
-    };
     sub namespace {
         my $List__ = bless \@_, "ARRAY";
         $List__->[0]->{'namespace'}

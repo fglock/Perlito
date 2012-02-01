@@ -1564,26 +1564,6 @@ if (typeof Var !== 'object') {
                         }
                     }
                 };
-                v__NAMESPACE["twigil"] = function () {
-                    var List__ = Array.prototype.slice.call(arguments);
-                    if (List__[0] instanceof CallSubClass) {
-                        List__.shift()
-                    }
-                    else {
-                        List__.unshift(this)
-                    }
-                    try {
-                        return(List__[0]['twigil']);;
-                    }
-                    catch(err) {
-                        if ( err instanceof Error ) {
-                            throw(err);
-                        }
-                        else {
-                            return(err);
-                        }
-                    }
-                };
                 v__NAMESPACE["namespace"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -2853,7 +2833,7 @@ if (typeof Javascript !== 'object') {
                                 if ( bool((and((v_type == 'HASH'), function () { return (((v_ast._class_ && v_ast._class_.sigil) || v_ast.sigil).call(v_ast) == '$'); }))) ) { (function () {
                                     var v_var_js = null;
 
-                                    (v_ast = (function () { if (Var.new ) { return Var.new('sigil', '%', 'twigil', ((v_ast._class_ && v_ast._class_.twigil) || v_ast.twigil).call(v_ast), 'namespace', ((v_ast._class_ && v_ast._class_.namespace) || v_ast.namespace).call(v_ast), 'name', ((v_ast._class_ && v_ast._class_.name) || v_ast.name).call(v_ast)); } var tmp = {sigil: '%',twigil: ((v_ast._class_ && v_ast._class_.twigil) || v_ast.twigil).call(v_ast),namespace: ((v_ast._class_ && v_ast._class_.namespace) || v_ast.namespace).call(v_ast),name: ((v_ast._class_ && v_ast._class_.name) || v_ast.name).call(v_ast)}; tmp._class_ = Var; return tmp; })());
+                                    (v_ast = (function () { if (Var.new ) { return Var.new('sigil', '%', 'namespace', ((v_ast._class_ && v_ast._class_.namespace) || v_ast.namespace).call(v_ast), 'name', ((v_ast._class_ && v_ast._class_.name) || v_ast.name).call(v_ast)); } var tmp = {sigil: '%',namespace: ((v_ast._class_ && v_ast._class_.namespace) || v_ast.namespace).call(v_ast),name: ((v_ast._class_ && v_ast._class_.name) || v_ast.name).call(v_ast)}; tmp._class_ = Var; return tmp; })());
                                     (v_var_js = ((v_ast._class_ && v_ast._class_.emit_javascript) || v_ast.emit_javascript).call(v_ast));
                                     throw((function () { 
     var List_a = [];
@@ -2868,7 +2848,7 @@ if (typeof Javascript !== 'object') {
                                     if ( bool((and((v_type == 'ARRAY'), function () { return (((v_ast._class_ && v_ast._class_.sigil) || v_ast.sigil).call(v_ast) == '$'); }))) ) { (function () {
                                         var v_var_js = null;
 
-                                        (v_ast = (function () { if (Var.new ) { return Var.new('sigil', '@', 'twigil', ((v_ast._class_ && v_ast._class_.twigil) || v_ast.twigil).call(v_ast), 'namespace', ((v_ast._class_ && v_ast._class_.namespace) || v_ast.namespace).call(v_ast), 'name', ((v_ast._class_ && v_ast._class_.name) || v_ast.name).call(v_ast)); } var tmp = {sigil: '@',twigil: ((v_ast._class_ && v_ast._class_.twigil) || v_ast.twigil).call(v_ast),namespace: ((v_ast._class_ && v_ast._class_.namespace) || v_ast.namespace).call(v_ast),name: ((v_ast._class_ && v_ast._class_.name) || v_ast.name).call(v_ast)}; tmp._class_ = Var; return tmp; })());
+                                        (v_ast = (function () { if (Var.new ) { return Var.new('sigil', '@', 'namespace', ((v_ast._class_ && v_ast._class_.namespace) || v_ast.namespace).call(v_ast), 'name', ((v_ast._class_ && v_ast._class_.name) || v_ast.name).call(v_ast)); } var tmp = {sigil: '@',namespace: ((v_ast._class_ && v_ast._class_.namespace) || v_ast.namespace).call(v_ast),name: ((v_ast._class_ && v_ast._class_.name) || v_ast.name).call(v_ast)}; tmp._class_ = Var; return tmp; })());
                                         (v_var_js = ((v_ast._class_ && v_ast._class_.emit_javascript) || v_ast.emit_javascript).call(v_ast));
                                         throw((function () { 
     var List_a = [];
@@ -3890,7 +3870,7 @@ if (typeof Index !== 'object') {
         if ( bool((and(((v_self[('obj')]._class_ && v_self[('obj')]._class_.isa) || v_self[('obj')].isa).call(v_self[('obj')],'Var'), function () { return (((v_self[('obj')]._class_ && v_self[('obj')]._class_.sigil) || v_self[('obj')].sigil).call(v_self[('obj')]) == '$'); }))) ) { (function () {
             var v_v = null;
 
-            (v_v = (function () { if (Var.new ) { return Var.new('sigil', '@', 'twigil', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.twigil) || v_self[('obj')].twigil).call(v_self[('obj')]), 'namespace', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]), 'name', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])); } var tmp = {sigil: '@',twigil: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.twigil) || v_self[('obj')].twigil).call(v_self[('obj')]),namespace: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]),name: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])}; tmp._class_ = Var; return tmp; })());
+            (v_v = (function () { if (Var.new ) { return Var.new('sigil', '@', 'namespace', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]), 'name', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])); } var tmp = {sigil: '@',namespace: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]),name: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])}; tmp._class_ = Var; return tmp; })());
             throw((string(((v_v._class_ && v_v._class_.emit_javascript_indented) || v_v.emit_javascript_indented).call(v_v,v_level)) + '[' + string(((v_self[('index_exp')]._class_ && v_self[('index_exp')]._class_.emit_javascript) || v_self[('index_exp')].emit_javascript).call(v_self[('index_exp')])) + ']'));;
         })(); };
         return((string(Javascript.tab(CallSub, v_level)) + string(((v_self[('obj')]._class_ && v_self[('obj')]._class_.emit_javascript) || v_self[('obj')].emit_javascript).call(v_self[('obj')])) + '[' + string(((v_self[('index_exp')]._class_ && v_self[('index_exp')]._class_.emit_javascript) || v_self[('index_exp')].emit_javascript).call(v_self[('index_exp')])) + ']'));;
@@ -3955,7 +3935,7 @@ if (typeof Lookup !== 'object') {
         if ( bool((and(((v_self[('obj')]._class_ && v_self[('obj')]._class_.isa) || v_self[('obj')].isa).call(v_self[('obj')],'Var'), function () { return (((v_self[('obj')]._class_ && v_self[('obj')]._class_.sigil) || v_self[('obj')].sigil).call(v_self[('obj')]) == '$'); }))) ) { (function () {
             var v_v = null;
 
-            (v_v = (function () { if (Var.new ) { return Var.new('sigil', '%', 'twigil', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.twigil) || v_self[('obj')].twigil).call(v_self[('obj')]), 'namespace', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]), 'name', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])); } var tmp = {sigil: '%',twigil: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.twigil) || v_self[('obj')].twigil).call(v_self[('obj')]),namespace: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]),name: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])}; tmp._class_ = Var; return tmp; })());
+            (v_v = (function () { if (Var.new ) { return Var.new('sigil', '%', 'namespace', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]), 'name', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])); } var tmp = {sigil: '%',namespace: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]),name: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])}; tmp._class_ = Var; return tmp; })());
             throw((string(((v_v._class_ && v_v._class_.emit_javascript_indented) || v_v.emit_javascript_indented).call(v_v,v_level)) + '[' + string(((v_self[('index_exp')]._class_ && v_self[('index_exp')]._class_.emit_javascript) || v_self[('index_exp')].emit_javascript).call(v_self[('index_exp')])) + ']'));;
         })(); };
         throw((string(((v_self[('obj')]._class_ && v_self[('obj')]._class_.emit_javascript_indented) || v_self[('obj')].emit_javascript_indented).call(v_self[('obj')],v_level)) + '[' + string(((v_self[('index_exp')]._class_ && v_self[('index_exp')]._class_.emit_javascript) || v_self[('index_exp')].emit_javascript).call(v_self[('index_exp')])) + ']'));;
@@ -4034,7 +4014,7 @@ if (typeof Var !== 'object') {
                             if ( bool((v_self[('namespace')])) ) { (function () {
                                 (v_ns = (string(Perlito5$Runtime.to_javascript_namespace(CallSub, v_self[('namespace')])) + '.'));;
                             })(); };
-                            return(( bool(((v_self[('twigil')] == '.'))) ? (('v_self.' + string(v_self[('name')]) + '')) : ((string(v_table[v_self[('sigil')]]) + string(v_ns) + string(v_self[('name')])))));;
+                            return((string(v_table[v_self[('sigil')]]) + string(v_ns) + string(v_self[('name')])));;
                         }
                         catch(err) {
                             if ( err instanceof Error ) {
@@ -4430,7 +4410,7 @@ if (typeof Apply !== 'object') {
 
                                     (v_v = ((v_arg._class_ && v_arg._class_.obj) || v_arg.obj).call(v_arg));
                                     if ( bool((and(((v_v._class_ && v_v._class_.isa) || v_v.isa).call(v_v,'Var'), function () { return (((v_v._class_ && v_v._class_.sigil) || v_v.sigil).call(v_v) == '$'); }))) ) { (function () {
-                                        (v_v = (function () { if (Var.new ) { return Var.new('sigil', '%', 'twigil', ((v_v._class_ && v_v._class_.twigil) || v_v.twigil).call(v_v), 'namespace', ((v_v._class_ && v_v._class_.namespace) || v_v.namespace).call(v_v), 'name', ((v_v._class_ && v_v._class_.name) || v_v.name).call(v_v)); } var tmp = {sigil: '%',twigil: ((v_v._class_ && v_v._class_.twigil) || v_v.twigil).call(v_v),namespace: ((v_v._class_ && v_v._class_.namespace) || v_v.namespace).call(v_v),name: ((v_v._class_ && v_v._class_.name) || v_v.name).call(v_v)}; tmp._class_ = Var; return tmp; })());;
+                                        (v_v = (function () { if (Var.new ) { return Var.new('sigil', '%', 'namespace', ((v_v._class_ && v_v._class_.namespace) || v_v.namespace).call(v_v), 'name', ((v_v._class_ && v_v._class_.name) || v_v.name).call(v_v)); } var tmp = {sigil: '%',namespace: ((v_v._class_ && v_v._class_.namespace) || v_v.namespace).call(v_v),name: ((v_v._class_ && v_v._class_.name) || v_v.name).call(v_v)}; tmp._class_ = Var; return tmp; })());;
                                     })(); };
                                     throw(('(' + string(((v_v._class_ && v_v._class_.emit_javascript) || v_v.emit_javascript).call(v_v)) + ').hasOwnProperty(' + string((((((v_arg._class_ && v_arg._class_.index_exp) || v_arg.index_exp).call(v_arg))._class_ && (((v_arg._class_ && v_arg._class_.index_exp) || v_arg.index_exp).call(v_arg))._class_.emit_javascript) || (((v_arg._class_ && v_arg._class_.index_exp) || v_arg.index_exp).call(v_arg)).emit_javascript).call((((v_arg._class_ && v_arg._class_.index_exp) || v_arg.index_exp).call(v_arg)))) + ')'));;
                                 })(); };
@@ -4546,7 +4526,7 @@ if (typeof Apply !== 'object') {
             (v_str = '');
             (v_var = ((v_parameters._class_ && v_parameters._class_.obj) || v_parameters.obj).call(v_parameters));
             if ( bool((and(((v_var._class_ && v_var._class_.isa) || v_var.isa).call(v_var,'Var'), function () { return (((v_var._class_ && v_var._class_.sigil) || v_var.sigil).call(v_var) == '$'); }))) ) { (function () {
-                (v_var = (function () { if (Var.new ) { return Var.new('sigil', '%', 'twigil', ((v_var._class_ && v_var._class_.twigil) || v_var.twigil).call(v_var), 'namespace', ((v_var._class_ && v_var._class_.namespace) || v_var.namespace).call(v_var), 'name', ((v_var._class_ && v_var._class_.name) || v_var.name).call(v_var)); } var tmp = {sigil: '%',twigil: ((v_var._class_ && v_var._class_.twigil) || v_var.twigil).call(v_var),namespace: ((v_var._class_ && v_var._class_.namespace) || v_var.namespace).call(v_var),name: ((v_var._class_ && v_var._class_.name) || v_var.name).call(v_var)}; tmp._class_ = Var; return tmp; })());;
+                (v_var = (function () { if (Var.new ) { return Var.new('sigil', '%', 'namespace', ((v_var._class_ && v_var._class_.namespace) || v_var.namespace).call(v_var), 'name', ((v_var._class_ && v_var._class_.name) || v_var.name).call(v_var)); } var tmp = {sigil: '%',namespace: ((v_var._class_ && v_var._class_.namespace) || v_var.namespace).call(v_var),name: ((v_var._class_ && v_var._class_.name) || v_var.name).call(v_var)}; tmp._class_ = Var; return tmp; })());;
             })(); };
             (v_var_js = ((v_var._class_ && v_var._class_.emit_javascript) || v_var.emit_javascript).call(v_var));
             (v_auto = Javascript.autovivify(CallSub, v_parameters, 'ARRAYREF'));
@@ -4570,7 +4550,7 @@ if (typeof Apply !== 'object') {
             (v_str = '');
             (v_var = ((v_parameters._class_ && v_parameters._class_.obj) || v_parameters.obj).call(v_parameters));
             if ( bool((and(((v_var._class_ && v_var._class_.isa) || v_var.isa).call(v_var,'Var'), function () { return (((v_var._class_ && v_var._class_.sigil) || v_var.sigil).call(v_var) == '$'); }))) ) { (function () {
-                (v_var = (function () { if (Var.new ) { return Var.new('sigil', '@', 'twigil', ((v_var._class_ && v_var._class_.twigil) || v_var.twigil).call(v_var), 'namespace', ((v_var._class_ && v_var._class_.namespace) || v_var.namespace).call(v_var), 'name', ((v_var._class_ && v_var._class_.name) || v_var.name).call(v_var)); } var tmp = {sigil: '@',twigil: ((v_var._class_ && v_var._class_.twigil) || v_var.twigil).call(v_var),namespace: ((v_var._class_ && v_var._class_.namespace) || v_var.namespace).call(v_var),name: ((v_var._class_ && v_var._class_.name) || v_var.name).call(v_var)}; tmp._class_ = Var; return tmp; })());;
+                (v_var = (function () { if (Var.new ) { return Var.new('sigil', '@', 'namespace', ((v_var._class_ && v_var._class_.namespace) || v_var.namespace).call(v_var), 'name', ((v_var._class_ && v_var._class_.name) || v_var.name).call(v_var)); } var tmp = {sigil: '@',namespace: ((v_var._class_ && v_var._class_.namespace) || v_var.namespace).call(v_var),name: ((v_var._class_ && v_var._class_.name) || v_var.name).call(v_var)}; tmp._class_ = Var; return tmp; })());;
             })(); };
             (v_var_js = ((v_var._class_ && v_var._class_.emit_javascript) || v_var.emit_javascript).call(v_var));
             (v_auto = Javascript.autovivify(CallSub, v_parameters, 'ARRAYREF'));
@@ -6612,7 +6592,7 @@ if (typeof Index !== 'object') {
         if ( bool((and(((v_self[('obj')]._class_ && v_self[('obj')]._class_.isa) || v_self[('obj')].isa).call(v_self[('obj')],'Var'), function () { return (((v_self[('obj')]._class_ && v_self[('obj')]._class_.sigil) || v_self[('obj')].sigil).call(v_self[('obj')]) == '$'); }))) ) { (function () {
             var v_v = null;
 
-            (v_v = (function () { if (Var.new ) { return Var.new('sigil', '@', 'twigil', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.twigil) || v_self[('obj')].twigil).call(v_self[('obj')]), 'namespace', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]), 'name', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])); } var tmp = {sigil: '@',twigil: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.twigil) || v_self[('obj')].twigil).call(v_self[('obj')]),namespace: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]),name: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])}; tmp._class_ = Var; return tmp; })());
+            (v_v = (function () { if (Var.new ) { return Var.new('sigil', '@', 'namespace', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]), 'name', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])); } var tmp = {sigil: '@',namespace: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]),name: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])}; tmp._class_ = Var; return tmp; })());
             throw((string(((v_v._class_ && v_v._class_.emit_perl5_indented) || v_v.emit_perl5_indented).call(v_v,v_level)) + '->[' + string(((v_self[('index_exp')]._class_ && v_self[('index_exp')]._class_.emit_perl5) || v_self[('index_exp')].emit_perl5).call(v_self[('index_exp')])) + ']'));;
         })(); };
         return((string(((v_self[('obj')]._class_ && v_self[('obj')]._class_.emit_perl5_indented) || v_self[('obj')].emit_perl5_indented).call(v_self[('obj')],v_level)) + '->[' + string(((v_self[('index_exp')]._class_ && v_self[('index_exp')]._class_.emit_perl5) || v_self[('index_exp')].emit_perl5).call(v_self[('index_exp')])) + ']'));;
@@ -6680,7 +6660,7 @@ if (typeof Lookup !== 'object') {
         if ( bool((and(and(((v_self[('obj')]._class_ && v_self[('obj')]._class_.isa) || v_self[('obj')].isa).call(v_self[('obj')],'Var'), function () { return (((v_self[('obj')]._class_ && v_self[('obj')]._class_.sigil) || v_self[('obj')].sigil).call(v_self[('obj')]) == '$'); }), function () { return (((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')]) != 'MATCH'); }))) ) { (function () {
             var v_v = null;
 
-            (v_v = (function () { if (Var.new ) { return Var.new('sigil', '%', 'twigil', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.twigil) || v_self[('obj')].twigil).call(v_self[('obj')]), 'namespace', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]), 'name', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])); } var tmp = {sigil: '%',twigil: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.twigil) || v_self[('obj')].twigil).call(v_self[('obj')]),namespace: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]),name: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])}; tmp._class_ = Var; return tmp; })());
+            (v_v = (function () { if (Var.new ) { return Var.new('sigil', '%', 'namespace', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]), 'name', ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])); } var tmp = {sigil: '%',namespace: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.namespace) || v_self[('obj')].namespace).call(v_self[('obj')]),name: ((v_self[('obj')]._class_ && v_self[('obj')]._class_.name) || v_self[('obj')].name).call(v_self[('obj')])}; tmp._class_ = Var; return tmp; })());
             throw((string(((v_v._class_ && v_v._class_.emit_perl5_indented) || v_v.emit_perl5_indented).call(v_v,v_level)) + '->{' + string(((v_self[('index_exp')]._class_ && v_self[('index_exp')]._class_.emit_perl5) || v_self[('index_exp')].emit_perl5).call(v_self[('index_exp')])) + '}'));;
         })(); };
         return((string(((v_self[('obj')]._class_ && v_self[('obj')]._class_.emit_perl5_indented) || v_self[('obj')].emit_perl5_indented).call(v_self[('obj')],v_level)) + '->{' + string(((v_self[('index_exp')]._class_ && v_self[('index_exp')]._class_.emit_perl5) || v_self[('index_exp')].emit_perl5).call(v_self[('index_exp')])) + '}'));;
@@ -6765,19 +6745,6 @@ if (typeof Var !== 'object') {
                             else { (function () {
                                 if ( bool((and((v_self[('sigil')] == '@'), function () { return (v_self[('name')] == 'ARGV'); }))) ) { (function () {
                                     throw((string(Perl5.tab(CallSub, v_level)) + '(' + String.fromCharCode(92) + '@ARGV)'));;
-                                })(); };
-                                if ( bool(((v_self[('twigil')] == '.'))) ) { (function () {
-                                    if ( bool(((v_self[('sigil')] == '%'))) ) { (function () {
-                                        throw((string(Perl5.tab(CallSub, v_level)) + '(' + 'defined $self->{' + string(v_self[('name')]) + '} ' + String.fromCharCode(63) + ' $self->{' + string(v_self[('name')]) + '} ' + ': ($self->{' + string(v_self[('name')]) + string(('} = bless(' + '{' + '}, ' + String.fromCharCode(39) + 'HASH' + String.fromCharCode(39) + ')))'))));;
-                                    })(); }
-                                    else { (function () {
-                                        if ( bool(((v_self[('sigil')] == '@'))) ) { (function () {
-                                            throw((string(Perl5.tab(CallSub, v_level)) + '(' + 'defined $self->{' + string(v_self[('name')]) + '} ' + String.fromCharCode(63) + ' $self->{' + string(v_self[('name')]) + '} ' + ': ($self->{' + string(v_self[('name')]) + string(('} ||= bless([], ' + String.fromCharCode(39) + 'ARRAY' + String.fromCharCode(39) + ')))'))));;
-                                        })(); }
-                                        else { (function () {
-                                            throw((string(Perl5.tab(CallSub, v_level)) + '$self->{' + string(v_self[('name')]) + '}'));;
-                                        })(); };;
-                                    })(); };;
                                 })(); };;
                             })(); };
                             throw((string(Perl5.tab(CallSub, v_level)) + string(v_table[v_self[('sigil')]]) + string(v_ns) + string(v_self[('name')])));;
@@ -14492,68 +14459,6 @@ if (typeof Perlito5$Grammar !== 'object') {
                         }
                     }
                 };
-                v__NAMESPACE["var_twigil"] = function () {
-                    var List__ = Array.prototype.slice.call(arguments);
-                    if (List__[0] instanceof CallSubClass) {
-                        List__.shift()
-                    }
-                    else {
-                        List__.unshift(this)
-                    }
-                    try {
-                        var v_grammar = null;
-
-                        var v_str = null;
-
-                        var v_pos = null;
-
-                        var v_MATCH = null;
-
-                        (v_grammar = List__[0]);
-                        (v_str = List__[1]);
-                        (v_pos = List__[2]);
-                        (v_MATCH = (function () { if (Perlito5$Match.new ) { return Perlito5$Match.new('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1); } var tmp = {str: v_str,from: v_pos,to: v_pos,bool: 1}; tmp._class_ = Perlito5$Match; return tmp; })());
-                        (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('bool')]  = (((function () { 
-    var v_pos1 = null;
-
-    (v_pos1 = ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH));
-    return(((function () { 
-    var v_last_pos = null;
-
-    (v_last_pos = ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH));
-    if ( bool((( bool(((function () { 
-    var v_pos1 = null;
-
-    (v_pos1 = ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH));
-    return(or(or(or(((function () { 
-    return(and(('.' == (v_str || "").substr(((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH), 1)), function () { return ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = add(1, ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH))); })()); }));
-})()), function () { return ((function () { 
-    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = v_pos1); })();
-    return(((and((String.fromCharCode(33) == (v_str || "").substr(((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH), 1)), function () { return ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = add(1, ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH))); })()); }))));
-})()); }), function () { return ((function () { 
-    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = v_pos1); })();
-    return(((and((String.fromCharCode(94) == (v_str || "").substr(((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH), 1)), function () { return ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = add(1, ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH))); })()); }))));
-})()); }), function () { return ((function () { 
-    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = v_pos1); })();
-    return(((and(('*' == (v_str || "").substr(((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH), 1)), function () { return ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = add(1, ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH))); })()); }))));
-})()); }));
-})())) ? false : true))) ) { (function () {
-        (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = v_last_pos); })();;
-    })(); };
-    return(1);
-})()));
-})()))); })();
-                        return(v_MATCH);;
-                    }
-                    catch(err) {
-                        if ( err instanceof Error ) {
-                            throw(err);
-                        }
-                        else {
-                            return(err);
-                        }
-                    }
-                };
                 v__NAMESPACE["var_name"] = function () {
                     var List__ = Array.prototype.slice.call(arguments);
                     if (List__[0] instanceof CallSubClass) {
@@ -14645,7 +14550,7 @@ if (typeof Perlito5$Grammar !== 'object') {
 
     (v_pos1 = ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH));
     return(((function () { 
-    return(and(and(and(and(((function () { 
+    return(and(and(and(((function () { 
     var v_m2 = null;
 
     (v_m2 = ((v_grammar._class_ && v_grammar._class_.var_sigil) || v_grammar.var_sigil).call(v_grammar,v_str,((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH)));
@@ -14658,18 +14563,6 @@ if (typeof Perlito5$Grammar !== 'object') {
         return(0);
     })(); };
 })()), function () { return ((function () { 
-    var v_m2 = null;
-
-    (v_m2 = ((v_grammar._class_ && v_grammar._class_.var_twigil) || v_grammar.var_twigil).call(v_grammar,v_str,((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH)));
-    if ( bool((((v_m2._class_ && v_m2._class_.bool) || v_m2.bool).call(v_m2))) ) { return (function () {
-        (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = ((v_m2._class_ && v_m2._class_.to) || v_m2.to).call(v_m2)); })();
-        (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH['var_twigil']  = v_m2); })();
-        return(1);
-    })(); }
-    else { return (function () {
-        return(0);
-    })(); };
-})()); }), function () { return ((function () { 
     var v_m2 = null;
 
     (v_m2 = ((v_grammar._class_ && v_grammar._class_.optional_namespace_before_ident) || v_grammar.optional_namespace_before_ident).call(v_grammar,v_str,((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH)));
@@ -14694,7 +14587,7 @@ if (typeof Perlito5$Grammar !== 'object') {
         return(0);
     })(); };
 })()); }), function () { return ((function () { 
-    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('capture')]  = (function () { if (Var.new ) { return Var.new('sigil', ((v_MATCH[('var_sigil')]._class_ && v_MATCH[('var_sigil')]._class_.flat) || v_MATCH[('var_sigil')].flat).call(v_MATCH[('var_sigil')]), 'twigil', ((v_MATCH[('var_twigil')]._class_ && v_MATCH[('var_twigil')]._class_.flat) || v_MATCH[('var_twigil')].flat).call(v_MATCH[('var_twigil')]), 'namespace', ((v_MATCH[('optional_namespace_before_ident')]._class_ && v_MATCH[('optional_namespace_before_ident')]._class_.flat) || v_MATCH[('optional_namespace_before_ident')].flat).call(v_MATCH[('optional_namespace_before_ident')]), 'name', ((v_MATCH[('var_name')]._class_ && v_MATCH[('var_name')]._class_.flat) || v_MATCH[('var_name')].flat).call(v_MATCH[('var_name')])); } var tmp = {sigil: ((v_MATCH[('var_sigil')]._class_ && v_MATCH[('var_sigil')]._class_.flat) || v_MATCH[('var_sigil')].flat).call(v_MATCH[('var_sigil')]),twigil: ((v_MATCH[('var_twigil')]._class_ && v_MATCH[('var_twigil')]._class_.flat) || v_MATCH[('var_twigil')].flat).call(v_MATCH[('var_twigil')]),namespace: ((v_MATCH[('optional_namespace_before_ident')]._class_ && v_MATCH[('optional_namespace_before_ident')]._class_.flat) || v_MATCH[('optional_namespace_before_ident')].flat).call(v_MATCH[('optional_namespace_before_ident')]),name: ((v_MATCH[('var_name')]._class_ && v_MATCH[('var_name')]._class_.flat) || v_MATCH[('var_name')].flat).call(v_MATCH[('var_name')])}; tmp._class_ = Var; return tmp; })()); })();
+    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('capture')]  = (function () { if (Var.new ) { return Var.new('sigil', ((v_MATCH[('var_sigil')]._class_ && v_MATCH[('var_sigil')]._class_.flat) || v_MATCH[('var_sigil')].flat).call(v_MATCH[('var_sigil')]), 'namespace', ((v_MATCH[('optional_namespace_before_ident')]._class_ && v_MATCH[('optional_namespace_before_ident')]._class_.flat) || v_MATCH[('optional_namespace_before_ident')].flat).call(v_MATCH[('optional_namespace_before_ident')]), 'name', ((v_MATCH[('var_name')]._class_ && v_MATCH[('var_name')]._class_.flat) || v_MATCH[('var_name')].flat).call(v_MATCH[('var_name')])); } var tmp = {sigil: ((v_MATCH[('var_sigil')]._class_ && v_MATCH[('var_sigil')]._class_.flat) || v_MATCH[('var_sigil')].flat).call(v_MATCH[('var_sigil')]),namespace: ((v_MATCH[('optional_namespace_before_ident')]._class_ && v_MATCH[('optional_namespace_before_ident')]._class_.flat) || v_MATCH[('optional_namespace_before_ident')].flat).call(v_MATCH[('optional_namespace_before_ident')]),name: ((v_MATCH[('var_name')]._class_ && v_MATCH[('var_name')]._class_.flat) || v_MATCH[('var_name')].flat).call(v_MATCH[('var_name')])}; tmp._class_ = Var; return tmp; })()); })();
     return(1);
 })()); }));
 })()));
@@ -15640,7 +15533,7 @@ if (typeof Perlito5$Grammar !== 'object') {
         return(0);
     })(); };
 })()); }), function () { return (and(('}' == (v_str || "").substr(((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH), 1)), function () { return ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = add(1, ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH))); })()); })); }), function () { return ((function () { 
-    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('capture')]  = (function () { if (Var.new ) { return Var.new('sigil', '$', 'twigil', '', 'name', ((v_MATCH[('ident')]._class_ && v_MATCH[('ident')]._class_.flat) || v_MATCH[('ident')].flat).call(v_MATCH[('ident')])); } var tmp = {sigil: '$',twigil: '',name: ((v_MATCH[('ident')]._class_ && v_MATCH[('ident')]._class_.flat) || v_MATCH[('ident')].flat).call(v_MATCH[('ident')])}; tmp._class_ = Var; return tmp; })()); })();
+    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('capture')]  = (function () { if (Var.new ) { return Var.new('sigil', '$', 'name', ((v_MATCH[('ident')]._class_ && v_MATCH[('ident')]._class_.flat) || v_MATCH[('ident')].flat).call(v_MATCH[('ident')])); } var tmp = {sigil: '$',name: ((v_MATCH[('ident')]._class_ && v_MATCH[('ident')]._class_.flat) || v_MATCH[('ident')].flat).call(v_MATCH[('ident')])}; tmp._class_ = Var; return tmp; })()); })();
     return(1);
 })()); })));
 })()); }), function () { return ((function () { 
@@ -16280,7 +16173,7 @@ if (typeof Perlito5$Grammar !== 'object') {
 })()), function () { return ((function () { 
     (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = v_pos1); })();
     return((((function () { 
-    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('capture')]  = (function () { if (Var.new ) { return Var.new('sigil', '$', 'twigil', '', 'name', 'self'); } var tmp = {sigil: '$',twigil: '',name: 'self'}; tmp._class_ = Var; return tmp; })()); })();
+    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('capture')]  = (function () { if (Var.new ) { return Var.new('sigil', '$', 'name', 'self'); } var tmp = {sigil: '$',name: 'self'}; tmp._class_ = Var; return tmp; })()); })();
     return(1);
 })())));
 })()); }));
@@ -16460,7 +16353,7 @@ if (typeof Perlito5$Grammar !== 'object') {
 })()), function () { return ((function () { 
     (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = v_pos1); })();
     return((((function () { 
-    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('capture')]  = (function () { if (Sig.new ) { return Sig.new('invocant', (function () { if (Var.new ) { return Var.new('sigil', '$', 'twigil', '', 'name', 'self'); } var tmp = {sigil: '$',twigil: '',name: 'self'}; tmp._class_ = Var; return tmp; })(), 'positional', (function () { 
+    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('capture')]  = (function () { if (Sig.new ) { return Sig.new('invocant', (function () { if (Var.new ) { return Var.new('sigil', '$', 'name', 'self'); } var tmp = {sigil: '$',name: 'self'}; tmp._class_ = Var; return tmp; })(), 'positional', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -16470,7 +16363,7 @@ if (typeof Perlito5$Grammar !== 'object') {
     var Hash_a = {};
 
     return(Hash_a);
-})()); } var tmp = {invocant: (function () { if (Var.new ) { return Var.new('sigil', '$', 'twigil', '', 'name', 'self'); } var tmp = {sigil: '$',twigil: '',name: 'self'}; tmp._class_ = Var; return tmp; })(),positional: (function () { 
+})()); } var tmp = {invocant: (function () { if (Var.new ) { return Var.new('sigil', '$', 'name', 'self'); } var tmp = {sigil: '$',name: 'self'}; tmp._class_ = Var; return tmp; })(),positional: (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -18199,7 +18092,7 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -18207,11 +18100,11 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
-                                (v__NAMESPACE.push || CORE.push)(CallSub, List_s, (function () { if (For.new ) { return For.new('body', (function () { if (Lit$Block.new ) { return Lit$Block.new('sig', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'stmts', (function () { 
+                                (v__NAMESPACE.push || CORE.push)(CallSub, List_s, (function () { if (For.new ) { return For.new('body', (function () { if (Lit$Block.new ) { return Lit$Block.new('sig', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -18221,20 +18114,20 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'push', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'push',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
-})()); } var tmp = {sig: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),stmts: (function () { 
+})()); } var tmp = {sig: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -18244,16 +18137,16 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'push', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'push',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -18278,14 +18171,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18300,14 +18193,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18329,14 +18222,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18351,14 +18244,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18388,14 +18281,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18410,14 +18303,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18439,14 +18332,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18461,14 +18354,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18477,7 +18370,7 @@ if (typeof Lit$Array !== 'object') {
     return(List_a);
 })(),code: 'circumfix:<( )>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
-})(),code: 'infix:<..>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'topic', null); } var tmp = {body: (function () { if (Lit$Block.new ) { return Lit$Block.new('sig', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'stmts', (function () { 
+})(),code: 'infix:<..>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'topic', null); } var tmp = {body: (function () { if (Lit$Block.new ) { return Lit$Block.new('sig', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -18487,20 +18380,20 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'push', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'push',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
-})()); } var tmp = {sig: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),stmts: (function () { 
+})()); } var tmp = {sig: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -18510,16 +18403,16 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'push', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'x',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'x', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'x',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'v',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'push',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -18544,14 +18437,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18566,14 +18459,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18595,14 +18488,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18617,14 +18510,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18654,14 +18547,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18676,14 +18569,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18705,14 +18598,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18727,14 +18620,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
@@ -18751,7 +18644,7 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(), 'code', 'push', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -18759,7 +18652,7 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(),code: 'push',namespace: ''}; tmp._class_ = Apply; return tmp; })());;
@@ -18769,8 +18662,8 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (List_v = (List_s).slice());
     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_x) {         (v__NAMESPACE.push || CORE.push)(CallSub, List_a, List_v[v_x]);; })(a_[i_]) } })((function (a) { for (var i=0, l=(((v__NAMESPACE.scalar || CORE.scalar)(CallSub, List_v) - 1)); i<=l; ++i){ a.push(i) }; return a })([]));
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -18778,14 +18671,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'prefix:<' + String.fromCharCode(92) + '>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'prefix:<' + String.fromCharCode(92) + '>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -18794,8 +18687,8 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (List_v = (List_s).slice());
     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_x) {         (v__NAMESPACE.push || CORE.push)(CallSub, List_a, List_v[v_x]);; })(a_[i_]) } })((function (a) { for (var i=0, l=(((v__NAMESPACE.scalar || CORE.scalar)(CallSub, List_v) - 1)); i<=l; ++i){ a.push(i) }; return a })([]));
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -18803,14 +18696,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'prefix:<' + String.fromCharCode(92) + '>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'prefix:<' + String.fromCharCode(92) + '>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -18819,8 +18712,8 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (List_v = (List_s).slice());
     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_x) {         (v__NAMESPACE.push || CORE.push)(CallSub, List_a, List_v[v_x]);; })(a_[i_]) } })((function (a) { for (var i=0, l=(((v__NAMESPACE.scalar || CORE.scalar)(CallSub, List_v) - 1)); i<=l; ++i){ a.push(i) }; return a })([]));
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -18828,14 +18721,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'prefix:<' + String.fromCharCode(92) + '>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'prefix:<' + String.fromCharCode(92) + '>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -18844,8 +18737,8 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'v',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'v', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'v',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (List_v = (List_s).slice());
     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_x) {         (v__NAMESPACE.push || CORE.push)(CallSub, List_a, List_v[v_x]);; })(a_[i_]) } })((function (a) { for (var i=0, l=(((v__NAMESPACE.scalar || CORE.scalar)(CallSub, List_v) - 1)); i<=l; ++i){ a.push(i) }; return a })([]));
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -18853,14 +18746,14 @@ if (typeof Lit$Array !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'prefix:<' + String.fromCharCode(92) + '>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '@'); } var tmp = {name: 'a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'prefix:<' + String.fromCharCode(92) + '>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -18914,7 +18807,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', ((v_item._class_ && v_item._class_.arguments) || v_item.arguments).call(v_item)[0], 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: ((v_item._class_ && v_item._class_.arguments) || v_item.arguments).call(v_item)[0],obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', ((v_item._class_ && v_item._class_.arguments) || v_item.arguments).call(v_item)[0], 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: ((v_item._class_ && v_item._class_.arguments) || v_item.arguments).call(v_item)[0],obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, ((v_item._class_ && v_item._class_.arguments) || v_item.arguments).call(v_item)[1]);
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -18922,7 +18815,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', ((v_item._class_ && v_item._class_.arguments) || v_item.arguments).call(v_item)[0], 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: ((v_item._class_ && v_item._class_.arguments) || v_item.arguments).call(v_item)[0],obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', ((v_item._class_ && v_item._class_.arguments) || v_item.arguments).call(v_item)[0], 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: ((v_item._class_ && v_item._class_.arguments) || v_item.arguments).call(v_item)[0],obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, ((v_item._class_ && v_item._class_.arguments) || v_item.arguments).call(v_item)[1]);
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());;
@@ -18933,9 +18826,9 @@ if (typeof Lit$Hash !== 'object') {
 
                                     (v_v = v_item);
                                     if ( bool(((v_item._class_ && v_item._class_.isa) || v_item.isa).call(v_item,'Var')) ) { (function () {
-                                        (v_v = (function () { if (Var.new ) { return Var.new('sigil', '$', 'twigil', ((v_item._class_ && v_item._class_.twigil) || v_item.twigil).call(v_item), 'namespace', ((v_item._class_ && v_item._class_.namespace) || v_item.namespace).call(v_item), 'name', ((v_item._class_ && v_item._class_.name) || v_item.name).call(v_item)); } var tmp = {sigil: '$',twigil: ((v_item._class_ && v_item._class_.twigil) || v_item.twigil).call(v_item),namespace: ((v_item._class_ && v_item._class_.namespace) || v_item.namespace).call(v_item),name: ((v_item._class_ && v_item._class_.name) || v_item.name).call(v_item)}; tmp._class_ = Var; return tmp; })());;
+                                        (v_v = (function () { if (Var.new ) { return Var.new('sigil', '$', 'namespace', ((v_item._class_ && v_item._class_.namespace) || v_item.namespace).call(v_item), 'name', ((v_item._class_ && v_item._class_.name) || v_item.name).call(v_item)); } var tmp = {sigil: '$',namespace: ((v_item._class_ && v_item._class_.namespace) || v_item.namespace).call(v_item),name: ((v_item._class_ && v_item._class_.name) || v_item.name).call(v_item)}; tmp._class_ = Var; return tmp; })());;
                                     })(); };
-                                    (v__NAMESPACE.push || CORE.push)(CallSub, List_s, (function () { if (For.new ) { return For.new('body', (function () { if (Lit$Block.new ) { return Lit$Block.new('sig', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'stmts', (function () { 
+                                    (v__NAMESPACE.push || CORE.push)(CallSub, List_s, (function () { if (For.new ) { return For.new('body', (function () { if (Lit$Block.new ) { return Lit$Block.new('sig', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -18945,20 +18838,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
-})()); } var tmp = {sig: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),stmts: (function () { 
+})()); } var tmp = {sig: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -18968,16 +18861,16 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -18995,7 +18888,7 @@ if (typeof Lit$Hash !== 'object') {
 
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
-})(),code: 'keys',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'topic', null); } var tmp = {body: (function () { if (Lit$Block.new ) { return Lit$Block.new('sig', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'stmts', (function () { 
+})(),code: 'keys',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'topic', null); } var tmp = {body: (function () { if (Lit$Block.new ) { return Lit$Block.new('sig', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'stmts', (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -19005,20 +18898,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
-})()); } var tmp = {sig: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),stmts: (function () { 
+})()); } var tmp = {sig: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),stmts: (function () { 
     var List_a = [];
 
     var List_v = [];
@@ -19028,16 +18921,16 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'p',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', v_v); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', 'p', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'p',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: v_v}; tmp._class_ = Lookup; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -19069,7 +18962,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 0); } var tmp = {int: 0}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19077,7 +18970,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 0); } var tmp = {int: 0}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19086,7 +18979,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19094,7 +18987,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19108,13 +19001,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19122,15 +19015,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19138,23 +19031,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19162,15 +19055,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19178,10 +19071,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -19189,13 +19082,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19203,7 +19096,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19213,13 +19106,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19227,7 +19120,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19244,13 +19137,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19258,15 +19151,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19274,23 +19167,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19298,15 +19191,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19314,10 +19207,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -19325,13 +19218,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19339,7 +19232,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19349,13 +19242,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19363,7 +19256,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19380,20 +19273,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -19402,20 +19295,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -19431,20 +19324,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -19453,20 +19346,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -19482,13 +19375,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19496,15 +19389,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19512,23 +19405,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19536,15 +19429,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19552,10 +19445,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -19563,13 +19456,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19577,7 +19470,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19587,13 +19480,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19601,7 +19494,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19618,13 +19511,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19632,15 +19525,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19648,23 +19541,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19672,15 +19565,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19688,10 +19581,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -19699,13 +19592,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19713,7 +19606,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19723,13 +19616,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19737,7 +19630,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19754,20 +19647,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -19776,20 +19669,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -19805,20 +19698,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -19827,20 +19720,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -19858,7 +19751,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 0); } var tmp = {int: 0}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19866,7 +19759,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 0); } var tmp = {int: 0}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19875,7 +19768,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19883,7 +19776,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -19897,13 +19790,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19911,15 +19804,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19927,23 +19820,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19951,15 +19844,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19967,10 +19860,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -19978,13 +19871,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -19992,7 +19885,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20002,13 +19895,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20016,7 +19909,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20033,13 +19926,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20047,15 +19940,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20063,23 +19956,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20087,15 +19980,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20103,10 +19996,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -20114,13 +20007,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20128,7 +20021,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20138,13 +20031,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20152,7 +20045,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20169,20 +20062,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -20191,20 +20084,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -20220,20 +20113,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -20242,20 +20135,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -20271,13 +20164,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20285,15 +20178,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20301,23 +20194,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20325,15 +20218,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20341,10 +20234,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -20352,13 +20245,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20366,7 +20259,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20376,13 +20269,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20390,7 +20283,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20407,13 +20300,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20421,15 +20314,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20437,23 +20330,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20461,15 +20354,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20477,10 +20370,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -20488,13 +20381,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20502,7 +20395,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20512,13 +20405,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20526,7 +20419,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20543,20 +20436,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -20565,20 +20458,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -20594,20 +20487,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -20616,20 +20509,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -20647,7 +20540,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 0); } var tmp = {int: 0}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20655,7 +20548,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 0); } var tmp = {int: 0}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20664,7 +20557,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20672,7 +20565,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20686,13 +20579,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20700,15 +20593,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20716,23 +20609,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20740,15 +20633,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20756,10 +20649,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -20767,13 +20660,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20781,7 +20674,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20791,13 +20684,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20805,7 +20698,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20822,13 +20715,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20836,15 +20729,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20852,23 +20745,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20876,15 +20769,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20892,10 +20785,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -20903,13 +20796,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20917,7 +20810,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20927,13 +20820,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -20941,7 +20834,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -20958,20 +20851,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -20980,20 +20873,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21009,20 +20902,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21031,20 +20924,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21060,13 +20953,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21074,15 +20967,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21090,23 +20983,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21114,15 +21007,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21130,10 +21023,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -21141,13 +21034,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21155,7 +21048,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21165,13 +21058,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21179,7 +21072,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21196,13 +21089,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21210,15 +21103,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21226,23 +21119,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21250,15 +21143,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21266,10 +21159,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -21277,13 +21170,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21291,7 +21184,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21301,13 +21194,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21315,7 +21208,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21332,20 +21225,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21354,20 +21247,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21383,20 +21276,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21405,20 +21298,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21436,7 +21329,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 0); } var tmp = {int: 0}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21444,7 +21337,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 0); } var tmp = {int: 0}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21453,7 +21346,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21461,7 +21354,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, v_item);
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21475,13 +21368,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21489,15 +21382,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21505,23 +21398,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21529,15 +21422,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21545,10 +21438,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -21556,13 +21449,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21570,7 +21463,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21580,13 +21473,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21594,7 +21487,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21611,13 +21504,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21625,15 +21518,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21641,23 +21534,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21665,15 +21558,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21681,10 +21574,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -21692,13 +21585,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21706,7 +21599,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21716,13 +21609,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21730,7 +21623,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21747,20 +21640,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21769,20 +21662,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21798,20 +21691,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21820,20 +21713,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -21849,13 +21742,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21863,15 +21756,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21879,23 +21772,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21903,15 +21796,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21919,10 +21812,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -21930,13 +21823,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21944,7 +21837,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21954,13 +21847,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21968,7 +21861,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -21985,13 +21878,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -21999,15 +21892,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -22015,23 +21908,23 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<=>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Lookup.new ) { return Lookup.new('index_exp', (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '$'); } var tmp = {name: 'a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Lookup; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Index.new ) { return Index.new('index_exp', (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -22039,15 +21932,15 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(), 'obj', (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()); } var tmp = {index_exp: (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -22055,10 +21948,10 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 1); } var tmp = {int: 1}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
-})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
+})(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })(),obj: (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_a',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Index; return tmp; })());
     return(List_a);
 })(),code: 'infix:<=>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -22066,13 +21959,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -22080,7 +21973,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -22090,13 +21983,13 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(), 'code', 'infix:<+>', 'namespace', ''); } var tmp = {arguments: (function () { 
@@ -22104,7 +21997,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Val$Int.new ) { return Val$Int.new('int', 2); } var tmp = {int: 2}; tmp._class_ = Val$Int; return tmp; })());
     return(List_a);
 })(),code: 'infix:<+>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
@@ -22121,20 +22014,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -22143,20 +22036,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -22172,20 +22065,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -22194,20 +22087,20 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$', 'twigil', ''); } var tmp = {name: '_i',namespace: '',sigil: '$',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_i', 'namespace', '', 'sigil', '$'); } var tmp = {name: '_i',namespace: '',sigil: '$'}; tmp._class_ = Var; return tmp; })());
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'scalar', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@', 'twigil', ''); } var tmp = {name: '_a',namespace: '',sigil: '@',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', '_a', 'namespace', '', 'sigil', '@'); } var tmp = {name: '_a',namespace: '',sigil: '@'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'scalar',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -22227,7 +22120,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (List_v = (List_s).slice());
     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_x) {         (v__NAMESPACE.push || CORE.push)(CallSub, List_a, List_v[v_x]);; })(a_[i_]) } })((function (a) { for (var i=0, l=(((v__NAMESPACE.scalar || CORE.scalar)(CallSub, List_v) - 1)); i<=l; ++i){ a.push(i) }; return a })([]));
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -22235,14 +22128,14 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'prefix:<' + String.fromCharCode(92) + '>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'prefix:<' + String.fromCharCode(92) + '>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -22251,7 +22144,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (List_v = (List_s).slice());
     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_x) {         (v__NAMESPACE.push || CORE.push)(CallSub, List_a, List_v[v_x]);; })(a_[i_]) } })((function (a) { for (var i=0, l=(((v__NAMESPACE.scalar || CORE.scalar)(CallSub, List_v) - 1)); i<=l; ++i){ a.push(i) }; return a })([]));
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -22259,14 +22152,14 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'prefix:<' + String.fromCharCode(92) + '>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'prefix:<' + String.fromCharCode(92) + '>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -22275,7 +22168,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (List_v = (List_s).slice());
     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_x) {         (v__NAMESPACE.push || CORE.push)(CallSub, List_a, List_v[v_x]);; })(a_[i_]) } })((function (a) { for (var i=0, l=(((v__NAMESPACE.scalar || CORE.scalar)(CallSub, List_v) - 1)); i<=l; ++i){ a.push(i) }; return a })([]));
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -22283,14 +22176,14 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'prefix:<' + String.fromCharCode(92) + '>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'prefix:<' + String.fromCharCode(92) + '>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);
@@ -22299,7 +22192,7 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Decl.new ) { return Decl.new('decl', 'my', 'type', '', 'var', (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })()); } var tmp = {decl: 'my',type: '',var: (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })()}; tmp._class_ = Decl; return tmp; })());
     (List_v = (List_s).slice());
     (function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_x) {         (v__NAMESPACE.push || CORE.push)(CallSub, List_a, List_v[v_x]);; })(a_[i_]) } })((function (a) { for (var i=0, l=(((v__NAMESPACE.scalar || CORE.scalar)(CallSub, List_v) - 1)); i<=l; ++i){ a.push(i) }; return a })([]));
     (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Apply.new ) { return Apply.new('arguments', (function () { 
@@ -22307,14 +22200,14 @@ if (typeof Lit$Hash !== 'object') {
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(), 'code', 'prefix:<' + String.fromCharCode(92) + '>', 'namespace', ''); } var tmp = {arguments: (function () { 
     var List_a = [];
 
     var List_v = [];
 
-    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%', 'twigil', ''); } var tmp = {name: 'a',namespace: '',sigil: '%',twigil: ''}; tmp._class_ = Var; return tmp; })());
+    (v__NAMESPACE.push || CORE.push)(CallSub, List_a, (function () { if (Var.new ) { return Var.new('name', 'a', 'namespace', '', 'sigil', '%'); } var tmp = {name: 'a',namespace: '',sigil: '%'}; tmp._class_ = Var; return tmp; })());
     return(List_a);
 })(),code: 'prefix:<' + String.fromCharCode(92) + '>',namespace: ''}; tmp._class_ = Apply; return tmp; })());
     return(List_a);

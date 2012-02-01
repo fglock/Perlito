@@ -104,14 +104,6 @@ sub eval {
         if ($self->{"sigil"} eq '@') && ($self->{"name"} eq 'ARGV') {
             return @ARGV
         }
-        if ($self->{"twigil"} eq '.') {
-            warn 'Interpreter TODO: $.' . $self->{"name"};
-            return '$self->{' . $self->{"name"} . '}'
-        }
-        if ($self->{"name"} eq 'MATCH') {
-            warn 'Interpreter TODO: $MATCH';
-            return $self->{"sigil"} . 'MATCH'
-        }
     }
 
     my $name = $self->{"sigil"} . $ns . $self->{"name"};

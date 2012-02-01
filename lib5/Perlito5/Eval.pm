@@ -124,14 +124,6 @@ package main;
         else {
             if (((($self->{('sigil')} eq chr(64))) && (($self->{('name')} eq 'ARGV')))) {
                 return ((\@ARGV))
-            };
-            if ((($self->{('twigil')} eq '.'))) {
-                warn(('Interpreter TODO: ' . chr(36) . '.' . $self->{('name')}));
-                return ((chr(36) . 'self->' . chr(123) . $self->{('name')} . chr(125)))
-            };
-            if ((($self->{('name')} eq 'MATCH'))) {
-                warn('Interpreter TODO: ' . chr(36) . 'MATCH');
-                return (($self->{('sigil')} . 'MATCH'))
             }
         };
         ((my  $name) = ($self->{('sigil')} . $ns . $self->{('name')}));

@@ -45,7 +45,7 @@ sub expand_interpolation {
             push @s,
                 Apply->new(
                     'arguments' => [
-                            Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
+                            Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@'),
                             $item
                         ],
                     'code' => 'infix:<=>',
@@ -54,12 +54,12 @@ sub expand_interpolation {
             push @s,
                 For->new(
                     'body' => Lit::Block->new(
-                        'sig' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
+                        'sig' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$'),
                         'stmts' => [
                             Apply->new(
                                 'arguments' => [
-                                    Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
-                                    Index->new('index_exp' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$', 'twigil' => ''), 'obj' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '$', 'twigil' => ''))],
+                                    Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@'),
+                                    Index->new('index_exp' => Var->new('name' => 'x', 'namespace' => '', 'sigil' => '$'), 'obj' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '$'))],
                                 'code' => 'push',
                                 'namespace' => '')
                         ]
@@ -73,7 +73,7 @@ sub expand_interpolation {
                                         'arguments' => [
                                             Apply->new(
                                                 'arguments' => [
-                                                    Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => '')],
+                                                    Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@')],
                                                 'code' => 'scalar',
                                                 'namespace' => ''), 
                                             Val::Int->new('int' => 1)
@@ -92,7 +92,7 @@ sub expand_interpolation {
             push @s,
                 Apply->new(
                     'arguments' => [
-                        Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
+                        Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@'),
                         $item ],
                     'code' => 'push',
                     'namespace' => '');
@@ -105,15 +105,15 @@ sub expand_interpolation {
                 Decl->new(
                     'decl' => 'my',
                     'type' => '',
-                    'var' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => '')),
+                    'var' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@')),
                 Decl->new(
                     'decl' => 'my',
                     'type' => '',
-                    'var' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@', 'twigil' => '')),
+                    'var' => Var->new('name' => 'v', 'namespace' => '', 'sigil' => '@')),
                 @s,
                 Apply->new(
                     arguments => [
-                            Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@', 'twigil' => ''),
+                            Var->new('name' => 'a', 'namespace' => '', 'sigil' => '@'),
                         ],
                     code => 'prefix:<\\>',
                     namespace => '',
@@ -147,7 +147,7 @@ sub expand_interpolation {
                     'arguments' => [
                         Lookup->new(
                             'index_exp' => $item->arguments[0],
-                            'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '')),
+                            'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '$')),
                         $item->arguments[1]
                     ],
                     'code' => 'infix:<=>',
@@ -158,20 +158,20 @@ sub expand_interpolation {
               )
         {
             my $v = $item;
-            $v = Var->new( sigil => '$', twigil => $item->twigil, namespace => $item->namespace, name => $item->name )
+            $v = Var->new( sigil => '$', namespace => $item->namespace, name => $item->name )
                 if $item->isa( 'Var' );
             push @s,
                 For->new(
                     'body' => Lit::Block->new(
-                                'sig' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
+                                'sig' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$'),
                                 'stmts' => [Apply->new(
                                         'arguments' => [
                                             Lookup->new(
-                                                    'index_exp' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
-                                                    'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '')
+                                                    'index_exp' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$'),
+                                                    'obj' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '$')
                                                 ),
                                             Lookup->new(
-                                                    'index_exp' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$', 'twigil' => ''),
+                                                    'index_exp' => Var->new('name' => 'p', 'namespace' => '', 'sigil' => '$'),
                                                     'obj' => $v
                                                 ),
                                         ],
@@ -203,10 +203,10 @@ sub expand_interpolation {
                     'block' => Lit::Block->new(
                         'sig'   => undef,
                         'stmts' => [
-                            Apply->new( 'arguments' => [ Decl->new( 'decl' => 'my', 'type' => '', 'var' => Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), Val::Int->new( 'int' => 0 ) ], 'code' => 'infix:<=>', 'namespace' => '' ),
+                            Apply->new( 'arguments' => [ Decl->new( 'decl' => 'my', 'type' => '', 'var' => Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$') ), Val::Int->new( 'int' => 0 ) ], 'code' => 'infix:<=>', 'namespace' => '' ),
                             Apply->new( 
                                 'arguments' => [ 
-                                    Decl->new( 'decl' => 'my', 'type' => '', 'var' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' ) ), 
+                                    Decl->new( 'decl' => 'my', 'type' => '', 'var' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '@') ), 
                                     $item
                                 ], 
                                 'code' => 'infix:<=>', 
@@ -219,21 +219,21 @@ sub expand_interpolation {
                                         Apply->new( 
                                             'arguments' => [ 
                                                 Lookup->new( 
-                                                    'index_exp' => Index->new( 'index_exp' => Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), 'obj' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), 
-                                                    'obj' => Var->new( 'name' => 'a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ), 
-                                                Index->new( 'index_exp' => Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Val::Int->new( 'int' => 1 ) ], 'code' => 'infix:<+>', 'namespace' => '' ), 'obj' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ) ) 
+                                                    'index_exp' => Index->new( 'index_exp' => Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$'), 'obj' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '$') ), 
+                                                    'obj' => Var->new( 'name' => 'a', 'namespace' => '', 'sigil' => '$') ), 
+                                                Index->new( 'index_exp' => Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$'), Val::Int->new( 'int' => 1 ) ], 'code' => 'infix:<+>', 'namespace' => '' ), 'obj' => Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '$') ) 
                                             ], 
                                             'code' => 'infix:<=>', 
                                             'namespace' => '' 
                                         ),
-                                        Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), Val::Int->new( 'int' => 2 ) ], 'code' => 'infix:<+>', 'namespace' => '' ) ], 'code' => 'infix:<=>', 'namespace' => '' )
+                                        Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$'), Apply->new( 'arguments' => [ Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$'), Val::Int->new( 'int' => 2 ) ], 'code' => 'infix:<+>', 'namespace' => '' ) ], 'code' => 'infix:<=>', 'namespace' => '' )
                                     ]
                                 ),
                                 'cond' => Apply->new( 'arguments' => [ 
                                         Apply->new( 'arguments' => [ 
-                                            Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$', 'twigil' => '' ), 
+                                            Var->new( 'name' => '_i', 'namespace' => '', 'sigil' => '$'), 
                                             Apply->new(
-                                                'arguments' => [Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '@', 'twigil' => '' )], 'code' => 'scalar', 'namespace' => '' 
+                                                'arguments' => [Var->new( 'name' => '_a', 'namespace' => '', 'sigil' => '@')], 'code' => 'scalar', 'namespace' => '' 
                                             ) ], 
                                         'code' => 'infix:<<>', 'namespace' => '' ) 
                                     ], 'code' => 'circumfix:<( )>', 'namespace' => '' )
@@ -254,11 +254,11 @@ sub expand_interpolation {
                 Decl->new(
                     'decl' => 'my',
                     'type' => '',
-                    'var' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => '')),
+                    'var' => Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%')),
                 @s,
                 Apply->new(
                     arguments => [
-                            Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%', 'twigil' => ''),
+                            Var->new('name' => 'a', 'namespace' => '', 'sigil' => '%'),
                         ],
                     code => 'prefix:<\\>',
                     namespace => '',

@@ -62,7 +62,6 @@ sub index_exp { $_[0]->{'index_exp'} }
 package Var;
 sub new { my $class = shift; bless {@_}, $class }
 sub sigil { $_[0]->{'sigil'} }
-sub twigil { $_[0]->{'twigil'} }
 sub namespace { $_[0]->{'namespace'} }
 sub name { $_[0]->{'name'} }
 

@@ -190,7 +190,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             if (((Perlito5::Runtime::isa($self->{('obj')}, 'Var') && ($self->{('obj')}->sigil() eq chr(36))))) {
-                ((my  $v) = Var->new(('sigil' => chr(64)), ('twigil' => $self->{('obj')}->twigil()), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
+                ((my  $v) = Var->new(('sigil' => chr(64)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
                 return (($v->emit_perl5_indented($level) . '->[' . $self->{('index_exp')}->emit_perl5() . ']'))
             };
             ($self->{('obj')}->emit_perl5_indented($level) . '->[' . $self->{('index_exp')}->emit_perl5() . ']')
@@ -208,7 +208,7 @@ package main;
             ((my  $self) = $List__->[0]);
             ((my  $level) = $List__->[1]);
             if ((((Perlito5::Runtime::isa($self->{('obj')}, 'Var') && ($self->{('obj')}->sigil() eq chr(36))) && ($self->{('obj')}->name() ne 'MATCH')))) {
-                ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{('obj')}->twigil()), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
+                ((my  $v) = Var->new(('sigil' => chr(37)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
                 return (($v->emit_perl5_indented($level) . '->' . chr(123) . $self->{('index_exp')}->emit_perl5() . chr(125)))
             };
             ($self->{('obj')}->emit_perl5_indented($level) . '->' . chr(123) . $self->{('index_exp')}->emit_perl5() . chr(125))
@@ -240,19 +240,6 @@ package main;
             else {
                 if (((($self->{('sigil')} eq chr(64)) && ($self->{('name')} eq 'ARGV')))) {
                     return ((Perl5::tab($level) . '(' . chr(92) . chr(64) . 'ARGV)'))
-                };
-                if ((($self->{('twigil')} eq '.'))) {
-                    if ((($self->{('sigil')} eq chr(37)))) {
-                        return ((Perl5::tab($level) . '(' . 'defined ' . chr(36) . 'self->' . chr(123) . $self->{('name')} . chr(125) . ' ' . chr(63) . ' ' . chr(36) . 'self->' . chr(123) . $self->{('name')} . chr(125) . ' ' . ': (' . chr(36) . 'self->' . chr(123) . $self->{('name')} . (chr(125) . ' ' . chr(61) . ' bless(' . chr(123) . chr(125) . ', ' . chr(39) . 'HASH' . chr(39) . ')))')))
-                    }
-                    else {
-                        if ((($self->{('sigil')} eq chr(64)))) {
-                            return ((Perl5::tab($level) . '(' . 'defined ' . chr(36) . 'self->' . chr(123) . $self->{('name')} . chr(125) . ' ' . chr(63) . ' ' . chr(36) . 'self->' . chr(123) . $self->{('name')} . chr(125) . ' ' . ': (' . chr(36) . 'self->' . chr(123) . $self->{('name')} . (chr(125) . ' ' . chr(124) . chr(124) . chr(61) . ' bless([], ' . chr(39) . 'ARRAY' . chr(39) . ')))')))
-                        }
-                        else {
-                            return ((Perl5::tab($level) . chr(36) . 'self->' . chr(123) . $self->{('name')} . chr(125)))
-                        }
-                    }
                 }
             };
             return ((Perl5::tab($level) . $table->{$self->{('sigil')}} . $ns . $self->{('name')}))

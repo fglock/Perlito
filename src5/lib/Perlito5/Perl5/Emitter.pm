@@ -186,7 +186,7 @@ package Index;
            && $self->{"obj"}->sigil eq '$'
            )
         {
-            my $v = Var->new( sigil => '@', twigil => $self->{"obj"}->twigil, namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
+            my $v = Var->new( sigil => '@', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
             return $v->emit_perl5_indented($level) . '->[' . $self->{"index_exp"}->emit_perl5() . ']';
         }
 
@@ -209,7 +209,7 @@ package Lookup;
            && $self->{"obj"}->name ne 'MATCH'  # XXX $MATCH is the Perl6 match object
            )
         {
-            my $v = Var->new( sigil => '%', twigil => $self->{"obj"}->twigil, namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
+            my $v = Var->new( sigil => '%', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
             return $v->emit_perl5_indented($level) . '->{' . $self->{"index_exp"}->emit_perl5() . '}';
         }
 
@@ -240,23 +240,6 @@ package Var;
         else {
             if ($self->{"sigil"} eq '@' && $self->{"name"} eq 'ARGV') {
                 return Perl5::tab($level) . '(\\@ARGV)'
-            }
-            if ($self->{"twigil"} eq '.') {
-                if ($self->{"sigil"} eq '%') {
-                    return Perl5::tab($level) . '('
-                        . 'defined $self->{' . $self->{"name"} . '} '
-                        . '? $self->{' . $self->{"name"} . '} '
-                        . ': ($self->{' . $self->{"name"} . "} = bless(\{}, 'HASH')))"
-                }
-                elsif ($self->{"sigil"} eq '@') {
-                    return Perl5::tab($level) . '('
-                        . 'defined $self->{' . $self->{"name"} . '} '
-                        . '? $self->{' . $self->{"name"} . '} '
-                        . ': ($self->{' . $self->{"name"} . "} ||= bless([], 'ARRAY')))"
-                }
-                else {
-                    return Perl5::tab($level) . '$self->{' . $self->{"name"} . '}'
-                }
             }
         }
         return Perl5::tab($level) . $table->{$self->{"sigil"}} . $ns . $self->{"name"}

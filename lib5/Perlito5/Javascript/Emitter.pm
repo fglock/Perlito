@@ -90,7 +90,7 @@ package main;
             };
             if ((Perlito5::Runtime::isa($ast, 'Var'))) {
                 if (((($type eq 'HASH') && ($ast->sigil() eq chr(36))))) {
-                    ($ast = Var->new(('sigil' => chr(37)), ('twigil' => $ast->twigil()), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
+                    ($ast = Var->new(('sigil' => chr(37)), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
                     ((my  $var_js) = $ast->emit_javascript());
                     return ((do {
     (my  $List_a = bless [], 'ARRAY');
@@ -101,7 +101,7 @@ package main;
                 }
                 else {
                     if (((($type eq 'ARRAY') && ($ast->sigil() eq chr(36))))) {
-                        ($ast = Var->new(('sigil' => chr(64)), ('twigil' => $ast->twigil()), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
+                        ($ast = Var->new(('sigil' => chr(64)), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
                         ((my  $var_js) = $ast->emit_javascript());
                         return ((do {
     (my  $List_a = bless [], 'ARRAY');
@@ -514,7 +514,7 @@ package main;
             ((my  $self) = shift());
             ((my  $level) = shift());
             if (((Perlito5::Runtime::isa($self->{('obj')}, 'Var') && ($self->{('obj')}->sigil() eq chr(36))))) {
-                ((my  $v) = Var->new(('sigil' => chr(64)), ('twigil' => $self->{('obj')}->twigil()), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
+                ((my  $v) = Var->new(('sigil' => chr(64)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
                 return (($v->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
             };
             (Javascript::tab($level) . $self->{('obj')}->emit_javascript() . '[' . $self->{('index_exp')}->emit_javascript() . ']')
@@ -531,7 +531,7 @@ package main;
             ((my  $self) = shift());
             ((my  $level) = shift());
             if (((Perlito5::Runtime::isa($self->{('obj')}, 'Var') && ($self->{('obj')}->sigil() eq chr(36))))) {
-                ((my  $v) = Var->new(('sigil' => chr(37)), ('twigil' => $self->{('obj')}->twigil()), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
+                ((my  $v) = Var->new(('sigil' => chr(37)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
                 return (($v->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
             };
             return (($self->{('obj')}->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
@@ -559,7 +559,7 @@ package main;
             if (($self->{('namespace')})) {
                 ($ns = (Perlito5::Runtime::to_javascript_namespace($self->{('namespace')}) . '.'))
             };
-            ((($self->{('twigil')} eq '.')) ? (('v_self.' . $self->{('name')} . '')) : (($table->{$self->{('sigil')}} . $ns . $self->{('name')})))
+            ($table->{$self->{('sigil')}} . $ns . $self->{('name')})
         };
         sub plain_name {
             my $List__ = bless \@_, "ARRAY";
@@ -770,7 +770,7 @@ package main;
                 if ((Perlito5::Runtime::isa($arg, 'Lookup'))) {
                     ((my  $v) = $arg->obj());
                     if (((Perlito5::Runtime::isa($v, 'Var') && ($v->sigil() eq chr(36))))) {
-                        ($v = Var->new(('sigil' => chr(37)), ('twigil' => $v->twigil()), ('namespace' => $v->namespace()), ('name' => $v->name())))
+                        ($v = Var->new(('sigil' => chr(37)), ('namespace' => $v->namespace()), ('name' => $v->name())))
                     };
                     return (('(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
                 };
@@ -838,7 +838,7 @@ package main;
                 ((my  $str) = '');
                 ((my  $var) = $parameters->obj());
                 if (((Perlito5::Runtime::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
-                    ($var = Var->new(('sigil' => chr(37)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
+                    ($var = Var->new(('sigil' => chr(37)), ('namespace' => $var->namespace()), ('name' => $var->name())))
                 };
                 ((my  $var_js) = $var->emit_javascript());
                 ((my  $auto) = Javascript::autovivify($parameters, 'ARRAYREF'));
@@ -852,7 +852,7 @@ package main;
                 ((my  $str) = '');
                 ((my  $var) = $parameters->obj());
                 if (((Perlito5::Runtime::isa($var, 'Var') && ($var->sigil() eq chr(36))))) {
-                    ($var = Var->new(('sigil' => chr(64)), ('twigil' => $var->twigil()), ('namespace' => $var->namespace()), ('name' => $var->name())))
+                    ($var = Var->new(('sigil' => chr(64)), ('namespace' => $var->namespace()), ('name' => $var->name())))
                 };
                 ((my  $var_js) = $var->emit_javascript());
                 ((my  $auto) = Javascript::autovivify($parameters, 'ARRAYREF'));

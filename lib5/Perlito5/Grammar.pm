@@ -777,38 +777,6 @@ package main;
 }))));
         $MATCH
     };
-    sub var_twigil {
-        my $List__ = bless \@_, "ARRAY";
-        ((my  $grammar) = $List__->[0]);
-        ((my  $str) = $List__->[1]);
-        ((my  $pos) = $List__->[2]);
-        ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        ($MATCH->{('bool')} = (((do {
-    ((my  $pos1) = $MATCH->to());
-    ((do {
-    ((my  $last_pos) = $MATCH->to());
-    if ((!(((do {
-    ((my  $pos1) = $MATCH->to());
-    (((((do {
-    (('.' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
-})) || ((do {
-    ($MATCH->{('to')} = $pos1);
-    ((((chr(33) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
-}))) || ((do {
-    ($MATCH->{('to')} = $pos1);
-    ((((chr(94) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
-}))) || ((do {
-    ($MATCH->{('to')} = $pos1);
-    (((('*' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
-})))
-}))))) {
-        ($MATCH->{('to')} = $last_pos)
-    };
-    1
-}))
-}))));
-        $MATCH
-    };
     sub var_name {
         my $List__ = bless \@_, "ARRAY";
         ((my  $grammar) = $List__->[0]);
@@ -853,7 +821,7 @@ package main;
         ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    ((((((do {
+    (((((do {
     ((my  $m2) = $grammar->var_sigil($str, $MATCH->to()));
     if (($m2->bool())) {
         ($MATCH->{('to')} = $m2->to());
@@ -864,16 +832,6 @@ package main;
         0
     }
 })) && ((do {
-    ((my  $m2) = $grammar->var_twigil($str, $MATCH->to()));
-    if (($m2->bool())) {
-        ($MATCH->{('to')} = $m2->to());
-        ($MATCH->{'var_twigil'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
     ((my  $m2) = $grammar->optional_namespace_before_ident($str, $MATCH->to()));
     if (($m2->bool())) {
         ($MATCH->{('to')} = $m2->to());
@@ -894,7 +852,7 @@ package main;
         0
     }
 }))) && ((do {
-    ($MATCH->{('capture')} = Var->new(('sigil' => $MATCH->{('var_sigil')}->flat()), ('twigil' => $MATCH->{('var_twigil')}->flat()), ('namespace' => $MATCH->{('optional_namespace_before_ident')}->flat()), ('name' => $MATCH->{('var_name')}->flat())));
+    ($MATCH->{('capture')} = Var->new(('sigil' => $MATCH->{('var_sigil')}->flat()), ('namespace' => $MATCH->{('optional_namespace_before_ident')}->flat()), ('name' => $MATCH->{('var_name')}->flat())));
     1
 })))
 }))
@@ -1522,7 +1480,7 @@ package main;
         0
     }
 }))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
-    ($MATCH->{('capture')} = Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => $MATCH->{('ident')}->flat())));
+    ($MATCH->{('capture')} = Var->new(('sigil' => chr(36)), ('name' => $MATCH->{('ident')}->flat())));
     1
 }))))
 }))) || ((do {
@@ -1929,7 +1887,7 @@ package main;
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((do {
-    ($MATCH->{('capture')} = Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self')));
+    ($MATCH->{('capture')} = Var->new(('sigil' => chr(36)), ('name' => 'self')));
     1
 })))
 })))
@@ -2039,7 +1997,7 @@ package main;
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((do {
-    ($MATCH->{('capture')} = Sig->new(('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self'))), ('positional' => (do {
+    ($MATCH->{('capture')} = Sig->new(('invocant' => Var->new(('sigil' => chr(36)), ('name' => 'self'))), ('positional' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
