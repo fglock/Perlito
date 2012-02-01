@@ -1,10 +1,13 @@
 Perlito5 Data model Overview
 
 method call
-- native
+- lookup the method in _class_
+- do a native call
 
 subroutine call 
-- same as a method call, but the first argument is set to "CallSub"
+- lookup the method in the current namespace
+- if not found, lookup the method in CORE
+- do a native method call, but the first argument is set to "CallSub"
 
 Hash
 - native {}
@@ -25,7 +28,7 @@ ScalarRef
 - TODO
 
 Object
-- native {} with prototype set to the class
+- native {} with a _class_ attribute
 
 Class
 - TODO

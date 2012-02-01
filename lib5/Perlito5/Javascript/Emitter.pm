@@ -626,7 +626,10 @@ package main;
                         die('Error in constructor, field: ', $field)
                     }
                 };
-                return (('(function () ' . chr(123) . ' ' . 'if (' . Perlito5::Runtime::to_javascript_namespace($invocant) . '.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ) ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . join(',', @{($str)}) . chr(125) . chr(59) . ' ' . 'tmp.__proto__ ' . chr(61) . ' ' . Perlito5::Runtime::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
+                if ((Perlito5::Runtime::isa($self->{invocant}, 'Proto'))) {
+                    return (('(function () ' . chr(123) . ' ' . 'if (' . Perlito5::Runtime::to_javascript_namespace($invocant) . '.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ' . ') ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . join(',', @{($str)}) . chr(125) . chr(59) . ' ' . 'tmp._class_ ' . chr(61) . ' ' . Perlito5::Runtime::to_javascript_namespace($invocant) . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
+                };
+                return (('(function () ' . chr(123) . ' ' . 'if (' . Perlito5::Runtime::to_javascript_namespace($invocant) . '._class_ ' . chr(38) . chr(38) . ' ' . Perlito5::Runtime::to_javascript_namespace($invocant) . '._class_.hasOwnProperty(' . chr(34) . 'new' . chr(34) . ') ' . ') ' . chr(123) . ' ' . 'return ' . $invocant . '._class_.new(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . join(',', @{($str)}) . chr(125) . chr(59) . ' ' . 'tmp._class_ ' . chr(61) . ' ' . Perlito5::Runtime::to_javascript_namespace($invocant) . '._class_' . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
             };
             ((my  $meth) = $self->{method});
             if ((($self->{method} eq 'postcircumfix:<[ ]>'))) {
@@ -656,7 +659,7 @@ package main;
             for ( @{($self->{arguments})} ) {
                 push( @{$List_args}, $_->emit_javascript() )
             };
-            return ((Javascript::tab($level) . '(' . 'typeof(' . $invocant . '.__proto__) ' . chr(33) . chr(61) . ' ' . chr(39) . 'undefined' . chr(39) . ' ' . chr(38) . chr(38) . ' ' . $invocant . '.__proto__.hasOwnProperty(' . chr(34) . ($meth) . chr(34) . ') ' . chr(63) . ' ' . $invocant . '.__proto__.' . ($meth) . '.call(' . join(',', @{$List_args}) . ') ' . ': ' . $invocant . '.' . ($meth) . '(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')' . ')'))
+            return ((Javascript::tab($level) . '(' . $invocant . '._class_ ' . chr(38) . chr(38) . ' ' . $invocant . '._class_.hasOwnProperty(' . chr(34) . ($meth) . chr(34) . ') ' . chr(63) . ' ' . $invocant . '._class_.' . ($meth) . '.call(' . join(',', @{$List_args}) . ') ' . ': ' . $invocant . '.' . ($meth) . '(' . join(', ', @{[map($_->emit_javascript(), @{($self->{arguments})})]}) . ')' . ')'))
         }
     }
 

@@ -19,26 +19,26 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
-    ((((chr(10) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ((((chr(10) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
-    ((chr(13) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(13) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((((chr(13) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ($MATCH->{('to')} = $pos1);
+    (((((chr(13) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
-    ((chr(10) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(10) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 }))))
@@ -52,18 +52,18 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $m2) = $grammar->is_newline($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -71,10 +71,10 @@ package main;
     }
 }))
 })));
-    (($tmp)->{bool} = !($MATCH->bool()));
+    ($tmp->{('bool')} = !($MATCH->bool()));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
-})) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+})) && ((('' ne substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))
 }))));
         $MATCH
@@ -85,18 +85,18 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -104,7 +104,7 @@ package main;
     }
 }))
 })));
-    (($tmp)->{bool} = !($MATCH->bool()));
+    ($tmp->{('bool')} = !($MATCH->bool()));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
 })) && ((do {
@@ -114,7 +114,7 @@ package main;
     for ( ; ((((do {
     ((my  $m2) = $grammar->word($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -130,7 +130,7 @@ package main;
         ($last_pos = $MATCH->to());
         ($count = ($count + 1))
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     ($count > 0)
 })))
 }))
@@ -143,13 +143,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -161,10 +161,10 @@ package main;
     for ( ; ((((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    (((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && ((do {
+    (((('::' eq substr($str, $MATCH->to(), 2)) && (($MATCH->{('to')} = (2 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -181,7 +181,7 @@ package main;
         };
         ($last_pos = $MATCH->to())
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     1
 })))
 }))
@@ -194,13 +194,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -209,13 +209,13 @@ package main;
 })) && ((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    (('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
+    (('::' eq substr($str, $MATCH->to(), 2)) && (($MATCH->{('to')} = (2 + $MATCH->to()))))
 }))
 })));
-    (($tmp)->{bool} = ($MATCH->bool() ? 1 : 0));
+    ($tmp->{('bool')} = ($MATCH->bool() ? 1 : 0));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
 }))) && ((do {
@@ -224,10 +224,10 @@ package main;
     for ( ; ((((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    ((((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))) && ((do {
+    ((((('::' eq substr($str, $MATCH->to(), 2)) && (($MATCH->{('to')} = (2 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -236,13 +236,13 @@ package main;
 }))) && ((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    (('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
+    (('::' eq substr($str, $MATCH->to(), 2)) && (($MATCH->{('to')} = (2 + $MATCH->to()))))
 }))
 })));
-    (($tmp)->{bool} = ($MATCH->bool() ? 1 : 0));
+    ($tmp->{('bool')} = ($MATCH->bool() ? 1 : 0));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
 })))
@@ -256,7 +256,7 @@ package main;
         };
         ($last_pos = $MATCH->to())
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     1
 })))
 }))
@@ -269,27 +269,27 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     ((((do {
     ((my  $m2) = $grammar->namespace_before_ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'namespace_before_ident'} = $m2);
         1
     }
     else {
         0
     }
-})) && ((('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to())))))) && ((do {
-    (($MATCH)->{capture} = $MATCH->{('namespace_before_ident')}->flat());
+})) && ((('::' eq substr($str, $MATCH->to(), 2)) && (($MATCH->{('to')} = (2 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('capture')} = $MATCH->{('namespace_before_ident')}->flat());
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((1 && ((do {
-    (($MATCH)->{capture} = '');
+    ($MATCH->{('capture')} = '');
     1
 }))))
 })))
@@ -302,25 +302,25 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     ((((do {
     ((my  $m2) = $grammar->is_newline($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
-})) && (((chr(61) . 'end' eq substr($str, $MATCH->to(), 4)) && ((($MATCH)->{to} = (4 + $MATCH->to())))))) && ((do {
+})) && (((chr(61) . 'end' eq substr($str, $MATCH->to(), 4)) && (($MATCH->{('to')} = (4 + $MATCH->to())))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     for ( ; ((((do {
     ((my  $m2) = $grammar->not_newline($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -335,18 +335,18 @@ package main;
         };
         ($last_pos = $MATCH->to())
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ($MATCH->{('to')} = $pos1);
+    (((((('' ne substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     for ( ; ((((do {
     ((my  $m2) = $grammar->not_newline($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -361,12 +361,12 @@ package main;
         };
         ($last_pos = $MATCH->to())
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     1
 }))) && ((do {
     ((my  $m2) = $grammar->pod_begin($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -383,7 +383,7 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $last_match_null) = 0);
@@ -392,13 +392,13 @@ package main;
     for ( ; ((((do {
     ((my  $pos1) = $MATCH->to());
     ((((do {
-    ((((chr(35) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ((((chr(35) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     for ( ; ((((do {
     ((my  $m2) = $grammar->not_newline($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -413,31 +413,31 @@ package main;
         };
         ($last_pos = $MATCH->to())
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
-    ((((chr(10) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ((((chr(10) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
-    ((chr(13) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(13) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((((chr(13) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ($MATCH->{('to')} = $pos1);
+    (((((chr(13) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
-    ((chr(10) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(10) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 }))))
@@ -445,10 +445,10 @@ package main;
 })) && ((do {
     ((my  $pos1) = $MATCH->to());
     ((((do {
-    ((((chr(61) . 'begin' eq substr($str, $MATCH->to(), 6)) && ((($MATCH)->{to} = (6 + $MATCH->to()))))) && ((do {
+    ((((chr(61) . 'begin' eq substr($str, $MATCH->to(), 6)) && (($MATCH->{('to')} = (6 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->pod_begin($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -456,11 +456,11 @@ package main;
     }
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((((chr(61) . 'for' eq substr($str, $MATCH->to(), 4)) && ((($MATCH)->{to} = (4 + $MATCH->to()))))) && ((do {
+    ($MATCH->{('to')} = $pos1);
+    (((((chr(61) . 'for' eq substr($str, $MATCH->to(), 4)) && (($MATCH->{('to')} = (4 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->pod_begin($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -468,16 +468,16 @@ package main;
     }
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     (1)
 })))
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     (((do {
     ((my  $m2) = $grammar->space($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -495,7 +495,7 @@ package main;
         ($last_pos = $MATCH->to());
         ($count = ($count + 1))
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     ($count > 0)
 }))
 }))));
@@ -507,21 +507,21 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 }))
@@ -534,21 +534,21 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 }))
@@ -561,21 +561,21 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 }))
@@ -588,13 +588,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((((((((do {
     ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'full_ident'} = $m2);
         1
     }
@@ -606,35 +606,35 @@ package main;
     if ((!(((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
-}))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+}))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 }))) && ((do {
     ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
     }
@@ -646,18 +646,18 @@ package main;
     if ((!(((do {
     ((my  $m2) = $grammar->ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
-}))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    (($MATCH)->{capture} = CompUnit->new(('name' => $MATCH->{('full_ident')}->flat()), ('body' => $MATCH->{('exp_stmts')}->flat())));
+}))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('capture')} = CompUnit->new(('name' => $MATCH->{('full_ident')}->flat()), ('body' => $MATCH->{('exp_stmts')}->flat())));
     1
 })))
 }))
@@ -670,16 +670,16 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((((do {
-    (('my' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
+    (('my' eq substr($str, $MATCH->to(), 2)) && (($MATCH->{('to')} = (2 + $MATCH->to()))))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((('state' eq substr($str, $MATCH->to(), 5)) && ((($MATCH)->{to} = (5 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    (((('state' eq substr($str, $MATCH->to(), 5)) && (($MATCH->{('to')} = (5 + $MATCH->to()))))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((('has' eq substr($str, $MATCH->to(), 3)) && ((($MATCH)->{to} = (3 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    (((('has' eq substr($str, $MATCH->to(), 3)) && (($MATCH->{('to')} = (3 + $MATCH->to()))))))
 })))
 }))));
         $MATCH
@@ -690,13 +690,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
     ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
     }
@@ -704,7 +704,7 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = $MATCH->{('exp_stmts')}->flat());
+    ($MATCH->{('capture')} = $MATCH->{('exp_stmts')}->flat());
     1
 })))
 }))
@@ -717,13 +717,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
     ((my  $m2) = Perlito5::Expression->exp_parse($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'Perlito5::Expression.exp_parse'} = $m2);
         1
     }
@@ -731,7 +731,7 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = $MATCH->{('Perlito5::Expression.exp_parse')}->flat());
+    ($MATCH->{('capture')} = $MATCH->{('Perlito5::Expression.exp_parse')}->flat());
     1
 })))
 }))
@@ -744,13 +744,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
     ((my  $m2) = Perlito5::Expression->exp_parse($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'Perlito5::Expression.exp_parse'} = $m2);
         1
     }
@@ -758,7 +758,7 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = $MATCH->{('Perlito5::Expression.exp_parse')}->flat());
+    ($MATCH->{('capture')} = $MATCH->{('Perlito5::Expression.exp_parse')}->flat());
     1
 })))
 }))
@@ -771,13 +771,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     (((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'ident'} = $m2);
         1
     }
@@ -785,13 +785,13 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = $MATCH->{('ident')}->flat());
+    ($MATCH->{('capture')} = $MATCH->{('ident')}->flat());
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((1 && ((do {
-    (($MATCH)->{capture} = 'postcircumfix:<( )>');
+    ($MATCH->{('capture')} = 'postcircumfix:<( )>');
     1
 }))))
 })))
@@ -804,21 +804,21 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     ((((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
-    (('::' eq substr($str, $MATCH->to(), 2)) && ((($MATCH)->{to} = (2 + $MATCH->to()))))
+    (('::' eq substr($str, $MATCH->to(), 2)) && (($MATCH->{('to')} = (2 + $MATCH->to()))))
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 })) && ((do {
     ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'full_ident'} = $m2);
         1
     }
@@ -826,13 +826,13 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = $MATCH->{('full_ident')}->flat());
+    ($MATCH->{('capture')} = $MATCH->{('full_ident')}->flat());
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((1 && ((do {
-    (($MATCH)->{capture} = '');
+    ($MATCH->{('capture')} = '');
     1
 }))))
 })))
@@ -845,19 +845,19 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((((do {
-    ((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(36) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(37) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(37) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(64) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(64) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(38) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(38) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 })))
 }))));
         $MATCH
@@ -868,26 +868,26 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
     ((my  $pos1) = $MATCH->to());
     (((((do {
-    (('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    (('.' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(33) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(33) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(94) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(94) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((('*' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    (((('*' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 })))
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 }))
@@ -900,12 +900,12 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     ((my  $m2) = $grammar->full_ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'full_ident'} = $m2);
         1
     }
@@ -913,11 +913,11 @@ package main;
         0
     }
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     (((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'digit'} = $m2);
         1
     }
@@ -935,13 +935,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((((((do {
     ((my  $m2) = $grammar->var_sigil($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'var_sigil'} = $m2);
         1
     }
@@ -951,7 +951,7 @@ package main;
 })) && ((do {
     ((my  $m2) = $grammar->var_twigil($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'var_twigil'} = $m2);
         1
     }
@@ -961,7 +961,7 @@ package main;
 }))) && ((do {
     ((my  $m2) = $grammar->optional_namespace_before_ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'optional_namespace_before_ident'} = $m2);
         1
     }
@@ -971,7 +971,7 @@ package main;
 }))) && ((do {
     ((my  $m2) = $grammar->var_name($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'var_name'} = $m2);
         1
     }
@@ -979,7 +979,7 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = Var->new(('sigil' => $MATCH->{('var_sigil')}->flat()), ('twigil' => $MATCH->{('var_twigil')}->flat()), ('namespace' => $MATCH->{('optional_namespace_before_ident')}->flat()), ('name' => $MATCH->{('var_name')}->flat())));
+    ($MATCH->{('capture')} = Var->new(('sigil' => $MATCH->{('var_sigil')}->flat()), ('twigil' => $MATCH->{('var_twigil')}->flat()), ('namespace' => $MATCH->{('optional_namespace_before_ident')}->flat()), ('name' => $MATCH->{('var_name')}->flat())));
     1
 })))
 }))
@@ -992,26 +992,26 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
-    (('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    (('e' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((('E' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    (((('E' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 })))
 })) && ((do {
     ((my  $pos1) = $MATCH->to());
     ((((do {
-    (('+' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    (('+' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((('-' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    (((('-' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     (1)
 })))
 }))) && ((do {
@@ -1021,7 +1021,7 @@ package main;
     for ( ; ((((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -1037,7 +1037,7 @@ package main;
         ($last_pos = $MATCH->to());
         ($count = ($count + 1))
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     ($count > 0)
 })))
 }))
@@ -1050,20 +1050,20 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
-    ((((('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ((((('.' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     ((my  $count) = 0);
     for ( ; ((((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -1079,26 +1079,26 @@ package main;
         ($last_pos = $MATCH->to());
         ($count = ($count + 1))
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     ($count > 0)
 }))) && ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
     ((my  $m2) = $grammar->exponent($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
@@ -1106,7 +1106,7 @@ package main;
     for ( ; ((((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -1122,29 +1122,29 @@ package main;
         ($last_pos = $MATCH->to());
         ($count = ($count + 1))
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     ($count > 0)
 })) && ((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     ((my  $m2) = $grammar->exponent($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((((('.' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ($MATCH->{('to')} = $pos1);
+    (((((('.' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     ((my  $count) = 0);
     for ( ; ((((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -1160,21 +1160,21 @@ package main;
         ($last_pos = $MATCH->to());
         ($count = ($count + 1))
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     ($count > 0)
 }))) && ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
     ((my  $m2) = $grammar->exponent($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 }))))
@@ -1182,7 +1182,7 @@ package main;
 }))))
 })))
 })) && ((do {
-    (($MATCH)->{capture} = Val::Num->new(('num' => $MATCH->flat())));
+    ($MATCH->{('capture')} = Val::Num->new(('num' => $MATCH->flat())));
     1
 })))
 }))
@@ -1195,10 +1195,10 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    (('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    (('' ne substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 }))
 }))));
         $MATCH
@@ -1209,22 +1209,22 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    ((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(39) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 }))
 })));
-    (($tmp)->{bool} = !($MATCH->bool()));
+    ($tmp->{('bool')} = !($MATCH->bool()));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
-})) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+})) && ((('' ne substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     for ( ; ((((do {
@@ -1233,22 +1233,22 @@ package main;
     (((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
-    ((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(39) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(92) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 })))
 }))
 })));
-    (($tmp)->{bool} = !($MATCH->bool()));
+    ($tmp->{('bool')} = !($MATCH->bool()));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
-})) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+})) && ((('' ne substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))
 })) && (($last_match_null < 2))));  ) {
         if ((($last_pos == $MATCH->to()))) {
@@ -1259,7 +1259,7 @@ package main;
         };
         ($last_pos = $MATCH->to())
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     1
 })))
 }))
@@ -1272,13 +1272,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((((((do {
-    ((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+    ((((((chr(92) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && (((chr(92) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
     }
@@ -1286,15 +1286,15 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = (chr(92) . $MATCH->{('single_quoted_unescape')}->flat()));
+    ($MATCH->{('capture')} = (chr(92) . $MATCH->{('single_quoted_unescape')}->flat()));
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('to')} = $pos1);
+    (((((((chr(92) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
     }
@@ -1302,15 +1302,15 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = (chr(39) . $MATCH->{('single_quoted_unescape')}->flat()));
+    ($MATCH->{('capture')} = (chr(39) . $MATCH->{('single_quoted_unescape')}->flat()));
     1
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ($MATCH->{('to')} = $pos1);
+    ((((((chr(92) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
     }
@@ -1318,15 +1318,15 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = (chr(92) . $MATCH->{('single_quoted_unescape')}->flat()));
+    ($MATCH->{('capture')} = (chr(92) . $MATCH->{('single_quoted_unescape')}->flat()));
     1
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     (((((do {
     ((my  $m2) = $grammar->char_any_single_quote($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'char_any_single_quote'} = $m2);
         1
     }
@@ -1336,7 +1336,7 @@ package main;
 })) && ((do {
     ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
     }
@@ -1344,11 +1344,11 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = ($MATCH->{('char_any_single_quote')}->flat() . $MATCH->{('single_quoted_unescape')}->flat()));
+    ($MATCH->{('capture')} = ($MATCH->{('char_any_single_quote')}->flat() . $MATCH->{('single_quoted_unescape')}->flat()));
     1
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     (1)
 })))
 }))));
@@ -1360,31 +1360,31 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $pos1) = $MATCH->to());
     ((((do {
-    ((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(34) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(36) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(64) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(64) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 })))
 }))
 })));
-    (($tmp)->{bool} = !($MATCH->bool()));
+    ($tmp->{('bool')} = !($MATCH->bool()));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
-})) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+})) && ((('' ne substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     for ( ; ((((do {
@@ -1393,28 +1393,28 @@ package main;
     (((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $pos1) = $MATCH->to());
     (((((do {
-    ((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(34) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(36) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(64) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(64) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+    ($MATCH->{('to')} = $pos1);
+    ((((chr(92) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 })))
 }))
 })));
-    (($tmp)->{bool} = !($MATCH->bool()));
+    ($tmp->{('bool')} = !($MATCH->bool()));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
-})) && ((('' ne substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))))
+})) && ((('' ne substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 }))
 })) && (($last_match_null < 2))));  ) {
         if ((($last_pos == $MATCH->to()))) {
@@ -1425,7 +1425,7 @@ package main;
         };
         ($last_pos = $MATCH->to())
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     1
 })))
 }))
@@ -1438,35 +1438,35 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
-    ((((chr(92) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ((((chr(92) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $pos1) = $MATCH->to());
     ((((((do {
-    (((('c' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    (((('c' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
-    (((((('[' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    (((((('[' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->digits($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'digits'} = $m2);
         1
     }
     else {
         0
     }
-}))) && (((']' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    (($MATCH)->{capture} = chr($MATCH->{('digits')}->flat()));
+}))) && (((']' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('capture')} = chr($MATCH->{('digits')}->flat()));
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((((do {
     ((my  $m2) = $grammar->digits($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'digits'} = $m2);
         1
     }
@@ -1474,35 +1474,35 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = chr($MATCH->{('digits')}->flat()));
+    ($MATCH->{('capture')} = chr($MATCH->{('digits')}->flat()));
     1
 }))))
 })))
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((('e' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
-    (($MATCH)->{capture} = chr(27));
+    ($MATCH->{('to')} = $pos1);
+    ((((('e' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
+    ($MATCH->{('capture')} = chr(27));
     1
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((('n' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
-    (($MATCH)->{capture} = (chr(10)));
+    ($MATCH->{('to')} = $pos1);
+    ((((('n' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
+    ($MATCH->{('capture')} = (chr(10)));
     1
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((('t' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
-    (($MATCH)->{capture} = chr(9));
+    ($MATCH->{('to')} = $pos1);
+    ((((('t' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
+    ($MATCH->{('capture')} = chr(9));
     1
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((((do {
     ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
     }
@@ -1510,17 +1510,17 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = $MATCH->{('char_any')}->flat());
+    ($MATCH->{('capture')} = $MATCH->{('char_any')}->flat());
     1
 }))))
 })))
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((((do {
     ((my  $m2) = $grammar->char_any_double_quote($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'char_any_double_quote'} = $m2);
         1
     }
@@ -1528,7 +1528,7 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = $MATCH->{('char_any_double_quote')}->flat());
+    ($MATCH->{('capture')} = $MATCH->{('char_any_double_quote')}->flat());
     1
 }))))
 })))
@@ -1541,19 +1541,19 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((((do {
     (((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    ((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(36) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 }))
 })));
-    (($tmp)->{bool} = ($MATCH->bool() ? 1 : 0));
+    ($tmp->{('bool')} = ($MATCH->bool() ? 1 : 0));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
 })) && ((do {
@@ -1562,13 +1562,13 @@ package main;
     ((((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    ((((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ((((chr(36) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -1577,13 +1577,13 @@ package main;
 })))
 }))
 })));
-    (($tmp)->{bool} = ($MATCH->bool() ? 1 : 0));
+    ($tmp->{('bool')} = ($MATCH->bool() ? 1 : 0));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
 })) && ((do {
     ((my  $m2) = Perlito5::Expression->operator($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'Perlito5::Expression.operator'} = $m2);
         1
     }
@@ -1591,31 +1591,31 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = ($MATCH->{('Perlito5::Expression.operator')}->flat())->[1]);
+    ($MATCH->{('capture')} = ($MATCH->{('Perlito5::Expression.operator')}->flat())->[1]);
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((((((chr(36) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('to')} = $pos1);
+    ((((((((chr(36) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'ident'} = $m2);
         1
     }
     else {
         0
     }
-}))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    (($MATCH)->{capture} = Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => $MATCH->{('ident')}->flat())));
+}))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('capture')} = Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => $MATCH->{('ident')}->flat())));
     1
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((((do {
     ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
     }
@@ -1623,23 +1623,23 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = Val::Buf->new(('buf' => $MATCH->{('char_any')}->flat())));
+    ($MATCH->{('capture')} = Val::Buf->new(('buf' => $MATCH->{('char_any')}->flat())));
     1
 }))))
 })))
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    ((chr(64) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(64) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 }))
 })));
-    (($tmp)->{bool} = ($MATCH->bool() ? 1 : 0));
+    ($tmp->{('bool')} = ($MATCH->bool() ? 1 : 0));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
 })) && ((do {
@@ -1648,13 +1648,13 @@ package main;
     ((((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->to()), ('to' => $tmp->to()), ('bool' => 1)));
-    (($MATCH)->{bool} = ((do {
+    ($MATCH->{('bool')} = ((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    ((((chr(64) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ((((chr(64) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -1663,13 +1663,13 @@ package main;
 })))
 }))
 })));
-    (($tmp)->{bool} = ($MATCH->bool() ? 1 : 0));
+    ($tmp->{('bool')} = ($MATCH->bool() ? 1 : 0));
     ($MATCH = $tmp);
     ($MATCH->bool() ? 1 : 0)
 })) && ((do {
     ((my  $m2) = Perlito5::Expression->operator($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'Perlito5::Expression.operator'} = $m2);
         1
     }
@@ -1677,7 +1677,7 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => (do {
+    ($MATCH->{('capture')} = Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Val::Buf->new(('buf' => ' ')) );
@@ -1687,19 +1687,19 @@ package main;
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    ((((((((chr(64) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('to')} = $pos1);
+    ((((((((chr(64) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
     }
     else {
         0
     }
-}))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    (($MATCH)->{capture} = Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => (do {
+}))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('capture')} = Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, Val::Buf->new(('buf' => ' ')) );
@@ -1709,11 +1709,11 @@ package main;
     1
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((((do {
     ((my  $m2) = $grammar->char_any($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'char_any'} = $m2);
         1
     }
@@ -1721,17 +1721,17 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = Val::Buf->new(('buf' => $MATCH->{('char_any')}->flat())));
+    ($MATCH->{('capture')} = Val::Buf->new(('buf' => $MATCH->{('char_any')}->flat())));
     1
 }))))
 })))
 }))))
 }))) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     ((((do {
     ((my  $m2) = $grammar->double_quoted_unescape($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'double_quoted_unescape'} = $m2);
         1
     }
@@ -1739,7 +1739,7 @@ package main;
         0
     }
 })) && ((do {
-    (($MATCH)->{capture} = Val::Buf->new(('buf' => $MATCH->{('double_quoted_unescape')}->flat())));
+    ($MATCH->{('capture')} = Val::Buf->new(('buf' => $MATCH->{('double_quoted_unescape')}->flat())));
     1
 }))))
 })))
@@ -1752,16 +1752,16 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
-    ((((((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ((((((chr(34) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->to());
     for ( ; ((((do {
     ((my  $m2) = $grammar->double_quoted_buf($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         if ((exists($MATCH->{'double_quoted_buf'}))) {
             push( @{($MATCH->{'double_quoted_buf'})}, $m2 )
         }
@@ -1787,33 +1787,33 @@ package main;
         };
         ($last_pos = $MATCH->to())
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     1
-}))) && (((chr(34) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+}))) && (((chr(34) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $args) = $MATCH->{('double_quoted_buf')});
     if ((!($args))) {
-        (($MATCH)->{capture} = Val::Buf->new(('buf' => '')))
+        ($MATCH->{('capture')} = Val::Buf->new(('buf' => '')))
     }
     else {
-        (($MATCH)->{capture} = Apply->new(('namespace' => ''), ('code' => 'list:<.>'), ('arguments' => [map($_->capture(), @{($MATCH->{('double_quoted_buf')})})])))
+        ($MATCH->{('capture')} = Apply->new(('namespace' => ''), ('code' => 'list:<.>'), ('arguments' => [map($_->capture(), @{($MATCH->{('double_quoted_buf')})})])))
     };
 ;
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
-    (((((((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))) && ((do {
+    ($MATCH->{('to')} = $pos1);
+    (((((((chr(39) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->single_quoted_unescape($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'single_quoted_unescape'} = $m2);
         1
     }
     else {
         0
     }
-}))) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    (($MATCH)->{capture} = Val::Buf->new(('buf' => $MATCH->{('single_quoted_unescape')}->flat())));
+}))) && (((chr(39) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('capture')} = Val::Buf->new(('buf' => $MATCH->{('single_quoted_unescape')}->flat())));
     1
 }))))
 })))
@@ -1826,7 +1826,7 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $last_match_null) = 0);
@@ -1835,7 +1835,7 @@ package main;
     for ( ; ((((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -1851,7 +1851,7 @@ package main;
         ($last_pos = $MATCH->to());
         ($count = ($count + 1))
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     ($count > 0)
 }))
 }))));
@@ -1863,7 +1863,7 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
@@ -1873,7 +1873,7 @@ package main;
     for ( ; ((((do {
     ((my  $m2) = $grammar->digit($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -1889,10 +1889,10 @@ package main;
         ($last_pos = $MATCH->to());
         ($count = ($count + 1))
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     ($count > 0)
 })) && ((do {
-    (($MATCH)->{capture} = Val::Int->new(('int' => $MATCH->flat())));
+    ($MATCH->{('capture')} = Val::Int->new(('int' => $MATCH->flat())));
     1
 })))
 }))
@@ -1905,7 +1905,7 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((do {
@@ -1914,7 +1914,7 @@ package main;
     for ( ; ((((do {
     ((my  $m2) = Perlito5::Expression->delimited_statement($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         if ((exists($MATCH->{'Perlito5::Expression.delimited_statement'}))) {
             push( @{($MATCH->{'Perlito5::Expression.delimited_statement'})}, $m2 )
         }
@@ -1940,10 +1940,10 @@ package main;
         };
         ($last_pos = $MATCH->to())
     };
-    (($MATCH)->{to} = $last_pos);
+    ($MATCH->{('to')} = $last_pos);
     1
 })) && ((do {
-    (($MATCH)->{capture} = [map($_->capture(), @{($MATCH->{('Perlito5::Expression.delimited_statement')})})]);
+    ($MATCH->{('capture')} = [map($_->capture(), @{($MATCH->{('Perlito5::Expression.delimited_statement')})})]);
     1
 })))
 }))
@@ -1956,14 +1956,14 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     ((my  $last_pos) = $MATCH->to());
     if ((!(((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         if ((exists($MATCH->{'ident'}))) {
             push( @{($MATCH->{'ident'})}, $m2 )
         }
@@ -1981,7 +1981,7 @@ package main;
         0
     }
 }))))) {
-        (($MATCH)->{to} = $last_pos)
+        ($MATCH->{('to')} = $last_pos)
     };
     1
 }))
@@ -1994,27 +1994,27 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     ((((do {
     ((my  $m2) = $grammar->var_ident($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'var_ident'} = $m2);
         1
     }
     else {
         0
     }
-})) && (((':' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    (($MATCH)->{capture} = $MATCH->{('var_ident')}->flat());
+})) && (((':' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('capture')} = $MATCH->{('var_ident')}->flat());
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     (((do {
-    (($MATCH)->{capture} = Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self')));
+    ($MATCH->{('capture')} = Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self')));
     1
 })))
 })))
@@ -2027,13 +2027,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((((do {
     ((my  $m2) = $grammar->var_invocant($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'var_invocant'} = $m2);
         1
     }
@@ -2043,7 +2043,7 @@ package main;
 })) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -2052,7 +2052,7 @@ package main;
 }))) && ((do {
     ((my  $m2) = Perlito5::Expression->list_parse($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'Perlito5::Expression.list_parse'} = $m2);
         1
     }
@@ -2060,7 +2060,7 @@ package main;
         0
     }
 }))) && ((do {
-    (($MATCH)->{capture} = Sig->new(('invocant' => $MATCH->{('var_invocant')}->flat()), ('positional' => Perlito5::Expression::expand_list(($MATCH->{('Perlito5::Expression.list_parse')}->flat())->{'exp'})), ('named' => (do {
+    ($MATCH->{('capture')} = Sig->new(('invocant' => $MATCH->{('var_invocant')}->flat()), ('positional' => Perlito5::Expression::expand_list(($MATCH->{('Perlito5::Expression.list_parse')}->flat())->{'exp'})), ('named' => (do {
     (my  $Hash_a = bless {}, 'HASH');
     $Hash_a
 }))));
@@ -2077,22 +2077,22 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
     ((((((((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
-})) && ((('(' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+})) && ((('(' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -2101,7 +2101,7 @@ package main;
 }))) && ((do {
     ((my  $m2) = $grammar->args_sig($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'args_sig'} = $m2);
         1
     }
@@ -2111,20 +2111,20 @@ package main;
 }))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
-}))) && (((')' eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    (($MATCH)->{capture} = $MATCH->{('args_sig')}->flat());
+}))) && (((')' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
+    ($MATCH->{('capture')} = $MATCH->{('args_sig')}->flat());
     1
 })))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     (((do {
-    (($MATCH)->{capture} = Sig->new(('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self'))), ('positional' => (do {
+    ($MATCH->{('capture')} = Sig->new(('invocant' => Var->new(('sigil' => chr(36)), ('twigil' => ''), ('name' => 'self'))), ('positional' => (do {
     (my  $List_a = bless [], 'ARRAY');
     (my  $List_v = bless [], 'ARRAY');
     $List_a
@@ -2144,13 +2144,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((((((((((do {
     ((my  $m2) = $grammar->opt_name($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'opt_name'} = $m2);
         1
     }
@@ -2160,7 +2160,7 @@ package main;
 })) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -2169,7 +2169,7 @@ package main;
 }))) && ((do {
     ((my  $m2) = $grammar->method_sig($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'method_sig'} = $m2);
         1
     }
@@ -2179,16 +2179,16 @@ package main;
 }))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
-}))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+}))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -2197,7 +2197,7 @@ package main;
 }))) && ((do {
     ((my  $m2) = $grammar->exp_stmts($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'exp_stmts'} = $m2);
         1
     }
@@ -2207,7 +2207,7 @@ package main;
 }))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
@@ -2216,9 +2216,9 @@ package main;
 }))) && ((do {
     ((my  $pos1) = $MATCH->to());
     (((do {
-    ((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to()))))
+    ((chr(125) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 })) || ((do {
-    (($MATCH)->{to} = $pos1);
+    ($MATCH->{('to')} = $pos1);
     (((do {
     die('Syntax Error in sub ' . chr(39), $MATCH->{('opt_name')}->flat(), chr(39));
 ;
@@ -2226,7 +2226,7 @@ package main;
 })))
 })))
 }))) && ((do {
-    (($MATCH)->{capture} = Sub->new(('name' => $MATCH->{('opt_name')}->flat()), ('sig' => $MATCH->{('method_sig')}->flat()), ('block' => $MATCH->{('exp_stmts')}->flat())));
+    ($MATCH->{('capture')} = Sub->new(('name' => $MATCH->{('opt_name')}->flat()), ('sig' => $MATCH->{('method_sig')}->flat()), ('block' => $MATCH->{('exp_stmts')}->flat())));
     1
 })))
 }))
@@ -2239,13 +2239,13 @@ package main;
         ((my  $str) = $List__->[1]);
         ((my  $pos) = $List__->[2]);
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-        (($MATCH)->{bool} = (((do {
+        ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
     (((((((do {
     ((my  $m2) = $grammar->opt_name($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'opt_name'} = $m2);
         1
     }
@@ -2255,26 +2255,26 @@ package main;
 })) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         1
     }
     else {
         0
     }
-}))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
+}))) && (((chr(123) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
     ((my  $m2) = Perlito5::Grammar::Regex->rule($str, $MATCH->to()));
     if (($m2->bool())) {
-        (($MATCH)->{to} = $m2->to());
+        ($MATCH->{('to')} = $m2->to());
         ($MATCH->{'Perlito5::Grammar::Regex.rule'} = $m2);
         1
     }
     else {
         0
     }
-}))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && ((($MATCH)->{to} = (1 + $MATCH->to())))))) && ((do {
-    ((my  $source) = ($MATCH->{('opt_name')}->flat() . chr(123) . ' ' . 'my ' . chr(36) . 'grammar ' . chr(61) . ' ' . chr(36) . '_[0]' . chr(59) . ' ' . 'my ' . chr(36) . 'str     ' . chr(61) . ' ' . chr(36) . '_[1]' . chr(59) . ' ' . 'my ' . chr(36) . 'pos     ' . chr(61) . ' ' . chr(36) . '_[2]' . chr(59) . ' ' . 'my ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( str ' . chr(61) . '> ' . chr(36) . 'str, from ' . chr(61) . '> ' . chr(36) . 'pos, to ' . chr(61) . '> ' . chr(36) . 'pos, bool ' . chr(61) . '> 1 )' . chr(59) . ' ' . chr(36) . 'MATCH->bool ' . chr(61) . ' ( ' . ($MATCH->{('Perlito5::Grammar::Regex.rule')}->flat())->emit_perl5() . ')' . chr(59) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125)));
+}))) && (((chr(125) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
+    ((my  $source) = ($MATCH->{('opt_name')}->flat() . chr(123) . ' ' . 'my ' . chr(36) . 'grammar ' . chr(61) . ' ' . chr(36) . '_[0]' . chr(59) . ' ' . 'my ' . chr(36) . 'str     ' . chr(61) . ' ' . chr(36) . '_[1]' . chr(59) . ' ' . 'my ' . chr(36) . 'pos     ' . chr(61) . ' ' . chr(36) . '_[2]' . chr(59) . ' ' . 'my ' . chr(36) . 'MATCH ' . chr(61) . ' Perlito5::Match->new( str ' . chr(61) . '> ' . chr(36) . 'str, from ' . chr(61) . '> ' . chr(36) . 'pos, to ' . chr(61) . '> ' . chr(36) . 'pos, bool ' . chr(61) . '> 1 )' . chr(59) . ' ' . chr(36) . 'MATCH->' . chr(123) . chr(34) . 'bool' . chr(34) . chr(125) . ' ' . chr(61) . ' ( ' . ($MATCH->{('Perlito5::Grammar::Regex.rule')}->flat())->emit_perl5() . ')' . chr(59) . ' ' . chr(36) . 'MATCH' . chr(59) . ' ' . chr(125)));
     ((my  $ast) = Perlito5::Grammar->sub_def($source, 0));
-    (($MATCH)->{capture} = $ast->flat());
+    ($MATCH->{('capture')} = $ast->flat());
 ;
     1
 })))

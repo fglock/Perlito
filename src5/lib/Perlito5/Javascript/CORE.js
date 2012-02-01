@@ -80,7 +80,7 @@ CORE.warn = function() {
 
 CORE.bless = function(callsub, o, class_name) {
     try {
-        o.__proto__ = eval(class_name);
+        o._class_ = eval(class_name);
     }
     catch(err) {
         eval( ''
@@ -88,7 +88,7 @@ CORE.bless = function(callsub, o, class_name) {
             +   class_name+' = function() {}; '
             +   class_name+' = new '+class_name+'; '
             + '}; '
-            + 'o.__proto__ = class_name; '
+            + 'o._class_ = class_name; '
         );
     }
     return o;
@@ -275,10 +275,9 @@ CORE.ref = function(o) {
     if (o == null) {
         return '';
     }
-    var vv = o.__proto__.ref;
-    if (typeof vv === 'string') {
+    if (o._class_ && typeof o._class_._ref_ === 'string') {
         // blessed reference
-        return vv;
+        return o._class_._ref_;
     }
     if (typeof o._ref_ === 'string') {
         // un-blessed reference

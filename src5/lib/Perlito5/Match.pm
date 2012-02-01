@@ -1,26 +1,30 @@
 use v5;
 
-class Perlito5::Match {
-    has $.from;
-    has $.to;
-    has $.str;
-    has $.bool;
-    has $.capture;
+package Perlito5::Match;
 
-    sub flat {
-        my $self = $_[0];
+sub new {
+    my $class = shift;
+    bless { @_ }, $class
+}
 
-        if ($.bool) {
-            if (defined($.capture)) {
-                return $.capture;
-            }
-            return substr( $.str, $.from, ( $.to - $.from ) );
+sub from    { $_[0]->{'from'} }
+sub to      { $_[0]->{'to'} }
+sub str     { $_[0]->{'str'} }
+sub bool    { $_[0]->{'bool'} }
+sub capture { $_[0]->{'capture'} }
+
+sub flat {
+    my $self = $_[0];
+
+    if ( $self->{'bool'} ) {
+        if ( defined( $self->{'capture'} ) ) {
+            return $self->{'capture'};
         }
-        else {
-            return '';
-        }
+        return substr( $self->{'str'}, $self->{'from'}, ( $self->{'to'} - $self->{'from'} ) );
     }
-
+    else {
+        return '';
+    }
 }
 
 =begin

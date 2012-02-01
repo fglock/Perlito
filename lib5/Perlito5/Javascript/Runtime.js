@@ -168,8 +168,8 @@ bool = function(o) {
     if (typeof o === 'string') {
         return o != '' && o != '0';
     }
-    if (typeof o.__proto__.bool === 'function') {
-        return o.__proto__.bool.call(o);
+    if (o._class_ && typeof o._class_.bool === 'function') {
+        return o._class_.bool.call(o);
     }
     if (typeof o.bool === 'function') {
         return o.bool();
@@ -211,48 +211,48 @@ str_replicate = function(o, n) {
 
 Perlito5$Grammar.word = function(v_str, v_pos) {
     var tmp = {
-        v_str: v_str,
-        v_from: v_pos,
-        v_to: v_pos + 1,
-        v_bool: v_str.substr(v_pos, 1).match(/\w/) != null
+        str: v_str,
+        from: v_pos,
+        to: v_pos + 1,
+        bool: v_str.substr(v_pos, 1).match(/\w/) != null
     };
-    tmp.__proto__ = Perlito5$Match;
+    tmp._class_ = Perlito5$Match;
     return tmp;
 };
 
 Perlito5$Grammar.digit = function(v_str, v_pos) {
     var tmp = {
-        v_str: v_str,
-        v_from: v_pos,
-        v_to: v_pos + 1,
-        v_bool: v_str.substr(v_pos, 1).match(/\d/) != null
+        str:  v_str,
+        from: v_pos,
+        to:   v_pos + 1,
+        bool: v_str.substr(v_pos, 1).match(/\d/) != null
     };
-    tmp.__proto__ = Perlito5$Match;
+    tmp._class_ = Perlito5$Match;
     return tmp;
 };
 
 Perlito5$Grammar.space = function(v_str, v_pos) {
     var tmp = {
-        v_str: v_str,
-        v_from: v_pos,
-        v_to: v_pos + 1,
-        v_bool: v_str.substr(v_pos, 1).match(/\s/) != null
+        str:  v_str,
+        from: v_pos,
+        to:   v_pos + 1,
+        bool: v_str.substr(v_pos, 1).match(/\s/) != null
     };
-    tmp.__proto__ = Perlito5$Match;
+    tmp._class_ = Perlito5$Match;
     return tmp;
 };
 
 function perl5_to_js( source ) {
     // say( "source: [" + source + "]" );
     match = Perlito5$Grammar.exp_stmts(source, 0);
-    ast = match.flat();
+    ast = match._class_.flat.call(match);
     var block = {v_stmts: ast};
-    block.__proto__ = Lit$Block;
+    block._class_ = Lit$Block;
     var tmp = {v_block: block};
-    tmp.__proto__ = Do;   
+    tmp._class_ = Do;   
     ast = tmp;
     // CORE.say( "ast: [" + perl(ast) + "]" );
-    js_code = ast.emit_javascript();
+    js_code = ast._class_.emit_javascript.call(ast);
     // CORE.say( "js-source: [" + js_code + "]" );
     return js_code;
 }

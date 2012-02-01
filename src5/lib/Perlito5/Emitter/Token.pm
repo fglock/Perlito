@@ -13,7 +13,7 @@ class Rul {
             }
             if ( $len ) {
                 '( \'' . $str . '\' eq substr( $str, $MATCH->to, ' . $len . ') ' .
-                '&& ( $MATCH->to = ' . $len . ' + $MATCH->to )' .
+                '&& ( $MATCH->{"to"} = ' . $len . ' + $MATCH->to )' .
                 ')';
             }
             else {
@@ -53,7 +53,7 @@ class Rul::Quantifier {
                 .       '$last_pos = $MATCH->to; '
                 .       '$count = $count + 1; '
                 .   '}; '
-                .   '$MATCH->to = $last_pos; '
+                .   '$MATCH->{"to"} = $last_pos; '
                 .   '$count > 0; '
                 . '})';
         }
@@ -73,7 +73,7 @@ class Rul::Quantifier {
                 .       '}; '
                 .       '$last_pos = $MATCH->to; '
                 .   '}; '
-                .   '$MATCH->to = $last_pos; '
+                .   '$MATCH->{"to"} = $last_pos; '
                 .   '1 '
                 . '})';
         }
@@ -84,7 +84,7 @@ class Rul::Quantifier {
                 .   'my $last_pos = $MATCH->to; '
                 .   'if (!(do {' . $.term->emit_perl5() . '})) '
                 .   '{ '
-                .       '$MATCH->to = $last_pos; '
+                .       '$MATCH->{"to"} = $last_pos; '
                 .   '}; '
                 .   '1 '
                 . '})';
@@ -108,7 +108,7 @@ class Rul::Or {
 
         '(do { '
             . 'my $pos1 = $MATCH->to; (do { '
-            . join( '}) || (do { $MATCH->to = $pos1; ',
+            . join( '}) || (do { $MATCH->{"to"} = $pos1; ',
                   map( $_->emit_perl5, @{$.or_list} )
                 )
         . '}) })';
@@ -150,12 +150,12 @@ class Rul::Subrule {
 
         my $code;
         if ($.captures == 1) {
-            $code = 'if ($m2->bool) { $MATCH->to = $m2->to; $MATCH->{\'' . $.metasyntax . '\'} = $m2; 1 } else { 0 }; '
+            $code = 'if ($m2->bool) { $MATCH->{"to"} = $m2->to; $MATCH->{\'' . $.metasyntax . '\'} = $m2; 1 } else { 0 }; '
         }
         elsif ($.captures > 1) {
             # TODO: capture level > 2
             $code = 'if ($m2->bool) { '
-                    .   '$MATCH->to = $m2->to; '
+                    .   '$MATCH->{"to"} = $m2->to; '
                     .   'if (exists $MATCH->{\'' . $.metasyntax . '\'}) { '
                     .       'push @{ $MATCH->{\'' . $.metasyntax . '\'} }, $m2; '
                     .   '} '
@@ -166,7 +166,7 @@ class Rul::Subrule {
                     . '} else { 0 }; '
         }
         else {
-            $code = 'if ($m2->bool) { $MATCH->to = $m2->to; 1 } else { 0 }; '
+            $code = 'if ($m2->bool) { $MATCH->{"to"} = $m2->to; 1 } else { 0 }; '
         }
 
         '(do { '
@@ -201,7 +201,7 @@ class Rul::Dot {
         my $self = $_[0];
 
         '( \'\' ne substr( $str, $MATCH->to, 1 ) ' .
-        '&& ($MATCH->to = 1 + $MATCH->to)' .
+        '&& ($MATCH->{"to"} = 1 + $MATCH->to)' .
         ')';
     }
     sub set_captures_to_array {
@@ -257,10 +257,10 @@ class Rul::Before {
         '(do { ' .
             'my $tmp = $MATCH; ' .
             '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
-            '$MATCH->bool = ' .
+            '$MATCH->{"bool"} = ' .
                 $.rule_exp->emit_perl5() .
             '; ' .
-            '$tmp->bool = $MATCH->bool ? 1 : 0; ' .
+            '$tmp->{"bool"} = $MATCH->bool ? 1 : 0; ' .
             '$MATCH = $tmp; ' .
             '$MATCH->bool ? 1 : 0; ' .
         '})'
@@ -278,10 +278,10 @@ class Rul::NotBefore {
         '(do { ' .
             'my $tmp = $MATCH; ' .
             '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
-            '$MATCH->bool = ' .
+            '$MATCH->{"bool"} = ' .
                 $.rule_exp->emit_perl5() .
             '; ' .
-            '$tmp->bool = !$MATCH->bool; ' .
+            '$tmp->{"bool"} = !$MATCH->bool; ' .
             '$MATCH = $tmp; ' .
             '$MATCH->bool ? 1 : 0; ' .
         '})'
