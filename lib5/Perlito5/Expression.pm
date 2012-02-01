@@ -363,7 +363,7 @@ package main;
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
-    (((((((((((((((((((((do {
+    ((((((((((((((((((((do {
     ((((((do {
     ((my  $m2) = Perlito5::Grammar->var_sigil($str, $MATCH->to()));
     if (($m2->bool())) {
@@ -794,37 +794,6 @@ package main;
     (my  $List_v = bless [], 'ARRAY');
     push( @{$List_a}, 'term' );
     push( @{$List_a}, Use->new(('mod' => $MATCH->{('Perlito5::Grammar.full_ident')}->flat())) );
-    $List_a
-}));
-    1
-}))))
-}))) || ((do {
-    ($MATCH->{('to')} = $pos1);
-    ((((((('class' eq substr($str, $MATCH->to(), 5)) && (($MATCH->{('to')} = (5 + $MATCH->to()))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->to()));
-    if (($m2->bool())) {
-        ($MATCH->{('to')} = $m2->to());
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->grammar($str, $MATCH->to()));
-    if (($m2->bool())) {
-        ($MATCH->{('to')} = $m2->to());
-        ($MATCH->{'Perlito5::Grammar.grammar'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ($MATCH->{('capture')} = (do {
-    (my  $List_a = bless [], 'ARRAY');
-    (my  $List_v = bless [], 'ARRAY');
-    push( @{$List_a}, 'term' );
-    push( @{$List_a}, $MATCH->{('Perlito5::Grammar.grammar')}->flat() );
     $List_a
 }));
     1

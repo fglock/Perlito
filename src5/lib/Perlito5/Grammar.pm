@@ -57,21 +57,6 @@ token opt_ws  {  <.ws>?  }
 token opt_ws2 {  <.ws>?  }
 token opt_ws3 {  <.ws>?  }
 
-token grammar {
-    <full_ident> <.ws>?
-    '{'
-        <.ws>?
-        <exp_stmts>
-        <.ws>?
-    '}'
-    {
-        $MATCH->{"capture"} = CompUnit->new(
-            name        => $MATCH->{"full_ident"}->flat(),
-            body        => $MATCH->{"exp_stmts"}->flat(),
-        )
-    }
-}
-
 token declarator {
      'my' | 'state'
 }

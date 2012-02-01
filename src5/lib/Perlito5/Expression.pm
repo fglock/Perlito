@@ -404,10 +404,6 @@ package Perlito5::Expression;
         | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
             { $MATCH->{"capture"} = [ 'term', Use->new( mod => $MATCH->{"Perlito5::Grammar.full_ident"}->flat() ) ] }
 
-          # XXX Perl6
-        | 'class' <.Perlito5::Grammar.ws> <Perlito5::Grammar.grammar>
-            { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.grammar"}->flat() ] }
-
         | 'package' <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
             { $MATCH->{"capture"} = [ 'term',
                      Apply->new(
