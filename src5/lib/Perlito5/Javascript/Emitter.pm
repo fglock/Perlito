@@ -472,12 +472,6 @@ class Lookup {
         {
             my $v = Var->new( sigil => '%', twigil => $.obj->twigil, namespace => $.obj->namespace, name => $.obj->name );
             return $v->emit_javascript_indented($level) . '[' . $.index_exp->emit_javascript() . ']';
-            # return Javascript::tab($level)
-            #     . '('
-            #     .   $v->emit_javascript . '.hasOwnProperty("' . $.index_exp->emit_javascript() . '") '
-            #     .   '? ' . $v->emit_javascript . '[' . $.index_exp->emit_javascript() . '] '
-            #     .   ': null'
-            #     . ')'
         }
         return $.obj->emit_javascript_indented($level) . '[' . $.index_exp->emit_javascript() . ']';
     }
@@ -547,7 +541,7 @@ class Call {
                 return
                       '(function () { '
                     .   'if (' 
-                    .       Perlito5::Runtime::to_javascript_namespace($invocant) . '.hasOwnProperty("new") '
+                    .       Perlito5::Runtime::to_javascript_namespace($invocant) . '.new '
                     .   ') { '
                     .       'return ' . $invocant . '.new(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . '); '
                     .   '} '
@@ -564,7 +558,7 @@ class Call {
                   '(function () { '
                 .   'if (' 
                 .       Perlito5::Runtime::to_javascript_namespace($invocant) . '._class_ '
-                .       '&& ' . Perlito5::Runtime::to_javascript_namespace($invocant) . '._class_.hasOwnProperty("new") '
+                .       '&& ' . Perlito5::Runtime::to_javascript_namespace($invocant) . '._class_.new '
                 .   ') { '
                 .       'return ' . $invocant . '._class_.new(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . '); '
                 .   '} '
@@ -599,9 +593,9 @@ class Call {
         return Javascript::tab($level) 
             . '(' 
             .           $invocant . '._class_ '
-            .   '&& ' . $invocant . '._class_.hasOwnProperty("' . ( $meth ) . '") '
-            . '? ' . $invocant . '._class_.' . ( $meth ) . '.call(' . join(',', @args) . ') '
-            . ': ' . $invocant . '.' . ( $meth ) . '(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . ')'
+            .   '&& ' . $invocant . '._class_.' . $meth . ' '
+            . '? ' . $invocant . '._class_.' . $meth . '.call(' . join(',', @args) . ') '
+            . ': ' . $invocant . '.' . $meth . '(' . join(', ', map( $_->emit_javascript, @{$.arguments} )) . ')'
             . ')';
     }
 }
@@ -791,9 +785,8 @@ class Apply {
         }
         else {
             $code = 
-                  '(v__NAMESPACE.hasOwnProperty("' . ( $code ) . '") '
-                . '? v__NAMESPACE.' . ( $code ) . ' '
-                . ': CORE.' . ( $code )
+                  '('
+                . 'v__NAMESPACE.' . $code . ' || ' . ' CORE.' . $code
                 . ')'
         }
         my @args = 'CallSub';
