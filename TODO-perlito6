@@ -89,6 +89,10 @@ Nice to Have
 
 - 'perlito-format' script (see gofmt and perltidy)
 
+Tests
+
+- move tests from "t/" to "t6/"
+
 - run some tests from the standard test suite
 
 - use Test.pm - FIXED
