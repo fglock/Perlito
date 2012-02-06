@@ -539,6 +539,14 @@ package main;
     });
     package Var;
     (do {
+        ((my  $table) = (do {
+    (my  $Hash_a = bless {}, 'HASH');
+    ($Hash_a->{chr(36)} = 'v_');
+    ($Hash_a->{chr(64)} = 'List_');
+    ($Hash_a->{chr(37)} = 'Hash_');
+    ($Hash_a->{chr(38)} = 'Code_');
+    $Hash_a
+}));
         sub emit_javascript {
             my $List__ = bless \@_, "ARRAY";
             $List__->[0]->emit_javascript_indented(0)
@@ -547,14 +555,13 @@ package main;
             my $List__ = bless \@_, "ARRAY";
             ((my  $self) = shift());
             ((my  $level) = shift());
-            ((my  $table) = (do {
-    (my  $Hash_a = bless {}, 'HASH');
-    ($Hash_a->{chr(36)} = 'v_');
-    ($Hash_a->{chr(64)} = 'List_');
-    ($Hash_a->{chr(37)} = 'Hash_');
-    ($Hash_a->{chr(38)} = 'Code_');
-    $Hash_a
-}));
+            if ((($self->{('sigil')} eq '*'))) {
+                ((my  $ns) = 'v__NAMESPACE');
+                if (($self->{('namespace')})) {
+                    ($ns = Perlito5::Runtime::to_javascript_namespace($self->{('namespace')}))
+                };
+                return (($ns . '[' . chr(34) . $self->{('name')} . chr(34) . ']'))
+            };
             ((my  $ns) = '');
             if (($self->{('namespace')})) {
                 ($ns = (Perlito5::Runtime::to_javascript_namespace($self->{('namespace')}) . '.'))

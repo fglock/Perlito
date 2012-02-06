@@ -232,6 +232,7 @@ package Var;
             '@' => '$List_',
             '%' => '$Hash_',
             '&' => '$Code_',
+            '*' => '*',
         }
         my $ns = '';
         if ($self->{"namespace"}) {

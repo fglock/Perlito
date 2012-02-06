@@ -486,16 +486,26 @@ package Lookup;
 
 package Var;
 {
+    my $table = {
+        '$' => 'v_',
+        '@' => 'List_',
+        '%' => 'Hash_',
+        '&' => 'Code_',
+    }
+
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $table = {
-            '$' => 'v_',
-            '@' => 'List_',
-            '%' => 'Hash_',
-            '&' => 'Code_',
+
+        if ( $self->{"sigil"} eq '*' ) {
+            my $ns = 'v__NAMESPACE';
+            if ($self->{"namespace"}) {
+                $ns = Perlito5::Runtime::to_javascript_namespace($self->{"namespace"});
+            }
+            return $ns . '["' . $self->{"name"} . '"]';
         }
+
         my $ns = '';
         if ($self->{"namespace"}) {
             $ns = Perlito5::Runtime::to_javascript_namespace($self->{"namespace"}) . '.';

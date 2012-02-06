@@ -4,7 +4,7 @@ use feature 'say';
 
 package Main;
 
-say '1..4';
+say '1..6';
 
 sub subr { $_[0] + $_[1] };
 
@@ -42,4 +42,14 @@ if (Mod2::subr( 1, 2 ) != 4) {
     print 'not '
 }
 say 'ok 4 - ', Mod2::subr( 1, 2 );
+
+*subr4 = sub { 123 };
+
+print "not " unless subr4() == 123;
+say "ok 5";
+
+*Mod2::subr4 = sub { 456 };
+
+print "not " unless Mod2::subr4() == 456;
+say "ok 6";
 

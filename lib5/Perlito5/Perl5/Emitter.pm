@@ -231,6 +231,7 @@ package main;
     ($Hash_a->{chr(64)} = chr(36) . 'List_');
     ($Hash_a->{chr(37)} = chr(36) . 'Hash_');
     ($Hash_a->{chr(38)} = chr(36) . 'Code_');
+    ($Hash_a->{'*'} = '*');
     $Hash_a
 }));
             ((my  $ns) = '');
