@@ -26,11 +26,11 @@ CORE.print = function() {
     for (i = 0; i < List__.length; i++) {
         var s = string(List__[i]);
         if (s.substr(s.length - 2, 2) == "\n") {
-            (console ? console.log : print)(_print_buf + s.substr(0, s.length - 2));
+            print(_print_buf + s.substr(0, s.length - 2));
             _print_buf = "";
         }
         else if (s.substr(s.length - 1, 1) == "\n") {
-            (console ? console.log : print)(_print_buf + s.substr(0, s.length - 1));
+            print(_print_buf + s.substr(0, s.length - 1));
             _print_buf = "";
         }
         else {
