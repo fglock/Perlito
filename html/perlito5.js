@@ -4023,7 +4023,7 @@ if (typeof Var !== 'object') {
                             if ( bool((v_self[('namespace')])) ) { (function () {
                                 (v_ns = (string(Perlito5$Runtime.to_javascript_namespace(CallSub, v_self[('namespace')])) + '.'));;
                             })(); };
-                            return((string(v_table[v_self[('sigil')]]) + string(v_ns) + string(v_self[('name')])));;
+                            return((string(v_ns) + string(v_table[v_self[('sigil')]]) + string(v_self[('name')])));;
                         }
                         catch(err) {
                             if ( err instanceof Error ) {
@@ -13645,7 +13645,7 @@ if (typeof Perlito5$Grammar !== 'object') {
     var v_pos1 = null;
 
     (v_pos1 = ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH));
-    return(or(((function () { 
+    return(or(or(((function () { 
     return(and(and(((function () { 
     var v_m2 = null;
 
@@ -13663,6 +13663,12 @@ if (typeof Perlito5$Grammar !== 'object') {
     return(1);
 })()); }));
 })()), function () { return ((function () { 
+    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = v_pos1); })();
+    return((and((and(('::' == (v_str || "").substr(((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH), 2)), function () { return ((function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = add(2, ((v_MATCH._class_ && v_MATCH._class_.to) || v_MATCH.to).call(v_MATCH))); })()); })), function () { return ((function () { 
+    (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('capture')]  = 'main'); })();
+    return(1);
+})()); })));
+})()); }), function () { return ((function () { 
     (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('to')]  = v_pos1); })();
     return((and(1, function () { return ((function () { 
     (function () { if (v_MATCH == null) { v_MATCH = {} }; return (v_MATCH[('capture')]  = ''); })();

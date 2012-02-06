@@ -27,6 +27,8 @@ token namespace_before_ident {
 token optional_namespace_before_ident {
     | <namespace_before_ident> '::'
         { $MATCH->{"capture"} = $MATCH->{"namespace_before_ident"}->flat() }
+    | '::'
+        { $MATCH->{"capture"} = 'main' }
     | ''
         { $MATCH->{"capture"} = '' }
 }

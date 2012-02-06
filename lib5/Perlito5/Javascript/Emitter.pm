@@ -566,7 +566,7 @@ package main;
             if (($self->{('namespace')})) {
                 ($ns = (Perlito5::Runtime::to_javascript_namespace($self->{('namespace')}) . '.'))
             };
-            ($table->{$self->{('sigil')}} . $ns . $self->{('name')})
+            ($ns . $table->{$self->{('sigil')}} . $self->{('name')})
         };
         sub plain_name {
             my $List__ = bless \@_, "ARRAY";
