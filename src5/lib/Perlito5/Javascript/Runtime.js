@@ -17,7 +17,10 @@
 // See http://www.perl.com/perl/misc/Artistic.html
 
 if (typeof arguments === 'object') {
-    List_ARGV = arguments;
+    List_ARGV = arguments  // d8
+}
+else if (typeof process === 'object') {
+    List_ARGV = process.argv.splice(2)  // node.js
 }
 
 // call context - method or subroutine
