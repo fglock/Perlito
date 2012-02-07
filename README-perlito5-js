@@ -34,7 +34,11 @@ Class
 - TODO
 
 Namespace
-- TODO
+- TODO: split namespaces from classes
+- current namespace is v__NAMESPACE
+- v__NAMESPACE inherits from CORE, which inherits from CORE::GLOBAL
+- v__NAMESPACE is a copy of the Class, but with a different inheritance
+- v__NAMESPACE and Class are updated in parallel, both when a sub is declared or when using typeglob assignment
 
 Calling context ("wantarray", caller)
 - TODO
