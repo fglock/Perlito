@@ -27,8 +27,7 @@ TODO list for Perlito5
 
 * Parser
 
--- use "prefix + proto" to represent variables, because it is more flexible; remove 'Var'
-   add_op( 'prefix',   '*',   $prec );  # typeglob
+-- maybe use "prefix + proto" to represent variables, because it is more flexible; remove 'Var'
 
 -- use an array to represent names that contain '::', because it is more flexible
 
@@ -73,6 +72,8 @@ TODO list for Perlito5
 -- run the "perl" test suite
 
 -- wantarray()
+
+-- import
 
 -- require plain perl5 syntax (any perl6 is a syntax error)
 
