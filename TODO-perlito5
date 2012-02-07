@@ -32,6 +32,8 @@ TODO list for Perlito5
 
 -- use an array to represent names that contain '::', because it is more flexible
 
+-- implement signatures
+
 
 * Perl5 backend
 
