@@ -399,18 +399,6 @@ package Perlito5::Expression;
                     { $MATCH->{"capture"} = [ 'op',          '?? !!', $MATCH->{"ternary5_parse"}->flat()  ] }
         | <Perlito5::Grammar.var_ident>                { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.var_ident"}->flat()   ] }
 
-        | '*' <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name> <before <.Perlito5::Grammar.ws> '=' >
-            {
-                $MATCH->{"capture"} = [
-                    'term', 
-                    Var->new(
-                        sigil       => '*',
-                        namespace   => $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
-                        name        => $MATCH->{"Perlito5::Grammar.var_name"}->flat(),
-                    )
-                ]
-            }
-
         | <Perlito5::Precedence.op_parse>              { $MATCH->{"capture"} = $MATCH->{"Perlito5::Precedence.op_parse"}->flat()             }
 
         | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
