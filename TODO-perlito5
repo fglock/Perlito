@@ -25,12 +25,24 @@ TODO list for Perlito5
 -- Data::Dumper
 
 
+* Parser
+
+-- use "prefix + proto" to represent variables, because it is more flexible; remove 'Var'
+   add_op( 'prefix',   '*',   $prec );  # typeglob
+
+-- use an array to represent names that contain '::', because it is more flexible
+
+
 * Perl5 backend
 
 -- remove all CORE runtime (everything should work natively)
 
 
 * Javascript backend
+
+-- add node.js runtime
+
+-- bug: negative index in array doesn't work
 
 -- bug: packages currently create lexical blocks
 
@@ -44,7 +56,7 @@ TODO list for Perlito5
 
 -- TODO move "CallSub" to last argument in order to get some more compatibility with native js
 
--- in the browser: implement "use" with XMLHttpRequest
+-- in the browser: implement "use" with XMLHttpRequest (what are the security implications?)
 
 
 * Python backend
