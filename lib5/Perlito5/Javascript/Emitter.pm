@@ -16,7 +16,7 @@ package main;
         sub tab {
             my $List__ = bless \@_, "ARRAY";
             ((my  $level) = shift());
-            (('    ') x $level)
+            ((chr(9)) x $level)
         };
         ((my  $Hash_safe_char = bless {}, 'HASH') = (do {
     (my  $Hash_a = bless {}, 'HASH');

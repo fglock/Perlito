@@ -6,7 +6,7 @@ package Javascript;
 {
     sub tab {
         my $level = shift;
-        "    " x $level
+        "\t" x $level
     }
 
     my %safe_char = (
