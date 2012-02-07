@@ -85,7 +85,7 @@ token opt_type {
     |   ''                    { $MATCH->{"capture"} = '' }
 }
 
-token var_sigil     { \$ |\% |\@ |\& }
+token var_sigil     { \$ |\% |\@ |\& | \* }
 
 token var_name      { <full_ident> | <digit> }
 

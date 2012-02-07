@@ -768,7 +768,7 @@ package main;
         ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
         ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
-    (((((do {
+    ((((((do {
     ((chr(36) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
@@ -779,6 +779,9 @@ package main;
 }))) || ((do {
     ($MATCH->{('to')} = $pos1);
     ((((chr(38) eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
+}))) || ((do {
+    ($MATCH->{('to')} = $pos1);
+    (((('*' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))))
 })))
 }))));
         $MATCH
