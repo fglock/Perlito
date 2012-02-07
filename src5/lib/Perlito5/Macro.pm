@@ -31,7 +31,7 @@ sub expand_interpolation {
                 arguments => [
                         $items[0]
                     ],
-                code => 'prefix:<\\>',
+                code => 'circumfix:<[ ]>',
                 namespace => '',
             );
     }

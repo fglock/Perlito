@@ -6,34 +6,27 @@ use warnings;
 no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');
 use Perlito5::Perl5::Runtime;
 our $MATCH = Perlito5::Match->new();
-{
 package main;
-    sub new { shift; bless { @_ }, "main" }
-    package Perlito5::Runtime;
-    sub _replace {
-        my $List__ = bless \@_, "ARRAY";
-        ((my  $s) = shift());
-        ((my  $old) = shift());
-        ((my  $new) = shift());
-        ((my  $p) = index($s, $old));
-        (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + length($old))), $old, $new)) : $s)
-    };
-    sub lisp_escape_string {
-        my $List__ = bless \@_, "ARRAY";
-        ((my  $s) = shift());
-        _replace($s, (chr(92)), (chr(92) . chr(92)))
-    };
-    sub to_javascript_namespace {
-        my $List__ = bless \@_, "ARRAY";
-        ((my  $s) = shift());
-        _replace($s, ('::'), chr(36))
-    };
-    sub to_go_namespace {
-        my $List__ = bless \@_, "ARRAY";
-        ((my  $s) = shift());
-        _replace($s, ('::'), ('__'))
-    };
-    1
-}
+package Perlito5::Runtime;
+sub _replace {
+    ((my  $s) = shift());
+    ((my  $old) = shift());
+    ((my  $new) = shift());
+    ((my  $p) = index($s, $old));
+    (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + length($old))), $old, $new)) : $s)
+};
+sub lisp_escape_string {
+    ((my  $s) = shift());
+    _replace($s, (chr(92)), (chr(92) . chr(92)))
+};
+sub to_javascript_namespace {
+    ((my  $s) = shift());
+    _replace($s, ('::'), chr(36))
+};
+sub to_go_namespace {
+    ((my  $s) = shift());
+    _replace($s, ('::'), ('__'))
+};
+1;
 
 1;

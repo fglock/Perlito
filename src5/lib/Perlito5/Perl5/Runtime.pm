@@ -51,36 +51,6 @@ package IO;
         return $source;
     }
 
-package ARRAY;
-
-    use overload (
-        bool     => sub { scalar(@{$_[0]}) },
-        '""'     => \&Str,
-    );
-
-    sub map  { bless [ CORE::map(  $_[1]($_), @{$_[0]} ) ], 'ARRAY' }
-    sub grep { bless [ CORE::grep( $_[1]($_), @{$_[0]} ) ], 'ARRAY' }
-    sub sort {
-          $_[1]
-        ? bless [ CORE::sort( $_[1]($_), @{$_[0]} ) ], 'ARRAY'
-        : bless [ CORE::sort( @{$_[0]} ) ], 'ARRAY'
-    }
-
-    sub Str {
-        join( " ", CORE::map { Perlito5::Runtime::Str($_) } @{$_[0]} )
-    }
-
-package HASH;
-
-    use overload (
-        bool     => sub { scalar(CORE::keys %{$_[0]}) },
-        '""'     => \&Str,
-    );
-
-    sub Str {
-        join( "\n", map { $_ . "\t" . Perlito5::Runtime::Str($_[0]{$_}) } CORE::keys %{$_[0]} )
-    }
-
 package Perlito5::Runtime;
 
     sub map  { bless [ CORE::map(  $_[0]($_), @{$_[1]} ) ], 'ARRAY' }
@@ -112,29 +82,6 @@ package Perlito5::Runtime;
         return 1;
     }
     sub say   { Perlito5::Runtime::print( @_, "\n" ) }
-    sub isa {
-        my $ref = ref($_[0]);
-           (  $ref eq 'ARRAY'
-           && $_[1] eq 'Array'
-           )
-        || (  $ref eq 'HASH'
-           && $_[1] eq 'Hash'
-           )
-        || (  $ref eq ''
-           && $_[1] eq 'Str'
-           )
-        || $ref eq $_[1]
-        || (  ref( $_[1] )
-           && $ref eq ref( $_[1] )
-           )
-    }
-
-    sub keys   {
-        bless [ CORE::keys %{$_[0]} ], 'ARRAY';
-    }
-    sub values {
-        bless [ CORE::values %{$_[0]} ], 'ARRAY';
-    }
 
     # XXX Perl6
     sub perl {

@@ -33,6 +33,7 @@ TODO list for Perlito5
 
 -- implement signatures
 
+-- check that \(@a) and \@a have different meanings
 
 * Perl5 backend
 

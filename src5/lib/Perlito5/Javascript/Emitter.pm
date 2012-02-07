@@ -660,7 +660,7 @@ package Apply;
         }
 
         if ($code eq 'shift')      {
-            if ( @{$self->{"arguments"}} ) {
+            if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
                 return 'CORE.shift(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . ')'
             }
             return 'CORE.shift(List__)'
@@ -686,6 +686,9 @@ package Apply;
         if ($code eq 'prefix:<@>') { return '(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ')' }
         if ($code eq 'prefix:<%>') { return '(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ').' . 'hash' . '()' }
 
+        if ($code eq 'circumfix:<[ ]>') {
+            return 'Array.prototype.slice.call(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . ')'
+        }
         if ($code eq 'prefix:<\\>') { 
             # XXX currently a no-op
             return join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} )) 
@@ -772,7 +775,10 @@ package Apply;
         }
         if ($code eq 'return') {
             return Javascript::tab($level) . 'throw('
-                .   (@{$self->{"arguments"}} ? $self->{"arguments"}->[0]->emit_javascript() : 'null')
+                .   ( $self->{"arguments"} && @{$self->{"arguments"}} 
+                    ? $self->{"arguments"}->[0]->emit_javascript() 
+                    : 'null'
+                    )
                 . ')'
         }
 
@@ -901,7 +907,7 @@ package If;
             . '(function () {' . "\n"
             .       $body->emit_javascript_indented( $level + 1 ) . "\n"
             . Javascript::tab($level) . '})(); }';
-        if ( $self->{"otherwise"}->stmts ) {
+        if ( @{ $self->{"otherwise"}->stmts } ) {
             my $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $self->{"otherwise"}->stmts, needs_return => 0 );
             $s = $s
                 . "\n"
