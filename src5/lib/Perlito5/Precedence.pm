@@ -137,6 +137,8 @@ add_op( 'prefix',   '\\',  $prec );
 add_op( 'prefix',   '+',   $prec );
 add_op( 'prefix',   '-',   $prec );
 add_op( 'prefix',   '$',   $prec );
+add_op( 'prefix',   '&',   $prec );
+add_op( 'prefix',   '*',   $prec );
 add_op( 'prefix',   '@',   $prec );
 add_op( 'prefix',   '%',   $prec );
 add_op( 'prefix',   '!',   $prec );

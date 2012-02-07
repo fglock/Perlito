@@ -226,6 +226,8 @@ package main;
     add_op('prefix', '+', $prec);
     add_op('prefix', '-', $prec);
     add_op('prefix', chr(36), $prec);
+    add_op('prefix', chr(38), $prec);
+    add_op('prefix', '*', $prec);
     add_op('prefix', chr(64), $prec);
     add_op('prefix', chr(37), $prec);
     add_op('prefix', chr(33), $prec);

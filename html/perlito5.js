@@ -5745,6 +5745,8 @@ if (typeof Perlito5$Precedence !== 'object') {
                 (v__NAMESPACE.add_op || CORE.add_op)(CallSub, 'prefix', '+', v_prec);
                 (v__NAMESPACE.add_op || CORE.add_op)(CallSub, 'prefix', '-', v_prec);
                 (v__NAMESPACE.add_op || CORE.add_op)(CallSub, 'prefix', '$', v_prec);
+                (v__NAMESPACE.add_op || CORE.add_op)(CallSub, 'prefix', '&', v_prec);
+                (v__NAMESPACE.add_op || CORE.add_op)(CallSub, 'prefix', '*', v_prec);
                 (v__NAMESPACE.add_op || CORE.add_op)(CallSub, 'prefix', '@', v_prec);
                 (v__NAMESPACE.add_op || CORE.add_op)(CallSub, 'prefix', '%', v_prec);
                 (v__NAMESPACE.add_op || CORE.add_op)(CallSub, 'prefix', String.fromCharCode(33), v_prec);
