@@ -9,7 +9,7 @@
 //
 // COPYRIGHT
 //
-// Copyright 2009, 2010, 2011 by Flavio Soibelmann Glock and others.
+// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the same terms as Perl itself.
@@ -286,11 +286,8 @@ CORE.ref = function(o) {
     if (typeof o === 'object' && (o instanceof Array)) {
         return 'ARRAY';
     }
-    switch (typeof o) {
-        case "string": return '';
-        case "function": return 'CODE';
-        case "number": return '';
-        case "boolean": return '';
+    if (typeof o === 'function') {
+        return 'CODE';
     }
     return '';
 };
