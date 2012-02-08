@@ -536,22 +536,6 @@ package Call;
         ((my  $level) = shift());
         ((my  $invocant) = $self->{('invocant')}->emit_javascript());
         ((my  $meth) = $self->{('method')});
-        if (((($self->{('method')} eq 'new') && $self->{('invocant')}->isa('Proto')))) {
-            ((my  $str) = (do {
-    (my  @a);
-    (my  @v);
-    \@a
-}));
-            for my $field (@{$self->{('arguments')}}) {
-                if ((($field->isa('Apply') && ($field->code() eq 'infix:<' . chr(61) . '>>')))) {
-                    push(@{$str}, ('' . $field->arguments()->[0]->buf() . ': ' . $field->arguments()->[1]->emit_javascript()) )
-                }
-                else {
-                    die('Error in constructor, field: ', $field)
-                }
-            };
-            return (('(function () ' . chr(123) . ' ' . 'if (' . Perlito5::Runtime::to_javascript_namespace($invocant) . '.new ' . ') ' . chr(123) . ' ' . 'return ' . $invocant . '.new(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')' . chr(59) . ' ' . chr(125) . ' ' . 'var tmp ' . chr(61) . ' ' . chr(123) . join(',', @{$str}) . chr(125) . chr(59) . ' ' . 'tmp._class_ ' . chr(61) . ' ' . $invocant . chr(59) . ' ' . 'return tmp' . chr(59) . ' ' . chr(125) . ')()'))
-        };
         if ((($self->{('method')} eq 'postcircumfix:<[ ]>'))) {
             return ((Javascript::tab($level) . $invocant . '[' . $self->{('arguments')}->emit_javascript() . ']'))
         };
