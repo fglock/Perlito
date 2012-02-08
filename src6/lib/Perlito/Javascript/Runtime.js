@@ -398,7 +398,7 @@ and = function(a, fb) {
     if (bool(a)) {
         return fb();
     }
-    return a;
+    return false;
 };
 
 or = function(a, fb) {
