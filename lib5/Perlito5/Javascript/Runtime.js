@@ -80,8 +80,8 @@ function ScalarRef(o) {
 }
 
 make_package('IO');
-make_package('Perlito5$Runtime');
-make_package('Perlito5$Grammar');
+make_package('Perlito5::Runtime');
+make_package('Perlito5::Grammar');
 
 make_sub('IO', 'slurp', function(v_callsub, filename) {
     if (typeof readFile == 'function') {
@@ -107,7 +107,7 @@ perl = function(o) {
         return "[" + out.join(", ") + "]";
     }
     switch (typeof o) {
-        case "string": return '"' + Perlito5$Runtime.lisp_escape_string(o) + '"';
+        case "string": return '"' + CLASS['Perlito5::Runtime'].lisp_escape_string(o) + '"';
         case "function": return "function";
         case "number": return o;
         case "boolean": return o;
@@ -213,45 +213,45 @@ str_replicate = function(o, n) {
     return n ? Array(n + 1).join(o) : "";
 };
 
-make_sub('Perlito5$Grammar', 'word', function(v_str, v_pos) {
+make_sub('Perlito5::Grammar', 'word', function(v_str, v_pos) {
     var tmp = {
         str: v_str,
         from: v_pos,
         to: v_pos + 1,
         bool: v_str.substr(v_pos, 1).match(/\w/) != null
     };
-    tmp._class_ = CLASS.Perlito5$Match;
+    tmp._class_ = CLASS['Perlito5::Match'];
     return tmp;
 });
 
-make_sub('Perlito5$Grammar', 'digit', function(v_str, v_pos) {
+make_sub('Perlito5::Grammar', 'digit', function(v_str, v_pos) {
     var tmp = {
         str:  v_str,
         from: v_pos,
         to:   v_pos + 1,
         bool: v_str.substr(v_pos, 1).match(/\d/) != null
     };
-    tmp._class_ = CLASS.Perlito5$Match;
+    tmp._class_ = CLASS['Perlito5::Match'];
     return tmp;
 });
 
-make_sub('Perlito5$Grammar', 'space', function(v_str, v_pos) {
+make_sub('Perlito5::Grammar', 'space', function(v_str, v_pos) {
     var tmp = {
         str:  v_str,
         from: v_pos,
         to:   v_pos + 1,
         bool: v_str.substr(v_pos, 1).match(/\s/) != null
     };
-    tmp._class_ = CLASS.Perlito5$Match;
+    tmp._class_ = CLASS['Perlito5::Match'];
     return tmp;
 });
 
 function perl5_to_js( source ) {
     // say( "source: [" + source + "]" );
-    match = Perlito5$Grammar.exp_stmts(source, 0);
+    match = CLASS['Perlito5::Grammar'].exp_stmts(source, 0);
     ast = match._class_.flat.call(match);
     var block = {stmts: ast};
-    block._class_ = CLASS.Lit$Block;
+    block._class_ = CLASS['Lit::Block'];
     var tmp = {block: block};
     tmp._class_ = CLASS.Do;   
     ast = tmp;
