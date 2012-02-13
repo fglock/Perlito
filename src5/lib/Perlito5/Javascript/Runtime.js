@@ -214,36 +214,33 @@ str_replicate = function(o, n) {
 };
 
 make_sub('Perlito5::Grammar', 'word', function(v_str, v_pos) {
-    var tmp = {
+    return {
         str: v_str,
         from: v_pos,
         to: v_pos + 1,
-        bool: v_str.substr(v_pos, 1).match(/\w/) != null
+        bool: v_str.substr(v_pos, 1).match(/\w/) != null,
+        _class_: CLASS['Perlito5::Match']
     };
-    tmp._class_ = CLASS['Perlito5::Match'];
-    return tmp;
 });
 
 make_sub('Perlito5::Grammar', 'digit', function(v_str, v_pos) {
-    var tmp = {
+    return {
         str:  v_str,
         from: v_pos,
         to:   v_pos + 1,
-        bool: v_str.substr(v_pos, 1).match(/\d/) != null
+        bool: v_str.substr(v_pos, 1).match(/\d/) != null,
+        _class_: CLASS['Perlito5::Match']
     };
-    tmp._class_ = CLASS['Perlito5::Match'];
-    return tmp;
 });
 
 make_sub('Perlito5::Grammar', 'space', function(v_str, v_pos) {
-    var tmp = {
+    return {
         str:  v_str,
         from: v_pos,
         to:   v_pos + 1,
-        bool: v_str.substr(v_pos, 1).match(/\s/) != null
+        bool: v_str.substr(v_pos, 1).match(/\s/) != null,
+        _class_: CLASS['Perlito5::Match']
     };
-    tmp._class_ = CLASS['Perlito5::Match'];
-    return tmp;
 });
 
 function perl5_to_js( source ) {
