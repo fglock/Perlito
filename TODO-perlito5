@@ -35,6 +35,7 @@ TODO list for Perlito5
 
 -- check that \(@a) and \@a have different meanings
 
+
 * Perl5 backend
 
 -- remove all CORE runtime (everything should work natively)
@@ -89,6 +90,4 @@ TODO list for Perlito5
 -- finish "overload" implementation
 
 -- source code - remove Perl 6 code such as "token"
-
--- much more!
 

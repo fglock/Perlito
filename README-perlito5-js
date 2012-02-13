@@ -1,12 +1,13 @@
 Perlito5 Data model Overview
 
 method call
-- lookup the method in _class_
-- do a native call
+- lookup the method in the _class_ attribute
+- if the lookup fails, than do a normal javascript method lookup
+- do a native call on the method
 
 subroutine call 
-- lookup the method in the current namespace
-- if not found, lookup the method in CORE
+- lookup the subroutine in the current namespace
+- if not found, lookup the subroutine in CORE
 - do a native method call, but the first argument is set to "CallSub"
 
 Hash
@@ -34,7 +35,6 @@ Class
 - TODO
 
 Namespace
-- TODO: split namespaces from classes
 - current namespace is v__NAMESPACE
 - v__NAMESPACE inherits from CORE, which inherits from CORE::GLOBAL
 - v__NAMESPACE is a copy of the Class, but with a different inheritance
