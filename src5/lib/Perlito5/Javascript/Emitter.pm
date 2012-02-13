@@ -332,17 +332,11 @@ package CompUnit;
             }
         }
 
-        my $class_name = Perlito5::Runtime::to_javascript_namespace($self->{"name"});
-        my $str =
-              '// class ' . $self->{"name"} . "\n"
-            . 'if (typeof ' . $class_name . ' !== \'object\') {' . "\n"
-            . '  ' . $class_name . ' = function() {};' . "\n"
-            . '  ' . $class_name . ' = new ' . $class_name . ';' . "\n"
-            . '  ' . $class_name . '.isa = function (s) { return s == \'' . $self->{"name"} . '\'; };' . "\n"
-            . '  ' . $class_name . '._ref_ = \'' . $self->{"name"} . '\';' . "\n"
-            . '}' . "\n"
+        my $class_name = $self->{"name"};
+        my $str = 'make_package("' . $class_name . '");' . "\n"
             . '(function () {' . "\n"
-            . '  var v__NAMESPACE = ' . $class_name . ';' . "\n";
+            . '  var __PACKAGE__ = "' . $class_name . '";' . "\n"
+            . '  var v__NAMESPACE = NAMESPACE[__PACKAGE__];' . "\n";
 
         for my $decl ( @body ) {
             if ($decl->isa( 'Decl' ) && ( $decl->decl eq 'my' )) {
@@ -501,14 +495,14 @@ package Var;
         if ( $self->{"sigil"} eq '*' ) {
             my $ns = 'v__NAMESPACE';
             if ($self->{"namespace"}) {
-                $ns = Perlito5::Runtime::to_javascript_namespace($self->{"namespace"});
+                $ns = 'NAMESPACE["' . $self->{"namespace"} . '"]';
             }
             return $ns . '["' . $self->{"name"} . '"]';
         }
 
         my $ns = '';
         if ($self->{"namespace"}) {
-            $ns = Perlito5::Runtime::to_javascript_namespace($self->{"namespace"}) . '.';
+            $ns = 'NAMESPACE["' . $self->{"namespace"} . '"].';
         }
         $ns . $table->{$self->{"sigil"}} . $self->{"name"}
     }
@@ -527,7 +521,7 @@ package Proto;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        Javascript::tab($level) . Perlito5::Runtime::to_javascript_namespace($self->{"name"})
+        Javascript::tab($level) . 'CLASS["' . $self->{"name"} . '"]'
     }
 }
 
@@ -630,9 +624,9 @@ package Apply;
 
         if ($code eq 'shift')      {
             if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return 'CORE.shift(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . ')'
+                return 'v__NAMESPACE.shift(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . ')'
             }
-            return 'CORE.shift(List__)'
+            return 'v__NAMESPACE.shift(List__)'
         }
 
         if ($code eq 'map') {
@@ -752,13 +746,10 @@ package Apply;
         }
 
         if ($self->{"namespace"}) {
-            $code = Perlito5::Runtime::to_javascript_namespace($self->{"namespace"}) . '.' . ( $code );
+            $code = 'NAMESPACE["' . $self->{"namespace"} . '"].' . ( $code );
         }
         else {
-            $code = 
-                  '('
-                . 'v__NAMESPACE.' . $code . ' || CORE.' . $code
-                . ')'
+            $code = 'v__NAMESPACE.' . $code
         }
         my @args = 'CallSub';
         push @args, $_->emit_javascript
@@ -871,7 +862,7 @@ package If;
         {
             $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
         }
-        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
+        my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         my $s = Javascript::tab($level) . 'if ( ' . Javascript::to_bool( $cond ) . ' ) { '
             . '(function () {' . "\n"
             .       $body->emit_javascript_indented( $level + 1 ) . "\n"
@@ -899,11 +890,11 @@ package While;
         my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         return
            Javascript::tab($level) . 'for ( '
-        .  ( $self->{"init"}     ? $self->{"init"}->emit_javascript()             . '; '  : '; ' )
-        .  ( $self->{"cond"}     ? Javascript::to_bool( $self->{"cond"} )                     . '; '  : '; ' )
-        .  ( $self->{"continue"} ? $self->{"continue"}->emit_javascript()         . ' '   : ' '  )
+        .  ( $self->{"init"}     ? $self->{"init"}->emit_javascript()           . '; '  : '; ' )
+        .  ( $self->{"cond"}     ? Javascript::to_bool( $self->{"cond"} )       . '; '  : '; ' )
+        .  ( $self->{"continue"} ? $self->{"continue"}->emit_javascript()       . ' '   : ' '  )
         .  ') { '
-            . '(function () { ' . $body->emit_javascript_indented( $level + 1 )      . ' })()'
+            . '(function () {' . "\n" . $body->emit_javascript_indented( $level + 1 )      . ' })()'
         . ' }'
     }
 }
@@ -924,7 +915,7 @@ package For;
             $sig = $self->{"body"}->sig->emit_javascript_indented( $level + 1 );
         }
         Javascript::tab($level) . '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { '
-            . "(function ($sig) \{ "
+            . "(function ($sig) {\n"
                 . $body->emit_javascript_indented( $level + 1 )
             . ' })(a_[i_]) } })'
         . '(' . $cond->emit_javascript() . ')'
@@ -968,12 +959,7 @@ package Sub;
         my $self = shift;
         my $level = shift;
 
-          Javascript::tab($level) . ''
-        .                           ( $self->{"name"}
-                                      ? 'v__NAMESPACE["' . $self->{"name"} . '"] = '
-                                      : ''
-                                    )
-        .                           'function () {' . "\n"
+        my $s =                     'function () {' . "\n"
         . Javascript::tab($level + 1) . 'var List__ = Array.prototype.slice.call(arguments);' . "\n"
         . Javascript::tab($level + 1) . 'if (List__[0] instanceof CallSubClass) {' . "\n"
         . Javascript::tab($level + 2) .   'List__.shift()' . "\n"
@@ -982,7 +968,13 @@ package Sub;
         . Javascript::tab($level + 2) .   'List__.unshift(this)' . "\n"
         . Javascript::tab($level + 1) . '}' . "\n"
         .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"block"}, needs_return => 1, top_level => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
-        . Javascript::tab($level) . '}'
+        . Javascript::tab($level) . '}';
+
+        ( $self->{"name"}
+          ? 'make_sub(__PACKAGE__, "' . $self->{"name"} . '", ' . $s . ')'
+          : $s
+        )
+
     }
 }
 
@@ -994,7 +986,7 @@ package Do;
         my $level = shift;
         my $block = $self->simplify->block;
         return
-              Javascript::tab($level) . '(function () { ' . "\n"
+              Javascript::tab($level) . '(function () {' . "\n"
             .   (Perlito5::Javascript::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
             . Javascript::tab($level) . '})()'
     }

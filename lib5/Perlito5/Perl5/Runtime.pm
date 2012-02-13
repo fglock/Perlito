@@ -70,18 +70,7 @@ package Perlito5::Runtime;
         }
         return $_[0];
     }
-    sub print {
-        local $_;
-        for (@_) {
-            if ( ref($_) ) {
-                CORE::print Perlito5::Runtime::Str($_);
-                next;
-            }
-            CORE::print $_
-        }
-        return 1;
-    }
-    sub say   { Perlito5::Runtime::print( @_, "\n" ) }
+    sub say   { print( @_, "\n" ) }
 
     # XXX Perl6
     sub perl {

@@ -16,6 +16,41 @@
 //
 // See http://www.perl.com/perl/misc/Artistic.html
 
+if (typeof NAMESPACE !== 'object') {
+    NAMESPACE = {};
+    CLASS = {};
+
+    var universal = function () {};
+    CLASS.UNIVERSAL = new universal();
+    CLASS.UNIVERSAL._ref_ = 'UNIVERSAL';
+    CLASS.UNIVERSAL.isa = function (s) { return s == (this._class_ || this)._ref_ };
+
+    NAMESPACE.UNIVERSAL = new universal();
+
+    var core = function () {};
+    CLASS.CORE = new core();
+    CLASS.CORE._ref_ = 'CORE';
+
+    NAMESPACE.CORE = new core();
+}
+
+function make_package(pkg_name) {
+    if (!CLASS.hasOwnProperty(pkg_name)) {
+        var tmp = function () {};
+        tmp.prototype = CLASS.UNIVERSAL;
+        CLASS[pkg_name] = new tmp();
+        CLASS[pkg_name]._ref_ = pkg_name;
+
+        var tmp = function () {};
+        tmp.prototype = NAMESPACE.CORE;
+        NAMESPACE[pkg_name] = new tmp();
+    }
+}
+
+function make_sub(pkg_name, sub_name, func) {
+    NAMESPACE[pkg_name][sub_name] = CLASS[pkg_name][sub_name] = func;
+}
+
 if (typeof arguments === 'object') {
     List_ARGV = arguments;
 }
@@ -44,19 +79,11 @@ function ScalarRef(o) {
     this.bool = function() { return 1 };
 }
 
-// namespace CORE
-if (typeof CORE !== 'object') {
-  CORE = function() {};
-  CORE = new CORE;
-}
+make_package('IO');
+make_package('Perlito5$Runtime');
+make_package('Perlito5$Grammar');
 
-// class IO
-if (typeof IO !== 'object') {
-    IO = function() {};
-    IO = new IO;
-}
-
-IO.slurp = function(v_callsub, filename) {
+make_sub('IO', 'slurp', function(v_callsub, filename) {
     if (typeof readFile == 'function') {
         return readFile(filename);
     }
@@ -65,30 +92,7 @@ IO.slurp = function(v_callsub, filename) {
         return read(filename);
     }
     die("IO.slurp() not implemented");
-};
-
-// class Perlito5$Runtime
-if (typeof Perlito5$Runtime !== 'object') {
-    Perlito5$Runtime = function() {};
-    Perlito5$Runtime = new Perlito5$Runtime;
-}
-
-// class for grammar primitives
-if (typeof Perlito5$Grammar !== 'object') {
-    Perlito5$Grammar = function() {};
-    Perlito5$Grammar = new Perlito5$Grammar;
-}
-
-// XXX this doesn't belong here
-Array.prototype.grep = function grep(f) {
-    var res = new Array()
-    for (var i in this) {
-        if (bool(f(this[i]))) {
-            res.push(this[i])
-        }
-    }
-    return res
-}
+});
 
 // XXX Perl6
 perl = function(o) {
@@ -209,47 +213,47 @@ str_replicate = function(o, n) {
     return n ? Array(n + 1).join(o) : "";
 };
 
-Perlito5$Grammar.word = function(v_str, v_pos) {
+make_sub('Perlito5$Grammar', 'word', function(v_str, v_pos) {
     var tmp = {
         str: v_str,
         from: v_pos,
         to: v_pos + 1,
         bool: v_str.substr(v_pos, 1).match(/\w/) != null
     };
-    tmp._class_ = Perlito5$Match;
+    tmp._class_ = CLASS.Perlito5$Match;
     return tmp;
-};
+});
 
-Perlito5$Grammar.digit = function(v_str, v_pos) {
+make_sub('Perlito5$Grammar', 'digit', function(v_str, v_pos) {
     var tmp = {
         str:  v_str,
         from: v_pos,
         to:   v_pos + 1,
         bool: v_str.substr(v_pos, 1).match(/\d/) != null
     };
-    tmp._class_ = Perlito5$Match;
+    tmp._class_ = CLASS.Perlito5$Match;
     return tmp;
-};
+});
 
-Perlito5$Grammar.space = function(v_str, v_pos) {
+make_sub('Perlito5$Grammar', 'space', function(v_str, v_pos) {
     var tmp = {
         str:  v_str,
         from: v_pos,
         to:   v_pos + 1,
         bool: v_str.substr(v_pos, 1).match(/\s/) != null
     };
-    tmp._class_ = Perlito5$Match;
+    tmp._class_ = CLASS.Perlito5$Match;
     return tmp;
-};
+});
 
 function perl5_to_js( source ) {
     // say( "source: [" + source + "]" );
     match = Perlito5$Grammar.exp_stmts(source, 0);
     ast = match._class_.flat.call(match);
     var block = {stmts: ast};
-    block._class_ = Lit$Block;
+    block._class_ = CLASS.Lit$Block;
     var tmp = {block: block};
-    tmp._class_ = Do;   
+    tmp._class_ = CLASS.Do;   
     ast = tmp;
     // CORE.say( "ast: [" + perl(ast) + "]" );
     js_code = ast._class_.emit_javascript.call(ast);

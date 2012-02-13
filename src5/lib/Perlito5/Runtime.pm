@@ -15,11 +15,6 @@ sub lisp_escape_string {
     _replace($s, "\\", "\\\\");
 }
 
-sub to_javascript_namespace {
-    my $s = shift;
-    _replace($s, "::", '$');
-}
-
 sub to_go_namespace {
     my $s = shift;
     _replace($s, "::", "__");

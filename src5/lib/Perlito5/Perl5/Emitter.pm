@@ -281,7 +281,7 @@ package Apply;
 
     my %op_prefix_perl5 = (
         say     => 'Perlito5::Runtime::say',
-        print   => 'Perlito5::Runtime::print',
+        print   => 'print',
         grep    => 'Perlito5::Runtime::grep',
         sort    => 'Perlito5::Runtime::sort',
         keys    => 'keys',

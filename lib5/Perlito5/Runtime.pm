@@ -19,10 +19,6 @@ sub lisp_escape_string {
     ((my  $s) = shift());
     _replace($s, (chr(92)), (chr(92) . chr(92)))
 };
-sub to_javascript_namespace {
-    ((my  $s) = shift());
-    _replace($s, ('::'), chr(36))
-};
 sub to_go_namespace {
     ((my  $s) = shift());
     _replace($s, ('::'), ('__'))

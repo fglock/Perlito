@@ -16,6 +16,8 @@
 //
 // See http://www.perl.com/perl/misc/Artistic.html
 
+var CORE = NAMESPACE.CORE;
+
 var _print_buf = "";
 CORE.print = function() {
     var List__ = Array.prototype.slice.call(arguments);
@@ -78,19 +80,16 @@ CORE.warn = function() {
     CORE.print("Warning: " + s + "\n");
 };
 
-CORE.bless = function(callsub, o, class_name) {
-    try {
-        o._class_ = eval(class_name);
+CORE.bless = function(callsub, o, pkg_name) {
+    if (typeof pkg_name === 'object') {
+        // bless {}, Class
+        o._class_ = pkg_name;
+        return o;
     }
-    catch(err) {
-        eval( ''
-            + 'if (typeof ('+class_name+') !== "object") { '
-            +   class_name+' = function() {}; '
-            +   class_name+' = new '+class_name+'; '
-            + '}; '
-            + 'o._class_ = class_name; '
-        );
+    if (!CLASS.hasOwnProperty(pkg_name)) {
+        make_package(pkg_name);
     }
+    o._class_ = CLASS[pkg_name];
     return o;
 };
 
