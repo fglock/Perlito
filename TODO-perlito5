@@ -35,10 +35,10 @@ TODO list for Perlito5
 
 -- check that \(@a) and \@a have different meanings
 
+-- symbol variables like $]
+
 
 * Perl5 backend
-
--- remove all CORE runtime (everything should work natively)
 
 
 * Javascript backend
@@ -60,6 +60,8 @@ TODO list for Perlito5
 -- TODO move "CallSub" to last argument in order to get some more compatibility with native js
 
 -- in the browser: implement "use" with XMLHttpRequest (what are the security implications?)
+
+-- add symbol tables for scalar, array and hash
 
 
 * Python backend
