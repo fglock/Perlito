@@ -374,20 +374,14 @@ package Perlito5::Expression;
                             )   
                         ] 
                     }
-        | '->'
+        | '->' <.Perlito5::Grammar.opt_ws>
             [
             | '(' <paren_parse>   ')'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.( )',  $MATCH->{"paren_parse"}->flat()   ] }
             | '[' <square_parse>  ']'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.[ ]',  $MATCH->{"square_parse"}->flat()  ] }
             | '{' <curly_parse>   '}'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.{ }',  $MATCH->{"curly_parse"}->flat()   ] }
 
-            | <Perlito5::Grammar.ident>
-                [ ':' <.Perlito5::Grammar.ws>? <list_parse>
-                  { $MATCH->{"capture"} = [ 'postfix_or_term',
-                            'methcall',
-                            $MATCH->{"Perlito5::Grammar.ident"}->flat(), $MATCH->{"list_parse"}->flat() 
-                          ]
-                  }
-                | '(' <paren_parse> ')'
+            | <Perlito5::Grammar.ident> <.Perlito5::Grammar.opt_ws>
+                [ '(' <paren_parse> ')'
                   { $MATCH->{"capture"} = [ 'postfix_or_term',
                            'methcall',
                            $MATCH->{"Perlito5::Grammar.ident"}->flat(),

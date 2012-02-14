@@ -393,7 +393,16 @@ sub operator {
 })))
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
-    ((((('->' eq substr($str, $MATCH->to(), 2)) && (($MATCH->{('to')} = (2 + $MATCH->to()))))) && ((do {
+    (((((('->' eq substr($str, $MATCH->to(), 2)) && (($MATCH->{('to')} = (2 + $MATCH->to()))))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->to()));
+    if (($m2->bool())) {
+        ($MATCH->{('to')} = $m2->to());
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
     ((my  $pos1) = $MATCH->to());
     (((((do {
     (((((('(' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
@@ -465,7 +474,7 @@ sub operator {
 }))))
 }))) || ((do {
     ($MATCH->{('to')} = $pos1);
-    ((((do {
+    (((((do {
     ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->to()));
     if (($m2->bool())) {
         ($MATCH->{('to')} = $m2->to());
@@ -476,48 +485,18 @@ sub operator {
         0
     }
 })) && ((do {
+    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->to()));
+    if (($m2->bool())) {
+        ($MATCH->{('to')} = $m2->to());
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
     ((my  $pos1) = $MATCH->to());
-    ((((do {
-    ((((((':' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
-    ((my  $last_pos) = $MATCH->to());
-    if ((!(((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->to()));
-    if (($m2->bool())) {
-        ($MATCH->{('to')} = $m2->to());
-        1
-    }
-    else {
-        0
-    }
-}))))) {
-        ($MATCH->{('to')} = $last_pos)
-    };
-    1
-}))) && ((do {
-    ((my  $m2) = $grammar->list_parse($str, $MATCH->to()));
-    if (($m2->bool())) {
-        ($MATCH->{('to')} = $m2->to());
-        ($MATCH->{'list_parse'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ($MATCH->{('capture')} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, 'postfix_or_term' );
-    push(@a, 'methcall' );
-    push(@a, $MATCH->{('Perlito5::Grammar.ident')}->flat() );
-    push(@a, $MATCH->{('list_parse')}->flat() );
-    \@a
-}));
-    1
-})))
-})) || ((do {
-    ($MATCH->{('to')} = $pos1);
-    ((((((('(' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
+    (((do {
+    (((((('(' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to()))))) && ((do {
     ((my  $m2) = $grammar->paren_parse($str, $MATCH->to()));
     if (($m2->bool())) {
         ($MATCH->{('to')} = $m2->to());
@@ -544,8 +523,8 @@ sub operator {
     \@a
 }));
     1
-}))))
-}))) || ((do {
+})))
+})) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((do {
     ($MATCH->{('capture')} = (do {
