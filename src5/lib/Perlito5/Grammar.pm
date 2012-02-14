@@ -236,25 +236,12 @@ token exp_stmts {
 
 token opt_name {  <ident>?  }
 
-token var_invocant {
-    |  <var_ident> \:    { $MATCH->{"capture"} = $MATCH->{"var_ident"}->flat() }
-    |  { $MATCH->{"capture"} = Var->new(
-            sigil  => '$',
-            name   => 'self',
-         )
-       }
-}
-
 token args_sig {
-    <var_invocant>
-    <.opt_ws>
     # TODO - Perlito5::Expression.list_parse / exp_mapping == positional / named
     <Perlito5::Expression.list_parse>
     {
-        # say ' invocant: ', ($MATCH->{"var_invocant"}->flat()).perl;
         # say ' positional: ', ($MATCH->{""}->flat()).perl;
         $MATCH->{"capture"} = Sig->new(
-            invocant    => $MATCH->{"var_invocant"}->flat(),
             positional  => Perlito5::Expression::expand_list($MATCH->{"Perlito5::Expression.list_parse"}->flat()->{'exp'}),
             named       => { } );
     }
@@ -264,9 +251,6 @@ token method_sig {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
         { $MATCH->{"capture"} = $MATCH->{"args_sig"}->flat() }
     |   { $MATCH->{"capture"} = Sig->new(
-            invocant => Var->new(
-                sigil  => '$',
-                name   => 'self' ),
             positional => [ ],
             named => { } ) }
 }

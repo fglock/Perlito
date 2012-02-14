@@ -1835,38 +1835,6 @@ sub opt_name {
 }))));
     $MATCH
 };
-sub var_invocant {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-    ($MATCH->{('bool')} = (((do {
-    ((my  $pos1) = $MATCH->to());
-    (((do {
-    ((((do {
-    ((my  $m2) = $grammar->var_ident($str, $MATCH->to()));
-    if (($m2->bool())) {
-        ($MATCH->{('to')} = $m2->to());
-        ($MATCH->{'var_ident'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && (((':' eq substr($str, $MATCH->to(), 1)) && (($MATCH->{('to')} = (1 + $MATCH->to())))))) && ((do {
-    ($MATCH->{('capture')} = $MATCH->{('var_ident')}->flat());
-    1
-})))
-})) || ((do {
-    ($MATCH->{('to')} = $pos1);
-    (((do {
-    ($MATCH->{('capture')} = Var->new(('sigil' => chr(36)), ('name' => 'self')));
-    1
-})))
-})))
-}))));
-    $MATCH
-};
 sub args_sig {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -1875,26 +1843,7 @@ sub args_sig {
     ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->to());
     ((do {
-    (((((do {
-    ((my  $m2) = $grammar->var_invocant($str, $MATCH->to()));
-    if (($m2->bool())) {
-        ($MATCH->{('to')} = $m2->to());
-        ($MATCH->{'var_invocant'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ((my  $m2) = $grammar->opt_ws($str, $MATCH->to()));
-    if (($m2->bool())) {
-        ($MATCH->{('to')} = $m2->to());
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
+    (((do {
     ((my  $m2) = Perlito5::Expression->list_parse($str, $MATCH->to()));
     if (($m2->bool())) {
         ($MATCH->{('to')} = $m2->to());
@@ -1904,8 +1853,8 @@ sub args_sig {
     else {
         0
     }
-}))) && ((do {
-    ($MATCH->{('capture')} = Sig->new(('invocant' => $MATCH->{('var_invocant')}->flat()), ('positional' => Perlito5::Expression::expand_list($MATCH->{('Perlito5::Expression.list_parse')}->flat()->{'exp'})), ('named' => (do {
+})) && ((do {
+    ($MATCH->{('capture')} = Sig->new(('positional' => Perlito5::Expression::expand_list($MATCH->{('Perlito5::Expression.list_parse')}->flat()->{'exp'})), ('named' => (do {
     (my  %a);
     \%a
 }))));
@@ -1968,7 +1917,7 @@ sub method_sig {
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((do {
-    ($MATCH->{('capture')} = Sig->new(('invocant' => Var->new(('sigil' => chr(36)), ('name' => 'self'))), ('positional' => (do {
+    ($MATCH->{('capture')} = Sig->new(('positional' => (do {
     (my  @a);
     (my  @v);
     \@a
