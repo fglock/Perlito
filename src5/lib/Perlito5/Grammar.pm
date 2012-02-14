@@ -1,7 +1,7 @@
 package Perlito5::Grammar;
 
 use Perlito5::Expression;
-use Perlito5::Grammar::Regex;
+# use Perlito5::Grammar::Regex;
 use Perlito5::Grammar::Control;
 
 token is_newline {
