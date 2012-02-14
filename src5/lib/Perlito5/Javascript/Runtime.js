@@ -23,7 +23,7 @@ if (typeof NAMESPACE !== 'object') {
     var universal = function () {};
     CLASS.UNIVERSAL = new universal();
     CLASS.UNIVERSAL._ref_ = 'UNIVERSAL';
-    CLASS.UNIVERSAL.isa = function (s) { return s == (this._class_ || this)._ref_ };
+    CLASS.UNIVERSAL.isa = function (o, s) { return s == (o._class_ || o)._ref_ };
 
     NAMESPACE.UNIVERSAL = new universal();
 
@@ -55,12 +55,6 @@ if (typeof arguments === 'object') {
     List_ARGV = arguments;
 }
 
-// call context - method or subroutine
-if (typeof CallSub !== 'object') {
-    CallSubClass = function() {};
-    CallSub = new CallSubClass;
-}
-
 function HashRef(o) {
     this._hash_ = o;
     this._ref_ = 'HASH';
@@ -83,7 +77,7 @@ make_package('IO');
 make_package('Perlito5::Runtime');
 make_package('Perlito5::Grammar');
 
-make_sub('IO', 'slurp', function(v_callsub, filename) {
+make_sub('IO', 'slurp', function(filename) {
     if (typeof readFile == 'function') {
         return readFile(filename);
     }
@@ -173,7 +167,7 @@ bool = function(o) {
         return o != '' && o != '0';
     }
     if (o._class_ && typeof o._class_.bool === 'function') {
-        return o._class_.bool.call(o);
+        return o._class_.bool(o);
     }
     if (typeof o.bool === 'function') {
         return o.bool();
@@ -213,7 +207,7 @@ str_replicate = function(o, n) {
     return n ? Array(n + 1).join(o) : "";
 };
 
-make_sub('Perlito5::Grammar', 'word', function(v_str, v_pos) {
+make_sub('Perlito5::Grammar', 'word', function(v_grammar, v_str, v_pos) {
     return {
         str: v_str,
         from: v_pos,
@@ -223,7 +217,7 @@ make_sub('Perlito5::Grammar', 'word', function(v_str, v_pos) {
     };
 });
 
-make_sub('Perlito5::Grammar', 'digit', function(v_str, v_pos) {
+make_sub('Perlito5::Grammar', 'digit', function(v_grammar, v_str, v_pos) {
     return {
         str:  v_str,
         from: v_pos,
@@ -233,7 +227,7 @@ make_sub('Perlito5::Grammar', 'digit', function(v_str, v_pos) {
     };
 });
 
-make_sub('Perlito5::Grammar', 'space', function(v_str, v_pos) {
+make_sub('Perlito5::Grammar', 'space', function(v_grammar, v_str, v_pos) {
     return {
         str:  v_str,
         from: v_pos,
@@ -245,15 +239,19 @@ make_sub('Perlito5::Grammar', 'space', function(v_str, v_pos) {
 
 function perl5_to_js( source ) {
     // say( "source: [" + source + "]" );
-    match = CLASS['Perlito5::Grammar'].exp_stmts(source, 0);
-    ast = match._class_.flat.call(match);
-    var block = {stmts: ast};
-    block._class_ = CLASS['Lit::Block'];
-    var tmp = {block: block};
-    tmp._class_ = CLASS.Do;   
+    match = CLASS['Perlito5::Grammar'].exp_stmts(CLASS['Perlito5::Grammar'], source, 0);
+    ast = match._class_.flat(match);
+    var block = {
+        stmts:   ast,
+        _class_: CLASS['Lit::Block']
+    };
+    var tmp = {
+        block:   block,
+        _class_: CLASS.Do
+    };
     ast = tmp;
     // CORE.say( "ast: [" + perl(ast) + "]" );
-    js_code = ast._class_.emit_javascript.call(ast);
+    js_code = ast._class_.emit_javascript(ast);
     // CORE.say( "js-source: [" + js_code + "]" );
     return js_code;
 }

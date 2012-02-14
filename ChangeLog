@@ -1,3 +1,13 @@
+Dev  2012-02-14
+
+Perlito Perl 5:
+- symbol tables; typeglobs
+- perlito5 calling convention is incompatible with browser DOM
+
+Perlito Perl 6:
+- mostly no changes
+
+
 8.0  2011-12-24
 - added new compiler for Perl version 5.
 

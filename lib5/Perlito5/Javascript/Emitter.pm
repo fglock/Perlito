@@ -536,14 +536,14 @@ package Call;
         ((my  $level) = shift());
         ((my  $invocant) = $self->{('invocant')}->emit_javascript());
         ((my  $meth) = $self->{('method')});
-        if ((($self->{('method')} eq 'postcircumfix:<[ ]>'))) {
+        if ((($meth eq 'postcircumfix:<[ ]>'))) {
             return ((Javascript::tab($level) . $invocant . '[' . $self->{('arguments')}->emit_javascript() . ']'))
         };
-        if ((($self->{('method')} eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
+        if ((($meth eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
             return ((Javascript::tab($level) . $invocant . '[' . $self->{('arguments')}->emit_javascript() . ']'))
         };
         if ((($meth eq 'postcircumfix:<( )>'))) {
-            ((my  @args) = 'CallSub');
+            ((my  @args) = ());
             for (@{$self->{('arguments')}}) {
                 push(@args, $_->emit_javascript() )
             };
@@ -553,7 +553,7 @@ package Call;
         for (@{$self->{('arguments')}}) {
             push(@args, $_->emit_javascript() )
         };
-        return ((Javascript::tab($level) . '(' . '(' . $invocant . '._class_ ' . chr(38) . chr(38) . ' ' . $invocant . '._class_.' . $meth . ')' . ' ' . chr(124) . chr(124) . ' ' . $invocant . '.' . $meth . ').call(' . join(',', @args) . ')'))
+        return ((Javascript::tab($level) . '((' . '(' . $invocant . '._class_ ' . chr(38) . chr(38) . ' ' . $invocant . '._class_.' . $meth . ')' . ' ' . chr(124) . chr(124) . ' ' . $invocant . '.' . $meth . ')(' . join(',', @args) . '))'))
     }
 });
 package Apply;
@@ -571,7 +571,7 @@ package Apply;
         };
         ((my  $code) = $self->{('code')});
         if ((ref(($code ne '')))) {
-            ((my  @args) = 'CallSub');
+            ((my  @args) = ());
             for (@{$self->{('arguments')}}) {
                 push(@args, $_->emit_javascript() )
             };
@@ -593,7 +593,7 @@ package Apply;
             return ((Javascript::tab($level) . '(' . join(' ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ' ' . chr(33) . chr(61) . ' null)'))
         };
         if ((($code eq 'substr'))) {
-            return (('(' . ($self->{('arguments')}->[0])->emit_javascript() . ' ' . chr(124) . chr(124) . ' ' . chr(34) . chr(34) . ').substr(' . ($self->{('arguments')}->[1])->emit_javascript() . ((defined($self->{('arguments')}->[2]) ? (', ' . ($self->{('arguments')}->[2])->emit_javascript()) : '')) . ')'))
+            return (('(' . Javascript::to_str($self->{('arguments')}->[0]) . ').substr(' . ($self->{('arguments')}->[1])->emit_javascript() . ((defined($self->{('arguments')}->[2]) ? (', ' . ($self->{('arguments')}->[2])->emit_javascript()) : '')) . ')'))
         };
         if ((($code eq 'shift'))) {
             if ((($self->{('arguments')} && @{$self->{('arguments')}}))) {
@@ -691,7 +691,7 @@ package Apply;
         else {
             ($code = ('v__NAMESPACE.' . $code))
         };
-        ((my  @args) = 'CallSub');
+        ((my  @args) = ());
         for (@{$self->{('arguments')}}) {
             push(@args, $_->emit_javascript() )
         };
@@ -878,7 +878,7 @@ package Sub;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $s) = ('function () ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . 'if (List__[0] instanceof CallSubClass) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.shift()' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'List__.unshift(this)' . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125)));
+        ((my  $s) = ('function () ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125)));
         (($self->{('name')} ? ('make_sub(__PACKAGE__, ' . chr(34) . $self->{('name')} . chr(34) . ', ' . $s . ')') : $s))
     }
 });

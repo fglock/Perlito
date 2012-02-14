@@ -3,12 +3,12 @@ Perlito5 Data model Overview
 method call
 - lookup the method in the _class_ attribute
 - if the lookup fails, than do a normal javascript method lookup
-- do a native call on the method
+- do a native call on the method. The invocant is the first argument. "this" is not used.
 
 subroutine call 
 - lookup the subroutine in the current namespace
 - if not found, lookup the subroutine in CORE
-- do a native method call, but the first argument is set to "CallSub"
+- do a native method call
 
 Hash
 - native {}

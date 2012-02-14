@@ -21,9 +21,6 @@ var CORE = NAMESPACE.CORE;
 var _print_buf = "";
 CORE.print = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var i;
     for (i = 0; i < List__.length; i++) {
         var s = string(List__[i]);
@@ -44,9 +41,6 @@ CORE.print = function() {
 
 CORE.say = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var i;
     for (i = 0; i < List__.length; i++) {
         CORE.print(List__[i]);
@@ -56,9 +50,6 @@ CORE.say = function() {
 
 CORE.die = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var i;
     var s = '';
     for (i = 0; i < List__.length; i++) {
@@ -69,9 +60,6 @@ CORE.die = function() {
 
 CORE.warn = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var i;
     var s = '';
     for (i = 0; i < List__.length; i++) {
@@ -80,7 +68,7 @@ CORE.warn = function() {
     CORE.print("Warning: " + s + "\n");
 };
 
-CORE.bless = function(callsub, o, pkg_name) {
+CORE.bless = function(o, pkg_name) {
     if (typeof pkg_name === 'object') {
         // bless {}, Class
         o._class_ = pkg_name;
@@ -93,19 +81,16 @@ CORE.bless = function(callsub, o, pkg_name) {
     return o;
 };
 
-CORE.chr = function(callsub, o) {
+CORE.chr = function(o) {
     return String.fromCharCode(num(o));
 };
 
-CORE.ord = function(callsub, o) {
+CORE.ord = function(o) {
     return string(o).charCodeAt(0);
 };
 
 CORE.scalar = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var o = List__[0];
     if (o == null) {
         return 1;
@@ -131,9 +116,6 @@ CORE.scalar = function() {
 
 CORE.values = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var o = List__[0];
     if (o == null) {
         return [];
@@ -159,9 +141,6 @@ CORE.values = function() {
 
 CORE.keys = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var o = List__[0];
     if (o == null) {
         return [];
@@ -186,9 +165,6 @@ CORE.keys = function() {
 
 CORE.pop = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var o = List__[0];
     if (o.length == null) {
         return null;
@@ -198,9 +174,6 @@ CORE.pop = function() {
 
 CORE.shift = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var o = List__[0];
     if (o.length == null) {
         return null;
@@ -210,9 +183,6 @@ CORE.shift = function() {
 
 CORE.push = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var o = List__[0];
     var v = List__[1];
     return o.push(v);
@@ -220,9 +190,6 @@ CORE.push = function() {
 
 CORE.unshift = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var o = List__[0];
     var v = List__[1];
     return o.unshift(v);
@@ -230,9 +197,6 @@ CORE.unshift = function() {
 
 CORE.join = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var s = List__[0];
     var o = List__[1];
     return o.join(s);
@@ -240,9 +204,6 @@ CORE.join = function() {
 
 CORE.index = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var o = List__[0];
     var s = List__[1];
     try {
@@ -255,9 +216,6 @@ CORE.index = function() {
 
 CORE.length = function() {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var o = List__[0];
     if (typeof o.string === 'function') {
         return o.string().length;
@@ -267,9 +225,6 @@ CORE.length = function() {
 
 CORE.ref = function(o) {
     var List__ = Array.prototype.slice.call(arguments);
-    if (List__[0] instanceof CallSubClass) {
-        List__.shift()
-    }
     var o = List__[0];
     if (o == null) {
         return '';

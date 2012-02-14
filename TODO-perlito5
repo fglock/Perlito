@@ -43,7 +43,11 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- add JS::inline(string) - see PIL2JS for examples
+
 -- add node.js runtime
+
+-- move "substr" to CORE
 
 -- bug: negative index in array doesn't work
 
@@ -62,6 +66,8 @@ TODO list for Perlito5
 -- in the browser: implement "use" with XMLHttpRequest (what are the security implications?)
 
 -- add symbol tables for scalar, array and hash
+
+-- string increment and ranges
 
 
 * Python backend
@@ -92,4 +98,6 @@ TODO list for Perlito5
 -- finish "overload" implementation
 
 -- source code - remove Perl 6 code such as "token"
+
+-- here-docs
 
