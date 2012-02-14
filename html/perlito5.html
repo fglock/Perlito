@@ -15,9 +15,8 @@ use feature 'say';
 
 package Main;
 
-## my $where = 'print-result';
-## my $out = $Document->getElementById($where);
-## $out->{'value'} = "Changing the '$where' box using the 'Document' object\n";
+my $out = JS::inline('document.getElementById("print-result")');
+$out->{'value'} = "Changing the output box using the document object\n";
 
 say "hello, World!";
 
@@ -39,22 +38,19 @@ $str = ' say("this was compiled at $time") ';
 $time = 'Run-time';
 eval $str;
 
-## package Printer;
-## 
-##     my $where = 'print-result';
-##     my $out = $Document->getElementById($where);
-## 
-##     sub new { 
-##         bless {}, $_[0] 
-##     }
-##     sub out { 
-##         $out->{'value'} .= $_[1] 
-##     }
-## 
-## package Main;
-## 
-## my $printer = Printer->new;
-## $printer->out( "Using my 'Printer' object\n" );
+package Printer;
+    my $out = JS::inline('document.getElementById("print-result")');
+    sub new { 
+        bless {}, $_[0] 
+    }
+    sub out { 
+        $out->{'value'} .= $_[1] 
+    }
+
+package Main;
+
+my $printer = Printer->new;
+$printer->out( "Using my 'Printer' object\n" );
 
 </textarea><br/>
 		<input type="button" value="Execute" onclick="execute()"/>
@@ -85,7 +81,6 @@ eval $str;
                 return true;
             };
 
-            // var v_Document = document;
 			var source = document.getElementById('source').value;
             var pos = 0;
             var ast;

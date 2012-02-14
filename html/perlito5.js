@@ -3524,6 +3524,14 @@ make_sub(__PACKAGE__, "emit_javascript_indented", function () {
 								throw((string(NAMESPACE["Javascript"].tab(v_level)) + 'throw(' + string((( and(v_self[('arguments')], function () { return (v_self[('arguments')]); }) ? (((v_self[('arguments')][0]._class_ && v_self[('arguments')][0]._class_.emit_javascript) || v_self[('arguments')][0].emit_javascript)(v_self[('arguments')][0])) : 'null'))) + ')'));;
 							})(); };
 							if ( bool((v_self[('namespace')])) ) { (function () {
+								if ( bool((and((v_self[('namespace')] == 'JS'), function () { return (v_code == 'inline'); }))) ) { (function () {
+									if ( bool(((((v_self[('arguments')][0]._class_ && v_self[('arguments')][0]._class_.isa) || v_self[('arguments')][0].isa)(v_self[('arguments')][0],'Val::Buf')))) ) { (function () {
+										throw(v_self[('arguments')][0][('buf')]);;
+									})(); }
+									else { (function () {
+										v__NAMESPACE.die(('JS::inline needs a string constant'));;
+									})(); };;
+								})(); };
 								(v_code = ('NAMESPACE[' + String.fromCharCode(34) + string(v_self[('namespace')]) + String.fromCharCode(34) + '].' + string((v_code))));;
 							})(); }
 							else { (function () {

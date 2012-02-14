@@ -746,6 +746,20 @@ package Apply;
         }
 
         if ($self->{"namespace"}) {
+
+            if (  $self->{"namespace"} eq 'JS' 
+               && $code eq 'inline'
+               ) 
+            {
+                if ( $self->{"arguments"}->[0]->isa('Val::Buf') ) {
+                    # JS::inline('var x = 123')
+                    return $self->{"arguments"}[0]{"buf"};
+                }
+                else {
+                    die "JS::inline needs a string constant";
+                }
+            }
+
             $code = 'NAMESPACE["' . $self->{"namespace"} . '"].' . ( $code );
         }
         else {

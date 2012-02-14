@@ -686,6 +686,14 @@ package Apply;
             return ((Javascript::tab($level) . 'throw(' . ((($self->{('arguments')} && @{$self->{('arguments')}}) ? $self->{('arguments')}->[0]->emit_javascript() : 'null')) . ')'))
         };
         if (($self->{('namespace')})) {
+            if (((($self->{('namespace')} eq 'JS') && ($code eq 'inline')))) {
+                if (($self->{('arguments')}->[0]->isa('Val::Buf'))) {
+                    return ($self->{('arguments')}->[0]->{('buf')})
+                }
+                else {
+                    die(('JS::inline needs a string constant'))
+                }
+            };
             ($code = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . '].' . ($code)))
         }
         else {
