@@ -57,9 +57,8 @@ TODO list for Perlito5
 
 -- scalar references not implemented
 
--- generate more compact code; maybe use more subroutines instead of inlining
-
--- TODO move "CallSub" to last argument in order to get some more compatibility with native js
+-- generate more compact code; maybe use more subroutines instead of inlining;
+   autovivification is probably the most verbose part of the code.
 
 -- in the browser: implement "use" with XMLHttpRequest (what are the security implications?)
 
