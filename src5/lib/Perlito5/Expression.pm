@@ -379,7 +379,32 @@ package Perlito5::Expression;
             | '(' <paren_parse>   ')'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.( )',  $MATCH->{"paren_parse"}->flat()   ] }
             | '[' <square_parse>  ']'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.[ ]',  $MATCH->{"square_parse"}->flat()  ] }
             | '{' <curly_parse>   '}'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.{ }',  $MATCH->{"curly_parse"}->flat()   ] }
+
+            | <Perlito5::Grammar.ident>
+                [ ':' <.Perlito5::Grammar.ws>? <list_parse>
+                  { $MATCH->{"capture"} = [ 'postfix_or_term',
+                            'methcall',
+                            $MATCH->{"Perlito5::Grammar.ident"}->flat(), $MATCH->{"list_parse"}->flat() 
+                          ]
+                  }
+                | '(' <paren_parse> ')'
+                  { $MATCH->{"capture"} = [ 'postfix_or_term',
+                           'methcall',
+                           $MATCH->{"Perlito5::Grammar.ident"}->flat(),
+                           { end_block => undef,
+                             exp       => $MATCH->{"paren_parse"}->flat(),
+                             terminated => 0,
+                           },
+                         ]
+                  }
+                | { $MATCH->{"capture"} = [ 'postfix_or_term',
+                            'methcall_no_params',
+                            $MATCH->{"Perlito5::Grammar.ident"}->flat()
+                          ]
+                  }
+                ]
             ]
+
         | '('  <paren_parse>   ')'                      { $MATCH->{"capture"} = [ 'postfix_or_term',  '( )',   $MATCH->{"paren_parse"}->flat()   ] }
         | '['  <square_parse>  ']'                      { $MATCH->{"capture"} = [ 'postfix_or_term',  '[ ]',   $MATCH->{"square_parse"}->flat()  ] }
 
@@ -414,23 +439,6 @@ package Perlito5::Expression;
 
         | <Perlito5::Grammar.declarator> <.Perlito5::Grammar.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
             { $MATCH->{"capture"} = [ 'term', Decl->new( decl => $MATCH->{"Perlito5::Grammar.declarator"}->flat(), type => $MATCH->{"Perlito5::Grammar.opt_type"}->flat(), var => $MATCH->{"Perlito5::Grammar.var_ident"}->flat() ) ] }
-
-        | '->' 
-            <Perlito5::Grammar.ident>
-          [ ':' <.Perlito5::Grammar.ws>? <list_parse>
-            { $MATCH->{"capture"} = [ 'postfix_or_term', 'methcall', $MATCH->{"Perlito5::Grammar.ident"}->flat(), $MATCH->{"list_parse"}->flat() ] }
-          | '(' <paren_parse> ')'
-            { $MATCH->{"capture"} = [ 'postfix_or_term',
-                     'methcall',
-                     $MATCH->{"Perlito5::Grammar.ident"}->flat(),
-                     { end_block => undef,
-                       exp       => $MATCH->{"paren_parse"}->flat(),
-                       terminated => 0,
-                     },
-                   ]
-            }
-          | { $MATCH->{"capture"} = [ 'postfix_or_term', 'methcall_no_params', $MATCH->{"Perlito5::Grammar.ident"}->flat() ] }
-          ]
 
         | <before <.Perlito5::Grammar.digit> >
             [ <Perlito5::Grammar.val_num>    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.val_num"}->flat() ]  }  # 123.456
