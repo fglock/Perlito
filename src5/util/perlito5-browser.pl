@@ -4,8 +4,6 @@ use Perlito5::Match;
 use Perlito5::Javascript::Emitter;
 use Perlito5::Grammar;
 use Perlito5::Grammar::Control;
-use Perlito5::Grammar::Regex;
-use Perlito5::Emitter::Token;
 use Perlito5::Precedence;
 use Perlito5::Expression;
 use Perlito5::Macro;
