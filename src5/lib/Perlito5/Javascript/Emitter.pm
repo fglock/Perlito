@@ -550,11 +550,7 @@ package Call;
         my @args = ($invocant);
         push @args, $_->emit_javascript
             for @{$self->{"arguments"}};
-        return Javascript::tab($level) 
-            . '((' 
-            .  '('   . $invocant . '._class_ ' . '&& ' . $invocant . '._class_.' . $meth . ')' 
-            . ' || ' . $invocant . '.' . $meth
-            . ')(' . join(',', @args) . '))'
+        return Javascript::tab($level) . $invocant . '._class_.' . $meth . '(' . join(',', @args) . ')'
     }
 }
 

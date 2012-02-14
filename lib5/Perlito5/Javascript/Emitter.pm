@@ -553,7 +553,7 @@ package Call;
         for (@{$self->{('arguments')}}) {
             push(@args, $_->emit_javascript() )
         };
-        return ((Javascript::tab($level) . '((' . '(' . $invocant . '._class_ ' . chr(38) . chr(38) . ' ' . $invocant . '._class_.' . $meth . ')' . ' ' . chr(124) . chr(124) . ' ' . $invocant . '.' . $meth . ')(' . join(',', @args) . '))'))
+        return ((Javascript::tab($level) . $invocant . '._class_.' . $meth . '(' . join(',', @args) . ')'))
     }
 });
 package Apply;

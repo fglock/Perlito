@@ -23,7 +23,7 @@ if (typeof NAMESPACE !== 'object') {
     var universal = function () {};
     CLASS.UNIVERSAL = new universal();
     CLASS.UNIVERSAL._ref_ = 'UNIVERSAL';
-    CLASS.UNIVERSAL.isa = function (o, s) { return s == (o._class_ || o)._ref_ };
+    CLASS.UNIVERSAL.isa = function (o, s) { return s == o._class_._ref_ };
 
     NAMESPACE.UNIVERSAL = new universal();
 
@@ -40,6 +40,7 @@ function make_package(pkg_name) {
         tmp.prototype = CLASS.UNIVERSAL;
         CLASS[pkg_name] = new tmp();
         CLASS[pkg_name]._ref_ = pkg_name;
+        CLASS[pkg_name]._class_ = CLASS[pkg_name];  // XXX memory leak
 
         var tmp = function () {};
         tmp.prototype = NAMESPACE.CORE;
