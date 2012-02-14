@@ -43,8 +43,6 @@ TODO list for Perlito5
 
 * Javascript backend
 
--- add JS::inline(string) - see PIL2JS for examples
-
 -- add node.js runtime
 
 -- move "substr" to CORE

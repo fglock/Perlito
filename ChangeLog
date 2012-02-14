@@ -2,7 +2,8 @@ Dev  2012-02-14
 
 Perlito Perl 5:
 - symbol tables; typeglobs
-- perlito5 calling convention is incompatible with browser DOM
+- perlito5 calling convention is incompatible with native javascript
+- native javascript can be accessed with JS::inline('string')
 
 Perlito Perl 6:
 - mostly no changes
