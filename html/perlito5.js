@@ -384,15 +384,6 @@ CORE.values = function() {
     if (typeof o.values === 'function') {
         return o.values();
     }
-    if (typeof o === 'object' && (o instanceof Array)) {
-        return o;
-    }
-    switch (typeof o) {
-        case "string": return [o];
-        case "function": return [o];
-        case "number": return [o];
-        case "boolean": return [o];
-    }
     var out = [];
     for (var i in o) {
         out.push(o[i]);
@@ -410,14 +401,6 @@ CORE.keys = function() {
         return o.keys();
     }
     var out = [];
-    if (typeof o === 'object' && (o instanceof Array)) {
-        var count = 0;
-        for (var i in o) {
-            out.push(count);
-            count++;
-        }
-        return out;
-    }
     for (var i in o) {
         out.push(i);
     }

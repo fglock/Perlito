@@ -27,6 +27,7 @@ ArrayRef
 
 ScalarRef
 - TODO
+- We could probably use String/Boolean/Number (boxed types) as SCALARs
 
 Object
 - native {} with a _class_ attribute
