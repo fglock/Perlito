@@ -9,7 +9,6 @@ our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Grammar;
 use Perlito5::Expression;
-use Perlito5::Grammar::Regex;
 use Perlito5::Grammar::Control;
 sub is_newline {
     ((my  $grammar) = $_[0]);

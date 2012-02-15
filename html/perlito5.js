@@ -3428,7 +3428,10 @@ make_sub(__PACKAGE__, "emit_javascript_indented", function () {
 								throw(('( ' + string(NAMESPACE["Javascript"].to_bool(v_self[('arguments')][0])) + ' ' + String.fromCharCode(63) + ' false : true)'));;
 							})(); };
 							if ( bool(((v_code == 'prefix:<$>'))) ) { (function () {
-								throw(('scalar' + '(' + string(v__NAMESPACE.join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript(v__))}; return out; })((v_self[('arguments')])))) + ')'));;
+								var v_arg = null;
+
+								(v_arg = v_self[('arguments')][0]);
+								throw(('(' + string(v_arg._class_.emit_javascript(v_arg)) + ')._scalar_'));;
 							})(); };
 							if ( bool(((v_code == 'prefix:<@>'))) ) { (function () {
 								throw(('(' + string(v__NAMESPACE.join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript(v__))}; return out; })((v_self[('arguments')])))) + ')'));;
@@ -3440,7 +3443,18 @@ make_sub(__PACKAGE__, "emit_javascript_indented", function () {
 								throw(('Array.prototype.slice.call(' + string(v__NAMESPACE.join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript(v__))}; return out; })((v_self[('arguments')])))) + ')'));;
 							})(); };
 							if ( bool(((v_code == 'prefix:<' + String.fromCharCode(92) + '>'))) ) { (function () {
-								throw(v__NAMESPACE.join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript(v__))}; return out; })((v_self[('arguments')]))));;
+								var v_arg = null;
+
+								(v_arg = v_self[('arguments')][0]);
+								if ( bool((v_arg._class_.isa(v_arg,'Var'))) ) { (function () {
+									if ( bool(((v_arg._class_.sigil(v_arg) == '@'))) ) { (function () {
+										throw(v_arg._class_.emit_javascript(v_arg));;
+									})(); };
+									if ( bool(((v_arg._class_.sigil(v_arg) == '%'))) ) { (function () {
+										throw(v_arg._class_.emit_javascript(v_arg));;
+									})(); };;
+								})(); };
+								throw(('(new ScalarRef(' + string(v_arg._class_.emit_javascript(v_arg)) + '))'));;
 							})(); };
 							if ( bool(((v_code == 'postfix:<++>'))) ) { (function () {
 								throw(('(' + string(v__NAMESPACE.join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript(v__))}; return out; })((v_self[('arguments')])))) + ')++'));;

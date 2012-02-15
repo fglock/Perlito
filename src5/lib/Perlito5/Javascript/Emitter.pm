@@ -640,17 +640,38 @@ package Apply;
                     . ' })(' . $list->emit_javascript() . ')'
         }
 
-        if ($code eq 'prefix:<!>') { return '( ' . Javascript::to_bool( $self->{"arguments"}->[0] ) . ' ? false : true)' }
-        if ($code eq 'prefix:<$>') { return 'scalar' . '(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ')' }
-        if ($code eq 'prefix:<@>') { return '(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ')' }
-        if ($code eq 'prefix:<%>') { return '(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ').' . 'hash' . '()' }
-
-        if ($code eq 'circumfix:<[ ]>') {
-            return 'Array.prototype.slice.call(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . ')'
+        if ( $code eq 'prefix:<!>' ) {
+            return '( ' . Javascript::to_bool( $self->{"arguments"}->[0] ) . ' ? false : true)';
         }
-        if ($code eq 'prefix:<\\>') { 
-            # XXX currently a no-op
-            return join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} )) 
+
+        if ( $code eq 'prefix:<$>' ) {
+            my $arg = $self->{"arguments"}->[0];
+            return '(' . $arg->emit_javascript . ')._scalar_';
+        }
+        if ( $code eq 'prefix:<@>' ) {
+            return '(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
+        }
+        if ( $code eq 'prefix:<%>' ) {
+            return '(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ').' . 'hash' . '()';
+        }
+
+        if ( $code eq 'circumfix:<[ ]>' ) {
+            return 'Array.prototype.slice.call(' . join( ', ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
+        }
+        if ( $code eq 'prefix:<\\>' ) {
+            my $arg = $self->{"arguments"}->[0];
+            if ( $arg->isa('Var') ) {
+                if ( $arg->sigil eq '@' ) {
+                    # XXX not implemented
+                    return $arg->emit_javascript;
+                }
+                if ( $arg->sigil eq '%' ) {
+                    # XXX not implemented
+                    return $arg->emit_javascript;
+                }
+            }
+            # XXX \&x should return a CODE ref
+            return '(new ScalarRef(' . $arg->emit_javascript . '))';
         }
 
         if ($code eq 'postfix:<++>') { return '('   . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')++' }

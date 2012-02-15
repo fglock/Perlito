@@ -610,7 +610,8 @@ package Apply;
             return (('( ' . Javascript::to_bool($self->{('arguments')}->[0]) . ' ' . chr(63) . ' false : true)'))
         };
         if ((($code eq 'prefix:<' . chr(36) . '>'))) {
-            return (('scalar' . '(' . join(' ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
+            ((my  $arg) = $self->{('arguments')}->[0]);
+            return (('(' . $arg->emit_javascript() . ')._scalar_'))
         };
         if ((($code eq 'prefix:<' . chr(64) . '>'))) {
             return (('(' . join(' ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
@@ -622,7 +623,16 @@ package Apply;
             return (('Array.prototype.slice.call(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
         };
         if ((($code eq 'prefix:<' . chr(92) . '>'))) {
-            return (join(' ', map($_->emit_javascript(), @{$self->{('arguments')}})))
+            ((my  $arg) = $self->{('arguments')}->[0]);
+            if (($arg->isa('Var'))) {
+                if ((($arg->sigil() eq chr(64)))) {
+                    return ($arg->emit_javascript())
+                };
+                if ((($arg->sigil() eq chr(37)))) {
+                    return ($arg->emit_javascript())
+                }
+            };
+            return (('(new ScalarRef(' . $arg->emit_javascript() . '))'))
         };
         if ((($code eq 'postfix:<++>'))) {
             return (('(' . join(' ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')++'))
