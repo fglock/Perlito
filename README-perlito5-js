@@ -1,5 +1,6 @@
 Perlito5 Data model Overview
 
+
 method call
 - lookup the method in the _class_ attribute; follow the class hierarchy until the UNIVERSAL base class.
 - do a native call on the method. The invocant is the first argument. "this" is not used.
@@ -18,6 +19,7 @@ Scalar
 - native
 
 HashRef
+- TODO
 - native {} with prototype "HashRef"
 
 ArrayRef
@@ -46,4 +48,14 @@ Alias
 
 List (eg. subroutine return value)
 - native []
+
+
+Javascript resources
+
+
+https://github.com/eriwen/javascript-stacktrace
+- how to get a stacktrace in browsers
+
+https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
+- Pugs Perl6 in javascript
 
