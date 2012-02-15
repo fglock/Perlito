@@ -52,7 +52,7 @@ package Javascript;
             ($str_init = '[]')
         };
         if (($type eq 'HASHREF')) {
-            ($str_init = chr(123) . chr(125))
+            ($str_init = 'new HashRef(' . chr(123) . chr(125) . ')')
         };
         if (($type eq 'ARRAYREF')) {
             ($str_init = '[]')
@@ -475,7 +475,7 @@ package Lookup;
             ((my  $v) = Var->new(('sigil' => chr(37)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
             return (($v->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
         };
-        return (($self->{('obj')}->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
+        return (($self->{('obj')}->emit_javascript_indented($level) . '._hash_[' . $self->{('index_exp')}->emit_javascript() . ']'))
     }
 });
 package Var;
@@ -540,7 +540,7 @@ package Call;
             return ((Javascript::tab($level) . $invocant . '[' . $self->{('arguments')}->emit_javascript() . ']'))
         };
         if ((($meth eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-            return ((Javascript::tab($level) . $invocant . '[' . $self->{('arguments')}->emit_javascript() . ']'))
+            return ((Javascript::tab($level) . $invocant . '._hash_[' . $self->{('arguments')}->emit_javascript() . ']'))
         };
         if ((($meth eq 'postcircumfix:<( )>'))) {
             ((my  @args) = ());
@@ -617,7 +617,8 @@ package Apply;
             return (('(' . join(' ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
         };
         if ((($code eq 'prefix:<' . chr(37) . '>'))) {
-            return (('(' . join(' ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ').' . 'hash' . '()'))
+            ((my  $arg) = $self->{('arguments')}->[0]);
+            return (('(' . $arg->emit_javascript() . ')._hash_'))
         };
         if ((($code eq 'circumfix:<[ ]>'))) {
             return (('Array.prototype.slice.call(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
@@ -629,7 +630,7 @@ package Apply;
                     return ($arg->emit_javascript())
                 };
                 if ((($arg->sigil() eq chr(37)))) {
-                    return ($arg->emit_javascript())
+                    return (('(new HashRef(' . $arg->emit_javascript() . '))'))
                 }
             };
             return (('(new ScalarRef(' . $arg->emit_javascript() . '))'))
@@ -675,12 +676,15 @@ package Apply;
             if (($arg->isa('Lookup'))) {
                 ((my  $v) = $arg->obj());
                 if ((($v->isa('Var') && ($v->sigil() eq chr(36))))) {
-                    ($v = Var->new(('sigil' => chr(37)), ('namespace' => $v->namespace()), ('name' => $v->name())))
+                    ($v = Var->new(('sigil' => chr(37)), ('namespace' => $v->namespace()), ('name' => $v->name())));
+                    return (('(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
                 };
-                return (('(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
+                return (('(' . $v->emit_javascript() . ')._hash_.hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
             };
-            if ((($arg->isa('Call') && ($arg->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>')))) {
-                return (('(' . $arg->invocant()->emit_javascript() . ').hasOwnProperty(' . $arg->arguments()->emit_javascript() . ')'))
+            if (($arg->isa('Call'))) {
+                if ((($arg->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
+                    return (('(' . $arg->invocant()->emit_javascript() . ')._hash_.hasOwnProperty(' . $arg->{('arguments')}->emit_javascript() . ')'))
+                }
             }
         };
         if ((($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>'))) {
@@ -733,11 +737,11 @@ package Apply;
             if ((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
                 ((my  $str) = '');
                 ((my  $var_js) = $parameters->invocant()->emit_javascript());
-                ((my  $auto) = Javascript::autovivify($parameters, 'ARRAYREF'));
+                ((my  $auto) = Javascript::autovivify($parameters, 'HASHREF'));
                 pop(@{$auto});
                 ($str = ($str . join('', @{$auto})));
                 ((my  $index_js) = $parameters->arguments()->emit_javascript());
-                ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
+                ($str = ($str . 'return (' . $var_js . '._hash_[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
                 return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
             }
         };
@@ -745,14 +749,21 @@ package Apply;
             ((my  $str) = '');
             ((my  $var) = $parameters->obj());
             if ((($var->isa('Var') && ($var->sigil() eq chr(36))))) {
-                ($var = Var->new(('sigil' => chr(37)), ('namespace' => $var->namespace()), ('name' => $var->name())))
+                ($var = Var->new(('sigil' => chr(37)), ('namespace' => $var->namespace()), ('name' => $var->name())));
+                ((my  $var_js) = $var->emit_javascript());
+                ((my  $auto) = Javascript::autovivify($parameters, 'HASHREF'));
+                pop(@{$auto});
+                ($str = ($str . join('', @{$auto})));
+                ((my  $index_js) = $parameters->index_exp()->emit_javascript());
+                ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
+                return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
             };
             ((my  $var_js) = $var->emit_javascript());
-            ((my  $auto) = Javascript::autovivify($parameters, 'ARRAYREF'));
+            ((my  $auto) = Javascript::autovivify($parameters, 'HASHREF'));
             pop(@{$auto});
             ($str = ($str . join('', @{$auto})));
             ((my  $index_js) = $parameters->index_exp()->emit_javascript());
-            ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
+            ($str = ($str . 'return (' . $var_js . '._hash_[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')' . chr(59) . ' '));
             return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
         };
         if (($parameters->isa('Index'))) {
@@ -770,20 +781,30 @@ package Apply;
             return ((Javascript::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
         };
         if ((($parameters->isa('Var') && ($parameters->sigil() eq chr(64))) || ($parameters->isa('Decl') && ($parameters->var()->sigil() eq chr(64))))) {
-            ($arguments = Lit::Array->new(('array1' => (do {
+            ($arguments = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
+    (my  @a);
+    (my  @v);
+    push(@a, Lit::Array->new(('array1' => (do {
     (my  @a);
     (my  @v);
     push(@a, $arguments );
+    \@a
+}))) );
     \@a
 }))));
             return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' (' . $arguments->emit_javascript() . ').slice())'))
         }
         else {
             if ((($parameters->isa('Var') && ($parameters->sigil() eq chr(37))) || ($parameters->isa('Decl') && ($parameters->var()->sigil() eq chr(37))))) {
-                ($arguments = Lit::Hash->new(('hash1' => (do {
+                ($arguments = Apply->new(('code' => 'prefix:<' . chr(37) . '>'), ('arguments' => (do {
+    (my  @a);
+    (my  @v);
+    push(@a, Lit::Hash->new(('hash1' => (do {
     (my  @a);
     (my  @v);
     push(@a, $arguments );
+    \@a
+}))) );
     \@a
 }))));
                 return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' (function (_h) ' . chr(123) . ' ' . 'var _tmp ' . chr(61) . ' ' . chr(123) . chr(125) . chr(59) . ' ' . 'for (var _i in _h) ' . chr(123) . ' ' . '_tmp[_i] ' . chr(61) . ' _h[_i]' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'return _tmp' . chr(59) . ' ' . chr(125) . ')( ' . $arguments->emit_javascript() . '))'))

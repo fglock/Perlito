@@ -15,8 +15,8 @@ use feature 'say';
 
 package Main;
 
-my $out = JS::inline('document.getElementById("print-result")');
-$out->{'value'} = "Changing the output box using the document object\n";
+JS::inline('document.getElementById("print-result").value') = 
+  "Changing the output box using the document object\n";
 
 say "hello, World!";
 
@@ -39,12 +39,12 @@ $time = 'Run-time';
 eval $str;
 
 package Printer;
-    my $out = JS::inline('document.getElementById("print-result")');
     sub new { 
         bless {}, $_[0] 
     }
     sub out { 
-        $out->{'value'} .= $_[1] 
+        JS::inline('document.getElementById("print-result").value') = 
+        JS::inline('document.getElementById("print-result").value') . $_[1];
     }
 
 package Main;
@@ -97,9 +97,10 @@ $printer->out( "Using my 'Printer' object\n" );
                 // compilation unit
                 match = CLASS["Perlito5::Grammar"].exp_stmts(CLASS["Perlito5::Grammar"], source, pos);
                 ast = match._class_.flat(match);
-
-                var tmp = {name:"GLOBAL", body: ast}; 
-                tmp._class_ = CLASS["CompUnit"]; 
+                var tmp = NAMESPACE.CORE.bless(
+                                new HashRef({name:"GLOBAL", body: ast}),
+                                CLASS["CompUnit"]
+                          ); 
                 ast = tmp;
 
 		    	// document.getElementById('ast-result').value += perl(ast) + "\n";

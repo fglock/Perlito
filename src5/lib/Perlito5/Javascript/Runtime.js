@@ -209,48 +209,57 @@ str_replicate = function(o, n) {
 };
 
 make_sub('Perlito5::Grammar', 'word', function(v_grammar, v_str, v_pos) {
-    return {
-        str: v_str,
-        from: v_pos,
-        to: v_pos + 1,
-        bool: v_str.substr(v_pos, 1).match(/\w/) != null,
-        _class_: CLASS['Perlito5::Match']
-    };
+    return NAMESPACE.CORE.bless(
+        new HashRef({
+            str: v_str,
+            from: v_pos,
+            to: v_pos + 1,
+            bool: v_str.substr(v_pos, 1).match(/\w/) != null,
+        }),
+        CLASS['Perlito5::Match']
+    );
 });
 
 make_sub('Perlito5::Grammar', 'digit', function(v_grammar, v_str, v_pos) {
-    return {
-        str:  v_str,
-        from: v_pos,
-        to:   v_pos + 1,
-        bool: v_str.substr(v_pos, 1).match(/\d/) != null,
-        _class_: CLASS['Perlito5::Match']
-    };
+    return NAMESPACE.CORE.bless(
+        new HashRef({
+            str:  v_str,
+            from: v_pos,
+            to:   v_pos + 1,
+            bool: v_str.substr(v_pos, 1).match(/\d/) != null,
+        }),
+        CLASS['Perlito5::Match']
+    );
 });
 
 make_sub('Perlito5::Grammar', 'space', function(v_grammar, v_str, v_pos) {
-    return {
-        str:  v_str,
-        from: v_pos,
-        to:   v_pos + 1,
-        bool: v_str.substr(v_pos, 1).match(/\s/) != null,
-        _class_: CLASS['Perlito5::Match']
-    };
+    return NAMESPACE.CORE.bless(
+        new HashRef({
+            str:  v_str,
+            from: v_pos,
+            to:   v_pos + 1,
+            bool: v_str.substr(v_pos, 1).match(/\s/) != null,
+        }),
+        CLASS['Perlito5::Match']
+    );
 });
 
 function perl5_to_js( source ) {
     // say( "source: [" + source + "]" );
     match = CLASS['Perlito5::Grammar'].exp_stmts(CLASS['Perlito5::Grammar'], source, 0);
-    ast = match._class_.flat(match);
-    var block = {
-        stmts:   ast,
-        _class_: CLASS['Lit::Block']
-    };
-    var tmp = {
-        block:   block,
-        _class_: CLASS.Do
-    };
-    ast = tmp;
+
+    ast = NAMESPACE.CORE.bless(
+        new HashRef({
+            block:  NAMESPACE.CORE.bless(
+                        new HashRef({
+                            stmts:   match._class_.flat(match),
+                        }),
+                        CLASS['Lit::Block']
+                    ),
+        }),
+        CLASS.Do
+    );
+
     // CORE.say( "ast: [" + perl(ast) + "]" );
     js_code = ast._class_.emit_javascript(ast);
     // CORE.say( "js-source: [" + js_code + "]" );
