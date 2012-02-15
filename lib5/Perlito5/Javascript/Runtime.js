@@ -86,7 +86,7 @@ make_sub('IO', 'slurp', function(filename) {
         // v8
         return read(filename);
     }
-    die("IO.slurp() not implemented");
+    CLASS.CORE.die("IO.slurp() not implemented");
 });
 
 // XXX Perl6

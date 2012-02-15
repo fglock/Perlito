@@ -87,7 +87,7 @@ make_sub('IO', 'slurp', function(filename) {
         // v8
         return read(filename);
     }
-    die("IO.slurp() not implemented");
+    CLASS.CORE.die("IO.slurp() not implemented");
 });
 
 // XXX Perl6
@@ -316,7 +316,7 @@ CORE.die = function() {
     for (i = 0; i < List__.length; i++) {
         s = s + string(List__[i]);
     }
-    CORE.print("Died: " + s + "\n");
+    throw(new Error("Died: " + s));
 };
 
 CORE.warn = function() {
