@@ -63,3 +63,27 @@ https://github.com/eriwen/javascript-stacktrace
 https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 - Pugs Perl6 in javascript
 
+
+Cell-based aliasing
+
+
+- slow
+- allows aliasing (rw parameters to functions)
+- allows "tie", because collection access is done through methods
+- simplifies autovivification
+- allows lvalue subroutines
+
+- examples:
+
+v = new Cell();
+v.set(5);
+f(v);   // f gets a copy of the cell; v.set() inside f() modifies the original variable.
+1 + v;  // calls v.valueOf()
+x = v;  // alias (copies the cell); v.set() modifies x.valueOf()
+x.set( v.valueOf() );  // copies the value (doesn't alias)
+
+h.lookup("x");  // looks up h["x"] for a cell; autovivifies if needed
+v.lookup("x");  // error if the cell in v contains something else than undef or an arrayref
+
+- see mp6_Scalar class in src6/lib/Perlito/Python/Runtime.py
+
