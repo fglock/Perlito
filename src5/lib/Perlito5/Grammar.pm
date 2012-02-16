@@ -230,7 +230,7 @@ token val_int {
 token exp_stmts {
     <Perlito5::Expression.delimited_statement>*
     { 
-        $MATCH->{"capture"} = [ map( $_->capture, @{ $MATCH->{"Perlito5::Expression.delimited_statement"} } ) ]
+        $MATCH->{"capture"} = [ map( $_->capture, @{ $MATCH->{"Perlito5::Expression.delimited_statement"} || [] } ) ]
     }
 }
 
