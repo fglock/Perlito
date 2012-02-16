@@ -1,7 +1,7 @@
 //
-// lib/Perlito/Javascript/CORE.js
+// lib/Perlito/Javascript5/CORE.js
 //
-// CORE functions for "Perlito" Perlito5-in-Javascript
+// CORE functions for "Perlito" Perl5-in-Javascript
 //
 // AUTHORS
 //

@@ -53,6 +53,9 @@ List (eg. subroutine return value)
 - TODO
 - native []
 
+AUTOLOAD
+- TODO
+
 
 Javascript resources
 
@@ -71,7 +74,8 @@ Cell-based aliasing
 - allows aliasing (rw parameters to functions)
 - allows "tie", because collection access is done through methods
 - simplifies autovivification
-- allows lvalue subroutines
+- allows lvalue subroutines, such as chop(), chomp(), keys(), pos(), substr(), undef()
+- allows "our"
 
 - examples:
 

@@ -1,5 +1,5 @@
 //
-// lib/Perlito/Javascript/Runtime.js
+// lib/Perlito5/Javascript/Runtime.js
 //
 // Runtime for "Perlito" Perl5-in-Javascript
 //
@@ -9,7 +9,7 @@
 //
 // COPYRIGHT
 //
-// Copyright 2009, 2010, 2011 by Flavio Soibelmann Glock and others.
+// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the same terms as Perl itself.
@@ -88,31 +88,6 @@ make_sub('IO', 'slurp', function(filename) {
     }
     CLASS.CORE.die("IO.slurp() not implemented");
 });
-
-// XXX Perl6
-perl = function(o) {
-    if (o == null) {
-        return 'undef';
-    }
-    if (typeof o === 'object' && (o instanceof Array)) {
-        var out = [];
-        for (var i = 0; i < o.length; i++) {
-            out.push(perl(o[i]));
-        }
-        return "[" + out.join(", ") + "]";
-    }
-    switch (typeof o) {
-        case "string": return '"' + CLASS['Perlito5::Runtime'].lisp_escape_string(o) + '"';
-        case "function": return "function";
-        case "number": return o;
-        case "boolean": return o;
-    }
-    var out = [];
-    for (var i in o) {
-        out.push(i + " => " + perl(o[i]));
-    }
-    return '{' + out.join(", ") + '}';
-};
 
 string = function(o) {
     if (o == null) {
