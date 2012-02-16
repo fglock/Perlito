@@ -67,8 +67,8 @@ package Javascript;
         my $str_init = "''";
         $str_init = '{}' if $type eq 'HASH';
         $str_init = '[]' if $type eq 'ARRAY';
-        $str_init = 'new HashRef({})' if $type eq 'HASHREF';
-        $str_init = 'new ArrayRef([])' if $type eq 'ARRAYREF';
+        $str_init = 'new HashRef({})' if $type eq 'HASHREF';  # TODO use "real" reference
+        $str_init = '[]' if $type eq 'ARRAYREF'; # TODO use "real" references
 
         if (  $ast->isa('Var') ) {
             if (  $type eq 'HASH'
@@ -265,9 +265,9 @@ package Perlito5::Javascript::LexicalBlock;
                 my $cond      = $last_statement->cond;
                 my $body      = $last_statement->body;
                 my $otherwise = $last_statement->otherwise;
-                # if ($cond->isa( 'Var' ) && $cond->sigil eq '@') {
-                #     $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
-                # }
+                if ($cond->isa( 'Var' ) && $cond->sigil eq '@') {
+                    $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
+                }
                 $body      = Perlito5::Javascript::LexicalBlock->new( block => $body->stmts, needs_return => 1 );
                 push @str, Javascript::tab($level) .
                         'if ( ' . Javascript::to_bool( $cond ) . ' ) { return (function () {' . "\n"
@@ -453,7 +453,8 @@ package Index;
             my $v = Var->new( sigil => '@', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
             return $v->emit_javascript_indented($level) . '[' . $self->{"index_exp"}->emit_javascript() . ']';
         }
-        Javascript::tab($level) . $self->{"obj"}->emit_javascript() . '._array_[' . $self->{"index_exp"}->emit_javascript() . ']';
+
+        Javascript::tab($level) . $self->{"obj"}->emit_javascript() . '[' . $self->{"index_exp"}->emit_javascript() . ']';
     }
 }
 
@@ -463,6 +464,8 @@ package Lookup;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
+        # my $var = $self->{"obj"}->emit_javascript;
+        # return $var . '[' . $self->{"index_exp"}->emit_javascript() . ']'
 
         if (  $self->{"obj"}->isa('Var')
            && $self->{"obj"}->sigil eq '$'
@@ -532,7 +535,7 @@ package Call;
         my $meth = $self->{"method"};
 
         if ( $meth eq 'postcircumfix:<[ ]>' ) {
-            return Javascript::tab($level) . $invocant . '._array_[' . $self->{"arguments"}->emit_javascript() . ']'
+            return Javascript::tab($level) . $invocant . '[' . $self->{"arguments"}->emit_javascript() . ']'
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
             return Javascript::tab($level) . $invocant . '._hash_[' . $self->{"arguments"}->emit_javascript() . ']'
@@ -646,8 +649,7 @@ package Apply;
             return '(' . $arg->emit_javascript . ')._scalar_';
         }
         if ( $code eq 'prefix:<@>' ) {
-            my $arg = $self->{"arguments"}->[0];
-            return '(' . $arg->emit_javascript . ')._array_';
+            return '(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
         }
         if ( $code eq 'prefix:<%>' ) {
             my $arg = $self->{"arguments"}->[0];
@@ -655,13 +657,14 @@ package Apply;
         }
 
         if ( $code eq 'circumfix:<[ ]>' ) {
-            return '(new ArrayRef(Array.prototype.slice.call(' . join( ', ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')))';
+            return 'Array.prototype.slice.call(' . join( ', ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
         }
         if ( $code eq 'prefix:<\\>' ) {
             my $arg = $self->{"arguments"}->[0];
             if ( $arg->isa('Var') ) {
                 if ( $arg->sigil eq '@' ) {
-                    return '(new ArrayRef(' . $arg->emit_javascript . '))';
+                    # XXX not implemented
+                    return $arg->emit_javascript;
                 }
                 if ( $arg->sigil eq '%' ) {
                     return '(new HashRef(' . $arg->emit_javascript . '))';
@@ -818,7 +821,7 @@ package Apply;
                 pop @$auto;
                 $str = $str . join( '', @$auto );
                 my $index_js = $parameters->arguments->emit_javascript;
-                $str = $str . 'return (' . $var_js . '._array_[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
+                $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
                 return Javascript::tab($level) . '(function () { ' . $str . '})()';
             }
  
@@ -851,7 +854,7 @@ package Apply;
                 my $index_js = $parameters->index_exp->emit_javascript;
                 $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
                 return Javascript::tab($level) . '(function () { ' . $str . '})()';
-            }
+           }
 
             my $var_js = $var->emit_javascript;
             my $auto = Javascript::autovivify( $parameters, 'HASHREF' );
@@ -870,13 +873,6 @@ package Apply;
                )
             {
                 $var = Var->new( sigil => '@', namespace => $var->namespace, name => $var->name );
-                my $var_js = $var->emit_javascript;
-                my $auto = Javascript::autovivify( $parameters, 'ARRAYREF' );
-                pop @$auto;
-                $str = $str . join( '', @$auto );
-                my $index_js = $parameters->index_exp->emit_javascript;
-                $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
-                return Javascript::tab($level) . '(function () { ' . $str . '})()';
             }
 
             my $var_js = $var->emit_javascript;
@@ -884,7 +880,7 @@ package Apply;
             pop @$auto;
             $str = $str . join( '', @$auto );
             my $index_js = $parameters->index_exp->emit_javascript;
-            $str = $str . 'return (' . $var_js . '._array_[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
+            $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_javascript() . '); ';
             return Javascript::tab($level) . '(function () { ' . $str . '})()';
         }
         if      $parameters->isa( 'Var' ) && $parameters->sigil eq '@'
@@ -923,12 +919,12 @@ package If;
         my $self = shift;
         my $level = shift;
         my $cond = $self->{"cond"};
-        # if (  $cond->isa( 'Var' )
-        #    && $cond->sigil eq '@'
-        #    )
-        # {
-        #     $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
-        # }
+        if (  $cond->isa( 'Var' )
+           && $cond->sigil eq '@'
+           )
+        {
+            $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
+        }
         my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         my $s = Javascript::tab($level) . 'if ( ' . Javascript::to_bool( $cond ) . ' ) { '
             . '(function () {' . "\n"
@@ -973,15 +969,8 @@ package For;
         my $self = shift;
         my $level = shift;
         my $cond = $self->{"cond"};
-        if (!(  $cond->isa( 'Var' ) && $cond->sigil eq '@' 
-             || $cond->isa( 'Apply' ) && $cond->code eq 'prefix:<@>'
-             )
-           ) 
-        {
-            $cond = Apply->new(
-                            code => 'prefix:<@>',
-                            arguments => [ Lit::Array->new( array1 => [$cond] ) ]
-                        );
+        if (!( $cond->isa( 'Var' ) && $cond->sigil eq '@' )) {
+            $cond = Lit::Array->new( array1 => [$cond] )
         }
         my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         my $sig = 'v__';
