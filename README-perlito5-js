@@ -16,38 +16,41 @@ Array
 - native []
 
 Scalar
-- native
+- native values
 
 HashRef
-- TODO
-- native {} with prototype "HashRef"
+- native {} wrapped in a "HashRef" object
 
 ArrayRef
 - TODO
 
 ScalarRef
-- TODO
-- We could probably use String/Boolean/Number (boxed types) as SCALARs
+- native value wrapped in a "ScalarRef" object
 
 Object
-- native {} with a _class_ attribute
+- one of the reference types, with a _class_ attribute
 
 Class
-- TODO
+- classes are stored in the CLASS global hash
+- the _class_ attribute points to the class itself
+- classes inherit from UNIVERSAL
 
 Namespace
+- namespaces are stored in the NAMESPACE global hash
 - current namespace is v__NAMESPACE
-- v__NAMESPACE inherits from CORE, which inherits from CORE::GLOBAL
-- v__NAMESPACE is a copy of the Class, but with a different inheritance
-- v__NAMESPACE and Class are updated in parallel, both when a sub is declared or when using typeglob assignment
+- Namespace inherits from CORE, which inherits from CORE::GLOBAL
+- Namespace is a copy of the Class, but with a different inheritance
+- Namespace and Class are updated in parallel, both when a sub is declared or when using typeglob assignment
 
 Calling context ("wantarray", caller)
 - TODO
 
 Alias
 - TODO
+- We could probably use String/Boolean/Number (boxed types) as SCALARs
 
 List (eg. subroutine return value)
+- TODO
 - native []
 
 

@@ -1,11 +1,19 @@
 Dev  2012-02-14
 
 Perlito Perl 5:
+- parser optimizations
+
+- perl5 backend:
+-- use native data structures and ops
+
 - javascript backend:
 -- symbol tables; typeglobs
+-- scalar references; hash references
 -- perlito5 calling convention is incompatible with native javascript
+   The last commit using native javascript data is "e1e3316b"
 -- native javascript can be accessed with JS::inline('string')
 -- reduced generated code size by 3x
+   The browser backend doesn't load the grammar compiler
 
 Perlito Perl 6:
 - mostly no changes
