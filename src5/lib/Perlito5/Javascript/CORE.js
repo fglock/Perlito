@@ -1,5 +1,5 @@
 //
-// lib/Perlito/Javascript5/CORE.js
+// lib/Perlito5/Javascript/CORE.js
 //
 // CORE functions for "Perlito" Perl5-in-Javascript
 //
@@ -87,6 +87,10 @@ CORE.chr = function(o) {
 
 CORE.ord = function(o) {
     return string(o).charCodeAt(0);
+};
+
+CORE.substr = function(expr, offset, length, replacement) {
+    return string(expr).substr(offset, length);
 };
 
 CORE.scalar = function() {

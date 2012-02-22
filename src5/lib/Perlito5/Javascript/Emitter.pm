@@ -611,12 +611,6 @@ package Apply;
 
         if ($code eq 'undef')      { return Javascript::tab($level) . 'null' }
         if ($code eq 'defined')    { return Javascript::tab($level) . '('  . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ' != null)' }
-        if ($code eq 'substr') {
-            return '(' . Javascript::to_str($self->{"arguments"}->[0])
-                 . ').substr(' . ($self->{"arguments"}->[1])->emit_javascript()
-                 . ( defined($self->{"arguments"}->[2]) ? ', ' . ($self->{"arguments"}->[2])->emit_javascript() : '' )
-                 . ')'
-        }
 
         if ($code eq 'shift')      {
             if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
