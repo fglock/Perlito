@@ -160,11 +160,11 @@ sub emit_perl5 {
 
     my $code;
     if ($self->{"captures"} == 1) {
-        $code = 'if ($m2->bool) { $MATCH->{"to"} = $m2->{"to"}; $MATCH->{\'' . $self->{"metasyntax"} . '\'} = $m2; 1 } else { 0 }; '
+        $code = 'if ($m2->{"bool"}) { $MATCH->{"to"} = $m2->{"to"}; $MATCH->{\'' . $self->{"metasyntax"} . '\'} = $m2; 1 } else { 0 }; '
     }
     elsif ($self->{"captures"} > 1) {
         # TODO: capture level > 2
-        $code = 'if ($m2->bool) { '
+        $code = 'if ($m2->{"bool"}) { '
                 .   '$MATCH->{"to"} = $m2->{"to"}; '
                 .   'if (exists $MATCH->{\'' . $self->{"metasyntax"} . '\'}) { '
                 .       'push @{ $MATCH->{\'' . $self->{"metasyntax"} . '\'} }, $m2; '
@@ -176,7 +176,7 @@ sub emit_perl5 {
                 . '} else { 0 }; '
     }
     else {
-        $code = 'if ($m2->bool) { $MATCH->{"to"} = $m2->{"to"}; 1 } else { 0 }; '
+        $code = 'if ($m2->{"bool"}) { $MATCH->{"to"} = $m2->{"to"}; 1 } else { 0 }; '
     }
 
     '(do { '
@@ -280,9 +280,9 @@ sub emit_perl5 {
         '$MATCH->{"bool"} = ' .
             $self->{"rule_exp"}->emit_perl5() .
         '; ' .
-        '$tmp->{"bool"} = $MATCH->bool ? 1 : 0; ' .
+        '$tmp->{"bool"} = $MATCH->{"bool"} ? 1 : 0; ' .
         '$MATCH = $tmp; ' .
-        '$MATCH->bool ? 1 : 0; ' .
+        '$MATCH->{"bool"} ? 1 : 0; ' .
     '})'
 }
 sub set_captures_to_array {
@@ -303,9 +303,9 @@ sub emit_perl5 {
         '$MATCH->{"bool"} = ' .
             $self->{"rule_exp"}->emit_perl5() .
         '; ' .
-        '$tmp->{"bool"} = !$MATCH->bool; ' .
+        '$tmp->{"bool"} = !$MATCH->{"bool"}; ' .
         '$MATCH = $tmp; ' .
-        '$MATCH->bool ? 1 : 0; ' .
+        '$MATCH->{"bool"} ? 1 : 0; ' .
     '})'
 }
 sub set_captures_to_array {
