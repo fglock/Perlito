@@ -14,8 +14,8 @@ sub constant {
         $str = '\\\'';
     }
     if ( $len ) {
-        '( \'' . $str . '\' eq substr( $str, $MATCH->to, ' . $len . ') ' .
-        '&& ( $MATCH->{"to"} = ' . $len . ' + $MATCH->to )' .
+        '( \'' . $str . '\' eq substr( $str, $MATCH->{"to"}, ' . $len . ') ' .
+        '&& ( $MATCH->{"to"} = ' . $len . ' + $MATCH->{"to"} )' .
         ')';
     }
     else {
@@ -44,17 +44,17 @@ sub emit_perl5 {
         return
             '(do { '
             .   'my $last_match_null = 0; '
-            .   'my $last_pos = $MATCH->to; '
+            .   'my $last_pos = $MATCH->{"to"}; '
             .   'my $count = 0; '
             .   'while (' . $self->{"term"}->emit_perl5() . ' && ($last_match_null < 2)) '
             .   '{ '
-            .       'if ($last_pos == $MATCH->to()) { '
+            .       'if ($last_pos == $MATCH->{"to"}) { '
             .           '$last_match_null = $last_match_null + 1; '
             .       '} '
             .       'else { '
             .           '$last_match_null = 0; '
             .       '}; '
-            .       '$last_pos = $MATCH->to; '
+            .       '$last_pos = $MATCH->{"to"}; '
             .       '$count = $count + 1; '
             .   '}; '
             .   '$MATCH->{"to"} = $last_pos; '
@@ -66,16 +66,16 @@ sub emit_perl5 {
         return
             '(do { '
             .   'my $last_match_null = 0; '
-            .   'my $last_pos = $MATCH->to; '
+            .   'my $last_pos = $MATCH->{"to"}; '
             .   'while (' . $self->{"term"}->emit_perl5() . ' && ($last_match_null < 2)) '
             .   '{ '
-            .       'if ($last_pos == $MATCH->to()) { '
+            .       'if ($last_pos == $MATCH->{"to"}) { '
             .           '$last_match_null = $last_match_null + 1; '
             .       '} '
             .       'else { '
             .           '$last_match_null = 0; '
             .       '}; '
-            .       '$last_pos = $MATCH->to; '
+            .       '$last_pos = $MATCH->{"to"}; '
             .   '}; '
             .   '$MATCH->{"to"} = $last_pos; '
             .   '1 '
@@ -85,7 +85,7 @@ sub emit_perl5 {
         $self->{"term"}->set_captures_to_array;
         return
             '(do { '
-            .   'my $last_pos = $MATCH->to; '
+            .   'my $last_pos = $MATCH->{"to"}; '
             .   'if (!(do {' . $self->{"term"}->emit_perl5() . '})) '
             .   '{ '
             .       '$MATCH->{"to"} = $last_pos; '
@@ -113,7 +113,7 @@ sub emit_perl5 {
     my $self = $_[0];
 
     '(do { '
-        . 'my $pos1 = $MATCH->to; (do { '
+        . 'my $pos1 = $MATCH->{"to"}; (do { '
         . join( '}) || (do { $MATCH->{"to"} = $pos1; ',
               map( $_->emit_perl5, @{$self->{"or_list"}} )
             )
@@ -160,12 +160,12 @@ sub emit_perl5 {
 
     my $code;
     if ($self->{"captures"} == 1) {
-        $code = 'if ($m2->bool) { $MATCH->{"to"} = $m2->to; $MATCH->{\'' . $self->{"metasyntax"} . '\'} = $m2; 1 } else { 0 }; '
+        $code = 'if ($m2->bool) { $MATCH->{"to"} = $m2->{"to"}; $MATCH->{\'' . $self->{"metasyntax"} . '\'} = $m2; 1 } else { 0 }; '
     }
     elsif ($self->{"captures"} > 1) {
         # TODO: capture level > 2
         $code = 'if ($m2->bool) { '
-                .   '$MATCH->{"to"} = $m2->to; '
+                .   '$MATCH->{"to"} = $m2->{"to"}; '
                 .   'if (exists $MATCH->{\'' . $self->{"metasyntax"} . '\'}) { '
                 .       'push @{ $MATCH->{\'' . $self->{"metasyntax"} . '\'} }, $m2; '
                 .   '} '
@@ -176,11 +176,11 @@ sub emit_perl5 {
                 . '} else { 0 }; '
     }
     else {
-        $code = 'if ($m2->bool) { $MATCH->{"to"} = $m2->to; 1 } else { 0 }; '
+        $code = 'if ($m2->bool) { $MATCH->{"to"} = $m2->{"to"}; 1 } else { 0 }; '
     }
 
     '(do { '
-    .   'my $m2 = ' . $meth . '($str, $MATCH->to); '
+    .   'my $m2 = ' . $meth . '($str, $MATCH->{"to"}); '
     .   $code
     . '})'
 }
@@ -214,8 +214,8 @@ sub new { my $class = shift; bless {@_}, $class }
 sub emit_perl5 {
     my $self = $_[0];
 
-    '( \'\' ne substr( $str, $MATCH->to, 1 ) ' .
-    '&& ($MATCH->{"to"} = 1 + $MATCH->to)' .
+    '( \'\' ne substr( $str, $MATCH->{"to"}, 1 ) ' .
+    '&& ($MATCH->{"to"} = 1 + $MATCH->{"to"})' .
     ')';
 }
 sub set_captures_to_array {
@@ -276,7 +276,7 @@ sub emit_perl5 {
 
     '(do { ' .
         'my $tmp = $MATCH; ' .
-        '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
+        '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->{"to"}, \'to\' => $tmp->{"to"}, \'bool\' => 1  ); ' .
         '$MATCH->{"bool"} = ' .
             $self->{"rule_exp"}->emit_perl5() .
         '; ' .
@@ -299,7 +299,7 @@ sub emit_perl5 {
 
     '(do { ' .
         'my $tmp = $MATCH; ' .
-        '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->to, \'to\' => $tmp->to, \'bool\' => 1  ); ' .
+        '$MATCH = Perlito5::Match->new( \'str\' => $str, \'from\' => $tmp->{"to"}, \'to\' => $tmp->{"to"}, \'bool\' => 1  ); ' .
         '$MATCH->{"bool"} = ' .
             $self->{"rule_exp"}->emit_perl5() .
         '; ' .
