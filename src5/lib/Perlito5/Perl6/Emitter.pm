@@ -307,17 +307,15 @@ package Lookup;
     sub emit_perl6_indented {
         my $self = shift;
         my $level = shift;
-        # my $var = $self->{"obj"}->emit_perl6;
-        # return $var . '[' . $self->{"index_exp"}->emit_perl6() . ']'
 
         if (  $self->{"obj"}->isa('Var')
            && $self->{"obj"}->sigil eq '$'
            )
         {
             my $v = Var->new( sigil => '%', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
-            return $v->emit_perl6_indented($level) . '[' . $self->{"index_exp"}->emit_perl6() . ']';
+            return $v->emit_perl6_indented($level) . '{' . $self->{"index_exp"}->emit_perl6() . '}';
         }
-        return $self->{"obj"}->emit_perl6_indented($level) . '._hash_[' . $self->{"index_exp"}->emit_perl6() . ']';
+        return $self->{"obj"}->emit_perl6_indented($level) . '{' . $self->{"index_exp"}->emit_perl6() . '}';
     }
 }
 
@@ -333,7 +331,7 @@ package Var;
             if ($self->{"namespace"}) {
                 $ns = 'NAMESPACE["' . $self->{"namespace"} . '"]';
             }
-            return $ns . '["' . $self->{"name"} . '"]';
+            return $ns . '::' . $self->{"name"};
         }
 
         my $ns = '';
@@ -345,7 +343,7 @@ package Var;
     sub plain_name {
         my $self = shift;
         if ($self->namespace) {
-            return $self->namespace . '.' . $self->name
+            return $self->namespace . '::' . $self->name
         }
         return $self->name
     }

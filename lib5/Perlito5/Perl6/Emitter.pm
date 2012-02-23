@@ -295,9 +295,9 @@ package Lookup;
         ((my  $level) = shift());
         if ((($self->{('obj')}->isa('Var') && ($self->{('obj')}->sigil() eq chr(36))))) {
             ((my  $v) = Var->new(('sigil' => chr(37)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
-            return (($v->emit_perl6_indented($level) . '[' . $self->{('index_exp')}->emit_perl6() . ']'))
+            return (($v->emit_perl6_indented($level) . chr(123) . $self->{('index_exp')}->emit_perl6() . chr(125)))
         };
-        return (($self->{('obj')}->emit_perl6_indented($level) . '._hash_[' . $self->{('index_exp')}->emit_perl6() . ']'))
+        return (($self->{('obj')}->emit_perl6_indented($level) . chr(123) . $self->{('index_exp')}->emit_perl6() . chr(125)))
     }
 });
 package Var;
@@ -313,7 +313,7 @@ package Var;
             if (($self->{('namespace')})) {
                 ($ns = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . ']'))
             };
-            return (($ns . '[' . chr(34) . $self->{('name')} . chr(34) . ']'))
+            return (($ns . '::' . $self->{('name')}))
         };
         ((my  $ns) = '');
         if (($self->{('namespace')})) {
@@ -324,7 +324,7 @@ package Var;
     sub plain_name {
         ((my  $self) = shift());
         if (($self->namespace())) {
-            return (($self->namespace() . '.' . $self->name()))
+            return (($self->namespace() . '::' . $self->name()))
         };
         return ($self->name())
     }
