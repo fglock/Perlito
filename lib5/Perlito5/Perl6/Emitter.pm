@@ -452,6 +452,9 @@ package Apply;
         if ((($code eq 'prefix:<+>'))) {
             return (('+(' . $self->{('arguments')}->[0]->emit_perl6() . ')'))
         };
+        if ((($code eq 'list:<.>'))) {
+            return (('(' . join(' ' . chr(126) . ' ', map(Perl6::to_str($_), @{$self->{('arguments')}})) . ')'))
+        };
         if ((($code eq 'exists'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
             if (($arg->isa('Lookup'))) {
@@ -662,8 +665,7 @@ package Sub;
     sub emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $s) = ('function () ' . chr(123) . (chr(10)) . Perl6::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125)));
-        (($self->{('name')} ? ('make_sub(__PACKAGE__, ' . chr(34) . $self->{('name')} . chr(34) . ', ' . $s . ')') : $s))
+        ((my  $s) = (Perl6::tab($level) . ('sub ') . (($self->{('name')} ? ($self->{('name')} . ' ') : '')) . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125)))
     }
 });
 package Do;
