@@ -337,7 +337,7 @@ package Proto;
     sub emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        (Perl6::tab($level) . 'CLASS[' . chr(34) . $self->{('name')} . chr(34) . ']')
+        (Perl6::tab($level) . $self->{('name')})
     }
 });
 package Call;
@@ -354,7 +354,7 @@ package Call;
             return ((Perl6::tab($level) . $invocant . '[' . $self->{('arguments')}->emit_perl6() . ']'))
         };
         if ((($meth eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-            return ((Perl6::tab($level) . $invocant . '._hash_[' . $self->{('arguments')}->emit_perl6() . ']'))
+            return ((Perl6::tab($level) . $invocant . chr(123) . $self->{('arguments')}->emit_perl6() . chr(125)))
         };
         if ((($meth eq 'postcircumfix:<( )>'))) {
             ((my  @args) = ());
@@ -367,7 +367,7 @@ package Call;
         for (@{$self->{('arguments')}}) {
             push(@args, $_->emit_perl6() )
         };
-        return ((Perl6::tab($level) . $invocant . '._class_.' . $meth . '(' . join(',', @args) . ')'))
+        return ((Perl6::tab($level) . $invocant . '.' . $meth . '(' . join(',', @args) . ')'))
     }
 });
 package Apply;
@@ -418,14 +418,14 @@ package Apply;
         };
         if ((($code eq 'prefix:<' . chr(36) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
-            return (('(' . $arg->emit_perl6() . ')._scalar_'))
+            return ((chr(36) . '(' . $arg->emit_perl6() . ')'))
         };
         if ((($code eq 'prefix:<' . chr(64) . '>'))) {
-            return (('(' . join(' ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')'))
+            return ((chr(64) . '(' . join(' ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')'))
         };
         if ((($code eq 'prefix:<' . chr(37) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
-            return (('(' . $arg->emit_perl6() . ')._hash_'))
+            return ((chr(37) . '(' . $arg->emit_perl6() . ')'))
         };
         if ((($code eq 'circumfix:<[ ]>'))) {
             return (('Array.prototype.slice.call(' . join(', ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')'))
@@ -459,22 +459,6 @@ package Apply;
         };
         if ((($code eq 'list:<.>'))) {
             return (('(' . join(' ' . chr(126) . ' ', map(Perl6::to_str($_), @{$self->{('arguments')}})) . ')'))
-        };
-        if ((($code eq 'exists'))) {
-            ((my  $arg) = $self->{('arguments')}->[0]);
-            if (($arg->isa('Lookup'))) {
-                ((my  $v) = $arg->obj());
-                if ((($v->isa('Var') && ($v->sigil() eq chr(36))))) {
-                    ($v = Var->new(('sigil' => chr(37)), ('namespace' => $v->namespace()), ('name' => $v->name())));
-                    return (('(' . $v->emit_perl6() . ').hasOwnProperty(' . ($arg->index_exp())->emit_perl6() . ')'))
-                };
-                return (('(' . $v->emit_perl6() . ')._hash_.hasOwnProperty(' . ($arg->index_exp())->emit_perl6() . ')'))
-            };
-            if (($arg->isa('Call'))) {
-                if ((($arg->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-                    return (('(' . $arg->invocant()->emit_perl6() . ')._hash_.hasOwnProperty(' . $arg->{('arguments')}->emit_perl6() . ')'))
-                }
-            }
         };
         if ((($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>'))) {
             return ((Perl6::tab($level) . '( ' . Perl6::to_bool($self->{('arguments')}->[0]) . ' ' . chr(63) . chr(63) . ' ' . ($self->{('arguments')}->[1])->emit_perl6() . ' ' . chr(33) . chr(33) . ' ' . ($self->{('arguments')}->[2])->emit_perl6() . ')'))
@@ -547,7 +531,7 @@ package While;
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $body) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
-        return ((Perl6::tab($level) . 'for ( ' . (($self->{('init')} ? ($self->{('init')}->emit_perl6() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('cond')} ? (Perl6::to_bool($self->{('cond')}) . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('continue')} ? ($self->{('continue')}->emit_perl6() . ' ') : ' ')) . ') ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_perl6_indented(($level + 1)) . ' ' . chr(125) . ')()' . ' ' . chr(125)))
+        return ((Perl6::tab($level) . 'loop ( ' . (($self->{('init')} ? ($self->{('init')}->emit_perl6() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('cond')} ? (Perl6::to_bool($self->{('cond')}) . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('continue')} ? ($self->{('continue')}->emit_perl6() . ' ') : ' ')) . ') ' . chr(123) . (chr(10)) . $body->emit_perl6_indented(($level + 1)) . ' ' . chr(125)))
     }
 });
 package For;

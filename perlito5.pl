@@ -100,7 +100,7 @@ if (((substr($ARGV[0], 0, 2) eq '-C'))) {
     ($backend = substr($ARGV[0], 2, 10));
     ($execute = 0);
     shift(@ARGV);
-    if ((((($backend eq 'perl5')) || (($backend eq 'python'))) || (($backend eq 'ruby')))) {
+    if (((((($backend eq 'perl5')) || (($backend eq 'python'))) || (($backend eq 'ruby'))) || ($backend eq 'perl6'))) {
         ($expand_use = 0)
     }
 };

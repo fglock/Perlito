@@ -357,7 +357,7 @@ package Proto;
     sub emit_perl6_indented {
         my $self = shift;
         my $level = shift;
-        Perl6::tab($level) . 'CLASS["' . $self->{"name"} . '"]'
+        Perl6::tab($level) . $self->{"name"}
     }
 }
 
@@ -374,7 +374,7 @@ package Call;
             return Perl6::tab($level) . $invocant . '[' . $self->{"arguments"}->emit_perl6() . ']'
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
-            return Perl6::tab($level) . $invocant . '._hash_[' . $self->{"arguments"}->emit_perl6() . ']'
+            return Perl6::tab($level) . $invocant . '{' . $self->{"arguments"}->emit_perl6() . '}'
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
             my @args = ();
@@ -386,7 +386,7 @@ package Call;
         my @args = ($invocant);
         push @args, $_->emit_perl6
             for @{$self->{"arguments"}};
-        return Perl6::tab($level) . $invocant . '._class_.' . $meth . '(' . join(',', @args) . ')'
+        return Perl6::tab($level) . $invocant . '.' . $meth . '(' . join(',', @args) . ')'
     }
 }
 
@@ -483,14 +483,14 @@ package Apply;
 
         if ( $code eq 'prefix:<$>' ) {
             my $arg = $self->{"arguments"}->[0];
-            return '(' . $arg->emit_perl6 . ')._scalar_';
+            return '$(' . $arg->emit_perl6 . ')';
         }
         if ( $code eq 'prefix:<@>' ) {
-            return '(' . join( ' ', map( $_->emit_perl6, @{ $self->{"arguments"} } ) ) . ')';
+            return '@(' . join( ' ', map( $_->emit_perl6, @{ $self->{"arguments"} } ) ) . ')';
         }
         if ( $code eq 'prefix:<%>' ) {
             my $arg = $self->{"arguments"}->[0];
-            return '(' . $arg->emit_perl6 . ')._hash_';
+            return '%(' . $arg->emit_perl6 . ')';
         }
 
         if ( $code eq 'circumfix:<[ ]>' ) {
@@ -527,25 +527,6 @@ package Apply;
                 . ')'
         }
 
-        if ($code eq 'exists') {
-            my $arg = $self->{"arguments"}->[0];
-            if ($arg->isa( 'Lookup' )) {
-                my $v = $arg->obj;
-                if (  $v->isa('Var')
-                   && $v->sigil eq '$'
-                   )
-                {
-                    $v = Var->new( sigil => '%', namespace => $v->namespace, name => $v->name );
-                    return '(' . $v->emit_perl6() . ').hasOwnProperty(' . ($arg->index_exp)->emit_perl6() . ')';
-                }
-                return '(' . $v->emit_perl6() . ')._hash_.hasOwnProperty(' . ($arg->index_exp)->emit_perl6() . ')';
-            }
-            if ($arg->isa( 'Call' )) {
-                if ( $arg->method eq 'postcircumfix:<{ }>' ) {
-                    return '(' . $arg->invocant->emit_perl6() . ')._hash_.hasOwnProperty(' . $arg->{"arguments"}->emit_perl6() . ')';
-                }
-            }
-        }
         if ($code eq 'ternary:<?? !!>') {
             return Perl6::tab($level) 
                  . '( ' . Perl6::to_bool( $self->{"arguments"}->[0] )
@@ -637,12 +618,12 @@ package While;
         my $level = shift;
         my $body      = Perlito5::Perl6::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         return
-           Perl6::tab($level) . 'for ( '
+           Perl6::tab($level) . 'loop ( '
         .  ( $self->{"init"}     ? $self->{"init"}->emit_perl6()           . '; '  : '; ' )
         .  ( $self->{"cond"}     ? Perl6::to_bool( $self->{"cond"} )       . '; '  : '; ' )
         .  ( $self->{"continue"} ? $self->{"continue"}->emit_perl6()       . ' '   : ' '  )
-        .  ') { '
-            . '(function () {' . "\n" . $body->emit_perl6_indented( $level + 1 )      . ' })()'
+        .  ') {' . "\n" 
+            . $body->emit_perl6_indented( $level + 1 )
         . ' }'
     }
 }
