@@ -403,6 +403,11 @@ package Apply;
         if ((($code eq 'undef'))) {
             return ((Perl6::tab($level) . 'Any'))
         };
+        if ((($code eq 'shift'))) {
+            if ((!((($self->{('arguments')} && @{$self->{('arguments')}}))))) {
+                return ('shift(' . chr(64) . '_)')
+            }
+        };
         if ((($code eq 'map'))) {
             ((my  $fun) = $self->{('arguments')}->[0]);
             ((my  $list) = $self->{('arguments')}->[1]);

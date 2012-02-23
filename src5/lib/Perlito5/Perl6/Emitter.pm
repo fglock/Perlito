@@ -456,12 +456,11 @@ package Apply;
 
         if ($code eq 'undef')      { return Perl6::tab($level) . 'Any' }
 
-        # if ($code eq 'shift')      {
-        #     if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-        #         return 'v__NAMESPACE.shift(' . join(', ', map( $_->emit_perl6, @{$self->{"arguments"}} )) . ')'
-        #     }
-        #     return 'v__NAMESPACE.shift(List__)'
-        # }
+        if ($code eq 'shift')      {
+            if (!( $self->{"arguments"} && @{$self->{"arguments"}} )) {
+                return 'shift(@_)'
+            }
+        }
 
         if ($code eq 'map') {
             my $fun  = $self->{"arguments"}->[0];
