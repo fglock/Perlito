@@ -492,7 +492,7 @@ package Apply;
         }
 
         if ( $code eq 'circumfix:<[ ]>' ) {
-            return 'Array.prototype.slice.call(' . join( ', ', map( $_->emit_perl6, @{ $self->{"arguments"} } ) ) . ')';
+            return '[' . join( ', ', map( $_->emit_perl6, @{ $self->{"arguments"} } ) ) . ']';
         }
         if ( $code eq 'prefix:<\\>' ) {
             my $arg = $self->{"arguments"}->[0];
@@ -502,11 +502,11 @@ package Apply;
                     return $arg->emit_perl6;
                 }
                 if ( $arg->sigil eq '%' ) {
-                    return '(new HashRef(' . $arg->emit_perl6 . '))';
+                    return '(HashRef.new(' . $arg->emit_perl6 . '))';
                 }
             }
             # XXX \&x should return a CODE ref
-            return '(new ScalarRef(' . $arg->emit_perl6 . '))';
+            return '(ScalarRef.new(' . $arg->emit_perl6 . '))';
         }
 
         if ($code eq 'postfix:<++>') { return '('   . join(' ', map( $_->emit_perl6, @{$self->{"arguments"}} ))  . ')++' }
@@ -691,7 +691,7 @@ package Do;
         my $level = shift;
         my $block = $self->simplify->block;
         return
-              Perl6::tab($level) . '(do {' . "\n"
+              Perl6::tab($level) . '(-> *@_ {' . "\n"
             .   (Perlito5::Perl6::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_perl6_indented( $level + 1 ) . "\n"
             . Perl6::tab($level) . '})'
     }

@@ -428,7 +428,7 @@ package Apply;
             return ((chr(37) . '(' . $arg->emit_perl6() . ')'))
         };
         if ((($code eq 'circumfix:<[ ]>'))) {
-            return (('Array.prototype.slice.call(' . join(', ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')'))
+            return (('[' . join(', ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ']'))
         };
         if ((($code eq 'prefix:<' . chr(92) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
@@ -437,10 +437,10 @@ package Apply;
                     return ($arg->emit_perl6())
                 };
                 if ((($arg->sigil() eq chr(37)))) {
-                    return (('(new HashRef(' . $arg->emit_perl6() . '))'))
+                    return (('(HashRef.new(' . $arg->emit_perl6() . '))'))
                 }
             };
-            return (('(new ScalarRef(' . $arg->emit_perl6() . '))'))
+            return (('(ScalarRef.new(' . $arg->emit_perl6() . '))'))
         };
         if ((($code eq 'postfix:<++>'))) {
             return (('(' . join(' ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')++'))
@@ -594,7 +594,7 @@ package Do;
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $block) = $self->simplify()->block());
-        return ((Perl6::tab($level) . '(do ' . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')'))
+        return ((Perl6::tab($level) . '(-> *' . chr(64) . '_ ' . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')'))
     }
 });
 package Use;
