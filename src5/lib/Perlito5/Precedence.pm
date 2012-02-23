@@ -40,6 +40,17 @@ sub is_ident_middle {
     || ($c eq '_')
 }
 
+my @Term_chars = (2);
+my @Term = (
+    # 0 chars
+    {},
+    # 1 char
+    {},
+    # 2 chars
+    {   '->' => sub { Perlito5::Expression->arrow($_[0], $_[1]) },
+    }
+);
+
 my @Op;
 my $End_token;
 my @Op_chars = (3,2,1);
@@ -69,10 +80,12 @@ sub op_parse {
         }
     }
 
-    # TODO - make this more generic for other terms
-    if (substr($str, $pos, 2) eq '->') {
-        my $m = Perlito5::Expression->after_arrow($str, $pos+2);
-        return $m if $m->{"bool"};
+    for my $len ( @Term_chars ) {
+        my $term = substr($str, $pos, $len);
+        if (exists($Term[$len]{$term})) {
+            my $m = $Term[$len]{$term}->($str, $pos);
+            return $m if $m->{"bool"};
+        }
     }
 
     for my $len ( @Op_chars ) {

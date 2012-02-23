@@ -57,6 +57,20 @@ sub is_ident_middle {
     ((my  $c) = shift());
     ((((($c ge 'a') && ($c le 'z'))) || ((($c ge '0') && ($c le '9')))) || (($c eq '_')))
 };
+((my  @Term_chars) = (2));
+((my  @Term) = ((do {
+    (my  %a);
+    \%a
+}), (do {
+    (my  %a);
+    \%a
+}), (do {
+    (my  %a);
+    ($a{'->'} = sub  {
+    Perlito5::Expression->arrow($_[0], $_[1])
+});
+    \%a
+})));
 (my  @Op);
 (my  $End_token);
 ((my  @Op_chars) = (3, 2, 1));
@@ -81,10 +95,13 @@ sub op_parse {
             }
         }
     };
-    if (((substr($str, $pos, 2) eq '->'))) {
-        ((my  $m) = Perlito5::Expression->after_arrow($str, ($pos + 2)));
-        if ($m->{('bool')}) {
-            return ($m)
+    for my $len (@Term_chars) {
+        ((my  $term) = substr($str, $pos, $len));
+        if ((exists($Term[$len]->{$term}))) {
+            ((my  $m) = $Term[$len]->{$term}->($str, $pos));
+            if ($m->{('bool')}) {
+                return ($m)
+            }
         }
     };
     for my $len (@Op_chars) {

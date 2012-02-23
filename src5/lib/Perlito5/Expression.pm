@@ -363,8 +363,8 @@ package Perlito5::Expression;
         }
     };
 
-    token after_arrow {
-        <.Perlito5::Grammar.opt_ws>
+    token arrow {
+        '->' <.Perlito5::Grammar.opt_ws>
             [
             | '(' <paren_parse>   ')'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.( )',  $MATCH->{"paren_parse"}->flat()   ] }
             | '[' <square_parse>  ']'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.[ ]',  $MATCH->{"square_parse"}->flat()  ] }

@@ -348,7 +348,7 @@ sub reduce_postfix {
         }
     }
 });
-sub after_arrow {
+sub arrow {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -356,7 +356,7 @@ sub after_arrow {
     ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->{('to')});
     ((do {
-    (((do {
+    ((((('->' eq substr($str, $MATCH->{('to')}, 2)) && (($MATCH->{('to')} = (2 + $MATCH->{('to')}))))) && ((do {
     ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{('to')}));
     if (($m2->{('bool')})) {
         ($MATCH->{('to')} = $m2->{('to')});
@@ -365,7 +365,7 @@ sub after_arrow {
     else {
         0
     }
-})) && ((do {
+}))) && ((do {
     ((my  $pos1) = $MATCH->{('to')});
     (((((do {
     (((((('(' eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))) && ((do {
