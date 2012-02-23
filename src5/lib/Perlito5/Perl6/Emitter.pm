@@ -775,7 +775,7 @@ package Sub;
         my $self = shift;
         my $level = shift;
 
-        my $s = Perl6::tab($level)
+          Perl6::tab($level)
         . "sub "
         . ( $self->{"name"}
           ? $self->{"name"} . ' '
@@ -784,7 +784,6 @@ package Sub;
         . '{' . "\n"
         .   (Perlito5::Perl6::LexicalBlock->new( block => $self->{"block"}, needs_return => 1, top_level => 1 ))->emit_perl6_indented( $level + 1 ) . "\n"
         . Perl6::tab($level) . '}';
-
 
     }
 }

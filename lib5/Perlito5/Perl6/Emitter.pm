@@ -665,7 +665,7 @@ package Sub;
     sub emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $s) = (Perl6::tab($level) . ('sub ') . (($self->{('name')} ? ($self->{('name')} . ' ') : '')) . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125)))
+        (Perl6::tab($level) . ('sub ') . (($self->{('name')} ? ($self->{('name')} . ' ') : '')) . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125))
     }
 });
 package Do;
