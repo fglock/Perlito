@@ -120,7 +120,7 @@ package Perlito5::Perl6::LexicalBlock;
             }
         }
         if (!@block) {
-            return Perl6::tab($level) . 'null;';
+            return Perl6::tab($level) . ';';
         }
         my @str;
         for my $decl ( @block ) {
@@ -563,7 +563,7 @@ package Apply;
             return Perl6::tab($level) . 'return('
                 .   ( $self->{"arguments"} && @{$self->{"arguments"}} 
                     ? $self->{"arguments"}->[0]->emit_perl6() 
-                    : 'null'
+                    : ''
                     )
                 . ')'
         }
@@ -595,89 +595,6 @@ package Apply;
         my $parameters = shift;
         my $arguments = shift;
         my $level = shift;
-
-        if ($parameters->isa( 'Call' )) {
-
-            # $a->[3] = 4
-            if  (  $parameters->method eq 'postcircumfix:<[ ]>' ) {
-                my $str = '';
-                my $var_js = $parameters->invocant->emit_perl6;
-                my $index_js = $parameters->arguments->emit_perl6;
-                $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_perl6() . '); ';
-                return Perl6::tab($level) . '(function () { ' . $str . '})()';
-            }
- 
-            # $a->{x} = 4
-            if  (  $parameters->method eq 'postcircumfix:<{ }>' ) {
-                my $str = '';
-                my $var_js = $parameters->invocant->emit_perl6;
-                my $index_js = $parameters->arguments->emit_perl6;
-                $str = $str . 'return (' . $var_js . '._hash_[' . $index_js . '] ' . ' = ' . $arguments->emit_perl6() . '); ';
-                return Perl6::tab($level) . '(function () { ' . $str . '})()';
-            }
-
-        }
-        if ($parameters->isa( 'Lookup' )) {
-            my $str = '';
-            my $var = $parameters->obj;
-
-            if (  $var->isa('Var')
-               && $var->sigil eq '$'
-               )
-            {
-                $var = Var->new( sigil => '%', namespace => $var->namespace, name => $var->name );
-                my $var_js = $var->emit_perl6;
-                my $index_js = $parameters->index_exp->emit_perl6;
-                $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_perl6() . '); ';
-                return Perl6::tab($level) . '(function () { ' . $str . '})()';
-           }
-
-            my $var_js = $var->emit_perl6;
-            my $index_js = $parameters->index_exp->emit_perl6;
-            $str = $str . 'return (' . $var_js . '._hash_[' . $index_js . '] ' . ' = ' . $arguments->emit_perl6() . '); ';
-            return Perl6::tab($level) . '(function () { ' . $str . '})()';
-        }
-        if ($parameters->isa( 'Index' )) {
-            my $str = '';
-            my $var = $parameters->obj;
-
-            if (  $var->isa('Var')
-               && $var->sigil eq '$'
-               )
-            {
-                $var = Var->new( sigil => '@', namespace => $var->namespace, name => $var->name );
-            }
-
-            my $var_js = $var->emit_perl6;
-            my $index_js = $parameters->index_exp->emit_perl6;
-            $str = $str . 'return (' . $var_js . '[' . $index_js . '] ' . ' = ' . $arguments->emit_perl6() . '); ';
-            return Perl6::tab($level) . '(function () { ' . $str . '})()';
-        }
-        if      $parameters->isa( 'Var' ) && $parameters->sigil eq '@'
-            ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '@'
-        {
-            $arguments = Apply->new(
-                            code => 'prefix:<@>', 
-                            arguments => [ Lit::Array->new( array1 => [$arguments] ) ]
-                        );
-            return Perl6::tab($level) . '(' . $parameters->emit_perl6() . ' = (' . $arguments->emit_perl6() . ').slice())';
-        }
-        elsif   $parameters->isa( 'Var' ) && $parameters->sigil eq '%'
-            ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '%'
-        {
-            $arguments = Apply->new( 
-                            code => 'prefix:<%>', 
-                            arguments => [ Lit::Hash->new( hash1 => [$arguments] ) ] 
-                        );
-            return Perl6::tab($level) . '(' 
-                . $parameters->emit_perl6() . ' = (function (_h) { '
-                .   'var _tmp = {}; '
-                .   'for (var _i in _h) { '
-                .       '_tmp[_i] = _h[_i]; '
-                .   '}; '
-                .   'return _tmp; '
-                . '})( ' . $arguments->emit_perl6() . '))';
-        }
         Perl6::tab($level) . '(' . $parameters->emit_perl6() . ' = ' . $arguments->emit_perl6() . ')';
     }
 }

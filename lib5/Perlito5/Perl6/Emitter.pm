@@ -112,7 +112,7 @@ package Perlito5::Perl6::LexicalBlock;
             }
         };
         if ((!(@block))) {
-            return ((Perl6::tab($level) . 'null' . chr(59)))
+            return ((Perl6::tab($level) . chr(59)))
         };
         (my  @str);
         for my $decl (@block) {
@@ -486,7 +486,7 @@ package Apply;
             return (emit_perl6_bind($self->{('arguments')}->[0], $self->{('arguments')}->[1], $level))
         };
         if ((($code eq 'return'))) {
-            return ((Perl6::tab($level) . 'return(' . ((($self->{('arguments')} && @{$self->{('arguments')}}) ? $self->{('arguments')}->[0]->emit_perl6() : 'null')) . ')'))
+            return ((Perl6::tab($level) . 'return(' . ((($self->{('arguments')} && @{$self->{('arguments')}}) ? $self->{('arguments')}->[0]->emit_perl6() : '')) . ')'))
         };
         if (($self->{('namespace')})) {
             if (((($self->{('namespace')} eq 'Perl6') && ($code eq 'inline')))) {
@@ -509,78 +509,6 @@ package Apply;
         ((my  $parameters) = shift());
         ((my  $arguments) = shift());
         ((my  $level) = shift());
-        if (($parameters->isa('Call'))) {
-            if ((($parameters->method() eq 'postcircumfix:<[ ]>'))) {
-                ((my  $str) = '');
-                ((my  $var_js) = $parameters->invocant()->emit_perl6());
-                ((my  $index_js) = $parameters->arguments()->emit_perl6());
-                ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')' . chr(59) . ' '));
-                return ((Perl6::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
-            };
-            if ((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-                ((my  $str) = '');
-                ((my  $var_js) = $parameters->invocant()->emit_perl6());
-                ((my  $index_js) = $parameters->arguments()->emit_perl6());
-                ($str = ($str . 'return (' . $var_js . '._hash_[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')' . chr(59) . ' '));
-                return ((Perl6::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
-            }
-        };
-        if (($parameters->isa('Lookup'))) {
-            ((my  $str) = '');
-            ((my  $var) = $parameters->obj());
-            if ((($var->isa('Var') && ($var->sigil() eq chr(36))))) {
-                ($var = Var->new(('sigil' => chr(37)), ('namespace' => $var->namespace()), ('name' => $var->name())));
-                ((my  $var_js) = $var->emit_perl6());
-                ((my  $index_js) = $parameters->index_exp()->emit_perl6());
-                ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')' . chr(59) . ' '));
-                return ((Perl6::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
-            };
-            ((my  $var_js) = $var->emit_perl6());
-            ((my  $index_js) = $parameters->index_exp()->emit_perl6());
-            ($str = ($str . 'return (' . $var_js . '._hash_[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')' . chr(59) . ' '));
-            return ((Perl6::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
-        };
-        if (($parameters->isa('Index'))) {
-            ((my  $str) = '');
-            ((my  $var) = $parameters->obj());
-            if ((($var->isa('Var') && ($var->sigil() eq chr(36))))) {
-                ($var = Var->new(('sigil' => chr(64)), ('namespace' => $var->namespace()), ('name' => $var->name())))
-            };
-            ((my  $var_js) = $var->emit_perl6());
-            ((my  $index_js) = $parameters->index_exp()->emit_perl6());
-            ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')' . chr(59) . ' '));
-            return ((Perl6::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
-        };
-        if ((($parameters->isa('Var') && ($parameters->sigil() eq chr(64))) || ($parameters->isa('Decl') && ($parameters->var()->sigil() eq chr(64))))) {
-            ($arguments = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Lit::Array->new(('array1' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $arguments );
-    \@a
-}))) );
-    \@a
-}))));
-            return ((Perl6::tab($level) . '(' . $parameters->emit_perl6() . ' ' . chr(61) . ' (' . $arguments->emit_perl6() . ').slice())'))
-        }
-        else {
-            if ((($parameters->isa('Var') && ($parameters->sigil() eq chr(37))) || ($parameters->isa('Decl') && ($parameters->var()->sigil() eq chr(37))))) {
-                ($arguments = Apply->new(('code' => 'prefix:<' . chr(37) . '>'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Lit::Hash->new(('hash1' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $arguments );
-    \@a
-}))) );
-    \@a
-}))));
-                return ((Perl6::tab($level) . '(' . $parameters->emit_perl6() . ' ' . chr(61) . ' (function (_h) ' . chr(123) . ' ' . 'var _tmp ' . chr(61) . ' ' . chr(123) . chr(125) . chr(59) . ' ' . 'for (var _i in _h) ' . chr(123) . ' ' . '_tmp[_i] ' . chr(61) . ' _h[_i]' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'return _tmp' . chr(59) . ' ' . chr(125) . ')( ' . $arguments->emit_perl6() . '))'))
-            }
-        };
         (Perl6::tab($level) . '(' . $parameters->emit_perl6() . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')')
     }
 });
