@@ -4251,10 +4251,7 @@ make_sub(__PACKAGE__, "op_parse", function () {
 
 								(v_c1 = v__NAMESPACE.substr(v_str, (add(v_pos, v_l) - 1), 1));
 								(v_c2 = v__NAMESPACE.substr(v_str, add(v_pos, v_l), 1));
-								if ( bool((and(v__NAMESPACE.is_ident_middle(v_c1), function () { return (or(v__NAMESPACE.is_ident_middle(v_c2), function () { return (v_c2 == '('); })); }))) ) { (function () {
-									null;
-								})(); }
-								else { (function () {
+								if ( bool((( bool((and(v__NAMESPACE.is_ident_middle(v_c1), function () { return (or(v__NAMESPACE.is_ident_middle(v_c2), function () { return (v_c2 == '('); })); }))) ? false : true))) ) { (function () {
 									throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_from,'to', add(v_pos, 2),'bool', 1,'capture', (function () {
 	var List_a = [];
 
@@ -4280,18 +4277,8 @@ make_sub(__PACKAGE__, "op_parse", function () {
 
 								(v_c1 = v__NAMESPACE.substr(v_str, (add(v_pos, v_len) - 1), 1));
 								(v_c2 = v__NAMESPACE.substr(v_str, add(v_pos, v_len), 1));
-								if ( bool((and(v__NAMESPACE.is_ident_middle(v_c1), function () { return (or(v__NAMESPACE.is_ident_middle(v_c2), function () { return (v_c2 == '('); })); }))) ) { (function () {
-									null;
-								})(); }
-								else { (function () {
-									var v_c01 = null;
-
-									var v_c02 = null;
-
-									(v_pos = add(v_pos, v_len));
-									(v_c01 = v__NAMESPACE.substr(v_str, v_pos, 1));
-									(v_c02 = v__NAMESPACE.substr(v_str, v_pos, 2));
-									throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_from,'to', v_pos,'bool', 1,'capture', (function () {
+								if ( bool((( bool((and(v__NAMESPACE.is_ident_middle(v_c1), function () { return (or(v__NAMESPACE.is_ident_middle(v_c2), function () { return (v_c2 == '('); })); }))) ? false : true))) ) { (function () {
+									throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_from,'to', add(v_pos, v_len),'bool', 1,'capture', (function () {
 	var List_a = [];
 
 	var List_v = [];

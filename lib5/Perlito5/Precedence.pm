@@ -71,10 +71,7 @@ sub op_parse {
         if ((($s eq $tok))) {
             ((my  $c1) = substr($str, (($pos + $l) - 1), 1));
             ((my  $c2) = substr($str, ($pos + $l), 1));
-            if (((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))) {
-
-            }
-            else {
+            if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))))) {
                 return (Perlito5::Match->new(('str' => $str), ('from' => $from), ('to' => ($pos + 2)), ('bool' => 1), ('capture' => (do {
     (my  @a);
     (my  @v);
@@ -93,14 +90,8 @@ sub op_parse {
         if ((exists($Op[$len]->{$op}))) {
             ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
             ((my  $c2) = substr($str, ($pos + $len), 1));
-            if (((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))) {
-
-            }
-            else {
-                ($pos = ($pos + $len));
-                ((my  $c01) = substr($str, $pos, 1));
-                ((my  $c02) = substr($str, $pos, 2));
-                return (Perlito5::Match->new(('str' => $str), ('from' => $from), ('to' => $pos), ('bool' => 1), ('capture' => (do {
+            if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))))) {
+                return (Perlito5::Match->new(('str' => $str), ('from' => $from), ('to' => ($pos + $len)), ('bool' => 1), ('capture' => (do {
     (my  @a);
     (my  @v);
     push(@a, 'op' );
