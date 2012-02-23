@@ -41,151 +41,6 @@ package Perl6;
         };
         return (join(' + ', @out))
     };
-    sub autovivify {
-        ((my  $ast) = shift());
-        ((my  $type) = shift());
-        ((my  $str_init) = (chr(39) . chr(39)));
-        if (($type eq 'HASH')) {
-            ($str_init = chr(123) . chr(125))
-        };
-        if (($type eq 'ARRAY')) {
-            ($str_init = '[]')
-        };
-        if (($type eq 'HASHREF')) {
-            ($str_init = 'new HashRef(' . chr(123) . chr(125) . ')')
-        };
-        if (($type eq 'ARRAYREF')) {
-            ($str_init = '[]')
-        };
-        if (($ast->isa('Var'))) {
-            if (((($type eq 'HASH') && ($ast->sigil() eq chr(36))))) {
-                ($ast = Var->new(('sigil' => chr(37)), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
-                ((my  $var_js) = $ast->emit_perl6());
-                return ((do {
-    (my  @a);
-    (my  @v);
-    push(@a, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
-    \@a
-}))
-            }
-            else {
-                if (((($type eq 'ARRAY') && ($ast->sigil() eq chr(36))))) {
-                    ($ast = Var->new(('sigil' => chr(64)), ('namespace' => $ast->namespace()), ('name' => $ast->name())));
-                    ((my  $var_js) = $ast->emit_perl6());
-                    return ((do {
-    (my  @a);
-    (my  @v);
-    push(@a, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
-    \@a
-}))
-                }
-                else {
-                    if (((($type eq 'HASHREF') && ($ast->sigil() eq chr(36))))) {
-                        ((my  $var_js) = $ast->emit_perl6());
-                        return ((do {
-    (my  @a);
-    (my  @v);
-    push(@a, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
-    \@a
-}))
-                    }
-                    else {
-                        if (((($type eq 'ARRAYREF') && ($ast->sigil() eq chr(36))))) {
-                            ((my  $var_js) = $ast->emit_perl6());
-                            return ((do {
-    (my  @a);
-    (my  @v);
-    push(@a, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
-    \@a
-}))
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            if (($ast->isa('Call'))) {
-                ((my  $var_js) = $ast->emit_perl6());
-                if ((($ast->method() eq 'postcircumfix:<[ ]>'))) {
-                    return ((do {
-    (my  @a);
-    (my  @v);
-    (@v = @{autovivify($ast->invocant(), 'ARRAYREF')});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    push(@a, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
-    \@a
-}))
-                }
-                else {
-                    if ((($ast->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-                        return ((do {
-    (my  @a);
-    (my  @v);
-    (@v = @{autovivify($ast->invocant(), 'HASHREF')});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    push(@a, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
-    \@a
-}))
-                    }
-                }
-            }
-            else {
-                if (($ast->isa('Index'))) {
-                    ((my  $var_js) = $ast->emit_perl6());
-                    (my  $type);
-                    ((my  $var) = $ast->obj());
-                    if ((($var->isa('Var') && ($var->sigil() eq chr(36))))) {
-                        ($type = 'ARRAY')
-                    }
-                    else {
-                        ($type = 'ARRAYREF')
-                    };
-                    return ((do {
-    (my  @a);
-    (my  @v);
-    (@v = @{autovivify($ast->obj(), $type)});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    push(@a, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
-    \@a
-}))
-                }
-                else {
-                    if (($ast->isa('Lookup'))) {
-                        ((my  $var_js) = $ast->emit_perl6());
-                        (my  $type);
-                        ((my  $var) = $ast->obj());
-                        if ((($var->isa('Var') && ($var->sigil() eq chr(36))))) {
-                            ($type = 'HASH')
-                        }
-                        else {
-                            ($type = 'HASHREF')
-                        };
-                        return ((do {
-    (my  @a);
-    (my  @v);
-    (@v = @{autovivify($var, $type)});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    push(@a, ('if (' . $var_js . ' ' . chr(61) . chr(61) . ' null) ' . chr(123) . ' ' . $var_js . ' ' . chr(61) . ' ' . $str_init . ' ' . chr(125) . chr(59) . ' ') );
-    \@a
-}))
-                    }
-                }
-            }
-        };
-        return ((do {
-    (my  @a);
-    (my  @v);
-    \@a
-}))
-    };
     sub to_str {
         ((my  $cond) = shift());
         if (($cond->isa('Val::Buf'))) {
@@ -248,7 +103,7 @@ package Perlito5::Perl6::LexicalBlock;
         ((my  $level) = shift());
         if (($self->{('top_level')})) {
             ((my  $block) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->block()), ('needs_return' => $self->needs_return()), ('top_level' => 0)));
-            return ((Perl6::tab($level) . 'try ' . chr(123) . (chr(10)) . $block->emit_perl6_indented(($level + 1)) . chr(59) . (chr(10)) . Perl6::tab($level) . chr(125) . (chr(10)) . Perl6::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Perl6::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Perl6::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Perl6::tab(($level + 1)) . chr(125) . (chr(10)) . Perl6::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Perl6::tab(($level + 2)) . 'return(err)' . chr(59) . (chr(10)) . Perl6::tab(($level + 1)) . chr(125) . (chr(10)) . Perl6::tab($level) . chr(125)))
+            return (($block->emit_perl6_indented(($level + 1)) . chr(59) . (chr(10))))
         };
         (my  @block);
         for ((@{$self->{('block')}})) {
@@ -271,42 +126,9 @@ package Perlito5::Perl6::LexicalBlock;
                 }
             }
         };
-        (my  $last_statement);
-        if (($self->{('needs_return')})) {
-            ($last_statement = pop(@block))
-        };
         for my $decl (@block) {
             if ((!((($decl->isa('Decl') && ($decl->decl() eq 'my')))))) {
                 push(@str, ($decl->emit_perl6_indented($level) . chr(59)) )
-            }
-        };
-        if ((($self->{('needs_return')} && $last_statement))) {
-            if (($last_statement->isa('If'))) {
-                ((my  $cond) = $last_statement->cond());
-                ((my  $body) = $last_statement->body());
-                ((my  $otherwise) = $last_statement->otherwise());
-                if ((($cond->isa('Var') && ($cond->sigil() eq chr(64))))) {
-                    ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $cond );
-    \@a
-}))))
-                };
-                ($body = Perlito5::Perl6::LexicalBlock->new(('block' => $body->stmts()), ('needs_return' => 1)));
-                push(@str, (Perl6::tab($level) . 'if ( ' . Perl6::to_bool($cond) . ' ) ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $body->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) );
-                if (($otherwise)) {
-                    ($otherwise = Perlito5::Perl6::LexicalBlock->new(('block' => $otherwise->stmts()), ('needs_return' => 1)));
-                    push(@str, (Perl6::tab($level) . 'else ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $otherwise->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) )
-                }
-            }
-            else {
-                if (((($last_statement->isa('Apply') && ($last_statement->code() eq 'return')) || $last_statement->isa('For')) || $last_statement->isa('While'))) {
-                    push(@str, $last_statement->emit_perl6_indented($level) )
-                }
-                else {
-                    push(@str, (Perl6::tab($level) . 'return(' . $last_statement->emit_perl6() . ')') )
-                }
             }
         };
         return ((join((chr(10)), @str) . chr(59)))
@@ -694,15 +516,15 @@ package Apply;
             return (emit_perl6_bind($self->{('arguments')}->[0], $self->{('arguments')}->[1], $level))
         };
         if ((($code eq 'return'))) {
-            return ((Perl6::tab($level) . 'throw(' . ((($self->{('arguments')} && @{$self->{('arguments')}}) ? $self->{('arguments')}->[0]->emit_perl6() : 'null')) . ')'))
+            return ((Perl6::tab($level) . 'return(' . ((($self->{('arguments')} && @{$self->{('arguments')}}) ? $self->{('arguments')}->[0]->emit_perl6() : 'null')) . ')'))
         };
         if (($self->{('namespace')})) {
-            if (((($self->{('namespace')} eq 'JS') && ($code eq 'inline')))) {
+            if (((($self->{('namespace')} eq 'Perl6') && ($code eq 'inline')))) {
                 if (($self->{('arguments')}->[0]->isa('Val::Buf'))) {
                     return ($self->{('arguments')}->[0]->{('buf')})
                 }
                 else {
-                    die(('JS::inline needs a string constant'))
+                    die(('Perl6::inline needs a string constant'))
                 }
             };
             ($code = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . '].' . ($code)))
@@ -724,9 +546,6 @@ package Apply;
             if ((($parameters->method() eq 'postcircumfix:<[ ]>'))) {
                 ((my  $str) = '');
                 ((my  $var_js) = $parameters->invocant()->emit_perl6());
-                ((my  $auto) = Perl6::autovivify($parameters, 'ARRAYREF'));
-                pop(@{$auto});
-                ($str = ($str . join('', @{$auto})));
                 ((my  $index_js) = $parameters->arguments()->emit_perl6());
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')' . chr(59) . ' '));
                 return ((Perl6::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
@@ -734,9 +553,6 @@ package Apply;
             if ((($parameters->method() eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
                 ((my  $str) = '');
                 ((my  $var_js) = $parameters->invocant()->emit_perl6());
-                ((my  $auto) = Perl6::autovivify($parameters, 'HASHREF'));
-                pop(@{$auto});
-                ($str = ($str . join('', @{$auto})));
                 ((my  $index_js) = $parameters->arguments()->emit_perl6());
                 ($str = ($str . 'return (' . $var_js . '._hash_[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')' . chr(59) . ' '));
                 return ((Perl6::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
@@ -748,17 +564,11 @@ package Apply;
             if ((($var->isa('Var') && ($var->sigil() eq chr(36))))) {
                 ($var = Var->new(('sigil' => chr(37)), ('namespace' => $var->namespace()), ('name' => $var->name())));
                 ((my  $var_js) = $var->emit_perl6());
-                ((my  $auto) = Perl6::autovivify($parameters, 'HASHREF'));
-                pop(@{$auto});
-                ($str = ($str . join('', @{$auto})));
                 ((my  $index_js) = $parameters->index_exp()->emit_perl6());
                 ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')' . chr(59) . ' '));
                 return ((Perl6::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
             };
             ((my  $var_js) = $var->emit_perl6());
-            ((my  $auto) = Perl6::autovivify($parameters, 'HASHREF'));
-            pop(@{$auto});
-            ($str = ($str . join('', @{$auto})));
             ((my  $index_js) = $parameters->index_exp()->emit_perl6());
             ($str = ($str . 'return (' . $var_js . '._hash_[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')' . chr(59) . ' '));
             return ((Perl6::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
@@ -770,9 +580,6 @@ package Apply;
                 ($var = Var->new(('sigil' => chr(64)), ('namespace' => $var->namespace()), ('name' => $var->name())))
             };
             ((my  $var_js) = $var->emit_perl6());
-            ((my  $auto) = Perl6::autovivify($parameters, 'ARRAYREF'));
-            pop(@{$auto});
-            ($str = ($str . join('', @{$auto})));
             ((my  $index_js) = $parameters->index_exp()->emit_perl6());
             ($str = ($str . 'return (' . $var_js . '[' . $index_js . '] ' . ' ' . chr(61) . ' ' . $arguments->emit_perl6() . ')' . chr(59) . ' '));
             return ((Perl6::tab($level) . '(function () ' . chr(123) . ' ' . $str . chr(125) . ')()'))
