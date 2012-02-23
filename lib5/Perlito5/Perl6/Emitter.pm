@@ -582,7 +582,7 @@ package Sub;
     sub emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        (Perl6::tab($level) . ('sub ') . (($self->{('name')} ? ($self->{('name')} . ' ') : '')) . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125))
+        (Perl6::tab($level) . ('sub ') . (($self->{('name')} ? $self->{('name')} : '')) . '(*' . chr(64) . '_) ' . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125))
     }
 });
 package Do;
@@ -594,7 +594,7 @@ package Do;
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $block) = $self->simplify()->block());
-        return ((Perl6::tab($level) . '(-> *' . chr(64) . '_ ' . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')'))
+        return ((Perl6::tab($level) . '(do ' . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')'))
     }
 });
 package Use;

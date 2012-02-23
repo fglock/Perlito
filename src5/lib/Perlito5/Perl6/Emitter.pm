@@ -673,10 +673,10 @@ package Sub;
           Perl6::tab($level)
         . "sub "
         . ( $self->{"name"}
-          ? $self->{"name"} . ' '
+          ? $self->{"name"}
           : ''
           )
-        . '{' . "\n"
+        . '(*@_) {' . "\n"
         .   (Perlito5::Perl6::LexicalBlock->new( block => $self->{"block"}, needs_return => 1, top_level => 1 ))->emit_perl6_indented( $level + 1 ) . "\n"
         . Perl6::tab($level) . '}';
 
@@ -691,7 +691,7 @@ package Do;
         my $level = shift;
         my $block = $self->simplify->block;
         return
-              Perl6::tab($level) . '(-> *@_ {' . "\n"
+              Perl6::tab($level) . '(do {' . "\n"
             .   (Perlito5::Perl6::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_perl6_indented( $level + 1 ) . "\n"
             . Perl6::tab($level) . '})'
     }
