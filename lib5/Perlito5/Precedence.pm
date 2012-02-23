@@ -177,9 +177,6 @@ sub is_ident_middle {
     ($a{'state'} = sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
 });
-    ($a{'token'} = sub  {
-    Perlito5::Expression->term_token($_[0], $_[1])
-});
     \%a
 }), (do {
     (my  %a);
@@ -191,6 +188,11 @@ sub is_ident_middle {
 });
     \%a
 })));
+sub add_term {
+    ((my  $name) = shift());
+    ((my  $param) = shift());
+    ($Term[length($name)]->{$name} = $param)
+};
 (my  @Op);
 (my  $End_token);
 ((my  @Op_chars) = (3, 2, 1));

@@ -264,29 +264,6 @@ token sub_def {
     { $MATCH->{"capture"} = Sub->new( name => $MATCH->{"opt_name"}->flat(), sig => $MATCH->{"method_sig"}->flat(), block => $MATCH->{"exp_stmts"}->flat() ) }
 }
 
-token token {
-    <opt_name>  <.opt_ws> \{
-        <Perlito5::Grammar::Regex.rule>
-    \}
-    {
-        #say 'Token was compiled into: ', ($MATCH->{"Perlito5::Grammar::Regex.rule"}->flat())->perl;
-        my $source = $MATCH->{"opt_name"}->flat()
-            . '{ ' .
-                'my $grammar = $_[0]; ' .
-                'my $str     = $_[1]; ' .
-                'my $pos     = $_[2]; ' .
-                'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' .
-                '$MATCH->{"bool"} = ( ' .
-                    $MATCH->{"Perlito5::Grammar::Regex.rule"}->flat()->emit_perl5() .
-                '); ' .
-                '$MATCH; ' 
-            . '}';
-        #say 'Intermediate code: ', $source;
-        my $ast = Perlito5::Grammar->sub_def( $source, 0 );
-        # say 'Intermediate ast: ', $ast->flat;
-        $MATCH->{"capture"} = $ast->flat();
-    }
-}
 
 =begin
 

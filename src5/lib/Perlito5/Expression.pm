@@ -447,12 +447,6 @@ package Perlito5::Expression;
                     { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.sub_def"}->flat()     ] }
     }
 
-    # XXX Perl6
-    token term_token {
-        'token' <.Perlito5::Grammar.ws> <Perlito5::Grammar.token>
-                    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.token"}->flat()       ] }
-    }
-
     token term_do {
         'do' <.Perlito5::Grammar.ws> <statement_parse>
                     { $MATCH->{"capture"} = [ 'term', Do->new( block => $MATCH->{"statement_parse"}->flat() ) ] }

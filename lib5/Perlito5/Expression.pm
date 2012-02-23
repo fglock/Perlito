@@ -919,47 +919,6 @@ sub term_sub {
 }))));
     $MATCH
 };
-sub term_token {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-    ($MATCH->{('bool')} = (((do {
-    ((my  $pos1) = $MATCH->{('to')});
-    ((do {
-    (((((('token' eq substr($str, $MATCH->{('to')}, 5)) && (($MATCH->{('to')} = (5 + $MATCH->{('to')}))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{('to')}));
-    if (($m2->{('bool')})) {
-        ($MATCH->{('to')} = $m2->{('to')});
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->token($str, $MATCH->{('to')}));
-    if (($m2->{('bool')})) {
-        ($MATCH->{('to')} = $m2->{('to')});
-        ($MATCH->{'Perlito5::Grammar.token'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ($MATCH->{('capture')} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, 'term' );
-    push(@a, $MATCH->{('Perlito5::Grammar.token')}->flat() );
-    \@a
-}));
-    1
-})))
-}))
-}))));
-    $MATCH
-};
 sub term_do {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);

@@ -91,7 +91,6 @@ my @Term = (
     {},
     # 5 chars
     {   'state' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
-        'token' => sub { Perlito5::Expression->term_token($_[0], $_[1]) },
     },
     # 6 chars
     {},
@@ -99,6 +98,15 @@ my @Term = (
     {   'package' => sub { Perlito5::Expression->term_package($_[0], $_[1]) },
     },
 );
+
+sub add_term {
+    my $name = shift;
+    my $param = shift;
+
+    # XXX this fails unless the length is registered in @Term_chars
+
+    $Term[ length $name ]{ $name } = $param;
+}
 
 my @Op;
 my $End_token;

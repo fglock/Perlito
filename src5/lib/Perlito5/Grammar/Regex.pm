@@ -1,5 +1,45 @@
 package Perlito5::Grammar::Regex;
 
+use Perlito5::Precedence;
+
+
+# register the "token" keyword - XXX Perl6
+
+token token {
+    <Perlito5::Grammar.opt_name>  <.Perlito5::Grammar.opt_ws> \{
+        <Perlito5::Grammar::Regex.rule>
+    \}
+    {
+        #say 'Token was compiled into: ', ($MATCH->{"Perlito5::Grammar::Regex.rule"}->flat())->perl;
+        my $source = $MATCH->{"Perlito5::Grammar.opt_name"}->flat()
+            . '{ ' .
+                'my $grammar = $_[0]; ' .
+                'my $str     = $_[1]; ' .
+                'my $pos     = $_[2]; ' .
+                'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' .
+                '$MATCH->{"bool"} = ( ' .
+                    $MATCH->{"Perlito5::Grammar::Regex.rule"}->flat()->emit_perl5() .
+                '); ' .
+                '$MATCH; '
+            . '}';
+        #say 'Intermediate code: ', $source;
+        my $ast = Perlito5::Grammar->sub_def( $source, 0 );
+        # say 'Intermediate ast: ', $ast->flat;
+        $MATCH->{"capture"} = $ast->flat();
+    }
+}
+
+token term_token {
+    'token' <.Perlito5::Grammar.ws> <token>
+                { $MATCH->{"capture"} = [ 'term', $MATCH->{"token"}->flat()       ] }
+}
+
+Perlito5::Precedence::add_term( 'token', sub { Perlito5::Grammar::Regex->term_token($_[0], $_[1]) } );
+
+
+# "grammar grammar"
+
+
 token ws {  <.Perlito5::Grammar.ws>  }
 
 token any { . }
