@@ -594,10 +594,10 @@ package If;
 }))))
         };
         ((my  $body) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
-        ((my  $s) = (Perl6::tab($level) . 'if ( ' . Perl6::to_bool($cond) . ' ) ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)));
+        ((my  $s) = (Perl6::tab($level) . 'if ( ' . Perl6::to_bool($cond) . ' ) ' . chr(123) . (chr(10)) . $body->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125)));
         if ((@{$self->{('otherwise')}->stmts()})) {
             ((my  $otherwise) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('otherwise')}->stmts()), ('needs_return' => 0)));
-            ($s = ($s . (chr(10)) . Perl6::tab($level) . 'else ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $otherwise->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)))
+            ($s = ($s . (chr(10)) . Perl6::tab($level) . 'else ' . chr(123) . (chr(10)) . $otherwise->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125)))
         };
         return ($s)
     }
@@ -675,7 +675,7 @@ package Do;
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $block) = $self->simplify()->block());
-        return ((Perl6::tab($level) . '(function () ' . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')()'))
+        return ((Perl6::tab($level) . '(do ' . chr(123) . (chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')'))
     }
 });
 package Use;
@@ -686,7 +686,11 @@ package Use;
     sub emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        (Perl6::tab($level) . chr(47) . chr(47) . ' use ' . $self->{('mod')} . (chr(10)))
+        ((my  $mod) = $self->{('mod')});
+        if ((($mod eq 'feature') || ($mod eq 'v5'))) {
+            return ()
+        };
+        (Perl6::tab($level) . 'use ' . $self->{('mod')} . (chr(59)))
     }
 });
 

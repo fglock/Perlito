@@ -688,18 +688,16 @@ package If;
             $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
         }
         my $body  = Perlito5::Perl6::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
-        my $s = Perl6::tab($level) . 'if ( ' . Perl6::to_bool( $cond ) . ' ) { '
-            . '(function () {' . "\n"
+        my $s = Perl6::tab($level) . 'if ( ' . Perl6::to_bool( $cond ) . ' ) {' . "\n"
             .       $body->emit_perl6_indented( $level + 1 ) . "\n"
-            . Perl6::tab($level) . '})(); }';
+            . Perl6::tab($level) . '}';
         if ( @{ $self->{"otherwise"}->stmts } ) {
             my $otherwise = Perlito5::Perl6::LexicalBlock->new( block => $self->{"otherwise"}->stmts, needs_return => 0 );
             $s = $s
                 . "\n"
-                . Perl6::tab($level) . 'else { '
-                .   '(function () {' . "\n"
+                . Perl6::tab($level) . 'else {' . "\n"
                 .       $otherwise->emit_perl6_indented( $level + 1 ) . "\n"
-                . Perl6::tab($level) . '})(); }';
+                . Perl6::tab($level) . '}';
         }
         return $s;
     }
@@ -789,9 +787,9 @@ package Do;
         my $level = shift;
         my $block = $self->simplify->block;
         return
-              Perl6::tab($level) . '(function () {' . "\n"
+              Perl6::tab($level) . '(do {' . "\n"
             .   (Perlito5::Perl6::LexicalBlock->new( block => $block, needs_return => 1 ))->emit_perl6_indented( $level + 1 ) . "\n"
-            . Perl6::tab($level) . '})()'
+            . Perl6::tab($level) . '})'
     }
 }
 
@@ -801,7 +799,11 @@ package Use;
     sub emit_perl6_indented {
         my $self = shift;
         my $level = shift;
-        Perl6::tab($level) . '// use ' . $self->{"mod"} . "\n"
+        my $mod = $self->{"mod"};
+        return 
+            if $mod eq 'feature' 
+            || $mod eq 'v5';
+        Perl6::tab($level) . 'use ' . $self->{"mod"} . ";"
     }
 }
 
