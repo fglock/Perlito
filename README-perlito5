@@ -6,6 +6,10 @@ Running the tests using v8:
 
 find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cjs $_ > tmp.js && ~/bin/d8 tmp.js  ` '
 
+Running the tests using perl6:
+
+find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
+
 Compile the compiler to Javascript into perlito5.js:
 
 -- using perlito5.pl:
