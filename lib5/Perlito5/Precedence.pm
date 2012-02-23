@@ -57,7 +57,7 @@ sub is_ident_middle {
     ((my  $c) = shift());
     ((((($c ge 'a') && ($c le 'z'))) || ((($c ge '0') && ($c le '9')))) || (($c eq '_')))
 };
-((my  @Term_chars) = (2, 1));
+((my  @Term_chars) = (5, 4, 3, 2, 1));
 ((my  @Term) = ((do {
     (my  %a);
     \%a
@@ -111,11 +111,38 @@ sub is_ident_middle {
     ($a{chr(63)} = sub  {
     Perlito5::Expression->term_ternary($_[0], $_[1])
 });
+    ($a{'('} = sub  {
+    Perlito5::Expression->term_paren($_[0], $_[1])
+});
+    ($a{'['} = sub  {
+    Perlito5::Expression->term_square($_[0], $_[1])
+});
+    ($a{chr(123)} = sub  {
+    Perlito5::Expression->term_curly($_[0], $_[1])
+});
     \%a
 }), (do {
     (my  %a);
     ($a{'->'} = sub  {
     Perlito5::Expression->term_arrow($_[0], $_[1])
+});
+    ($a{'my'} = sub  {
+    Perlito5::Expression->term_declarator($_[0], $_[1])
+});
+    \%a
+}), (do {
+    (my  %a);
+    ($a{'our'} = sub  {
+    Perlito5::Expression->term_declarator($_[0], $_[1])
+});
+    \%a
+}), (do {
+    (my  %a);
+    \%a
+}), (do {
+    (my  %a);
+    ($a{'state'} = sub  {
+    Perlito5::Expression->term_declarator($_[0], $_[1])
 });
     \%a
 })));
@@ -127,11 +154,11 @@ sub op_parse {
     ((my  $str) = shift());
     ((my  $pos) = shift());
     for my $tok (@{$End_token}) {
-        ((my  $l) = length($tok));
-        ((my  $s) = substr($str, $pos, $l));
+        ((my  $len) = length($tok));
+        ((my  $s) = substr($str, $pos, $len));
         if ((($s eq $tok))) {
-            ((my  $c1) = substr($str, (($pos + $l) - 1), 1));
-            ((my  $c2) = substr($str, ($pos + $l), 1));
+            ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
+            ((my  $c2) = substr($str, ($pos + $len), 1));
             if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))))) {
                 return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => (do {
     (my  @a);

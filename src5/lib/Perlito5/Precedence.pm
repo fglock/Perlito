@@ -40,7 +40,7 @@ sub is_ident_middle {
     || ($c eq '_')
 }
 
-my @Term_chars = (2, 1);
+my @Term_chars = (5, 4, 3, 2, 1);
 my @Term = (
     # 0 chars
     {},
@@ -63,9 +63,22 @@ my @Term = (
         '9'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
 
         '?'  => sub { Perlito5::Expression->term_ternary($_[0], $_[1]) },
+        '('  => sub { Perlito5::Expression->term_paren($_[0], $_[1]) },
+        '['  => sub { Perlito5::Expression->term_square($_[0], $_[1]) },
+        '{'  => sub { Perlito5::Expression->term_curly($_[0], $_[1]) },
     },
     # 2 chars
     {   '->' => sub { Perlito5::Expression->term_arrow($_[0], $_[1]) },
+        'my' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
+    },
+    # 3 chars
+    {   'our' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
+    },
+    # 4 chars
+    {
+    },
+    # 5 chars
+    {   'state' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
     },
 );
 
@@ -78,11 +91,11 @@ sub op_parse {
     my $pos  = shift;
 
     for my $tok ( @{$End_token} ) {
-        my $l = length($tok);
-        my $s = substr($str, $pos, $l);
+        my $len = length($tok);
+        my $s = substr($str, $pos, $len);
         if ($s eq $tok) {
-            my $c1 = substr($str, $pos+$l-1, 1);
-            my $c2 = substr($str, $pos+$l, 1);
+            my $c1 = substr($str, $pos+$len-1, 1);
+            my $c2 = substr($str, $pos+$len, 1);
             if (!(is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ))) {
                 # it looks like an end token, and it is not one of these cases:
                 #   if_more
@@ -101,8 +114,15 @@ sub op_parse {
     for my $len ( @Term_chars ) {
         my $term = substr($str, $pos, $len);
         if (exists($Term[$len]{$term})) {
-            my $m = $Term[$len]{$term}->($str, $pos);
-            return $m if $m->{"bool"};
+            # my $c1 = substr($str, $pos+$len-1, 1);
+            # my $c2 = substr($str, $pos+$len, 1);
+            # if (!(is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ))) {
+            #     # it looks like a token, and it is not one of these cases:
+            #     #   if_more
+            #     #   if(...)
+                my $m = $Term[$len]{$term}->($str, $pos);
+                return $m if $m->{"bool"};
+            # }
         }
     }
 
