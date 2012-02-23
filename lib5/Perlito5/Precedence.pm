@@ -126,6 +126,9 @@ sub is_ident_middle {
     ($a{chr(34)} = sub  {
     Perlito5::Expression->term_quote($_[0], $_[1])
 });
+    ($a{chr(35)} = sub  {
+    Perlito5::Expression->term_space($_[0], $_[1])
+});
     ($a{chr(9)} = sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
 });

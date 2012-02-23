@@ -4842,6 +4842,20 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 		}
 	}
 }); })();
+	(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[String.fromCharCode(35)]  = function () {
+	var List__ = Array.prototype.slice.call(arguments);
+	try {
+		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
+	}
+	catch(err) {
+		if ( err instanceof Error ) {
+			throw(err);
+		}
+		else {
+			return(err);
+		}
+	}
+}); })();
 	(function () { if (Hash_a == null) { Hash_a = {} }; return (Hash_a[v__NAMESPACE.chr(9)]  = function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
@@ -8328,32 +8342,7 @@ make_sub(__PACKAGE__, "operator", function () {
 })()); }));
 })()), function () { return ((function () {
 	(function () { if (v_MATCH == null) { v_MATCH = new HashRef({}) }; return (v_MATCH._hash_[('to')]  = v_pos1); })();
-	return((and(and(and(((function () {
-	var v_tmp = null;
-
-	(v_tmp = v_MATCH);
-	(v_MATCH = CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_tmp._hash_[('to')],'to', v_tmp._hash_[('to')],'bool', 1));
-	(function () { if (v_MATCH == null) { v_MATCH = new HashRef({}) }; return (v_MATCH._hash_[('bool')]  = ((function () {
-	var v_pos1 = null;
-
-	(v_pos1 = v_MATCH._hash_[('to')]);
-	return(((function () {
-	var v_m2 = null;
-
-	(v_m2 = CLASS["Perlito5::Grammar"]._class_.word(CLASS["Perlito5::Grammar"],v_str,v_MATCH._hash_[('to')]));
-	if ( bool((v_m2._hash_[('bool')])) ) { return (function () {
-		(function () { if (v_MATCH == null) { v_MATCH = new HashRef({}) }; return (v_MATCH._hash_[('to')]  = v_m2._hash_[('to')]); })();
-		return(1);
-	})(); }
-	else { return (function () {
-		return(0);
-	})(); };
-})()));
-})())); })();
-	(function () { if (v_tmp == null) { v_tmp = new HashRef({}) }; return (v_tmp._hash_[('bool')]  = ( bool(v_MATCH._hash_[('bool')]) ? 1 : 0)); })();
-	(v_MATCH = v_tmp);
-	return(( bool(v_MATCH._hash_[('bool')]) ? 1 : 0));
-})()), function () { return ((function () {
+	return((and(and(((function () {
 	var v_m2 = null;
 
 	(v_m2 = CLASS["Perlito5::Grammar"]._class_.optional_namespace_before_ident(CLASS["Perlito5::Grammar"],v_str,v_MATCH._hash_[('to')]));
@@ -8365,7 +8354,7 @@ make_sub(__PACKAGE__, "operator", function () {
 	else { return (function () {
 		return(0);
 	})(); };
-})()); }), function () { return ((function () {
+})()), function () { return ((function () {
 	var v_m2 = null;
 
 	(v_m2 = CLASS["Perlito5::Grammar"]._class_.ident(CLASS["Perlito5::Grammar"],v_str,v_MATCH._hash_[('to')]));

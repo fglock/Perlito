@@ -70,6 +70,7 @@ my @Term = (
         "'"  => sub { Perlito5::Expression->term_quote($_[0], $_[1]) },
         '"'  => sub { Perlito5::Expression->term_quote($_[0], $_[1]) },
 
+        '#'     => sub { Perlito5::Expression->term_space($_[0], $_[1]) }, 
         chr(9)  => sub { Perlito5::Expression->term_space($_[0], $_[1]) }, 
         chr(10) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },
         chr(12) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },

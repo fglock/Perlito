@@ -484,8 +484,8 @@ package Perlito5::Expression;
     token operator {
         | <Perlito5::Precedence.op_parse>              { $MATCH->{"capture"} = $MATCH->{"Perlito5::Precedence.op_parse"}->flat()             }
 
-        | <before <.Perlito5::Grammar.word> >
-          <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
+          # other identifiers, barewords
+        | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
 
           [
             <before <.Perlito5::Grammar.ws>? '=>' >   # autoquote
