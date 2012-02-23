@@ -442,28 +442,39 @@ package Perlito5::Expression;
             { $MATCH->{"capture"} = [ 'term', Decl->new( decl => $MATCH->{"Perlito5::Grammar.declarator"}->flat(), type => $MATCH->{"Perlito5::Grammar.opt_type"}->flat(), var => $MATCH->{"Perlito5::Grammar.var_ident"}->flat() ) ] }
     }
 
-    token operator {
-        | 'sub' <.Perlito5::Grammar.ws> <Perlito5::Grammar.sub_def>
+    token term_sub {
+        'sub' <.Perlito5::Grammar.ws> <Perlito5::Grammar.sub_def>
                     { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.sub_def"}->flat()     ] }
+    }
 
-        # XXX Perl6
-        | 'token' <.Perlito5::Grammar.ws> <Perlito5::Grammar.token>
+    # XXX Perl6
+    token term_token {
+        'token' <.Perlito5::Grammar.ws> <Perlito5::Grammar.token>
                     { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.token"}->flat()       ] }
-        | 'do' <.Perlito5::Grammar.ws> <statement_parse>
+    }
+
+    token term_do {
+        'do' <.Perlito5::Grammar.ws> <statement_parse>
                     { $MATCH->{"capture"} = [ 'term', Do->new( block => $MATCH->{"statement_parse"}->flat() ) ] }
+    }
 
-        | <Perlito5::Precedence.op_parse>              { $MATCH->{"capture"} = $MATCH->{"Perlito5::Precedence.op_parse"}->flat()             }
-
-        | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
+    token term_use {
+        'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
             { $MATCH->{"capture"} = [ 'term', Use->new( mod => $MATCH->{"Perlito5::Grammar.full_ident"}->flat() ) ] }
+    }
 
-        | 'package' <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
+    token term_package {
+        'package' <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
             { $MATCH->{"capture"} = [ 'term',
                      Apply->new(
                         code => 'package', arguments => [], namespace => $MATCH->{"Perlito5::Grammar.full_ident"}->flat() 
                      )
                    ]
             }
+    }
+
+    token operator {
+        | <Perlito5::Precedence.op_parse>              { $MATCH->{"capture"} = $MATCH->{"Perlito5::Precedence.op_parse"}->flat()             }
 
         | <before <.Perlito5::Grammar.word> >
           <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>

@@ -40,7 +40,7 @@ sub is_ident_middle {
     || ($c eq '_')
 }
 
-my @Term_chars = (5, 4, 3, 2, 1);
+my @Term_chars = (7, 5, 3, 2, 1);
 my @Term = (
     # 0 chars
     {},
@@ -70,15 +70,23 @@ my @Term = (
     # 2 chars
     {   '->' => sub { Perlito5::Expression->term_arrow($_[0], $_[1]) },
         'my' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
+        'do' => sub { Perlito5::Expression->term_do($_[0], $_[1]) },
     },
     # 3 chars
     {   'our' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
+        'sub' => sub { Perlito5::Expression->term_sub($_[0], $_[1]) },
+        'use' => sub { Perlito5::Expression->term_use($_[0], $_[1]) },
     },
     # 4 chars
-    {
-    },
+    {},
     # 5 chars
     {   'state' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
+        'token' => sub { Perlito5::Expression->term_token($_[0], $_[1]) },
+    },
+    # 6 chars
+    {},
+    # 7 chars
+    {   'package' => sub { Perlito5::Expression->term_package($_[0], $_[1]) },
     },
 );
 

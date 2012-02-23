@@ -57,7 +57,7 @@ sub is_ident_middle {
     ((my  $c) = shift());
     ((((($c ge 'a') && ($c le 'z'))) || ((($c ge '0') && ($c le '9')))) || (($c eq '_')))
 };
-((my  @Term_chars) = (5, 4, 3, 2, 1));
+((my  @Term_chars) = (7, 5, 3, 2, 1));
 ((my  @Term) = ((do {
     (my  %a);
     \%a
@@ -129,11 +129,20 @@ sub is_ident_middle {
     ($a{'my'} = sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
 });
+    ($a{'do'} = sub  {
+    Perlito5::Expression->term_do($_[0], $_[1])
+});
     \%a
 }), (do {
     (my  %a);
     ($a{'our'} = sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
+});
+    ($a{'sub'} = sub  {
+    Perlito5::Expression->term_sub($_[0], $_[1])
+});
+    ($a{'use'} = sub  {
+    Perlito5::Expression->term_use($_[0], $_[1])
 });
     \%a
 }), (do {
@@ -143,6 +152,18 @@ sub is_ident_middle {
     (my  %a);
     ($a{'state'} = sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
+});
+    ($a{'token'} = sub  {
+    Perlito5::Expression->term_token($_[0], $_[1])
+});
+    \%a
+}), (do {
+    (my  %a);
+    \%a
+}), (do {
+    (my  %a);
+    ($a{'package'} = sub  {
+    Perlito5::Expression->term_package($_[0], $_[1])
 });
     \%a
 })));
