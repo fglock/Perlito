@@ -180,10 +180,7 @@ package CompUnit;
         }
 
         my $class_name = $self->{"name"};
-        my $str = 'make_package("' . $class_name . '");' . "\n"
-            . '(function () {' . "\n"
-            . '  var __PACKAGE__ = "' . $class_name . '";' . "\n"
-            . '  var v__NAMESPACE = NAMESPACE[__PACKAGE__];' . "\n";
+        my $str = 'package ' . $class_name . ';' . "\n";
 
         for my $decl ( @body ) {
             if ($decl->isa( 'Decl' ) && ( $decl->decl eq 'my' )) {
@@ -210,8 +207,7 @@ package CompUnit;
                 $str = $str . ($decl)->emit_perl6_indented( $level + 1 ) . ";\n";
             }
         }
-        $str = $str . '}'
-            . ')()' . "\n";
+        $str . "\n";
     }
     sub emit_perl6_program {
         my $comp_units = shift;

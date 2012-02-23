@@ -165,7 +165,7 @@ package CompUnit;
             }
         };
         ((my  $class_name) = $self->{('name')});
-        ((my  $str) = ('make_package(' . chr(34) . $class_name . chr(34) . ')' . chr(59) . (chr(10)) . '(function () ' . chr(123) . (chr(10)) . '  var __PACKAGE__ ' . chr(61) . ' ' . chr(34) . $class_name . chr(34) . chr(59) . (chr(10)) . '  var v__NAMESPACE ' . chr(61) . ' NAMESPACE[__PACKAGE__]' . chr(59) . (chr(10))));
+        ((my  $str) = ('package ' . $class_name . chr(59) . (chr(10))));
         for my $decl (@body) {
             if ((($decl->isa('Decl') && (($decl->decl() eq 'my'))))) {
                 ($str = ($str . '  ' . $decl->emit_perl6_init()))
@@ -187,7 +187,7 @@ package CompUnit;
                 ($str = ($str . ($decl)->emit_perl6_indented(($level + 1)) . (chr(59) . chr(10))))
             }
         };
-        ($str = ($str . chr(125) . ')()' . (chr(10))))
+        ($str . (chr(10)))
     };
     sub emit_perl6_program {
         ((my  $comp_units) = shift());
