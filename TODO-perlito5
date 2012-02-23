@@ -63,6 +63,7 @@ TODO list for Perlito5
 -- bug: packages currently create lexical blocks
 
 -- bug: "my" variables are block-wide; this doesn't work as expected: my $v = $v
+   possible fix: rename variables
 
 -- bug: variable aliases create copies instead
 
@@ -73,7 +74,7 @@ TODO list for Perlito5
 
 -- add symbol tables for scalar, array and hash
 
--- string increment and ranges
+-- string increment and string ranges
 
 
 * Python backend
@@ -95,6 +96,7 @@ TODO list for Perlito5
 
 -- run perltidy on the source code
 
+-- proper "use strict" and "use warnings"
 -- use the same error messages and warnings as 'perl'
 
 -- __PACKAGE__,  __END__
@@ -104,6 +106,7 @@ TODO list for Perlito5
 -- finish "overload" implementation
 
 -- source code - remove Perl 6 code such as "token"
+   (fixed: This is only loaded if the grammar compiler is needed)
 
 -- here-docs
 

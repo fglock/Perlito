@@ -2,6 +2,8 @@ Dev  2012-02-14
 
 Perlito Perl 5:
 - parser optimizations
+- it is now possible to add new words to the grammar from inside perl5 modules
+-- moved the non-standard "token" grammar to a module
 
 - perl5 backend:
 -- use native data structures and ops

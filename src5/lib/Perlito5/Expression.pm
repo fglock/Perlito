@@ -895,18 +895,12 @@ Perlito5::Expression - Parser and AST generator for Perlito
 
 =head1 DESCRIPTION
 
-This module parses source code for Perl 6 statements and generates Perlito AST.
+This module parses source code for Perl 5 statements and generates Perlito5 AST.
 
 =head1 AUTHORS
 
 Flavio Soibelmann Glock <fglock@gmail.com>.
 The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
-
-=head1 SEE ALSO
-
-The Perl 6 homepage at L<http://dev.perl.org/perl6>.
-
-The Pugs homepage at L<http://pugscode.org/>.
 
 =head1 COPYRIGHT
 

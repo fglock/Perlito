@@ -3,7 +3,10 @@ package Perlito5::Grammar::Regex;
 use Perlito5::Precedence;
 
 
-# register the "token" keyword - XXX Perl6
+# Register the "token" keyword
+#
+# This is not a Perl5 word, but Perl6 - but it is useful inside the grammar compiler
+
 
 token token {
     <Perlito5::Grammar.opt_name>  <.Perlito5::Grammar.opt_ws> \{
@@ -37,7 +40,7 @@ token term_token {
 Perlito5::Precedence::add_term( 'token', sub { Perlito5::Grammar::Regex->term_token($_[0], $_[1]) } );
 
 
-# "grammar grammar"
+# this is the "grammar grammar"
 
 
 token ws {  <.Perlito5::Grammar.ws>  }
@@ -199,12 +202,14 @@ Perlito5::Grammar::Regex - Grammar for Perlito Grammar
 
 =head1 SYNOPSIS
 
-    my $match = $source.rule;
+    my $match = Perlito5::Grammar::Regex->rule( $source, $pos );
     $match->flat();    # generated Regex AST
 
 =head1 DESCRIPTION
 
 This module generates a syntax tree for the Regex compiler.
+
+This is not useful during runtime, and this module should never be loaded in the compiled programs.
 
 =head1 AUTHORS
 
@@ -214,8 +219,6 @@ The Pugs Team E<lt>perl6-compiler@perl.orgE<gt>.
 =head1 SEE ALSO
 
 The Perl 6 homepage at L<http://dev.perl.org/perl6>.
-
-The Pugs homepage at L<http://pugscode.org/>.
 
 =head1 COPYRIGHT
 
