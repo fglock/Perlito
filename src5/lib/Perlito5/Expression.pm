@@ -363,7 +363,7 @@ package Perlito5::Expression;
         }
     };
 
-    token arrow {
+    token term_arrow {
         '->' <.Perlito5::Grammar.opt_ws>
             [
             | '(' <paren_parse>   ')'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.( )',  $MATCH->{"paren_parse"}->flat()   ] }
@@ -390,9 +390,8 @@ package Perlito5::Expression;
             ]
     }
 
-    token operator {
-
-        | <Perlito5::Grammar.var_sigil>
+    token term_sigil {
+        <Perlito5::Grammar.var_sigil>
             [ '{' <curly_parse>   '}'
                     { $MATCH->{"capture"} = [ 'term',  
                             Apply->new( 
@@ -412,7 +411,20 @@ package Perlito5::Expression;
                         ]
                     }
             ]
+    }
 
+    token term_digit {
+          <Perlito5::Grammar.val_num>    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.val_num"}->flat() ]  }  # 123.456
+        | <Perlito5::Grammar.val_int>    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.val_int"}->flat() ]  }  # 123
+    }
+
+    token term_ternary {
+        '?'  <ternary5_parse> ':'
+                    { $MATCH->{"capture"} = [ 'op',          '?? !!', $MATCH->{"ternary5_parse"}->flat()  ] }
+    }
+
+    token operator {
+    
         | '('  <paren_parse>   ')'      { $MATCH->{"capture"} = [ 'postfix_or_term',  '( )',   $MATCH->{"paren_parse"}->flat()   ] }
         | '['  <square_parse>  ']'      { $MATCH->{"capture"} = [ 'postfix_or_term',  '[ ]',   $MATCH->{"square_parse"}->flat()  ] }
 
@@ -428,8 +440,6 @@ package Perlito5::Expression;
         | 'do' <.Perlito5::Grammar.ws> <statement_parse>
                     { $MATCH->{"capture"} = [ 'term', Do->new( block => $MATCH->{"statement_parse"}->flat() ) ] }
 
-        | '?'  <ternary5_parse> ':'
-                    { $MATCH->{"capture"} = [ 'op',          '?? !!', $MATCH->{"ternary5_parse"}->flat()  ] }
         | <Perlito5::Precedence.op_parse>              { $MATCH->{"capture"} = $MATCH->{"Perlito5::Precedence.op_parse"}->flat()             }
 
         | 'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
@@ -445,11 +455,6 @@ package Perlito5::Expression;
 
         | <Perlito5::Grammar.declarator> <.Perlito5::Grammar.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
             { $MATCH->{"capture"} = [ 'term', Decl->new( decl => $MATCH->{"Perlito5::Grammar.declarator"}->flat(), type => $MATCH->{"Perlito5::Grammar.opt_type"}->flat(), var => $MATCH->{"Perlito5::Grammar.var_ident"}->flat() ) ] }
-
-        | <before <.Perlito5::Grammar.digit> >
-            [ <Perlito5::Grammar.val_num>    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.val_num"}->flat() ]  }  # 123.456
-            | <Perlito5::Grammar.val_int>    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.val_int"}->flat() ]  }  # 123
-            ]
 
         | <before <.Perlito5::Grammar.word> >
           <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>

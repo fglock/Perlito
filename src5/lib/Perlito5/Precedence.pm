@@ -40,15 +40,33 @@ sub is_ident_middle {
     || ($c eq '_')
 }
 
-my @Term_chars = (2);
+my @Term_chars = (2, 1);
 my @Term = (
     # 0 chars
     {},
     # 1 char
-    {},
+    {   '$'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
+        '@'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
+        '%'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
+        '&'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
+        '*'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
+
+        '0'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
+        '1'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
+        '2'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
+        '3'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
+        '4'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
+        '5'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
+        '6'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
+        '7'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
+        '8'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
+        '9'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
+
+        '?'  => sub { Perlito5::Expression->term_ternary($_[0], $_[1]) },
+    },
     # 2 chars
-    {   '->' => sub { Perlito5::Expression->arrow($_[0], $_[1]) },
-    }
+    {   '->' => sub { Perlito5::Expression->term_arrow($_[0], $_[1]) },
+    },
 );
 
 my @Op;

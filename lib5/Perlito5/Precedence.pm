@@ -57,17 +57,65 @@ sub is_ident_middle {
     ((my  $c) = shift());
     ((((($c ge 'a') && ($c le 'z'))) || ((($c ge '0') && ($c le '9')))) || (($c eq '_')))
 };
-((my  @Term_chars) = (2));
+((my  @Term_chars) = (2, 1));
 ((my  @Term) = ((do {
     (my  %a);
     \%a
 }), (do {
     (my  %a);
+    ($a{chr(36)} = sub  {
+    Perlito5::Expression->term_sigil($_[0], $_[1])
+});
+    ($a{chr(64)} = sub  {
+    Perlito5::Expression->term_sigil($_[0], $_[1])
+});
+    ($a{chr(37)} = sub  {
+    Perlito5::Expression->term_sigil($_[0], $_[1])
+});
+    ($a{chr(38)} = sub  {
+    Perlito5::Expression->term_sigil($_[0], $_[1])
+});
+    ($a{'*'} = sub  {
+    Perlito5::Expression->term_sigil($_[0], $_[1])
+});
+    ($a{'0'} = sub  {
+    Perlito5::Expression->term_digit($_[0], $_[1])
+});
+    ($a{'1'} = sub  {
+    Perlito5::Expression->term_digit($_[0], $_[1])
+});
+    ($a{'2'} = sub  {
+    Perlito5::Expression->term_digit($_[0], $_[1])
+});
+    ($a{'3'} = sub  {
+    Perlito5::Expression->term_digit($_[0], $_[1])
+});
+    ($a{'4'} = sub  {
+    Perlito5::Expression->term_digit($_[0], $_[1])
+});
+    ($a{'5'} = sub  {
+    Perlito5::Expression->term_digit($_[0], $_[1])
+});
+    ($a{'6'} = sub  {
+    Perlito5::Expression->term_digit($_[0], $_[1])
+});
+    ($a{'7'} = sub  {
+    Perlito5::Expression->term_digit($_[0], $_[1])
+});
+    ($a{'8'} = sub  {
+    Perlito5::Expression->term_digit($_[0], $_[1])
+});
+    ($a{'9'} = sub  {
+    Perlito5::Expression->term_digit($_[0], $_[1])
+});
+    ($a{chr(63)} = sub  {
+    Perlito5::Expression->term_ternary($_[0], $_[1])
+});
     \%a
 }), (do {
     (my  %a);
     ($a{'->'} = sub  {
-    Perlito5::Expression->arrow($_[0], $_[1])
+    Perlito5::Expression->term_arrow($_[0], $_[1])
 });
     \%a
 })));
