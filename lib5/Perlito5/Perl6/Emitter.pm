@@ -32,14 +32,14 @@ package Perl6;
                 if (($tmp ne '')) {
                     push(@out, (chr(39) . $tmp . chr(39)) )
                 };
-                push(@out, ('String.fromCharCode(' . ord($c) . (')')) );
+                push(@out, ('chr(' . ord($c) . (')')) );
                 ($tmp = '')
             }
         };
         if (($tmp ne '')) {
             push(@out, (chr(39) . $tmp . chr(39)) )
         };
-        return (join(' + ', @out))
+        return (join(' ' . chr(126) . ' ', @out))
     };
     sub to_str {
         ((my  $cond) = shift());
@@ -47,7 +47,7 @@ package Perl6;
             return ($cond->emit_perl6())
         }
         else {
-            return (('string(' . $cond->emit_perl6() . ')'))
+            return (('(' . $cond->emit_perl6() . ')'))
         }
     };
     sub to_num {
@@ -56,7 +56,7 @@ package Perl6;
             return ($cond->emit_perl6())
         }
         else {
-            return (('num(' . $cond->emit_perl6() . ')'))
+            return (('(' . $cond->emit_perl6() . ')'))
         }
     };
     sub to_bool {
@@ -65,7 +65,7 @@ package Perl6;
             return ($cond->emit_perl6())
         }
         else {
-            return (('bool(' . $cond->emit_perl6() . ')'))
+            return (('(' . $cond->emit_perl6() . ')'))
         }
     }
 });
@@ -302,14 +302,6 @@ package Lookup;
 });
 package Var;
 (do {
-    ((my  $table) = (do {
-    (my  %a);
-    ($a{chr(36)} = 'v_');
-    ($a{chr(64)} = 'List_');
-    ($a{chr(37)} = 'Hash_');
-    ($a{chr(38)} = 'Code_');
-    \%a
-}));
     sub emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
@@ -325,9 +317,9 @@ package Var;
         };
         ((my  $ns) = '');
         if (($self->{('namespace')})) {
-            ($ns = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . '].'))
+            ($ns = ($self->{('namespace')} . '::'))
         };
-        ($ns . $table->{$self->{('sigil')}} . $self->{('name')})
+        ($ns . $self->{('sigil')} . $self->{('name')})
     };
     sub plain_name {
         ((my  $self) = shift());
@@ -380,7 +372,7 @@ package Call;
 });
 package Apply;
 (do {
-    ((my  %op_infix_js) = (('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:<' . chr(47) . '>' => ' ' . chr(47) . ' '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>' . chr(61) . '>' => ' >' . chr(61) . ' '), ('infix:<<' . chr(61) . '>' => ' <' . chr(61) . ' '), ('infix:<eq>' => ' ' . chr(61) . chr(61) . ' '), ('infix:<ne>' => ' ' . chr(33) . chr(61) . ' '), ('infix:<le>' => ' <' . chr(61) . ' '), ('infix:<ge>' => ' >' . chr(61) . ' '), ('infix:<' . chr(61) . chr(61) . '>' => ' ' . chr(61) . chr(61) . ' '), ('infix:<' . chr(33) . chr(61) . '>' => ' ' . chr(33) . chr(61) . ' ')));
+    ((my  %op_infix_js) = (('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:<x>' => ' x '), ('infix:<+>' => ' + '), ('infix:<.>' => ' ' . chr(126) . ' '), ('infix:<' . chr(47) . '>' => ' ' . chr(47) . ' '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>' . chr(61) . '>' => ' >' . chr(61) . ' '), ('infix:<<' . chr(61) . '>' => ' <' . chr(61) . ' '), ('infix:<eq>' => ' eq '), ('infix:<ne>' => ' ne '), ('infix:<le>' => ' le '), ('infix:<ge>' => ' ge '), ('infix:<' . chr(61) . chr(61) . '>' => ' ' . chr(61) . chr(61) . ' '), ('infix:<' . chr(33) . chr(61) . '>' => ' ' . chr(33) . chr(61) . ' '), ('infix:<..>' => ' .. '), ('infix:<' . chr(38) . chr(38) . '>' => ' ' . chr(38) . chr(38) . ' '), ('infix:<' . chr(124) . chr(124) . '>' => ' ' . chr(124) . chr(124) . ' '), ('infix:<and>' => ' and '), ('infix:<or>' => ' or '), ('infix:<' . chr(47) . chr(47) . '>' => ' ' . chr(47) . chr(47) . ' ')));
     sub emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
@@ -409,16 +401,7 @@ package Apply;
             return (('eval(perl5_to_js(' . Perl6::to_str($self->{('arguments')}->[0]) . '))'))
         };
         if ((($code eq 'undef'))) {
-            return ((Perl6::tab($level) . 'null'))
-        };
-        if ((($code eq 'defined'))) {
-            return ((Perl6::tab($level) . '(' . join(' ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ' ' . chr(33) . chr(61) . ' null)'))
-        };
-        if ((($code eq 'shift'))) {
-            if ((($self->{('arguments')} && @{$self->{('arguments')}}))) {
-                return (('v__NAMESPACE.shift(' . join(', ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')'))
-            };
-            return ('v__NAMESPACE.shift(List__)')
+            return ((Perl6::tab($level) . 'Any'))
         };
         if ((($code eq 'map'))) {
             ((my  $fun) = $self->{('arguments')}->[0]);
@@ -426,7 +409,7 @@ package Apply;
             return (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'var v__ ' . chr(61) . ' a_[i]' . chr(59) . ' ' . 'out.push(' . $fun->emit_perl6() . ')' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . ')(' . $list->emit_perl6() . ')'))
         };
         if ((($code eq 'prefix:<' . chr(33) . '>'))) {
-            return (('( ' . Perl6::to_bool($self->{('arguments')}->[0]) . ' ' . chr(63) . ' false : true)'))
+            return ((chr(33) . '( ' . Perl6::to_bool($self->{('arguments')}->[0]) . ')'))
         };
         if ((($code eq 'prefix:<' . chr(36) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
@@ -466,29 +449,8 @@ package Apply;
         if ((($code eq 'prefix:<-->'))) {
             return (('--(' . join(' ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')'))
         };
-        if ((($code eq 'infix:<x>'))) {
-            return (('str_replicate(' . join(', ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')'))
-        };
-        if ((($code eq 'list:<.>'))) {
-            return (('(' . join(' + ', map(Perl6::to_str($_), @{$self->{('arguments')}})) . ')'))
-        };
-        if ((($code eq 'infix:<+>'))) {
-            return (('add' . '(' . join(', ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')'))
-        };
         if ((($code eq 'prefix:<+>'))) {
-            return (('(' . $self->{('arguments')}->[0]->emit_perl6() . ')'))
-        };
-        if ((($code eq 'infix:<..>'))) {
-            return (('(function (a) ' . chr(123) . ' ' . 'for (var i' . chr(61) . $self->{('arguments')}->[0]->emit_perl6() . ', l' . chr(61) . $self->{('arguments')}->[1]->emit_perl6() . chr(59) . ' ' . 'i<' . chr(61) . 'l' . chr(59) . ' ++i)' . chr(123) . ' ' . 'a.push(i) ' . chr(125) . chr(59) . ' ' . 'return a ' . chr(125) . ')([])'))
-        };
-        if ((($code eq 'infix:<' . chr(38) . chr(38) . '>') || ($code eq 'infix:<and>'))) {
-            return (('and' . '(' . $self->{('arguments')}->[0]->emit_perl6() . ', ' . 'function () ' . chr(123) . ' return ' . $self->{('arguments')}->[1]->emit_perl6() . chr(59) . ' ' . chr(125) . ')'))
-        };
-        if ((($code eq 'infix:<' . chr(124) . chr(124) . '>') || ($code eq 'infix:<or>'))) {
-            return (('or' . '(' . $self->{('arguments')}->[0]->emit_perl6() . ', ' . 'function () ' . chr(123) . ' return ' . $self->{('arguments')}->[1]->emit_perl6() . chr(59) . ' ' . chr(125) . ')'))
-        };
-        if ((($code eq 'infix:<' . chr(47) . chr(47) . '>'))) {
-            return ((('defined_or') . '(' . $self->{('arguments')}->[0]->emit_perl6() . ', ' . 'function () ' . chr(123) . ' return ' . $self->{('arguments')}->[1]->emit_perl6() . chr(59) . ' ' . chr(125) . ')'))
+            return (('+(' . $self->{('arguments')}->[0]->emit_perl6() . ')'))
         };
         if ((($code eq 'exists'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
@@ -527,10 +489,7 @@ package Apply;
                     die(('Perl6::inline needs a string constant'))
                 }
             };
-            ($code = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . '].' . ($code)))
-        }
-        else {
-            ($code = ('v__NAMESPACE.' . $code))
+            ($code = ($self->{('namespace')} . '::' . ($code)))
         };
         ((my  @args) = ());
         for (@{$self->{('arguments')}}) {
@@ -692,25 +651,7 @@ package Decl;
     };
     sub emit_perl6_init {
         ((my  $self) = shift());
-        if ((($self->{('decl')} eq 'my'))) {
-            ((my  $str) = '');
-            ($str = ($str . 'var ' . ($self->{('var')})->emit_perl6() . ' ' . chr(61) . ' '));
-            if ((($self->{('var')})->sigil() eq chr(37))) {
-                ($str = ($str . chr(123) . chr(125) . chr(59) . (chr(10))))
-            }
-            else {
-                if ((($self->{('var')})->sigil() eq chr(64))) {
-                    ($str = ($str . '[]' . chr(59) . (chr(10))))
-                }
-                else {
-                    ($str = ($str . 'null' . chr(59) . (chr(10))))
-                }
-            };
-            return ($str)
-        }
-        else {
-            die(('not implemented: Decl ' . chr(39) . $self->{('decl')} . (chr(39))))
-        }
+        ($self->{('decl')} . ' ' . ($self->{('var')})->emit_perl6() . chr(59))
     }
 });
 package Sub;

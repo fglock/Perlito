@@ -52,12 +52,12 @@ package Perl6;
             }
             else {
                 push @out, "'$tmp'" if $tmp ne '';
-                push @out, "String.fromCharCode(" . ord($c) . ")";
+                push @out, "chr(" . ord($c) . ")";
                 $tmp = '';
             }
         }
         push @out, "'$tmp'" if $tmp ne '';
-        return join(' + ', @out);
+        return join(' ~ ', @out);
     }
 
     sub to_str {
@@ -66,7 +66,7 @@ package Perl6;
                 return $cond->emit_perl6;
             }
             else {
-                return 'string(' . $cond->emit_perl6 . ')';
+                return '(' . $cond->emit_perl6 . ')';  # XXX change if needed
             }
     }
     sub to_num {
@@ -75,7 +75,7 @@ package Perl6;
                 return $cond->emit_perl6;
             }
             else {
-                return 'num(' . $cond->emit_perl6 . ')';
+                return '(' . $cond->emit_perl6 . ')';   # XXX change if needed
             }
     }
     sub to_bool {
@@ -90,7 +90,7 @@ package Perl6;
                 return $cond->emit_perl6;
             }
             else {
-                return 'bool(' . $cond->emit_perl6 . ')';
+                return '(' . $cond->emit_perl6 . ')';  # XXX change if needed
             }
     }
 
@@ -323,13 +323,6 @@ package Lookup;
 
 package Var;
 {
-    my $table = {
-        '$' => 'v_',
-        '@' => 'List_',
-        '%' => 'Hash_',
-        '&' => 'Code_',
-    }
-
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
         my $self = shift;
@@ -345,9 +338,9 @@ package Var;
 
         my $ns = '';
         if ($self->{"namespace"}) {
-            $ns = 'NAMESPACE["' . $self->{"namespace"} . '"].';
+            $ns = $self->{"namespace"} . '::';
         }
-        $ns . $table->{$self->{"sigil"}} . $self->{"name"}
+        $ns . $self->{"sigil"} . $self->{"name"}
     }
     sub plain_name {
         my $self = shift;
@@ -403,19 +396,28 @@ package Apply;
     my %op_infix_js = (
         'infix:<->'  => ' - ',
         'infix:<*>'  => ' * ',
+        'infix:<x>'  => ' x ',
+        'infix:<+>'  => ' + ',
+        'infix:<.>'  => ' ~ ',
         'infix:</>'  => ' / ',
         'infix:<>>'  => ' > ',
         'infix:<<>'  => ' < ',
         'infix:<>=>' => ' >= ',
         'infix:<<=>' => ' <= ',
 
-        'infix:<eq>' => ' == ',
-        'infix:<ne>' => ' != ',
-        'infix:<le>' => ' <= ',
-        'infix:<ge>' => ' >= ',
+        'infix:<eq>' => ' eq ',
+        'infix:<ne>' => ' ne ',
+        'infix:<le>' => ' le ',
+        'infix:<ge>' => ' ge ',
 
         'infix:<==>' => ' == ',
         'infix:<!=>' => ' != ',
+        'infix:<..>' => ' .. ',
+        'infix:<&&>' => ' && ',
+        'infix:<||>' => ' || ',
+        'infix:<and>' => ' and ',
+        'infix:<or>' => ' or ',
+        'infix:<//>' => ' // ',
     );
 
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
@@ -452,15 +454,14 @@ package Apply;
                 . '))'
         }
 
-        if ($code eq 'undef')      { return Perl6::tab($level) . 'null' }
-        if ($code eq 'defined')    { return Perl6::tab($level) . '('  . join(' ', map( $_->emit_perl6, @{$self->{"arguments"}} ))    . ' != null)' }
+        if ($code eq 'undef')      { return Perl6::tab($level) . 'Any' }
 
-        if ($code eq 'shift')      {
-            if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return 'v__NAMESPACE.shift(' . join(', ', map( $_->emit_perl6, @{$self->{"arguments"}} )) . ')'
-            }
-            return 'v__NAMESPACE.shift(List__)'
-        }
+        # if ($code eq 'shift')      {
+        #     if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
+        #         return 'v__NAMESPACE.shift(' . join(', ', map( $_->emit_perl6, @{$self->{"arguments"}} )) . ')'
+        #     }
+        #     return 'v__NAMESPACE.shift(List__)'
+        # }
 
         if ($code eq 'map') {
             my $fun  = $self->{"arguments"}->[0];
@@ -478,7 +479,7 @@ package Apply;
         }
 
         if ( $code eq 'prefix:<!>' ) {
-            return '( ' . Perl6::to_bool( $self->{"arguments"}->[0] ) . ' ? false : true)';
+            return '!( ' . Perl6::to_bool( $self->{"arguments"}->[0] ) . ')';
         }
 
         if ( $code eq 'prefix:<$>' ) {
@@ -516,50 +517,7 @@ package Apply;
         if ($code eq 'prefix:<++>')  { return '++(' . join(' ', map( $_->emit_perl6, @{$self->{"arguments"}} ))  . ')' }
         if ($code eq 'prefix:<-->')  { return '--(' . join(' ', map( $_->emit_perl6, @{$self->{"arguments"}} ))  . ')' }
 
-        if ($code eq 'infix:<x>')  { return 'str_replicate(' . join(', ', map( $_->emit_perl6, @{$self->{"arguments"}} ))  . ')' }
-
-        if ($code eq 'list:<.>')
-        { 
-            return '('  
-                . join( ' + ',
-                        map( Perl6::to_str($_), @{$self->{"arguments"}} )
-                      )
-                . ')' 
-        }
-
-        if ($code eq 'infix:<+>')  { return 'add' . '('  . join(', ', map( $_->emit_perl6, @{$self->{"arguments"}} ))  . ')' }
-        if ($code eq 'prefix:<+>') { return '('  . $self->{"arguments"}->[0]->emit_perl6()  . ')' }
-
-        if ($code eq 'infix:<..>') {
-            return '(function (a) { '
-                    . 'for (var i=' . $self->{"arguments"}->[0]->emit_perl6()
-                           . ', l=' . $self->{"arguments"}->[1]->emit_perl6() . '; '
-                       . 'i<=l; ++i)'
-                    . '{ '
-                        . 'a.push(i) '
-                    . '}; '
-                    . 'return a '
-                . '})([])'
-        }
-
-        if   $code eq 'infix:<&&>'
-          || $code eq 'infix:<and>'
-        {
-            return 'and' . '('
-                . $self->{"arguments"}->[0]->emit_perl6() . ', '
-                . 'function () { return ' . $self->{"arguments"}->[1]->emit_perl6() . '; })'
-        }
-        if   $code eq 'infix:<||>'
-          || $code eq 'infix:<or>'
-        {
-            return 'or' . '('
-                . $self->{"arguments"}->[0]->emit_perl6() . ', '
-                . 'function () { return ' . $self->{"arguments"}->[1]->emit_perl6() . '; })'
-        }
-        if ($code eq 'infix:<//>') { return ('defined_or') . '('
-                . $self->{"arguments"}->[0]->emit_perl6() . ', '
-                . 'function () { return ' . $self->{"arguments"}->[1]->emit_perl6() . '; })'
-        }
+        if ($code eq 'prefix:<+>') { return '+('  . $self->{"arguments"}->[0]->emit_perl6()  . ')' }
 
         if ($code eq 'exists') {
             my $arg = $self->{"arguments"}->[0];
@@ -617,10 +575,7 @@ package Apply;
                 }
             }
 
-            $code = 'NAMESPACE["' . $self->{"namespace"} . '"].' . ( $code );
-        }
-        else {
-            $code = 'v__NAMESPACE.' . $code
+            $code = $self->{"namespace"} . '::' . ( $code );
         }
         my @args = ();
         push @args, $_->emit_perl6
@@ -802,23 +757,7 @@ package Decl;
     }
     sub emit_perl6_init {
         my $self = shift;
-        if ($self->{"decl"} eq 'my') {
-            my $str = "";
-            $str = $str . 'var ' . ($self->{"var"})->emit_perl6() . ' = ';
-            if ($self->{"var"})->sigil eq '%' {
-                $str = $str . '{};' . "\n";
-            }
-            elsif ($self->{"var"})->sigil eq '@' {
-                $str = $str . '[];' . "\n";
-            }
-            else {
-                $str = $str . 'null;' . "\n";
-            }
-            return $str;
-        }
-        else {
-            die "not implemented: Decl '" . $self->{"decl"} . "'";
-        }
+        $self->{"decl"} . ' ' . ($self->{"var"})->emit_perl6() . ';';
     }
 }
 
