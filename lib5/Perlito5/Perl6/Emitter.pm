@@ -472,7 +472,7 @@ package Apply;
             }
         };
         if ((($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>'))) {
-            return ((Perl6::tab($level) . '( ' . Perl6::to_bool($self->{('arguments')}->[0]) . ' ' . chr(63) . ' ' . ($self->{('arguments')}->[1])->emit_perl6() . ' : ' . ($self->{('arguments')}->[2])->emit_perl6() . ')'))
+            return ((Perl6::tab($level) . '( ' . Perl6::to_bool($self->{('arguments')}->[0]) . ' ' . chr(63) . chr(63) . ' ' . ($self->{('arguments')}->[1])->emit_perl6() . ' ' . chr(33) . chr(33) . ' ' . ($self->{('arguments')}->[2])->emit_perl6() . ')'))
         };
         if ((($code eq 'circumfix:<( )>'))) {
             return ((Perl6::tab($level) . '(' . join(', ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')'))

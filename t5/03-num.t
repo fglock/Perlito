@@ -33,7 +33,7 @@ say 'ok 5 # ', ($v * 2);
 print 'not ' if !defined 3.14;
 say 'ok 6 - defined num';
 
-my $v = 3.14;
+$v = 3.14;
 print 'not ' if !defined $v;
 say 'ok 7 - defined var';
 
