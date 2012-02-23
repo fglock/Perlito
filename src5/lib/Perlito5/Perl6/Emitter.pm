@@ -180,7 +180,7 @@ package CompUnit;
         }
 
         my $class_name = $self->{"name"};
-        my $str = 'module ' . $class_name . '{' . "\n";
+        my $str = 'package ' . $class_name . '{' . "\n";
 
         for my $decl ( @body ) {
             if ($decl->isa( 'Decl' ) && ( $decl->decl eq 'my' )) {

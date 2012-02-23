@@ -165,7 +165,7 @@ package CompUnit;
             }
         };
         ((my  $class_name) = $self->{('name')});
-        ((my  $str) = ('module ' . $class_name . chr(123) . (chr(10))));
+        ((my  $str) = ('package ' . $class_name . chr(123) . (chr(10))));
         for my $decl (@body) {
             if ((($decl->isa('Decl') && (($decl->decl() eq 'my'))))) {
                 ($str = ($str . '  ' . $decl->emit_perl6_init()))
