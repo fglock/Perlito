@@ -81,8 +81,11 @@ sub op_parse {
             }
         }
     };
-    if ((substr($str, $pos, 2) eq '->')) {
-        return (Perlito5::Match->new(('bool' => 0)))
+    if (((substr($str, $pos, 2) eq '->'))) {
+        ((my  $m) = Perlito5::Expression->after_arrow($str, ($pos + 2)));
+        if ($m->{('bool')}) {
+            return ($m)
+        }
     };
     for my $len (@Op_chars) {
         ((my  $op) = substr($str, $pos, $len));

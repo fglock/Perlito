@@ -363,30 +363,8 @@ package Perlito5::Expression;
         }
     };
 
-    token operator {
-
-        | <Perlito5::Grammar.var_sigil>
-            [ '{' <curly_parse>   '}'
-                    { $MATCH->{"capture"} = [ 'term',  
-                            Apply->new( 
-                                    'arguments' => [ $MATCH->{"curly_parse"}->flat() ],
-                                    'code'      => 'prefix:<' . $MATCH->{"Perlito5::Grammar.var_sigil"}->flat() . '>', 
-                                    'namespace' => ''
-                                )
-                        ] 
-                    }
-            | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name>
-                    { $MATCH->{"capture"} = [ 'term', 
-                            Var->new(
-                                    sigil       => $MATCH->{"Perlito5::Grammar.var_sigil"}->flat(),
-                                    namespace   => $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
-                                    name        => $MATCH->{"Perlito5::Grammar.var_name"}->flat(),
-                                )
-                        ]
-                    }
-            ]
-
-        | '->' <.Perlito5::Grammar.opt_ws>
+    token after_arrow {
+        <.Perlito5::Grammar.opt_ws>
             [
             | '(' <paren_parse>   ')'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.( )',  $MATCH->{"paren_parse"}->flat()   ] }
             | '[' <square_parse>  ']'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.[ ]',  $MATCH->{"square_parse"}->flat()  ] }
@@ -410,9 +388,33 @@ package Perlito5::Expression;
                   }
                 ]
             ]
+    }
 
-        | '('  <paren_parse>   ')'                      { $MATCH->{"capture"} = [ 'postfix_or_term',  '( )',   $MATCH->{"paren_parse"}->flat()   ] }
-        | '['  <square_parse>  ']'                      { $MATCH->{"capture"} = [ 'postfix_or_term',  '[ ]',   $MATCH->{"square_parse"}->flat()  ] }
+    token operator {
+
+        | <Perlito5::Grammar.var_sigil>
+            [ '{' <curly_parse>   '}'
+                    { $MATCH->{"capture"} = [ 'term',  
+                            Apply->new( 
+                                    'arguments' => [ $MATCH->{"curly_parse"}->flat() ],
+                                    'code'      => 'prefix:<' . $MATCH->{"Perlito5::Grammar.var_sigil"}->flat() . '>', 
+                                    'namespace' => ''
+                                )
+                        ] 
+                    }
+            | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name>
+                    { $MATCH->{"capture"} = [ 'term', 
+                            Var->new(
+                                    sigil       => $MATCH->{"Perlito5::Grammar.var_sigil"}->flat(),
+                                    namespace   => $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
+                                    name        => $MATCH->{"Perlito5::Grammar.var_name"}->flat(),
+                                )
+                        ]
+                    }
+            ]
+
+        | '('  <paren_parse>   ')'      { $MATCH->{"capture"} = [ 'postfix_or_term',  '( )',   $MATCH->{"paren_parse"}->flat()   ] }
+        | '['  <square_parse>  ']'      { $MATCH->{"capture"} = [ 'postfix_or_term',  '[ ]',   $MATCH->{"square_parse"}->flat()  ] }
 
         | '{'  <.Perlito5::Grammar.ws>?
                <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.ws>? '}'
