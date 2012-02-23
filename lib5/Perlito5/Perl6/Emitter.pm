@@ -165,7 +165,7 @@ package CompUnit;
             }
         };
         ((my  $class_name) = $self->{('name')});
-        ((my  $str) = ('package ' . $class_name . chr(59) . (chr(10))));
+        ((my  $str) = ('module ' . $class_name . chr(59) . (chr(10))));
         for my $decl (@body) {
             if ((($decl->isa('Decl') && (($decl->decl() eq 'my'))))) {
                 ($str = ($str . '  ' . $decl->emit_perl6_init()))
@@ -689,7 +689,7 @@ package Use;
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $mod) = $self->{('mod')});
-        if ((($mod eq 'feature') || ($mod eq 'v5'))) {
+        if (((($mod eq 'feature') || ($mod eq 'strict')) || ($mod eq 'v5'))) {
             return ()
         };
         (Perl6::tab($level) . 'use ' . $self->{('mod')} . (chr(59)))

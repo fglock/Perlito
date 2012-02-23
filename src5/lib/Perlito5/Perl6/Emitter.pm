@@ -180,7 +180,7 @@ package CompUnit;
         }
 
         my $class_name = $self->{"name"};
-        my $str = 'package ' . $class_name . ';' . "\n";
+        my $str = 'module ' . $class_name . ';' . "\n";
 
         for my $decl ( @body ) {
             if ($decl->isa( 'Decl' ) && ( $decl->decl eq 'my' )) {
@@ -812,6 +812,7 @@ package Use;
         my $mod = $self->{"mod"};
         return 
             if $mod eq 'feature' 
+            || $mod eq 'strict'
             || $mod eq 'v5';
         Perl6::tab($level) . 'use ' . $self->{"mod"} . ";"
     }
