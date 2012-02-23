@@ -473,6 +473,14 @@ package Perlito5::Expression;
             }
     }
 
+    token term_quote {
+        <Perlito5::Grammar.val_buf>    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.val_buf"}->flat() ]  }  # 'moose'
+    }
+
+    token term_space {
+        <.Perlito5::Grammar.ws>           { $MATCH->{"capture"} = [ 'space',   ' ' ] }
+    }
+
     token operator {
         | <Perlito5::Precedence.op_parse>              { $MATCH->{"capture"} = $MATCH->{"Perlito5::Precedence.op_parse"}->flat()             }
 
@@ -509,9 +517,8 @@ package Perlito5::Expression;
                      $MATCH->{"Perlito5::Grammar.ident"}->flat()                  ] }
           ]
 
-        | <Perlito5::Grammar.val_buf>    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.val_buf"}->flat() ]  }  # 'moose'
-
-        | <.Perlito5::Grammar.ws>                      { $MATCH->{"capture"} = [ 'space',   ' '                             ] }
+          # other space, just in case
+        | <.Perlito5::Grammar.ws>           { $MATCH->{"capture"} = [ 'space',   ' ' ] }
     }
 
     token has_newline_after {

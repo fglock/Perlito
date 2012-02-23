@@ -1128,6 +1128,69 @@ sub term_package {
 }))));
     $MATCH
 };
+sub term_quote {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{('bool')} = (((do {
+    ((my  $pos1) = $MATCH->{('to')});
+    ((do {
+    (((do {
+    ((my  $m2) = Perlito5::Grammar->val_buf($str, $MATCH->{('to')}));
+    if (($m2->{('bool')})) {
+        ($MATCH->{('to')} = $m2->{('to')});
+        ($MATCH->{'Perlito5::Grammar.val_buf'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ($MATCH->{('capture')} = (do {
+    (my  @a);
+    (my  @v);
+    push(@a, 'term' );
+    push(@a, $MATCH->{('Perlito5::Grammar.val_buf')}->flat() );
+    \@a
+}));
+    1
+})))
+}))
+}))));
+    $MATCH
+};
+sub term_space {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{('bool')} = (((do {
+    ((my  $pos1) = $MATCH->{('to')});
+    ((do {
+    (((do {
+    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{('to')}));
+    if (($m2->{('bool')})) {
+        ($MATCH->{('to')} = $m2->{('to')});
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ($MATCH->{('capture')} = (do {
+    (my  @a);
+    (my  @v);
+    push(@a, 'space' );
+    push(@a, ' ' );
+    \@a
+}));
+    1
+})))
+}))
+}))));
+    $MATCH
+};
 sub operator {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -1135,7 +1198,7 @@ sub operator {
     ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
     ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->{('to')});
-    (((((do {
+    ((((do {
     (((do {
     ((my  $m2) = Perlito5::Precedence->op_parse($str, $MATCH->{('to')}));
     if (($m2->{('bool')})) {
@@ -1314,28 +1377,6 @@ sub operator {
     1
 })))
 })))
-}))))
-}))) || ((do {
-    ($MATCH->{('to')} = $pos1);
-    ((((do {
-    ((my  $m2) = Perlito5::Grammar->val_buf($str, $MATCH->{('to')}));
-    if (($m2->{('bool')})) {
-        ($MATCH->{('to')} = $m2->{('to')});
-        ($MATCH->{'Perlito5::Grammar.val_buf'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ($MATCH->{('capture')} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, 'term' );
-    push(@a, $MATCH->{('Perlito5::Grammar.val_buf')}->flat() );
-    \@a
-}));
-    1
 }))))
 }))) || ((do {
     ($MATCH->{('to')} = $pos1);
