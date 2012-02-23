@@ -180,7 +180,7 @@ package CompUnit;
         }
 
         my $class_name = $self->{"name"};
-        my $str = 'module ' . $class_name . ';' . "\n";
+        my $str = 'module ' . $class_name . '{' . "\n";
 
         for my $decl ( @body ) {
             if ($decl->isa( 'Decl' ) && ( $decl->decl eq 'my' )) {
@@ -207,7 +207,7 @@ package CompUnit;
                 $str = $str . ($decl)->emit_perl6_indented( $level + 1 ) . ";\n";
             }
         }
-        $str . "\n";
+        $str . "}\n";
     }
     sub emit_perl6_program {
         my $comp_units = shift;

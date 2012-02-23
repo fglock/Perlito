@@ -165,7 +165,7 @@ package CompUnit;
             }
         };
         ((my  $class_name) = $self->{('name')});
-        ((my  $str) = ('module ' . $class_name . chr(59) . (chr(10))));
+        ((my  $str) = ('module ' . $class_name . chr(123) . (chr(10))));
         for my $decl (@body) {
             if ((($decl->isa('Decl') && (($decl->decl() eq 'my'))))) {
                 ($str = ($str . '  ' . $decl->emit_perl6_init()))
@@ -187,7 +187,7 @@ package CompUnit;
                 ($str = ($str . ($decl)->emit_perl6_indented(($level + 1)) . (chr(59) . chr(10))))
             }
         };
-        ($str . (chr(10)))
+        ($str . (chr(125) . chr(10)))
     };
     sub emit_perl6_program {
         ((my  $comp_units) = shift());
