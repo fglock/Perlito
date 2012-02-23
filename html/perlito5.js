@@ -4231,12 +4231,9 @@ make_sub(__PACKAGE__, "op_parse", function () {
 
 						var v_pos = null;
 
-						var v_from = null;
-
 						(v_self = v__NAMESPACE.shift(List__));
 						(v_str = v__NAMESPACE.shift(List__));
 						(v_pos = v__NAMESPACE.shift(List__));
-						(v_from = v_pos);
 						(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_tok) {
 							var v_l = null;
 
@@ -4252,7 +4249,7 @@ make_sub(__PACKAGE__, "op_parse", function () {
 								(v_c1 = v__NAMESPACE.substr(v_str, (add(v_pos, v_l) - 1), 1));
 								(v_c2 = v__NAMESPACE.substr(v_str, add(v_pos, v_l), 1));
 								if ( bool((( bool((and(v__NAMESPACE.is_ident_middle(v_c1), function () { return (or(v__NAMESPACE.is_ident_middle(v_c2), function () { return (v_c2 == '('); })); }))) ? false : true))) ) { (function () {
-									throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_from,'to', add(v_pos, 2),'bool', 1,'capture', (function () {
+									throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', (function () {
 	var List_a = [];
 
 	var List_v = [];
@@ -4278,7 +4275,7 @@ make_sub(__PACKAGE__, "op_parse", function () {
 								(v_c1 = v__NAMESPACE.substr(v_str, (add(v_pos, v_len) - 1), 1));
 								(v_c2 = v__NAMESPACE.substr(v_str, add(v_pos, v_len), 1));
 								if ( bool((( bool((and(v__NAMESPACE.is_ident_middle(v_c1), function () { return (or(v__NAMESPACE.is_ident_middle(v_c2), function () { return (v_c2 == '('); })); }))) ? false : true))) ) { (function () {
-									throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_from,'to', add(v_pos, v_len),'bool', 1,'capture', (function () {
+									throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', add(v_pos, v_len),'bool', 1,'capture', (function () {
 	var List_a = [];
 
 	var List_v = [];

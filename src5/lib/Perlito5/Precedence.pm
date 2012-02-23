@@ -48,7 +48,6 @@ sub op_parse {
     my $str  = shift;
     my $pos  = shift;
 
-    my $from = $pos;
     for my $tok ( @{$End_token} ) {
         my $l = length($tok);
         my $s = substr($str, $pos, $l);
@@ -61,8 +60,8 @@ sub op_parse {
                 #   if(...)
                 return Perlito5::Match->new(
                     str     => $str,
-                    from    => $from,
-                    to      => $pos + 2,
+                    from    => $pos,
+                    to      => $pos,
                     bool    => 1,
                     capture => [ 'end', $s ]
                 );
@@ -84,7 +83,7 @@ sub op_parse {
                 #   and(...)
                 return Perlito5::Match->new(
                     str     => $str,
-                    from    => $from,
+                    from    => $pos,
                     to      => $pos + $len,
                     bool    => 1,
                     capture => [ 'op', $op ]
