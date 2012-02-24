@@ -10,7 +10,7 @@
 # 
 # COPYRIGHT
 # 
-# Copyright 2010, 2011 by Flavio Soibelmann Glock and others.
+# Copyright 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the same terms as Perl itself.

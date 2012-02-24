@@ -334,7 +334,7 @@ Flavio Soibelmann Glock <fglock@gmail.com>.
 
 =head1 COPYRIGHT
 
-Copyright 2006, 2009, 2011 by Flavio Soibelmann Glock, Audrey Tang and others.
+Copyright 2006, 2009, 2011, 2012 by Flavio Soibelmann Glock, Audrey Tang and others.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
