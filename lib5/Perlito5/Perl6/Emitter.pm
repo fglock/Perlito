@@ -547,20 +547,12 @@ package For;
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $cond) = $self->{('cond')});
-        if ((!((($cond->isa('Var') && ($cond->sigil() eq chr(64))))))) {
-            ($cond = Lit::Array->new(('array1' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $cond );
-    \@a
-}))))
-        };
         ((my  $body) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
-        ((my  $sig) = 'v__');
+        ((my  $sig) = chr(36) . '_');
         if (($self->{('body')}->sig())) {
             ($sig = $self->{('body')}->sig()->emit_perl6_indented(($level + 1)))
         };
-        (Perl6::tab($level) . '(function (a_) ' . chr(123) . ' for (var i_ ' . chr(61) . ' 0' . chr(59) . ' i_ < a_.length ' . chr(59) . ' i_++) ' . chr(123) . ' ' . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . $body->emit_perl6_indented(($level + 1)) . ' ' . chr(125) . ')(a_[i_]) ' . chr(125) . ' ' . chr(125) . ')' . '(' . $cond->emit_perl6() . ')')
+        (Perl6::tab($level) . 'for ' . $cond->emit_perl6() . ' -> ' . $sig . ' ' . chr(123) . ' ' . $body->emit_perl6_indented(($level + 1)) . chr(125) . (chr(10)))
     }
 });
 package Decl;

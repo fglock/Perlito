@@ -642,19 +642,17 @@ package For;
         my $self = shift;
         my $level = shift;
         my $cond = $self->{"cond"};
-        if (!( $cond->isa( 'Var' ) && $cond->sigil eq '@' )) {
-            $cond = Lit::Array->new( array1 => [$cond] )
-        }
+        # if (!( $cond->isa( 'Var' ) && $cond->sigil eq '@' )) {
+        #     $cond = Lit::Array->new( array1 => [$cond] )
+        # }
         my $body      = Perlito5::Perl6::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
-        my $sig = 'v__';
+        my $sig = '$_';
         if ($self->{"body"}->sig()) {
             $sig = $self->{"body"}->sig->emit_perl6_indented( $level + 1 );
         }
-        Perl6::tab($level) . '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { '
-            . "(function ($sig) {\n"
+        Perl6::tab($level) . 'for ' . $cond->emit_perl6() . ' -> ' . $sig . ' { '
                 . $body->emit_perl6_indented( $level + 1 )
-            . ' })(a_[i_]) } })'
-        . '(' . $cond->emit_perl6() . ')'
+        . '}' . "\n"
     }
 }
 
