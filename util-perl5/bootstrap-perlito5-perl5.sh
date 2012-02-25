@@ -12,6 +12,7 @@ mkdir lib5-new/Perlito5/Perl5
 mkdir lib5-new/Perlito5/Perl6
 
 cp src5/lib/Perlito5/Perl5/Runtime.pm lib5-new/Perlito5/Perl5/Runtime.pm
+cp src5/lib/Perlito5/Perl6/Runtime.pm lib5-new/Perlito5/Perl6/Runtime.pm
 
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Test.pm            > lib5-new/Perlito5/Test.pm
 
