@@ -414,8 +414,8 @@ package Apply;
             ((my  $list) = $self->{('arguments')}->[1]);
             return (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'var v__ ' . chr(61) . ' a_[i]' . chr(59) . ' ' . 'out.push(' . $fun->emit_perl6() . ')' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . ')(' . $list->emit_perl6() . ')'))
         };
-        if ((($code eq 'ref'))) {
-            return (('Perlito5::Perl6::Runtime::ref( ' . $self->{('arguments')}->[0]->emit_perl6() . ')'))
+        if (((($code eq 'bless') || ($code eq 'ref')))) {
+            return (('Perlito5::Perl6::Runtime::' . $code . '( ' . join(', ', map($_->emit_perl6(), @{$self->{('arguments')}})) . ')'))
         };
         if ((($code eq 'prefix:<' . chr(33) . '>'))) {
             return ((chr(33) . '( ' . Perl6::to_bool($self->{('arguments')}->[0]) . ')'))
