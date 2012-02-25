@@ -476,6 +476,9 @@ package Apply;
                     . ' })(' . $list->emit_perl6() . ')'
         }
 
+        if ( $code eq 'ref' ) {
+            return 'Perlito5::Perl6::Runtime::ref( ' . $self->{"arguments"}->[0]->emit_perl6 . ')';
+        }
         if ( $code eq 'prefix:<!>' ) {
             return '!( ' . Perl6::to_bool( $self->{"arguments"}->[0] ) . ')';
         }
