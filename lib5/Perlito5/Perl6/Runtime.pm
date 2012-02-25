@@ -3,7 +3,7 @@ use v6;
 
 module Perlito5::Perl6::Runtime {
 
-sub ref ($obj) {
+sub ref ($obj) { #OK
     my $s = $obj.WHAT.perl;
     return 'ARRAY' if $s eq 'Array';
     return 'HASH'  if $s eq 'Hash';
@@ -16,7 +16,7 @@ sub ref ($obj) {
 
 }
 
-=pod
+=begin
 
 =head1 NAME
 
@@ -39,4 +39,4 @@ under the same terms as Perl itself.
 
 See L<http://www.perl.com/perl/misc/Artistic.html>
 
-=cut
+=end
