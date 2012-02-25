@@ -6,7 +6,7 @@ module Perlito5::Perl6::Runtime {
 # class X { has $.val }; my $v = {}; bless($v, "X"); $v.WHAT.say
 
 sub bless ($v is rw, $class) {
-    $v = (eval $class).new(val=>$v)
+    $v = ::($class).new(val=>$v)
 }
 
 sub ref ($obj) {
