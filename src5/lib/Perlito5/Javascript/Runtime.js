@@ -89,6 +89,40 @@ make_sub('IO', 'slurp', function(filename) {
     CLASS.CORE.die("IO.slurp() not implemented");
 });
 
+interpolate_array = function() {
+    var res = [];
+    for (i = 0; i < arguments.length; i++) {
+        var o = arguments[i];
+        if  (  o == null
+            || o._class_    // perl5 blessed reference
+            || o._ref_      // perl5 un-blessed reference
+            )
+        {
+            res.push(o);
+        }
+        else if (o instanceof Array) {
+            // perl5 array
+            for (j = 0; j < o.length; j++) {
+                res.push(o[j]);
+            }
+        }
+        else if (typeof o === 'object') {
+            // perl5 hash
+            for(var j in o) {
+                if (o.hasOwnProperty(j)) {
+                    res.push(j);
+                    res.push(o[j]);
+                }
+            }
+        }
+        else {
+            // non-ref
+            res.push(o);
+        }
+    }
+    return res;
+};
+
 string = function(o) {
     if (o == null) {
         return "";

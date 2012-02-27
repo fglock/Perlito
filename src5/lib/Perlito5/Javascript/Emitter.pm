@@ -316,8 +316,23 @@ package Lit::Array;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $ast = $self->expand_interpolation;
-        return $ast->emit_javascript_indented( $level );
+
+        my @items;
+        for my $item ( @{$self->{"array1"}} ) {
+            if ($item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
+                for my $arg ( @{$item->arguments} ) {
+                    push( @items, $arg);
+                }
+            }
+            else {
+                push( @items, $item);
+            }
+        }
+
+        Javascript::tab($level)
+        . '(new ArrayRef(interpolate_array('
+        .   join(', ', map( $_->emit_javascript, @items ))
+        . ')))'
     }
 }
 
