@@ -198,7 +198,7 @@ package CompUnit;
             }
         };
         ((my  $class_name) = $self->{('name')});
-        ((my  $str) = ('make_package(' . chr(34) . $class_name . chr(34) . ')' . chr(59) . (chr(10)) . '(function () ' . chr(123) . (chr(10)) . '  var __PACKAGE__ ' . chr(61) . ' ' . chr(34) . $class_name . chr(34) . chr(59) . (chr(10)) . '  var v__NAMESPACE ' . chr(61) . ' NAMESPACE[__PACKAGE__]' . chr(59) . (chr(10))));
+        ((my  $str) = ('make_package(' . chr(34) . $class_name . chr(34) . ')' . chr(59) . (chr(10)) . '(function () ' . chr(123) . (chr(10)) . '  var __PACKAGE__ ' . chr(61) . ' ' . chr(34) . $class_name . chr(34) . chr(59) . (chr(10)) . '  var PKG ' . chr(61) . ' NAMESPACE[__PACKAGE__]' . chr(59) . (chr(10))));
         for my $decl (@body) {
             if ((($decl->isa('Decl') && (($decl->decl() eq 'my'))))) {
                 ($str = ($str . '  ' . $decl->emit_javascript_init()))
@@ -350,7 +350,7 @@ package Var;
         ((my  $self) = shift());
         ((my  $level) = shift());
         if ((($self->{('sigil')} eq '*'))) {
-            ((my  $ns) = 'v__NAMESPACE');
+            ((my  $ns) = 'PKG');
             if (($self->{('namespace')})) {
                 ($ns = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . ']'))
             };
@@ -449,9 +449,9 @@ package Apply;
         };
         if ((($code eq 'shift'))) {
             if ((($self->{('arguments')} && @{$self->{('arguments')}}))) {
-                return (('v__NAMESPACE.shift(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
+                return (('PKG.shift(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
             };
-            return ('v__NAMESPACE.shift(List__)')
+            return ('PKG.shift(List__)')
         };
         if ((($code eq 'map'))) {
             ((my  $fun) = $self->{('arguments')}->[0]);
@@ -564,7 +564,7 @@ package Apply;
             ($code = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . '].' . ($code)))
         }
         else {
-            ($code = ('v__NAMESPACE.' . $code))
+            ($code = ('PKG.' . $code))
         };
         ((my  @args) = ());
         for (@{$self->{('arguments')}}) {

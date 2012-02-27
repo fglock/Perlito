@@ -328,7 +328,7 @@ package Var;
         my $level = shift;
 
         if ( $self->{"sigil"} eq '*' ) {
-            my $ns = 'v__NAMESPACE';
+            my $ns = 'PKG';
             if ($self->{"namespace"}) {
                 $ns = 'NAMESPACE["' . $self->{"namespace"} . '"]';
             }

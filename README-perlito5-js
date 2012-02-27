@@ -37,7 +37,7 @@ Class
 
 Namespace
 - namespaces are stored in the NAMESPACE global hash
-- current namespace is v__NAMESPACE
+- current namespace object is in the PKG variable
 - Namespace inherits from CORE, which inherits from CORE::GLOBAL
 - Namespace is a copy of the Class, but with a different inheritance
 - Namespace and Class are updated in parallel, both when a sub is declared or when using typeglob assignment

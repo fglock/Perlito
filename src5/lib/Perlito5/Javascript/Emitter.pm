@@ -229,7 +229,7 @@ package CompUnit;
         my $str = 'make_package("' . $class_name . '");' . "\n"
             . '(function () {' . "\n"
             . '  var __PACKAGE__ = "' . $class_name . '";' . "\n"
-            . '  var v__NAMESPACE = NAMESPACE[__PACKAGE__];' . "\n";
+            . '  var PKG = NAMESPACE[__PACKAGE__];' . "\n";
 
         for my $decl ( @body ) {
             if ($decl->isa( 'Decl' ) && ( $decl->decl eq 'my' )) {
@@ -397,7 +397,7 @@ package Var;
         my $level = shift;
 
         if ( $self->{"sigil"} eq '*' ) {
-            my $ns = 'v__NAMESPACE';
+            my $ns = 'PKG';
             if ($self->{"namespace"}) {
                 $ns = 'NAMESPACE["' . $self->{"namespace"} . '"]';
             }
@@ -528,9 +528,9 @@ package Apply;
 
         if ($code eq 'shift')      {
             if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return 'v__NAMESPACE.shift(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . ')'
+                return 'PKG.shift(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . ')'
             }
-            return 'v__NAMESPACE.shift(List__)'
+            return 'PKG.shift(List__)'
         }
 
         if ($code eq 'map') {
@@ -697,7 +697,7 @@ package Apply;
             $code = 'NAMESPACE["' . $self->{"namespace"} . '"].' . ( $code );
         }
         else {
-            $code = 'v__NAMESPACE.' . $code
+            $code = 'PKG.' . $code
         }
         my @args = ();
         push @args, $_->emit_javascript

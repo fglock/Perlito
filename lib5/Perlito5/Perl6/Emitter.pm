@@ -310,7 +310,7 @@ package Var;
         ((my  $self) = shift());
         ((my  $level) = shift());
         if ((($self->{('sigil')} eq '*'))) {
-            ((my  $ns) = 'v__NAMESPACE');
+            ((my  $ns) = 'PKG');
             if (($self->{('namespace')})) {
                 ($ns = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . ']'))
             };
