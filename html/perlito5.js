@@ -124,6 +124,14 @@ interpolate_array = function() {
     return res;
 };
 
+array_to_hash = function(a) {
+    var res = {};
+    for (i = 0; i < a.length; i+=2) {
+        res[string(a[i])] = a[i+1];
+    }
+    return res;
+};
+
 string = function(o) {
     if (o == null) {
         return "";
@@ -554,22 +562,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -697,22 +690,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -763,22 +741,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -815,22 +778,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -867,22 +815,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -919,22 +852,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -985,22 +903,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1037,22 +940,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1089,22 +977,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1155,22 +1028,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1221,22 +1079,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1301,22 +1144,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1353,22 +1181,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1433,22 +1246,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1513,22 +1311,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1593,22 +1376,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1687,22 +1455,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1753,22 +1506,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1833,22 +1571,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1913,22 +1636,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -1993,22 +1701,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -2045,22 +1738,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -2121,34 +1799,7 @@ make_sub(__PACKAGE__, "tab", function () {
 							}
 						}
 					});
-					(Hash_safe_char = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((function () {
-	var Hash_a = {};
-
-	(Hash_a['$'] = 1);
-	(Hash_a['%'] = 1);
-	(Hash_a['@'] = 1);
-	(Hash_a['&'] = 1);
-	(Hash_a['_'] = 1);
-	(Hash_a[','] = 1);
-	(Hash_a['.'] = 1);
-	(Hash_a[':'] = 1);
-	(Hash_a[';'] = 1);
-	(Hash_a['-'] = 1);
-	(Hash_a['+'] = 1);
-	(Hash_a['*'] = 1);
-	(Hash_a[' '] = 1);
-	(Hash_a['('] = 1);
-	(Hash_a[')'] = 1);
-	(Hash_a['<'] = 1);
-	(Hash_a['='] = 1);
-	(Hash_a['>'] = 1);
-	(Hash_a['['] = 1);
-	(Hash_a[']'] = 1);
-	(Hash_a['{'] = 1);
-	(Hash_a['|'] = 1);
-	(Hash_a['}'] = 1);
-	return((new HashRef(Hash_a)));
-})())._hash_));
+					(Hash_safe_char = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((new HashRef(array_to_hash(interpolate_array('$', 1, '%', 1, '@', 1, '&', 1, '_', 1, ',', 1, '.', 1, ':', 1, ';', 1, '-', 1, '+', 1, '*', 1, ' ', 1, '(', 1, ')', 1, '<', 1, '=', 1, '>', 1, '[', 1, ']', 1, '{', 1, '|', 1, '}', 1)))))._hash_));
 make_sub(__PACKAGE__, "escape_string", function () {
 						var List__ = Array.prototype.slice.call(arguments);
 						try {
@@ -2235,18 +1886,48 @@ make_sub(__PACKAGE__, "to_num", function () {
 							}
 						}
 					});
-					return(make_sub(__PACKAGE__, "to_bool", function () {
+make_sub(__PACKAGE__, "to_bool", function () {
+						var List__ = Array.prototype.slice.call(arguments);
+						try {
+							var v_cond = null;
+
+							(v_cond = PKG.shift(List__));
+							if ( bool((or(or((v_cond._class_.isa(v_cond,'Val::Int')), function () { return (v_cond._class_.isa(v_cond,'Val::Num')); }), function () { return (and(v_cond._class_.isa(v_cond,'Apply'), function () { return (v_cond._class_.code(v_cond) == 'prefix:<' + String.fromCharCode(33) + '>'); })); }))) ) { return (function () {
+								throw(v_cond._class_.emit_javascript(v_cond));
+							})(); }
+							else { return (function () {
+								throw(('bool(' + string(v_cond._class_.emit_javascript(v_cond)) + ')'));
+							})(); };;
+						}
+						catch(err) {
+							if ( err instanceof Error ) {
+								throw(err);
+							}
+							else {
+								return(err);
+							}
+						}
+					});
+					return(make_sub(__PACKAGE__, "preprocess_array_interpolation", function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
-		var v_cond = null;
+		var List_items = [];
 
-		(v_cond = PKG.shift(List__));
-		if ( bool((or(or((v_cond._class_.isa(v_cond,'Val::Int')), function () { return (v_cond._class_.isa(v_cond,'Val::Num')); }), function () { return (and(v_cond._class_.isa(v_cond,'Apply'), function () { return (v_cond._class_.code(v_cond) == 'prefix:<' + String.fromCharCode(33) + '>'); })); }))) ) { return (function () {
-			throw(v_cond._class_.emit_javascript(v_cond));
-		})(); }
-		else { return (function () {
-			throw(('bool(' + string(v_cond._class_.emit_javascript(v_cond)) + ')'));
-		})(); };;
+		(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {
+			if ( bool((and(v_item._class_.isa(v_item,'Apply'), function () { return (or((v_item._class_.code(v_item) == 'circumfix:<( )>'), function () { return (v_item._class_.code(v_item) == 'list:<,>'); })); }))) ) { (function () {
+				(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) {
+					PKG.push(List_items, v_arg);; })(a_[i_]) } })(((new ArrayRef(interpolate_array((PKG.preprocess_array_interpolation(v_item._class_.arguments(v_item)) ? PKG.preprocess_array_interpolation(v_item._class_.arguments(v_item)) : PKG.preprocess_array_interpolation(v_item._class_.arguments(v_item)) = new ArrayRef([]))._array_))) ? (new ArrayRef(interpolate_array((PKG.preprocess_array_interpolation(v_item._class_.arguments(v_item)) ? PKG.preprocess_array_interpolation(v_item._class_.arguments(v_item)) : PKG.preprocess_array_interpolation(v_item._class_.arguments(v_item)) = new ArrayRef([]))._array_))) : (new ArrayRef(interpolate_array((PKG.preprocess_array_interpolation(v_item._class_.arguments(v_item)) ? PKG.preprocess_array_interpolation(v_item._class_.arguments(v_item)) : PKG.preprocess_array_interpolation(v_item._class_.arguments(v_item)) = new ArrayRef([]))._array_))) = new ArrayRef([]))._array_);;
+			})(); }
+			else { (function () {
+				if ( bool((and(v_item._class_.isa(v_item,'Apply'), function () { return (v_item._class_.code(v_item) == 'infix:<=>>'); }))) ) { (function () {
+					PKG.push(List_items, (v_item._class_.arguments(v_item) ? v_item._class_.arguments(v_item) : v_item._class_.arguments(v_item) = new ArrayRef([]))._array_[0]);
+					PKG.push(List_items, (v_item._class_.arguments(v_item) ? v_item._class_.arguments(v_item) : v_item._class_.arguments(v_item) = new ArrayRef([]))._array_[1]);;
+				})(); }
+				else { (function () {
+					PKG.push(List_items, v_item);;
+				})(); };;
+			})(); };; })(a_[i_]) } })(((new ArrayRef(interpolate_array((List__[0] ? List__[0] : List__[0] = new ArrayRef([]))._array_))) ? (new ArrayRef(interpolate_array((List__[0] ? List__[0] : List__[0] = new ArrayRef([]))._array_))) : (new ArrayRef(interpolate_array((List__[0] ? List__[0] : List__[0] = new ArrayRef([]))._array_))) = new ArrayRef([]))._array_);
+		throw((new ArrayRef(List_items)));;
 	}
 	catch(err) {
 		if ( err instanceof Error ) {
@@ -2271,22 +1952,7 @@ make_sub(__PACKAGE__, "new", function () {
 							var v_class = null;
 
 							(v_class = PKG.shift(List__));
-							return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+							return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 						}
 						catch(err) {
 							if ( err instanceof Error ) {
@@ -2764,19 +2430,12 @@ make_sub(__PACKAGE__, "emit_javascript", function () {
 
 		var v_level = null;
 
-		var List_items = [];
+		var v_items = null;
 
 		(v_self = PKG.shift(List__));
 		(v_level = PKG.shift(List__));
-		(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {
-			if ( bool((and(v_item._class_.isa(v_item,'Apply'), function () { return (or((v_item._class_.code(v_item) == 'circumfix:<( )>'), function () { return (v_item._class_.code(v_item) == 'list:<,>'); })); }))) ) { (function () {
-				(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) {
-					PKG.push(List_items, v_arg);; })(a_[i_]) } })(((new ArrayRef(interpolate_array((v_item._class_.arguments(v_item) ? v_item._class_.arguments(v_item) : v_item._class_.arguments(v_item) = new ArrayRef([]))._array_))) ? (new ArrayRef(interpolate_array((v_item._class_.arguments(v_item) ? v_item._class_.arguments(v_item) : v_item._class_.arguments(v_item) = new ArrayRef([]))._array_))) : (new ArrayRef(interpolate_array((v_item._class_.arguments(v_item) ? v_item._class_.arguments(v_item) : v_item._class_.arguments(v_item) = new ArrayRef([]))._array_))) = new ArrayRef([]))._array_);;
-			})(); }
-			else { (function () {
-				PKG.push(List_items, v_item);;
-			})(); };; })(a_[i_]) } })(((new ArrayRef(interpolate_array(((v_self ? v_self : v_self = new HashRef({}))._hash_[('array1')] ? (v_self ? v_self : v_self = new HashRef({}))._hash_[('array1')] : (v_self ? v_self : v_self = new HashRef({}))._hash_[('array1')] = new ArrayRef([]))._array_))) ? (new ArrayRef(interpolate_array(((v_self ? v_self : v_self = new HashRef({}))._hash_[('array1')] ? (v_self ? v_self : v_self = new HashRef({}))._hash_[('array1')] : (v_self ? v_self : v_self = new HashRef({}))._hash_[('array1')] = new ArrayRef([]))._array_))) : (new ArrayRef(interpolate_array(((v_self ? v_self : v_self = new HashRef({}))._hash_[('array1')] ? (v_self ? v_self : v_self = new HashRef({}))._hash_[('array1')] : (v_self ? v_self : v_self = new HashRef({}))._hash_[('array1')] = new ArrayRef([]))._array_))) = new ArrayRef([]))._array_);
-		return((string(NAMESPACE["Javascript"].tab(v_level)) + '(new ArrayRef(interpolate_array(' + string(PKG.join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript(v__))}; return out; })(List_items))) + ')))'));;
+		(v_items = NAMESPACE["Javascript"].preprocess_array_interpolation((v_self ? v_self : v_self = new HashRef({}))._hash_[('array1')]));
+		return((string(NAMESPACE["Javascript"].tab(v_level)) + '(new ArrayRef(interpolate_array(' + string(PKG.join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript(v__))}; return out; })((v_items ? v_items : v_items = new ArrayRef([]))._array_))) + ')))'));;
 	}
 	catch(err) {
 		if ( err instanceof Error ) {
@@ -2816,12 +2475,12 @@ make_sub(__PACKAGE__, "emit_javascript", function () {
 
 		var v_level = null;
 
-		var v_ast = null;
+		var v_items = null;
 
 		(v_self = PKG.shift(List__));
 		(v_level = PKG.shift(List__));
-		(v_ast = v_self._class_.expand_interpolation(v_self));
-		throw(v_ast._class_.emit_javascript_indented(v_ast,v_level));;
+		(v_items = NAMESPACE["Javascript"].preprocess_array_interpolation((v_self ? v_self : v_self = new HashRef({}))._hash_[('hash1')]));
+		return((string(NAMESPACE["Javascript"].tab(v_level)) + '(new HashRef(array_to_hash(interpolate_array(' + string(PKG.join(', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript(v__))}; return out; })((v_items ? v_items : v_items = new ArrayRef([]))._array_))) + '))))'));;
 	}
 	catch(err) {
 		if ( err instanceof Error ) {
@@ -2938,15 +2597,7 @@ make_package("Var");
 				(function () {
 					var v_table = null;
 
-					(v_table = (function () {
-	var Hash_a = {};
-
-	(Hash_a['$'] = 'v_');
-	(Hash_a['@'] = 'List_');
-	(Hash_a['%'] = 'Hash_');
-	(Hash_a['&'] = 'Code_');
-	return((new HashRef(Hash_a)));
-})());
+					(v_table = (new HashRef(array_to_hash(interpolate_array('$', 'v_', '@', 'List_', '%', 'Hash_', '&', 'Code_')))));
 make_sub(__PACKAGE__, "emit_javascript", function () {
 						var List__ = Array.prototype.slice.call(arguments);
 						try {
@@ -3135,24 +2786,7 @@ make_package("Apply");
 				(function () {
 					var Hash_op_infix_js = {};
 
-					(Hash_op_infix_js = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((function () {
-	var Hash_a = {};
-
-	(Hash_a['infix:<->'] = ' - ');
-	(Hash_a['infix:<*>'] = ' * ');
-	(Hash_a['infix:<' + String.fromCharCode(47) + '>'] = ' ' + String.fromCharCode(47) + ' ');
-	(Hash_a['infix:<>>'] = ' > ');
-	(Hash_a['infix:<<>'] = ' < ');
-	(Hash_a['infix:<>=>'] = ' >= ');
-	(Hash_a['infix:<<=>'] = ' <= ');
-	(Hash_a['infix:<eq>'] = ' == ');
-	(Hash_a['infix:<ne>'] = ' ' + String.fromCharCode(33) + '= ');
-	(Hash_a['infix:<le>'] = ' <= ');
-	(Hash_a['infix:<ge>'] = ' >= ');
-	(Hash_a['infix:<==>'] = ' == ');
-	(Hash_a['infix:<' + String.fromCharCode(33) + '=>'] = ' ' + String.fromCharCode(33) + '= ');
-	return((new HashRef(Hash_a)));
-})())._hash_));
+					(Hash_op_infix_js = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((new HashRef(array_to_hash(interpolate_array('infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:<' + String.fromCharCode(47) + '>', ' ' + String.fromCharCode(47) + ' ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<eq>', ' == ', 'infix:<ne>', ' ' + String.fromCharCode(33) + '= ', 'infix:<le>', ' <= ', 'infix:<ge>', ' >= ', 'infix:<==>', ' == ', 'infix:<' + String.fromCharCode(33) + '=>', ' ' + String.fromCharCode(33) + '= ')))))._hash_));
 make_sub(__PACKAGE__, "emit_javascript", function () {
 						var List__ = Array.prototype.slice.call(arguments);
 						try {
@@ -3799,22 +3433,7 @@ make_sub(__PACKAGE__, "new", function () {
 						var v_class = null;
 
 						(v_class = PKG.shift(List__));
-						return(PKG.bless((function () {
-	var Hash_a = {};
-
-	(function () {
-		var v__i = null;
-
-		var List__a = [];
-
-		(v__i = 0);
-		(List__a = (((new ArrayRef(interpolate_array(List__))) ? (new ArrayRef(interpolate_array(List__))) : (new ArrayRef(interpolate_array(List__))) = new ArrayRef([]))._array_).slice());
-		for ( ; bool(((v__i < PKG.scalar(List__a))));  ) { (function () {
-			(Hash_a[List__a[v__i]] = List__a[add(v__i, 1)]);
-			(v__i = add(v__i, 2));; })() };
-	})();
-	return((new HashRef(Hash_a)));
-})(), v_class));;
+						return(PKG.bless((new HashRef(array_to_hash(interpolate_array(List__)))), v_class));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -4005,11 +3624,7 @@ make_sub(__PACKAGE__, "add_op", function () {
 						(v_precedence = PKG.shift(List__));
 						(v_param = PKG.shift(List__));
 						if ( bool((( bool(((v_param != null))) ? false : true))) ) { (function () {
-							(v_param = (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})());;
+							(v_param = (new HashRef(array_to_hash(interpolate_array()))));;
 						})(); };
 						(v_assoc = or((v_param ? v_param : v_param = new HashRef({}))._hash_['assoc'], function () { return 'left'; }));
 						(((v_Operator ? v_Operator : v_Operator = new HashRef({}))._hash_[v_fixity] ? (v_Operator ? v_Operator : v_Operator = new HashRef({}))._hash_[v_fixity] : (v_Operator ? v_Operator : v_Operator = new HashRef({}))._hash_[v_fixity] = new HashRef({}))._hash_[v_name] = 1);
@@ -4154,35 +3769,12 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 						}
 					}
 				});
-				(v_Operator = (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})());
-				(v_Precedence = (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})());
-				(v_Assoc = (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})());
-				(v_Allow_space_before = (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})());
+				(v_Operator = (new HashRef(array_to_hash(interpolate_array()))));
+				(v_Precedence = (new HashRef(array_to_hash(interpolate_array()))));
+				(v_Assoc = (new HashRef(array_to_hash(interpolate_array()))));
+				(v_Allow_space_before = (new HashRef(array_to_hash(interpolate_array()))));
 				(List_Term_chars = (((new ArrayRef(interpolate_array(7, 5, 3, 2, 1))) ? (new ArrayRef(interpolate_array(7, 5, 3, 2, 1))) : (new ArrayRef(interpolate_array(7, 5, 3, 2, 1))) = new ArrayRef([]))._array_).slice());
-				(List_Term = (((new ArrayRef(interpolate_array((function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['$'] = function () {
+				(List_Term = (((new ArrayRef(interpolate_array((new HashRef(array_to_hash(interpolate_array()))), (new HashRef(array_to_hash(interpolate_array('$', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4195,8 +3787,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['@'] = function () {
+}, '@', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4209,8 +3800,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['%'] = function () {
+}, '%', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4223,8 +3813,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['&'] = function () {
+}, '&', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4237,8 +3826,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['*'] = function () {
+}, '*', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4251,8 +3839,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['0'] = function () {
+}, '0', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4265,8 +3852,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['1'] = function () {
+}, '1', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4279,8 +3865,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['2'] = function () {
+}, '2', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4293,8 +3878,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['3'] = function () {
+}, '3', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4307,8 +3891,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['4'] = function () {
+}, '4', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4321,8 +3904,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['5'] = function () {
+}, '5', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4335,8 +3917,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['6'] = function () {
+}, '6', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4349,8 +3930,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['7'] = function () {
+}, '7', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4363,8 +3943,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['8'] = function () {
+}, '8', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4377,8 +3956,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['9'] = function () {
+}, '9', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4391,8 +3969,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[String.fromCharCode(63)] = function () {
+}, String.fromCharCode(63), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_ternary(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4405,8 +3982,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['('] = function () {
+}, '(', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_paren(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4419,8 +3995,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['['] = function () {
+}, '[', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_square(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4433,8 +4008,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['{'] = function () {
+}, '{', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_curly(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4447,8 +4021,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[(String.fromCharCode(39))] = function () {
+}, (String.fromCharCode(39)), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_quote(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4461,8 +4034,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[String.fromCharCode(34)] = function () {
+}, String.fromCharCode(34), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_quote(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4475,8 +4047,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[String.fromCharCode(35)] = function () {
+}, String.fromCharCode(35), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4489,8 +4060,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(9)] = function () {
+}, PKG.chr(9), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4503,8 +4073,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(10)] = function () {
+}, PKG.chr(10), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4517,8 +4086,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(12)] = function () {
+}, PKG.chr(12), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4531,8 +4099,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(13)] = function () {
+}, PKG.chr(13), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4545,8 +4112,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(32)] = function () {
+}, PKG.chr(32), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4559,12 +4125,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['->'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array('->', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_arrow(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4577,8 +4138,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['my'] = function () {
+}, 'my', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_declarator(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4591,8 +4151,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['do'] = function () {
+}, 'do', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_do(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4605,12 +4164,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['our'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array('our', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_declarator(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4623,8 +4177,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['sub'] = function () {
+}, 'sub', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sub(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4637,8 +4190,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['use'] = function () {
+}, 'use', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_use(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4651,16 +4203,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['state'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array()))), (new HashRef(array_to_hash(interpolate_array('state', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_declarator(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4673,16 +4216,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['package'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array()))), (new HashRef(array_to_hash(interpolate_array('package', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_package(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4695,16 +4229,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})()))) ? (new ArrayRef(interpolate_array((function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['$'] = function () {
+}))))))) ? (new ArrayRef(interpolate_array((new HashRef(array_to_hash(interpolate_array()))), (new HashRef(array_to_hash(interpolate_array('$', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4717,8 +4242,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['@'] = function () {
+}, '@', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4731,8 +4255,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['%'] = function () {
+}, '%', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4745,8 +4268,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['&'] = function () {
+}, '&', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4759,8 +4281,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['*'] = function () {
+}, '*', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4773,8 +4294,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['0'] = function () {
+}, '0', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4787,8 +4307,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['1'] = function () {
+}, '1', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4801,8 +4320,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['2'] = function () {
+}, '2', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4815,8 +4333,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['3'] = function () {
+}, '3', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4829,8 +4346,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['4'] = function () {
+}, '4', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4843,8 +4359,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['5'] = function () {
+}, '5', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4857,8 +4372,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['6'] = function () {
+}, '6', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4871,8 +4385,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['7'] = function () {
+}, '7', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4885,8 +4398,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['8'] = function () {
+}, '8', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4899,8 +4411,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['9'] = function () {
+}, '9', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4913,8 +4424,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[String.fromCharCode(63)] = function () {
+}, String.fromCharCode(63), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_ternary(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4927,8 +4437,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['('] = function () {
+}, '(', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_paren(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4941,8 +4450,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['['] = function () {
+}, '[', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_square(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4955,8 +4463,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['{'] = function () {
+}, '{', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_curly(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4969,8 +4476,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[(String.fromCharCode(39))] = function () {
+}, (String.fromCharCode(39)), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_quote(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4983,8 +4489,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[String.fromCharCode(34)] = function () {
+}, String.fromCharCode(34), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_quote(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -4997,8 +4502,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[String.fromCharCode(35)] = function () {
+}, String.fromCharCode(35), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5011,8 +4515,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(9)] = function () {
+}, PKG.chr(9), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5025,8 +4528,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(10)] = function () {
+}, PKG.chr(10), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5039,8 +4541,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(12)] = function () {
+}, PKG.chr(12), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5053,8 +4554,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(13)] = function () {
+}, PKG.chr(13), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5067,8 +4567,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(32)] = function () {
+}, PKG.chr(32), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5081,12 +4580,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['->'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array('->', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_arrow(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5099,8 +4593,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['my'] = function () {
+}, 'my', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_declarator(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5113,8 +4606,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['do'] = function () {
+}, 'do', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_do(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5127,12 +4619,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['our'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array('our', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_declarator(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5145,8 +4632,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['sub'] = function () {
+}, 'sub', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sub(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5159,8 +4645,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['use'] = function () {
+}, 'use', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_use(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5173,16 +4658,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['state'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array()))), (new HashRef(array_to_hash(interpolate_array('state', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_declarator(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5195,16 +4671,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['package'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array()))), (new HashRef(array_to_hash(interpolate_array('package', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_package(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5217,16 +4684,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})()))) : (new ArrayRef(interpolate_array((function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['$'] = function () {
+}))))))) : (new ArrayRef(interpolate_array((new HashRef(array_to_hash(interpolate_array()))), (new HashRef(array_to_hash(interpolate_array('$', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5239,8 +4697,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['@'] = function () {
+}, '@', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5253,8 +4710,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['%'] = function () {
+}, '%', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5267,8 +4723,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['&'] = function () {
+}, '&', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5281,8 +4736,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['*'] = function () {
+}, '*', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sigil(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5295,8 +4749,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['0'] = function () {
+}, '0', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5309,8 +4762,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['1'] = function () {
+}, '1', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5323,8 +4775,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['2'] = function () {
+}, '2', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5337,8 +4788,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['3'] = function () {
+}, '3', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5351,8 +4801,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['4'] = function () {
+}, '4', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5365,8 +4814,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['5'] = function () {
+}, '5', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5379,8 +4827,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['6'] = function () {
+}, '6', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5393,8 +4840,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['7'] = function () {
+}, '7', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5407,8 +4853,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['8'] = function () {
+}, '8', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5421,8 +4866,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['9'] = function () {
+}, '9', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_digit(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5435,8 +4879,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[String.fromCharCode(63)] = function () {
+}, String.fromCharCode(63), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_ternary(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5449,8 +4892,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['('] = function () {
+}, '(', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_paren(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5463,8 +4905,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['['] = function () {
+}, '[', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_square(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5477,8 +4918,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['{'] = function () {
+}, '{', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_curly(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5491,8 +4931,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[(String.fromCharCode(39))] = function () {
+}, (String.fromCharCode(39)), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_quote(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5505,8 +4944,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[String.fromCharCode(34)] = function () {
+}, String.fromCharCode(34), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_quote(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5519,8 +4957,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[String.fromCharCode(35)] = function () {
+}, String.fromCharCode(35), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5533,8 +4970,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(9)] = function () {
+}, PKG.chr(9), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5547,8 +4983,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(10)] = function () {
+}, PKG.chr(10), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5561,8 +4996,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(12)] = function () {
+}, PKG.chr(12), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5575,8 +5009,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(13)] = function () {
+}, PKG.chr(13), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5589,8 +5022,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a[PKG.chr(32)] = function () {
+}, PKG.chr(32), function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_space(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5603,12 +5035,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['->'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array('->', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_arrow(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5621,8 +5048,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['my'] = function () {
+}, 'my', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_declarator(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5635,8 +5061,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['do'] = function () {
+}, 'do', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_do(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5649,12 +5074,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['our'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array('our', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_declarator(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5667,8 +5087,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['sub'] = function () {
+}, 'sub', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_sub(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5681,8 +5100,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	(Hash_a['use'] = function () {
+}, 'use', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_use(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5695,16 +5113,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['state'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array()))), (new HashRef(array_to_hash(interpolate_array('state', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_declarator(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5717,16 +5126,7 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})(), (function () {
-	var Hash_a = {};
-
-	(Hash_a['package'] = function () {
+})))), (new HashRef(array_to_hash(interpolate_array()))), (new HashRef(array_to_hash(interpolate_array('package', function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
 		return(CLASS["Perlito5::Expression"]._class_.term_package(CLASS["Perlito5::Expression"],List__[0],List__[1]));;
@@ -5739,99 +5139,27 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 			return(err);
 		}
 	}
-});
-	return((new HashRef(Hash_a)));
-})()))) = new ArrayRef([]))._array_).slice());
+}))))))) = new ArrayRef([]))._array_).slice());
 				(List_Op_chars = (((new ArrayRef(interpolate_array(3, 2, 1))) ? (new ArrayRef(interpolate_array(3, 2, 1))) : (new ArrayRef(interpolate_array(3, 2, 1))) = new ArrayRef([]))._array_).slice());
 				(v_prec = 100);
-				PKG.add_op('postfix', '.( )', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', '.[ ]', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', '.{ }', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', '( )', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', '[ ]', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', 'funcall', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', 'funcall_no_params', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', 'methcall', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', 'methcall_no_params', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', 'block', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', 'hash', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
+				PKG.add_op('postfix', '.( )', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', '.[ ]', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', '.{ }', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', '( )', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', '[ ]', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', 'funcall', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', 'funcall_no_params', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', 'methcall', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', 'methcall_no_params', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', 'block', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', 'hash', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
 				(v_prec = (v_prec - 1));
 				PKG.add_op('prefix', '++', v_prec);
 				PKG.add_op('prefix', '--', v_prec);
-				PKG.add_op('postfix', '++', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('postfix', '--', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['no_space_before'] = 1);
-	return((new HashRef(Hash_a)));
-})());
+				PKG.add_op('postfix', '++', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
+				PKG.add_op('postfix', '--', v_prec, (new HashRef(array_to_hash(interpolate_array('no_space_before', 1)))));
 				(v_prec = (v_prec - 1));
-				PKG.add_op('infix', '**', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
+				PKG.add_op('infix', '**', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
 				(v_prec = (v_prec - 1));
 				PKG.add_op('prefix', String.fromCharCode(92), v_prec);
 				PKG.add_op('prefix', '+', v_prec);
@@ -5852,27 +5180,12 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 				(v_prec = (v_prec - 1));
 				PKG.add_op('infix', 'x', v_prec);
 				(v_prec = (v_prec - 1));
-				PKG.add_op('infix', '.', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'list');
-	return((new HashRef(Hash_a)));
-})());
+				PKG.add_op('infix', '.', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'list')))));
 				(v_prec = (v_prec - 1));
-				PKG.add_op('infix', '&', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'list');
-	return((new HashRef(Hash_a)));
-})());
+				PKG.add_op('infix', '&', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'list')))));
 				PKG.add_op('prefix', '&', v_prec);
 				(v_prec = (v_prec - 1));
-				PKG.add_op('infix', '|', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'list');
-	return((new HashRef(Hash_a)));
-})());
+				PKG.add_op('infix', '|', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'list')))));
 				PKG.add_op('prefix', '|', v_prec);
 				(v_prec = (v_prec - 1));
 				PKG.add_op('infix', '<=>', v_prec);
@@ -5882,84 +5195,19 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 				PKG.add_op('infix', 'but', v_prec);
 				PKG.add_op('infix', '..', v_prec);
 				(v_prec = (v_prec - 1));
-				PKG.add_op('infix', 'ne', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', 'eq', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', 'lt', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', 'le', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', 'gt', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', 'ge', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '<=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '>=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '==', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', String.fromCharCode(33) + '=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '<', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '>', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', String.fromCharCode(126) + String.fromCharCode(126), v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'chain');
-	return((new HashRef(Hash_a)));
-})());
+				PKG.add_op('infix', 'ne', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', 'eq', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', 'lt', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', 'le', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', 'gt', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', 'ge', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', '<=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', '>=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', '==', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', String.fromCharCode(33) + '=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', '<', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', '>', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
+				PKG.add_op('infix', String.fromCharCode(126) + String.fromCharCode(126), v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain')))));
 				(v_prec = (v_prec - 1));
 				PKG.add_op('infix', '&&', v_prec);
 				(v_prec = (v_prec - 1));
@@ -5969,83 +5217,23 @@ make_sub(__PACKAGE__, "precedence_parse", function () {
 				PKG.add_op('ternary', String.fromCharCode(63) + String.fromCharCode(63) + ' ' + String.fromCharCode(33) + String.fromCharCode(33), v_prec);
 				PKG.add_op('ternary', String.fromCharCode(63) + ' :', v_prec);
 				(v_prec = (v_prec - 1));
-				PKG.add_op('infix', '=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '||=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '&&=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '|=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '&=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', String.fromCharCode(47) + String.fromCharCode(47) + '=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '+=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '-=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '*=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', String.fromCharCode(47) + '=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
-				PKG.add_op('infix', '.=', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'right');
-	return((new HashRef(Hash_a)));
-})());
+				PKG.add_op('infix', '=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
+				PKG.add_op('infix', '||=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
+				PKG.add_op('infix', '&&=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
+				PKG.add_op('infix', '|=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
+				PKG.add_op('infix', '&=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
+				PKG.add_op('infix', String.fromCharCode(47) + String.fromCharCode(47) + '=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
+				PKG.add_op('infix', '+=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
+				PKG.add_op('infix', '-=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
+				PKG.add_op('infix', '*=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
+				PKG.add_op('infix', String.fromCharCode(47) + '=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
+				PKG.add_op('infix', '.=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right')))));
 				(v_prec = (v_prec - 1));
 				PKG.add_op('prefix', 'not', v_prec);
 				(v_prec = (v_prec - 1));
 				PKG.add_op('infix', '=>', v_prec);
 				(v_prec = (v_prec - 1));
-				PKG.add_op('list', ',', v_prec, (function () {
-	var Hash_a = {};
-
-	(Hash_a['assoc'] = 'list');
-	return((new HashRef(Hash_a)));
-})());
+				PKG.add_op('list', ',', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'list')))));
 				(v_prec = (v_prec - 1));
 				PKG.add_op('infix', 'and', v_prec);
 				(v_prec = (v_prec - 1));
@@ -6089,25 +5277,7 @@ make_sub(__PACKAGE__, "tab", function () {
 							}
 						}
 					});
-					(Hash_safe_char = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((function () {
-	var Hash_a = {};
-
-	(Hash_a['_'] = 1);
-	(Hash_a[','] = 1);
-	(Hash_a['.'] = 1);
-	(Hash_a[':'] = 1);
-	(Hash_a['-'] = 1);
-	(Hash_a['+'] = 1);
-	(Hash_a['*'] = 1);
-	(Hash_a[' '] = 1);
-	(Hash_a['('] = 1);
-	(Hash_a[')'] = 1);
-	(Hash_a['<'] = 1);
-	(Hash_a['>'] = 1);
-	(Hash_a['['] = 1);
-	(Hash_a[']'] = 1);
-	return((new HashRef(Hash_a)));
-})())._hash_));
+					(Hash_safe_char = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((new HashRef(array_to_hash(interpolate_array('_', 1, ',', 1, '.', 1, ':', 1, '-', 1, '+', 1, '*', 1, ' ', 1, '(', 1, ')', 1, '<', 1, '>', 1, '[', 1, ']', 1)))))._hash_));
 					return(make_sub(__PACKAGE__, "escape_string", function () {
 	var List__ = Array.prototype.slice.call(arguments);
 	try {
@@ -6787,49 +5957,8 @@ make_package("Apply");
 
 					var Hash_op_infix_perl5 = {};
 
-					(Hash_op_prefix_perl5 = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((function () {
-	var Hash_a = {};
-
-	(Hash_a['say'] = 'Perlito5::Runtime::say');
-	(Hash_a['print'] = 'print');
-	(Hash_a['grep'] = 'Perlito5::Runtime::grep');
-	(Hash_a['sort'] = 'Perlito5::Runtime::sort');
-	(Hash_a['keys'] = 'keys');
-	(Hash_a['values'] = 'values');
-	(Hash_a['warn'] = 'warn');
-	(Hash_a['prefix:<' + String.fromCharCode(33) + '>'] = String.fromCharCode(33));
-	(Hash_a['prefix:<++>'] = '++');
-	(Hash_a['prefix:<-->'] = '--');
-	(Hash_a['prefix:<+>'] = '+');
-	return((new HashRef(Hash_a)));
-})())._hash_));
-					(Hash_op_infix_perl5 = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((function () {
-	var Hash_a = {};
-
-	(Hash_a['list:<.>'] = ' . ');
-	(Hash_a['infix:<+>'] = ' + ');
-	(Hash_a['infix:<->'] = ' - ');
-	(Hash_a['infix:<*>'] = ' * ');
-	(Hash_a['infix:<' + String.fromCharCode(47) + '>'] = ' ' + String.fromCharCode(47) + ' ');
-	(Hash_a['infix:<>>'] = ' > ');
-	(Hash_a['infix:<<>'] = ' < ');
-	(Hash_a['infix:<>=>'] = ' >= ');
-	(Hash_a['infix:<<=>'] = ' <= ');
-	(Hash_a['infix:<x>'] = ' x ');
-	(Hash_a['infix:<&&>'] = ' && ');
-	(Hash_a['infix:<||>'] = ' || ');
-	(Hash_a['infix:<and>'] = ' and ');
-	(Hash_a['infix:<or>'] = ' or ');
-	(Hash_a['infix:<' + String.fromCharCode(47) + String.fromCharCode(47) + '>'] = ' ' + String.fromCharCode(47) + String.fromCharCode(47) + ' ');
-	(Hash_a['infix:<eq>'] = ' eq ');
-	(Hash_a['infix:<ne>'] = ' ne ');
-	(Hash_a['infix:<le>'] = ' le ');
-	(Hash_a['infix:<ge>'] = ' ge ');
-	(Hash_a['infix:<==>'] = ' == ');
-	(Hash_a['infix:<' + String.fromCharCode(33) + '=>'] = ' ' + String.fromCharCode(33) + '= ');
-	(Hash_a['infix:<=>>'] = ' => ');
-	return((new HashRef(Hash_a)));
-})())._hash_));
+					(Hash_op_prefix_perl5 = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((new HashRef(array_to_hash(interpolate_array('say', 'Perlito5::Runtime::say', 'print', 'print', 'grep', 'Perlito5::Runtime::grep', 'sort', 'Perlito5::Runtime::sort', 'keys', 'keys', 'values', 'values', 'warn', 'warn', 'prefix:<' + String.fromCharCode(33) + '>', String.fromCharCode(33), 'prefix:<++>', '++', 'prefix:<-->', '--', 'prefix:<+>', '+')))))._hash_));
+					(Hash_op_infix_perl5 = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((new HashRef(array_to_hash(interpolate_array('list:<.>', ' . ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:<' + String.fromCharCode(47) + '>', ' ' + String.fromCharCode(47) + ' ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<x>', ' x ', 'infix:<&&>', ' && ', 'infix:<||>', ' || ', 'infix:<and>', ' and ', 'infix:<or>', ' or ', 'infix:<' + String.fromCharCode(47) + String.fromCharCode(47) + '>', ' ' + String.fromCharCode(47) + String.fromCharCode(47) + ' ', 'infix:<eq>', ' eq ', 'infix:<ne>', ' ne ', 'infix:<le>', ' le ', 'infix:<ge>', ' ge ', 'infix:<==>', ' == ', 'infix:<' + String.fromCharCode(33) + '=>', ' ' + String.fromCharCode(33) + '= ', 'infix:<=>>', ' => ')))))._hash_));
 make_sub(__PACKAGE__, "emit_perl5", function () {
 						var List__ = Array.prototype.slice.call(arguments);
 						try {
@@ -7734,14 +6863,7 @@ make_sub(__PACKAGE__, "term_arrow", function () {
 		return(0);
 	})(); };
 })()); }), function () { return (and((')' == PKG.substr(v_str, (v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('to')], 1)), function () { return (((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('to')] = add(1, (v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('to')]))); })); }), function () { return ((function () {
-	((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('capture')] = (new ArrayRef(interpolate_array('postfix_or_term', 'methcall', (v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Grammar.ident')]._class_.flat((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Grammar.ident')]), (function () {
-	var Hash_a = {};
-
-	(Hash_a['end_block'] = null);
-	(Hash_a['exp'] = (v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('paren_parse')]._class_.flat((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('paren_parse')]));
-	(Hash_a['terminated'] = 0);
-	return((new HashRef(Hash_a)));
-})()))));
+	((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('capture')] = (new ArrayRef(interpolate_array('postfix_or_term', 'methcall', (v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Grammar.ident')]._class_.flat((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Grammar.ident')]), (new HashRef(array_to_hash(interpolate_array('end_block', null, 'exp', (v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('paren_parse')]._class_.flat((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('paren_parse')]), 'terminated', 0))))))));
 	return(1);
 })()); }));
 })()), function () { return ((function () {
@@ -9090,14 +8212,7 @@ make_sub(__PACKAGE__, "list_parse", function () {
 						(v_prec = CLASS["Perlito5::Precedence"]._class_.new(CLASS["Perlito5::Precedence"],'get_token', v_get_token,'reduce', v_reduce_to_ast,'end_token', (new ArrayRef(interpolate_array('and', 'or', ':', ']', ')', '}', ';', 'if', 'else', 'elsif', 'unless', 'when', 'foreach', 'for', 'while')))));
 						(v_res = v_prec._class_.precedence_parse(v_prec));
 						if ( bool(((PKG.scalar((v_res ? v_res : v_res = new ArrayRef([]))._array_) == 0))) ) { (function () {
-							throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_last_pos,'bool', 1,'capture', (function () {
-	var Hash_a = {};
-
-	(Hash_a['exp'] = '*undef*');
-	(Hash_a['end_block'] = null);
-	(Hash_a['terminated'] = null);
-	return((new HashRef(Hash_a)));
-})()));;
+							throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_last_pos,'bool', 1,'capture', (new HashRef(array_to_hash(interpolate_array('exp', '*undef*', 'end_block', null, 'terminated', null))))));;
 						})(); };
 						if ( bool(((PKG.scalar((v_res ? v_res : v_res = new ArrayRef([]))._array_) > 1))) ) { (function () {
 							(v_block = PKG.pop((v_res ? v_res : v_res = new ArrayRef([]))._array_));
@@ -9108,14 +8223,7 @@ make_sub(__PACKAGE__, "list_parse", function () {
 							(v_block = PKG.pop((v_res ? v_res : v_res = new ArrayRef([]))._array_));
 							(v_block = CLASS["Lit::Block"]._class_.new(CLASS["Lit::Block"],'stmts', (v_block ? v_block : v_block = new ArrayRef([]))._array_[2],'sig', (v_block ? v_block : v_block = new ArrayRef([]))._array_[3]));;
 						})(); };
-						throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_last_pos,'bool', 1,'capture', (function () {
-	var Hash_a = {};
-
-	(Hash_a['exp'] = v_result);
-	(Hash_a['end_block'] = v_block);
-	(Hash_a['terminated'] = v_terminated);
-	return((new HashRef(Hash_a)));
-})()));;
+						throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_last_pos,'bool', 1,'capture', (new HashRef(array_to_hash(interpolate_array('exp', v_result, 'end_block', v_block, 'terminated', v_terminated))))));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -9373,14 +8481,7 @@ make_sub(__PACKAGE__, "exp_parse", function () {
 								(v_block = CLASS["Lit::Block"]._class_.new(CLASS["Lit::Block"],'stmts', (v_block ? v_block : v_block = new ArrayRef([]))._array_[2],'sig', (v_block ? v_block : v_block = new ArrayRef([]))._array_[3]));;
 							})(); };;
 						})(); };
-						throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_last_pos,'bool', 1,'capture', (function () {
-	var Hash_a = {};
-
-	(Hash_a['exp'] = v_result);
-	(Hash_a['end_block'] = v_block);
-	(Hash_a['terminated'] = v_terminated);
-	return((new HashRef(Hash_a)));
-})()));;
+						throw(CLASS["Perlito5::Match"]._class_.new(CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_last_pos,'bool', 1,'capture', (new HashRef(array_to_hash(interpolate_array('exp', v_result, 'end_block', v_block, 'terminated', v_terminated))))));;
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -13243,11 +12344,7 @@ make_sub(__PACKAGE__, "args_sig", function () {
 		return(0);
 	})(); };
 })()), function () { return ((function () {
-	((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('capture')] = CLASS["Sig"]._class_.new(CLASS["Sig"],'positional', NAMESPACE["Perlito5::Expression"].expand_list(((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]._class_.flat((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]) ? (v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]._class_.flat((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]) : (v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]._class_.flat((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]) = new HashRef({}))._hash_['exp']),'named', (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})()));
+	((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('capture')] = CLASS["Sig"]._class_.new(CLASS["Sig"],'positional', NAMESPACE["Perlito5::Expression"].expand_list(((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]._class_.flat((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]) ? (v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]._class_.flat((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]) : (v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]._class_.flat((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('Perlito5::Expression.list_parse')]) = new HashRef({}))._hash_['exp']),'named', (new HashRef(array_to_hash(interpolate_array())))));
 	return(1);
 })()); }));
 })()));
@@ -13335,11 +12432,7 @@ make_sub(__PACKAGE__, "method_sig", function () {
 })()), function () { return ((function () {
 	((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('to')] = v_pos1);
 	return((((function () {
-	((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('capture')] = CLASS["Sig"]._class_.new(CLASS["Sig"],'positional', (new ArrayRef(interpolate_array())),'named', (function () {
-	var Hash_a = {};
-
-	return((new HashRef(Hash_a)));
-})()));
+	((v_MATCH ? v_MATCH : v_MATCH = new HashRef({}))._hash_[('capture')] = CLASS["Sig"]._class_.new(CLASS["Sig"],'positional', (new ArrayRef(interpolate_array())),'named', (new HashRef(array_to_hash(interpolate_array())))));
 	return(1);
 })())));
 })()); }));
@@ -13649,21 +12742,7 @@ make_sub(__PACKAGE__, "op_assign", function () {
 						}
 					}
 				});
-				(Hash_op = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((function () {
-	var Hash_a = {};
-
-	(Hash_a['infix:<+=>'] = 'infix:<+>');
-	(Hash_a['infix:<-=>'] = 'infix:<->');
-	(Hash_a['infix:<*=>'] = 'infix:<*>');
-	(Hash_a['infix:<' + String.fromCharCode(47) + '=>'] = 'infix:<' + String.fromCharCode(47) + '>');
-	(Hash_a['infix:<||=>'] = 'infix:<||>');
-	(Hash_a['infix:<&&=>'] = 'infix:<&&>');
-	(Hash_a['infix:<|=>'] = 'infix:<|>');
-	(Hash_a['infix:<&=>'] = 'infix:<&>');
-	(Hash_a['infix:<' + String.fromCharCode(47) + String.fromCharCode(47) + '=>'] = 'infix:<' + String.fromCharCode(47) + String.fromCharCode(47) + '>');
-	(Hash_a['infix:<.=>'] = 'list:<.>');
-	return((new HashRef(Hash_a)));
-})())._hash_));
+				(Hash_op = (function (_h) { var _tmp = {}; for (var _i in _h) { _tmp[_i] = _h[_i]; }; return _tmp; })( ((new HashRef(array_to_hash(interpolate_array('infix:<+=>', 'infix:<+>', 'infix:<-=>', 'infix:<->', 'infix:<*=>', 'infix:<*>', 'infix:<' + String.fromCharCode(47) + '=>', 'infix:<' + String.fromCharCode(47) + '>', 'infix:<||=>', 'infix:<||>', 'infix:<&&=>', 'infix:<&&>', 'infix:<|=>', 'infix:<|>', 'infix:<&=>', 'infix:<&>', 'infix:<' + String.fromCharCode(47) + String.fromCharCode(47) + '=>', 'infix:<' + String.fromCharCode(47) + String.fromCharCode(47) + '>', 'infix:<.=>', 'list:<.>')))))._hash_));
 })()
 ;
 make_package("Do");

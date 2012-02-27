@@ -123,6 +123,14 @@ interpolate_array = function() {
     return res;
 };
 
+array_to_hash = function(a) {
+    var res = {};
+    for (i = 0; i < a.length; i+=2) {
+        res[string(a[i])] = a[i+1];
+    }
+    return res;
+};
+
 string = function(o) {
     if (o == null) {
         return "";

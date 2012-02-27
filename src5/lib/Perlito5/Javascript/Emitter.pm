@@ -93,6 +93,24 @@ package Javascript;
             }
     }
 
+    sub preprocess_array_interpolation {
+        my @items;
+        for my $item ( @{$_[0]} ) {
+            if ($item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
+                for my $arg ( @{ preprocess_array_interpolation($item->arguments) } ) {
+                    push( @items, $arg);
+                }
+            }
+            elsif ($item->isa('Apply') && $item->code eq 'infix:<=>>') {
+                push @items, $item->arguments[0];
+                push @items, $item->arguments[1];
+            }
+            else {
+                push( @items, $item);
+            }
+        }
+        return \@items;
+    }
 }
 
 package Perlito5::Javascript::LexicalBlock;
@@ -317,21 +335,10 @@ package Lit::Array;
         my $self = shift;
         my $level = shift;
 
-        my @items;
-        for my $item ( @{$self->{"array1"}} ) {
-            if ($item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
-                for my $arg ( @{$item->arguments} ) {
-                    push( @items, $arg);
-                }
-            }
-            else {
-                push( @items, $item);
-            }
-        }
-
+        my $items = Javascript::preprocess_array_interpolation( $self->{"array1"} );
         Javascript::tab($level)
         . '(new ArrayRef(interpolate_array('
-        .   join(', ', map( $_->emit_javascript, @items ))
+        .   join(', ', map( $_->emit_javascript, @$items ))
         . ')))'
     }
 }
@@ -342,8 +349,12 @@ package Lit::Hash;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $ast = $self->expand_interpolation;
-        return $ast->emit_javascript_indented( $level );
+
+        my $items = Javascript::preprocess_array_interpolation( $self->{"hash1"} );
+        Javascript::tab($level)
+        . '(new HashRef(array_to_hash(interpolate_array('
+        .   join(', ', map( $_->emit_javascript, @$items ))
+        . '))))'
     }
 }
 
