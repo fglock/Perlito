@@ -79,11 +79,10 @@ package Javascript;
             }
     }
     sub to_bool {
+            # Note: 'infix:<||>' and 'infix:<&&>' can't be optimized here, because they don't return bool
             my $cond = shift;
             if  (  ($cond->isa( 'Val::Int' ))
                 || ($cond->isa( 'Val::Num' ))
-                || ($cond->isa( 'Apply' ) && $cond->code eq 'infix:<||>')
-                || ($cond->isa( 'Apply' ) && $cond->code eq 'infix:<&&>')
                 || ($cond->isa( 'Apply' ) && $cond->code eq 'prefix:<!>')
                 )
             {
@@ -352,8 +351,8 @@ package Index;
         . '('
         .   $self->{"obj"}->emit_javascript() 
         .   ' ? ' . $self->{"obj"}->emit_javascript() 
-        .   ' : ' . $self->{"obj"}->emit_javascript() . ' = []'
-        . ')[' . $self->{"index_exp"}->emit_javascript() . ']';
+        .   ' : ' . $self->{"obj"}->emit_javascript() . ' = new ArrayRef([])'
+        . ')._array_[' . $self->{"index_exp"}->emit_javascript() . ']';
     }
 }
 
@@ -444,8 +443,8 @@ package Call;
                 . '('
                 .   $invocant 
                 .   ' ? ' . $invocant 
-                .   ' : ' . $invocant . ' = []'
-                . ')[' . $self->{"arguments"}->emit_javascript() . ']';
+                .   ' : ' . $invocant . ' = new ArrayRef([])'
+                . ')._array_[' . $self->{"arguments"}->emit_javascript() . ']';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
             return Javascript::tab($level) 
@@ -564,8 +563,8 @@ package Apply;
                 . '('
                 .   $arg->emit_javascript() 
                 .   ' ? ' . $arg->emit_javascript() 
-                .   ' : ' . $arg->emit_javascript() . ' = []'
-                . ')';
+                .   ' : ' . $arg->emit_javascript() . ' = new ArrayRef([])'
+                . ')._array_';
         }
         if ( $code eq 'prefix:<%>' ) {
             my $arg = $self->{"arguments"}->[0];
@@ -573,14 +572,13 @@ package Apply;
         }
 
         if ( $code eq 'circumfix:<[ ]>' ) {
-            return 'Array.prototype.slice.call(' . join( ', ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
+            return '(new ArrayRef(Array.prototype.slice.call(' . join( ', ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')))';
         }
         if ( $code eq 'prefix:<\\>' ) {
             my $arg = $self->{"arguments"}->[0];
             if ( $arg->isa('Var') ) {
                 if ( $arg->sigil eq '@' ) {
-                    # XXX not implemented
-                    return $arg->emit_javascript;
+                    return '(new ArrayRef(' . $arg->emit_javascript . '))';
                 }
                 if ( $arg->sigil eq '%' ) {
                     return '(new HashRef(' . $arg->emit_javascript . '))';
@@ -799,7 +797,7 @@ package For;
         my $level = shift;
         my $cond = $self->{"cond"};
         if (!( $cond->isa( 'Var' ) && $cond->sigil eq '@' )) {
-            $cond = Lit::Array->new( array1 => [$cond] )
+            $cond = Apply->new( code => 'prefix:<@>', arguments => [ Lit::Array->new( array1 => [$cond] ) ] );
         }
         my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         my $sig = 'v__';

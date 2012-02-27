@@ -43,9 +43,6 @@ TODO list for Perlito5
 
 * Javascript backend
 
--- array refs break the compiler bootstrap; the problem seems to be an autovivification bug
-   (maybe fixed now)
-
 -- wrap CODE.js and Runtime.js in perl code.
 -- create target-specific versions of the runtime
 -- add browser, v8, node.js runtimes

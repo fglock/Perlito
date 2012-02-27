@@ -161,7 +161,7 @@ and = function(a, fb) {
     if (bool(a)) {
         return fb();
     }
-    return false;
+    return a;
 };
 
 or = function(a, fb) {

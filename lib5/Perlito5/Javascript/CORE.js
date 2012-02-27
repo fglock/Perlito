@@ -224,9 +224,6 @@ CORE.ref = function(o) {
         // un-blessed reference
         return o._ref_;
     }
-    if (typeof o === 'object' && (o instanceof Array)) {
-        return 'ARRAY';
-    }
     if (typeof o === 'function') {
         return 'CODE';
     }

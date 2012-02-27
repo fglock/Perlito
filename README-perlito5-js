@@ -22,7 +22,7 @@ HashRef
 - native {} wrapped in a "HashRef" object
 
 ArrayRef
-- TODO
+- native [] wrapped in a "ArrayRef" object
 
 ScalarRef
 - native value wrapped in a "ScalarRef" object

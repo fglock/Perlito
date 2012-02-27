@@ -61,7 +61,7 @@ package Javascript;
     };
     sub to_bool {
         ((my  $cond) = shift());
-        if ((((((($cond->isa('Val::Int')) || ($cond->isa('Val::Num'))) || (($cond->isa('Apply') && ($cond->code() eq 'infix:<' . chr(124) . chr(124) . '>')))) || (($cond->isa('Apply') && ($cond->code() eq 'infix:<' . chr(38) . chr(38) . '>')))) || (($cond->isa('Apply') && ($cond->code() eq 'prefix:<' . chr(33) . '>')))))) {
+        if ((((($cond->isa('Val::Int')) || ($cond->isa('Val::Num'))) || (($cond->isa('Apply') && ($cond->code() eq 'prefix:<' . chr(33) . '>')))))) {
             return ($cond->emit_javascript())
         }
         else {
@@ -315,7 +315,7 @@ package Index;
             ((my  $v) = Var->new(('sigil' => chr(64)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
             return (($v->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
         };
-        (Javascript::tab($level) . '(' . $self->{('obj')}->emit_javascript() . ' ' . chr(63) . ' ' . $self->{('obj')}->emit_javascript() . ' : ' . $self->{('obj')}->emit_javascript() . ' ' . chr(61) . ' []' . ')[' . $self->{('index_exp')}->emit_javascript() . ']')
+        (Javascript::tab($level) . '(' . $self->{('obj')}->emit_javascript() . ' ' . chr(63) . ' ' . $self->{('obj')}->emit_javascript() . ' : ' . $self->{('obj')}->emit_javascript() . ' ' . chr(61) . ' new ArrayRef([])' . ')._array_[' . $self->{('index_exp')}->emit_javascript() . ']')
     }
 });
 package Lookup;
@@ -392,7 +392,7 @@ package Call;
         ((my  $invocant) = $self->{('invocant')}->emit_javascript());
         ((my  $meth) = $self->{('method')});
         if ((($meth eq 'postcircumfix:<[ ]>'))) {
-            return ((Javascript::tab($level) . '(' . $invocant . ' ' . chr(63) . ' ' . $invocant . ' : ' . $invocant . ' ' . chr(61) . ' []' . ')[' . $self->{('arguments')}->emit_javascript() . ']'))
+            return ((Javascript::tab($level) . '(' . $invocant . ' ' . chr(63) . ' ' . $invocant . ' : ' . $invocant . ' ' . chr(61) . ' new ArrayRef([])' . ')._array_[' . $self->{('arguments')}->emit_javascript() . ']'))
         };
         if ((($meth eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
             return ((Javascript::tab($level) . '(' . $invocant . ' ' . chr(63) . ' ' . $invocant . ' : ' . $invocant . ' ' . chr(61) . ' new HashRef(' . chr(123) . chr(125) . ')' . ')._hash_[' . $self->{('arguments')}->emit_javascript() . ']'))
@@ -467,20 +467,20 @@ package Apply;
         };
         if ((($code eq 'prefix:<' . chr(64) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
-            return ((Javascript::tab($level) . '(' . $arg->emit_javascript() . ' ' . chr(63) . ' ' . $arg->emit_javascript() . ' : ' . $arg->emit_javascript() . ' ' . chr(61) . ' []' . ')'))
+            return ((Javascript::tab($level) . '(' . $arg->emit_javascript() . ' ' . chr(63) . ' ' . $arg->emit_javascript() . ' : ' . $arg->emit_javascript() . ' ' . chr(61) . ' new ArrayRef([])' . ')._array_'))
         };
         if ((($code eq 'prefix:<' . chr(37) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
             return (('(' . $arg->emit_javascript() . ')._hash_'))
         };
         if ((($code eq 'circumfix:<[ ]>'))) {
-            return (('Array.prototype.slice.call(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
+            return (('(new ArrayRef(Array.prototype.slice.call(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')))'))
         };
         if ((($code eq 'prefix:<' . chr(92) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
             if (($arg->isa('Var'))) {
                 if ((($arg->sigil() eq chr(64)))) {
-                    return ($arg->emit_javascript())
+                    return (('(new ArrayRef(' . $arg->emit_javascript() . '))'))
                 };
                 if ((($arg->sigil() eq chr(37)))) {
                     return (('(new HashRef(' . $arg->emit_javascript() . '))'))
@@ -657,10 +657,15 @@ package For;
         ((my  $level) = shift());
         ((my  $cond) = $self->{('cond')});
         if ((!((($cond->isa('Var') && ($cond->sigil() eq chr(64))))))) {
-            ($cond = Lit::Array->new(('array1' => (do {
+            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
+    (my  @a);
+    (my  @v);
+    push(@a, Lit::Array->new(('array1' => (do {
     (my  @a);
     (my  @v);
     push(@a, $cond );
+    \@a
+}))) );
     \@a
 }))))
         };
