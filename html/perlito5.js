@@ -3228,7 +3228,10 @@ make_sub(__PACKAGE__, "emit_javascript_indented", function () {
 								throw(('eval(perl5_to_js(' + string(NAMESPACE["Javascript"].to_str(((v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] ? (v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] : (v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] = new ArrayRef([]))._array_[0])) + '))'));;
 							})(); };
 							if ( bool(((v_code == 'undef'))) ) { (function () {
-								throw((string(NAMESPACE["Javascript"].tab(v_level)) + 'null'));;
+								if ( bool((and((v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')], function () { return ((v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] ? (v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] : (v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] = new ArrayRef([]))._array_; }))) ) { (function () {
+									throw(('(' + string(((v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] ? (v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] : (v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] = new ArrayRef([]))._array_[0]._class_.emit_javascript(((v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] ? (v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] : (v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] = new ArrayRef([]))._array_[0])) + ' = null)'));;
+								})(); };
+								throw('null');;
 							})(); };
 							if ( bool(((v_code == 'defined'))) ) { (function () {
 								throw((string(NAMESPACE["Javascript"].tab(v_level)) + '(' + string(PKG.join(' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript(v__))}; return out; })(((v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] ? (v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] : (v_self ? v_self : v_self = new HashRef({}))._hash_[('arguments')] = new ArrayRef([]))._array_))) + ' ' + String.fromCharCode(33) + '= null)'));;

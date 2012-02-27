@@ -523,7 +523,13 @@ package Apply;
                 . '))'
         }
 
-        if ($code eq 'undef')      { return Javascript::tab($level) . 'null' }
+        if ($code eq 'undef')      {
+            if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
+                return '(' . $self->{"arguments"}->[0]->emit_javascript . ' = null)'
+            }
+            return 'null'
+        }
+
         if ($code eq 'defined')    { return Javascript::tab($level) . '('  . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))    . ' != null)' }
 
         if ($code eq 'shift')      {

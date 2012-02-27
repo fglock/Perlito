@@ -442,7 +442,10 @@ package Apply;
             return (('eval(perl5_to_js(' . Javascript::to_str($self->{('arguments')}->[0]) . '))'))
         };
         if ((($code eq 'undef'))) {
-            return ((Javascript::tab($level) . 'null'))
+            if ((($self->{('arguments')} && @{$self->{('arguments')}}))) {
+                return (('(' . $self->{('arguments')}->[0]->emit_javascript() . ' ' . chr(61) . ' null)'))
+            };
+            return ('null')
         };
         if ((($code eq 'defined'))) {
             return ((Javascript::tab($level) . '(' . join(' ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ' ' . chr(33) . chr(61) . ' null)'))
