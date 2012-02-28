@@ -93,18 +93,7 @@ package Perlito5::Javascript::LexicalBlock;
 (do {
     sub new {
         ((my  $class) = shift());
-        bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+        bless({    @_}, $class)
     };
     sub block {
         $_[0]->{'block'}
@@ -161,12 +150,7 @@ package Perlito5::Javascript::LexicalBlock;
                 ((my  $body) = $last_statement->body());
                 ((my  $otherwise) = $last_statement->otherwise());
                 if ((($cond->isa('Var') && ($cond->sigil() eq chr(64))))) {
-                    ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $cond );
-    \@a
-}))))
+                    ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [    $cond])))
                 };
                 ($body = Perlito5::Javascript::LexicalBlock->new(('block' => $body->stmts()), ('needs_return' => 1)));
                 push(@str, (Javascript::tab($level) . 'if ( ' . Javascript::to_bool($cond) . ' ) ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) );
@@ -355,14 +339,10 @@ package Lookup;
 });
 package Var;
 (do {
-    ((my  $table) = (do {
-    (my  %a);
-    ($a{chr(36)} = 'v_');
-    ($a{chr(64)} = 'List_');
-    ($a{chr(37)} = 'Hash_');
-    ($a{chr(38)} = 'Code_');
-    \%a
-}));
+    ((my  $table) = {    (chr(36) => 'v_'),
+    (chr(64) => 'List_'),
+    (chr(37) => 'Hash_'),
+    (chr(38) => 'Code_')});
     sub emit_javascript {
         $_[0]->emit_javascript_indented(0)
     };
@@ -608,32 +588,12 @@ package Apply;
         ((my  $arguments) = shift());
         ((my  $level) = shift());
         if ((($parameters->isa('Var') && ($parameters->sigil() eq chr(64))) || ($parameters->isa('Decl') && ($parameters->var()->sigil() eq chr(64))))) {
-            ($arguments = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Lit::Array->new(('array1' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $arguments );
-    \@a
-}))) );
-    \@a
-}))));
+            ($arguments = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [    Lit::Array->new(('array1' => [    $arguments]))])));
             return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' (' . $arguments->emit_javascript() . ').slice())'))
         }
         else {
             if ((($parameters->isa('Var') && ($parameters->sigil() eq chr(37))) || ($parameters->isa('Decl') && ($parameters->var()->sigil() eq chr(37))))) {
-                ($arguments = Apply->new(('code' => 'prefix:<' . chr(37) . '>'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Lit::Hash->new(('hash1' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $arguments );
-    \@a
-}))) );
-    \@a
-}))));
+                ($arguments = Apply->new(('code' => 'prefix:<' . chr(37) . '>'), ('arguments' => [    Lit::Hash->new(('hash1' => [    $arguments]))])));
                 return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' (function (_h) ' . chr(123) . ' ' . 'var _tmp ' . chr(61) . ' ' . chr(123) . chr(125) . chr(59) . ' ' . 'for (var _i in _h) ' . chr(123) . ' ' . '_tmp[_i] ' . chr(61) . ' _h[_i]' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'return _tmp' . chr(59) . ' ' . chr(125) . ')( ' . $arguments->emit_javascript() . '))'))
             }
         };
@@ -650,12 +610,7 @@ package If;
         ((my  $level) = shift());
         ((my  $cond) = $self->{('cond')});
         if ((($cond->isa('Var') && ($cond->sigil() eq chr(64))))) {
-            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $cond );
-    \@a
-}))))
+            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [    $cond])))
         };
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
         ((my  $s) = (Javascript::tab($level) . 'if ( ' . Javascript::to_bool($cond) . ' ) ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)));
@@ -688,17 +643,7 @@ package For;
         ((my  $level) = shift());
         ((my  $cond) = $self->{('cond')});
         if ((!((($cond->isa('Var') && ($cond->sigil() eq chr(64))))))) {
-            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Lit::Array->new(('array1' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $cond );
-    \@a
-}))) );
-    \@a
-}))))
+            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [    Lit::Array->new(('array1' => [    $cond]))])))
         };
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
         ((my  $sig) = 'v__');

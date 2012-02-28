@@ -11,18 +11,7 @@ use v5;
 package Rul;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub constant {
     ((my  $str) = shift());
@@ -43,18 +32,7 @@ sub constant {
 package Rul::Quantifier;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub term {
     $_[0]->{'term'}
@@ -101,18 +79,7 @@ sub set_captures_to_array {
 package Rul::Or;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub or_list {
     $_[0]->{'or_list'}
@@ -128,18 +95,7 @@ sub set_captures_to_array {
 package Rul::Concat;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub concat {
     $_[0]->{'concat'}
@@ -155,18 +111,7 @@ sub set_captures_to_array {
 package Rul::Subrule;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub metasyntax {
     $_[0]->{'metasyntax'}
@@ -200,18 +145,7 @@ sub set_captures_to_array {
 package Rul::Constant;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub constant {
     $_[0]->{'constant'}
@@ -227,18 +161,7 @@ sub set_captures_to_array {
 package Rul::Dot;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub emit_perl5 {
     ((my  $self) = $_[0]);
@@ -250,18 +173,7 @@ sub set_captures_to_array {
 package Rul::SpecialChar;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub char {
     $_[0]->{'char'}
@@ -292,18 +204,7 @@ sub set_captures_to_array {
 package Rul::Block;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub closure {
     $_[0]->{'closure'}
@@ -318,18 +219,7 @@ sub set_captures_to_array {
 package Rul::Before;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub rule_exp {
     $_[0]->{'rule_exp'}
@@ -344,18 +234,7 @@ sub set_captures_to_array {
 package Rul::NotBefore;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub rule_exp {
     $_[0]->{'rule_exp'}

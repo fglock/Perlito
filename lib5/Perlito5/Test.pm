@@ -53,11 +53,7 @@ sub isnt {
     ((my  $todo) = shift());
     ((my  $depends) = shift());
     ((my  $test) = !((($got eq $expected))));
-    Perlito5::Test::proclaim($test, ('isnt' . chr(33) . ' ' . $desc), $todo, $got, $expected, $depends, (do {
-    (my  %a);
-    ($a{'negate'} = 1);
-    \%a
-}))
+    Perlito5::Test::proclaim($test, ('isnt' . chr(33) . ' ' . $desc), $todo, $got, $expected, $depends, {    ('negate' => 1)})
 };
 sub cmp_ok {
     ((my  $got) = shift());

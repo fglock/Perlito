@@ -150,8 +150,8 @@ package Lit::Array;
         my $self = $_[0];
         my $level = $_[1];
         
-        my $ast = $self->expand_interpolation;
-        return $ast->emit_perl5_indented($level);
+        Perl5::tab($level) . "["
+        .   join(",\n", map( $_->emit_perl5_indented( $level + 1 ), @{$self->{"array1"}} )) . "]"
     }
 }
 
@@ -164,8 +164,8 @@ package Lit::Hash;
         my $self = $_[0];
         my $level = $_[1];
         
-        my $ast = $self->expand_interpolation;
-        return $ast->emit_perl5_indented($level);
+        Perl5::tab($level) . "{"
+        .   join(",\n", map( $_->emit_perl5_indented( $level + 1 ), @{$self->{"hash1"}} )) . "}"
     }
 }
 

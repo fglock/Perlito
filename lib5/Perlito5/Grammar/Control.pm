@@ -40,11 +40,7 @@ sub unless {
     if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'unless' . chr(39)))
     };
-    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => Lit::Block->new(('stmts' => (do {
-    (my  @a);
-    (my  @v);
-    \@a
-})))), ('otherwise' => $body)));
+    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => Lit::Block->new(('stmts' => []))), ('otherwise' => $body)));
     1
 })))
 }))
@@ -141,12 +137,7 @@ sub if {
     if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'if' . chr(39)))
     };
-    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $MATCH->{('if')}->flat() );
-    \@a
-}))))));
+    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => [    $MATCH->{('if')}->flat()])))));
     1
 }))))
 }))) || ((do {
@@ -156,11 +147,7 @@ sub if {
     if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'if' . chr(39)))
     };
-    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => (do {
-    (my  @a);
-    (my  @v);
-    \@a
-}))))));
+    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => [])))));
     1
 })))
 })))

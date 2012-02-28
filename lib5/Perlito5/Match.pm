@@ -11,18 +11,7 @@ use v5;
 package Perlito5::Match;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub from {
     $_[0]->{'from'}

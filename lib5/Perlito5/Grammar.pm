@@ -1528,13 +1528,8 @@ sub double_quoted_buf {
         0
     }
 }))) && ((do {
-    ($MATCH->{('capture')} = Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Val::Buf->new(('buf' => ' ')) );
-    push(@a, ($MATCH->{('Perlito5::Expression.operator')}->flat())->[1] );
-    \@a
-}))));
+    ($MATCH->{('capture')} = Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => [    Val::Buf->new(('buf' => ' ')),
+    ($MATCH->{('Perlito5::Expression.operator')}->flat())->[1]])));
     1
 })))
 })) || ((do {
@@ -1550,13 +1545,8 @@ sub double_quoted_buf {
         0
     }
 }))) && (((chr(125) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')})))))) && ((do {
-    ($MATCH->{('capture')} = Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Val::Buf->new(('buf' => ' ')) );
-    push(@a, ($MATCH->{('exp_stmts')}->flat())->[0] );
-    \@a
-}))));
+    ($MATCH->{('capture')} = Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => [    Val::Buf->new(('buf' => ' ')),
+    ($MATCH->{('exp_stmts')}->flat())->[0]])));
     1
 }))))
 }))) || ((do {
@@ -1616,12 +1606,7 @@ sub val_buf {
             push(@{$MATCH->{'double_quoted_buf'}}, $m2 )
         }
         else {
-            ($MATCH->{'double_quoted_buf'} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $m2 );
-    \@a
-}))
+            ($MATCH->{'double_quoted_buf'} = [    $m2])
         };
         1
     }
@@ -1645,7 +1630,7 @@ sub val_buf {
         ($MATCH->{('capture')} = Val::Buf->new(('buf' => '')))
     }
     else {
-        ($MATCH->{('capture')} = Apply->new(('namespace' => ''), ('code' => 'list:<.>'), ('arguments' => [map($_->capture(), @{$MATCH->{('double_quoted_buf')}})])))
+        ($MATCH->{('capture')} = Apply->new(('namespace' => ''), ('code' => 'list:<.>'), ('arguments' => [    map($_->capture(), @{$MATCH->{('double_quoted_buf')}})])))
     };
 ;
     1
@@ -1766,12 +1751,7 @@ sub exp_stmts {
             push(@{$MATCH->{'Perlito5::Expression.delimited_statement'}}, $m2 )
         }
         else {
-            ($MATCH->{'Perlito5::Expression.delimited_statement'} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $m2 );
-    \@a
-}))
+            ($MATCH->{'Perlito5::Expression.delimited_statement'} = [    $m2])
         };
         1
     }
@@ -1790,7 +1770,7 @@ sub exp_stmts {
     ($MATCH->{('to')} = $last_pos);
     1
 })) && ((do {
-    ($MATCH->{('capture')} = [map($_->capture(), @{$MATCH->{('Perlito5::Expression.delimited_statement')}})]);
+    ($MATCH->{('capture')} = [    map($_->capture(), @{$MATCH->{('Perlito5::Expression.delimited_statement')}})]);
     1
 })))
 }))
@@ -1814,12 +1794,7 @@ sub opt_name {
             push(@{$MATCH->{'ident'}}, $m2 )
         }
         else {
-            ($MATCH->{'ident'} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $m2 );
-    \@a
-}))
+            ($MATCH->{'ident'} = [    $m2])
         };
         1
     }
@@ -1853,10 +1828,7 @@ sub args_sig {
         0
     }
 })) && ((do {
-    ($MATCH->{('capture')} = Sig->new(('positional' => Perlito5::Expression::expand_list($MATCH->{('Perlito5::Expression.list_parse')}->flat()->{'exp'})), ('named' => (do {
-    (my  %a);
-    \%a
-}))));
+    ($MATCH->{('capture')} = Sig->new(('positional' => Perlito5::Expression::expand_list($MATCH->{('Perlito5::Expression.list_parse')}->flat()->{'exp'})), ('named' => {})));
 ;
     1
 })))
@@ -1916,14 +1888,7 @@ sub method_sig {
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((do {
-    ($MATCH->{('capture')} = Sig->new(('positional' => (do {
-    (my  @a);
-    (my  @v);
-    \@a
-})), ('named' => (do {
-    (my  %a);
-    \%a
-}))));
+    ($MATCH->{('capture')} = Sig->new(('positional' => []), ('named' => {})));
     1
 })))
 })))

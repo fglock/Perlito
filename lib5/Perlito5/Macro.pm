@@ -29,85 +29,27 @@ sub expand_interpolation {
         }
     };
     if ((($needs_interpolation && (scalar(@items) == 1)))) {
-        return (Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $items[0] );
-    \@a
-})), ('code' => 'circumfix:<[ ]>'), ('namespace' => '')))
+        return (Apply->new(('arguments' => [    $items[0]]), ('code' => 'circumfix:<[ ]>'), ('namespace' => '')))
     };
     (my  @s);
     for my $item (@items) {
         if (((($item->isa('Var') && ($item->sigil() eq chr(64))) || ($item->isa('Apply') && (((($item->code() eq 'prefix:<' . chr(64) . '>') || ($item->code() eq 'infix:<..>')) || ($item->code() eq 'map'))))))) {
-            push(@s, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64))) );
-    push(@a, $item );
-    \@a
-})), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
-            push(@s, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)))), ('stmts' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64))) );
-    push(@a, Index->new(('index_exp' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)))), ('obj' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(36))))) );
-    \@a
-})), ('code' => 'push'), ('namespace' => '')) );
-    \@a
-})))), ('cond' => Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Val::Int->new(('int' => 0)) );
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64))) );
-    \@a
-})), ('code' => 'scalar'), ('namespace' => '')) );
-    push(@a, Val::Int->new(('int' => 1)) );
-    \@a
-})), ('code' => 'infix:<->'), ('namespace' => '')) );
-    \@a
-})), ('code' => 'circumfix:<( )>'), ('namespace' => '')) );
-    \@a
-})), ('code' => 'infix:<..>'), ('namespace' => ''))), ('topic' => undef())) )
+            push(@s, Apply->new(('arguments' => [    Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64))),
+    $item]), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
+            push(@s, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)))), ('stmts' => [    Apply->new(('arguments' => [    Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64))),
+    Index->new(('index_exp' => Var->new(('name' => 'x'), ('namespace' => ''), ('sigil' => chr(36)))), ('obj' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(36)))))]), ('code' => 'push'), ('namespace' => ''))]))), ('cond' => Apply->new(('arguments' => [    Val::Int->new(('int' => 0)),
+    Apply->new(('arguments' => [    Apply->new(('arguments' => [    Apply->new(('arguments' => [    Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64)))]), ('code' => 'scalar'), ('namespace' => '')),
+    Val::Int->new(('int' => 1))]), ('code' => 'infix:<->'), ('namespace' => ''))]), ('code' => 'circumfix:<( )>'), ('namespace' => ''))]), ('code' => 'infix:<..>'), ('namespace' => ''))), ('topic' => undef())) )
         }
         else {
-            push(@s, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64))) );
-    push(@a, $item );
-    \@a
-})), ('code' => 'push'), ('namespace' => '')) )
+            push(@s, Apply->new(('arguments' => [    Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64))),
+    $item]), ('code' => 'push'), ('namespace' => '')) )
         }
     };
-    return (Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64))))) );
-    push(@a, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64))))) );
-    (@v = @s);
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64))) );
-    \@a
-})), ('code' => 'prefix:<' . chr(92) . '>'), ('namespace' => '')) );
-    \@a
-}))))))
+    return (Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => [    Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64))))),
+    Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'v'), ('namespace' => ''), ('sigil' => chr(64))))),
+    @s,
+    Apply->new(('arguments' => [    Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(64)))]), ('code' => 'prefix:<' . chr(92) . '>'), ('namespace' => ''))])))))
 };
 package Lit::Hash;
 sub expand_interpolation {
@@ -126,13 +68,8 @@ sub expand_interpolation {
     (my  @s);
     for my $item (@items) {
         if ((($item->isa('Apply') && ($item->code() eq 'infix:<' . chr(61) . '>>')))) {
-            push(@s, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Lookup->new(('index_exp' => $item->arguments()->[0]), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36))))) );
-    push(@a, $item->arguments()->[1] );
-    \@a
-})), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) )
+            push(@s, Apply->new(('arguments' => [    Lookup->new(('index_exp' => $item->arguments()->[0]), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36))))),
+    $item->arguments()->[1]]), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) )
         }
         else {
             if (((($item->isa('Var') && ($item->sigil() eq chr(37))) || ($item->isa('Apply') && ($item->code() eq 'prefix:<' . chr(37) . '>'))))) {
@@ -140,92 +77,22 @@ sub expand_interpolation {
                 if ($item->isa('Var')) {
                     ($v = Var->new(('sigil' => chr(36)), ('namespace' => $item->namespace()), ('name' => $item->name())))
                 };
-                push(@s, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)))), ('stmts' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Lookup->new(('index_exp' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36))))) );
-    push(@a, Lookup->new(('index_exp' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)))), ('obj' => $v)) );
-    \@a
-})), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
-    \@a
-})))), ('cond' => Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $item );
-    \@a
-})), ('code' => 'keys'), ('namespace' => ''))), ('topic' => undef())) )
+                push(@s, For->new(('body' => Lit::Block->new(('sig' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)))), ('stmts' => [    Apply->new(('arguments' => [    Lookup->new(('index_exp' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36))))),
+    Lookup->new(('index_exp' => Var->new(('name' => 'p'), ('namespace' => ''), ('sigil' => chr(36)))), ('obj' => $v))]), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => ''))]))), ('cond' => Apply->new(('arguments' => [    $item]), ('code' => 'keys'), ('namespace' => ''))), ('topic' => undef())) )
             }
             else {
                 if (((($item->isa('Var') && ($item->sigil() eq chr(64))) || ($item->isa('Apply') && ($item->code() eq 'prefix:<' . chr(64) . '>'))))) {
-                    push(@s, Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36))))) );
-    push(@a, Val::Int->new(('int' => 0)) );
-    \@a
-})), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(64))))) );
-    push(@a, $item );
-    \@a
-})), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
-    push(@a, While->new(('body' => Lit::Block->new(('sig' => undef()), ('stmts' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Lookup->new(('index_exp' => Index->new(('index_exp' => Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36)))), ('obj' => Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(36)))))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36))))) );
-    push(@a, Index->new(('index_exp' => Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36))) );
-    push(@a, Val::Int->new(('int' => 1)) );
-    \@a
-})), ('code' => 'infix:<+>'), ('namespace' => ''))), ('obj' => Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(36))))) );
-    \@a
-})), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36))) );
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36))) );
-    push(@a, Val::Int->new(('int' => 2)) );
-    \@a
-})), ('code' => 'infix:<+>'), ('namespace' => '')) );
-    \@a
-})), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')) );
-    \@a
-})))), ('cond' => Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36))) );
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(64))) );
-    \@a
-})), ('code' => 'scalar'), ('namespace' => '')) );
-    \@a
-})), ('code' => 'infix:<<>'), ('namespace' => '')) );
-    \@a
-})), ('code' => 'circumfix:<( )>'), ('namespace' => '')))) );
-    \@a
-}))))) )
+                    push(@s, Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => [    Apply->new(('arguments' => [    Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36))))),
+    Val::Int->new(('int' => 0))]), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')),
+    Apply->new(('arguments' => [    Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(64))))),
+    $item]), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')),
+    While->new(('body' => Lit::Block->new(('sig' => undef()), ('stmts' => [    Apply->new(('arguments' => [    Lookup->new(('index_exp' => Index->new(('index_exp' => Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36)))), ('obj' => Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(36)))))), ('obj' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(36))))),
+    Index->new(('index_exp' => Apply->new(('arguments' => [    Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36))),
+    Val::Int->new(('int' => 1))]), ('code' => 'infix:<+>'), ('namespace' => ''))), ('obj' => Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(36)))))]), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => '')),
+    Apply->new(('arguments' => [    Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36))),
+    Apply->new(('arguments' => [    Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36))),
+    Val::Int->new(('int' => 2))]), ('code' => 'infix:<+>'), ('namespace' => ''))]), ('code' => 'infix:<' . chr(61) . '>'), ('namespace' => ''))]))), ('cond' => Apply->new(('arguments' => [    Apply->new(('arguments' => [    Var->new(('name' => '_i'), ('namespace' => ''), ('sigil' => chr(36))),
+    Apply->new(('arguments' => [    Var->new(('name' => '_a'), ('namespace' => ''), ('sigil' => chr(64)))]), ('code' => 'scalar'), ('namespace' => ''))]), ('code' => 'infix:<<>'), ('namespace' => ''))]), ('code' => 'circumfix:<( )>'), ('namespace' => ''))))])))) )
                 }
                 else {
                     die('Error in hash composer: ', $item)
@@ -233,22 +100,9 @@ sub expand_interpolation {
             }
         }
     };
-    return (Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37))))) );
-    (@v = @s);
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    push(@a, Apply->new(('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37))) );
-    \@a
-})), ('code' => 'prefix:<' . chr(92) . '>'), ('namespace' => '')) );
-    \@a
-}))))))
+    return (Do->new(('block' => Lit::Block->new(('sig' => undef()), ('stmts' => [    Decl->new(('decl' => 'my'), ('type' => ''), ('var' => Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37))))),
+    @s,
+    Apply->new(('arguments' => [    Var->new(('name' => 'a'), ('namespace' => ''), ('sigil' => chr(37)))]), ('code' => 'prefix:<' . chr(92) . '>'), ('namespace' => ''))])))))
 };
 package Apply;
 ((my  %op) = (('infix:<+' . chr(61) . '>' => 'infix:<+>'), ('infix:<-' . chr(61) . '>' => 'infix:<->'), ('infix:<*' . chr(61) . '>' => 'infix:<*>'), ('infix:<' . chr(47) . chr(61) . '>' => 'infix:<' . chr(47) . '>'), ('infix:<' . chr(124) . chr(124) . chr(61) . '>' => 'infix:<' . chr(124) . chr(124) . '>'), ('infix:<' . chr(38) . chr(38) . chr(61) . '>' => 'infix:<' . chr(38) . chr(38) . '>'), ('infix:<' . chr(124) . chr(61) . '>' => 'infix:<' . chr(124) . '>'), ('infix:<' . chr(38) . chr(61) . '>' => 'infix:<' . chr(38) . '>'), ('infix:<' . chr(47) . chr(47) . chr(61) . '>' => 'infix:<' . chr(47) . chr(47) . '>'), ('infix:<.' . chr(61) . '>' => 'list:<.>')));
@@ -259,13 +113,8 @@ sub op_assign {
         return (0)
     };
     if ((exists($op{$code}))) {
-        return (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $self->{('arguments')}->[0] );
-    push(@a, Apply->new(('code' => $op{$code}), ('arguments' => $self->{('arguments')})) );
-    \@a
-}))))
+        return (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => [    $self->{('arguments')}->[0],
+    Apply->new(('code' => $op{$code}), ('arguments' => $self->{('arguments')}))])))
     };
     return (0)
 };
@@ -277,12 +126,7 @@ sub simplify {
         ($block = $self->{('block')}->stmts())
     }
     else {
-        ($block = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $self->{('block')} );
-    \@a
-}))
+        ($block = [    $self->{('block')}])
     };
     if (((scalar(@{$block}) == 1))) {
         ((my  $stmt) = $block->[0]);

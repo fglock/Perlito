@@ -73,18 +73,7 @@ package Perlito5::Perl6::LexicalBlock;
 (do {
     sub new {
         ((my  $class) = shift());
-        bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+        bless({    @_}, $class)
     };
     sub block {
         $_[0]->{'block'}
@@ -510,12 +499,7 @@ package If;
         ((my  $level) = shift());
         ((my  $cond) = $self->{('cond')});
         if ((($cond->isa('Var') && ($cond->sigil() eq chr(64))))) {
-            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $cond );
-    \@a
-}))))
+            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [    $cond])))
         };
         ((my  $body) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
         ((my  $s) = (Perl6::tab($level) . 'if ( ' . Perl6::to_bool($cond) . ' ) ' . chr(123) . (chr(10)) . $body->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125)));

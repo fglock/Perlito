@@ -12,19 +12,8 @@ package CompUnit;
 sub eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
-    ((my  $env1) = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, (do {
-    (my  %a);
-    \%a
-}) );
-    (@v = @{$env});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    \@a
-}));
+    ((my  $env1) = [    {},
+    @{$env}]);
     for my $stmt (@{$self->{('body')}}) {
         $stmt->eval($env1)
     }
@@ -51,19 +40,8 @@ package Lit::Block;
 sub eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
-    ((my  $env1) = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, (do {
-    (my  %a);
-    \%a
-}) );
-    (@v = @{$env});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    \@a
-}));
+    ((my  $env1) = [    {},
+    @{$env}]);
     for my $stmt (@{$self->{('stmts')}}) {
         $stmt->eval($env1)
     }
@@ -168,37 +146,15 @@ sub eval {
     ((my  $env) = $_[1]);
     ((my  $cond) = $self->{('cond')});
     if (($cond->eval($env))) {
-        ((my  $env1) = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, (do {
-    (my  %a);
-    \%a
-}) );
-    (@v = @{$env});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    \@a
-}));
+        ((my  $env1) = [    {},
+    @{$env}]);
         for my $stmt (@{($self->{('body')})->stmts()}) {
             $stmt->eval($env1)
         }
     }
     else {
-        ((my  $env1) = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, (do {
-    (my  %a);
-    \%a
-}) );
-    (@v = @{$env});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    \@a
-}));
+        ((my  $env1) = [    {},
+    @{$env}]);
         for my $stmt (@{($self->{('otherwise')})->stmts()}) {
             $stmt->eval($env1)
         }
@@ -211,25 +167,10 @@ sub eval {
     ((my  $env) = $_[1]);
     ((my  $cond) = $self->{('cond')});
     ((my  $topic_name) = $self->{('body')}->sig()->plain_name());
-    ((my  $env1) = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, (do {
-    (my  %a);
-    \%a
-}) );
-    (@v = @{$env});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    \@a
-}));
+    ((my  $env1) = [    {},
+    @{$env}]);
     for my $topic (@{$cond->eval($env)}) {
-        ($env1->[0] = (do {
-    (my  %a);
-    ($a{$topic_name} = $topic);
-    \%a
-}));
+        ($env1->[0] = {    ($topic_name => $topic)});
         for my $stmt (@{($self->{('body')})->stmts()}) {
             $stmt->eval($env1)
         }
@@ -279,16 +220,8 @@ sub eval {
         ($context{$name} = ($args->[$n])->eval($env));
         ($n = ($n + 1))
     };
-    ((my  $env1) = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, %context );
-    (@v = @{$env});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    \@a
-}));
+    ((my  $env1) = [    %context,
+    @{$env}]);
     (my  $r);
     for my $stmt (@{$self->{('block')}}) {
         ($r = $stmt->eval($env1))
@@ -304,19 +237,8 @@ package Do;
 sub eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
-    ((my  $env1) = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, (do {
-    (my  %a);
-    \%a
-}) );
-    (@v = @{$env});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    \@a
-}));
+    ((my  $env1) = [    {},
+    @{$env}]);
     for my $stmt (@{$self->{('block')}}) {
         $stmt->eval($env1)
     }

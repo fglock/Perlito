@@ -85,13 +85,8 @@ sub term_token {
         0
     }
 }))) && ((do {
-    ($MATCH->{('capture')} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, 'term' );
-    push(@a, $MATCH->{('token')}->flat() );
-    \@a
-}));
+    ($MATCH->{('capture')} = [    'term',
+    $MATCH->{('token')}->flat()]);
     1
 })))
 }))
@@ -803,27 +798,14 @@ sub concat_list {
         0
     }
 })) && ((do {
-    ($MATCH->{('capture')} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $MATCH->{('quantifier')}->flat() );
-    (@v = @{$MATCH->{('concat_list')}->flat()});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    \@a
-}));
+    ($MATCH->{('capture')} = [    $MATCH->{('quantifier')}->flat(),
+    @{$MATCH->{('concat_list')}->flat()}]);
     1
 })))
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((do {
-    ($MATCH->{('capture')} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $MATCH->{('quantifier')}->flat() );
-    \@a
-}));
+    ($MATCH->{('capture')} = [    $MATCH->{('quantifier')}->flat()]);
     1
 })))
 })))
@@ -831,11 +813,7 @@ sub concat_list {
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((do {
-    ($MATCH->{('capture')} = (do {
-    (my  @a);
-    (my  @v);
-    \@a
-}));
+    ($MATCH->{('capture')} = []);
     1
 })))
 })))
@@ -900,27 +878,14 @@ sub or_list_exp {
         0
     }
 }))) && ((do {
-    ($MATCH->{('capture')} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $MATCH->{('concat_exp')}->flat() );
-    (@v = @{$MATCH->{('or_list_exp')}->flat()});
-    for my $x ((0 .. ((scalar(@v) - 1)))) {
-        push(@a, $v[$x] )
-    };
-    \@a
-}));
+    ($MATCH->{('capture')} = [    $MATCH->{('concat_exp')}->flat(),
+    @{$MATCH->{('or_list_exp')}->flat()}]);
     1
 })))
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((do {
-    ($MATCH->{('capture')} = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, $MATCH->{('concat_exp')}->flat() );
-    \@a
-}));
+    ($MATCH->{('capture')} = [    $MATCH->{('concat_exp')}->flat()]);
     1
 })))
 })))
@@ -928,11 +893,7 @@ sub or_list_exp {
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
     (((do {
-    ($MATCH->{('capture')} = (do {
-    (my  @a);
-    (my  @v);
-    \@a
-}));
+    ($MATCH->{('capture')} = []);
     1
 })))
 })))

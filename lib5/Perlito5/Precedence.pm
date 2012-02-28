@@ -10,35 +10,12 @@ package main;
 package Perlito5::Precedence;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
-((my  $Operator) = (do {
-    (my  %a);
-    \%a
-}));
-((my  $Precedence) = (do {
-    (my  %a);
-    \%a
-}));
-((my  $Assoc) = (do {
-    (my  %a);
-    \%a
-}));
-((my  $Allow_space_before) = (do {
-    (my  %a);
-    \%a
-}));
+((my  $Operator) = {});
+((my  $Precedence) = {});
+((my  $Assoc) = {});
+((my  $Allow_space_before) = {});
 sub is_assoc_type {
     ((my  $assoc_type) = shift());
     ((my  $op_name) = shift());
@@ -58,136 +35,107 @@ sub is_ident_middle {
     ((((($c ge 'a') && ($c le 'z'))) || ((($c ge '0') && ($c le '9')))) || (($c eq '_')))
 };
 ((my  @Term_chars) = (7, 5, 3, 2, 1));
-((my  @Term) = ((do {
-    (my  %a);
-    \%a
-}), (do {
-    (my  %a);
-    ($a{chr(36)} = sub  {
+((my  @Term) = ({}, {    (chr(36) => sub  {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-});
-    ($a{chr(64)} = sub  {
+}),
+    (chr(64) => sub  {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-});
-    ($a{chr(37)} = sub  {
+}),
+    (chr(37) => sub  {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-});
-    ($a{chr(38)} = sub  {
+}),
+    (chr(38) => sub  {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-});
-    ($a{'*'} = sub  {
+}),
+    ('*' => sub  {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-});
-    ($a{'0'} = sub  {
+}),
+    ('0' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-});
-    ($a{'1'} = sub  {
+}),
+    ('1' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-});
-    ($a{'2'} = sub  {
+}),
+    ('2' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-});
-    ($a{'3'} = sub  {
+}),
+    ('3' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-});
-    ($a{'4'} = sub  {
+}),
+    ('4' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-});
-    ($a{'5'} = sub  {
+}),
+    ('5' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-});
-    ($a{'6'} = sub  {
+}),
+    ('6' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-});
-    ($a{'7'} = sub  {
+}),
+    ('7' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-});
-    ($a{'8'} = sub  {
+}),
+    ('8' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-});
-    ($a{'9'} = sub  {
+}),
+    ('9' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-});
-    ($a{chr(63)} = sub  {
+}),
+    (chr(63) => sub  {
     Perlito5::Expression->term_ternary($_[0], $_[1])
-});
-    ($a{'('} = sub  {
+}),
+    ('(' => sub  {
     Perlito5::Expression->term_paren($_[0], $_[1])
-});
-    ($a{'['} = sub  {
+}),
+    ('[' => sub  {
     Perlito5::Expression->term_square($_[0], $_[1])
-});
-    ($a{chr(123)} = sub  {
+}),
+    (chr(123) => sub  {
     Perlito5::Expression->term_curly($_[0], $_[1])
-});
-    ($a{(chr(39))} = sub  {
+}),
+    ((chr(39)) => sub  {
     Perlito5::Expression->term_quote($_[0], $_[1])
-});
-    ($a{chr(34)} = sub  {
+}),
+    (chr(34) => sub  {
     Perlito5::Expression->term_quote($_[0], $_[1])
-});
-    ($a{chr(35)} = sub  {
+}),
+    (chr(35) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-});
-    ($a{chr(9)} = sub  {
+}),
+    (chr(9) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-});
-    ($a{chr(10)} = sub  {
+}),
+    (chr(10) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-});
-    ($a{chr(12)} = sub  {
+}),
+    (chr(12) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-});
-    ($a{chr(13)} = sub  {
+}),
+    (chr(13) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-});
-    ($a{chr(32)} = sub  {
+}),
+    (chr(32) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-});
-    \%a
-}), (do {
-    (my  %a);
-    ($a{'->'} = sub  {
+})}, {    ('->' => sub  {
     Perlito5::Expression->term_arrow($_[0], $_[1])
-});
-    ($a{'my'} = sub  {
+}),
+    ('my' => sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-});
-    ($a{'do'} = sub  {
+}),
+    ('do' => sub  {
     Perlito5::Expression->term_do($_[0], $_[1])
-});
-    \%a
-}), (do {
-    (my  %a);
-    ($a{'our'} = sub  {
+})}, {    ('our' => sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-});
-    ($a{'sub'} = sub  {
+}),
+    ('sub' => sub  {
     Perlito5::Expression->term_sub($_[0], $_[1])
-});
-    ($a{'use'} = sub  {
+}),
+    ('use' => sub  {
     Perlito5::Expression->term_use($_[0], $_[1])
-});
-    \%a
-}), (do {
-    (my  %a);
-    \%a
-}), (do {
-    (my  %a);
-    ($a{'state'} = sub  {
+})}, {}, {    ('state' => sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-});
-    \%a
-}), (do {
-    (my  %a);
-    \%a
-}), (do {
-    (my  %a);
-    ($a{'package'} = sub  {
+})}, {}, {    ('package' => sub  {
     Perlito5::Expression->term_package($_[0], $_[1])
-});
-    \%a
-})));
+})}));
 sub add_term {
     ((my  $name) = shift());
     ((my  $param) = shift());
@@ -207,13 +155,8 @@ sub op_parse {
             ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
             ((my  $c2) = substr($str, ($pos + $len), 1));
             if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))))) {
-                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, 'end' );
-    push(@a, $s );
-    \@a
-}))))
+                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => [    'end',
+    $s])))
             }
         }
     };
@@ -232,13 +175,8 @@ sub op_parse {
             ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
             ((my  $c2) = substr($str, ($pos + $len), 1));
             if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))))) {
-                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => 1), ('capture' => (do {
-    (my  @a);
-    (my  @v);
-    push(@a, 'op' );
-    push(@a, $op );
-    \@a
-}))))
+                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => 1), ('capture' => [    'op',
+    $op])))
             }
         }
     };
@@ -250,10 +188,7 @@ sub add_op {
     ((my  $precedence) = shift());
     ((my  $param) = shift());
     if ((!((defined($param))))) {
-        ($param = (do {
-    (my  %a);
-    \%a
-}))
+        ($param = {})
     };
     ((my  $assoc) = ($param->{'assoc'} || 'left'));
     ($Operator->{$fixity}->{$name} = 1);
@@ -263,80 +198,24 @@ sub add_op {
     ($Op[length($name)]->{$name} = 1)
 };
 ((my  $prec) = 100);
-add_op('postfix', '.( )', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', '.[ ]', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', '.' . chr(123) . ' ' . chr(125), $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', '( )', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', '[ ]', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', 'funcall', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', 'funcall_no_params', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', 'methcall', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', 'methcall_no_params', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', 'block', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', 'hash', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
+add_op('postfix', '.( )', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', '.[ ]', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', '.' . chr(123) . ' ' . chr(125), $prec, {    ('no_space_before' => 1)});
+add_op('postfix', '( )', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', '[ ]', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', 'funcall', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', 'funcall_no_params', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', 'methcall', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', 'methcall_no_params', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', 'block', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', 'hash', $prec, {    ('no_space_before' => 1)});
 ($prec = ($prec - 1));
 add_op('prefix', '++', $prec);
 add_op('prefix', '--', $prec);
-add_op('postfix', '++', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
-add_op('postfix', '--', $prec, (do {
-    (my  %a);
-    ($a{'no_space_before'} = 1);
-    \%a
-}));
+add_op('postfix', '++', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', '--', $prec, {    ('no_space_before' => 1)});
 ($prec = ($prec - 1));
-add_op('infix', '**', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
+add_op('infix', '**', $prec, {    ('assoc' => 'right')});
 ($prec = ($prec - 1));
 add_op('prefix', chr(92), $prec);
 add_op('prefix', '+', $prec);
@@ -357,24 +236,12 @@ add_op('infix', '-', $prec);
 ($prec = ($prec - 1));
 add_op('infix', 'x', $prec);
 ($prec = ($prec - 1));
-add_op('infix', '.', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'list');
-    \%a
-}));
+add_op('infix', '.', $prec, {    ('assoc' => 'list')});
 ($prec = ($prec - 1));
-add_op('infix', chr(38), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'list');
-    \%a
-}));
+add_op('infix', chr(38), $prec, {    ('assoc' => 'list')});
 add_op('prefix', chr(38), $prec);
 ($prec = ($prec - 1));
-add_op('infix', chr(124), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'list');
-    \%a
-}));
+add_op('infix', chr(124), $prec, {    ('assoc' => 'list')});
 add_op('prefix', chr(124), $prec);
 ($prec = ($prec - 1));
 add_op('infix', '<' . chr(61) . '>', $prec);
@@ -384,71 +251,19 @@ add_op('infix', 'does', $prec);
 add_op('infix', 'but', $prec);
 add_op('infix', '..', $prec);
 ($prec = ($prec - 1));
-add_op('infix', 'ne', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', 'eq', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', 'lt', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', 'le', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', 'gt', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', 'ge', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', '<' . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', '>' . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', chr(61) . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', chr(33) . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', '<', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', '>', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
-add_op('infix', chr(126) . chr(126), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'chain');
-    \%a
-}));
+add_op('infix', 'ne', $prec, {    ('assoc' => 'chain')});
+add_op('infix', 'eq', $prec, {    ('assoc' => 'chain')});
+add_op('infix', 'lt', $prec, {    ('assoc' => 'chain')});
+add_op('infix', 'le', $prec, {    ('assoc' => 'chain')});
+add_op('infix', 'gt', $prec, {    ('assoc' => 'chain')});
+add_op('infix', 'ge', $prec, {    ('assoc' => 'chain')});
+add_op('infix', '<' . chr(61), $prec, {    ('assoc' => 'chain')});
+add_op('infix', '>' . chr(61), $prec, {    ('assoc' => 'chain')});
+add_op('infix', chr(61) . chr(61), $prec, {    ('assoc' => 'chain')});
+add_op('infix', chr(33) . chr(61), $prec, {    ('assoc' => 'chain')});
+add_op('infix', '<', $prec, {    ('assoc' => 'chain')});
+add_op('infix', '>', $prec, {    ('assoc' => 'chain')});
+add_op('infix', chr(126) . chr(126), $prec, {    ('assoc' => 'chain')});
 ($prec = ($prec - 1));
 add_op('infix', chr(38) . chr(38), $prec);
 ($prec = ($prec - 1));
@@ -458,71 +273,23 @@ add_op('infix', chr(47) . chr(47), $prec);
 add_op('ternary', chr(63) . chr(63) . ' ' . chr(33) . chr(33), $prec);
 add_op('ternary', chr(63) . ' :', $prec);
 ($prec = ($prec - 1));
-add_op('infix', chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
-add_op('infix', chr(124) . chr(124) . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
-add_op('infix', chr(38) . chr(38) . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
-add_op('infix', chr(124) . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
-add_op('infix', chr(38) . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
-add_op('infix', chr(47) . chr(47) . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
-add_op('infix', '+' . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
-add_op('infix', '-' . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
-add_op('infix', '*' . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
-add_op('infix', chr(47) . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
-add_op('infix', '.' . chr(61), $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'right');
-    \%a
-}));
+add_op('infix', chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', chr(124) . chr(124) . chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', chr(38) . chr(38) . chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', chr(124) . chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', chr(38) . chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', chr(47) . chr(47) . chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', '+' . chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', '-' . chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', '*' . chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', chr(47) . chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', '.' . chr(61), $prec, {    ('assoc' => 'right')});
 ($prec = ($prec - 1));
 add_op('prefix', 'not', $prec);
 ($prec = ($prec - 1));
 add_op('infix', chr(61) . '>', $prec);
 ($prec = ($prec - 1));
-add_op('list', ',', $prec, (do {
-    (my  %a);
-    ($a{'assoc'} = 'list');
-    \%a
-}));
+add_op('list', ',', $prec, {    ('assoc' => 'list')});
 ($prec = ($prec - 1));
 add_op('infix', 'and', $prec);
 ($prec = ($prec - 1));
@@ -535,23 +302,10 @@ sub precedence_parse {
     ((my  $reduce) = $self->{'reduce'});
     ((my  $last_end_token) = $End_token);
     ($End_token = $self->{'end_token'});
-    ((my  $op_stack) = (do {
-    (my  @a);
-    (my  @v);
-    \@a
-}));
-    ((my  $num_stack) = (do {
-    (my  @a);
-    (my  @v);
-    \@a
-}));
-    ((my  $last) = (do {
-    (my  @a);
-    (my  @v);
-    push(@a, 'op' );
-    push(@a, '*start*' );
-    \@a
-}));
+    ((my  $op_stack) = []);
+    ((my  $num_stack) = []);
+    ((my  $last) = [    'op',
+    '*start*']);
     ((my  $last_has_space) = 0);
     ((my  $token) = $get_token->());
     if ((($token->[0]) eq 'space')) {
@@ -559,13 +313,8 @@ sub precedence_parse {
     };
     for ( ; ((defined($token)) && (($token->[0] ne 'end')));  ) {
         if (((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ',')))))) {
-            push(@{$num_stack}, (do {
-    (my  @a);
-    (my  @v);
-    push(@a, 'term' );
-    push(@a, undef() );
-    \@a
-}) )
+            push(@{$num_stack}, [    'term',
+    undef()] )
         };
         if ((($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !((is_term($last)))))))) {
             ($token->[0] = 'prefix');

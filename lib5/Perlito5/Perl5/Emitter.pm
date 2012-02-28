@@ -125,8 +125,7 @@ package Lit::Array;
     sub emit_perl5_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        ((my  $ast) = $self->expand_interpolation());
-        return ($ast->emit_perl5_indented($level))
+        (Perl5::tab($level) . ('[') . join((',' . chr(10)), map($_->emit_perl5_indented(($level + 1)), @{$self->{('array1')}})) . (']'))
     }
 });
 package Lit::Hash;
@@ -138,8 +137,7 @@ package Lit::Hash;
     sub emit_perl5_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        ((my  $ast) = $self->expand_interpolation());
-        return ($ast->emit_perl5_indented($level))
+        (Perl5::tab($level) . (chr(123)) . join((',' . chr(10)), map($_->emit_perl5_indented(($level + 1)), @{$self->{('hash1')}})) . (chr(125)))
     }
 });
 package Index;

@@ -11,18 +11,7 @@ use v5;
 package CompUnit;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub name {
     $_[0]->{'name'}
@@ -33,18 +22,7 @@ sub body {
 package Val::Int;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub int {
     $_[0]->{'int'}
@@ -52,18 +30,7 @@ sub int {
 package Val::Num;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub num {
     $_[0]->{'num'}
@@ -71,18 +38,7 @@ sub num {
 package Val::Buf;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub buf {
     $_[0]->{'buf'}
@@ -90,18 +46,7 @@ sub buf {
 package Lit::Block;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub sig {
     $_[0]->{'sig'}
@@ -112,18 +57,7 @@ sub stmts {
 package Lit::Array;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub array1 {
     $_[0]->{'array1'}
@@ -131,18 +65,7 @@ sub array1 {
 package Lit::Hash;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub hash1 {
     $_[0]->{'hash1'}
@@ -150,18 +73,7 @@ sub hash1 {
 package Index;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub obj {
     $_[0]->{'obj'}
@@ -172,18 +84,7 @@ sub index_exp {
 package Lookup;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub obj {
     $_[0]->{'obj'}
@@ -194,18 +95,7 @@ sub index_exp {
 package Var;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub sigil {
     $_[0]->{'sigil'}
@@ -219,18 +109,7 @@ sub name {
 package Proto;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub name {
     $_[0]->{'name'}
@@ -238,18 +117,7 @@ sub name {
 package Call;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub invocant {
     $_[0]->{'invocant'}
@@ -263,18 +131,7 @@ sub arguments {
 package Apply;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub code {
     $_[0]->{'code'}
@@ -288,18 +145,7 @@ sub namespace {
 package If;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub cond {
     $_[0]->{'cond'}
@@ -313,18 +159,7 @@ sub otherwise {
 package While;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub init {
     $_[0]->{'init'}
@@ -341,18 +176,7 @@ sub body {
 package For;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub cond {
     $_[0]->{'cond'}
@@ -363,18 +187,7 @@ sub body {
 package Decl;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub decl {
     $_[0]->{'decl'}
@@ -388,18 +201,7 @@ sub var {
 package Sig;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub invocant {
     $_[0]->{'invocant'}
@@ -413,18 +215,7 @@ sub named {
 package Sub;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub name {
     $_[0]->{'name'}
@@ -438,18 +229,7 @@ sub block {
 package Do;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub block {
     $_[0]->{'block'}
@@ -457,18 +237,7 @@ sub block {
 package Use;
 sub new {
     ((my  $class) = shift());
-    bless((do {
-    (my  %a);
-    (do {
-        ((my  $_i) = 0);
-        ((my  @_a) = @_);
-        for ( ; (($_i < scalar(@_a)));  ) {
-            ($a{$_a[$_i]} = $_a[($_i + 1)]);
-            ($_i = ($_i + 2))
-        }
-    });
-    \%a
-}), $class)
+    bless({    @_}, $class)
 };
 sub mod {
     $_[0]->{'mod'}

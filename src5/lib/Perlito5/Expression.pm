@@ -2,7 +2,6 @@
 package Perlito5::Expression;
     use Perlito5::Precedence;
     use Perlito5::Grammar;
-    use Perlito5::Perl5::Emitter;
 
     sub expand_list {
         my $param_list = shift;
