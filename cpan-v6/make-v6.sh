@@ -1,4 +1,4 @@
-[ -d v6.pm ] && cd v6.pm
+[ -d cpan-v6 ] && cd cpan-v6
 
 rm -rf lib
 rm -rf t
@@ -10,6 +10,7 @@ perl -pi -e 's/use v6;/use v6-perlito;/' t/*.t
 
 rm -rf t/bugs
 cp -r ../lib5 lib
+rm -rf lib/Perlito5
 
 cp ../src6/lib/Perlito/Python/Prelude.pm lib/Perlito/Python/Prelude.pm
 cp ../src6/lib/Perlito/Ruby/Runtime.rb   lib/Perlito/Ruby/Runtime.rb
