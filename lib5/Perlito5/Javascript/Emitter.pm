@@ -609,9 +609,6 @@ package If;
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $cond) = $self->{('cond')});
-        if ((($cond->isa('Var') && ($cond->sigil() eq chr(64))))) {
-            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [    $cond])))
-        };
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
         ((my  $s) = (Javascript::tab($level) . 'if ( ' . Javascript::to_bool($cond) . ' ) ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)));
         if ((@{$self->{('otherwise')}->stmts()})) {

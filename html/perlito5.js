@@ -3088,9 +3088,6 @@ make_sub(__PACKAGE__, "emit_javascript", function () {
 		(v_self = PKG.shift(List__));
 		(v_level = PKG.shift(List__));
 		(v_cond = (v_self ? v_self : v_self = new HashRef({}))._hash_[('cond')]);
-		if ( bool((and(v_cond._class_.isa(v_cond,'Var'), function () { return (v_cond._class_.sigil(v_cond) == '@'); }))) ) { (function () {
-			(v_cond = CLASS["Apply"]._class_.new(CLASS["Apply"],'code', 'prefix:<@>','arguments', (new ArrayRef(interpolate_array(v_cond)))));;
-		})(); };
 		(v_body = CLASS["Perlito5::Javascript::LexicalBlock"]._class_.new(CLASS["Perlito5::Javascript::LexicalBlock"],'block', (v_self ? v_self : v_self = new HashRef({}))._hash_[('body')]._class_.stmts((v_self ? v_self : v_self = new HashRef({}))._hash_[('body')]),'needs_return', 0));
 		(v_s = (string(NAMESPACE["Javascript"].tab(v_level)) + 'if ( ' + string(NAMESPACE["Javascript"].to_bool(v_cond)) + ' ) { ' + '(function () {' + string((String.fromCharCode(10))) + string(v_body._class_.emit_javascript_indented(v_body,add(v_level, 1))) + string((String.fromCharCode(10))) + string(NAMESPACE["Javascript"].tab(v_level)) + '})(); }'));
 		if ( bool((((v_self ? v_self : v_self = new HashRef({}))._hash_[('otherwise')]._class_.stmts((v_self ? v_self : v_self = new HashRef({}))._hash_[('otherwise')]) ? (v_self ? v_self : v_self = new HashRef({}))._hash_[('otherwise')]._class_.stmts((v_self ? v_self : v_self = new HashRef({}))._hash_[('otherwise')]) : (v_self ? v_self : v_self = new HashRef({}))._hash_[('otherwise')]._class_.stmts((v_self ? v_self : v_self = new HashRef({}))._hash_[('otherwise')]) = new ArrayRef([]))._array_)) ) { (function () {

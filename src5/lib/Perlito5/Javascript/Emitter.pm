@@ -778,12 +778,6 @@ package If;
         my $self = shift;
         my $level = shift;
         my $cond = $self->{"cond"};
-        if (  $cond->isa( 'Var' )
-           && $cond->sigil eq '@'
-           )
-        {
-            $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
-        }
         my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         my $s = Javascript::tab($level) . 'if ( ' . Javascript::to_bool( $cond ) . ' ) { '
             . '(function () {' . "\n"
