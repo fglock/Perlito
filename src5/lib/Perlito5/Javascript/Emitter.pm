@@ -101,11 +101,18 @@ package Javascript;
             }
     }
 
-    sub preprocess_array_interpolation {
+    sub to_list {
+        my $items = to_list_preprocess( $_[0] );
+          'interpolate_array('
+        .   join(', ', map( $_->emit_javascript, @$items ))
+        . ')'
+    }
+
+    sub to_list_preprocess {
         my @items;
         for my $item ( @{$_[0]} ) {
             if ($item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
-                for my $arg ( @{ preprocess_array_interpolation($item->arguments) } ) {
+                for my $arg ( @{ to_list_preprocess($item->arguments) } ) {
                     push( @items, $arg);
                 }
             }
@@ -342,12 +349,7 @@ package Lit::Array;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-
-        my $items = Javascript::preprocess_array_interpolation( $self->{"array1"} );
-        Javascript::tab($level)
-        . '(new ArrayRef(interpolate_array('
-        .   join(', ', map( $_->emit_javascript, @$items ))
-        . ')))'
+        Javascript::tab($level) . '(new ArrayRef(' . Javascript::to_list($self->{"array1"}) . '))'
     }
 }
 
@@ -357,12 +359,7 @@ package Lit::Hash;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-
-        my $items = Javascript::preprocess_array_interpolation( $self->{"hash1"} );
-        Javascript::tab($level)
-        . '(new HashRef(array_to_hash(interpolate_array('
-        .   join(', ', map( $_->emit_javascript, @$items ))
-        . '))))'
+        Javascript::tab($level) . '(new HashRef(array_to_hash(' . Javascript::to_list($self->{"hash1"}) . ')))'
     }
 }
 
@@ -605,11 +602,7 @@ package Apply;
         }
 
         if ( $code eq 'circumfix:<[ ]>' ) {
-            my $items = Javascript::preprocess_array_interpolation( $self->{"arguments"} );
-            return
-                  '(new ArrayRef(interpolate_array(' 
-                .   join(', ', map( $_->emit_javascript, @$items ))
-                . '))';
+            return '(new ArrayRef(' . Javascript::to_list($self->{"arguments"}) . '))'
         }
         if ( $code eq 'prefix:<\\>' ) {
             my $arg = $self->{"arguments"}->[0];
@@ -757,20 +750,12 @@ package Apply;
         if      $parameters->isa( 'Var' ) && $parameters->sigil eq '@'
             ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '@'
         {
-            my $items = Javascript::preprocess_array_interpolation( [$arguments] );
-            return Javascript::tab($level) . '(' . $parameters->emit_javascript() 
-                . ' = interpolate_array(' 
-                .   join(', ', map( $_->emit_javascript, @$items ))
-                . '))';
+            return Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' = ' . Javascript::to_list([$arguments]) . ')'
         }
         elsif   $parameters->isa( 'Var' ) && $parameters->sigil eq '%'
             ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '%'
         {
-            my $items = Javascript::preprocess_array_interpolation( [$arguments] );
-            return Javascript::tab($level) . '(' . $parameters->emit_javascript() 
-                . ' = array_to_hash(interpolate_array(' 
-                .   join(', ', map( $_->emit_javascript, @$items ))
-                . ')))';
+            return Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' = array_to_hash(' . Javascript::to_list([$arguments]) . '))' 
         }
         Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' = ' . $arguments->emit_javascript() . ')';
     }
@@ -827,14 +812,9 @@ package For;
         my $self = shift;
         my $level = shift;
 
-        my $items = Javascript::preprocess_array_interpolation( [$self->{"cond"}] );
-        my $cond =
-              'interpolate_array(' 
-            .   join(', ', map( $_->emit_javascript, @$items ))
-            . ')';
-
-        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
-        my $sig = 'v__';
+        my $cond = Javascript::to_list([$self->{"cond"}]);
+        my $body = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
+        my $sig  = 'v__';
         if ($self->{"body"}->sig()) {
             $sig = $self->{"body"}->sig->emit_javascript_indented( $level + 1 );
         }
