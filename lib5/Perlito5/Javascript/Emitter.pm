@@ -638,16 +638,14 @@ package For;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $cond) = $self->{('cond')});
-        if ((!((($cond->isa('Var') && ($cond->sigil() eq chr(64))))))) {
-            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [    Lit::Array->new(('array1' => [    $cond]))])))
-        };
+        ((my  $items) = Javascript::preprocess_array_interpolation([    $self->{('cond')}]));
+        ((my  $cond) = ('interpolate_array(' . join(', ', map($_->emit_javascript(), @{$items})) . ')'));
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
         ((my  $sig) = 'v__');
         if (($self->{('body')}->sig())) {
             ($sig = $self->{('body')}->sig()->emit_javascript_indented(($level + 1)))
         };
-        (Javascript::tab($level) . '(function (a_) ' . chr(123) . ' for (var i_ ' . chr(61) . ' 0' . chr(59) . ' i_ < a_.length ' . chr(59) . ' i_++) ' . chr(123) . ' ' . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')(a_[i_]) ' . chr(125) . ' ' . chr(125) . ')' . '(' . $cond->emit_javascript() . ')')
+        (Javascript::tab($level) . '(function (a_) ' . chr(123) . ' for (var i_ ' . chr(61) . ' 0' . chr(59) . ' i_ < a_.length ' . chr(59) . ' i_++) ' . chr(123) . ' ' . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')(a_[i_]) ' . chr(125) . ' ' . chr(125) . ')' . '(' . $cond . ')')
     }
 });
 package Decl;

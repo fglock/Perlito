@@ -821,10 +821,13 @@ package For;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $cond = $self->{"cond"};
-        if (!( $cond->isa( 'Var' ) && $cond->sigil eq '@' )) {
-            $cond = Apply->new( code => 'prefix:<@>', arguments => [ Lit::Array->new( array1 => [$cond] ) ] );
-        }
+
+        my $items = Javascript::preprocess_array_interpolation( [$self->{"cond"}] );
+        my $cond =
+              'interpolate_array(' 
+            .   join(', ', map( $_->emit_javascript, @$items ))
+            . ')';
+
         my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         my $sig = 'v__';
         if ($self->{"body"}->sig()) {
@@ -834,7 +837,7 @@ package For;
             . "(function ($sig) {\n"
                 . $body->emit_javascript_indented( $level + 1 )
             . ' })(a_[i_]) } })'
-        . '(' . $cond->emit_javascript() . ')'
+        . '(' . $cond . ')'
     }
 }
 
