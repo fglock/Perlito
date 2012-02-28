@@ -16,7 +16,7 @@ Array
 - native []
 
 Scalar
-- native values
+- native value
 
 HashRef
 - native {} wrapped in a "HashRef" object
@@ -26,6 +26,9 @@ ArrayRef
 
 ScalarRef
 - native value wrapped in a "ScalarRef" object
+
+CodeRef
+- native value
 
 Object
 - one of the reference types, with a _class_ attribute
@@ -47,10 +50,9 @@ Calling context ("wantarray", caller)
 
 Alias
 - TODO
-- We could probably use String/Boolean/Number (boxed types) as SCALARs
+- using String/Boolean/Number (boxed types) as SCALARs doesn't seem to work
 
 List (eg. subroutine return value)
-- TODO
 - native []
 
 AUTOLOAD

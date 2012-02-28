@@ -615,8 +615,15 @@ package Apply;
                 if ( $arg->sigil eq '%' ) {
                     return '(new HashRef(' . $arg->emit_javascript . '))';
                 }
+                if ( $arg->sigil eq '&' ) {
+                    if ($arg->{"namespace"}) {
+                        return 'NAMESPACE["' . $arg->{"namespace"} . '"].' . $arg->{"name"};
+                    }
+                    else {
+                        return 'PKG.' . $arg->{"name"};
+                    }
+                }
             }
-            # XXX \&x should return a CODE ref
             return '(new ScalarRef(' . $arg->emit_javascript . '))';
         }
 

@@ -11,7 +11,7 @@ Perlito Perl 5:
 
 - javascript backend:
 -- symbol tables; typeglobs
--- scalar references; hash references
+-- references
 -- perlito5 calling convention is incompatible with native javascript
    The last commit using native javascript data is "e1e3316b"
 -- native javascript can be accessed with JS::inline('string')

@@ -2896,6 +2896,14 @@ make_sub(__PACKAGE__, "emit_javascript_indented", function () {
 									})(); };
 									if ( bool(((v_arg._class_.sigil(v_arg) == '%'))) ) { (function () {
 										throw(('(new HashRef(' + string(v_arg._class_.emit_javascript(v_arg)) + '))'));;
+									})(); };
+									if ( bool(((v_arg._class_.sigil(v_arg) == '&'))) ) { (function () {
+										if ( bool(((v_arg ? v_arg : v_arg = new HashRef({}))._hash_[('namespace')])) ) { (function () {
+											throw(('NAMESPACE[' + String.fromCharCode(34) + string((v_arg ? v_arg : v_arg = new HashRef({}))._hash_[('namespace')]) + String.fromCharCode(34) + '].' + string((v_arg ? v_arg : v_arg = new HashRef({}))._hash_[('name')])));;
+										})(); }
+										else { (function () {
+											throw(('PKG.' + string((v_arg ? v_arg : v_arg = new HashRef({}))._hash_[('name')])));;
+										})(); };;
 									})(); };;
 								})(); };
 								throw(('(new ScalarRef(' + string(v_arg._class_.emit_javascript(v_arg)) + '))'));;

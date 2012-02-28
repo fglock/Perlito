@@ -507,6 +507,14 @@ package Apply;
                 };
                 if ((($arg->sigil() eq chr(37)))) {
                     return (('(new HashRef(' . $arg->emit_javascript() . '))'))
+                };
+                if ((($arg->sigil() eq chr(38)))) {
+                    if (($arg->{('namespace')})) {
+                        return (('NAMESPACE[' . chr(34) . $arg->{('namespace')} . chr(34) . '].' . $arg->{('name')}))
+                    }
+                    else {
+                        return (('PKG.' . $arg->{('name')}))
+                    }
                 }
             };
             return (('(new ScalarRef(' . $arg->emit_javascript() . '))'))
