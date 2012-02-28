@@ -61,6 +61,9 @@ package Javascript;
     };
     sub to_bool {
         ((my  $cond) = shift());
+        if ((((($cond->isa('Apply') && ($cond->code() eq 'circumfix:<( )>')) && $cond->{('arguments')}) && @{$cond->{('arguments')}}))) {
+            return (to_bool($cond->{('arguments')}->[0]))
+        };
         if ((((($cond->isa('Val::Int')) || ($cond->isa('Val::Num'))) || (($cond->isa('Apply') && ($cond->code() eq 'prefix:<' . chr(33) . '>')))))) {
             return ($cond->emit_javascript())
         }
