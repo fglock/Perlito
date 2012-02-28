@@ -141,22 +141,22 @@ sub add_term {
     ((my  $param) = shift());
     ($Term[length($name)]->{$name} = $param)
 };
-(my  @Op);
 (my  $End_token);
+(my  $End_token_chars);
+(my  @Op);
 ((my  @Op_chars) = (3, 2, 1));
 sub op_parse {
     ((my  $self) = shift());
     ((my  $str) = shift());
     ((my  $pos) = shift());
-    for my $tok (@{$End_token}) {
-        ((my  $len) = length($tok));
-        ((my  $s) = substr($str, $pos, $len));
-        if ((($s eq $tok))) {
+    for my $len (@{$End_token_chars}) {
+        ((my  $term) = substr($str, $pos, $len));
+        if ((exists($End_token->[$len]->{$term}))) {
             ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
             ((my  $c2) = substr($str, ($pos + $len), 1));
             if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))))) {
                 return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => [    'end',
-    $s])))
+    $term])))
             }
         }
     };
@@ -245,10 +245,7 @@ add_op('infix', chr(124), $prec, {    ('assoc' => 'list')});
 add_op('prefix', chr(124), $prec);
 ($prec = ($prec - 1));
 add_op('infix', '<' . chr(61) . '>', $prec);
-add_op('infix', 'leg', $prec);
 add_op('infix', 'cmp', $prec);
-add_op('infix', 'does', $prec);
-add_op('infix', 'but', $prec);
 add_op('infix', '..', $prec);
 ($prec = ($prec - 1));
 add_op('infix', 'ne', $prec, {    ('assoc' => 'chain')});
@@ -301,7 +298,9 @@ sub precedence_parse {
     ((my  $get_token) = $self->{'get_token'});
     ((my  $reduce) = $self->{'reduce'});
     ((my  $last_end_token) = $End_token);
+    ((my  $last_end_token_chars) = $End_token_chars);
     ($End_token = $self->{'end_token'});
+    ($End_token_chars = $self->{'end_token_chars'});
     ((my  $op_stack) = []);
     ((my  $num_stack) = []);
     ((my  $last) = [    'op',
@@ -338,6 +337,7 @@ sub precedence_parse {
                     };
                     push(@{$num_stack}, $token );
                     ($End_token = $last_end_token);
+                    ($End_token_chars = $last_end_token_chars);
                     return ($num_stack)
                 }
                 else {
@@ -396,6 +396,7 @@ sub precedence_parse {
         $reduce->($op_stack, $num_stack)
     };
     ($End_token = $last_end_token);
+    ($End_token_chars = $last_end_token_chars);
     return ($num_stack)
 };
 1;

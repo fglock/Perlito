@@ -1199,6 +1199,49 @@ sub has_no_comma_or_colon_after {
 }))));
     $MATCH
 };
+((my  $List_end_token) = [    {},
+    {        (':' => 1),
+        (']' => 1),
+        (')' => 1),
+        (chr(125) => 1),
+        (chr(59) => 1)},
+    {        ('or' => 1),
+        ('if' => 1)},
+    {        ('for' => 1),
+        ('and' => 1)},
+    {        ('else' => 1),
+        ('when' => 1)},
+    {        ('while' => 1),
+        ('elsif' => 1)},
+    {        ('unless' => 1)},
+    {        ('foreach' => 1)}]);
+((my  $List_end_token_chars) = [    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1]);
+((my  $Expr_end_token) = [    {},
+    {        (']' => 1),
+        (')' => 1),
+        (chr(125) => 1),
+        (chr(59) => 1)},
+    {        ('if' => 1)},
+    {        ('for' => 1)},
+    {        ('else' => 1),
+        ('when' => 1)},
+    {        ('while' => 1),
+        ('elsif' => 1)},
+    {        ('unless' => 1)},
+    {        ('foreach' => 1)}]);
+((my  $Expr_end_token_chars) = [    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1]);
 sub list_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -1249,21 +1292,7 @@ sub list_parse {
     ($is_first_token = 0);
     return ($v)
 });
-    ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => [    'and',
-    'or',
-    ':',
-    ']',
-    ')',
-    chr(125),
-    chr(59),
-    'if',
-    'else',
-    'elsif',
-    'unless',
-    'when',
-    'foreach',
-    'for',
-    'while'])));
+    ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => $List_end_token), ('end_token_chars' => $List_end_token_chars)));
     ((my  $res) = $prec->precedence_parse());
     if (((scalar(@{$res}) == 0))) {
         return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => {    ('exp' => '*undef*'),
@@ -1294,7 +1323,7 @@ sub circumfix_parse {
     ((my  $get_token) = sub  {
     ((my  $m) = $self->operator($str, $last_pos));
     if ((!($m->bool()))) {
-        die(('Expected closing delimiter: '), @{$delimiter}, ' near ', $last_pos)
+        die(('Expected closing delimiter: '), $delimiter, ' near ', $last_pos)
     };
     ((my  $v) = $m->flat());
     if ((($v->[0] ne 'end'))) {
@@ -1302,7 +1331,9 @@ sub circumfix_parse {
     };
     return ($v)
 });
-    ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => $delimiter)));
+    (my  @delim_token);
+    ($delim_token[length($delimiter)] = {    ($delimiter => 1)});
+    ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => \@delim_token), ('end_token_chars' => [    length($delimiter)])));
     ((my  $res) = $prec->precedence_parse());
     ($res = pop_term($res));
     if ((!((defined($res))))) {
@@ -1314,25 +1345,25 @@ sub ternary5_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    return ($self->circumfix_parse($str, $pos, [    ':']))
+    return ($self->circumfix_parse($str, $pos, ':'))
 };
 sub curly_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    return ($self->circumfix_parse($str, $pos, [    chr(125)]))
+    return ($self->circumfix_parse($str, $pos, chr(125)))
 };
 sub square_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    return ($self->circumfix_parse($str, $pos, [    ']']))
+    return ($self->circumfix_parse($str, $pos, ']'))
 };
 sub paren_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    return ($self->circumfix_parse($str, $pos, [    ')']))
+    return ($self->circumfix_parse($str, $pos, ')'))
 };
 sub exp_parse {
     ((my  $self) = $_[0]);
@@ -1367,18 +1398,7 @@ sub exp_parse {
     };
     return ($v)
 });
-    ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => [    ']',
-    ')',
-    chr(125),
-    chr(59),
-    'if',
-    'else',
-    'elsif',
-    'unless',
-    'when',
-    'foreach',
-    'for',
-    'while'])));
+    ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => $Expr_end_token), ('end_token_chars' => $Expr_end_token_chars)));
     ((my  $res) = $prec->precedence_parse());
     if (((scalar(@{$res}) == 0))) {
         return (Perlito5::Match->new(('bool' => 0)))

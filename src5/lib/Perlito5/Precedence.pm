@@ -5,6 +5,7 @@ package Perlito5::Precedence;
 #   get_token - code ref
 #   reduce    - code ref
 #   end_token - array ref
+#   end_token_chars - array ref (index to end_token entries)
 
 sub new { 
     my $class = shift;
@@ -108,18 +109,18 @@ sub add_term {
     $Term[ length $name ]{ $name } = $param;
 }
 
-my @Op;
 my $End_token;
+my $End_token_chars;
+my @Op;
 my @Op_chars = (3,2,1);
 sub op_parse {
     my $self = shift;
     my $str  = shift;
     my $pos  = shift;
 
-    for my $tok ( @{$End_token} ) {
-        my $len = length($tok);
-        my $s = substr($str, $pos, $len);
-        if ($s eq $tok) {
+    for my $len ( @$End_token_chars ) {
+        my $term = substr($str, $pos, $len);
+        if (exists($End_token->[$len]{$term})) {
             my $c1 = substr($str, $pos+$len-1, 1);
             my $c2 = substr($str, $pos+$len, 1);
             if (!(is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ))) {
@@ -131,7 +132,7 @@ sub op_parse {
                     from    => $pos,
                     to      => $pos,
                     bool    => 1,
-                    capture => [ 'end', $s ]
+                    capture => [ 'end', $term ]
                 );
             }
         }
@@ -249,10 +250,10 @@ add_op( 'infix',    '|',   $prec, { assoc => 'list' } );
 add_op( 'prefix',   '|',   $prec );
 $prec = $prec - 1;
 add_op( 'infix',    '<=>',  $prec );
-add_op( 'infix',    'leg',  $prec );
+#add_op( 'infix',    'leg',  $prec );
 add_op( 'infix',    'cmp',  $prec );
-add_op( 'infix',    'does', $prec );
-add_op( 'infix',    'but',  $prec );
+#add_op( 'infix',    'does', $prec );
+#add_op( 'infix',    'but',  $prec );
 add_op( 'infix',    '..',   $prec );
 
 $prec = $prec - 1;
@@ -310,10 +311,12 @@ add_op( 'infix',    '*start*', $prec );
 sub precedence_parse {
     my $self = shift;
 
-    my $get_token = $self->{'get_token'};
-    my $reduce    = $self->{'reduce'};
-    my $last_end_token = $End_token;
-    $End_token    = $self->{'end_token'};
+    my $get_token       = $self->{'get_token'};
+    my $reduce          = $self->{'reduce'};
+    my $last_end_token  = $End_token;
+    my $last_end_token_chars = $End_token_chars;
+    $End_token          = $self->{'end_token'};
+    $End_token_chars    = $self->{'end_token_chars'};
     my $op_stack  = [];   # [category, name]
     my $num_stack = [];
     my $last      = ['op', '*start*'];
@@ -356,6 +359,7 @@ sub precedence_parse {
             }
             push( @$num_stack, $token);  # save the block
             $End_token = $last_end_token;  # restore previous 'end token' context
+            $End_token_chars = $last_end_token_chars;  # restore previous 'end token' context
             return $num_stack;
         }
         elsif (is_term($token)) {
@@ -414,6 +418,7 @@ sub precedence_parse {
     }
     # say "# precedence return";
     $End_token = $last_end_token;  # restore previous 'end token' context
+    $End_token_chars = $last_end_token_chars;  # restore previous 'end token' context
     return $num_stack;
 }
 
@@ -430,7 +435,12 @@ Perlito5::Precedence - precedence parser for Perlito
     my $prec = Perlito5::Precedence->new(
         get_token => $get_token,
         reduce    => $reduce_to_ast,
-        end_token => [ ']', ')', '}', ';' ] );
+        end_token => [ 
+                {}, 
+                { ']' => 1, ')' => 1, '}' => 1, ';' => 1 } 
+            ],
+        end_token_chars => [ 1 ],
+    );
     my $res = $prec->precedence_parse;
 
 =head1 DESCRIPTION
