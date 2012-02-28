@@ -436,13 +436,6 @@ package Var;
         }
         $ns . $table->{$self->{"sigil"}} . $self->{"name"}
     }
-    sub plain_name {
-        my $self = shift;
-        if ($self->namespace) {
-            return $self->namespace . '.' . $self->name
-        }
-        return $self->name
-    }
 }
 
 package Proto;
@@ -581,7 +574,7 @@ package Apply;
         }
 
         if ( $code eq 'prefix:<!>' ) {
-            return '( ' . Javascript::to_bool( $self->{"arguments"}->[0] ) . ' ? false : true)';
+            return '!( ' . Javascript::to_bool( $self->{"arguments"}->[0] ) . ')';
         }
 
         if ( $code eq 'prefix:<$>' ) {
@@ -604,7 +597,11 @@ package Apply;
         }
 
         if ( $code eq 'circumfix:<[ ]>' ) {
-            return '(new ArrayRef(Array.prototype.slice.call(' . join( ', ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')))';
+            my $items = Javascript::preprocess_array_interpolation( $self->{"arguments"} );
+            return
+                  '(new ArrayRef(interpolate_array(' 
+                .   join(', ', map( $_->emit_javascript, @$items ))
+                . '))';
         }
         if ( $code eq 'prefix:<\\>' ) {
             my $arg = $self->{"arguments"}->[0];

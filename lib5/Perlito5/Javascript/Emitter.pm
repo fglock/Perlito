@@ -361,13 +361,6 @@ package Var;
             ($ns = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . '].'))
         };
         ($ns . $table->{$self->{('sigil')}} . $self->{('name')})
-    };
-    sub plain_name {
-        ((my  $self) = shift());
-        if (($self->namespace())) {
-            return (($self->namespace() . '.' . $self->name()))
-        };
-        return ($self->name())
     }
 });
 package Proto;
@@ -462,7 +455,7 @@ package Apply;
             return (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'var v__ ' . chr(61) . ' a_[i]' . chr(59) . ' ' . 'out.push(' . $fun->emit_javascript() . ')' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . ')(' . $list->emit_javascript() . ')'))
         };
         if ((($code eq 'prefix:<' . chr(33) . '>'))) {
-            return (('( ' . Javascript::to_bool($self->{('arguments')}->[0]) . ' ' . chr(63) . ' false : true)'))
+            return ((chr(33) . '( ' . Javascript::to_bool($self->{('arguments')}->[0]) . ')'))
         };
         if ((($code eq 'prefix:<' . chr(36) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
@@ -477,7 +470,8 @@ package Apply;
             return (('(' . $arg->emit_javascript() . ')._hash_'))
         };
         if ((($code eq 'circumfix:<[ ]>'))) {
-            return (('(new ArrayRef(Array.prototype.slice.call(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')))'))
+            ((my  $items) = Javascript::preprocess_array_interpolation($self->{('arguments')}));
+            return (('(new ArrayRef(interpolate_array(' . join(', ', map($_->emit_javascript(), @{$items})) . '))'))
         };
         if ((($code eq 'prefix:<' . chr(92) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
