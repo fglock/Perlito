@@ -37,6 +37,8 @@ TODO list for Perlito5
 
 -- symbol variables like $]
 
+-- here-docs
+
 
 * Perl5 backend
 
@@ -48,6 +50,9 @@ TODO list for Perlito5
 -- add browser, v8, node.js runtimes
 
 -- move "substr" and others to CORE
+-- lvalue "substr"
+-- subroutine signatures
+-- array interpolation in argument lists
 
 -- bug: negative index in array doesn't work
 
@@ -64,8 +69,11 @@ TODO list for Perlito5
 -- in the browser: implement "use" with XMLHttpRequest (what are the security implications?)
 
 -- add symbol tables for scalar, array and hash
+-- implement "our", "local"
 
 -- string increment and string ranges
+
+-- finish "overload" implementation
 
 
 * Python backend
@@ -94,10 +102,6 @@ TODO list for Perlito5
 
 -- BEGIN{}, INIT{}, END{}
 
--- finish "overload" implementation
-
 -- source code - remove Perl 6 code such as "token"
    (fixed: This is only loaded if the grammar compiler is needed)
-
--- here-docs
 
