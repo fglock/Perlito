@@ -267,8 +267,9 @@ package Lit::Array;
     sub emit_perl6_indented {
         my $self = shift;
         my $level = shift;
-        my $ast = $self->expand_interpolation;
-        return $ast->emit_perl6_indented( $level );
+
+        Perl6::tab($level) . "["
+        .   join(",\n", map( $_->emit_perl6_indented( $level + 1 ), @{$self->{"array1"}} )) . "]"
     }
 }
 
@@ -278,8 +279,9 @@ package Lit::Hash;
     sub emit_perl6_indented {
         my $self = shift;
         my $level = shift;
-        my $ast = $self->expand_interpolation;
-        return $ast->emit_perl6_indented( $level );
+
+        Perl6::tab($level) . "{"
+        .   join(",\n", map( $_->emit_perl6_indented( $level + 1 ), @{$self->{"hash1"}} )) . "}"
     }
 }
 
