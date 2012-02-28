@@ -25,6 +25,15 @@ if (typeof NAMESPACE !== 'object') {
     CLASS.UNIVERSAL = new universal();
     CLASS.UNIVERSAL._ref_ = 'UNIVERSAL';
     CLASS.UNIVERSAL.isa = function (o, s) { return s == o._class_._ref_ };
+    CLASS.UNIVERSAL.can = function (o, s) {
+        if ( s.indexOf('::') == -1 ) {
+            return o._class_[s]
+        }
+        var c = s.split('::');
+        s = c.pop(); 
+        return CLASS[c.join('::')][s]
+    };
+    CLASS.UNIVERSAL.DOES = CLASS.UNIVERSAL.can;
 
     NAMESPACE.UNIVERSAL = new universal();
 
