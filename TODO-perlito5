@@ -98,7 +98,7 @@ TODO list for Perlito5
 -- proper "use strict" and "use warnings"
 -- use the same error messages and warnings as 'perl'
 
--- __PACKAGE__,  __END__
+-- __PACKAGE__,  __END__, __LINE__, __DATA__
 
 -- BEGIN{}, INIT{}, END{}
 
