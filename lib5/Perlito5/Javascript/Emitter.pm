@@ -588,13 +588,13 @@ package Apply;
         ((my  $arguments) = shift());
         ((my  $level) = shift());
         if ((($parameters->isa('Var') && ($parameters->sigil() eq chr(64))) || ($parameters->isa('Decl') && ($parameters->var()->sigil() eq chr(64))))) {
-            ($arguments = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [    Lit::Array->new(('array1' => [    $arguments]))])));
-            return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' (' . $arguments->emit_javascript() . ').slice())'))
+            ((my  $items) = Javascript::preprocess_array_interpolation([    $arguments]));
+            return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' interpolate_array(' . join(', ', map($_->emit_javascript(), @{$items})) . '))'))
         }
         else {
             if ((($parameters->isa('Var') && ($parameters->sigil() eq chr(37))) || ($parameters->isa('Decl') && ($parameters->var()->sigil() eq chr(37))))) {
-                ($arguments = Apply->new(('code' => 'prefix:<' . chr(37) . '>'), ('arguments' => [    Lit::Hash->new(('hash1' => [    $arguments]))])));
-                return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' (function (_h) ' . chr(123) . ' ' . 'var _tmp ' . chr(61) . ' ' . chr(123) . chr(125) . chr(59) . ' ' . 'for (var _i in _h) ' . chr(123) . ' ' . '_tmp[_i] ' . chr(61) . ' _h[_i]' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'return _tmp' . chr(59) . ' ' . chr(125) . ')( ' . $arguments->emit_javascript() . '))'))
+                ((my  $items) = Javascript::preprocess_array_interpolation([    $arguments]));
+                return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' array_to_hash(interpolate_array(' . join(', ', map($_->emit_javascript(), @{$items})) . ')))'))
             }
         };
         (Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')')

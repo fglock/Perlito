@@ -752,27 +752,20 @@ package Apply;
         if      $parameters->isa( 'Var' ) && $parameters->sigil eq '@'
             ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '@'
         {
-            $arguments = Apply->new(
-                            code => 'prefix:<@>', 
-                            arguments => [ Lit::Array->new( array1 => [$arguments] ) ]
-                        );
-            return Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' = (' . $arguments->emit_javascript() . ').slice())';
+            my $items = Javascript::preprocess_array_interpolation( [$arguments] );
+            return Javascript::tab($level) . '(' . $parameters->emit_javascript() 
+                . ' = interpolate_array(' 
+                .   join(', ', map( $_->emit_javascript, @$items ))
+                . '))';
         }
         elsif   $parameters->isa( 'Var' ) && $parameters->sigil eq '%'
             ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '%'
         {
-            $arguments = Apply->new( 
-                            code => 'prefix:<%>', 
-                            arguments => [ Lit::Hash->new( hash1 => [$arguments] ) ] 
-                        );
-            return Javascript::tab($level) . '(' 
-                . $parameters->emit_javascript() . ' = (function (_h) { '
-                .   'var _tmp = {}; '
-                .   'for (var _i in _h) { '
-                .       '_tmp[_i] = _h[_i]; '
-                .   '}; '
-                .   'return _tmp; '
-                . '})( ' . $arguments->emit_javascript() . '))';
+            my $items = Javascript::preprocess_array_interpolation( [$arguments] );
+            return Javascript::tab($level) . '(' . $parameters->emit_javascript() 
+                . ' = array_to_hash(interpolate_array(' 
+                .   join(', ', map( $_->emit_javascript, @$items ))
+                . ')))';
         }
         Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' = ' . $arguments->emit_javascript() . ')';
     }
