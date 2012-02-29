@@ -11,7 +11,7 @@ use v5;
 package Perlito5::Match;
 sub new {
     ((my  $class) = shift());
-    bless({    @_}, $class)
+    bless({@_}, $class)
 };
 sub from {
     $_[0]->{'from'}

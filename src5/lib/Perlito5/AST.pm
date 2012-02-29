@@ -33,12 +33,6 @@ sub stmts { $_[0]->{'stmts'} }
 
 
 
-package Lit::Hash;
-sub new { my $class = shift; bless {@_}, $class }
-sub hash1 { $_[0]->{'hash1'} }
-
-
-
 package Index;
 sub new { my $class = shift; bless {@_}, $class }
 sub obj { $_[0]->{'obj'} }

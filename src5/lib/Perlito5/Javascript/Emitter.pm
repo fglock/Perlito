@@ -345,16 +345,6 @@ package Lit::Block;
     }
 }
 
-package Lit::Hash;
-{
-    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
-    sub emit_javascript_indented {
-        my $self = shift;
-        my $level = shift;
-        Javascript::tab($level) . '(new HashRef(array_to_hash(' . Javascript::to_list($self->{"hash1"}) . ')))'
-    }
-}
-
 package Index;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
@@ -589,6 +579,9 @@ package Apply;
 
         if ( $code eq 'circumfix:<[ ]>' ) {
             return '(new ArrayRef(' . Javascript::to_list($self->{"arguments"}) . '))'
+        }
+        if ( $code eq 'circumfix:<{ }>' ) {
+            return '(new HashRef(array_to_hash(' . Javascript::to_list($self->{"arguments"}) . ')))'
         }
         if ( $code eq 'prefix:<\\>' ) {
             my $arg = $self->{"arguments"}->[0];

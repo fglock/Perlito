@@ -100,7 +100,7 @@ package Perlito5::Javascript::LexicalBlock;
 (do {
     sub new {
         ((my  $class) = shift());
-        bless({    @_}, $class)
+        bless({@_}, $class)
     };
     sub block {
         $_[0]->{'block'}
@@ -290,17 +290,6 @@ package Lit::Block;
         return ((Javascript::tab($level) . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('stmts')}), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')'))
     }
 });
-package Lit::Hash;
-(do {
-    sub emit_javascript {
-        $_[0]->emit_javascript_indented(0)
-    };
-    sub emit_javascript_indented {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        (Javascript::tab($level) . '(new HashRef(array_to_hash(' . Javascript::to_list($self->{('hash1')}) . ')))')
-    }
-});
 package Index;
 (do {
     sub emit_javascript {
@@ -333,10 +322,7 @@ package Lookup;
 });
 package Var;
 (do {
-    ((my  $table) = {    (chr(36) => 'v_'),
-    (chr(64) => 'List_'),
-    (chr(37) => 'Hash_'),
-    (chr(38) => 'Code_')});
+    ((my  $table) = {(chr(36) => 'v_'), (chr(64) => 'List_'), (chr(37) => 'Hash_'), (chr(38) => 'Code_')});
     sub emit_javascript {
         $_[0]->emit_javascript_indented(0)
     };
@@ -465,6 +451,9 @@ package Apply;
         };
         if ((($code eq 'circumfix:<[ ]>'))) {
             return (('(new ArrayRef(' . Javascript::to_list($self->{('arguments')}) . '))'))
+        };
+        if ((($code eq 'circumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
+            return (('(new HashRef(array_to_hash(' . Javascript::to_list($self->{('arguments')}) . ')))'))
         };
         if ((($code eq 'prefix:<' . chr(92) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);

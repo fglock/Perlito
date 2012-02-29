@@ -33,7 +33,7 @@ package Perlito5::Expression;
         my $stmts = $o->stmts;
         if (!(defined $stmts) || scalar(@$stmts) == 0) {
             # say "#  no contents -- empty hash";
-            return Lit::Hash->new(hash1 => [])
+            return Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => [] );
         }
         if (scalar(@$stmts) != 1) {
             # say "#  more statements -- not hash";
@@ -43,7 +43,7 @@ package Perlito5::Expression;
         if ( ref($stmt) eq 'Var' ) {
             # the argument is a single variable
             # say "#  single var -- is hash";
-            return Lit::Hash->new(hash1 => [ $stmt ])
+            return Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => [ $stmt ])
         }
         if ( ref($stmt) ne 'Apply' ) {
             # say "#  not Apply -- not hash";
@@ -52,7 +52,7 @@ package Perlito5::Expression;
         if ($stmt->code eq 'infix:<=>>') {
             # the argument is a single pair
             # say "#  single pair -- is hash";
-            return Lit::Hash->new(hash1 => [ $stmt ])
+            return Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => [ $stmt ])
         }
         if ($stmt->code ne 'list:<,>') {
             # say "#  not a list -- not hash";
@@ -65,7 +65,7 @@ package Perlito5::Expression;
                 # argument is a pair
                 # say "#  block: ", $o->perl;
                 # say "#  hash with args: ", ( expand_list($stmt->arguments) )->perl;
-                return Lit::Hash->new(hash1 => expand_list($stmt))
+                return Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => expand_list($stmt))
             }
         }
         return $o;
@@ -128,7 +128,7 @@ package Perlito5::Expression;
                 # say "#   Block, Hash, or Pair ", ($v->[2])->perl;
                 $v = Lit::Block->new( stmts => $v->[2], sig => $v->[3] );
                 $v = block_or_hash($v);
-                # TODO: $v = Lit::Hash->new( hash1 => $v->[2] );
+                # TODO: $v = Apply->new( code => 'circumfix:<{ }>', namespace => '', arguments => $v->[2] );
                 return $v;
             }
             if ($v->[1] eq '.( )') {

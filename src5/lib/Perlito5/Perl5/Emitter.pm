@@ -141,20 +141,6 @@ package Lit::Block;
     }
 }
 
-package Lit::Hash;
-{
-    sub emit_perl5 {
-        my $self = $_[0];
-        $self->emit_perl5_indented(0) }
-    sub emit_perl5_indented {
-        my $self = $_[0];
-        my $level = $_[1];
-        
-        Perl5::tab($level) . "{"
-        .   join(",\n", map( $_->emit_perl5_indented( $level + 1 ), @{$self->{"hash1"}} )) . "}"
-    }
-}
-
 package Index;
 {
     sub emit_perl5 {
@@ -366,6 +352,9 @@ package Apply;
 
         if ($code eq 'circumfix:<[ ]>') { 
             return Perl5::tab($level) . '[' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ']'
+        }
+        if ($code eq 'circumfix:<{ }>') { 
+            return Perl5::tab($level) . '{' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . '}'
         }
         if ($code eq 'prefix:<\\>') { 
             # TODO - \(@a) vs. \@a

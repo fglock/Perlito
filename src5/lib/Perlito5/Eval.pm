@@ -47,20 +47,6 @@ sub eval {
 }
 
 
-package Lit::Hash;
-sub eval {
-    my $self = $_[0];
-    my $env = $_[1];
-
-    my %h;
-    for my $field ( @{$self->{"hash1"}} ) {
-        my $pair = $field->arguments;
-        $h{ ($pair->[0])->eval($env) } = ($pair->[1])->eval($env);
-    };
-    return %h;
-}
-
-
 package Index;
 sub eval {
     my $self = $_[0];

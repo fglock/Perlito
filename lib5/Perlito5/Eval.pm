@@ -44,17 +44,6 @@ sub eval {
         $stmt->eval($env1)
     }
 };
-package Lit::Hash;
-sub eval {
-    ((my  $self) = $_[0]);
-    ((my  $env) = $_[1]);
-    (my  %h);
-    for my $field (@{$self->{('hash1')}}) {
-        ((my  $pair) = $field->arguments());
-        ($h{($pair->[0])->eval($env)} = ($pair->[1])->eval($env))
-    };
-    return (%h)
-};
 package Index;
 sub eval {
     ((my  $self) = $_[0]);
@@ -155,7 +144,7 @@ sub eval {
     ((my  $topic_name) = $self->{('body')}->sig()->plain_name());
     ((my  $env1) = [{}, @{$env}]);
     for my $topic (@{$cond->eval($env)}) {
-        ($env1->[0] = {    ($topic_name => $topic)});
+        ($env1->[0] = {($topic_name => $topic)});
         for my $stmt (@{($self->{('body')})->stmts()}) {
             $stmt->eval($env1)
         }

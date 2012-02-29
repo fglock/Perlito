@@ -116,18 +116,6 @@ package Lit::Block;
         (Perl5::tab($level) . ('sub ' . chr(123) . chr(10)) . join((chr(59) . chr(10)), map($_->emit_perl5_indented(($level + 1)), @{$self->{('stmts')}})) . (chr(10)) . Perl5::tab($level) . (chr(125)))
     }
 });
-package Lit::Hash;
-(do {
-    sub emit_perl5 {
-        ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub emit_perl5_indented {
-        ((my  $self) = $_[0]);
-        ((my  $level) = $_[1]);
-        (Perl5::tab($level) . (chr(123)) . join((',' . chr(10)), map($_->emit_perl5_indented(($level + 1)), @{$self->{('hash1')}})) . (chr(125)))
-    }
-});
 package Index;
 (do {
     sub emit_perl5 {
@@ -281,6 +269,9 @@ package Apply;
         };
         if ((($code eq 'circumfix:<[ ]>'))) {
             return ((Perl5::tab($level) . '[' . join(', ', map($_->emit_perl5(), @{$self->{('arguments')}})) . ']'))
+        };
+        if ((($code eq 'circumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
+            return ((Perl5::tab($level) . chr(123) . join(', ', map($_->emit_perl5(), @{$self->{('arguments')}})) . chr(125)))
         };
         if ((($code eq 'prefix:<' . chr(92) . '>'))) {
             return ((Perl5::tab($level) . chr(92) . join(' ', map($_->emit_perl5(), @{$self->{('arguments')}})) . ''))

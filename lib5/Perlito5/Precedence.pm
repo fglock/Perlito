@@ -10,7 +10,7 @@ package main;
 package Perlito5::Precedence;
 sub new {
     ((my  $class) = shift());
-    bless({    @_}, $class)
+    bless({@_}, $class)
 };
 ((my  $Operator) = {});
 ((my  $Precedence) = {});
@@ -35,105 +35,75 @@ sub is_ident_middle {
     ((((($c ge 'a') && ($c le 'z'))) || ((($c ge '0') && ($c le '9')))) || (($c eq '_')))
 };
 ((my  @Term_chars) = (7, 5, 3, 2, 1));
-((my  @Term) = ({}, {    (chr(36) => sub  {
+((my  @Term) = ({}, {(chr(36) => sub  {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}),
-    (chr(64) => sub  {
+}), (chr(64) => sub  {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}),
-    (chr(37) => sub  {
+}), (chr(37) => sub  {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}),
-    (chr(38) => sub  {
+}), (chr(38) => sub  {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}),
-    ('*' => sub  {
+}), ('*' => sub  {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}),
-    ('0' => sub  {
+}), ('0' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}),
-    ('1' => sub  {
+}), ('1' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}),
-    ('2' => sub  {
+}), ('2' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}),
-    ('3' => sub  {
+}), ('3' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}),
-    ('4' => sub  {
+}), ('4' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}),
-    ('5' => sub  {
+}), ('5' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}),
-    ('6' => sub  {
+}), ('6' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}),
-    ('7' => sub  {
+}), ('7' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}),
-    ('8' => sub  {
+}), ('8' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}),
-    ('9' => sub  {
+}), ('9' => sub  {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}),
-    (chr(63) => sub  {
+}), (chr(63) => sub  {
     Perlito5::Expression->term_ternary($_[0], $_[1])
-}),
-    ('(' => sub  {
+}), ('(' => sub  {
     Perlito5::Expression->term_paren($_[0], $_[1])
-}),
-    ('[' => sub  {
+}), ('[' => sub  {
     Perlito5::Expression->term_square($_[0], $_[1])
-}),
-    (chr(123) => sub  {
+}), (chr(123) => sub  {
     Perlito5::Expression->term_curly($_[0], $_[1])
-}),
-    ((chr(39)) => sub  {
+}), ((chr(39)) => sub  {
     Perlito5::Expression->term_quote($_[0], $_[1])
-}),
-    (chr(34) => sub  {
+}), (chr(34) => sub  {
     Perlito5::Expression->term_quote($_[0], $_[1])
-}),
-    (chr(35) => sub  {
+}), (chr(35) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-}),
-    (chr(9) => sub  {
+}), (chr(9) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-}),
-    (chr(10) => sub  {
+}), (chr(10) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-}),
-    (chr(12) => sub  {
+}), (chr(12) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-}),
-    (chr(13) => sub  {
+}), (chr(13) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-}),
-    (chr(32) => sub  {
+}), (chr(32) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
-})}, {    ('->' => sub  {
+})}, {('->' => sub  {
     Perlito5::Expression->term_arrow($_[0], $_[1])
-}),
-    ('my' => sub  {
+}), ('my' => sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-}),
-    ('do' => sub  {
+}), ('do' => sub  {
     Perlito5::Expression->term_do($_[0], $_[1])
-})}, {    ('our' => sub  {
+})}, {('our' => sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-}),
-    ('sub' => sub  {
+}), ('sub' => sub  {
     Perlito5::Expression->term_sub($_[0], $_[1])
-}),
-    ('use' => sub  {
+}), ('use' => sub  {
     Perlito5::Expression->term_use($_[0], $_[1])
-})}, {}, {    ('state' => sub  {
+})}, {}, {('state' => sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-})}, {}, {    ('package' => sub  {
+})}, {}, {('package' => sub  {
     Perlito5::Expression->term_package($_[0], $_[1])
 })}));
 sub add_term {
@@ -196,24 +166,24 @@ sub add_op {
     ($Op[length($name)]->{$name} = 1)
 };
 ((my  $prec) = 100);
-add_op('postfix', '.( )', $prec, {    ('no_space_before' => 1)});
-add_op('postfix', '.[ ]', $prec, {    ('no_space_before' => 1)});
-add_op('postfix', '.' . chr(123) . ' ' . chr(125), $prec, {    ('no_space_before' => 1)});
-add_op('postfix', '( )', $prec, {    ('no_space_before' => 1)});
-add_op('postfix', '[ ]', $prec, {    ('no_space_before' => 1)});
-add_op('postfix', 'funcall', $prec, {    ('no_space_before' => 1)});
-add_op('postfix', 'funcall_no_params', $prec, {    ('no_space_before' => 1)});
-add_op('postfix', 'methcall', $prec, {    ('no_space_before' => 1)});
-add_op('postfix', 'methcall_no_params', $prec, {    ('no_space_before' => 1)});
-add_op('postfix', 'block', $prec, {    ('no_space_before' => 1)});
-add_op('postfix', 'hash', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', '.( )', $prec, {('no_space_before' => 1)});
+add_op('postfix', '.[ ]', $prec, {('no_space_before' => 1)});
+add_op('postfix', '.' . chr(123) . ' ' . chr(125), $prec, {('no_space_before' => 1)});
+add_op('postfix', '( )', $prec, {('no_space_before' => 1)});
+add_op('postfix', '[ ]', $prec, {('no_space_before' => 1)});
+add_op('postfix', 'funcall', $prec, {('no_space_before' => 1)});
+add_op('postfix', 'funcall_no_params', $prec, {('no_space_before' => 1)});
+add_op('postfix', 'methcall', $prec, {('no_space_before' => 1)});
+add_op('postfix', 'methcall_no_params', $prec, {('no_space_before' => 1)});
+add_op('postfix', 'block', $prec, {('no_space_before' => 1)});
+add_op('postfix', 'hash', $prec, {('no_space_before' => 1)});
 ($prec = ($prec - 1));
 add_op('prefix', '++', $prec);
 add_op('prefix', '--', $prec);
-add_op('postfix', '++', $prec, {    ('no_space_before' => 1)});
-add_op('postfix', '--', $prec, {    ('no_space_before' => 1)});
+add_op('postfix', '++', $prec, {('no_space_before' => 1)});
+add_op('postfix', '--', $prec, {('no_space_before' => 1)});
 ($prec = ($prec - 1));
-add_op('infix', '**', $prec, {    ('assoc' => 'right')});
+add_op('infix', '**', $prec, {('assoc' => 'right')});
 ($prec = ($prec - 1));
 add_op('prefix', chr(92), $prec);
 add_op('prefix', '+', $prec);
@@ -234,31 +204,31 @@ add_op('infix', '-', $prec);
 ($prec = ($prec - 1));
 add_op('infix', 'x', $prec);
 ($prec = ($prec - 1));
-add_op('infix', '.', $prec, {    ('assoc' => 'list')});
+add_op('infix', '.', $prec, {('assoc' => 'list')});
 ($prec = ($prec - 1));
-add_op('infix', chr(38), $prec, {    ('assoc' => 'list')});
+add_op('infix', chr(38), $prec, {('assoc' => 'list')});
 add_op('prefix', chr(38), $prec);
 ($prec = ($prec - 1));
-add_op('infix', chr(124), $prec, {    ('assoc' => 'list')});
+add_op('infix', chr(124), $prec, {('assoc' => 'list')});
 add_op('prefix', chr(124), $prec);
 ($prec = ($prec - 1));
 add_op('infix', '<' . chr(61) . '>', $prec);
 add_op('infix', 'cmp', $prec);
 add_op('infix', '..', $prec);
 ($prec = ($prec - 1));
-add_op('infix', 'ne', $prec, {    ('assoc' => 'chain')});
-add_op('infix', 'eq', $prec, {    ('assoc' => 'chain')});
-add_op('infix', 'lt', $prec, {    ('assoc' => 'chain')});
-add_op('infix', 'le', $prec, {    ('assoc' => 'chain')});
-add_op('infix', 'gt', $prec, {    ('assoc' => 'chain')});
-add_op('infix', 'ge', $prec, {    ('assoc' => 'chain')});
-add_op('infix', '<' . chr(61), $prec, {    ('assoc' => 'chain')});
-add_op('infix', '>' . chr(61), $prec, {    ('assoc' => 'chain')});
-add_op('infix', chr(61) . chr(61), $prec, {    ('assoc' => 'chain')});
-add_op('infix', chr(33) . chr(61), $prec, {    ('assoc' => 'chain')});
-add_op('infix', '<', $prec, {    ('assoc' => 'chain')});
-add_op('infix', '>', $prec, {    ('assoc' => 'chain')});
-add_op('infix', chr(126) . chr(126), $prec, {    ('assoc' => 'chain')});
+add_op('infix', 'ne', $prec, {('assoc' => 'chain')});
+add_op('infix', 'eq', $prec, {('assoc' => 'chain')});
+add_op('infix', 'lt', $prec, {('assoc' => 'chain')});
+add_op('infix', 'le', $prec, {('assoc' => 'chain')});
+add_op('infix', 'gt', $prec, {('assoc' => 'chain')});
+add_op('infix', 'ge', $prec, {('assoc' => 'chain')});
+add_op('infix', '<' . chr(61), $prec, {('assoc' => 'chain')});
+add_op('infix', '>' . chr(61), $prec, {('assoc' => 'chain')});
+add_op('infix', chr(61) . chr(61), $prec, {('assoc' => 'chain')});
+add_op('infix', chr(33) . chr(61), $prec, {('assoc' => 'chain')});
+add_op('infix', '<', $prec, {('assoc' => 'chain')});
+add_op('infix', '>', $prec, {('assoc' => 'chain')});
+add_op('infix', chr(126) . chr(126), $prec, {('assoc' => 'chain')});
 ($prec = ($prec - 1));
 add_op('infix', chr(38) . chr(38), $prec);
 ($prec = ($prec - 1));
@@ -268,23 +238,23 @@ add_op('infix', chr(47) . chr(47), $prec);
 add_op('ternary', chr(63) . chr(63) . ' ' . chr(33) . chr(33), $prec);
 add_op('ternary', chr(63) . ' :', $prec);
 ($prec = ($prec - 1));
-add_op('infix', chr(61), $prec, {    ('assoc' => 'right')});
-add_op('infix', chr(124) . chr(124) . chr(61), $prec, {    ('assoc' => 'right')});
-add_op('infix', chr(38) . chr(38) . chr(61), $prec, {    ('assoc' => 'right')});
-add_op('infix', chr(124) . chr(61), $prec, {    ('assoc' => 'right')});
-add_op('infix', chr(38) . chr(61), $prec, {    ('assoc' => 'right')});
-add_op('infix', chr(47) . chr(47) . chr(61), $prec, {    ('assoc' => 'right')});
-add_op('infix', '+' . chr(61), $prec, {    ('assoc' => 'right')});
-add_op('infix', '-' . chr(61), $prec, {    ('assoc' => 'right')});
-add_op('infix', '*' . chr(61), $prec, {    ('assoc' => 'right')});
-add_op('infix', chr(47) . chr(61), $prec, {    ('assoc' => 'right')});
-add_op('infix', '.' . chr(61), $prec, {    ('assoc' => 'right')});
+add_op('infix', chr(61), $prec, {('assoc' => 'right')});
+add_op('infix', chr(124) . chr(124) . chr(61), $prec, {('assoc' => 'right')});
+add_op('infix', chr(38) . chr(38) . chr(61), $prec, {('assoc' => 'right')});
+add_op('infix', chr(124) . chr(61), $prec, {('assoc' => 'right')});
+add_op('infix', chr(38) . chr(61), $prec, {('assoc' => 'right')});
+add_op('infix', chr(47) . chr(47) . chr(61), $prec, {('assoc' => 'right')});
+add_op('infix', '+' . chr(61), $prec, {('assoc' => 'right')});
+add_op('infix', '-' . chr(61), $prec, {('assoc' => 'right')});
+add_op('infix', '*' . chr(61), $prec, {('assoc' => 'right')});
+add_op('infix', chr(47) . chr(61), $prec, {('assoc' => 'right')});
+add_op('infix', '.' . chr(61), $prec, {('assoc' => 'right')});
 ($prec = ($prec - 1));
 add_op('prefix', 'not', $prec);
 ($prec = ($prec - 1));
 add_op('infix', chr(61) . '>', $prec);
 ($prec = ($prec - 1));
-add_op('list', ',', $prec, {    ('assoc' => 'list')});
+add_op('list', ',', $prec, {('assoc' => 'list')});
 ($prec = ($prec - 1));
 add_op('infix', 'and', $prec);
 ($prec = ($prec - 1));

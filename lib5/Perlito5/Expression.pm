@@ -37,27 +37,27 @@ sub block_or_hash {
     };
     ((my  $stmts) = $o->stmts());
     if (((!((defined($stmts))) || (scalar(@{$stmts}) == 0)))) {
-        return (Lit::Hash->new(('hash1' => [])))
+        return (Apply->new(('code' => 'circumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('namespace' => ''), ('arguments' => [])))
     };
     if (((scalar(@{$stmts}) != 1))) {
         return ($o)
     };
     ((my  $stmt) = $stmts->[0]);
     if (((ref($stmt) eq 'Var'))) {
-        return (Lit::Hash->new(('hash1' => [$stmt])))
+        return (Apply->new(('code' => 'circumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('namespace' => ''), ('arguments' => [$stmt])))
     };
     if (((ref($stmt) ne 'Apply'))) {
         return ($o)
     };
     if ((($stmt->code() eq 'infix:<' . chr(61) . '>>'))) {
-        return (Lit::Hash->new(('hash1' => [$stmt])))
+        return (Apply->new(('code' => 'circumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('namespace' => ''), ('arguments' => [$stmt])))
     };
     if ((($stmt->code() ne 'list:<,>'))) {
         return ($o)
     };
     for my $item (@{$stmt->arguments()}) {
         if ((((ref($item) eq 'Apply') && ($item->code() eq 'infix:<' . chr(61) . '>>')))) {
-            return (Lit::Hash->new(('hash1' => expand_list($stmt))))
+            return (Apply->new(('code' => 'circumfix:<' . chr(123) . ' ' . chr(125) . '>'), ('namespace' => ''), ('arguments' => expand_list($stmt))))
         }
     };
     return ($o)
@@ -354,9 +354,7 @@ sub term_arrow {
         0
     }
 }))) && (((')' eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')})))))) && ((do {
-    ($MATCH->{('capture')} = ['postfix_or_term', 'methcall', $MATCH->{('Perlito5::Grammar.ident')}->flat(), {    ('end_block' => undef()),
-    ('exp' => $MATCH->{('paren_parse')}->flat()),
-    ('terminated' => 0)}]);
+    ($MATCH->{('capture')} = ['postfix_or_term', 'methcall', $MATCH->{('Perlito5::Grammar.ident')}->flat(), {('end_block' => undef()), ('exp' => $MATCH->{('paren_parse')}->flat()), ('terminated' => 0)}]);
     1
 })))
 })) || ((do {
@@ -1151,22 +1149,9 @@ sub has_no_comma_or_colon_after {
 }))));
     $MATCH
 };
-((my  $List_end_token) = [{}, {    (':' => 1),
-    (']' => 1),
-    (')' => 1),
-    (chr(125) => 1),
-    (chr(59) => 1)}, {    ('or' => 1),
-    ('if' => 1)}, {    ('for' => 1),
-    ('and' => 1)}, {    ('else' => 1),
-    ('when' => 1)}, {    ('while' => 1),
-    ('elsif' => 1)}, {    ('unless' => 1)}, {    ('foreach' => 1)}]);
+((my  $List_end_token) = [{}, {(':' => 1), (']' => 1), (')' => 1), (chr(125) => 1), (chr(59) => 1)}, {('or' => 1), ('if' => 1)}, {('for' => 1), ('and' => 1)}, {('else' => 1), ('when' => 1)}, {('while' => 1), ('elsif' => 1)}, {('unless' => 1)}, {('foreach' => 1)}]);
 ((my  $List_end_token_chars) = [7, 6, 5, 4, 3, 2, 1]);
-((my  $Expr_end_token) = [{}, {    (']' => 1),
-    (')' => 1),
-    (chr(125) => 1),
-    (chr(59) => 1)}, {    ('if' => 1)}, {    ('for' => 1)}, {    ('else' => 1),
-    ('when' => 1)}, {    ('while' => 1),
-    ('elsif' => 1)}, {    ('unless' => 1)}, {    ('foreach' => 1)}]);
+((my  $Expr_end_token) = [{}, {(']' => 1), (')' => 1), (chr(125) => 1), (chr(59) => 1)}, {('if' => 1)}, {('for' => 1)}, {('else' => 1), ('when' => 1)}, {('while' => 1), ('elsif' => 1)}, {('unless' => 1)}, {('foreach' => 1)}]);
 ((my  $Expr_end_token_chars) = [7, 6, 5, 4, 3, 2, 1]);
 sub list_parse {
     ((my  $self) = $_[0]);
@@ -1218,9 +1203,7 @@ sub list_parse {
     ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => $List_end_token), ('end_token_chars' => $List_end_token_chars)));
     ((my  $res) = $prec->precedence_parse());
     if (((scalar(@{$res}) == 0))) {
-        return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => {    ('exp' => '*undef*'),
-    ('end_block' => undef()),
-    ('terminated' => undef())})))
+        return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => {('exp' => '*undef*'), ('end_block' => undef()), ('terminated' => undef())})))
     };
     (my  $block);
     if (((scalar(@{$res}) > 1))) {
@@ -1232,9 +1215,7 @@ sub list_parse {
         ($block = pop(@{$res}));
         ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
     };
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => {    ('exp' => $result),
-    ('end_block' => $block),
-    ('terminated' => $terminated)})))
+    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => {('exp' => $result), ('end_block' => $block), ('terminated' => $terminated)})))
 };
 sub circumfix_parse {
     ((my  $self) = $_[0]);
@@ -1255,7 +1236,7 @@ sub circumfix_parse {
     return ($v)
 });
     (my  @delim_token);
-    ($delim_token[length($delimiter)] = {    ($delimiter => 1)});
+    ($delim_token[length($delimiter)] = {($delimiter => 1)});
     ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => \@delim_token), ('end_token_chars' => [length($delimiter)])));
     ((my  $res) = $prec->precedence_parse());
     ($res = pop_term($res));
@@ -1336,9 +1317,7 @@ sub exp_parse {
             ($block = Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
         }
     };
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => {    ('exp' => $result),
-    ('end_block' => $block),
-    ('terminated' => $terminated)})))
+    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => {('exp' => $result), ('end_block' => $block), ('terminated' => $terminated)})))
 };
 sub exp_stmt {
     ((my  $grammar) = $_[0]);

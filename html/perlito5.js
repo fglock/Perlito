@@ -881,41 +881,6 @@ make_sub(__PACKAGE__, "stmts", function (List__) {
 				});
 })()
 ;
-make_package("Lit::Hash");
-(function () {
-  var __PACKAGE__ = "Lit::Hash";
-  var PKG = NAMESPACE[__PACKAGE__];
-make_sub(__PACKAGE__, "new", function (List__) {
-					try {
-						var v_class = null;
-
-						(v_class = PKG.shift([List__]));
-						return(PKG.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class]));;
-					}
-					catch(err) {
-						if ( err instanceof Error ) {
-							throw(err);
-						}
-						else {
-							return(err);
-						}
-					}
-				});
-make_sub(__PACKAGE__, "hash1", function (List__) {
-					try {
-						return((List__[0] || (List__[0] = new HashRef({})))._hash_['hash1']);;
-					}
-					catch(err) {
-						if ( err instanceof Error ) {
-							throw(err);
-						}
-						else {
-							return(err);
-						}
-					}
-				});
-})()
-;
 make_package("Index");
 (function () {
   var __PACKAGE__ = "Index";
@@ -2301,46 +2266,6 @@ make_sub(__PACKAGE__, "emit_javascript", function (List__) {
 				})();
 })()
 ;
-make_package("Lit::Hash");
-(function () {
-  var __PACKAGE__ = "Lit::Hash";
-  var PKG = NAMESPACE[__PACKAGE__];
-				(function () {
-make_sub(__PACKAGE__, "emit_javascript", function (List__) {
-						try {
-							return(List__[0]._class_.emit_javascript_indented([List__[0],0]));;
-						}
-						catch(err) {
-							if ( err instanceof Error ) {
-								throw(err);
-							}
-							else {
-								return(err);
-							}
-						}
-					});
-					return(make_sub(__PACKAGE__, "emit_javascript_indented", function (List__) {
-	try {
-		var v_self = null;
-
-		var v_level = null;
-
-		(v_self = PKG.shift([List__]));
-		(v_level = PKG.shift([List__]));
-		return((string(NAMESPACE["Javascript"].tab([v_level])) + '(new HashRef(array_to_hash(' + string(NAMESPACE["Javascript"].to_list([(v_self || (v_self = new HashRef({})))._hash_[('hash1')]])) + ')))'));;
-	}
-	catch(err) {
-		if ( err instanceof Error ) {
-			throw(err);
-		}
-		else {
-			return(err);
-		}
-	}
-}));
-				})();
-})()
-;
 make_package("Index");
 (function () {
   var __PACKAGE__ = "Index";
@@ -2700,6 +2625,9 @@ make_sub(__PACKAGE__, "emit_javascript_indented", function (List__) {
 							})(); };
 							if ( bool((v_code == 'circumfix:<[ ]>')) ) { (function () {
 								throw(('(new ArrayRef(' + string(NAMESPACE["Javascript"].to_list([(v_self || (v_self = new HashRef({})))._hash_[('arguments')]])) + '))'));;
+							})(); };
+							if ( bool((v_code == 'circumfix:<{ }>')) ) { (function () {
+								throw(('(new HashRef(array_to_hash(' + string(NAMESPACE["Javascript"].to_list([(v_self || (v_self = new HashRef({})))._hash_[('arguments')]])) + ')))'));;
 							})(); };
 							if ( bool((v_code == 'prefix:<' + String.fromCharCode(92) + '>')) ) { (function () {
 								var v_arg = null;
@@ -4151,27 +4079,27 @@ make_sub(__PACKAGE__, "block_or_hash", function (List__) {
 						})(); };
 						(v_stmts = v_o._class_.stmts([v_o]));
 						if ( bool(or(!( bool((v_stmts != null))), function () { return (PKG.scalar([(v_stmts || (v_stmts = new ArrayRef([])))._array_]) == 0); })) ) { (function () {
-							throw(CLASS["Lit::Hash"]._class_.new([CLASS["Lit::Hash"],'hash1', (new ArrayRef([]))]));;
+							throw(CLASS["Apply"]._class_.new([CLASS["Apply"],'code', 'circumfix:<{ }>','namespace', '','arguments', (new ArrayRef([]))]));;
 						})(); };
 						if ( bool((PKG.scalar([(v_stmts || (v_stmts = new ArrayRef([])))._array_]) != 1)) ) { (function () {
 							throw(v_o);;
 						})(); };
 						(v_stmt = (v_stmts || (v_stmts = new ArrayRef([])))._array_[0]);
 						if ( bool((PKG.ref([v_stmt]) == 'Var')) ) { (function () {
-							throw(CLASS["Lit::Hash"]._class_.new([CLASS["Lit::Hash"],'hash1', (new ArrayRef(interpolate_array(v_stmt)))]));;
+							throw(CLASS["Apply"]._class_.new([CLASS["Apply"],'code', 'circumfix:<{ }>','namespace', '','arguments', (new ArrayRef(interpolate_array(v_stmt)))]));;
 						})(); };
 						if ( bool((PKG.ref([v_stmt]) != 'Apply')) ) { (function () {
 							throw(v_o);;
 						})(); };
 						if ( bool((v_stmt._class_.code([v_stmt]) == 'infix:<=>>')) ) { (function () {
-							throw(CLASS["Lit::Hash"]._class_.new([CLASS["Lit::Hash"],'hash1', (new ArrayRef(interpolate_array(v_stmt)))]));;
+							throw(CLASS["Apply"]._class_.new([CLASS["Apply"],'code', 'circumfix:<{ }>','namespace', '','arguments', (new ArrayRef(interpolate_array(v_stmt)))]));;
 						})(); };
 						if ( bool((v_stmt._class_.code([v_stmt]) != 'list:<,>')) ) { (function () {
 							throw(v_o);;
 						})(); };
 						(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {
 							if ( bool(and((PKG.ref([v_item]) == 'Apply'), function () { return (v_item._class_.code([v_item]) == 'infix:<=>>'); })) ) { (function () {
-								throw(CLASS["Lit::Hash"]._class_.new([CLASS["Lit::Hash"],'hash1', PKG.expand_list([v_stmt])]));;
+								throw(CLASS["Apply"]._class_.new([CLASS["Apply"],'code', 'circumfix:<{ }>','namespace', '','arguments', PKG.expand_list([v_stmt])]));;
 							})(); };; })(a_[i_]) } })(interpolate_array((v_stmt._class_.arguments([v_stmt]) || (v_stmt._class_.arguments([v_stmt]) = new ArrayRef([])))._array_));
 						throw(v_o);;
 					}
@@ -6724,9 +6652,6 @@ make_sub(__PACKAGE__, "if", function (List__) {
 	})(); };
 	if ( !( bool((v_otherwise != null))) ) { (function () {
 		PKG.die([('Missing code block in ' + String.fromCharCode(39) + 'else' + String.fromCharCode(39))]);;
-	})(); };
-	if ( bool((PKG.ref([v_otherwise]) == 'Lit::Hash')) ) { (function () {
-		(v_otherwise = CLASS["Lit::Block"]._class_.new([CLASS["Lit::Block"],'stmts', v_otherwise._class_.hash1([v_otherwise])]));;
 	})(); };
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('capture')] = CLASS["If"]._class_.new([CLASS["If"],'cond', ((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('exp')]._class_.flat([(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('exp')]]) || ((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('exp')]._class_.flat([(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('exp')]]) = new HashRef({})))._hash_['exp'],'body', v_body,'otherwise', v_otherwise]));
 	return(1);

@@ -261,18 +261,6 @@ package Lit::Block;
     }
 }
 
-package Lit::Hash;
-{
-    sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
-    sub emit_perl6_indented {
-        my $self = shift;
-        my $level = shift;
-
-        Perl6::tab($level) . "{"
-        .   join(",\n", map( $_->emit_perl6_indented( $level + 1 ), @{$self->{"hash1"}} )) . "}"
-    }
-}
-
 package Index;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
@@ -492,6 +480,9 @@ package Apply;
 
         if ( $code eq 'circumfix:<[ ]>' ) {
             return '[' . join( ', ', map( $_->emit_perl6, @{ $self->{"arguments"} } ) ) . ']';
+        }
+        if ( $code eq 'circumfix:<{ }>' ) {
+            return '{' . join( ', ', map( $_->emit_perl6, @{ $self->{"arguments"} } ) ) . '}';
         }
         if ( $code eq 'prefix:<\\>' ) {
             my $arg = $self->{"arguments"}->[0];
