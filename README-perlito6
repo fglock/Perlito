@@ -91,15 +91,15 @@ RUNNING TESTS
 
     Perl 5:
 
-    find t/*.t | perl -ne ' print "*** $_"; chomp; print ` perl perlito6.pl -Cperl5 $_ | perl ` '
+    find t6/*.t | perl -ne ' print "*** $_"; chomp; print ` perl perlito6.pl -Cperl5 $_ | perl ` '
 
     Javascript:
 
-    find t/*.t | perl -ne ' print "*** $_"; chomp; print ` d8 perlito6.js -- -Cjs $_ > tmp.js && d8 tmp.js ` '
+    find t6/*.t | perl -ne ' print "*** $_"; chomp; print ` d8 perlito6.js -- -Cjs $_ > tmp.js && d8 tmp.js ` '
 
     Python 2.6:
 
-    find t/*.t | perl -ne ' print "*** $_"; chomp; print ` python perlito6.py -Cpython $_ | python ` '
+    find t6/*.t | perl -ne ' print "*** $_"; chomp; print ` python perlito6.py -Cpython $_ | python ` '
 
 AUTHORS
 
