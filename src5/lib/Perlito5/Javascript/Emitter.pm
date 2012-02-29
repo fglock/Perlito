@@ -482,13 +482,12 @@ package Call;
             my @args = ();
             push @args, $_->emit_javascript
                 for @{$self->{"arguments"}};
-            return Javascript::tab($level) . '(' . $invocant . ')(' . join(',', @args) . ')';
+            return Javascript::tab($level) . '(' . $invocant . ')([' . join(',', @args) . '])';
         }
-        # try to call a method on the class; if that fails, then call a 'native js' method
         my @args = ($invocant);
         push @args, $_->emit_javascript
             for @{$self->{"arguments"}};
-        return Javascript::tab($level) . $invocant . '._class_.' . $meth . '(' . join(',', @args) . ')'
+        return Javascript::tab($level) . $invocant . '._class_.' . $meth . '([' . join(',', @args) . '])'
     }
 }
 
@@ -558,9 +557,9 @@ package Apply;
 
         if ($code eq 'shift')      {
             if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return 'PKG.shift(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . ')'
+                return 'PKG.shift([' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} )) . '])'
             }
-            return 'PKG.shift(List__)'
+            return 'PKG.shift([List__])'
         }
 
         if ($code eq 'map') {
@@ -731,7 +730,7 @@ package Apply;
                 }
             }
 
-            $code = 'NAMESPACE["' . $self->{"namespace"} . '"].' . ( $code );
+            $code = 'NAMESPACE["' . $self->{"namespace"} . '"].' . $code;
         }
         else {
             $code = 'PKG.' . $code
@@ -739,7 +738,7 @@ package Apply;
         my @args = ();
         push @args, $_->emit_javascript
             for @{$self->{"arguments"}};
-        Javascript::tab($level) . $code . '(' . join(', ', @args) . ')';
+        Javascript::tab($level) . $code . '([' . join(', ', @args) . '])';
     }
 
     sub emit_javascript_bind {
@@ -863,8 +862,7 @@ package Sub;
         my $self = shift;
         my $level = shift;
 
-        my $s =                     'function () {' . "\n"
-        . Javascript::tab($level + 1) . 'var List__ = Array.prototype.slice.call(arguments);' . "\n"
+        my $s =                     'function (List__) {' . "\n"
         .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"block"}, needs_return => 1, top_level => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
         . Javascript::tab($level) . '}';
 

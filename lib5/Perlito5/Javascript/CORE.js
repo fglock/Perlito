@@ -19,8 +19,7 @@
 var CORE = NAMESPACE.CORE;
 
 var _print_buf = "";
-CORE.print = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.print = function(List__) {
     var i;
     for (i = 0; i < List__.length; i++) {
         var s = string(List__[i]);
@@ -39,17 +38,12 @@ CORE.print = function() {
     return true;
 };
 
-CORE.say = function() {
-    var List__ = Array.prototype.slice.call(arguments);
-    var i;
-    for (i = 0; i < List__.length; i++) {
-        CORE.print(List__[i]);
-    }
-    return CORE.print("\n");
+CORE.say = function(List__) {
+    CORE.print(List__);
+    return CORE.print(["\n"]);
 };
 
-CORE.die = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.die = function(List__) {
     var i;
     var s = '';
     for (i = 0; i < List__.length; i++) {
@@ -58,17 +52,18 @@ CORE.die = function() {
     throw(new Error("Died: " + s));
 };
 
-CORE.warn = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.warn = function(List__) {
     var i;
     var s = '';
     for (i = 0; i < List__.length; i++) {
         s = s + string(List__[i]);
     }
-    CORE.print("Warning: " + s + "\n");
+    CORE.print(["Warning: " + s + "\n"]);
 };
 
-CORE.bless = function(o, pkg_name) {
+CORE.bless = function(List__) {
+    var o        = List__[0];
+    var pkg_name = List__[1];
     if (typeof pkg_name === 'object') {
         // bless {}, Class
         o._class_ = pkg_name;
@@ -81,20 +76,23 @@ CORE.bless = function(o, pkg_name) {
     return o;
 };
 
-CORE.chr = function(o) {
-    return String.fromCharCode(num(o));
+CORE.chr = function(List__) {
+    return String.fromCharCode(num(List__[0]));
 };
 
-CORE.ord = function(o) {
-    return string(o).charCodeAt(0);
+CORE.ord = function(List__) {
+    return string(List__[0]).charCodeAt(0);
 };
 
-CORE.substr = function(expr, offset, length, replacement) {
+CORE.substr = function(List__) {
+    var expr        = List__[0];
+    var offset      = List__[1];
+    var length      = List__[2];
+    var replacement = List__[3];
     return string(expr).substr(offset, length);
 };
 
-CORE.scalar = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.scalar = function(List__) {
     var o = List__[0];
     if (o == null) {
         return 1;
@@ -118,8 +116,7 @@ CORE.scalar = function() {
     return l;
 };
 
-CORE.values = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.values = function(List__) {
     var o = List__[0];
     if (o == null) {
         return [];
@@ -134,8 +131,7 @@ CORE.values = function() {
     return out;
 };
 
-CORE.keys = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.keys = function(List__) {
     var o = List__[0];
     if (o == null) {
         return [];
@@ -150,8 +146,7 @@ CORE.keys = function() {
     return out;
 };
 
-CORE.pop = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.pop = function(List__) {
     var o = List__[0];
     if (o.length == null) {
         return null;
@@ -159,8 +154,7 @@ CORE.pop = function() {
     return o.pop();
 };
 
-CORE.shift = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.shift = function(List__) {
     var o = List__[0];
     if (o.length == null) {
         return null;
@@ -168,29 +162,25 @@ CORE.shift = function() {
     return o.shift();
 };
 
-CORE.push = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.push = function(List__) {
     var o = List__[0];
     var v = List__[1];
     return o.push(v);
 };
 
-CORE.unshift = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.unshift = function(List__) {
     var o = List__[0];
     var v = List__[1];
     return o.unshift(v);
 };
 
-CORE.join = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.join = function(List__) {
     var s = List__[0];
     var o = List__[1];
     return o.join(s);
 };
 
-CORE.index = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.index = function(List__) {
     var o = List__[0];
     var s = List__[1];
     try {
@@ -201,8 +191,7 @@ CORE.index = function() {
     }
 };
 
-CORE.length = function() {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.length = function(List__) {
     var o = List__[0];
     if (typeof o.string === 'function') {
         return o.string().length;
@@ -210,8 +199,7 @@ CORE.length = function() {
     return o.length;
 };
 
-CORE.ref = function(o) {
-    var List__ = Array.prototype.slice.call(arguments);
+CORE.ref = function(List__) {
     var o = List__[0];
     if (o == null) {
         return '';

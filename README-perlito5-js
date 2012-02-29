@@ -1,13 +1,17 @@
-Perlito5 Data model Overview
+* Perlito5 Data model Overview
 
 
 method call
 - lookup the method in the _class_ attribute; follow the class hierarchy until the UNIVERSAL base class.
-- do a native call on the method. The invocant is the first argument. "this" is not used.
+- do a native call on the method.
+- the argument list is the named array "List__" (that is, "@_").
+- the invocant is the first argument. "this" is not used.
 
 subroutine call 
 - lookup the subroutine in the current namespace; follow the hierarchy until the CORE base class.
-- do a native method call. "this" is not used.
+- do a native method call.
+- the argument list is the named array "List__" (that is, "@_").
+- "this" is not used.
 
 Hash
 - native {}
@@ -59,7 +63,7 @@ AUTOLOAD
 - TODO
 
 
-Javascript resources
+* Javascript resources
 
 
 https://github.com/eriwen/javascript-stacktrace
@@ -69,7 +73,7 @@ https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 - Pugs Perl6 in javascript
 
 
-Cell-based aliasing (TODO)
+* Cell-based aliasing (TODO)
 
 
 - slow

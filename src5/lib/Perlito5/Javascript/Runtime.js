@@ -23,8 +23,12 @@ if (typeof NAMESPACE !== 'object') {
     var universal = function () {};
     CLASS.UNIVERSAL = new universal();
     CLASS.UNIVERSAL._ref_ = 'UNIVERSAL';
-    CLASS.UNIVERSAL.isa = function (o, s) { return s == o._class_._ref_ };
-    CLASS.UNIVERSAL.can = function (o, s) {
+    CLASS.UNIVERSAL.isa = function (List__) {
+        return List__[0]._class_._ref_ == List__[1]
+    };
+    CLASS.UNIVERSAL.can = function (List__) {
+        var o = List__[0];
+        var s = List__[1];
         if ( s.indexOf('::') == -1 ) {
             return o._class_[s]
         }
@@ -87,7 +91,8 @@ make_package('IO');
 make_package('Perlito5::Runtime');
 make_package('Perlito5::Grammar');
 
-make_sub('IO', 'slurp', function(filename) {
+make_sub('IO', 'slurp', function(List__) {
+    var filename = List__[0];
     if (typeof readFile == 'function') {
         return readFile(filename);
     }
@@ -95,7 +100,7 @@ make_sub('IO', 'slurp', function(filename) {
         // v8
         return read(filename);
     }
-    CLASS.CORE.die("IO.slurp() not implemented");
+    CLASS.CORE.die(["IO.slurp() not implemented"]);
 });
 
 interpolate_array = function() {
@@ -193,9 +198,6 @@ bool = function(o) {
     if (typeof o === 'string') {
         return o != '' && o != '0';
     }
-    if (o._class_ && typeof o._class_.bool === 'function') {
-        return o._class_.bool(o);
-    }
     if (typeof o.bool === 'function') {
         return o.bool();
     }
@@ -234,8 +236,11 @@ str_replicate = function(o, n) {
     return n ? Array(n + 1).join(o) : "";
 };
 
-make_sub('Perlito5::Grammar', 'word', function(v_grammar, v_str, v_pos) {
-    return NAMESPACE.CORE.bless(
+make_sub('Perlito5::Grammar', 'word', function(List__) {
+    var v_grammar = List__[0];
+    var v_str     = List__[1];
+    var v_pos     = List__[2];
+    return NAMESPACE.CORE.bless([
         new HashRef({
             str: v_str,
             from: v_pos,
@@ -243,11 +248,14 @@ make_sub('Perlito5::Grammar', 'word', function(v_grammar, v_str, v_pos) {
             bool: v_str.substr(v_pos, 1).match(/\w/) != null,
         }),
         CLASS['Perlito5::Match']
-    );
+    ]);
 });
 
-make_sub('Perlito5::Grammar', 'digit', function(v_grammar, v_str, v_pos) {
-    return NAMESPACE.CORE.bless(
+make_sub('Perlito5::Grammar', 'digit', function(List__) {
+    var v_grammar = List__[0];
+    var v_str     = List__[1];
+    var v_pos     = List__[2];
+    return NAMESPACE.CORE.bless([
         new HashRef({
             str:  v_str,
             from: v_pos,
@@ -255,11 +263,14 @@ make_sub('Perlito5::Grammar', 'digit', function(v_grammar, v_str, v_pos) {
             bool: v_str.substr(v_pos, 1).match(/\d/) != null,
         }),
         CLASS['Perlito5::Match']
-    );
+    ]);
 });
 
-make_sub('Perlito5::Grammar', 'space', function(v_grammar, v_str, v_pos) {
-    return NAMESPACE.CORE.bless(
+make_sub('Perlito5::Grammar', 'space', function(List__) {
+    var v_grammar = List__[0];
+    var v_str     = List__[1];
+    var v_pos     = List__[2];
+    return NAMESPACE.CORE.bless([
         new HashRef({
             str:  v_str,
             from: v_pos,
@@ -267,27 +278,27 @@ make_sub('Perlito5::Grammar', 'space', function(v_grammar, v_str, v_pos) {
             bool: v_str.substr(v_pos, 1).match(/\s/) != null,
         }),
         CLASS['Perlito5::Match']
-    );
+    ]);
 });
 
 function perl5_to_js( source ) {
     // say( "source: [" + source + "]" );
-    match = CLASS['Perlito5::Grammar'].exp_stmts(CLASS['Perlito5::Grammar'], source, 0);
+    match = CLASS['Perlito5::Grammar'].exp_stmts([CLASS['Perlito5::Grammar'], source, 0]);
 
-    ast = NAMESPACE.CORE.bless(
+    ast = NAMESPACE.CORE.bless([
         new HashRef({
-            block:  NAMESPACE.CORE.bless(
+            block:  NAMESPACE.CORE.bless([
                         new HashRef({
-                            stmts:   match._class_.flat(match),
+                            stmts:   match._class_.flat([match]),
                         }),
                         CLASS['Lit::Block']
-                    ),
+                    ]),
         }),
         CLASS.Do
-    );
+    ]);
 
     // CORE.say( "ast: [" + perl(ast) + "]" );
-    js_code = ast._class_.emit_javascript(ast);
+    js_code = ast._class_.emit_javascript([ast]);
     // CORE.say( "js-source: [" + js_code + "]" );
     return js_code;
 }

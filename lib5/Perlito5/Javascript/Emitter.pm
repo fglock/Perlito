@@ -400,13 +400,13 @@ package Call;
             for (@{$self->{('arguments')}}) {
                 push(@args, $_->emit_javascript() )
             };
-            return ((Javascript::tab($level) . '(' . $invocant . ')(' . join(',', @args) . ')'))
+            return ((Javascript::tab($level) . '(' . $invocant . ')([' . join(',', @args) . '])'))
         };
         ((my  @args) = ($invocant));
         for (@{$self->{('arguments')}}) {
             push(@args, $_->emit_javascript() )
         };
-        return ((Javascript::tab($level) . $invocant . '._class_.' . $meth . '(' . join(',', @args) . ')'))
+        return ((Javascript::tab($level) . $invocant . '._class_.' . $meth . '([' . join(',', @args) . '])'))
     }
 });
 package Apply;
@@ -450,9 +450,9 @@ package Apply;
         };
         if ((($code eq 'shift'))) {
             if ((($self->{('arguments')} && @{$self->{('arguments')}}))) {
-                return (('PKG.shift(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
+                return (('PKG.shift([' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . '])'))
             };
-            return ('PKG.shift(List__)')
+            return ('PKG.shift([List__])')
         };
         if ((($code eq 'map'))) {
             ((my  $fun) = $self->{('arguments')}->[0]);
@@ -570,7 +570,7 @@ package Apply;
                     die(('JS::inline needs a string constant'))
                 }
             };
-            ($code = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . '].' . ($code)))
+            ($code = ('NAMESPACE[' . chr(34) . $self->{('namespace')} . chr(34) . '].' . $code))
         }
         else {
             ($code = ('PKG.' . $code))
@@ -579,7 +579,7 @@ package Apply;
         for (@{$self->{('arguments')}}) {
             push(@args, $_->emit_javascript() )
         };
-        (Javascript::tab($level) . $code . '(' . join(', ', @args) . ')')
+        (Javascript::tab($level) . $code . '([' . join(', ', @args) . '])')
     };
     sub emit_javascript_bind {
         ((my  $parameters) = shift());
@@ -684,7 +684,7 @@ package Sub;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $s) = ('function () ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'var List__ ' . chr(61) . ' Array.prototype.slice.call(arguments)' . chr(59) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125)));
+        ((my  $s) = ('function (List__) ' . chr(123) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125)));
         (($self->{('name')} ? ('make_sub(__PACKAGE__, ' . chr(34) . $self->{('name')} . chr(34) . ', ' . $s . ')') : $s))
     }
 });
