@@ -383,8 +383,7 @@ package Index;
         Javascript::tab($level) 
         . '('
         .   $self->{"obj"}->emit_javascript() 
-        .   ' ? ' . $self->{"obj"}->emit_javascript() 
-        .   ' : ' . $self->{"obj"}->emit_javascript() . ' = new ArrayRef([])'
+        .   ' || (' . $self->{"obj"}->emit_javascript() . ' = new ArrayRef([]))'
         . ')._array_[' . $self->{"index_exp"}->emit_javascript() . ']';
     }
 }
@@ -409,8 +408,7 @@ package Lookup;
         Javascript::tab($level) 
         . '('
         .   $self->{"obj"}->emit_javascript() 
-        .   ' ? ' . $self->{"obj"}->emit_javascript() 
-        .   ' : ' . $self->{"obj"}->emit_javascript() . ' = new HashRef({})'
+        .   ' || (' . $self->{"obj"}->emit_javascript() . ' = new HashRef({}))'
         . ')._hash_[' . $self->{"index_exp"}->emit_javascript() . ']';
     }
 }
@@ -468,16 +466,14 @@ package Call;
             return Javascript::tab($level) 
                 . '('
                 .   $invocant 
-                .   ' ? ' . $invocant 
-                .   ' : ' . $invocant . ' = new ArrayRef([])'
+                .   ' || (' . $invocant . ' = new ArrayRef([]))'
                 . ')._array_[' . $self->{"arguments"}->emit_javascript() . ']';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
             return Javascript::tab($level) 
                 . '('
                 .   $invocant 
-                .   ' ? ' . $invocant 
-                .   ' : ' . $invocant . ' = new HashRef({})'
+                .   ' || (' . $invocant . ' = new HashRef({}))'
                 . ')._hash_[' . $self->{"arguments"}->emit_javascript() . ']';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
@@ -593,8 +589,7 @@ package Apply;
                 Javascript::tab($level) 
                 . '('
                 .   $arg->emit_javascript() 
-                .   ' ? ' . $arg->emit_javascript() 
-                .   ' : ' . $arg->emit_javascript() . ' = new ArrayRef([])'
+                .   ' || (' . $arg->emit_javascript() . ' = new ArrayRef([]))'
                 . ')._array_';
         }
         if ( $code eq 'prefix:<%>' ) {

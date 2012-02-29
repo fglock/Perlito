@@ -324,7 +324,7 @@ package Index;
             ((my  $v) = Var->new(('sigil' => chr(64)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
             return (($v->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
         };
-        (Javascript::tab($level) . '(' . $self->{('obj')}->emit_javascript() . ' ' . chr(63) . ' ' . $self->{('obj')}->emit_javascript() . ' : ' . $self->{('obj')}->emit_javascript() . ' ' . chr(61) . ' new ArrayRef([])' . ')._array_[' . $self->{('index_exp')}->emit_javascript() . ']')
+        (Javascript::tab($level) . '(' . $self->{('obj')}->emit_javascript() . ' ' . chr(124) . chr(124) . ' (' . $self->{('obj')}->emit_javascript() . ' ' . chr(61) . ' new ArrayRef([]))' . ')._array_[' . $self->{('index_exp')}->emit_javascript() . ']')
     }
 });
 package Lookup;
@@ -339,7 +339,7 @@ package Lookup;
             ((my  $v) = Var->new(('sigil' => chr(37)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
             return (($v->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
         };
-        (Javascript::tab($level) . '(' . $self->{('obj')}->emit_javascript() . ' ' . chr(63) . ' ' . $self->{('obj')}->emit_javascript() . ' : ' . $self->{('obj')}->emit_javascript() . ' ' . chr(61) . ' new HashRef(' . chr(123) . chr(125) . ')' . ')._hash_[' . $self->{('index_exp')}->emit_javascript() . ']')
+        (Javascript::tab($level) . '(' . $self->{('obj')}->emit_javascript() . ' ' . chr(124) . chr(124) . ' (' . $self->{('obj')}->emit_javascript() . ' ' . chr(61) . ' new HashRef(' . chr(123) . chr(125) . '))' . ')._hash_[' . $self->{('index_exp')}->emit_javascript() . ']')
     }
 });
 package Var;
@@ -390,10 +390,10 @@ package Call;
         ((my  $invocant) = $self->{('invocant')}->emit_javascript());
         ((my  $meth) = $self->{('method')});
         if ((($meth eq 'postcircumfix:<[ ]>'))) {
-            return ((Javascript::tab($level) . '(' . $invocant . ' ' . chr(63) . ' ' . $invocant . ' : ' . $invocant . ' ' . chr(61) . ' new ArrayRef([])' . ')._array_[' . $self->{('arguments')}->emit_javascript() . ']'))
+            return ((Javascript::tab($level) . '(' . $invocant . ' ' . chr(124) . chr(124) . ' (' . $invocant . ' ' . chr(61) . ' new ArrayRef([]))' . ')._array_[' . $self->{('arguments')}->emit_javascript() . ']'))
         };
         if ((($meth eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-            return ((Javascript::tab($level) . '(' . $invocant . ' ' . chr(63) . ' ' . $invocant . ' : ' . $invocant . ' ' . chr(61) . ' new HashRef(' . chr(123) . chr(125) . ')' . ')._hash_[' . $self->{('arguments')}->emit_javascript() . ']'))
+            return ((Javascript::tab($level) . '(' . $invocant . ' ' . chr(124) . chr(124) . ' (' . $invocant . ' ' . chr(61) . ' new HashRef(' . chr(123) . chr(125) . '))' . ')._hash_[' . $self->{('arguments')}->emit_javascript() . ']'))
         };
         if ((($meth eq 'postcircumfix:<( )>'))) {
             ((my  @args) = ());
@@ -468,7 +468,7 @@ package Apply;
         };
         if ((($code eq 'prefix:<' . chr(64) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
-            return ((Javascript::tab($level) . '(' . $arg->emit_javascript() . ' ' . chr(63) . ' ' . $arg->emit_javascript() . ' : ' . $arg->emit_javascript() . ' ' . chr(61) . ' new ArrayRef([])' . ')._array_'))
+            return ((Javascript::tab($level) . '(' . $arg->emit_javascript() . ' ' . chr(124) . chr(124) . ' (' . $arg->emit_javascript() . ' ' . chr(61) . ' new ArrayRef([]))' . ')._array_'))
         };
         if ((($code eq 'prefix:<' . chr(37) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
