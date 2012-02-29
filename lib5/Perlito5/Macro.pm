@@ -17,8 +17,7 @@ sub op_assign {
         return (0)
     };
     if ((exists($op{$code}))) {
-        return (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => [    $self->{('arguments')}->[0],
-    Apply->new(('code' => $op{$code}), ('arguments' => $self->{('arguments')}))])))
+        return (Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => [$self->{('arguments')}->[0], Apply->new(('code' => $op{$code}), ('arguments' => $self->{('arguments')}))])))
     };
     return (0)
 };
@@ -30,7 +29,7 @@ sub simplify {
         ($block = $self->{('block')}->stmts())
     }
     else {
-        ($block = [    $self->{('block')}])
+        ($block = [$self->{('block')}])
     };
     if (((scalar(@{$block}) == 1))) {
         ((my  $stmt) = $block->[0]);

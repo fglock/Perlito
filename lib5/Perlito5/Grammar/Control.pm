@@ -137,7 +137,7 @@ sub if {
     if ((!(defined($body)))) {
         die(('Missing code block in ' . chr(39) . 'if' . chr(39)))
     };
-    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => [    $MATCH->{('if')}->flat()])))));
+    ($MATCH->{('capture')} = If->new(('cond' => $MATCH->{('exp')}->flat()->{'exp'}), ('body' => $body), ('otherwise' => Lit::Block->new(('stmts' => [$MATCH->{('if')}->flat()])))));
     1
 }))))
 }))) || ((do {

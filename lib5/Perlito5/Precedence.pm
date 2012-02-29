@@ -155,8 +155,7 @@ sub op_parse {
             ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
             ((my  $c2) = substr($str, ($pos + $len), 1));
             if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))))) {
-                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => [    'end',
-    $term])))
+                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => ['end', $term])))
             }
         }
     };
@@ -175,8 +174,7 @@ sub op_parse {
             ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
             ((my  $c2) = substr($str, ($pos + $len), 1));
             if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))))) {
-                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => 1), ('capture' => [    'op',
-    $op])))
+                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => 1), ('capture' => ['op', $op])))
             }
         }
     };
@@ -303,8 +301,7 @@ sub precedence_parse {
     ($End_token_chars = $self->{'end_token_chars'});
     ((my  $op_stack) = []);
     ((my  $num_stack) = []);
-    ((my  $last) = [    'op',
-    '*start*']);
+    ((my  $last) = ['op', '*start*']);
     ((my  $last_has_space) = 0);
     ((my  $token) = $get_token->());
     if ((($token->[0]) eq 'space')) {
@@ -312,8 +309,7 @@ sub precedence_parse {
     };
     for ( ; ((defined($token)) && (($token->[0] ne 'end')));  ) {
         if (((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ',')))))) {
-            push(@{$num_stack}, [    'term',
-    undef()] )
+            push(@{$num_stack}, ['term', undef()] )
         };
         if ((($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !((is_term($last)))))))) {
             ($token->[0] = 'prefix');

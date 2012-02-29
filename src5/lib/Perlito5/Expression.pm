@@ -120,7 +120,7 @@ package Perlito5::Expression;
             if ($v->[1] eq '[ ]') {
                 # say "#   Array ", ($v->[2])->perl;
                 my $param_list = expand_list($v->[2]);
-                $v = Lit::Array->new( array1 => $param_list );
+                $v = Apply->new( code => 'circumfix:<[ ]>', arguments => $param_list, namespace => '' );
                 # say "#     ", $v->perl;
                 return $v;
             }

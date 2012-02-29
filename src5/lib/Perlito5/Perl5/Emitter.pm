@@ -141,20 +141,6 @@ package Lit::Block;
     }
 }
 
-package Lit::Array;
-{
-    sub emit_perl5 {
-        my $self = $_[0];
-        $self->emit_perl5_indented(0) }
-    sub emit_perl5_indented {
-        my $self = $_[0];
-        my $level = $_[1];
-        
-        Perl5::tab($level) . "["
-        .   join(",\n", map( $_->emit_perl5_indented( $level + 1 ), @{$self->{"array1"}} )) . "]"
-    }
-}
-
 package Lit::Hash;
 {
     sub emit_perl5 {

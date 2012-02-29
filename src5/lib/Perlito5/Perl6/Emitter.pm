@@ -261,18 +261,6 @@ package Lit::Block;
     }
 }
 
-package Lit::Array;
-{
-    sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
-    sub emit_perl6_indented {
-        my $self = shift;
-        my $level = shift;
-
-        Perl6::tab($level) . "["
-        .   join(",\n", map( $_->emit_perl6_indented( $level + 1 ), @{$self->{"array1"}} )) . "]"
-    }
-}
-
 package Lit::Hash;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
@@ -641,14 +629,11 @@ package For;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
-        my $self = shift;
+        my $self  = shift;
         my $level = shift;
-        my $cond = $self->{"cond"};
-        # if (!( $cond->isa( 'Var' ) && $cond->sigil eq '@' )) {
-        #     $cond = Lit::Array->new( array1 => [$cond] )
-        # }
-        my $body      = Perlito5::Perl6::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
-        my $sig = '$_';
+        my $cond  = $self->{"cond"};
+        my $body  = Perlito5::Perl6::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
+        my $sig   = '$_';
         if ($self->{"body"}->sig()) {
             $sig = $self->{"body"}->sig->emit_perl6_indented( $level + 1 );
         }

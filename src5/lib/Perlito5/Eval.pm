@@ -47,18 +47,6 @@ sub eval {
 }
 
 
-package Lit::Array;
-sub eval {
-    my $self = $_[0];
-    my $env = $_[1];
-
-    my @a;
-    for my $v ( @{$self->{"array1"}} ) {
-        push( @a, $v->eval($env) );
-    }
-    return @a;
-}
-
 package Lit::Hash;
 sub eval {
     my $self = $_[0];

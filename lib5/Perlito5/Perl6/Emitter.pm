@@ -236,17 +236,6 @@ package Lit::Block;
         return ((Perl6::tab($level) . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('stmts')}), ('needs_return' => 1)))->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125) . ')'))
     }
 });
-package Lit::Array;
-(do {
-    sub emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub emit_perl6_indented {
-        ((my  $self) = shift());
-        ((my  $level) = shift());
-        (Perl6::tab($level) . ('[') . join((',' . chr(10)), map($_->emit_perl6_indented(($level + 1)), @{$self->{('array1')}})) . (']'))
-    }
-});
 package Lit::Hash;
 (do {
     sub emit_perl6 {
@@ -497,7 +486,7 @@ package If;
         ((my  $level) = shift());
         ((my  $cond) = $self->{('cond')});
         if ((($cond->isa('Var') && ($cond->sigil() eq chr(64))))) {
-            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [    $cond])))
+            ($cond = Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [$cond])))
         };
         ((my  $body) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
         ((my  $s) = (Perl6::tab($level) . 'if ( ' . Perl6::to_bool($cond) . ' ) ' . chr(123) . (chr(10)) . $body->emit_perl6_indented(($level + 1)) . (chr(10)) . Perl6::tab($level) . chr(125)));

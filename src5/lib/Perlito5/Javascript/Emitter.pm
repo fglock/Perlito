@@ -345,16 +345,6 @@ package Lit::Block;
     }
 }
 
-package Lit::Array;
-{
-    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
-    sub emit_javascript_indented {
-        my $self = shift;
-        my $level = shift;
-        Javascript::tab($level) . '(new ArrayRef(' . Javascript::to_list($self->{"array1"}) . '))'
-    }
-}
-
 package Lit::Hash;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
