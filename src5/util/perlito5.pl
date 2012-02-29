@@ -60,7 +60,7 @@ sub expand_use {
                 warn "// now loading: ", $filename;
             }
             # load source
-            my $source = IO::slurp( $filename );
+            my $source = Perlito5::IO::slurp( $filename );
 
             # compile; push AST into comp_units
             # warn $source;
@@ -160,7 +160,7 @@ perlito5 [switches] [programfile]
             if ($verbose) {
                 warn "// source from file: ", $ARGV[0];
             }
-            $source = IO::slurp( shift @ARGV );
+            $source = Perlito5::IO::slurp( shift @ARGV );
         }
 
         if ($verbose) {
@@ -198,14 +198,14 @@ perlito5 [switches] [programfile]
             if ( $verbose ) {
                 warn "// now loading: ", $filename;
             }
-            my $source = IO::slurp( $filename );
+            my $source = Perlito5::IO::slurp( $filename );
             say $source;
 
             my $filename = $perl5lib . '/Perlito5/Javascript/CORE.js';
             if ( $verbose ) {
                 warn "// now loading: ", $filename;
             }
-            my $source = IO::slurp( $filename );
+            my $source = Perlito5::IO::slurp( $filename );
             say $source;
 
             print Perlito5::AST::CompUnit::emit_javascript_program( $comp_units );

@@ -56,7 +56,7 @@ sub expand_use {
             if (($verbose)) {
                 warn((chr(47) . chr(47) . ' now loading: '), $filename)
             };
-            ((my  $source) = IO::slurp($filename));
+            ((my  $source) = Perlito5::IO::slurp($filename));
             ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
             add_comp_unit([Perlito5::AST::CompUnit->new(('name' => 'main'), ('body' => $m->flat()))])
         }
@@ -135,7 +135,7 @@ if ((($backend && @ARGV))) {
         if (($verbose)) {
             warn((chr(47) . chr(47) . ' source from file: '), $ARGV[0])
         };
-        ($source = IO::slurp(shift(@ARGV)))
+        ($source = Perlito5::IO::slurp(shift(@ARGV)))
     };
     if (($verbose)) {
         warn((chr(47) . chr(47) . ' backend: '), $backend);
@@ -162,13 +162,13 @@ if ((($backend && @ARGV))) {
         if (($verbose)) {
             warn((chr(47) . chr(47) . ' now loading: '), $filename)
         };
-        ((my  $source) = IO::slurp($filename));
+        ((my  $source) = Perlito5::IO::slurp($filename));
         Perlito5::Runtime::say($source);
         ((my  $filename) = ($perl5lib . chr(47) . 'Perlito5' . chr(47) . 'Javascript' . chr(47) . 'CORE.js'));
         if (($verbose)) {
             warn((chr(47) . chr(47) . ' now loading: '), $filename)
         };
-        ((my  $source) = IO::slurp($filename));
+        ((my  $source) = Perlito5::IO::slurp($filename));
         Perlito5::Runtime::say($source);
         print(Perlito5::AST::CompUnit::emit_javascript_program($comp_units))
     };

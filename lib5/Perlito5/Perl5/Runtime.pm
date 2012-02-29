@@ -35,7 +35,7 @@ package Perlito5::Grammar;
           'Perlito5::Match';
     }
 
-package IO;
+package Perlito5::IO;
 
     sub slurp {
         my $source_filename = shift;

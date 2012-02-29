@@ -88,11 +88,11 @@ function ScalarRef(o) {
     this.bool = function() { return 1 };
 }
 
-make_package('IO');
+make_package('Perlito5::IO');
 make_package('Perlito5::Runtime');
 make_package('Perlito5::Grammar');
 
-make_sub('IO', 'slurp', function(List__) {
+make_sub('Perlito5::IO', 'slurp', function(List__) {
     var filename = List__[0];
     if (typeof readFile == 'function') {
         return readFile(filename);
@@ -101,7 +101,7 @@ make_sub('IO', 'slurp', function(List__) {
         // v8
         return read(filename);
     }
-    CLASS.CORE.die(["IO.slurp() not implemented"]);
+    CLASS.CORE.die(["Perlito5::IO::slurp() not implemented"]);
 });
 
 interpolate_array = function() {
