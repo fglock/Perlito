@@ -1,15 +1,15 @@
-"Perlito" Perl 6 compiler
+"Perlito6" Perl 6 compiler
 
-    This is Perlito, a compiler that implements a subset of Perl 6.
+    This is Perlito6, a compiler that implements a subset of Perl 6.
 
 Backends
 
-    Perlito can compile Perl 6 programs into one of the 'backend' 
+    Perlito6 can compile Perl 6 programs into one of the 'backend' 
     languages:
 
         Perl 5, Javascript, Python 2.6
 
-    Previous versions of Perlito also compile to: Go, Common Lisp, and Ruby 1.9
+    Previous versions of Perlito6 also compile to: Go, Common Lisp, and Ruby 1.9
 
 Web
 
@@ -17,12 +17,12 @@ Web
 
     Main Project web page: http://www.perlito.org
 
-    Run Perlito online, in the browser: http://perlcabal.org/~fglock/perlito6.html
+    Run Perlito6 online, in the browser: http://perlcabal.org/~fglock/perlito6.html
 
 Source code
 
     The source code for Perlito can be found in the 'src' directory.
-    Perlito is written in Perl 6.
+    Perlito6 is written in Perl 6.
 
 USING PERLITO
 

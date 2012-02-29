@@ -1,16 +1,23 @@
 TODO list for Perlito6
 
-CPAN distribution
 
-- cross compilation doesn't work (can't create the temporary "AST" files) - FIXED
+* Perlito6
 
-Eval.pm module
+- rename directory Perlito to Perlito6
+
+- move all internal packages inside Perlito6 namespace
+
+- move tests from "t/" to "t6/"
+
+
+* Eval.pm module
 
 - add exceptions
 
 - complete ast nodes implementation
 
-Command line compiler (src6/util/perlito6.pl)
+
+* Command line compiler (src6/util/perlito6.pl)
 
 - build Ast cache using JSON (we currently use Perl5 Data::Dumper) or XML (Go has XML and JSON input)
 
@@ -22,43 +29,57 @@ Command line compiler (src6/util/perlito6.pl)
 
 - add '-B' option (execute)
 
-Perlito6 in Rakudo
+
+* Perlito6 in Javascript
+
+- reuse the good parts of Perlito5 data model
+
+
+* Perlito6 in Rakudo
 
 - Rakudo should be able to execute Perlito6 directly. What do we need to fix in both sides?
 
-Perlito6 in Lisp
+
+* Perlito6 in Lisp
 
 - test other Lisp implementations
 
-Perlito6 in Go
+
+* Perlito6 in Go
 
 - document which release of Go to use
 
-Perlito6 in Perl5
+
+* Perlito6 in Perl5
 
 (no issues at the moment)
 
-Perlito6 in Parrot
+
+* Perlito6 in Parrot
 
 - finish OO, class variables
 
 - fix die() parameter handling
 
-Perlito6 in Python
+
+* Perlito6 in Python
 
 - module loading uses mangled filenames (with underlines); it should use dot-separated names instead.
 
-Perlito6 in Ruby
+
+* Perlito6 in Ruby
 
 - module loading uses mangled filenames (with underlines); it should use dot-separated names instead.
 
-Missing Backends
+
+* Missing Backends
 
 - Haskell
 
 - Clojure
 
-Missing Features
+
+* Missing Features
 
 - detailed syntax errors
 
@@ -77,7 +98,8 @@ Missing Features
 
 - "when"
 
-Missing Features of the Token sub-compiler
+
+* Missing Features of the Token sub-compiler
 
 - no quantifiers - FIXED
 
@@ -85,19 +107,20 @@ Missing Features of the Token sub-compiler
 
 - use the new precedence parser
 
-Nice to Have
+
+* Nice to Have
 
 - 'perlito-format' script (see gofmt and perltidy)
 
-Tests
 
-- move tests from "t/" to "t6/"
+* Tests
 
 - run some tests from the standard test suite
 
 - use Test.pm - FIXED
 
-Grammar
+
+* Grammar
 
 - item-assignment precedence is different from list-assignment
 
@@ -114,7 +137,8 @@ Grammar
 
 - the grammar should be aware of function arity
 
-Semantics
+
+* Semantics
 
 - @a.values and %a.keys return Array
   These should return a List 

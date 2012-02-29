@@ -1,5 +1,10 @@
 TODO list for Perlito5
 
+* Perlito5
+
+- move all internal packages inside Perlito5 namespace
+
+
 * basic functionality
 
 -- add "map" block
