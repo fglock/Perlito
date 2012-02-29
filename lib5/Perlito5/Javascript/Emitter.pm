@@ -73,7 +73,7 @@ package Javascript;
     };
     sub to_list {
         ((my  $items) = to_list_preprocess($_[0]));
-        ('interpolate_array(' . join(', ', map($_->emit_javascript(), @{$items})) . ')')
+        (@{$items} ? ('interpolate_array(' . join(', ', map($_->emit_javascript(), @{$items})) . ')') : '[]')
     };
     sub to_list_preprocess {
         (my  @items);
