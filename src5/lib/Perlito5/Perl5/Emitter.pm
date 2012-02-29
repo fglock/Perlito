@@ -2,7 +2,7 @@ use v5;
 
 use Perlito5::AST;
 
-package Perl5;
+package Perlito5::Perl5;
 {
     sub tab {
         my $level = shift;
@@ -68,7 +68,7 @@ package Perlito5::AST::CompUnit;
                 push @body, $_
             }
         }
-          Perl5::tab($level)    . 'package ' . $self->{"name"} . ";" . "\n"
+          Perlito5::Perl5::tab($level)    . 'package ' . $self->{"name"} . ";" . "\n"
         .                         join(";\n", map( $_->emit_perl5_indented( $level ), @body )) . ";\n"
         . "\n"
     }
@@ -99,7 +99,7 @@ package Perlito5::AST::Val::Int;
     sub emit_perl5_indented {
         my $self = $_[0];
         my $level = $_[1];
-         Perl5::tab($level) . $self->{"int"} }
+         Perlito5::Perl5::tab($level) . $self->{"int"} }
 }
 
 package Perlito5::AST::Val::Num;
@@ -110,7 +110,7 @@ package Perlito5::AST::Val::Num;
     sub emit_perl5_indented {
         my $self = $_[0];
         my $level = $_[1];
-         Perl5::tab($level) . $self->{"num"} }
+         Perlito5::Perl5::tab($level) . $self->{"num"} }
 }
 
 package Perlito5::AST::Val::Buf;
@@ -122,7 +122,7 @@ package Perlito5::AST::Val::Buf;
         my $self = $_[0];
         my $level = $_[1];
         
-        Perl5::tab($level) . Perl5::escape_string($self->{"buf"})
+        Perlito5::Perl5::tab($level) . Perlito5::Perl5::escape_string($self->{"buf"})
     }
 }
 
@@ -135,9 +135,9 @@ package Perlito5::AST::Lit::Block;
         my $self = $_[0];
         my $level = $_[1];
         
-          Perl5::tab($level) . "sub \{\n"
+          Perlito5::Perl5::tab($level) . "sub \{\n"
         .   join(";\n", map( $_->emit_perl5_indented( $level + 1 ), @{$self->{"stmts"}} )) . "\n"
-        . Perl5::tab($level) . "}"
+        . Perlito5::Perl5::tab($level) . "}"
     }
 }
 
@@ -199,7 +199,7 @@ package Perlito5::AST::Var;
         if ($self->{"namespace"}) {
             $ns = $self->{"namespace"} . '::';
         }
-        return Perl5::tab($level) . $self->{"sigil"} . $ns . $self->{"name"}
+        return Perlito5::Perl5::tab($level) . $self->{"sigil"} . $ns . $self->{"name"}
     }
     sub plain_name {
         my $self = $_[0];
@@ -220,7 +220,7 @@ package Perlito5::AST::Proto;
         my $self = $_[0];
         my $level = $_[1];
         
-        Perl5::tab($level) . $self->{"name"}
+        Perlito5::Perl5::tab($level) . $self->{"name"}
     }
 }
 
@@ -235,16 +235,16 @@ package Perlito5::AST::Call;
         
         my $invocant = $self->{"invocant"}->emit_perl5;
         if ( $self->{"method"} eq 'postcircumfix:<[ ]>' ) {
-            return Perl5::tab($level) . $invocant . '->[' . $self->{"arguments"}->emit_perl5() . ']'
+            return Perlito5::Perl5::tab($level) . $invocant . '->[' . $self->{"arguments"}->emit_perl5() . ']'
         }
         if ( $self->{"method"} eq 'postcircumfix:<{ }>' ) {
-            return Perl5::tab($level) . $invocant . '->{' . $self->{"arguments"}->emit_perl5() . '}'
+            return Perlito5::Perl5::tab($level) . $invocant . '->{' . $self->{"arguments"}->emit_perl5() . '}'
         }
         my $meth = $self->{"method"};
         if  ($meth eq 'postcircumfix:<( )>')  {
              $meth = '';
         }
-        Perl5::tab($level) . $invocant . '->' . $meth . '(' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
+        Perlito5::Perl5::tab($level) . $invocant . '->' . $meth . '(' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
     }
 }
 
@@ -312,65 +312,65 @@ package Perlito5::AST::Apply;
         my $code = $ns . $self->{"code"};
 
         if (ref $code ne '') {
-            return Perl5::tab($level) . '(' . $self->{"code"}->emit_perl5() . ')->(' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
+            return Perlito5::Perl5::tab($level) . '(' . $self->{"code"}->emit_perl5() . ')->(' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
         }
 
         if (exists $op_infix_perl5{$code}) {
-            return Perl5::tab($level) . '(' 
+            return Perlito5::Perl5::tab($level) . '(' 
                 . join( $op_infix_perl5{$code},
                         (map( $_->emit_perl5, @{$self->{"arguments"}} ))
                       )
                 . ')'
         }
         if (exists $op_prefix_perl5{$code}) {
-            return Perl5::tab($level) . $op_prefix_perl5{$code} . '('   . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')'
+            return Perlito5::Perl5::tab($level) . $op_prefix_perl5{$code} . '('   . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')'
         }
 
-        if ($self->{"code"} eq 'package')   { return Perl5::tab($level) . 'package ' . $self->{"namespace"} }
-        if ($code eq 'undef')      { return Perl5::tab($level) . 'undef()' }
+        if ($self->{"code"} eq 'package')   { return Perlito5::Perl5::tab($level) . 'package ' . $self->{"namespace"} }
+        if ($code eq 'undef')      { return Perlito5::Perl5::tab($level) . 'undef()' }
 
-        if ($code eq 'scalar')     { return Perl5::tab($level) . 'scalar(' . ($self->{"arguments"}->[0]->emit_perl5) . ')' }
-        if ($code eq 'pop')        { return Perl5::tab($level) . 'pop('  . ($self->{"arguments"}->[0]->emit_perl5) . ')' }
-        if ($code eq 'push')       { return Perl5::tab($level) . 'push(' . ($self->{"arguments"}->[0]->emit_perl5) . ', ' . ($self->{"arguments"}->[1])->emit_perl5() . ' )' }
+        if ($code eq 'scalar')     { return Perlito5::Perl5::tab($level) . 'scalar(' . ($self->{"arguments"}->[0]->emit_perl5) . ')' }
+        if ($code eq 'pop')        { return Perlito5::Perl5::tab($level) . 'pop('  . ($self->{"arguments"}->[0]->emit_perl5) . ')' }
+        if ($code eq 'push')       { return Perlito5::Perl5::tab($level) . 'push(' . ($self->{"arguments"}->[0]->emit_perl5) . ', ' . ($self->{"arguments"}->[1])->emit_perl5() . ' )' }
         if ($code eq 'shift')      { 
             if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return Perl5::tab($level) . 'shift(' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))    . ')' 
+                return Perlito5::Perl5::tab($level) . 'shift(' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))    . ')' 
             }
             return 'shift()'
         }
-        if ($code eq 'unshift')    { return Perl5::tab($level) . 'unshift(' . $self->{"arguments"}->[0]->emit_perl5()  . ', ' . $self->{"arguments"}->[1]->emit_perl5() . ')' }
+        if ($code eq 'unshift')    { return Perlito5::Perl5::tab($level) . 'unshift(' . $self->{"arguments"}->[0]->emit_perl5()  . ', ' . $self->{"arguments"}->[1]->emit_perl5() . ')' }
 
         if ($code eq 'map')       {    
             my $str = shift @{$self->{"arguments"}};
-            return Perl5::tab($level) . 'map(' . $str->emit_perl5 . ', ' . join(',', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')'
+            return Perlito5::Perl5::tab($level) . 'map(' . $str->emit_perl5 . ', ' . join(',', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')'
         }
 
         if ($code eq 'join')       {    
             my $str = shift @{$self->{"arguments"}};
-            return Perl5::tab($level) . 'join(' . $str->emit_perl5 . ', ' . join(',', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')'
+            return Perlito5::Perl5::tab($level) . 'join(' . $str->emit_perl5 . ', ' . join(',', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')'
         }
 
         if ($code eq 'circumfix:<[ ]>') { 
-            return Perl5::tab($level) . '[' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ']'
+            return Perlito5::Perl5::tab($level) . '[' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ']'
         }
         if ($code eq 'circumfix:<{ }>') { 
-            return Perl5::tab($level) . '{' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . '}'
+            return Perlito5::Perl5::tab($level) . '{' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . '}'
         }
         if ($code eq 'prefix:<\\>') { 
             # TODO - \(@a) vs. \@a
-            return Perl5::tab($level) . '\\' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ''
+            return Perlito5::Perl5::tab($level) . '\\' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ''
         }
-        if ($code eq 'prefix:<$>') { return Perl5::tab($level) . '${' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))     . '}' }
-        if ($code eq 'prefix:<@>') { return Perl5::tab($level) . '@{' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))     . '}' }
-        if ($code eq 'prefix:<%>') { return Perl5::tab($level) . '%{' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))     . '}' }
+        if ($code eq 'prefix:<$>') { return Perlito5::Perl5::tab($level) . '${' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))     . '}' }
+        if ($code eq 'prefix:<@>') { return Perlito5::Perl5::tab($level) . '@{' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))     . '}' }
+        if ($code eq 'prefix:<%>') { return Perlito5::Perl5::tab($level) . '%{' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))     . '}' }
 
-        if ($code eq 'postfix:<++>') { return Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))  . ')++' }
-        if ($code eq 'postfix:<-->') { return Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))  . ')--' }
+        if ($code eq 'postfix:<++>') { return Perlito5::Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))  . ')++' }
+        if ($code eq 'postfix:<-->') { return Perlito5::Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))  . ')--' }
 
-        if ($code eq 'infix:<..>') { return Perl5::tab($level) . '('  . join(' .. ', map( $_->emit_perl5, @{$self->{"arguments"}} ))  . ")" }
+        if ($code eq 'infix:<..>') { return Perlito5::Perl5::tab($level) . '('  . join(' .. ', map( $_->emit_perl5, @{$self->{"arguments"}} ))  . ")" }
 
         if ($code eq 'ternary:<?? !!>') {
-            return Perl5::tab($level)
+            return Perlito5::Perl5::tab($level)
                 .  '('  . $self->{"arguments"}->[0]->emit_perl5
                 . ' ? ' . $self->{"arguments"}->[1]->emit_perl5
                 . ' : ' . $self->{"arguments"}->[2]->emit_perl5
@@ -378,16 +378,16 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'circumfix:<( )>') {
-            return Perl5::tab($level) . '(' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
+            return Perlito5::Perl5::tab($level) . '(' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
         }
         if ($code eq 'infix:<=>') {
-            return Perl5::tab($level) . emit_perl5_bind( $self->{"arguments"}->[0], $self->{"arguments"}->[1] );
+            return Perlito5::Perl5::tab($level) . emit_perl5_bind( $self->{"arguments"}->[0], $self->{"arguments"}->[1] );
         }
         if ($code eq 'return') {
-            return Perl5::tab($level) . 'return (' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
+            return Perlito5::Perl5::tab($level) . 'return (' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
         }
 
-        Perl5::tab($level) . $code . '(' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
+        Perlito5::Perl5::tab($level) . $code . '(' . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')';
     }
 
     sub emit_perl5_bind {
@@ -419,21 +419,21 @@ package Perlito5::AST::If;
         my $self = $_[0];
         my $level = $_[1];
         
-        return Perl5::tab($level) . 'if (' . $self->{"cond"}->emit_perl5() . ") \{\n"
+        return Perlito5::Perl5::tab($level) . 'if (' . $self->{"cond"}->emit_perl5() . ") \{\n"
              .  ($self->{"body"}
                 ? join(";\n", 
                        map( $_->emit_perl5_indented( $level + 1 ), @{ $self->{"body"}->stmts } )
                   ) . "\n"
                 : ''
                 )
-             . Perl5::tab($level) . "}"
+             . Perlito5::Perl5::tab($level) . "}"
              .  ($self->{"otherwise"} && scalar(@{ $self->{"otherwise"}->stmts })
                 ?  ( "\n"
-                    . Perl5::tab($level) . "else \{\n"
+                    . Perlito5::Perl5::tab($level) . "else \{\n"
                     .   join( ";\n", 
                               map( $_->emit_perl5_indented( $level + 1 ), @{ $self->{"otherwise"}->stmts } )
                         ) . "\n"
-                    . Perl5::tab($level) . "}"
+                    . Perlito5::Perl5::tab($level) . "}"
                     )
                 : ''
                 );
@@ -450,7 +450,7 @@ package Perlito5::AST::While;
         my $level = $_[1];
         
         my $cond = $self->{"cond"};
-           Perl5::tab($level) . 'for ( '
+           Perlito5::Perl5::tab($level) . 'for ( '
         .  ( $self->{"init"}     ? $self->{"init"}->emit_perl5()           . '; ' : '; ' )
         .  ( $cond      ? $cond->emit_perl5()            . '; ' : '; ' )
         .  ( $self->{"continue"} ? $self->{"continue"}->emit_perl5()       . ' '  : ' '  )
@@ -458,7 +458,7 @@ package Perlito5::AST::While;
         .       join(";\n", 
                      map( $_->emit_perl5_indented( $level + 1 ), @{ $self->{"body"}->stmts } )
                     ) . "\n"
-        . Perl5::tab($level) . "}"
+        . Perlito5::Perl5::tab($level) . "}"
     }
 }
 
@@ -476,9 +476,9 @@ package Perlito5::AST::For;
         if ($self->{"body"}->sig()) {
             $sig = 'my ' . $self->{"body"}->sig->emit_perl5() . ' ';
         }
-        return  Perl5::tab($level) . 'for ' . $sig . '(' . $cond->emit_perl5() . ') {' . "\n"
+        return  Perlito5::Perl5::tab($level) . 'for ' . $sig . '(' . $cond->emit_perl5() . ') {' . "\n"
              .   join(";\n", map( $_->emit_perl5_indented( $level + 1 ), @{ $self->{"body"}->stmts } )) . "\n"
-             . Perl5::tab($level) . "}"
+             . Perlito5::Perl5::tab($level) . "}"
     }
 }
 
@@ -496,7 +496,7 @@ package Perlito5::AST::Decl;
         my $name = $self->{"var"}->plain_name;
         my $str =
               '(' . $self->{"decl"} . ' ' . $self->{"type"} . ' ' . $self->{"var"}->emit_perl5() . ')';
-        return Perl5::tab($level) . $str;
+        return Perlito5::Perl5::tab($level) . $str;
     }
 }
 
@@ -513,9 +513,9 @@ package Perlito5::AST::Sub;
         my $sig = $self->{"sig"};
         my $pos = $sig->positional;
         my $i = 0;
-          Perl5::tab($level) . 'sub ' . $self->{"name"} . " \{\n"
+          Perlito5::Perl5::tab($level) . 'sub ' . $self->{"name"} . " \{\n"
         .   join(";\n", map( $_->emit_perl5_indented( $level + 1 ), @{$self->{"block"}} )) . "\n"
-        . Perl5::tab($level) . "}"
+        . Perlito5::Perl5::tab($level) . "}"
     }
 }
 
@@ -530,9 +530,9 @@ package Perlito5::AST::Do;
         my $level = $_[1];
         
         my $block = $self->simplify->block;
-          Perl5::tab($level) . "(do \{\n"
+          Perlito5::Perl5::tab($level) . "(do \{\n"
         .   join(";\n", map( defined($_) && $_->emit_perl5_indented( $level + 1 ), @$block )) . "\n"
-        . Perl5::tab($level) . "})"
+        . Perlito5::Perl5::tab($level) . "})"
     }
 }
 
@@ -551,9 +551,9 @@ package Perlito5::AST::Use;
             )
         {
             return "\n"
-                . Perl5::tab($level) . "# use " . $self->{"mod"} . "\n"
+                . Perlito5::Perl5::tab($level) . "# use " . $self->{"mod"} . "\n"
         }
-        Perl5::tab($level) . 'use ' . $self->{"mod"}
+        Perlito5::Perl5::tab($level) . 'use ' . $self->{"mod"}
     }
 }
 

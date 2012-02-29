@@ -9,7 +9,7 @@ our $MATCH = Perlito5::Match->new();
 package main;
 use v5;
 use Perlito5::AST;
-package Javascript;
+package Perlito5::Javascript;
 (do {
     sub tab {
         ((my  $level) = shift());
@@ -119,7 +119,7 @@ package Perlito5::Javascript::LexicalBlock;
         ((my  $level) = shift());
         if (($self->{('top_level')})) {
             ((my  $block) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->block()), ('needs_return' => $self->needs_return()), ('top_level' => 0)));
-            return ((Javascript::tab($level) . 'try ' . chr(123) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . chr(59) . (chr(10)) . Javascript::tab($level) . chr(125) . (chr(10)) . Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Javascript::tab(($level + 2)) . 'return(err)' . chr(59) . (chr(10)) . Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Javascript::tab($level) . chr(125)))
+            return ((Perlito5::Javascript::tab($level) . 'try ' . chr(123) . (chr(10)) . $block->emit_javascript_indented(($level + 1)) . chr(59) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . 'return(err)' . chr(59) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125)))
         };
         (my  @block);
         for ((@{$self->{('block')}})) {
@@ -128,17 +128,17 @@ package Perlito5::Javascript::LexicalBlock;
             }
         };
         if ((!(@block))) {
-            return ((Javascript::tab($level) . 'null' . chr(59)))
+            return ((Perlito5::Javascript::tab($level) . 'null' . chr(59)))
         };
         (my  @str);
         for my $decl (@block) {
             if ((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my')))) {
-                push(@str, (Javascript::tab($level) . $decl->emit_javascript_init()) )
+                push(@str, (Perlito5::Javascript::tab($level) . $decl->emit_javascript_init()) )
             };
             if ((($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')))) {
                 ((my  $var) = $decl->arguments()->[0]);
                 if ((($var->isa('Perlito5::AST::Decl') && ($var->decl() eq 'my')))) {
-                    push(@str, (Javascript::tab($level) . $var->emit_javascript_init()) )
+                    push(@str, (Perlito5::Javascript::tab($level) . $var->emit_javascript_init()) )
                 }
             }
         };
@@ -160,10 +160,10 @@ package Perlito5::Javascript::LexicalBlock;
                     ($cond = Perlito5::AST::Apply->new(('code' => 'prefix:<' . chr(64) . '>'), ('arguments' => [$cond])))
                 };
                 ($body = Perlito5::Javascript::LexicalBlock->new(('block' => $body->stmts()), ('needs_return' => 1)));
-                push(@str, (Javascript::tab($level) . 'if ( ' . Javascript::to_bool($cond) . ' ) ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) );
+                push(@str, (Perlito5::Javascript::tab($level) . 'if ( ' . Perlito5::Javascript::to_bool($cond) . ' ) ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) );
                 if (($otherwise)) {
                     ($otherwise = Perlito5::Javascript::LexicalBlock->new(('block' => $otherwise->stmts()), ('needs_return' => 1)));
-                    push(@str, (Javascript::tab($level) . 'else ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $otherwise->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) )
+                    push(@str, (Perlito5::Javascript::tab($level) . 'else ' . chr(123) . ' return (function () ' . chr(123) . (chr(10)) . $otherwise->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)) )
                 }
             }
             else {
@@ -171,7 +171,7 @@ package Perlito5::Javascript::LexicalBlock;
                     push(@str, $last_statement->emit_javascript_indented($level) )
                 }
                 else {
-                    push(@str, (Javascript::tab($level) . 'return(' . $last_statement->emit_javascript() . ')') )
+                    push(@str, (Perlito5::Javascript::tab($level) . 'return(' . $last_statement->emit_javascript() . ')') )
                 }
             }
         };
@@ -250,7 +250,7 @@ package Perlito5::AST::Val::Int;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        (Javascript::tab($level) . $self->{('int')})
+        (Perlito5::Javascript::tab($level) . $self->{('int')})
     }
 });
 package Perlito5::AST::Val::Num;
@@ -261,7 +261,7 @@ package Perlito5::AST::Val::Num;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        (Javascript::tab($level) . $self->{('num')})
+        (Perlito5::Javascript::tab($level) . $self->{('num')})
     }
 });
 package Perlito5::AST::Val::Buf;
@@ -272,7 +272,7 @@ package Perlito5::AST::Val::Buf;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        (Javascript::tab($level) . Javascript::escape_string($self->{('buf')}))
+        (Perlito5::Javascript::tab($level) . Perlito5::Javascript::escape_string($self->{('buf')}))
     }
 });
 package Perlito5::AST::Lit::Block;
@@ -287,7 +287,7 @@ package Perlito5::AST::Lit::Block;
         if (($self->{('sig')})) {
             ($sig = $self->{('sig')}->emit_javascript_indented(($level + 1)))
         };
-        return ((Javascript::tab($level) . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('stmts')}), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')'))
+        return ((Perlito5::Javascript::tab($level) . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('stmts')}), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . ')'))
     }
 });
 package Perlito5::AST::Index;
@@ -302,7 +302,7 @@ package Perlito5::AST::Index;
             ((my  $v) = Perlito5::AST::Var->new(('sigil' => chr(64)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
             return (($v->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
         };
-        (Javascript::tab($level) . '(' . $self->{('obj')}->emit_javascript() . ' ' . chr(124) . chr(124) . ' (' . $self->{('obj')}->emit_javascript() . ' ' . chr(61) . ' new ArrayRef([]))' . ')._array_[' . $self->{('index_exp')}->emit_javascript() . ']')
+        (Perlito5::Javascript::tab($level) . '(' . $self->{('obj')}->emit_javascript() . ' ' . chr(124) . chr(124) . ' (' . $self->{('obj')}->emit_javascript() . ' ' . chr(61) . ' new ArrayRef([]))' . ')._array_[' . $self->{('index_exp')}->emit_javascript() . ']')
     }
 });
 package Perlito5::AST::Lookup;
@@ -317,7 +317,7 @@ package Perlito5::AST::Lookup;
             ((my  $v) = Perlito5::AST::Var->new(('sigil' => chr(37)), ('namespace' => $self->{('obj')}->namespace()), ('name' => $self->{('obj')}->name())));
             return (($v->emit_javascript_indented($level) . '[' . $self->{('index_exp')}->emit_javascript() . ']'))
         };
-        (Javascript::tab($level) . '(' . $self->{('obj')}->emit_javascript() . ' ' . chr(124) . chr(124) . ' (' . $self->{('obj')}->emit_javascript() . ' ' . chr(61) . ' new HashRef(' . chr(123) . chr(125) . '))' . ')._hash_[' . $self->{('index_exp')}->emit_javascript() . ']')
+        (Perlito5::Javascript::tab($level) . '(' . $self->{('obj')}->emit_javascript() . ' ' . chr(124) . chr(124) . ' (' . $self->{('obj')}->emit_javascript() . ' ' . chr(61) . ' new HashRef(' . chr(123) . chr(125) . '))' . ')._hash_[' . $self->{('index_exp')}->emit_javascript() . ']')
     }
 });
 package Perlito5::AST::Var;
@@ -351,7 +351,7 @@ package Perlito5::AST::Proto;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        (Javascript::tab($level) . 'CLASS[' . chr(34) . $self->{('name')} . chr(34) . ']')
+        (Perlito5::Javascript::tab($level) . 'CLASS[' . chr(34) . $self->{('name')} . chr(34) . ']')
     }
 });
 package Perlito5::AST::Call;
@@ -365,23 +365,23 @@ package Perlito5::AST::Call;
         ((my  $invocant) = $self->{('invocant')}->emit_javascript());
         ((my  $meth) = $self->{('method')});
         if ((($meth eq 'postcircumfix:<[ ]>'))) {
-            return ((Javascript::tab($level) . '(' . $invocant . ' ' . chr(124) . chr(124) . ' (' . $invocant . ' ' . chr(61) . ' new ArrayRef([]))' . ')._array_[' . $self->{('arguments')}->emit_javascript() . ']'))
+            return ((Perlito5::Javascript::tab($level) . '(' . $invocant . ' ' . chr(124) . chr(124) . ' (' . $invocant . ' ' . chr(61) . ' new ArrayRef([]))' . ')._array_[' . $self->{('arguments')}->emit_javascript() . ']'))
         };
         if ((($meth eq 'postcircumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-            return ((Javascript::tab($level) . '(' . $invocant . ' ' . chr(124) . chr(124) . ' (' . $invocant . ' ' . chr(61) . ' new HashRef(' . chr(123) . chr(125) . '))' . ')._hash_[' . $self->{('arguments')}->emit_javascript() . ']'))
+            return ((Perlito5::Javascript::tab($level) . '(' . $invocant . ' ' . chr(124) . chr(124) . ' (' . $invocant . ' ' . chr(61) . ' new HashRef(' . chr(123) . chr(125) . '))' . ')._hash_[' . $self->{('arguments')}->emit_javascript() . ']'))
         };
         if ((($meth eq 'postcircumfix:<( )>'))) {
             ((my  @args) = ());
             for (@{$self->{('arguments')}}) {
                 push(@args, $_->emit_javascript() )
             };
-            return ((Javascript::tab($level) . '(' . $invocant . ')([' . join(',', @args) . '])'))
+            return ((Perlito5::Javascript::tab($level) . '(' . $invocant . ')([' . join(',', @args) . '])'))
         };
         ((my  @args) = ($invocant));
         for (@{$self->{('arguments')}}) {
             push(@args, $_->emit_javascript() )
         };
-        return ((Javascript::tab($level) . $invocant . '._class_.' . $meth . '([' . join(',', @args) . '])'))
+        return ((Perlito5::Javascript::tab($level) . $invocant . '._class_.' . $meth . '([' . join(',', @args) . '])'))
     }
 });
 package Perlito5::AST::Apply;
@@ -403,16 +403,16 @@ package Perlito5::AST::Apply;
             for (@{$self->{('arguments')}}) {
                 push(@args, $_->emit_javascript() )
             };
-            return ((Javascript::tab($level) . '(' . $self->{('code')}->emit_javascript() . ')(' . join(',', @args) . ')'))
+            return ((Perlito5::Javascript::tab($level) . '(' . $self->{('code')}->emit_javascript() . ')(' . join(',', @args) . ')'))
         };
         if ((($code eq 'infix:<' . chr(61) . '>>'))) {
-            return ((Javascript::tab($level) . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}}))))
+            return ((Perlito5::Javascript::tab($level) . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}}))))
         };
         if ((exists($op_infix_js{$code}))) {
-            return ((Javascript::tab($level) . '(' . join($op_infix_js{$code}, map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
+            return ((Perlito5::Javascript::tab($level) . '(' . join($op_infix_js{$code}, map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
         };
         if ((($code eq 'eval'))) {
-            return (('eval(perl5_to_js(' . Javascript::to_str($self->{('arguments')}->[0]) . '))'))
+            return (('eval(perl5_to_js(' . Perlito5::Javascript::to_str($self->{('arguments')}->[0]) . '))'))
         };
         if ((($code eq 'undef'))) {
             if ((($self->{('arguments')} && @{$self->{('arguments')}}))) {
@@ -421,7 +421,7 @@ package Perlito5::AST::Apply;
             return ('null')
         };
         if ((($code eq 'defined'))) {
-            return ((Javascript::tab($level) . '(' . join(' ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ' ' . chr(33) . chr(61) . ' null)'))
+            return ((Perlito5::Javascript::tab($level) . '(' . join(' ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ' ' . chr(33) . chr(61) . ' null)'))
         };
         if ((($code eq 'shift'))) {
             if ((($self->{('arguments')} && @{$self->{('arguments')}}))) {
@@ -435,7 +435,7 @@ package Perlito5::AST::Apply;
             return (('(function (a_) ' . chr(123) . ' ' . 'var out ' . chr(61) . ' []' . chr(59) . ' ' . 'if ( a_ ' . chr(61) . chr(61) . ' null ) ' . chr(123) . ' return out' . chr(59) . ' ' . chr(125) . chr(59) . ' ' . 'for(var i ' . chr(61) . ' 0' . chr(59) . ' i < a_.length' . chr(59) . ' i++) ' . chr(123) . ' ' . 'var v__ ' . chr(61) . ' a_[i]' . chr(59) . ' ' . 'out.push(' . $fun->emit_javascript() . ')' . chr(125) . chr(59) . ' ' . 'return out' . chr(59) . ' ' . chr(125) . ')(' . $list->emit_javascript() . ')'))
         };
         if ((($code eq 'prefix:<' . chr(33) . '>'))) {
-            return ((chr(33) . '( ' . Javascript::to_bool($self->{('arguments')}->[0]) . ')'))
+            return ((chr(33) . '( ' . Perlito5::Javascript::to_bool($self->{('arguments')}->[0]) . ')'))
         };
         if ((($code eq 'prefix:<' . chr(36) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
@@ -443,17 +443,17 @@ package Perlito5::AST::Apply;
         };
         if ((($code eq 'prefix:<' . chr(64) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
-            return ((Javascript::tab($level) . '(' . $arg->emit_javascript() . ' ' . chr(124) . chr(124) . ' (' . $arg->emit_javascript() . ' ' . chr(61) . ' new ArrayRef([]))' . ')._array_'))
+            return ((Perlito5::Javascript::tab($level) . '(' . $arg->emit_javascript() . ' ' . chr(124) . chr(124) . ' (' . $arg->emit_javascript() . ' ' . chr(61) . ' new ArrayRef([]))' . ')._array_'))
         };
         if ((($code eq 'prefix:<' . chr(37) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
             return (('(' . $arg->emit_javascript() . ')._hash_'))
         };
         if ((($code eq 'circumfix:<[ ]>'))) {
-            return (('(new ArrayRef(' . Javascript::to_list($self->{('arguments')}) . '))'))
+            return (('(new ArrayRef(' . Perlito5::Javascript::to_list($self->{('arguments')}) . '))'))
         };
         if ((($code eq 'circumfix:<' . chr(123) . ' ' . chr(125) . '>'))) {
-            return (('(new HashRef(array_to_hash(' . Javascript::to_list($self->{('arguments')}) . ')))'))
+            return (('(new HashRef(array_to_hash(' . Perlito5::Javascript::to_list($self->{('arguments')}) . ')))'))
         };
         if ((($code eq 'prefix:<' . chr(92) . '>'))) {
             ((my  $arg) = $self->{('arguments')}->[0]);
@@ -491,7 +491,7 @@ package Perlito5::AST::Apply;
             return (('str_replicate(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
         };
         if ((($code eq 'list:<.>'))) {
-            return (('(' . join(' + ', map(Javascript::to_str($_), @{$self->{('arguments')}})) . ')'))
+            return (('(' . join(' + ', map(Perlito5::Javascript::to_str($_), @{$self->{('arguments')}})) . ')'))
         };
         if ((($code eq 'infix:<+>'))) {
             return (('add' . '(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
@@ -528,16 +528,16 @@ package Perlito5::AST::Apply;
             }
         };
         if ((($code eq 'ternary:<' . chr(63) . chr(63) . ' ' . chr(33) . chr(33) . '>'))) {
-            return ((Javascript::tab($level) . '( ' . Javascript::to_bool($self->{('arguments')}->[0]) . ' ' . chr(63) . ' ' . ($self->{('arguments')}->[1])->emit_javascript() . ' : ' . ($self->{('arguments')}->[2])->emit_javascript() . ')'))
+            return ((Perlito5::Javascript::tab($level) . '( ' . Perlito5::Javascript::to_bool($self->{('arguments')}->[0]) . ' ' . chr(63) . ' ' . ($self->{('arguments')}->[1])->emit_javascript() . ' : ' . ($self->{('arguments')}->[2])->emit_javascript() . ')'))
         };
         if ((($code eq 'circumfix:<( )>'))) {
-            return ((Javascript::tab($level) . '(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
+            return ((Perlito5::Javascript::tab($level) . '(' . join(', ', map($_->emit_javascript(), @{$self->{('arguments')}})) . ')'))
         };
         if ((($code eq 'infix:<' . chr(61) . '>'))) {
             return (emit_javascript_bind($self->{('arguments')}->[0], $self->{('arguments')}->[1], $level))
         };
         if ((($code eq 'return'))) {
-            return ((Javascript::tab($level) . 'throw(' . ((($self->{('arguments')} && @{$self->{('arguments')}}) ? $self->{('arguments')}->[0]->emit_javascript() : 'null')) . ')'))
+            return ((Perlito5::Javascript::tab($level) . 'throw(' . ((($self->{('arguments')} && @{$self->{('arguments')}}) ? $self->{('arguments')}->[0]->emit_javascript() : 'null')) . ')'))
         };
         if (($self->{('namespace')})) {
             if (((($self->{('namespace')} eq 'JS') && ($code eq 'inline')))) {
@@ -557,21 +557,21 @@ package Perlito5::AST::Apply;
         for (@{$self->{('arguments')}}) {
             push(@args, $_->emit_javascript() )
         };
-        (Javascript::tab($level) . $code . '([' . join(', ', @args) . '])')
+        (Perlito5::Javascript::tab($level) . $code . '([' . join(', ', @args) . '])')
     };
     sub emit_javascript_bind {
         ((my  $parameters) = shift());
         ((my  $arguments) = shift());
         ((my  $level) = shift());
         if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq chr(64))) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq chr(64))))) {
-            return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . Javascript::to_list([$arguments]) . ')'))
+            return ((Perlito5::Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . Perlito5::Javascript::to_list([$arguments]) . ')'))
         }
         else {
             if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq chr(37))) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq chr(37))))) {
-                return ((Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' array_to_hash(' . Javascript::to_list([$arguments]) . '))'))
+                return ((Perlito5::Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' array_to_hash(' . Perlito5::Javascript::to_list([$arguments]) . '))'))
             }
         };
-        (Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')')
+        (Perlito5::Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' ' . chr(61) . ' ' . $arguments->emit_javascript() . ')')
     }
 });
 package Perlito5::AST::If;
@@ -584,10 +584,10 @@ package Perlito5::AST::If;
         ((my  $level) = shift());
         ((my  $cond) = $self->{('cond')});
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
-        ((my  $s) = (Javascript::tab($level) . 'if ( ' . Javascript::to_bool($cond) . ' ) ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)));
+        ((my  $s) = (Perlito5::Javascript::tab($level) . 'if ( ' . Perlito5::Javascript::to_bool($cond) . ' ) ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)));
         if ((@{$self->{('otherwise')}->stmts()})) {
             ((my  $otherwise) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('otherwise')}->stmts()), ('needs_return' => 0)));
-            ($s = ($s . (chr(10)) . Javascript::tab($level) . 'else ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $otherwise->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)))
+            ($s = ($s . (chr(10)) . Perlito5::Javascript::tab($level) . 'else ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $otherwise->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . ')()' . chr(59) . ' ' . chr(125)))
         };
         return ($s)
     }
@@ -601,7 +601,7 @@ package Perlito5::AST::While;
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
-        return ((Javascript::tab($level) . 'for ( ' . (($self->{('init')} ? ($self->{('init')}->emit_javascript() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('cond')} ? (Javascript::to_bool($self->{('cond')}) . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('continue')} ? ($self->{('continue')}->emit_javascript() . ' ') : ' ')) . ') ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')()' . ' ' . chr(125)))
+        return ((Perlito5::Javascript::tab($level) . 'for ( ' . (($self->{('init')} ? ($self->{('init')}->emit_javascript() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('cond')} ? (Perlito5::Javascript::to_bool($self->{('cond')}) . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('continue')} ? ($self->{('continue')}->emit_javascript() . ' ') : ' ')) . ') ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')()' . ' ' . chr(125)))
     }
 });
 package Perlito5::AST::For;
@@ -612,13 +612,13 @@ package Perlito5::AST::For;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $cond) = Javascript::to_list([$self->{('cond')}]));
+        ((my  $cond) = Perlito5::Javascript::to_list([$self->{('cond')}]));
         ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
         ((my  $sig) = 'v__');
         if (($self->{('body')}->sig())) {
             ($sig = $self->{('body')}->sig()->emit_javascript_indented(($level + 1)))
         };
-        (Javascript::tab($level) . '(function (a_) ' . chr(123) . ' for (var i_ ' . chr(61) . ' 0' . chr(59) . ' i_ < a_.length ' . chr(59) . ' i_++) ' . chr(123) . ' ' . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')(a_[i_]) ' . chr(125) . ' ' . chr(125) . ')' . '(' . $cond . ')')
+        (Perlito5::Javascript::tab($level) . '(function (a_) ' . chr(123) . ' for (var i_ ' . chr(61) . ' 0' . chr(59) . ' i_ < a_.length ' . chr(59) . ' i_++) ' . chr(123) . ' ' . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')(a_[i_]) ' . chr(125) . ' ' . chr(125) . ')' . '(' . $cond . ')')
     }
 });
 package Perlito5::AST::Decl;
@@ -629,7 +629,7 @@ package Perlito5::AST::Decl;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        (Javascript::tab($level) . $self->{('var')}->emit_javascript())
+        (Perlito5::Javascript::tab($level) . $self->{('var')}->emit_javascript())
     };
     sub emit_javascript_init {
         ((my  $self) = shift());
@@ -662,7 +662,7 @@ package Perlito5::AST::Sub;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $s) = ('function (List__) ' . chr(123) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125)));
+        ((my  $s) = ('function (List__) ' . chr(123) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('block')}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125)));
         (($self->{('name')} ? ('make_sub(__PACKAGE__, ' . chr(34) . $self->{('name')} . chr(34) . ', ' . $s . ')') : $s))
     }
 });
@@ -675,7 +675,7 @@ package Perlito5::AST::Do;
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $block) = $self->simplify()->block());
-        return ((Javascript::tab($level) . '(function () ' . chr(123) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Javascript::tab($level) . chr(125) . ')()'))
+        return ((Perlito5::Javascript::tab($level) . '(function () ' . chr(123) . (chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . ')()'))
     }
 });
 package Perlito5::AST::Use;
@@ -686,7 +686,7 @@ package Perlito5::AST::Use;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        (Javascript::tab($level) . chr(47) . chr(47) . ' use ' . $self->{('mod')} . (chr(10)))
+        (Perlito5::Javascript::tab($level) . chr(47) . chr(47) . ' use ' . $self->{('mod')} . (chr(10)))
     }
 });
 
