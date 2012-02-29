@@ -1,10 +1,10 @@
-Dev  2012-02-14
+Dev  2012-02-29
 
-Perlito Perl 5:
+* Perlito Perl 5:
 - parser optimizations
 - it is now possible to add new words to the grammar from inside perl5 modules
 -- moved the non-standard "token" grammar to a module
-- new Perl6 backend (experimental)
+- new Perl5-in-Perl6 backend (experimental)
 
 - perl5 backend:
 -- use native data structures and ops
@@ -15,22 +15,22 @@ Perlito Perl 5:
 -- perlito5 calling convention is incompatible with native javascript
    The last commit using native javascript data is "e1e3316b"
 -- native javascript can be accessed with JS::inline('string')
--- reduced generated code size by 3x
+-- reduced generated code size by over 3x
    The browser backend doesn't load the grammar compiler
 
-Perlito Perl 6:
-- mostly no changes
+* Perlito Perl 6:
+- compiler namespace moved from Perlito to Perlito6
 
 
 8.0  2011-12-24
 - added new compiler for Perl version 5.
 
-Perlito Perl 5:
+* Perlito Perl 5:
 - command line "perlito5.pl"
 - supported backends: Perl 5, Javascript
 - source code in src5/ directory
 
-Perlito Perl 6:
+* Perlito Perl 6:
 - command line renamed to "perlito6.pl"
 - supported backends: Perl 5, Python 2.6, Javascript
 - new experimental backend: Java
