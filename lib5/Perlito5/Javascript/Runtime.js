@@ -291,10 +291,10 @@ function perl5_to_js( source ) {
                         new HashRef({
                             stmts:   match._class_.flat([match]),
                         }),
-                        CLASS['Lit::Block']
+                        CLASS['Perlito5::AST::Lit::Block']
                     ]),
         }),
-        CLASS.Do
+        CLASS['Perlito5::AST::Do']
     ]);
 
     // CORE.say( "ast: [" + perl(ast) + "]" );

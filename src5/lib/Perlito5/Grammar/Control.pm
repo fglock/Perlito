@@ -7,9 +7,9 @@ token unless {
             if (!defined($body)) {
                 die "Missing code block in 'unless'";
             }
-            $MATCH->{"capture"} = If->new(
+            $MATCH->{"capture"} = Perlito5::AST::If->new(
                 cond => $MATCH->{"exp"}->flat()->{'exp'},
-                body => Lit::Block->new(stmts => [ ]),
+                body => Perlito5::AST::Lit::Block->new(stmts => [ ]),
                 otherwise => $body,
              )
         }
@@ -30,9 +30,9 @@ token if {
                 die "Missing code block in 'else'";
             }
             # if (ref($otherwise) eq 'Lit::Hash') {
-            #     $otherwise = Lit::Block->new( stmts => $otherwise->hash1 );
+            #     $otherwise = Perlito5::AST::Lit::Block->new( stmts => $otherwise->hash1 );
             # }
-            $MATCH->{"capture"} = If->new(
+            $MATCH->{"capture"} = Perlito5::AST::If->new(
                 cond      => $MATCH->{"exp"}->flat()->{'exp'},
                 body      => $body,
                 otherwise => $otherwise,
@@ -46,10 +46,10 @@ token if {
             if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
-            $MATCH->{"capture"} = If->new(
+            $MATCH->{"capture"} = Perlito5::AST::If->new(
                 cond => $MATCH->{"exp"}->flat()->{'exp'},
                 body => $body,
-                otherwise => Lit::Block->new( stmts => [ $MATCH->{"if"}->flat() ] ),
+                otherwise => Perlito5::AST::Lit::Block->new( stmts => [ $MATCH->{"if"}->flat() ] ),
             )
         }
     |
@@ -58,10 +58,10 @@ token if {
             if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
-            $MATCH->{"capture"} = If->new(
+            $MATCH->{"capture"} = Perlito5::AST::If->new(
                 cond => $MATCH->{"exp"}->flat()->{'exp'},
                 body => $body,
-                otherwise => Lit::Block->new(stmts => [ ]),
+                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ ]),
              )
         }
     ]
@@ -90,10 +90,10 @@ token for {
                 <.opt_ws>
             '}'
         {
-            $MATCH->{"capture"} = For->new( 
+            $MATCH->{"capture"} = Perlito5::AST::For->new( 
                     cond  => $MATCH->{"Perlito5::Expression.paren_parse"}->flat(), 
                     topic => undef, 
-                    body  => Lit::Block->new( stmts => $MATCH->{"Perlito5::Grammar.exp_stmts"}->flat(), sig => $MATCH->{"Perlito5::Grammar.var_ident"}->flat() )
+                    body  => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{"Perlito5::Grammar.exp_stmts"}->flat(), sig => $MATCH->{"Perlito5::Grammar.var_ident"}->flat() )
                  )
         }
     |
@@ -103,7 +103,7 @@ token for {
             if (!defined($body)) {
                 die "Missing code block in 'when'";
             }
-            $MATCH->{"capture"} = For->new( cond => $MATCH->{"exp"}->flat()->{'exp'}, topic => undef, body => $body )
+            $MATCH->{"capture"} = Perlito5::AST::For->new( cond => $MATCH->{"exp"}->flat()->{'exp'}, topic => undef, body => $body )
         }
     ]
 }
@@ -115,7 +115,7 @@ token while {
         if (!defined($body)) {
             die "Missing code block in 'while'";
         }
-        $MATCH->{"capture"} = While->new(
+        $MATCH->{"capture"} = Perlito5::AST::While->new(
                 cond => $MATCH->{"exp"}->flat()->{'exp'},
                 body => $body )
     }

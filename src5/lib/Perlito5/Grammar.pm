@@ -92,7 +92,7 @@ token var_name      { <full_ident> | <digit> }
 token var_ident {
     <var_sigil> <optional_namespace_before_ident> <var_name>
     {
-        $MATCH->{"capture"} = Var->new(
+        $MATCH->{"capture"} = Perlito5::AST::Var->new(
             sigil       => $MATCH->{"var_sigil"}->flat(),
             namespace   => $MATCH->{"optional_namespace_before_ident"}->flat(),
             name        => $MATCH->{"var_name"}->flat(),
@@ -108,7 +108,7 @@ token val_num {
     [   \. \d+    <.exponent>?
     |   \d+     [ <.exponent>  |   \. \d+  <.exponent>? ]
     ]
-    { $MATCH->{"capture"} = Val::Num->new( num => $MATCH->flat() ) }
+    { $MATCH->{"capture"} = Perlito5::AST::Val::Num->new( num => $MATCH->flat() ) }
 }
 
 token char_any {
@@ -163,40 +163,40 @@ token double_quoted_buf {
         [ <before \$ <.ident> > <Perlito5::Expression.operator>
             { $MATCH->{"capture"} = ($MATCH->{"Perlito5::Expression.operator"}->flat())[1] }
         | \$\{ <ident> \}
-            { $MATCH->{"capture"} = Var->new(
+            { $MATCH->{"capture"} = Perlito5::AST::Var->new(
                     sigil  => '$',
                     name   => $MATCH->{"ident"}->flat(),
                    )
             }
         | <char_any>
-            { $MATCH->{"capture"} = Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
+            { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
         ]
     | <before \@ >
         [ <before \@ <.ident> > <Perlito5::Expression.operator> 
-            { $MATCH->{"capture"} = Apply->new(
+            { $MATCH->{"capture"} = Perlito5::AST::Apply->new(
                     namespace => '',
                     code      => 'join',
                     arguments => [ 
-                        Val::Buf->new( buf => ' ' ), 
+                        Perlito5::AST::Val::Buf->new( buf => ' ' ), 
                         ($MATCH->{"Perlito5::Expression.operator"}->flat())[1] 
                     ],
                 )
             }
         | \@\{ <exp_stmts> \}
-            { $MATCH->{"capture"} = Apply->new(
+            { $MATCH->{"capture"} = Perlito5::AST::Apply->new(
                     namespace => '',
                     code      => 'join',
                     arguments => [ 
-                        Val::Buf->new( buf => ' ' ), 
+                        Perlito5::AST::Val::Buf->new( buf => ' ' ), 
                         ($MATCH->{"exp_stmts"}->flat())[0] 
                     ],
                 )
             }
         | <char_any>
-            { $MATCH->{"capture"} = Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
+            { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
         ]
     | <double_quoted_unescape>
-        { $MATCH->{"capture"} = Val::Buf->new( buf => $MATCH->{"double_quoted_unescape"}->flat() ) }
+        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"double_quoted_unescape"}->flat() ) }
 }
 
 token val_buf {
@@ -204,10 +204,10 @@ token val_buf {
         {
             my $args = $MATCH->{"double_quoted_buf"};
             if (!$args) {
-                $MATCH->{"capture"} = Val::Buf->new( buf => '' )
+                $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => '' )
             }
             else {
-                $MATCH->{"capture"} = Apply->new(
+                $MATCH->{"capture"} = Perlito5::AST::Apply->new(
                     namespace => '',
                     code => 'list:<.>',
                     arguments => [ map( $_->capture, @{$MATCH->{"double_quoted_buf"}} ) ],
@@ -215,7 +215,7 @@ token val_buf {
             }
         }
     | \' <single_quoted_unescape>  \'
-        { $MATCH->{"capture"} = Val::Buf->new( buf => $MATCH->{"single_quoted_unescape"}->flat() ) }
+        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"single_quoted_unescape"}->flat() ) }
 }
 
 token digits {
@@ -224,7 +224,7 @@ token digits {
 
 token val_int {
     \d+
-    { $MATCH->{"capture"} = Val::Int->new( int => $MATCH->flat() ) }
+    { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => $MATCH->flat() ) }
 }
 
 token exp_stmts {
@@ -241,7 +241,7 @@ token args_sig {
     <Perlito5::Expression.list_parse>
     {
         # say ' positional: ', ($MATCH->{""}->flat()).perl;
-        $MATCH->{"capture"} = Sig->new(
+        $MATCH->{"capture"} = Perlito5::AST::Sig->new(
             positional  => Perlito5::Expression::expand_list($MATCH->{"Perlito5::Expression.list_parse"}->flat()->{'exp'}),
             named       => { } );
     }
@@ -250,7 +250,7 @@ token args_sig {
 token method_sig {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
         { $MATCH->{"capture"} = $MATCH->{"args_sig"}->flat() }
-    |   { $MATCH->{"capture"} = Sig->new(
+    |   { $MATCH->{"capture"} = Perlito5::AST::Sig->new(
             positional => [ ],
             named => { } ) }
 }
@@ -261,7 +261,7 @@ token sub_def {
     <.opt_ws> \{ <.opt_ws>
           <exp_stmts> <.opt_ws>
     [   \}     | { die 'Syntax Error in sub \'', $MATCH->{"opt_name"}->flat(), '\''; } ]
-    { $MATCH->{"capture"} = Sub->new( name => $MATCH->{"opt_name"}->flat(), sig => $MATCH->{"method_sig"}->flat(), block => $MATCH->{"exp_stmts"}->flat() ) }
+    { $MATCH->{"capture"} = Perlito5::AST::Sub->new( name => $MATCH->{"opt_name"}->flat(), sig => $MATCH->{"method_sig"}->flat(), block => $MATCH->{"exp_stmts"}->flat() ) }
 }
 
 

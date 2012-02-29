@@ -53,7 +53,7 @@ package Perl5;
 
 }
 
-package CompUnit;
+package Perlito5::AST::CompUnit;
 {
     sub emit_perl5 {
         $_[0]->emit_perl5_indented(0)
@@ -91,7 +91,7 @@ package CompUnit;
     }
 }
 
-package Val::Int;
+package Perlito5::AST::Val::Int;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -102,7 +102,7 @@ package Val::Int;
          Perl5::tab($level) . $self->{"int"} }
 }
 
-package Val::Num;
+package Perlito5::AST::Val::Num;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -113,7 +113,7 @@ package Val::Num;
          Perl5::tab($level) . $self->{"num"} }
 }
 
-package Val::Buf;
+package Perlito5::AST::Val::Buf;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -126,7 +126,7 @@ package Val::Buf;
     }
 }
 
-package Lit::Block;
+package Perlito5::AST::Lit::Block;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -141,7 +141,7 @@ package Lit::Block;
     }
 }
 
-package Index;
+package Perlito5::AST::Index;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -151,7 +151,7 @@ package Index;
         my $level = $_[1];
         
 
-        if (  $self->{"obj"}->isa('Var')
+        if (  $self->{"obj"}->isa('Perlito5::AST::Var')
            && $self->{"obj"}->sigil eq '$'
            )
         {
@@ -163,7 +163,7 @@ package Index;
     }
 }
 
-package Lookup;
+package Perlito5::AST::Lookup;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -173,7 +173,7 @@ package Lookup;
         my $level = $_[1];
         
 
-        if (  $self->{"obj"}->isa('Var')
+        if (  $self->{"obj"}->isa('Perlito5::AST::Var')
            && $self->{"obj"}->sigil eq '$'
            )
         {
@@ -185,7 +185,7 @@ package Lookup;
     }
 }
 
-package Var;
+package Perlito5::AST::Var;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -211,7 +211,7 @@ package Var;
     }
 }
 
-package Proto;
+package Perlito5::AST::Proto;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -224,7 +224,7 @@ package Proto;
     }
 }
 
-package Call;
+package Perlito5::AST::Call;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -248,7 +248,7 @@ package Call;
     }
 }
 
-package Apply;
+package Perlito5::AST::Apply;
 {
 
     my %op_prefix_perl5 = (
@@ -394,7 +394,7 @@ package Apply;
         my $parameters = shift;
         my $arguments = shift;
 
-        if ($parameters->isa( 'Call' )) {
+        if ($parameters->isa( 'Perlito5::AST::Call' )) {
 
             # $a->{3} = 4
             # $a->[3] = 4
@@ -410,7 +410,7 @@ package Apply;
     }
 }
 
-package If;
+package Perlito5::AST::If;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -440,7 +440,7 @@ package If;
     }
 }
 
-package While;
+package Perlito5::AST::While;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -462,7 +462,7 @@ package While;
     }
 }
 
-package For;
+package Perlito5::AST::For;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -482,7 +482,7 @@ package For;
     }
 }
 
-package Decl;
+package Perlito5::AST::Decl;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -500,7 +500,7 @@ package Decl;
     }
 }
 
-package Sub;
+package Perlito5::AST::Sub;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -519,7 +519,7 @@ package Sub;
     }
 }
 
-package Do;
+package Perlito5::AST::Do;
 {
     sub emit_perl5 {
         my $self = $_[0];
@@ -536,7 +536,7 @@ package Do;
     }
 }
 
-package Use;
+package Perlito5::AST::Use;
 {
     sub emit_perl5 {
         my $self = $_[0];

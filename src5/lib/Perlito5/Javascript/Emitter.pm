@@ -62,7 +62,7 @@ package Javascript;
 
     sub to_str {
             my $cond = shift;
-            if ($cond->isa( 'Val::Buf' )) {
+            if ($cond->isa( 'Perlito5::AST::Val::Buf' )) {
                 return $cond->emit_javascript;
             }
             else {
@@ -71,7 +71,7 @@ package Javascript;
     }
     sub to_num {
             my $cond = shift;
-            if ($cond->isa( 'Val::Int' ) || $cond->isa( 'Val::Num' )) {
+            if ($cond->isa( 'Perlito5::AST::Val::Int' ) || $cond->isa( 'Perlito5::AST::Val::Num' )) {
                 return $cond->emit_javascript;
             }
             else {
@@ -82,16 +82,16 @@ package Javascript;
             # Note: 'infix:<||>' and 'infix:<&&>' can't be optimized here, because they don't return bool
             my $cond = shift;
 
-            if (  $cond->isa( 'Apply' ) && $cond->code eq 'circumfix:<( )>'
+            if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
                && $cond->{"arguments"} && @{$cond->{"arguments"}}
                ) 
             {
                 return to_bool( $cond->{"arguments"}[0] )
             }
 
-            if  (  ($cond->isa( 'Val::Int' ))
-                || ($cond->isa( 'Val::Num' ))
-                || ($cond->isa( 'Apply' ) && $cond->code eq 'prefix:<!>')
+            if  (  ($cond->isa( 'Perlito5::AST::Val::Int' ))
+                || ($cond->isa( 'Perlito5::AST::Val::Num' ))
+                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'prefix:<!>')
                 )
             {
                 return $cond->emit_javascript;
@@ -113,12 +113,12 @@ package Javascript;
     sub to_list_preprocess {
         my @items;
         for my $item ( @{$_[0]} ) {
-            if ($item->isa( 'Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
+            if ($item->isa( 'Perlito5::AST::Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
                 for my $arg ( @{ to_list_preprocess($item->arguments) } ) {
                     push( @items, $arg);
                 }
             }
-            elsif ($item->isa('Apply') && $item->code eq 'infix:<=>>') {
+            elsif ($item->isa('Perlito5::AST::Apply') && $item->code eq 'infix:<=>>') {
                 push @items, $item->arguments[0];
                 push @items, $item->arguments[1];
             }
@@ -169,12 +169,12 @@ package Perlito5::Javascript::LexicalBlock;
         }
         my @str;
         for my $decl ( @block ) {
-            if ($decl->isa( 'Decl' ) && $decl->decl eq 'my') {
+            if ($decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my') {
                 push @str, Javascript::tab($level) . $decl->emit_javascript_init;
             }
-            if ($decl->isa( 'Apply' ) && $decl->code eq 'infix:<=>') {
+            if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
                 my $var = $decl->arguments[0];
-                if ($var->isa( 'Decl' ) && $var->decl eq 'my') {
+                if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq 'my') {
                     push @str, Javascript::tab($level) . $var->emit_javascript_init;
                 }
             }
@@ -184,17 +184,17 @@ package Perlito5::Javascript::LexicalBlock;
             $last_statement = pop @block;
         }
         for my $decl ( @block ) {
-            if (!( $decl->isa( 'Decl' ) && $decl->decl eq 'my' )) {
+            if (!( $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my' )) {
                 push @str, $decl->emit_javascript_indented($level) . ';';
             }
         }
         if ($self->{"needs_return"} && $last_statement) {
-            if ($last_statement->isa( 'If' )) {
+            if ($last_statement->isa( 'Perlito5::AST::If' )) {
                 my $cond      = $last_statement->cond;
                 my $body      = $last_statement->body;
                 my $otherwise = $last_statement->otherwise;
-                if ($cond->isa( 'Var' ) && $cond->sigil eq '@') {
-                    $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
+                if ($cond->isa( 'Perlito5::AST::Var' ) && $cond->sigil eq '@') {
+                    $cond = Perlito5::AST::Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
                 }
                 $body      = Perlito5::Javascript::LexicalBlock->new( block => $body->stmts, needs_return => 1 );
                 push @str, Javascript::tab($level) .
@@ -209,11 +209,11 @@ package Perlito5::Javascript::LexicalBlock;
                         . Javascript::tab($level) . '})(); }';
                 }
             }
-            elsif  $last_statement->isa( 'Apply' ) && $last_statement->code eq 'return'
-                || $last_statement->isa( 'For' )
-                || $last_statement->isa( 'While' )
+            elsif  $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
+                || $last_statement->isa( 'Perlito5::AST::For' )
+                || $last_statement->isa( 'Perlito5::AST::While' )
             {
-                # Return, For - no changes for now
+                # Return, Perlito5::AST::For - no changes for now
                 push @str, $last_statement->emit_javascript_indented($level)
             }
             else {
@@ -224,7 +224,7 @@ package Perlito5::Javascript::LexicalBlock;
     }
 }
 
-package CompUnit;
+package Perlito5::AST::CompUnit;
 {
     sub emit_javascript { 
         my $self = $_[0];
@@ -239,19 +239,19 @@ package CompUnit;
         my $i = 0;
         while ( $i <= scalar @{$self->{"body"}} ) {
             my $stmt = $self->{"body"}->[$i];
-            if ( ref($stmt) eq 'Apply' && $stmt->code eq 'package' ) {
+            if ( ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->code eq 'package' ) {
                 # found an inner package
                 my $name = $stmt->namespace;
                 my @stmts;
                 $i++;
                 while (  $i <= scalar( @{$self->{"body"}} )
-                      && !( ref($self->{"body"}->[$i]) eq 'Apply' && $self->{"body"}->[$i]->code eq 'package' )
+                      && !( ref($self->{"body"}->[$i]) eq 'Perlito5::AST::Apply' && $self->{"body"}->[$i]->code eq 'package' )
                       )
                 {
                     push @stmts, $self->{"body"}->[$i];
                     $i++;
                 }
-                push @body, CompUnit->new( name => $name, body => \@stmts );
+                push @body, Perlito5::AST::CompUnit->new( name => $name, body => \@stmts );
             }
             else {
                 push @body, $stmt
@@ -267,25 +267,25 @@ package CompUnit;
             . '  var PKG = NAMESPACE[__PACKAGE__];' . "\n";
 
         for my $decl ( @body ) {
-            if ($decl->isa( 'Decl' ) && ( $decl->decl eq 'my' )) {
+            if ($decl->isa( 'Perlito5::AST::Decl' ) && ( $decl->decl eq 'my' )) {
                 $str = $str . '  ' . $decl->emit_javascript_init;
             }
-            if ($decl->isa( 'Apply' ) && $decl->code eq 'infix:<=>') {
+            if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
                 my $var = $decl->arguments[0];
-                if ($var->isa( 'Decl' ) && $var->decl eq 'my') {
+                if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq 'my') {
                     $str = $str . '  ' . $var->emit_javascript_init;
                 }
             }
         }
         for my $decl ( @body ) {
-            if ($decl->isa( 'Sub' )) {
+            if ($decl->isa( 'Perlito5::AST::Sub' )) {
                 $str = $str . ($decl)->emit_javascript_indented( $level + 1 ) . ";\n";
             }
         }
         for my $decl ( @body ) {
             if (  defined( $decl )
-               && (!( $decl->isa( 'Decl' ) && $decl->decl eq 'my' ))
-               && (!( $decl->isa( 'Sub')))
+               && (!( $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my' ))
+               && (!( $decl->isa( 'Perlito5::AST::Sub')))
                )
             {
                 $str = $str . ($decl)->emit_javascript_indented( $level + 1 ) . ";\n";
@@ -304,7 +304,7 @@ package CompUnit;
     }
 }
 
-package Val::Int;
+package Perlito5::AST::Val::Int;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -312,7 +312,7 @@ package Val::Int;
         my $level = shift; Javascript::tab($level) . $self->{"int"} }
 }
 
-package Val::Num;
+package Perlito5::AST::Val::Num;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -320,7 +320,7 @@ package Val::Num;
         my $level = shift; Javascript::tab($level) . $self->{"num"} }
 }
 
-package Val::Buf;
+package Perlito5::AST::Val::Buf;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -328,7 +328,7 @@ package Val::Buf;
         my $level = shift; Javascript::tab($level) . Javascript::escape_string($self->{"buf"}) }
 }
 
-package Lit::Block;
+package Perlito5::AST::Lit::Block;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -345,18 +345,18 @@ package Lit::Block;
     }
 }
 
-package Index;
+package Perlito5::AST::Index;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
 
-        if (  $self->{"obj"}->isa('Var')
+        if (  $self->{"obj"}->isa('Perlito5::AST::Var')
            && $self->{"obj"}->sigil eq '$'
            )
         {
-            my $v = Var->new( sigil => '@', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
+            my $v = Perlito5::AST::Var->new( sigil => '@', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
             return $v->emit_javascript_indented($level) . '[' . $self->{"index_exp"}->emit_javascript() . ']';
         }
 
@@ -368,7 +368,7 @@ package Index;
     }
 }
 
-package Lookup;
+package Perlito5::AST::Lookup;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -377,11 +377,11 @@ package Lookup;
         # my $var = $self->{"obj"}->emit_javascript;
         # return $var . '[' . $self->{"index_exp"}->emit_javascript() . ']'
 
-        if (  $self->{"obj"}->isa('Var')
+        if (  $self->{"obj"}->isa('Perlito5::AST::Var')
            && $self->{"obj"}->sigil eq '$'
            )
         {
-            my $v = Var->new( sigil => '%', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
+            my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
             return $v->emit_javascript_indented($level) . '[' . $self->{"index_exp"}->emit_javascript() . ']';
         }
 
@@ -393,7 +393,7 @@ package Lookup;
     }
 }
 
-package Var;
+package Perlito5::AST::Var;
 {
     my $table = {
         '$' => 'v_',
@@ -423,7 +423,7 @@ package Var;
     }
 }
 
-package Proto;
+package Perlito5::AST::Proto;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -433,7 +433,7 @@ package Proto;
     }
 }
 
-package Call;
+package Perlito5::AST::Call;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -469,7 +469,7 @@ package Call;
     }
 }
 
-package Apply;
+package Perlito5::AST::Apply;
 {
 
     my %op_infix_js = (
@@ -585,7 +585,7 @@ package Apply;
         }
         if ( $code eq 'prefix:<\\>' ) {
             my $arg = $self->{"arguments"}->[0];
-            if ( $arg->isa('Var') ) {
+            if ( $arg->isa('Perlito5::AST::Var') ) {
                 if ( $arg->sigil eq '@' ) {
                     return '(new ArrayRef(' . $arg->emit_javascript . '))';
                 }
@@ -656,18 +656,18 @@ package Apply;
 
         if ($code eq 'exists') {
             my $arg = $self->{"arguments"}->[0];
-            if ($arg->isa( 'Lookup' )) {
+            if ($arg->isa( 'Perlito5::AST::Lookup' )) {
                 my $v = $arg->obj;
-                if (  $v->isa('Var')
+                if (  $v->isa('Perlito5::AST::Var')
                    && $v->sigil eq '$'
                    )
                 {
-                    $v = Var->new( sigil => '%', namespace => $v->namespace, name => $v->name );
+                    $v = Perlito5::AST::Var->new( sigil => '%', namespace => $v->namespace, name => $v->name );
                     return '(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp)->emit_javascript() . ')';
                 }
                 return '(' . $v->emit_javascript() . ')._hash_.hasOwnProperty(' . ($arg->index_exp)->emit_javascript() . ')';
             }
-            if ($arg->isa( 'Call' )) {
+            if ($arg->isa( 'Perlito5::AST::Call' )) {
                 if ( $arg->method eq 'postcircumfix:<{ }>' ) {
                     return '(' . $arg->invocant->emit_javascript() . ')._hash_.hasOwnProperty(' . $arg->{"arguments"}->emit_javascript() . ')';
                 }
@@ -701,7 +701,7 @@ package Apply;
                && $code eq 'inline'
                ) 
             {
-                if ( $self->{"arguments"}->[0]->isa('Val::Buf') ) {
+                if ( $self->{"arguments"}->[0]->isa('Perlito5::AST::Val::Buf') ) {
                     # JS::inline('var x = 123')
                     return $self->{"arguments"}[0]{"buf"};
                 }
@@ -726,13 +726,13 @@ package Apply;
         my $arguments = shift;
         my $level = shift;
 
-        if      $parameters->isa( 'Var' ) && $parameters->sigil eq '@'
-            ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '@'
+        if      $parameters->isa( 'Perlito5::AST::Var' ) && $parameters->sigil eq '@'
+            ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '@'
         {
             return Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' = ' . Javascript::to_list([$arguments]) . ')'
         }
-        elsif   $parameters->isa( 'Var' ) && $parameters->sigil eq '%'
-            ||  $parameters->isa( 'Decl' ) && $parameters->var->sigil eq '%'
+        elsif   $parameters->isa( 'Perlito5::AST::Var' ) && $parameters->sigil eq '%'
+            ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
         {
             return Javascript::tab($level) . '(' . $parameters->emit_javascript() . ' = array_to_hash(' . Javascript::to_list([$arguments]) . '))' 
         }
@@ -740,7 +740,7 @@ package Apply;
     }
 }
 
-package If;
+package Perlito5::AST::If;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -766,7 +766,7 @@ package If;
 }
 
 
-package While;
+package Perlito5::AST::While;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -784,7 +784,7 @@ package While;
     }
 }
 
-package For;
+package Perlito5::AST::For;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -805,7 +805,7 @@ package For;
     }
 }
 
-package Decl;
+package Perlito5::AST::Decl;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -830,12 +830,12 @@ package Decl;
             return $str;
         }
         else {
-            die "not implemented: Decl '" . $self->{"decl"} . "'";
+            die "not implemented: Perlito5::AST::Decl '" . $self->{"decl"} . "'";
         }
     }
 }
 
-package Sub;
+package Perlito5::AST::Sub;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -854,7 +854,7 @@ package Sub;
     }
 }
 
-package Do;
+package Perlito5::AST::Do;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -868,7 +868,7 @@ package Do;
     }
 }
 
-package Use;
+package Perlito5::AST::Use;
 {
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {

@@ -62,7 +62,7 @@ package Perl6;
 
     sub to_str {
             my $cond = shift;
-            if ($cond->isa( 'Val::Buf' )) {
+            if ($cond->isa( 'Perlito5::AST::Val::Buf' )) {
                 return $cond->emit_perl6;
             }
             else {
@@ -71,7 +71,7 @@ package Perl6;
     }
     sub to_num {
             my $cond = shift;
-            if ($cond->isa( 'Val::Int' ) || $cond->isa( 'Val::Num' )) {
+            if ($cond->isa( 'Perlito5::AST::Val::Int' ) || $cond->isa( 'Perlito5::AST::Val::Num' )) {
                 return $cond->emit_perl6;
             }
             else {
@@ -80,11 +80,11 @@ package Perl6;
     }
     sub to_bool {
             my $cond = shift;
-            if  (  ($cond->isa( 'Val::Int' ))
-                || ($cond->isa( 'Val::Num' ))
-                || ($cond->isa( 'Apply' ) && $cond->code eq 'infix:<||>')
-                || ($cond->isa( 'Apply' ) && $cond->code eq 'infix:<&&>')
-                || ($cond->isa( 'Apply' ) && $cond->code eq 'prefix:<!>')
+            if  (  ($cond->isa( 'Perlito5::AST::Val::Int' ))
+                || ($cond->isa( 'Perlito5::AST::Val::Num' ))
+                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<||>')
+                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<&&>')
+                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'prefix:<!>')
                 )
             {
                 return $cond->emit_perl6;
@@ -124,18 +124,18 @@ package Perlito5::Perl6::LexicalBlock;
         }
         my @str;
         for my $decl ( @block ) {
-            if ($decl->isa( 'Decl' ) && $decl->decl eq 'my') {
+            if ($decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my') {
                 push @str, Perl6::tab($level) . $decl->emit_perl6_init;
             }
-            if ($decl->isa( 'Apply' ) && $decl->code eq 'infix:<=>') {
+            if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
                 my $var = $decl->arguments[0];
-                if ($var->isa( 'Decl' ) && $var->decl eq 'my') {
+                if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq 'my') {
                     push @str, Perl6::tab($level) . $var->emit_perl6_init;
                 }
             }
         }
         for my $decl ( @block ) {
-            if (!( $decl->isa( 'Decl' ) && $decl->decl eq 'my' )) {
+            if (!( $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my' )) {
                 push @str, $decl->emit_perl6_indented($level) . ';';
             }
         }
@@ -143,7 +143,7 @@ package Perlito5::Perl6::LexicalBlock;
     }
 }
 
-package CompUnit;
+package Perlito5::AST::CompUnit;
 {
     sub emit_perl6 { 
         my $self = $_[0];
@@ -158,19 +158,19 @@ package CompUnit;
         my $i = 0;
         while ( $i <= scalar @{$self->{"body"}} ) {
             my $stmt = $self->{"body"}->[$i];
-            if ( ref($stmt) eq 'Apply' && $stmt->code eq 'package' ) {
+            if ( ref($stmt) eq 'Perlito5::AST::Apply' && $stmt->code eq 'package' ) {
                 # found an inner package
                 my $name = $stmt->namespace;
                 my @stmts;
                 $i++;
                 while (  $i <= scalar( @{$self->{"body"}} )
-                      && !( ref($self->{"body"}->[$i]) eq 'Apply' && $self->{"body"}->[$i]->code eq 'package' )
+                      && !( ref($self->{"body"}->[$i]) eq 'Perlito5::AST::Apply' && $self->{"body"}->[$i]->code eq 'package' )
                       )
                 {
                     push @stmts, $self->{"body"}->[$i];
                     $i++;
                 }
-                push @body, CompUnit->new( name => $name, body => \@stmts );
+                push @body, Perlito5::AST::CompUnit->new( name => $name, body => \@stmts );
             }
             else {
                 push @body, $stmt
@@ -183,25 +183,25 @@ package CompUnit;
         my $str = 'package ' . $class_name . '{' . "\n";
 
         for my $decl ( @body ) {
-            if ($decl->isa( 'Decl' ) && ( $decl->decl eq 'my' )) {
+            if ($decl->isa( 'Perlito5::AST::Decl' ) && ( $decl->decl eq 'my' )) {
                 $str = $str . '  ' . $decl->emit_perl6_init;
             }
-            if ($decl->isa( 'Apply' ) && $decl->code eq 'infix:<=>') {
+            if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
                 my $var = $decl->arguments[0];
-                if ($var->isa( 'Decl' ) && $var->decl eq 'my') {
+                if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq 'my') {
                     $str = $str . '  ' . $var->emit_perl6_init;
                 }
             }
         }
         for my $decl ( @body ) {
-            if ($decl->isa( 'Sub' )) {
+            if ($decl->isa( 'Perlito5::AST::Sub' )) {
                 $str = $str . ($decl)->emit_perl6_indented( $level + 1 ) . ";\n";
             }
         }
         for my $decl ( @body ) {
             if (  defined( $decl )
-               && (!( $decl->isa( 'Decl' ) && $decl->decl eq 'my' ))
-               && (!( $decl->isa( 'Sub')))
+               && (!( $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my' ))
+               && (!( $decl->isa( 'Perlito5::AST::Sub')))
                )
             {
                 $str = $str . ($decl)->emit_perl6_indented( $level + 1 ) . ";\n";
@@ -220,7 +220,7 @@ package CompUnit;
     }
 }
 
-package Val::Int;
+package Perlito5::AST::Val::Int;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -228,7 +228,7 @@ package Val::Int;
         my $level = shift; Perl6::tab($level) . $self->{"int"} }
 }
 
-package Val::Num;
+package Perlito5::AST::Val::Num;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -236,7 +236,7 @@ package Val::Num;
         my $level = shift; Perl6::tab($level) . $self->{"num"} }
 }
 
-package Val::Buf;
+package Perlito5::AST::Val::Buf;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -244,7 +244,7 @@ package Val::Buf;
         my $level = shift; Perl6::tab($level) . Perl6::escape_string($self->{"buf"}) }
 }
 
-package Lit::Block;
+package Perlito5::AST::Lit::Block;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -261,18 +261,18 @@ package Lit::Block;
     }
 }
 
-package Index;
+package Perlito5::AST::Index;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
         my $self = shift;
         my $level = shift;
 
-        if (  $self->{"obj"}->isa('Var')
+        if (  $self->{"obj"}->isa('Perlito5::AST::Var')
            && $self->{"obj"}->sigil eq '$'
            )
         {
-            my $v = Var->new( sigil => '@', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
+            my $v = Perlito5::AST::Var->new( sigil => '@', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
             return $v->emit_perl6_indented($level) . '[' . $self->{"index_exp"}->emit_perl6() . ']';
         }
 
@@ -280,25 +280,25 @@ package Index;
     }
 }
 
-package Lookup;
+package Perlito5::AST::Lookup;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
         my $self = shift;
         my $level = shift;
 
-        if (  $self->{"obj"}->isa('Var')
+        if (  $self->{"obj"}->isa('Perlito5::AST::Var')
            && $self->{"obj"}->sigil eq '$'
            )
         {
-            my $v = Var->new( sigil => '%', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
+            my $v = Perlito5::AST::Var->new( sigil => '%', namespace => $self->{"obj"}->namespace, name => $self->{"obj"}->name );
             return $v->emit_perl6_indented($level) . '{' . $self->{"index_exp"}->emit_perl6() . '}';
         }
         return $self->{"obj"}->emit_perl6_indented($level) . '{' . $self->{"index_exp"}->emit_perl6() . '}';
     }
 }
 
-package Var;
+package Perlito5::AST::Var;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -328,7 +328,7 @@ package Var;
     }
 }
 
-package Proto;
+package Perlito5::AST::Proto;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -338,7 +338,7 @@ package Proto;
     }
 }
 
-package Call;
+package Perlito5::AST::Call;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -367,7 +367,7 @@ package Call;
     }
 }
 
-package Apply;
+package Perlito5::AST::Apply;
 {
 
     my %op_infix_js = (
@@ -486,7 +486,7 @@ package Apply;
         }
         if ( $code eq 'prefix:<\\>' ) {
             my $arg = $self->{"arguments"}->[0];
-            if ( $arg->isa('Var') ) {
+            if ( $arg->isa('Perlito5::AST::Var') ) {
                 if ( $arg->sigil eq '@' ) {
                     # XXX not implemented
                     return $arg->emit_perl6;
@@ -543,7 +543,7 @@ package Apply;
                && $code eq 'inline'
                ) 
             {
-                if ( $self->{"arguments"}->[0]->isa('Val::Buf') ) {
+                if ( $self->{"arguments"}->[0]->isa('Perlito5::AST::Val::Buf') ) {
                     # Perl6::inline('$x = 123')
                     return $self->{"arguments"}[0]{"buf"};
                 }
@@ -568,18 +568,18 @@ package Apply;
     }
 }
 
-package If;
+package Perlito5::AST::If;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
         my $self = shift;
         my $level = shift;
         my $cond = $self->{"cond"};
-        if (  $cond->isa( 'Var' )
+        if (  $cond->isa( 'Perlito5::AST::Var' )
            && $cond->sigil eq '@'
            )
         {
-            $cond = Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
+            $cond = Perlito5::AST::Apply->new( code => 'prefix:<@>', arguments => [ $cond ] );
         }
         my $body  = Perlito5::Perl6::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         my $s = Perl6::tab($level) . 'if ( ' . Perl6::to_bool( $cond ) . ' ) {' . "\n"
@@ -598,7 +598,7 @@ package If;
 }
 
 
-package While;
+package Perlito5::AST::While;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -616,7 +616,7 @@ package While;
     }
 }
 
-package For;
+package Perlito5::AST::For;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -634,7 +634,7 @@ package For;
     }
 }
 
-package Decl;
+package Perlito5::AST::Decl;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -648,7 +648,7 @@ package Decl;
     }
 }
 
-package Sub;
+package Perlito5::AST::Sub;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -668,7 +668,7 @@ package Sub;
     }
 }
 
-package Do;
+package Perlito5::AST::Do;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {
@@ -682,7 +682,7 @@ package Do;
     }
 }
 
-package Use;
+package Perlito5::AST::Use;
 {
     sub emit_perl6 { $_[0]->emit_perl6_indented(0) }
     sub emit_perl6_indented {

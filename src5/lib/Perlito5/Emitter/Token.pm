@@ -147,7 +147,7 @@ sub set_captures_to_array {
 
 
 
-package Rul::Subrule;
+package Rul::Perlito5::AST::Subrule;
 sub new { my $class = shift; bless {@_}, $class }
 sub metasyntax { $_[0]->{'metasyntax'} }
 sub captures { $_[0]->{'captures'} }
@@ -209,7 +209,7 @@ sub set_captures_to_array {
 
 
 
-package Rul::Dot;
+package Rul::Perlito5::AST::Dot;
 sub new { my $class = shift; bless {@_}, $class }
 sub emit_perl5 {
     my $self = $_[0];
@@ -232,16 +232,16 @@ sub emit_perl5 {
 
     my $char = $self->{"char"};
     if ($char eq 'n') {
-        return Rul::Subrule->new( metasyntax => 'is_newline', captures => 0 )->emit_perl5;
+        return Rul::Perlito5::AST::Subrule->new( metasyntax => 'is_newline', captures => 0 )->emit_perl5;
     }
     if ($char eq 'N') {
-        return Rul::Subrule->new( metasyntax => 'not_newline', captures => 0 )->emit_perl5;
+        return Rul::Perlito5::AST::Subrule->new( metasyntax => 'not_newline', captures => 0 )->emit_perl5;
     }
     if ($char eq 'd') {
-        return Rul::Subrule->new( metasyntax => 'digit', captures => 0 )->emit_perl5;
+        return Rul::Perlito5::AST::Subrule->new( metasyntax => 'digit', captures => 0 )->emit_perl5;
     }
     if ($char eq 's') {
-        return Rul::Subrule->new( metasyntax => 'space', captures => 0 )->emit_perl5;
+        return Rul::Perlito5::AST::Subrule->new( metasyntax => 'space', captures => 0 )->emit_perl5;
     }
     if ($char eq 't') {
         return Rul::constant( chr(9) );

@@ -92,10 +92,10 @@ token rule_terms {
         [
             \.
             <metasyntax_exp>  \>
-            { $MATCH->{"capture"} = Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 0 ) }
+            { $MATCH->{"capture"} = Rul::Perlito5::AST::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 0 ) }
         |
             <metasyntax_exp>  \>
-            { $MATCH->{"capture"} = Rul::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 1 ) }
+            { $MATCH->{"capture"} = Rul::Perlito5::AST::Subrule->new( metasyntax => $MATCH->{"metasyntax_exp"}->flat(), captures => 1 ) }
         ]
     |   \{
         <parsed_code>  \}
@@ -111,7 +111,7 @@ token rule_terms {
           { $MATCH->{"capture"} = Rul::SpecialChar->new( char => $MATCH->{"any"}->flat() ) }
         ]
     |   \.
-        { $MATCH->{"capture"} = Rul::Dot->new() }
+        { $MATCH->{"capture"} = Rul::Perlito5::AST::Dot->new() }
     |   '['
         <rule> ']'
         { $MATCH->{"capture"} = $MATCH->{"rule"}->flat() }

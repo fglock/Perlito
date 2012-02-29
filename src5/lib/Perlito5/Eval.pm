@@ -1,6 +1,6 @@
 use v5;
 
-package CompUnit;
+package Perlito5::AST::CompUnit;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -11,7 +11,7 @@ sub eval {
     }
 }
 
-package Val::Int;
+package Perlito5::AST::Val::Int;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -19,7 +19,7 @@ sub eval {
 }
 
 
-package Val::Num;
+package Perlito5::AST::Val::Num;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -27,7 +27,7 @@ sub eval {
 }
 
 
-package Val::Buf;
+package Perlito5::AST::Val::Buf;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -35,7 +35,7 @@ sub eval {
 }
 
 
-package Lit::Block;
+package Perlito5::AST::Lit::Block;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -47,7 +47,7 @@ sub eval {
 }
 
 
-package Index;
+package Perlito5::AST::Index;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -56,7 +56,7 @@ sub eval {
 }
 
 
-package Lookup;
+package Perlito5::AST::Lookup;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -65,7 +65,7 @@ sub eval {
 }
 
 
-package Var;
+package Perlito5::AST::Var;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -98,7 +98,7 @@ sub plain_name {
 };
 
 
-package Proto;
+package Perlito5::AST::Proto;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -107,12 +107,12 @@ sub eval {
 }
 
 
-package Call;
+package Perlito5::AST::Call;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
 
-    warn "Interpreter TODO: Call";
+    warn "Interpreter TODO: Perlito5::AST::Call";
     my $invocant = $self->{"invocant"}->eval($env);
     if ($invocant eq 'self') {
         $invocant = '$self';
@@ -122,7 +122,7 @@ sub eval {
 }
 
 
-package Apply;
+package Perlito5::AST::Apply;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -132,7 +132,7 @@ sub eval {
         $ns = $self->{"namespace"} . '::';
     }
     my $code = $ns . $self->{"code"};
-    # warn "Apply ", $env->perl, " code: '", $code, "'";
+    # warn "Perlito5::AST::Apply ", $env->perl, " code: '", $code, "'";
     for my $e ( @{$env} ) {
         if (exists( $e->{ $code } )) {
             return ($e->{ $code }->( $env, @{$self->{"arguments"}} ));
@@ -142,7 +142,7 @@ sub eval {
 }
 
 
-package If;
+package Perlito5::AST::If;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -164,7 +164,7 @@ sub eval {
 }
 
 
-package For;
+package Perlito5::AST::For;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -189,14 +189,14 @@ sub eval {
     die "TODO - When" 
 }
 
-package While;
+package Perlito5::AST::While;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
-    die "TODO - While" 
+    die "TODO - Perlito5::AST::While" 
 }
 
-package Decl;
+package Perlito5::AST::Decl;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -215,7 +215,7 @@ sub plain_name {
 }
 
 
-package Sub;
+package Perlito5::AST::Sub;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -247,7 +247,7 @@ sub eval {
 }
 
 
-package Do;
+package Perlito5::AST::Do;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
@@ -259,12 +259,12 @@ sub eval {
 }
 
 
-package Use;
+package Perlito5::AST::Use;
 sub eval {
     my $self = $_[0];
     my $env = $_[1];
 
-    warn "Interpreter TODO: Use";
+    warn "Interpreter TODO: Perlito5::AST::Use";
     'use ' . $self->{"mod"}
 }
 
