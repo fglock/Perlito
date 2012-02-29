@@ -3,11 +3,7 @@ TODO list for Perlito6
 
 * Perlito6
 
-- rename directory Perlito to Perlito6
-
 - move all internal packages inside Perlito6 namespace
-
-- move tests from "t/" to "t6/"
 
 
 * Eval.pm module

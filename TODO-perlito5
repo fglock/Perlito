@@ -90,6 +90,8 @@ TODO list for Perlito5
 
 * Nice to Have
 
+-- labels, "next", "last"
+
 -- run the "perl" test suite
 
 -- wantarray()
