@@ -92,6 +92,7 @@ my @Term = (
     {},
     # 5 chars
     {   'state' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
+        'local' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
     },
     # 6 chars
     {},

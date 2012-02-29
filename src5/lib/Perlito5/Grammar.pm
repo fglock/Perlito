@@ -33,6 +33,11 @@ token optional_namespace_before_ident {
         { $MATCH->{"capture"} = '' }
 }
 
+token pod_pod_begin {
+    |   \n '=cut' \N*
+    |   . \N* <.pod_pod_begin>
+}
+
 token pod_begin {
     |   \n '=end' \N*
     |   . \N* <.pod_begin>
@@ -47,6 +52,7 @@ token ws {
         ]
 
         [
+        |  '=pod'    <.pod_pod_begin>
         |  '=begin'  <.pod_begin>
         |  '=for'    <.pod_begin>  # fixme
         |  ''
@@ -60,7 +66,7 @@ token opt_ws2 {  <.ws>?  }
 token opt_ws3 {  <.ws>?  }
 
 token declarator {
-     'my' | 'state'
+     'my' | 'state' | 'our' | 'local'
 }
 
 token exp_stmts2 { <exp_stmts> { $MATCH->{"capture"} = $MATCH->{"exp_stmts"}->flat() } }

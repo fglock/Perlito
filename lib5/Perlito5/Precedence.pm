@@ -103,6 +103,8 @@ sub is_ident_middle {
     Perlito5::Expression->term_use($_[0], $_[1])
 })}, {}, {('state' => sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
+}), ('local' => sub  {
+    Perlito5::Expression->term_declarator($_[0], $_[1])
 })}, {}, {('package' => sub  {
     Perlito5::Expression->term_package($_[0], $_[1])
 })}));
