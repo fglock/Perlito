@@ -5,15 +5,16 @@ rm -rf t
 
 touch META.yml
 
-cp -r ../t .
+mkdir t
+cp ../t6/*.t t/
 perl -pi -e 's/use v6;/use v6-perlito;/' t/*.t
 
 rm -rf t/bugs
 cp -r ../lib5 lib
 rm -rf lib/Perlito5
 
-cp ../src6/lib/Perlito/Python/Prelude.pm lib/Perlito/Python/Prelude.pm
-cp ../src6/lib/Perlito/Ruby/Runtime.rb   lib/Perlito/Ruby/Runtime.rb
+cp ../src6/lib/Perlito6/Python/Prelude.pm lib/Perlito6/Python/Prelude.pm
+cp ../src6/lib/Perlito6/Ruby/Runtime.rb   lib/Perlito6/Ruby/Runtime.rb
 
 perldoc -otext v6.pm > README
 

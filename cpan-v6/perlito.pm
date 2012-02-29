@@ -5,16 +5,16 @@ use strict;
 sub compile {
     my $source = $_[0];
     return $source if $source =~ /^\s*$/;
-    $::_V6_COMPILER_NAME    = 'Perlito';
+    $::_V6_COMPILER_NAME    = 'Perlito6';
     $::_V6_COMPILER_VERSION = '8.0';
-    require Perlito::Perl5::Emitter;
-    require Perlito::Grammar;
-    require Perlito::Grammar::Regex;
-    require Perlito::Emitter::Token;
-    require Perlito::Macro;
+    require Perlito6::Perl5::Emitter;
+    require Perlito6::Grammar;
+    require Perlito6::Grammar::Regex;
+    require Perlito6::Emitter::Token;
+    require Perlito6::Macro;
     my @comp_unit;
     my $pos = 0;
-    my $p = Perlito::Grammar->exp_stmts( $source, $pos );
+    my $p = Perlito6::Grammar->exp_stmts( $source, $pos );
     if (!$p || length($source) > $p->to) {
         warn "<$source>\n";
         die "Syntax error at pos ", $p->to, "\n";
@@ -47,7 +47,7 @@ sub import {
 
 =head1 NAME 
 
-v6::perlito - A Perlito front-end for v6.pm
+v6::perlito - A Perlito Perl6 front-end for v6.pm
 
 =head1 SYNOPSIS
 
@@ -59,7 +59,7 @@ v6::perlito - A Perlito front-end for v6.pm
 
 =head1 DESCRIPTION
 
-The C<v6::perlito> module is a front-end to the Perlito Perl 6 compiler.
+The C<v6::perlito> module is a front-end to the Perlito6 Perl 6 compiler.
 
 =head1 REQUIREMENTS
 
@@ -99,7 +99,7 @@ The Parrot homepage at L<http://www.parrotcode.org>.
 
 =head1 COPYRIGHT
 
-Copyright 2006, 2010 by Flavio Soibelmann Glock and others.
+Copyright 2006, 2010, 2012 by Flavio Soibelmann Glock and others.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

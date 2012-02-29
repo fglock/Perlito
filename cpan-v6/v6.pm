@@ -30,7 +30,7 @@ v6 - A Perl 6 implementation
 
 =head1 DESCRIPTION
 
-The C<v6> module is a front-end to the "Perlito" compiler.
+The C<v6> module is a front-end to the "Perlito" Perl6 compiler.
 
 Alternate backend modules can be installed. For example, the "Mildew" compiler can be used as:
 
@@ -70,7 +70,7 @@ The Perlito compiler at L<http://github.com/fglock/Perlito>.
 
 =head1 COPYRIGHT
 
-Copyright 2006, 2010 by Flavio Soibelmann Glock and others.
+Copyright 2006, 2010, 2012 by Flavio Soibelmann Glock and others.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
