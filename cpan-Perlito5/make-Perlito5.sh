@@ -11,14 +11,16 @@ cp -r ../t5/*.t t/
 rm t/21-test.t
 rm t/22-unicode.t
 
-cp -r ../lib5 lib
-rm -rf lib/Perlito
-
-# perldoc -otext v6.pm > README
-cp ../README README
+mkdir lib
+cp -r ../lib5/Perlito5 lib/
 
 mkdir scripts
-cp ../perlito5.pl scripts/perlito5
+cp ../src5/util/perlito5.pl scripts/perlito5
+
+perldoc -otext scripts/perlito5 > README
+
+# perldoc -opod scripts/perlito5 > lib/Perlito5.pm
+# echo '1;' >> lib/Perlito5.pm
 
 perl Makefile.PL
 
