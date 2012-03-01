@@ -188,11 +188,14 @@ package Perlito5::Javascript::LexicalBlock;
                 }
             }
         };
+        if (($has_local)) {
+            push(@str, 'cleanup_local(local_idx, null)' . chr(59) )
+        };
         if (($self->{('top_level')})) {
             ($level)--;
             return (($out . join((chr(10)), map(($tab . $_), @str)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . (($has_local ? 'return cleanup_local(local_idx, err)' : 'return(err)')) . (chr(59) . chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125)))
         };
-        return ((join((chr(10)), map(($tab . $_), @str)) . chr(59)))
+        return (($out . join((chr(10)), map(($tab . $_), @str)) . chr(59)))
     }
 });
 package Perlito5::AST::CompUnit;
