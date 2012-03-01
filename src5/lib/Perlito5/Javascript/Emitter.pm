@@ -824,8 +824,8 @@ package Perlito5::AST::For;
         }
         '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { '
             . "(function ($sig) {\n"
-                . $body->emit_javascript_indented( $level + 1 )
-            . ' })(a_[i_]) } })'
+                . $body->emit_javascript_indented( $level + 1 ) . "\n"
+            . Perlito5::Javascript::tab($level) . '})(a_[i_]) } })'
         . '(' . $cond . ')'
     }
 }

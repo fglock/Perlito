@@ -1705,7 +1705,8 @@ make_package("main");
 									})(); };
 									PKG.push([List_out, ('String.fromCharCode(' + string(PKG.ord([v_c])) + string((')')))]);
 									(v_tmp = '');
-								})(); }; })(a_[i_]) } })(interpolate_array((function (a) { for (var i=0, l=(PKG.length([v_s]) - 1); i<=l; ++i){ a.push(i) }; return a })([])));
+								})(); };
+							})(a_[i_]) } })(interpolate_array((function (a) { for (var i=0, l=(PKG.length([v_s]) - 1); i<=l; ++i){ a.push(i) }; return a })([])));
 							if ( bool((v_tmp != '')) ) { (function () {
 								PKG.push([List_out, (String.fromCharCode(39) + string(v_tmp) + String.fromCharCode(39))]);
 							})(); };
@@ -1809,7 +1810,8 @@ make_package("main");
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {
 									if ( bool(and(v_item._class_.isa([v_item,'Perlito5::AST::Apply']), function () { return (or((v_item._class_.code([v_item]) == 'circumfix:<( )>'), function () { return (v_item._class_.code([v_item]) == 'list:<,>'); })); })) ) { (function () {
 										(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) {
-											PKG.push([List_items, v_arg]); })(a_[i_]) } })(interpolate_array((PKG.to_list_preprocess([v_item._class_.arguments([v_item])]) || (PKG.to_list_preprocess([v_item._class_.arguments([v_item])]) = new ArrayRef([])))._array_));
+											PKG.push([List_items, v_arg]);
+										})(a_[i_]) } })(interpolate_array((PKG.to_list_preprocess([v_item._class_.arguments([v_item])]) || (PKG.to_list_preprocess([v_item._class_.arguments([v_item])]) = new ArrayRef([])))._array_));
 									})(); }
 									else { (function () {
 										if ( bool(and(v_item._class_.isa([v_item,'Perlito5::AST::Apply']), function () { return (v_item._class_.code([v_item]) == 'infix:<=>>'); })) ) { (function () {
@@ -1819,7 +1821,8 @@ make_package("main");
 										else { (function () {
 											PKG.push([List_items, v_item]);
 										})(); };
-									})(); }; })(a_[i_]) } })(interpolate_array((List__[0] || (List__[0] = new ArrayRef([])))._array_));
+									})(); };
+								})(a_[i_]) } })(interpolate_array((List__[0] || (List__[0] = new ArrayRef([])))._array_));
 								throw((new ArrayRef(List_items)))
 							}
 							catch(err) {
@@ -1930,7 +1933,8 @@ make_package("main");
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v__) {
 									if ( bool((v__ != null)) ) { (function () {
 										PKG.push([List_block, v__]);
-									})(); }; })(a_[i_]) } })(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_[('block')] || ((v_self || (v_self = new HashRef({})))._hash_[('block')] = new ArrayRef([])))._array_));
+									})(); };
+								})(a_[i_]) } })(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_[('block')] || ((v_self || (v_self = new HashRef({})))._hash_[('block')] = new ArrayRef([])))._array_));
 								if ( !( bool(List_block)) ) { (function () {
 									throw((string(NAMESPACE["Perlito5::Javascript"].tab([v_level])) + 'null;'));
 								})(); };
@@ -1938,7 +1942,8 @@ make_package("main");
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {
 									if ( bool(and(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl']), function () { return (v_decl._class_.decl([v_decl]) == 'local'); })) ) { (function () {
 										(v_has_local = 1);
-									})(); }; })(a_[i_]) } })(interpolate_array(List_block));
+									})(); };
+								})(a_[i_]) } })(interpolate_array(List_block));
 								if ( bool(v_has_local) ) { (function () {
 									(v_out = (string(v_out) + string((string(NAMESPACE["Perlito5::Javascript"].tab([v_level])) + string(('var local_idx = LOCAL.length;' + String.fromCharCode(10)))))));
 								})(); };
@@ -1958,14 +1963,16 @@ make_package("main");
 										if ( bool(and(v_var._class_.isa([v_var,'Perlito5::AST::Decl']), function () { return (v_var._class_.decl([v_var]) == 'my'); })) ) { (function () {
 											PKG.push([List_str, v_var._class_.emit_javascript_init([v_var])]);
 										})(); };
-									})(); }; })(a_[i_]) } })(interpolate_array(List_block));
+									})(); };
+								})(a_[i_]) } })(interpolate_array(List_block));
 								if ( bool((v_self || (v_self = new HashRef({})))._hash_[('needs_return')]) ) { (function () {
 									(v_last_statement = PKG.pop([List_block]));
 								})(); };
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {
 									if ( !( bool(and(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl']), function () { return (v_decl._class_.decl([v_decl]) == 'my'); }))) ) { (function () {
 										PKG.push([List_str, (string(v_decl._class_.emit_javascript_indented([v_decl,v_level])) + ';')]);
-									})(); }; })(a_[i_]) } })(interpolate_array(List_block));
+									})(); };
+								})(a_[i_]) } })(interpolate_array(List_block));
 								if ( bool(and((v_self || (v_self = new HashRef({})))._hash_[('needs_return')], function () { return v_last_statement; })) ) { (function () {
 									if ( bool(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::If'])) ) { (function () {
 										var v_cond = null;
@@ -2095,15 +2102,18 @@ make_package("main");
 									if ( bool(and(v_var._class_.isa([v_var,'Perlito5::AST::Decl']), function () { return (v_var._class_.decl([v_var]) == 'my'); })) ) { (function () {
 										(v_str = (string(v_str) + string(v_tab) + string(v_var._class_.emit_javascript_init([v_var])) + string((String.fromCharCode(10)))));
 									})(); };
-								})(); }; })(a_[i_]) } })(interpolate_array(List_body));
+								})(); };
+							})(a_[i_]) } })(interpolate_array(List_body));
 							(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {
 								if ( bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Sub'])) ) { (function () {
 									(v_str = (string(v_str) + string(v_tab) + string(v_decl._class_.emit_javascript_indented([v_decl,add(v_level, 1)])) + string((';' + String.fromCharCode(10)))));
-								})(); }; })(a_[i_]) } })(interpolate_array(List_body));
+								})(); };
+							})(a_[i_]) } })(interpolate_array(List_body));
 							(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {
 								if ( bool(and(and((v_decl != null), function () { return (!( bool(and(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl']), function () { return (v_decl._class_.decl([v_decl]) == 'my'); })))); }), function () { return (!( bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Sub'])))); })) ) { (function () {
 									(v_str = (string(v_str) + string(v_tab) + string(v_decl._class_.emit_javascript_indented([v_decl,add(v_level, 1)])) + string((';' + String.fromCharCode(10)))));
-								})(); }; })(a_[i_]) } })(interpolate_array(List_body));
+								})(); };
+							})(a_[i_]) } })(interpolate_array(List_body));
 							return ((v_str = (string(v_str) + '}' + ')()' + string((String.fromCharCode(10))))));
 						}
 						catch(err) {
@@ -2124,7 +2134,8 @@ make_package("main");
 								(v_comp_units = PKG.shift([List__]));
 								(v_str = '');
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_comp_unit) {
-									(v_str = (string(v_str) + string(v_comp_unit._class_.emit_javascript([v_comp_unit])) + string((String.fromCharCode(10))))); })(a_[i_]) } })(interpolate_array((v_comp_units || (v_comp_units = new ArrayRef([])))._array_));
+									(v_str = (string(v_str) + string(v_comp_unit._class_.emit_javascript([v_comp_unit])) + string((String.fromCharCode(10)))));
+								})(a_[i_]) } })(interpolate_array((v_comp_units || (v_comp_units = new ArrayRef([])))._array_));
 								throw(v_str)
 							}
 							catch(err) {
@@ -2540,12 +2551,14 @@ make_package("main");
 
 									(List_args = []);
 									(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v__) {
-										PKG.push([List_args, v__._class_.emit_javascript([v__])]); })(a_[i_]) } })(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_));
+										PKG.push([List_args, v__._class_.emit_javascript([v__])]);
+									})(a_[i_]) } })(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_));
 									throw(('(' + string(v_invocant) + ')([' + string(PKG.join([',', List_args])) + '])'));
 								})(); };
 								(List_args = interpolate_array(v_invocant));
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v__) {
-									PKG.push([List_args, v__._class_.emit_javascript([v__])]); })(a_[i_]) } })(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_));
+									PKG.push([List_args, v__._class_.emit_javascript([v__])]);
+								})(a_[i_]) } })(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_));
 								throw((string(v_invocant) + '._class_.' + string(v_meth) + '([' + string(PKG.join([',', List_args])) + '])'))
 							}
 							catch(err) {
@@ -2605,7 +2618,8 @@ make_package("main");
 
 								(List_args = []);
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v__) {
-									PKG.push([List_args, v__._class_.emit_javascript([v__])]); })(a_[i_]) } })(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_));
+									PKG.push([List_args, v__._class_.emit_javascript([v__])]);
+								})(a_[i_]) } })(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_));
 								throw(('(' + string((v_self || (v_self = new HashRef({})))._hash_[('code')]._class_.emit_javascript_indented([(v_self || (v_self = new HashRef({})))._hash_[('code')],v_level])) + ')(' + string(PKG.join([',', List_args])) + ')'));
 							})(); };
 							if ( bool((v_code == 'infix:<=>>')) ) { (function () {
@@ -2774,7 +2788,8 @@ make_package("main");
 							})(); };
 							(List_args = []);
 							(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v__) {
-								PKG.push([List_args, v__._class_.emit_javascript_indented([v__,v_level])]); })(a_[i_]) } })(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_));
+								PKG.push([List_args, v__._class_.emit_javascript_indented([v__,v_level])]);
+							})(a_[i_]) } })(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_));
 							return ((string(v_code) + '([' + string(PKG.join([', ', List_args])) + '])'));
 						}
 						catch(err) {
@@ -2955,7 +2970,7 @@ make_package("main");
 								if ( bool((v_self || (v_self = new HashRef({})))._hash_[('body')]._class_.sig([(v_self || (v_self = new HashRef({})))._hash_[('body')]])) ) { (function () {
 									(v_sig = (v_self || (v_self = new HashRef({})))._hash_[('body')]._class_.sig([(v_self || (v_self = new HashRef({})))._hash_[('body')]])._class_.emit_javascript_indented([(v_self || (v_self = new HashRef({})))._hash_[('body')]._class_.sig([(v_self || (v_self = new HashRef({})))._hash_[('body')]]),add(v_level, 1)]));
 								})(); };
-								return (('(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' + string(('(function (' + string(v_sig) + ') {' + String.fromCharCode(10))) + string(v_body._class_.emit_javascript_indented([v_body,add(v_level, 1)])) + ' })(a_[i_]) } })' + '(' + string(v_cond) + ')'));
+								return (('(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { ' + string(('(function (' + string(v_sig) + ') {' + String.fromCharCode(10))) + string(v_body._class_.emit_javascript_indented([v_body,add(v_level, 1)])) + string((String.fromCharCode(10))) + string(NAMESPACE["Perlito5::Javascript"].tab([v_level])) + '})(a_[i_]) } })' + '(' + string(v_cond) + ')'));
 							}
 							catch(err) {
 								if ( err instanceof Error ) {
@@ -3344,7 +3359,8 @@ make_package("main");
 								if ( !( bool(and(PKG.is_ident_middle([v_c1]), function () { return (or(PKG.is_ident_middle([v_c2]), function () { return (v_c2 == '('); })); }))) ) { (function () {
 									throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', (new ArrayRef(interpolate_array('end', v_term)))]));
 								})(); };
-							})(); }; })(a_[i_]) } })(interpolate_array((v_End_token_chars || (v_End_token_chars = new ArrayRef([])))._array_));
+							})(); };
+						})(a_[i_]) } })(interpolate_array((v_End_token_chars || (v_End_token_chars = new ArrayRef([])))._array_));
 						(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_len) {
 							var v_term = null;
 
@@ -3356,7 +3372,8 @@ make_package("main");
 								if ( bool((v_m || (v_m = new HashRef({})))._hash_[('bool')]) ) { (function () {
 									throw(v_m);
 								})(); };
-							})(); }; })(a_[i_]) } })(interpolate_array(List_Term_chars));
+							})(); };
+						})(a_[i_]) } })(interpolate_array(List_Term_chars));
 						(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_len) {
 							var v_op = null;
 
@@ -3371,7 +3388,8 @@ make_package("main");
 								if ( !( bool(and(PKG.is_ident_middle([v_c1]), function () { return (or(PKG.is_ident_middle([v_c2]), function () { return (v_c2 == '('); })); }))) ) { (function () {
 									throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', add(v_pos, v_len),'bool', 1,'capture', (new ArrayRef(interpolate_array('op', v_op)))]));
 								})(); };
-							})(); }; })(a_[i_]) } })(interpolate_array(List_Op_chars));
+							})(); };
+						})(a_[i_]) } })(interpolate_array(List_Op_chars));
 						throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'bool', 0]))
 					}
 					catch(err) {
@@ -4120,7 +4138,8 @@ make_package("main");
 							(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_v) {
 								if ( bool((v_v != null)) ) { (function () {
 									PKG.push([(v_args || (v_args = new ArrayRef([])))._array_, v_v]);
-								})(); }; })(a_[i_]) } })(interpolate_array((v_param_list._class_.arguments([v_param_list]) || (v_param_list._class_.arguments([v_param_list]) = new ArrayRef([])))._array_));
+								})(); };
+							})(a_[i_]) } })(interpolate_array((v_param_list._class_.arguments([v_param_list]) || (v_param_list._class_.arguments([v_param_list]) = new ArrayRef([])))._array_));
 							throw(v_args)
 						})(); }
 												else { return (function () {
@@ -4176,7 +4195,8 @@ make_package("main");
 						(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {
 							if ( bool(and((PKG.ref([v_item]) == 'Perlito5::AST::Apply'), function () { return (v_item._class_.code([v_item]) == 'infix:<=>>'); })) ) { (function () {
 								throw(CLASS["Perlito5::AST::Apply"]._class_.new([CLASS["Perlito5::AST::Apply"],'code', 'circumfix:<{ }>','namespace', '','arguments', PKG.expand_list([v_stmt])]));
-							})(); }; })(a_[i_]) } })(interpolate_array((v_stmt._class_.arguments([v_stmt]) || (v_stmt._class_.arguments([v_stmt]) = new ArrayRef([])))._array_));
+							})(); };
+						})(a_[i_]) } })(interpolate_array((v_stmt._class_.arguments([v_stmt]) || (v_stmt._class_.arguments([v_stmt]) = new ArrayRef([])))._array_));
 						throw(v_o)
 					}
 					catch(err) {
