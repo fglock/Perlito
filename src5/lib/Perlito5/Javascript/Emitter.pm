@@ -196,13 +196,13 @@ package Perlito5::Javascript::LexicalBlock;
                 $body      = Perlito5::Javascript::LexicalBlock->new( block => $body->stmts, needs_return => 1 );
                 push @str,
                         'if ( ' . Perlito5::Javascript::to_bool( $cond ) . ' ) { return (function () {' . "\n"
-                        .       $body->emit_javascript_indented($level+1) . "\n"
+                        . $tab . $body->emit_javascript_indented($level+1) . "\n"
                         . Perlito5::Javascript::tab($level) . '})(); }';
                 if ($otherwise) {
                     $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $otherwise->stmts, needs_return => 0 );
                     push @str,
                           Perlito5::Javascript::tab($level) . 'else { return (function () {' . "\n"
-                        .       $otherwise->emit_javascript_indented($level+1) . "\n"
+                        . $tab . $otherwise->emit_javascript_indented($level+1) . "\n"
                         . Perlito5::Javascript::tab($level) . '})(); }';
                 }
             }
@@ -215,14 +215,10 @@ package Perlito5::Javascript::LexicalBlock;
             }
             else {
                 if ( $has_local ) {
-                    push @str, 'return cleanup_local(local_idx, (' . "\n"
-                            .     $last_statement->emit_javascript_indented($level+1) . "\n"
-                            .  Perlito5::Javascript::tab($level) . '));';
+                    push @str, 'return cleanup_local(local_idx, (' . $last_statement->emit_javascript_indented($level+1) . '));';
                 }
                 else {
-                    push @str, 'return (' . "\n"
-                            .     $last_statement->emit_javascript_indented($level+1) . "\n"
-                            .  Perlito5::Javascript::tab($level) . ');';
+                    push @str, 'return (' . $last_statement->emit_javascript_indented($level+1) . ');';
                 }
             }
         }
@@ -288,26 +284,27 @@ package Perlito5::AST::CompUnit;
             }
         }
 
+        my $tab = Perlito5::Javascript::tab($level + 1);
         my $class_name = $self->{"name"};
         my $str = 'make_package("' . $class_name . '");' . "\n"
             . '(function () {' . "\n"
-            . '  var __PACKAGE__ = "' . $class_name . '";' . "\n"
-            . '  var PKG = NAMESPACE[__PACKAGE__];' . "\n";
+            . $tab . 'var __PACKAGE__ = "' . $class_name . '";' . "\n"
+            . $tab . 'var PKG = NAMESPACE[__PACKAGE__];' . "\n";
 
         for my $decl ( @body ) {
             if ($decl->isa( 'Perlito5::AST::Decl' ) && ( $decl->decl eq 'my' )) {
-                $str = $str . '  ' . $decl->emit_javascript_init;
+                $str = $str . $tab . $decl->emit_javascript_init . "\n";
             }
             if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
                 my $var = $decl->arguments[0];
                 if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq 'my') {
-                    $str = $str . '  ' . $var->emit_javascript_init;
+                    $str = $str . $tab . $var->emit_javascript_init . "\n";
                 }
             }
         }
         for my $decl ( @body ) {
             if ($decl->isa( 'Perlito5::AST::Sub' )) {
-                $str = $str . ($decl)->emit_javascript_indented( $level + 1 ) . ";\n";
+                $str = $str . $tab . $decl->emit_javascript_indented( $level + 1 ) . ";\n";
             }
         }
         for my $decl ( @body ) {
@@ -316,7 +313,7 @@ package Perlito5::AST::CompUnit;
                && (!( $decl->isa( 'Perlito5::AST::Sub')))
                )
             {
-                $str = $str . ($decl)->emit_javascript_indented( $level + 1 ) . ";\n";
+                $str = $str . $tab . $decl->emit_javascript_indented( $level + 1 ) . ";\n";
             }
         }
         $str = $str . '}'
