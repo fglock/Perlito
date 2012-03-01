@@ -25,6 +25,7 @@ sub emit_javascript {
 if (typeof NAMESPACE !== "object") {
     NAMESPACE = {};
     CLASS = {};
+    LOCAL = [];
 
     var universal = function () {};
     CLASS.UNIVERSAL = new universal();
@@ -69,6 +70,22 @@ function make_package(pkg_name) {
 
 function make_sub(pkg_name, sub_name, func) {
     NAMESPACE[pkg_name][sub_name] = CLASS[pkg_name][sub_name] = func;
+}
+
+function set_local(namespace, name, sigil) {
+    var v = name;
+    if (sigil == "$") {
+        v = "v_"+name;
+    }
+    LOCAL.push([namespace, v, namespace[v]]);
+}
+
+function cleanup_local(idx, value) {
+    while (LOCAL.length > idx) {
+        l = LOCAL.pop();
+        l[0][l[1]] = l[2];
+    }
+    return value;
 }
 
 if (typeof arguments === "object") {
