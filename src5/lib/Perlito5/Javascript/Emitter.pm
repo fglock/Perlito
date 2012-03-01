@@ -243,7 +243,7 @@ package Perlito5::Javascript::LexicalBlock;
                 . Perlito5::Javascript::tab($level + 1)   . '}' . "\n"
                 . Perlito5::Javascript::tab($level)   . '}';
         }
-        return $out . join("\n", map($tab . $_, @str)) . ';';
+        return $out . join("\n", map($tab . $_, @str));
     }
 
 }
