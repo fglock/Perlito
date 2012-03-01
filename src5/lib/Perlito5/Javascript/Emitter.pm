@@ -841,6 +841,15 @@ package Perlito5::AST::Decl;
         my $level = shift;
         if ($self->{"decl"} eq 'local') {
 
+            # TODO - add grammar support
+            # if ($self->var->isa("Lookup")) {
+            #     return 
+            #         'set_local(' . $self->var->{"obj"}->emit_javascript() . ', '
+            #                      . $self->var->{"index_exp"}->emit_javascript() . ', '
+            #                      . '""); '
+            #         . $self->{"var"}->emit_javascript_indented( $level );
+            # }
+
             my $ns = 'PKG';
             if ($self->{"var"}{"namespace"}) {
                 $ns = 'NAMESPACE["' . $self->{"var"}{"namespace"} . '"]';
