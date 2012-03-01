@@ -866,13 +866,13 @@ package Perlito5::AST::Decl;
             my $str = "";
             $str = $str . 'var ' . ($self->{"var"})->emit_javascript() . ' = ';
             if ($self->{"var"})->sigil eq '%' {
-                $str = $str . '{};' . "\n";
+                $str = $str . '{};';
             }
             elsif ($self->{"var"})->sigil eq '@' {
-                $str = $str . '[];' . "\n";
+                $str = $str . '[];';
             }
             else {
-                $str = $str . 'null;' . "\n";
+                $str = $str . 'null;';
             }
             return $str;
         }

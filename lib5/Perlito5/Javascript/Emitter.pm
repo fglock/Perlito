@@ -665,14 +665,14 @@ package Perlito5::AST::Decl;
             ((my  $str) = '');
             ($str = ($str . 'var ' . ($self->{('var')})->emit_javascript() . ' ' . chr(61) . ' '));
             if ((($self->{('var')})->sigil() eq chr(37))) {
-                ($str = ($str . chr(123) . chr(125) . chr(59) . (chr(10))))
+                ($str = ($str . chr(123) . chr(125) . chr(59)))
             }
             else {
                 if ((($self->{('var')})->sigil() eq chr(64))) {
-                    ($str = ($str . '[]' . chr(59) . (chr(10))))
+                    ($str = ($str . '[]' . chr(59)))
                 }
                 else {
-                    ($str = ($str . 'null' . chr(59) . (chr(10))))
+                    ($str = ($str . 'null' . chr(59)))
                 }
             };
             return ($str)
