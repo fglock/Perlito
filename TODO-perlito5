@@ -50,7 +50,6 @@ TODO list for Perlito5
 
 * Javascript backend
 
--- wrap CODE.js and Runtime.js in perl code.
 -- create target-specific versions of the runtime
 -- add browser, v8, node.js runtimes
 

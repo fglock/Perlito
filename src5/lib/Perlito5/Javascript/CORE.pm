@@ -1,3 +1,10 @@
+use v5;
+
+package Perlito5::Javascript::CORE;
+
+sub emit_javascript {
+
+    return '//
 //
 // lib/Perlito5/Javascript/CORE.js
 //
@@ -45,7 +52,7 @@ CORE.say = function(List__) {
 
 CORE.die = function(List__) {
     var i;
-    var s = '';
+    var s = "";
     for (i = 0; i < List__.length; i++) {
         s = s + string(List__[i]);
     }
@@ -54,7 +61,7 @@ CORE.die = function(List__) {
 
 CORE.warn = function(List__) {
     var i;
-    var s = '';
+    var s = "";
     for (i = 0; i < List__.length; i++) {
         s = s + string(List__[i]);
     }
@@ -64,7 +71,7 @@ CORE.warn = function(List__) {
 CORE.bless = function(List__) {
     var o        = List__[0];
     var pkg_name = List__[1];
-    if (typeof pkg_name === 'object') {
+    if (typeof pkg_name === "object") {
         // bless {}, Class
         o._class_ = pkg_name;
         return o;
@@ -97,10 +104,10 @@ CORE.scalar = function(List__) {
     if (o == null) {
         return 1;
     };
-    if (typeof o.scalar === 'function') {
+    if (typeof o.scalar === "function") {
         return o.scalar();
     }
-    if (typeof o === 'object' && (o instanceof Array)) {
+    if (typeof o === "object" && (o instanceof Array)) {
         return o.length;
     }
     switch (typeof o) {
@@ -121,7 +128,7 @@ CORE.values = function(List__) {
     if (o == null) {
         return [];
     };
-    if (typeof o.values === 'function') {
+    if (typeof o.values === "function") {
         return o.values();
     }
     var out = [];
@@ -136,7 +143,7 @@ CORE.keys = function(List__) {
     if (o == null) {
         return [];
     }
-    if (typeof o.keys === 'function') {
+    if (typeof o.keys === "function") {
         return o.keys();
     }
     var out = [];
@@ -193,7 +200,7 @@ CORE.index = function(List__) {
 
 CORE.length = function(List__) {
     var o = List__[0];
-    if (typeof o.string === 'function') {
+    if (typeof o.string === "function") {
         return o.string().length;
     }
     return o.length;
@@ -202,19 +209,23 @@ CORE.length = function(List__) {
 CORE.ref = function(List__) {
     var o = List__[0];
     if (o == null) {
-        return '';
+        return "";
     }
-    if (o._class_ && typeof o._class_._ref_ === 'string') {
+    if (o._class_ && typeof o._class_._ref_ === "string") {
         // blessed reference
         return o._class_._ref_;
     }
-    if (typeof o._ref_ === 'string') {
+    if (typeof o._ref_ === "string") {
         // un-blessed reference
         return o._ref_;
     }
-    if (typeof o === 'function') {
-        return 'CODE';
+    if (typeof o === "function") {
+        return "CODE";
     }
-    return '';
+    return "";
 };
+';
+} # end of emit_javascript()
+
+1;
 

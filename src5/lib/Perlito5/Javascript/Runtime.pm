@@ -1,4 +1,10 @@
-//
+use v5;
+
+package Perlito5::Javascript::Runtime;
+
+sub emit_javascript {
+
+    return '//
 // lib/Perlito5/Javascript/Runtime.js
 //
 // Runtime for "Perlito" Perl5-in-Javascript
@@ -16,25 +22,25 @@
 //
 // See http://www.perl.com/perl/misc/Artistic.html
 
-if (typeof NAMESPACE !== 'object') {
+if (typeof NAMESPACE !== "object") {
     NAMESPACE = {};
     CLASS = {};
 
     var universal = function () {};
     CLASS.UNIVERSAL = new universal();
-    CLASS.UNIVERSAL._ref_ = 'UNIVERSAL';
+    CLASS.UNIVERSAL._ref_ = "UNIVERSAL";
     CLASS.UNIVERSAL.isa = function (List__) {
         return List__[0]._class_._ref_ == List__[1]
     };
     CLASS.UNIVERSAL.can = function (List__) {
         var o = List__[0];
         var s = List__[1];
-        if ( s.indexOf('::') == -1 ) {
+        if ( s.indexOf("::") == -1 ) {
             return o._class_[s]
         }
-        var c = s.split('::');
+        var c = s.split("::");
         s = c.pop(); 
-        return CLASS[c.join('::')][s]
+        return CLASS[c.join("::")][s]
     };
     CLASS.UNIVERSAL.DOES = CLASS.UNIVERSAL.can;
 
@@ -42,7 +48,7 @@ if (typeof NAMESPACE !== 'object') {
 
     var core = function () {};
     CLASS.CORE = new core();
-    CLASS.CORE._ref_ = 'CORE';
+    CLASS.CORE._ref_ = "CORE";
 
     NAMESPACE.CORE = new core();
 }
@@ -65,38 +71,38 @@ function make_sub(pkg_name, sub_name, func) {
     NAMESPACE[pkg_name][sub_name] = CLASS[pkg_name][sub_name] = func;
 }
 
-if (typeof arguments === 'object') {
+if (typeof arguments === "object") {
     List_ARGV = arguments;
 }
 
 function HashRef(o) {
     this._hash_ = o;
-    this._ref_ = 'HASH';
+    this._ref_ = "HASH";
     this.bool = function() { return 1 };
 }
 
 function ArrayRef(o) {
     this._array_ = o;
-    this._ref_ = 'ARRAY';
+    this._ref_ = "ARRAY";
     this.bool = function() { return 1 };
 }
 
 function ScalarRef(o) {
     this._scalar_ = o;
-    this._ref_ = 'SCALAR';
+    this._ref_ = "SCALAR";
     this.bool = function() { return 1 };
 }
 
-make_package('Perlito5::IO');
-make_package('Perlito5::Runtime');
-make_package('Perlito5::Grammar');
+make_package("Perlito5::IO");
+make_package("Perlito5::Runtime");
+make_package("Perlito5::Grammar");
 
-make_sub('Perlito5::IO', 'slurp', function(List__) {
+make_sub("Perlito5::IO", "slurp", function(List__) {
     var filename = List__[0];
-    if (typeof readFile == 'function') {
+    if (typeof readFile == "function") {
         return readFile(filename);
     }
-    if (typeof read == 'function') {
+    if (typeof read == "function") {
         // v8
         return read(filename);
     }
@@ -120,7 +126,7 @@ interpolate_array = function() {
                 res.push(o[j]);
             }
         }
-        else if (typeof o === 'object') {
+        else if (typeof o === "object") {
             // perl5 hash
             for(var j in o) {
                 if (o.hasOwnProperty(j)) {
@@ -149,17 +155,17 @@ string = function(o) {
     if (o == null) {
         return "";
     }
-    if (typeof o === 'object' && (o instanceof Array)) {
+    if (typeof o === "object" && (o instanceof Array)) {
         var out = [];
         for (var i = 0; i < o.length; i++) {
             out.push(string(o[i]));
         }
         return out.join(" ");
     }
-    if (typeof o.string === 'function') {
+    if (typeof o.string === "function") {
         return o.string();
     }
-    if (typeof o !== 'string') {
+    if (typeof o !== "string") {
         return "" + o;
     }
     return o;
@@ -169,13 +175,13 @@ num = function(o) {
     if (o == null) {
         return 0;
     }
-    if (typeof o === 'object' && (o instanceof Array)) {
+    if (typeof o === "object" && (o instanceof Array)) {
         return o.length;
     }
-    if (typeof o.num === 'function') {
+    if (typeof o.num === "function") {
         return o.num();
     }
-    if (typeof o !== 'number') {
+    if (typeof o !== "number") {
         return parseFloat(string(o));
     }
     return o;
@@ -189,19 +195,19 @@ bool = function(o) {
     if (o == null) {
         return o;
     }
-    if (typeof o === 'boolean') {
+    if (typeof o === "boolean") {
         return o;
     }
-    if (typeof o === 'number') {
+    if (typeof o === "number") {
         return o;
     }
-    if (typeof o === 'string') {
-        return o != '' && o != '0';
+    if (typeof o === "string") {
+        return o != "" && o != "0";
     }
-    if (typeof o.bool === 'function') {
+    if (typeof o.bool === "function") {
         return o.bool();
     }
-    if (typeof o.length === 'number') {
+    if (typeof o.length === "number") {
         return o.length;
     }
     for (var i in o) {
@@ -236,7 +242,7 @@ str_replicate = function(o, n) {
     return n ? Array(n + 1).join(o) : "";
 };
 
-make_sub('Perlito5::Grammar', 'word', function(List__) {
+make_sub("Perlito5::Grammar", "word", function(List__) {
     var v_grammar = List__[0];
     var v_str     = List__[1];
     var v_pos     = List__[2];
@@ -247,11 +253,11 @@ make_sub('Perlito5::Grammar', 'word', function(List__) {
             to: v_pos + 1,
             bool: v_str.substr(v_pos, 1).match(/\w/) != null,
         }),
-        CLASS['Perlito5::Match']
+        CLASS["Perlito5::Match"]
     ]);
 });
 
-make_sub('Perlito5::Grammar', 'digit', function(List__) {
+make_sub("Perlito5::Grammar", "digit", function(List__) {
     var v_grammar = List__[0];
     var v_str     = List__[1];
     var v_pos     = List__[2];
@@ -262,11 +268,11 @@ make_sub('Perlito5::Grammar', 'digit', function(List__) {
             to:   v_pos + 1,
             bool: v_str.substr(v_pos, 1).match(/\d/) != null,
         }),
-        CLASS['Perlito5::Match']
+        CLASS["Perlito5::Match"]
     ]);
 });
 
-make_sub('Perlito5::Grammar', 'space', function(List__) {
+make_sub("Perlito5::Grammar", "space", function(List__) {
     var v_grammar = List__[0];
     var v_str     = List__[1];
     var v_pos     = List__[2];
@@ -277,13 +283,13 @@ make_sub('Perlito5::Grammar', 'space', function(List__) {
             to:   v_pos + 1,
             bool: v_str.substr(v_pos, 1).match(/\s/) != null,
         }),
-        CLASS['Perlito5::Match']
+        CLASS["Perlito5::Match"]
     ]);
 });
 
 function perl5_to_js( source ) {
     // say( "source: [" + source + "]" );
-    match = CLASS['Perlito5::Grammar'].exp_stmts([CLASS['Perlito5::Grammar'], source, 0]);
+    match = CLASS["Perlito5::Grammar"].exp_stmts([CLASS["Perlito5::Grammar"], source, 0]);
 
     ast = NAMESPACE.CORE.bless([
         new HashRef({
@@ -291,10 +297,10 @@ function perl5_to_js( source ) {
                         new HashRef({
                             stmts:   match._class_.flat([match]),
                         }),
-                        CLASS['Perlito5::AST::Lit::Block']
+                        CLASS["Perlito5::AST::Lit::Block"]
                     ]),
         }),
-        CLASS['Perlito5::AST::Do']
+        CLASS["Perlito5::AST::Do"]
     ]);
 
     // CORE.say( "ast: [" + perl(ast) + "]" );
@@ -302,4 +308,9 @@ function perl5_to_js( source ) {
     // CORE.say( "js-source: [" + js_code + "]" );
     return js_code;
 }
+';
+} # end of emit_javascript()
+
+1;
+
 
