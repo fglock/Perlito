@@ -275,7 +275,6 @@ package Perlito5::AST::Apply;
         'infix:<<>'  => ' < ',
         'infix:<>=>' => ' >= ',
         'infix:<<=>' => ' <= ',
-        'infix:<x>'  => ' x ',
 
         'infix:<&&>' => ' && ',
         'infix:<||>' => ' || ',
@@ -343,6 +342,10 @@ package Perlito5::AST::Apply;
         if ($code eq 'map')       {    
             my $str = shift @{$self->{"arguments"}};
             return Perlito5::Perl5::tab($level) . 'map(' . $str->emit_perl5 . ', ' . join(',', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')'
+        }
+
+        if ($code eq 'infix:<x>')  { 
+            return 'join("", ' . join(' x ', map( $_->emit_perl5, @{$self->{"arguments"}} ))  . ')'
         }
 
         if ($code eq 'join')       {    

@@ -13,7 +13,7 @@ package Perlito5::Perl5;
 (do {
     sub tab {
         ((my  $level) = shift());
-        (('    ') x $level)
+join("", ('    ') x $level)
     };
     ((my  %safe_char) = (('_' => 1), (',' => 1), ('.' => 1), (':' => 1), ('-' => 1), ('+' => 1), ('*' => 1), (' ' => 1), ('(' => 1), (')' => 1), ('<' => 1), ('>' => 1), ('[' => 1), (']' => 1)));
     sub escape_string {
@@ -209,7 +209,7 @@ package Perlito5::AST::Call;
 package Perlito5::AST::Apply;
 (do {
     ((my  %op_prefix_perl5) = (('say' => 'Perlito5::Runtime::say'), ('print' => 'print'), ('grep' => 'Perlito5::Runtime::grep'), ('sort' => 'Perlito5::Runtime::sort'), ('keys' => 'keys'), ('values' => 'values'), ('warn' => 'warn'), ('prefix:<' . chr(33) . '>' => chr(33)), ('prefix:<++>' => '++'), ('prefix:<-->' => '--'), ('prefix:<+>' => '+')));
-    ((my  %op_infix_perl5) = (('list:<.>' => ' . '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:<' . chr(47) . '>' => ' ' . chr(47) . ' '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>' . chr(61) . '>' => ' >' . chr(61) . ' '), ('infix:<<' . chr(61) . '>' => ' <' . chr(61) . ' '), ('infix:<x>' => ' x '), ('infix:<' . chr(38) . chr(38) . '>' => ' ' . chr(38) . chr(38) . ' '), ('infix:<' . chr(124) . chr(124) . '>' => ' ' . chr(124) . chr(124) . ' '), ('infix:<and>' => ' and '), ('infix:<or>' => ' or '), ('infix:<' . chr(47) . chr(47) . '>' => ' ' . chr(47) . chr(47) . ' '), ('infix:<eq>' => ' eq '), ('infix:<ne>' => ' ne '), ('infix:<le>' => ' le '), ('infix:<ge>' => ' ge '), ('infix:<' . chr(61) . chr(61) . '>' => ' ' . chr(61) . chr(61) . ' '), ('infix:<' . chr(33) . chr(61) . '>' => ' ' . chr(33) . chr(61) . ' '), ('infix:<' . chr(61) . '>>' => ' ' . chr(61) . '> ')));
+    ((my  %op_infix_perl5) = (('list:<.>' => ' . '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:<' . chr(47) . '>' => ' ' . chr(47) . ' '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>' . chr(61) . '>' => ' >' . chr(61) . ' '), ('infix:<<' . chr(61) . '>' => ' <' . chr(61) . ' '), ('infix:<' . chr(38) . chr(38) . '>' => ' ' . chr(38) . chr(38) . ' '), ('infix:<' . chr(124) . chr(124) . '>' => ' ' . chr(124) . chr(124) . ' '), ('infix:<and>' => ' and '), ('infix:<or>' => ' or '), ('infix:<' . chr(47) . chr(47) . '>' => ' ' . chr(47) . chr(47) . ' '), ('infix:<eq>' => ' eq '), ('infix:<ne>' => ' ne '), ('infix:<le>' => ' le '), ('infix:<ge>' => ' ge '), ('infix:<' . chr(61) . chr(61) . '>' => ' ' . chr(61) . chr(61) . ' '), ('infix:<' . chr(33) . chr(61) . '>' => ' ' . chr(33) . chr(61) . ' '), ('infix:<' . chr(61) . '>>' => ' ' . chr(61) . '> ')));
     sub emit_perl5 {
         ((my  $self) = $_[0]);
         $self->emit_perl5_indented(0)
@@ -262,6 +262,9 @@ package Perlito5::AST::Apply;
         if ((($code eq 'map'))) {
             ((my  $str) = shift(@{$self->{('arguments')}}));
             return ((Perlito5::Perl5::tab($level) . 'map(' . $str->emit_perl5() . ', ' . join(',', map($_->emit_perl5(), @{$self->{('arguments')}})) . ')'))
+        };
+        if ((($code eq 'infix:<x>'))) {
+            return (('join(' . chr(34) . chr(34) . ', ' . join(' x ', map($_->emit_perl5(), @{$self->{('arguments')}})) . ')'))
         };
         if ((($code eq 'join'))) {
             ((my  $str) = shift(@{$self->{('arguments')}}));
