@@ -209,6 +209,7 @@ package Perlito5::Javascript::LexicalBlock;
             elsif (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
+                  || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
                   )
             {
                 push @str, $last_statement->emit_javascript_indented($level)
@@ -425,7 +426,7 @@ package Perlito5::AST::Var;
         '$' => 'v_',
         '@' => 'List_',
         '%' => 'Hash_',
-        '&' => 'Code_',
+        '&' => '',
     }
 
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
@@ -718,6 +719,9 @@ package Perlito5::AST::Apply;
                     : 'null'
                     )
                 . ')'
+        }
+        if ($code eq 'goto') {
+            return 'throw((' . $self->{"arguments"}->[0]->emit_javascript() . ')([List__]))'
         }
 
         if ($self->{"namespace"}) {

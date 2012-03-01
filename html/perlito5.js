@@ -1945,7 +1945,7 @@ make_package("main");
 										})(); };
 									})(); }
 									else { (function () {
-										if ( bool(or(or(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::For']), function () { return v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::While']); }), function () { return and(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::Apply']), function () { return (v_last_statement._class_.code([v_last_statement]) == 'return'); }); })) ) { (function () {
+										if ( bool(or(or(or(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::For']), function () { return v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::While']); }), function () { return and(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::Apply']), function () { return (v_last_statement._class_.code([v_last_statement]) == 'return'); }); }), function () { return and(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::Apply']), function () { return (v_last_statement._class_.code([v_last_statement]) == 'goto'); }); })) ) { (function () {
 											PKG.push([List_str, v_last_statement._class_.emit_javascript_indented([v_last_statement,v_level])]);
 										})(); }
 										else { (function () {
@@ -2338,7 +2338,7 @@ make_package("main");
 				var PKG = NAMESPACE[__PACKAGE__];
 				(function () {
 					var v_table = null;
-					(v_table = (new HashRef(array_to_hash(interpolate_array('$', 'v_', '@', 'List_', '%', 'Hash_', '&', 'Code_')))));
+					(v_table = (new HashRef(array_to_hash(interpolate_array('$', 'v_', '@', 'List_', '%', 'Hash_', '&', '')))));
 					make_sub(__PACKAGE__, "emit_javascript", function (List__) {
 						try {
 							return (List__[0]._class_.emit_javascript_indented([List__[0],0]));
@@ -2667,6 +2667,9 @@ make_package("main");
 							})(); };
 							if ( bool((v_code == 'return')) ) { (function () {
 								throw(('throw(' + string((( bool(and((v_self || (v_self = new HashRef({})))._hash_[('arguments')], function () { return ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_; })) ? ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]]) : 'null'))) + ')'));
+							})(); };
+							if ( bool((v_code == 'goto')) ) { (function () {
+								throw(('throw((' + string(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]])) + ')([List__]))'));
 							})(); };
 							if ( bool((v_self || (v_self = new HashRef({})))._hash_[('namespace')]) ) { (function () {
 								if ( bool(and(((v_self || (v_self = new HashRef({})))._hash_[('namespace')] == 'JS'), function () { return (v_code == 'inline'); })) ) { (function () {

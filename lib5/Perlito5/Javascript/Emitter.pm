@@ -175,7 +175,7 @@ package Perlito5::Javascript::LexicalBlock;
                 }
             }
             else {
-                if (((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return'))))) {
+                if ((((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))))) {
                     push(@str, $last_statement->emit_javascript_indented($level) )
                 }
                 else {
@@ -343,7 +343,7 @@ package Perlito5::AST::Lookup;
 });
 package Perlito5::AST::Var;
 (do {
-    ((my  $table) = {(chr(36) => 'v_'), (chr(64) => 'List_'), (chr(37) => 'Hash_'), (chr(38) => 'Code_')});
+    ((my  $table) = {(chr(36) => 'v_'), (chr(64) => 'List_'), (chr(37) => 'Hash_'), (chr(38) => '')});
     sub emit_javascript {
         $_[0]->emit_javascript_indented(0)
     };
@@ -559,6 +559,9 @@ package Perlito5::AST::Apply;
         };
         if ((($code eq 'return'))) {
             return (('throw(' . ((($self->{('arguments')} && @{$self->{('arguments')}}) ? $self->{('arguments')}->[0]->emit_javascript() : 'null')) . ')'))
+        };
+        if ((($code eq 'goto'))) {
+            return (('throw((' . $self->{('arguments')}->[0]->emit_javascript() . ')([List__]))'))
         };
         if (($self->{('namespace')})) {
             if (((($self->{('namespace')} eq 'JS') && ($code eq 'inline')))) {
