@@ -18,26 +18,10 @@ sub is_newline {
     ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->{('to')});
     (((do {
-    ((((chr(10) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))) && ((do {
-    ((my  $last_pos) = $MATCH->{('to')});
-    if ((!(((do {
-    ((chr(13) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))
-}))))) {
-        ($MATCH->{('to')} = $last_pos)
-    };
-    1
-})))
+    ((chr(10) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
-    (((((chr(13) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))) && ((do {
-    ((my  $last_pos) = $MATCH->{('to')});
-    if ((!(((do {
-    ((chr(10) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))
-}))))) {
-        ($MATCH->{('to')} = $last_pos)
-    };
-    1
-}))))
+    ((((chr(13) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))))
 })))
 }))));
     $MATCH

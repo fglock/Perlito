@@ -6620,28 +6620,10 @@ make_package("main");
 							var v_pos1 = null;
 							(v_pos1 = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 							return (or(((function () {
-	return (and((and((String.fromCharCode(10) == PKG.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')], 1])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = add(1, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]))); })), function () { return ((function () {
-	var v_last_pos = null;
-	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	if ( !( bool((function () {
-	return (and((String.fromCharCode(13) == PKG.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')], 1])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = add(1, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]))); }));
-})())) ) { (function () {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = v_last_pos);
-	})(); };
-	return (1);
-})()); }));
+	return (and((String.fromCharCode(10) == PKG.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')], 1])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = add(1, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]))); }));
 })()), function () { return ((function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = v_pos1);
-	return ((and((and((String.fromCharCode(13) == PKG.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')], 1])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = add(1, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]))); })), function () { return ((function () {
-	var v_last_pos = null;
-	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	if ( !( bool((function () {
-	return (and((String.fromCharCode(10) == PKG.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')], 1])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = add(1, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]))); }));
-})())) ) { (function () {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = v_last_pos);
-	})(); };
-	return (1);
-})()); })));
+	return (((and((String.fromCharCode(13) == PKG.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')], 1])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = add(1, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]))); }))));
 })()); }));
 						})())));
 						return (v_MATCH);

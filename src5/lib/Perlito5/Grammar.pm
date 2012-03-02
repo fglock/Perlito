@@ -5,8 +5,8 @@ use Perlito5::Expression;
 use Perlito5::Grammar::Control;
 
 token is_newline {
-    | \c10 \c13?
-    | \c13 \c10?
+    | \c10
+    | \c13
 }
 
 token not_newline {
