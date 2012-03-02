@@ -912,7 +912,7 @@ sub operator {
     ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
     ($MATCH->{('bool')} = (((do {
     ((my  $pos1) = $MATCH->{('to')});
-    ((((do {
+    (((do {
     (((do {
     ((my  $m2) = Perlito5::Precedence->op_parse($str, $MATCH->{('to')}));
     if (($m2->{('bool')})) {
@@ -1043,21 +1043,6 @@ sub operator {
     1
 })))
 })))
-}))))
-}))) || ((do {
-    ($MATCH->{('to')} = $pos1);
-    ((((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{('to')}));
-    if (($m2->{('bool')})) {
-        ($MATCH->{('to')} = $m2->{('to')});
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ($MATCH->{('capture')} = ['space', ' ']);
-    1
 }))))
 })))
 }))));

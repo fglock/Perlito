@@ -509,9 +509,6 @@ package Perlito5::Expression;
                      $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
                      $MATCH->{"Perlito5::Grammar.ident"}->flat()                  ] }
           ]
-
-          # other space, just in case
-        | <.Perlito5::Grammar.ws>           { $MATCH->{"capture"} = [ 'space',   ' ' ] }
     }
 
     token has_newline_after {
