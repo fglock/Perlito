@@ -94,6 +94,8 @@ package Perlito5::Javascript;
                 || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'prefix:<!>')
                 || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<!=>')
                 || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<==>')
+                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<eq>')
+                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<ne>')
                 )
             {
                 return $cond->emit_javascript;
