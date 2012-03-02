@@ -1254,6 +1254,7 @@ sub paren_parse {
     ((my  $pos) = $_[2]);
     return ($self->circumfix_parse($str, $pos, ')'))
 };
+(my  @Here_doc);
 sub here_doc_wanted {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -1269,8 +1270,7 @@ sub here_doc_wanted {
                 ($p = $m->{('to')});
                 if (((substr($str, $p, 1) eq (chr(39))))) {
                     ($p = ($p + 1));
-                    ($delimiter = $m->flat());
-                    Perlito5::Runtime::say(('got a here-doc delimiter: [' . $delimiter . ']'))
+                    ($delimiter = $m->flat())
                 }
             }
         }
@@ -1278,12 +1278,21 @@ sub here_doc_wanted {
     if ((!(defined($delimiter)))) {
         return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 0), ('capture' => undef())))
     };
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => ['term', Perlito5::AST::Val::Buf->new(('buf' => 'HEREDOC placeholder' . chr(33) . chr(33) . chr(33)))])))
+    ((my  $placeholder) = Perlito5::AST::Val::Buf->new(('buf' => 'HEREDOC')));
+    unshift(@Here_doc, ['single_quote', sub  {
+    ($placeholder->{('buf')} = $_[0])
+}]);
+    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => ['term', $placeholder])))
 };
 sub here_doc {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
+    if ((@Here_doc)) {
+        ((my  $here) = shift(@Here_doc));
+        Perlito5::Runtime::say(('got a newline and we are looking for a '), $here->[0]);
+        $here->[1]->('GOTIT')
+    };
     if ((1)) {
         return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => undef())))
     };

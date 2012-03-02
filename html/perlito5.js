@@ -3954,6 +3954,7 @@ make_package("main");
 				var v_List_end_token_chars = null;
 				var v_Expr_end_token = null;
 				var v_Expr_end_token_chars = null;
+				var List_Here_doc = [];
 				make_sub(__PACKAGE__, "expand_list", function (List__) {
 					try {
 						var v_param_list = null;
@@ -5626,6 +5627,7 @@ make_package("main");
 						var v_pos = null;
 						var v_delimiter = null;
 						var v_p = null;
+						var v_placeholder = null;
 						(v_self = List__[0]);
 						(v_str = List__[1]);
 						(v_pos = List__[2]);
@@ -5641,7 +5643,6 @@ make_package("main");
 									if ( bool((PKG.substr([v_str, v_p, 1]) == (String.fromCharCode(39)))) ) { (function () {
 										(v_p = add(v_p, 1));
 										(v_delimiter = v_m._class_.flat([v_m]));
-										PKG.say([('got a here-doc delimiter: [' + string(v_delimiter) + ']')]);
 									})(); };
 								})(); };
 							})(); };
@@ -5649,7 +5650,21 @@ make_package("main");
 						if ( !( bool((v_delimiter != null))) ) { (function () {
 							throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 0,'capture', null]));
 						})(); };
-						throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_p,'bool', 1,'capture', (new ArrayRef(interpolate_array('term', CLASS["Perlito5::AST::Val::Buf"]._class_.new([CLASS["Perlito5::AST::Val::Buf"],'buf', 'HEREDOC placeholder' + String.fromCharCode(33) + String.fromCharCode(33) + String.fromCharCode(33)]))))]))
+						(v_placeholder = CLASS["Perlito5::AST::Val::Buf"]._class_.new([CLASS["Perlito5::AST::Val::Buf"],'buf', 'HEREDOC']));
+						PKG.unshift([List_Here_doc, (new ArrayRef(interpolate_array('single_quote', function (List__) {
+	try {
+		return (((v_placeholder || (v_placeholder = new HashRef({})))._hash_[('buf')] = List__[0]));
+	}
+	catch(err) {
+		if ( err instanceof Error ) {
+			throw(err);
+		}
+		else {
+			return(err);
+		}
+	}
+})))]);
+						throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_p,'bool', 1,'capture', (new ArrayRef(interpolate_array('term', v_placeholder)))]))
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
@@ -5668,6 +5683,12 @@ make_package("main");
 						(v_self = List__[0]);
 						(v_str = List__[1]);
 						(v_pos = List__[2]);
+						if ( bool(List_Here_doc) ) { (function () {
+							var v_here = null;
+							(v_here = PKG.shift([List_Here_doc]));
+							PKG.say([('got a newline and we are looking for a '), (v_here || (v_here = new ArrayRef([])))._array_[0]]);
+							((v_here || (v_here = new ArrayRef([])))._array_[1])(['GOTIT']);
+						})(); };
 						if ( 1 ) { (function () {
 							throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', null]));
 						})(); };

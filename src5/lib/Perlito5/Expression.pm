@@ -766,6 +766,7 @@ package Perlito5::Expression;
     }
 
 
+    my @Here_doc;
     sub here_doc_wanted {
         # setup a here-doc request
         # the actual text will be parsed later, by here_doc()
@@ -786,7 +787,7 @@ package Perlito5::Expression;
                     if ( substr($str, $p, 1) eq "'" ) {
                         $p = $p + 1;
                         $delimiter = $m->flat();
-                        say "got a here-doc delimiter: [$delimiter]";
+                        # say "got a here-doc delimiter: [$delimiter]";
                     }
                 }
             }
@@ -798,9 +799,8 @@ package Perlito5::Expression;
                 'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 0, capture => undef);
         }
 
-        # now do something
-
-        # ...
+        my $placeholder = Perlito5::AST::Val::Buf->new( buf => 'HEREDOC' );
+        unshift @Here_doc, [ 'single_quote', sub { $placeholder->{"buf"} = $_[0] } ];
 
         return Perlito5::Match->new(
             'str' => $str, 
@@ -809,7 +809,7 @@ package Perlito5::Expression;
             'bool' => 1, 
             capture => [ 
                     'term', 
-                    Perlito5::AST::Val::Buf->new( buf => 'HEREDOC placeholder!!!' )
+                    $placeholder
                 ]
         );
     }
@@ -820,6 +820,12 @@ package Perlito5::Expression;
         my $self = $_[0];
         my $str = $_[1];
         my $pos = $_[2];
+
+        if ( @Here_doc ) {
+            my $here = shift @Here_doc;
+            say "got a newline and we are looking for a ", $here->[0];
+            $here->[1]->('GOTIT');
+        }
 
         if (1) {
             # we are not expecting a here-doc, return true without moving the pointer
