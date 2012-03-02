@@ -25,7 +25,9 @@ package Main;
 JS::inline('document.getElementById("print-result").value') = 
   "Changing the output box using the document object\n";
 
-say "hello, World!";
+say <<'HELLO';
+hello, World!
+HELLO
 
 say "goodbye $_"
     foreach 1 .. 3;
