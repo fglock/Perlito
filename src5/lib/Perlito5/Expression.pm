@@ -800,7 +800,11 @@ package Perlito5::Expression;
         }
 
         my $placeholder = Perlito5::AST::Val::Buf->new( buf => 'HEREDOC' );
-        unshift @Here_doc, [ 'single_quote', sub { $placeholder->{"buf"} = $_[0] } ];
+        unshift @Here_doc, [ 
+            'single_quote', 
+            sub { $placeholder->{"buf"} = $_[0] },
+            $delimiter,
+        ];
 
         return Perlito5::Match->new(
             'str' => $str, 
@@ -821,24 +825,23 @@ package Perlito5::Expression;
         my $str = $_[1];
         my $pos = $_[2];
 
-        if ( @Here_doc ) {
-            my $here = shift @Here_doc;
-            say "got a newline and we are looking for a ", $here->[0];
-            $here->[1]->('GOTIT');
-        }
-
-        if (1) {
+        if ( !@Here_doc ) {
             # we are not expecting a here-doc, return true without moving the pointer
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 1, capture => undef);
         }
 
-        # now do something
+        my $p = $pos;
+        my $here = shift @Here_doc;
+        say "got a newline and we are looking for a ", $here->[0], " that ends with ", $here->[2];
 
-        # ...
+        my $text = 'TODO';
 
+        # this will put the text in the right place in the AST
+        $here->[1]->($text);
+        # move the pointer and return true
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 1, capture => undef);
+            'str' => $str, 'from' => $pos, 'to' => $p, 'bool' => 1, capture => undef);
     }
 
     sub exp_parse {

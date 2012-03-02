@@ -1281,22 +1281,22 @@ sub here_doc_wanted {
     ((my  $placeholder) = Perlito5::AST::Val::Buf->new(('buf' => 'HEREDOC')));
     unshift(@Here_doc, ['single_quote', sub  {
     ($placeholder->{('buf')} = $_[0])
-}]);
+}, $delimiter]);
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => ['term', $placeholder])))
 };
 sub here_doc {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    if ((@Here_doc)) {
-        ((my  $here) = shift(@Here_doc));
-        Perlito5::Runtime::say(('got a newline and we are looking for a '), $here->[0]);
-        $here->[1]->('GOTIT')
-    };
-    if ((1)) {
+    if ((!(@Here_doc))) {
         return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => undef())))
     };
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => undef())))
+    ((my  $p) = $pos);
+    ((my  $here) = shift(@Here_doc));
+    Perlito5::Runtime::say(('got a newline and we are looking for a '), $here->[0], (' that ends with '), $here->[2]);
+    ((my  $text) = 'TODO');
+    $here->[1]->($text);
+    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => undef())))
 };
 sub exp_parse {
     ((my  $self) = $_[0]);
