@@ -114,8 +114,14 @@ package Perlito5::Javascript;
                    && (  $cond->code eq 'prefix:<!>'
                       || $cond->code eq 'infix:<!=>'
                       || $cond->code eq 'infix:<==>'
+                      || $cond->code eq 'infix:<<=>'
+                      || $cond->code eq 'infix:<>=>'
+                      || $cond->code eq 'infix:<>>'
+                      || $cond->code eq 'infix:<<>'
                       || $cond->code eq 'infix:<eq>'
                       || $cond->code eq 'infix:<ne>'
+                      || $cond->code eq 'infix:<ge>'
+                      || $cond->code eq 'infix:<le>'
                       )
                    )
                 )

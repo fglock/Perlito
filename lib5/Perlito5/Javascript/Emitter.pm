@@ -70,7 +70,7 @@ join("", (chr(9)) x $level)
         if ((($cond->isa('Perlito5::AST::Apply') && ((($cond->code() eq 'infix:<' . chr(124) . chr(124) . '>') || ($cond->code() eq 'infix:<or>')))))) {
             return (('(' . to_bool($cond->{('arguments')}->[0]) . ' ' . chr(124) . chr(124) . ' ' . to_bool($cond->{('arguments')}->[1]) . ')'))
         };
-        if ((((($cond->isa('Perlito5::AST::Val::Int')) || ($cond->isa('Perlito5::AST::Val::Num'))) || (($cond->isa('Perlito5::AST::Apply') && (((((($cond->code() eq 'prefix:<' . chr(33) . '>') || ($cond->code() eq 'infix:<' . chr(33) . chr(61) . '>')) || ($cond->code() eq 'infix:<' . chr(61) . chr(61) . '>')) || ($cond->code() eq 'infix:<eq>')) || ($cond->code() eq 'infix:<ne>')))))))) {
+        if ((((($cond->isa('Perlito5::AST::Val::Int')) || ($cond->isa('Perlito5::AST::Val::Num'))) || (($cond->isa('Perlito5::AST::Apply') && (((((((((((($cond->code() eq 'prefix:<' . chr(33) . '>') || ($cond->code() eq 'infix:<' . chr(33) . chr(61) . '>')) || ($cond->code() eq 'infix:<' . chr(61) . chr(61) . '>')) || ($cond->code() eq 'infix:<<' . chr(61) . '>')) || ($cond->code() eq 'infix:<>' . chr(61) . '>')) || ($cond->code() eq 'infix:<>>')) || ($cond->code() eq 'infix:<<>')) || ($cond->code() eq 'infix:<eq>')) || ($cond->code() eq 'infix:<ne>')) || ($cond->code() eq 'infix:<ge>')) || ($cond->code() eq 'infix:<le>')))))))) {
             return ($cond->emit_javascript())
         }
         else {
