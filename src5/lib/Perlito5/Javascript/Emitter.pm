@@ -79,7 +79,6 @@ package Perlito5::Javascript;
             }
     }
     sub to_bool {
-            # Note: 'infix:<||>' and 'infix:<&&>' can't be optimized here, because they don't return bool
             my $cond = shift;
 
             if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
@@ -89,13 +88,36 @@ package Perlito5::Javascript;
                 return to_bool( $cond->{"arguments"}[0] )
             }
 
+            # Note: 'infix:<||>' and 'infix:<&&>' can only be optimized here because we know we want "bool"
+            if (  $cond->isa( 'Perlito5::AST::Apply' ) 
+               && (  $cond->code eq 'infix:<&&>'
+                  || $cond->code eq 'infix:<and>'
+                  )
+               ) 
+            {
+                return '(' . to_bool($cond->{"arguments"}->[0]) . ' && '
+                           . to_bool($cond->{"arguments"}->[1]) . ')'
+            }
+            if (  $cond->isa( 'Perlito5::AST::Apply' ) 
+               && (  $cond->code eq 'infix:<||>'
+                  || $cond->code eq 'infix:<or>'
+                  )
+               ) 
+            {
+                return '(' . to_bool($cond->{"arguments"}->[0]) . ' || '
+                           . to_bool($cond->{"arguments"}->[1]) . ')'
+            }
+
             if  (  ($cond->isa( 'Perlito5::AST::Val::Int' ))
                 || ($cond->isa( 'Perlito5::AST::Val::Num' ))
-                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'prefix:<!>')
-                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<!=>')
-                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<==>')
-                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<eq>')
-                || ($cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'infix:<ne>')
+                || ($cond->isa( 'Perlito5::AST::Apply' ) 
+                   && (  $cond->code eq 'prefix:<!>'
+                      || $cond->code eq 'infix:<!=>'
+                      || $cond->code eq 'infix:<==>'
+                      || $cond->code eq 'infix:<eq>'
+                      || $cond->code eq 'infix:<ne>'
+                      )
+                   )
                 )
             {
                 return $cond->emit_javascript;

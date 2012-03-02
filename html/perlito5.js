@@ -1667,7 +1667,7 @@ make_package("main");
 							(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_i) {
 								var v_c = null;
 								(v_c = PKG.substr([v_s, v_i, 1]));
-								if ( bool(or(or(or((and((v_c >= 'a'), function () { return (v_c <= 'z'); })), function () { return (and((v_c >= 'A'), function () { return (v_c <= 'Z'); })); }), function () { return (and((v_c >= '0'), function () { return (v_c <= '9'); })); }), function () { return (Hash_safe_char).hasOwnProperty(v_c); })) ) { (function () {
+								if ( ((((bool((v_c >= 'a')) && bool((v_c <= 'z'))) || (bool((v_c >= 'A')) && bool((v_c <= 'Z')))) || (bool((v_c >= '0')) && bool((v_c <= '9')))) || bool((Hash_safe_char).hasOwnProperty(v_c))) ) { (function () {
 									(v_tmp = (string(v_tmp) + string(v_c)));
 								})(); }
 								else { (function () {
@@ -1716,7 +1716,7 @@ make_package("main");
 						try {
 							var v_cond = null;
 							(v_cond = PKG.shift([List__]));
-							if ( bool(or(v_cond._class_.isa([v_cond,'Perlito5::AST::Val::Int']), function () { return v_cond._class_.isa([v_cond,'Perlito5::AST::Val::Num']); })) ) { return (function () {
+							if ( (bool(v_cond._class_.isa([v_cond,'Perlito5::AST::Val::Int'])) || bool(v_cond._class_.isa([v_cond,'Perlito5::AST::Val::Num']))) ) { return (function () {
 															throw(v_cond._class_.emit_javascript([v_cond]))
 							})(); }
 														else { return (function () {
@@ -1736,10 +1736,16 @@ make_package("main");
 						try {
 							var v_cond = null;
 							(v_cond = PKG.shift([List__]));
-							if ( bool(and(and(and(v_cond._class_.isa([v_cond,'Perlito5::AST::Apply']), function () { return (v_cond._class_.code([v_cond]) == 'circumfix:<( )>'); }), function () { return (v_cond || (v_cond = new HashRef({})))._hash_[('arguments')]; }), function () { return ((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] || ((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_; })) ) { (function () {
+							if ( (((bool(v_cond._class_.isa([v_cond,'Perlito5::AST::Apply'])) && (v_cond._class_.code([v_cond]) == 'circumfix:<( )>')) && bool((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')])) && bool(((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] || ((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_)) ) { (function () {
 								throw(PKG.to_bool([((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] || ((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]]));
 							})(); };
-							if ( bool(or(or(or(or(or(or((v_cond._class_.isa([v_cond,'Perlito5::AST::Val::Int'])), function () { return (v_cond._class_.isa([v_cond,'Perlito5::AST::Val::Num'])); }), function () { return (and(v_cond._class_.isa([v_cond,'Perlito5::AST::Apply']), function () { return (v_cond._class_.code([v_cond]) == 'prefix:<' + String.fromCharCode(33) + '>'); })); }), function () { return (and(v_cond._class_.isa([v_cond,'Perlito5::AST::Apply']), function () { return (v_cond._class_.code([v_cond]) == 'infix:<' + String.fromCharCode(33) + '=>'); })); }), function () { return (and(v_cond._class_.isa([v_cond,'Perlito5::AST::Apply']), function () { return (v_cond._class_.code([v_cond]) == 'infix:<==>'); })); }), function () { return (and(v_cond._class_.isa([v_cond,'Perlito5::AST::Apply']), function () { return (v_cond._class_.code([v_cond]) == 'infix:<eq>'); })); }), function () { return (and(v_cond._class_.isa([v_cond,'Perlito5::AST::Apply']), function () { return (v_cond._class_.code([v_cond]) == 'infix:<ne>'); })); })) ) { return (function () {
+							if ( (bool(v_cond._class_.isa([v_cond,'Perlito5::AST::Apply'])) && ((v_cond._class_.code([v_cond]) == 'infix:<&&>') || (v_cond._class_.code([v_cond]) == 'infix:<and>'))) ) { (function () {
+								throw(('(' + string(PKG.to_bool([((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] || ((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]])) + ' && ' + string(PKG.to_bool([((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] || ((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[1]])) + ')'));
+							})(); };
+							if ( (bool(v_cond._class_.isa([v_cond,'Perlito5::AST::Apply'])) && ((v_cond._class_.code([v_cond]) == 'infix:<||>') || (v_cond._class_.code([v_cond]) == 'infix:<or>'))) ) { (function () {
+								throw(('(' + string(PKG.to_bool([((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] || ((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]])) + ' || ' + string(PKG.to_bool([((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] || ((v_cond || (v_cond = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[1]])) + ')'));
+							})(); };
+							if ( ((bool(v_cond._class_.isa([v_cond,'Perlito5::AST::Val::Int'])) || bool(v_cond._class_.isa([v_cond,'Perlito5::AST::Val::Num']))) || (bool(v_cond._class_.isa([v_cond,'Perlito5::AST::Apply'])) && (((((v_cond._class_.code([v_cond]) == 'prefix:<' + String.fromCharCode(33) + '>') || (v_cond._class_.code([v_cond]) == 'infix:<' + String.fromCharCode(33) + '=>')) || (v_cond._class_.code([v_cond]) == 'infix:<==>')) || (v_cond._class_.code([v_cond]) == 'infix:<eq>')) || (v_cond._class_.code([v_cond]) == 'infix:<ne>')))) ) { return (function () {
 															throw(v_cond._class_.emit_javascript([v_cond]))
 							})(); }
 														else { return (function () {
@@ -1774,13 +1780,13 @@ make_package("main");
 							try {
 								var List_items = [];
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {
-									if ( bool(and(v_item._class_.isa([v_item,'Perlito5::AST::Apply']), function () { return (or((v_item._class_.code([v_item]) == 'circumfix:<( )>'), function () { return (v_item._class_.code([v_item]) == 'list:<,>'); })); })) ) { (function () {
+									if ( (bool(v_item._class_.isa([v_item,'Perlito5::AST::Apply'])) && ((v_item._class_.code([v_item]) == 'circumfix:<( )>') || (v_item._class_.code([v_item]) == 'list:<,>'))) ) { (function () {
 										(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_arg) {
 											PKG.push([List_items, v_arg]);
 										})(a_[i_]) } })(interpolate_array((PKG.to_list_preprocess([v_item._class_.arguments([v_item])]) || (PKG.to_list_preprocess([v_item._class_.arguments([v_item])]) = new ArrayRef([])))._array_));
 									})(); }
 									else { (function () {
-										if ( bool(and(v_item._class_.isa([v_item,'Perlito5::AST::Apply']), function () { return (v_item._class_.code([v_item]) == 'infix:<=>>'); })) ) { (function () {
+										if ( (bool(v_item._class_.isa([v_item,'Perlito5::AST::Apply'])) && (v_item._class_.code([v_item]) == 'infix:<=>>')) ) { (function () {
 											PKG.push([List_items, (v_item._class_.arguments([v_item]) || (v_item._class_.arguments([v_item]) = new ArrayRef([])))._array_[0]]);
 											PKG.push([List_items, (v_item._class_.arguments([v_item]) || (v_item._class_.arguments([v_item]) = new ArrayRef([])))._array_[1]]);
 										})(); }
@@ -1897,7 +1903,7 @@ make_package("main");
 								})(); };
 								(v_out = '');
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {
-									if ( bool(and(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl']), function () { return (v_decl._class_.decl([v_decl]) == 'local'); })) ) { (function () {
+									if ( (bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl'])) && (v_decl._class_.decl([v_decl]) == 'local')) ) { (function () {
 										(v_has_local = 1);
 									})(); };
 								})(a_[i_]) } })(interpolate_array(List_block));
@@ -1910,13 +1916,13 @@ make_package("main");
 								})(); };
 								(v_tab = NAMESPACE["Perlito5::Javascript"].tab([v_level]));
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {
-									if ( bool(and(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl']), function () { return (v_decl._class_.decl([v_decl]) == 'my'); })) ) { (function () {
+									if ( (bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl'])) && (v_decl._class_.decl([v_decl]) == 'my')) ) { (function () {
 										PKG.push([List_str, v_decl._class_.emit_javascript_init([v_decl])]);
 									})(); };
-									if ( bool(and(v_decl._class_.isa([v_decl,'Perlito5::AST::Apply']), function () { return (v_decl._class_.code([v_decl]) == 'infix:<=>'); })) ) { (function () {
+									if ( (bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Apply'])) && (v_decl._class_.code([v_decl]) == 'infix:<=>')) ) { (function () {
 										var v_var = null;
 										(v_var = (v_decl._class_.arguments([v_decl]) || (v_decl._class_.arguments([v_decl]) = new ArrayRef([])))._array_[0]);
-										if ( bool(and(v_var._class_.isa([v_var,'Perlito5::AST::Decl']), function () { return (v_var._class_.decl([v_var]) == 'my'); })) ) { (function () {
+										if ( (bool(v_var._class_.isa([v_var,'Perlito5::AST::Decl'])) && (v_var._class_.decl([v_var]) == 'my')) ) { (function () {
 											PKG.push([List_str, v_var._class_.emit_javascript_init([v_var])]);
 										})(); };
 									})(); };
@@ -1925,11 +1931,11 @@ make_package("main");
 									(v_last_statement = PKG.pop([List_block]));
 								})(); };
 								(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {
-									if ( !( bool(and(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl']), function () { return (v_decl._class_.decl([v_decl]) == 'my'); }))) ) { (function () {
+									if ( !( (bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl'])) && (v_decl._class_.decl([v_decl]) == 'my'))) ) { (function () {
 										PKG.push([List_str, (string(v_decl._class_.emit_javascript_indented([v_decl,v_level])) + ';')]);
 									})(); };
 								})(a_[i_]) } })(interpolate_array(List_block));
-								if ( bool(and((v_self || (v_self = new HashRef({})))._hash_[('needs_return')], function () { return v_last_statement; })) ) { (function () {
+								if ( (bool((v_self || (v_self = new HashRef({})))._hash_[('needs_return')]) && bool(v_last_statement)) ) { (function () {
 									if ( bool(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::If'])) ) { (function () {
 										var v_cond = null;
 										var v_body = null;
@@ -1945,7 +1951,7 @@ make_package("main");
 										})(); };
 									})(); }
 									else { (function () {
-										if ( bool(or(or(or(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::For']), function () { return v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::While']); }), function () { return and(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::Apply']), function () { return (v_last_statement._class_.code([v_last_statement]) == 'return'); }); }), function () { return and(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::Apply']), function () { return (v_last_statement._class_.code([v_last_statement]) == 'goto'); }); })) ) { (function () {
+										if ( (((bool(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::For'])) || bool(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::While']))) || (bool(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::Apply'])) && (v_last_statement._class_.code([v_last_statement]) == 'return'))) || (bool(v_last_statement._class_.isa([v_last_statement,'Perlito5::AST::Apply'])) && (v_last_statement._class_.code([v_last_statement]) == 'goto'))) ) { (function () {
 											PKG.push([List_str, v_last_statement._class_.emit_javascript_indented([v_last_statement,v_level])]);
 										})(); }
 										else { (function () {
@@ -2014,12 +2020,12 @@ make_package("main");
 							for ( ; bool((v_i <= PKG.scalar([((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_])));  ) { (function () {
 								var v_stmt = null;
 								(v_stmt = ((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_[v_i]);
-								if ( bool(and((PKG.ref([v_stmt]) == 'Perlito5::AST::Apply'), function () { return (v_stmt._class_.code([v_stmt]) == 'package'); })) ) { (function () {
+								if ( ((PKG.ref([v_stmt]) == 'Perlito5::AST::Apply') && (v_stmt._class_.code([v_stmt]) == 'package')) ) { (function () {
 									var v_name = null;
 									var List_stmts = [];
 									(v_name = v_stmt._class_.namespace([v_stmt]));
 									(v_i)++;
-									for ( ; bool(and((v_i <= PKG.scalar([((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_])), function () { return !( bool(and((PKG.ref([((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_[v_i]]) == 'Perlito5::AST::Apply'), function () { return (((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_[v_i]._class_.code([((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_[v_i]]) == 'package'); }))); }));  ) { (function () {
+									for ( ; (bool((v_i <= PKG.scalar([((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_]))) && !( ((PKG.ref([((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_[v_i]]) == 'Perlito5::AST::Apply') && (((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_[v_i]._class_.code([((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_[v_i]]) == 'package'))));  ) { (function () {
 										PKG.push([List_stmts, ((v_self || (v_self = new HashRef({})))._hash_[('body')] || ((v_self || (v_self = new HashRef({})))._hash_[('body')] = new ArrayRef([])))._array_[v_i]]);
 										(v_i)++; })() };
 									PKG.push([List_body, CLASS["Perlito5::AST::CompUnit"]._class_.new([CLASS["Perlito5::AST::CompUnit"],'name', v_name,'body', (new ArrayRef(List_stmts))])]);
@@ -2034,13 +2040,13 @@ make_package("main");
 							(v_class_name = (v_self || (v_self = new HashRef({})))._hash_[('name')]);
 							(v_str = ('make_package(' + String.fromCharCode(34) + string(v_class_name) + String.fromCharCode(34) + ');' + string((String.fromCharCode(10))) + '(function () {' + string((String.fromCharCode(10))) + string(v_tab) + 'var __PACKAGE__ = ' + String.fromCharCode(34) + string(v_class_name) + String.fromCharCode(34) + ';' + string((String.fromCharCode(10))) + string(v_tab) + 'var PKG = NAMESPACE[__PACKAGE__];' + string((String.fromCharCode(10)))));
 							(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {
-								if ( bool(and(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl']), function () { return ((v_decl._class_.decl([v_decl]) == 'my')); })) ) { (function () {
+								if ( (bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl'])) && (v_decl._class_.decl([v_decl]) == 'my')) ) { (function () {
 									(v_str = (string(v_str) + string(v_tab) + string(v_decl._class_.emit_javascript_init([v_decl])) + string((String.fromCharCode(10)))));
 								})(); };
-								if ( bool(and(v_decl._class_.isa([v_decl,'Perlito5::AST::Apply']), function () { return (v_decl._class_.code([v_decl]) == 'infix:<=>'); })) ) { (function () {
+								if ( (bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Apply'])) && (v_decl._class_.code([v_decl]) == 'infix:<=>')) ) { (function () {
 									var v_var = null;
 									(v_var = (v_decl._class_.arguments([v_decl]) || (v_decl._class_.arguments([v_decl]) = new ArrayRef([])))._array_[0]);
-									if ( bool(and(v_var._class_.isa([v_var,'Perlito5::AST::Decl']), function () { return (v_var._class_.decl([v_var]) == 'my'); })) ) { (function () {
+									if ( (bool(v_var._class_.isa([v_var,'Perlito5::AST::Decl'])) && (v_var._class_.decl([v_var]) == 'my')) ) { (function () {
 										(v_str = (string(v_str) + string(v_tab) + string(v_var._class_.emit_javascript_init([v_var])) + string((String.fromCharCode(10)))));
 									})(); };
 								})(); };
@@ -2051,7 +2057,7 @@ make_package("main");
 								})(); };
 							})(a_[i_]) } })(interpolate_array(List_body));
 							(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_decl) {
-								if ( bool(and(and((v_decl != null), function () { return (!( bool(and(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl']), function () { return (v_decl._class_.decl([v_decl]) == 'my'); })))); }), function () { return (!( bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Sub'])))); })) ) { (function () {
+								if ( ((bool((v_decl != null)) && !( (bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Decl'])) && (v_decl._class_.decl([v_decl]) == 'my')))) && !( bool(v_decl._class_.isa([v_decl,'Perlito5::AST::Sub'])))) ) { (function () {
 									(v_str = (string(v_str) + string(v_tab) + string(v_decl._class_.emit_javascript_indented([v_decl,add(v_level, 1)])) + string((';' + String.fromCharCode(10)))));
 								})(); };
 							})(a_[i_]) } })(interpolate_array(List_body));
@@ -2270,7 +2276,7 @@ make_package("main");
 								var v_level = null;
 								(v_self = PKG.shift([List__]));
 								(v_level = PKG.shift([List__]));
-								if ( bool(and((v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.isa([(v_self || (v_self = new HashRef({})))._hash_[('obj')],'Perlito5::AST::Var']), function () { return ((v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.sigil([(v_self || (v_self = new HashRef({})))._hash_[('obj')]]) == '$'); })) ) { (function () {
+								if ( (bool((v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.isa([(v_self || (v_self = new HashRef({})))._hash_[('obj')],'Perlito5::AST::Var'])) && ((v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.sigil([(v_self || (v_self = new HashRef({})))._hash_[('obj')]]) == '$')) ) { (function () {
 									var v_v = null;
 									(v_v = CLASS["Perlito5::AST::Var"]._class_.new([CLASS["Perlito5::AST::Var"],'sigil', '@','namespace', (v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.namespace([(v_self || (v_self = new HashRef({})))._hash_[('obj')]]),'name', (v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.name([(v_self || (v_self = new HashRef({})))._hash_[('obj')]])]));
 									throw((string(v_v._class_.emit_javascript_indented([v_v,v_level])) + '[' + string((v_self || (v_self = new HashRef({})))._hash_[('index_exp')]._class_.emit_javascript([(v_self || (v_self = new HashRef({})))._hash_[('index_exp')]])) + ']'));
@@ -2313,7 +2319,7 @@ make_package("main");
 								var v_level = null;
 								(v_self = PKG.shift([List__]));
 								(v_level = PKG.shift([List__]));
-								if ( bool(and((v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.isa([(v_self || (v_self = new HashRef({})))._hash_[('obj')],'Perlito5::AST::Var']), function () { return ((v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.sigil([(v_self || (v_self = new HashRef({})))._hash_[('obj')]]) == '$'); })) ) { (function () {
+								if ( (bool((v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.isa([(v_self || (v_self = new HashRef({})))._hash_[('obj')],'Perlito5::AST::Var'])) && ((v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.sigil([(v_self || (v_self = new HashRef({})))._hash_[('obj')]]) == '$')) ) { (function () {
 									var v_v = null;
 									(v_v = CLASS["Perlito5::AST::Var"]._class_.new([CLASS["Perlito5::AST::Var"],'sigil', '%','namespace', (v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.namespace([(v_self || (v_self = new HashRef({})))._hash_[('obj')]]),'name', (v_self || (v_self = new HashRef({})))._hash_[('obj')]._class_.name([(v_self || (v_self = new HashRef({})))._hash_[('obj')]])]));
 									throw((string(v_v._class_.emit_javascript_indented([v_v,v_level])) + '[' + string((v_self || (v_self = new HashRef({})))._hash_[('index_exp')]._class_.emit_javascript([(v_self || (v_self = new HashRef({})))._hash_[('index_exp')]])) + ']'));
@@ -2536,7 +2542,7 @@ make_package("main");
 								throw(('eval(perl5_to_js(' + string(NAMESPACE["Perlito5::Javascript"].to_str([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]])) + '))'));
 							})(); };
 							if ( (v_code == 'undef') ) { (function () {
-								if ( bool(and((v_self || (v_self = new HashRef({})))._hash_[('arguments')], function () { return ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_; })) ) { (function () {
+								if ( (bool((v_self || (v_self = new HashRef({})))._hash_[('arguments')]) && bool(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_)) ) { (function () {
 									throw(('(' + string(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]])) + ' = null)'));
 								})(); };
 								throw('null');
@@ -2545,7 +2551,7 @@ make_package("main");
 								throw(('(' + string(PKG.join([' ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript_indented([v__,v_level]))}; return out; })(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_)])) + ' ' + String.fromCharCode(33) + '= null)'));
 							})(); };
 							if ( (v_code == 'shift') ) { (function () {
-								if ( bool(and((v_self || (v_self = new HashRef({})))._hash_[('arguments')], function () { return ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_; })) ) { (function () {
+								if ( (bool((v_self || (v_self = new HashRef({})))._hash_[('arguments')]) && bool(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_)) ) { (function () {
 									throw(('PKG.shift([' + string(PKG.join([', ', (function (a_) { var out = []; if ( a_ == null ) { return out; }; for(var i = 0; i < a_.length; i++) { var v__ = a_[i]; out.push(v__._class_.emit_javascript_indented([v__,v_level]))}; return out; })(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_)])) + '])'));
 								})(); };
 								throw('PKG.shift([List__])');
@@ -2629,10 +2635,10 @@ make_package("main");
 							if ( (v_code == 'infix:<..>') ) { (function () {
 								throw(('(function (a) { ' + 'for (var i=' + string(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]])) + ', l=' + string(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[1]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[1]])) + '; ' + 'i<=l; ++i)' + '{ ' + 'a.push(i) ' + '}; ' + 'return a ' + '})([])'));
 							})(); };
-							if ( bool(or((v_code == 'infix:<&&>'), function () { return (v_code == 'infix:<and>'); })) ) { (function () {
+							if ( ((v_code == 'infix:<&&>') || (v_code == 'infix:<and>')) ) { (function () {
 								throw(('and' + '(' + string(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]])) + ', ' + 'function () { return ' + string(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[1]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[1]])) + '; })'));
 							})(); };
-							if ( bool(or((v_code == 'infix:<||>'), function () { return (v_code == 'infix:<or>'); })) ) { (function () {
+							if ( ((v_code == 'infix:<||>') || (v_code == 'infix:<or>')) ) { (function () {
 								throw(('or' + '(' + string(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]])) + ', ' + 'function () { return ' + string(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[1]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[1]])) + '; })'));
 							})(); };
 							if ( (v_code == 'infix:<' + String.fromCharCode(47) + String.fromCharCode(47) + '>') ) { (function () {
@@ -2644,7 +2650,7 @@ make_package("main");
 								if ( bool(v_arg._class_.isa([v_arg,'Perlito5::AST::Lookup'])) ) { (function () {
 									var v_v = null;
 									(v_v = v_arg._class_.obj([v_arg]));
-									if ( bool(and(v_v._class_.isa([v_v,'Perlito5::AST::Var']), function () { return (v_v._class_.sigil([v_v]) == '$'); })) ) { (function () {
+									if ( (bool(v_v._class_.isa([v_v,'Perlito5::AST::Var'])) && (v_v._class_.sigil([v_v]) == '$')) ) { (function () {
 										(v_v = CLASS["Perlito5::AST::Var"]._class_.new([CLASS["Perlito5::AST::Var"],'sigil', '%','namespace', v_v._class_.namespace([v_v]),'name', v_v._class_.name([v_v])]));
 										throw(('(' + string(v_v._class_.emit_javascript([v_v])) + ').hasOwnProperty(' + string((v_arg._class_.index_exp([v_arg]))._class_.emit_javascript([(v_arg._class_.index_exp([v_arg]))])) + ')'));
 									})(); };
@@ -2666,13 +2672,13 @@ make_package("main");
 								throw(PKG.emit_javascript_bind([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0], ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[1], v_level]));
 							})(); };
 							if ( (v_code == 'return') ) { (function () {
-								throw(('throw(' + string((( bool(and((v_self || (v_self = new HashRef({})))._hash_[('arguments')], function () { return ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_; })) ? ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]]) : 'null'))) + ')'));
+								throw(('throw(' + string((( (bool((v_self || (v_self = new HashRef({})))._hash_[('arguments')]) && bool(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_)) ? ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]]) : 'null'))) + ')'));
 							})(); };
 							if ( (v_code == 'goto') ) { (function () {
 								throw(('throw((' + string(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]._class_.emit_javascript([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]])) + ')([List__]))'));
 							})(); };
 							if ( bool((v_self || (v_self = new HashRef({})))._hash_[('namespace')]) ) { (function () {
-								if ( bool(and(((v_self || (v_self = new HashRef({})))._hash_[('namespace')] == 'JS'), function () { return (v_code == 'inline'); })) ) { (function () {
+								if ( (((v_self || (v_self = new HashRef({})))._hash_[('namespace')] == 'JS') && (v_code == 'inline')) ) { (function () {
 									if ( bool(((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0]._class_.isa([((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0],'Perlito5::AST::Val::Buf'])) ) { (function () {
 										throw((((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0] || (((v_self || (v_self = new HashRef({})))._hash_[('arguments')] || ((v_self || (v_self = new HashRef({})))._hash_[('arguments')] = new ArrayRef([])))._array_[0] = new HashRef({})))._hash_[('buf')]);
 									})(); }
@@ -2708,11 +2714,11 @@ make_package("main");
 								(v_parameters = PKG.shift([List__]));
 								(v_arguments = PKG.shift([List__]));
 								(v_level = PKG.shift([List__]));
-								if ( bool(or(and(v_parameters._class_.isa([v_parameters,'Perlito5::AST::Var']), function () { return (v_parameters._class_.sigil([v_parameters]) == '@'); }), function () { return and(v_parameters._class_.isa([v_parameters,'Perlito5::AST::Decl']), function () { return (v_parameters._class_.var([v_parameters])._class_.sigil([v_parameters._class_.var([v_parameters])]) == '@'); }); })) ) { (function () {
+								if ( ((bool(v_parameters._class_.isa([v_parameters,'Perlito5::AST::Var'])) && (v_parameters._class_.sigil([v_parameters]) == '@')) || (bool(v_parameters._class_.isa([v_parameters,'Perlito5::AST::Decl'])) && (v_parameters._class_.var([v_parameters])._class_.sigil([v_parameters._class_.var([v_parameters])]) == '@'))) ) { (function () {
 									throw(('(' + string(v_parameters._class_.emit_javascript([v_parameters])) + ' = ' + string(NAMESPACE["Perlito5::Javascript"].to_list([(new ArrayRef(interpolate_array(v_arguments)))])) + ')'));
 								})(); }
 								else { (function () {
-									if ( bool(or(and(v_parameters._class_.isa([v_parameters,'Perlito5::AST::Var']), function () { return (v_parameters._class_.sigil([v_parameters]) == '%'); }), function () { return and(v_parameters._class_.isa([v_parameters,'Perlito5::AST::Decl']), function () { return (v_parameters._class_.var([v_parameters])._class_.sigil([v_parameters._class_.var([v_parameters])]) == '%'); }); })) ) { (function () {
+									if ( ((bool(v_parameters._class_.isa([v_parameters,'Perlito5::AST::Var'])) && (v_parameters._class_.sigil([v_parameters]) == '%')) || (bool(v_parameters._class_.isa([v_parameters,'Perlito5::AST::Decl'])) && (v_parameters._class_.var([v_parameters])._class_.sigil([v_parameters._class_.var([v_parameters])]) == '%'))) ) { (function () {
 										throw(('(' + string(v_parameters._class_.emit_javascript([v_parameters])) + ' = array_to_hash(' + string(NAMESPACE["Perlito5::Javascript"].to_list([(new ArrayRef(interpolate_array(v_arguments)))])) + '))'));
 									})(); };
 								})(); };
@@ -3199,7 +3205,7 @@ make_package("main");
 								var v_c2 = null;
 								(v_c1 = PKG.substr([v_str, (add(v_pos, v_len) - 1), 1]));
 								(v_c2 = PKG.substr([v_str, add(v_pos, v_len), 1]));
-								if ( !( bool(and(PKG.is_ident_middle([v_c1]), function () { return (or(PKG.is_ident_middle([v_c2]), function () { return (v_c2 == '('); })); }))) ) { (function () {
+								if ( !( (bool(PKG.is_ident_middle([v_c1])) && (bool(PKG.is_ident_middle([v_c2])) || (v_c2 == '(')))) ) { (function () {
 									throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', (new ArrayRef(interpolate_array('end', v_term)))]));
 								})(); };
 							})(); };
@@ -3223,7 +3229,7 @@ make_package("main");
 								var v_c2 = null;
 								(v_c1 = PKG.substr([v_str, (add(v_pos, v_len) - 1), 1]));
 								(v_c2 = PKG.substr([v_str, add(v_pos, v_len), 1]));
-								if ( !( bool(and(PKG.is_ident_middle([v_c1]), function () { return (or(PKG.is_ident_middle([v_c2]), function () { return (v_c2 == '('); })); }))) ) { (function () {
+								if ( !( (bool(PKG.is_ident_middle([v_c1])) && (bool(PKG.is_ident_middle([v_c2])) || (v_c2 == '(')))) ) { (function () {
 									throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', add(v_pos, v_len),'bool', 1,'capture', (new ArrayRef(interpolate_array('op', v_op)))]));
 								})(); };
 							})(); };
@@ -3296,19 +3302,19 @@ make_package("main");
 						if ( (((v_token || (v_token = new ArrayRef([])))._array_[0]) == 'space') ) { (function () {
 							(v_token = (v_get_token)([]));
 						})(); };
-						for ( ; bool(and(((v_token != null)), function () { return (((v_token || (v_token = new ArrayRef([])))._array_[0] != 'end')); }));  ) { (function () {
-							if ( bool(and((((v_token || (v_token = new ArrayRef([])))._array_[1] == ',')), function () { return (or((((v_last || (v_last = new ArrayRef([])))._array_[1] == '*start*')), function () { return (((v_last || (v_last = new ArrayRef([])))._array_[1] == ',')); })); })) ) { (function () {
+						for ( ; (bool((v_token != null)) && ((v_token || (v_token = new ArrayRef([])))._array_[0] != 'end'));  ) { (function () {
+							if ( (((v_token || (v_token = new ArrayRef([])))._array_[1] == ',') && (((v_last || (v_last = new ArrayRef([])))._array_[1] == '*start*') || ((v_last || (v_last = new ArrayRef([])))._array_[1] == ','))) ) { (function () {
 								PKG.push([(v_num_stack || (v_num_stack = new ArrayRef([])))._array_, (new ArrayRef(interpolate_array('term', null)))]);
 							})(); };
-							if ( bool(and(((v_Operator || (v_Operator = new HashRef({})))._hash_['prefix'] || ((v_Operator || (v_Operator = new HashRef({})))._hash_['prefix'] = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]], function () { return (or((((v_last || (v_last = new ArrayRef([])))._array_[1] == '*start*')), function () { return !( bool(PKG.is_term([v_last]))); })); })) ) { (function () {
+							if ( (bool(((v_Operator || (v_Operator = new HashRef({})))._hash_['prefix'] || ((v_Operator || (v_Operator = new HashRef({})))._hash_['prefix'] = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) && (((v_last || (v_last = new ArrayRef([])))._array_[1] == '*start*') || !( bool(PKG.is_term([v_last]))))) ) { (function () {
 								((v_token || (v_token = new ArrayRef([])))._array_[0] = 'prefix');
 								PKG.unshift([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_, v_token]);
 							})(); }
 							else { (function () {
-								if ( bool(and(and((((v_Operator || (v_Operator = new HashRef({})))._hash_['postfix']) || (((v_Operator || (v_Operator = new HashRef({})))._hash_['postfix']) = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]], function () { return PKG.is_term([v_last]); }), function () { return (or(((v_Allow_space_before || (v_Allow_space_before = new HashRef({})))._hash_['postfix'] || ((v_Allow_space_before || (v_Allow_space_before = new HashRef({})))._hash_['postfix'] = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]], function () { return !( bool(v_last_has_space)); })); })) ) { (function () {
+								if ( ((bool((((v_Operator || (v_Operator = new HashRef({})))._hash_['postfix']) || (((v_Operator || (v_Operator = new HashRef({})))._hash_['postfix']) = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) && bool(PKG.is_term([v_last]))) && (bool(((v_Allow_space_before || (v_Allow_space_before = new HashRef({})))._hash_['postfix'] || ((v_Allow_space_before || (v_Allow_space_before = new HashRef({})))._hash_['postfix'] = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) || !( bool(v_last_has_space)))) ) { (function () {
 									var v_pr = null;
 									(v_pr = (v_Precedence || (v_Precedence = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]);
-									for ( ; bool(and(PKG.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_]), function () { return ((v_pr <= (v_Precedence || (v_Precedence = new HashRef({})))._hash_[(((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) || (((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) = new ArrayRef([])))._array_[1]])); }));  ) { (function () {
+									for ( ; (bool(PKG.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_])) && bool((v_pr <= (v_Precedence || (v_Precedence = new HashRef({})))._hash_[(((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) || (((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) = new ArrayRef([])))._array_[1]])));  ) { (function () {
 										(v_reduce)([v_op_stack,v_num_stack]); })() };
 									if ( (((v_token || (v_token = new ArrayRef([])))._array_[0]) != 'postfix_or_term') ) { (function () {
 										((v_token || (v_token = new ArrayRef([])))._array_[0] = 'postfix');
@@ -3316,7 +3322,7 @@ make_package("main");
 									PKG.unshift([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_, v_token]);
 								})(); }
 								else { (function () {
-									if ( bool(and(and((((v_token || (v_token = new ArrayRef([])))._array_[1] == 'block')), function () { return PKG.is_term([v_last]); }), function () { return v_last_has_space; })) ) { (function () {
+									if ( ((((v_token || (v_token = new ArrayRef([])))._array_[1] == 'block') && bool(PKG.is_term([v_last]))) && bool(v_last_has_space)) ) { (function () {
 										for ( ; bool(PKG.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_]));  ) { (function () {
 											(v_reduce)([v_op_stack,v_num_stack]); })() };
 										PKG.push([(v_num_stack || (v_num_stack = new ArrayRef([])))._array_, v_token]);
@@ -3340,11 +3346,11 @@ make_package("main");
 												var v_pr = null;
 												(v_pr = (v_Precedence || (v_Precedence = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]);
 												if ( bool(((v_Assoc || (v_Assoc = new HashRef({})))._hash_['right'] || ((v_Assoc || (v_Assoc = new HashRef({})))._hash_['right'] = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) ) { (function () {
-													for ( ; bool(and(PKG.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_]), function () { return ((v_pr < (v_Precedence || (v_Precedence = new HashRef({})))._hash_[(((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) || (((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) = new ArrayRef([])))._array_[1]])); }));  ) { (function () {
+													for ( ; (bool(PKG.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_])) && bool((v_pr < (v_Precedence || (v_Precedence = new HashRef({})))._hash_[(((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) || (((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) = new ArrayRef([])))._array_[1]])));  ) { (function () {
 														(v_reduce)([v_op_stack,v_num_stack]); })() };
 												})(); }
 												else { (function () {
-													for ( ; bool(and(PKG.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_]), function () { return ((v_pr <= (v_Precedence || (v_Precedence = new HashRef({})))._hash_[(((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) || (((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) = new ArrayRef([])))._array_[1]])); }));  ) { (function () {
+													for ( ; (bool(PKG.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_])) && bool((v_pr <= (v_Precedence || (v_Precedence = new HashRef({})))._hash_[(((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) || (((v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]) = new ArrayRef([])))._array_[1]])));  ) { (function () {
 														(v_reduce)([v_op_stack,v_num_stack]); })() };
 												})(); };
 												if ( bool(((v_Operator || (v_Operator = new HashRef({})))._hash_['ternary'] || ((v_Operator || (v_Operator = new HashRef({})))._hash_['ternary'] = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) ) { (function () {
@@ -3371,7 +3377,7 @@ make_package("main");
 							else { (function () {
 								(v_last_has_space = 0);
 							})(); }; })() };
-						if ( bool(and((v_token != null), function () { return (((v_token || (v_token = new ArrayRef([])))._array_[0] != 'end')); })) ) { (function () {
+						if ( (bool((v_token != null)) && ((v_token || (v_token = new ArrayRef([])))._array_[0] != 'end')) ) { (function () {
 							PKG.die([('Unexpected end token: '), v_token]);
 						})(); };
 						for ( ; bool(PKG.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_]));  ) { (function () {
@@ -3959,7 +3965,7 @@ make_package("main");
 					try {
 						var v_param_list = null;
 						(v_param_list = PKG.shift([List__]));
-						if ( bool(and((PKG.ref([v_param_list]) == 'Perlito5::AST::Apply'), function () { return (v_param_list._class_.code([v_param_list]) == 'list:<,>'); })) ) { return (function () {
+						if ( ((PKG.ref([v_param_list]) == 'Perlito5::AST::Apply') && (v_param_list._class_.code([v_param_list]) == 'list:<,>')) ) { return (function () {
 													var v_args = null;
 							(v_args = (new ArrayRef([])));
 							(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_v) {
@@ -3997,7 +4003,7 @@ make_package("main");
 							throw(v_o);
 						})(); };
 						(v_stmts = v_o._class_.stmts([v_o]));
-						if ( bool(or(!( bool((v_stmts != null))), function () { return (PKG.scalar([(v_stmts || (v_stmts = new ArrayRef([])))._array_]) == 0); })) ) { (function () {
+						if ( (!( bool((v_stmts != null))) || (PKG.scalar([(v_stmts || (v_stmts = new ArrayRef([])))._array_]) == 0)) ) { (function () {
 							throw(CLASS["Perlito5::AST::Apply"]._class_.new([CLASS["Perlito5::AST::Apply"],'code', 'circumfix:<{ }>','namespace', '','arguments', (new ArrayRef([]))]));
 						})(); };
 						if ( (PKG.scalar([(v_stmts || (v_stmts = new ArrayRef([])))._array_]) != 1) ) { (function () {
@@ -4017,7 +4023,7 @@ make_package("main");
 							throw(v_o);
 						})(); };
 						(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { (function (v_item) {
-							if ( bool(and((PKG.ref([v_item]) == 'Perlito5::AST::Apply'), function () { return (v_item._class_.code([v_item]) == 'infix:<=>>'); })) ) { (function () {
+							if ( ((PKG.ref([v_item]) == 'Perlito5::AST::Apply') && (v_item._class_.code([v_item]) == 'infix:<=>>')) ) { (function () {
 								throw(CLASS["Perlito5::AST::Apply"]._class_.new([CLASS["Perlito5::AST::Apply"],'code', 'circumfix:<{ }>','namespace', '','arguments', PKG.expand_list([v_stmt])]));
 							})(); };
 						})(a_[i_]) } })(interpolate_array((v_stmt._class_.arguments([v_stmt]) || (v_stmt._class_.arguments([v_stmt]) = new ArrayRef([])))._array_));
@@ -4094,7 +4100,7 @@ make_package("main");
 								(v_v = CLASS["Perlito5::AST::Lookup"]._class_.new([CLASS["Perlito5::AST::Lookup"],'obj', null,'index_exp', (v_v || (v_v = new ArrayRef([])))._array_[2]]));
 								throw(v_v);
 							})(); };
-							if ( bool(and((PKG.ref([(v_v || (v_v = new ArrayRef([])))._array_[1]]) == 'ARRAY'), function () { return (PKG.scalar([(v_v || (v_v = new ArrayRef([])))._array_[1]]) == 2); })) ) { (function () {
+							if ( ((PKG.ref([(v_v || (v_v = new ArrayRef([])))._array_[1]]) == 'ARRAY') && (PKG.scalar([(v_v || (v_v = new ArrayRef([])))._array_[1]]) == 2)) ) { (function () {
 								(v_v = CLASS["Perlito5::AST::Apply"]._class_.new([CLASS["Perlito5::AST::Apply"],'code', 'pair','arguments', (v_v || (v_v = new ArrayRef([])))._array_[1],'namespace', '']));
 								throw(v_v);
 							})(); };
@@ -4142,11 +4148,11 @@ make_package("main");
 						if ( ((v_v || (v_v = new ArrayRef([])))._array_[1] == '( )') ) { (function () {
 							var v_param_list = null;
 							(v_param_list = PKG.expand_list([(v_v || (v_v = new ArrayRef([])))._array_[2]]));
-							if ( bool(and((PKG.ref([v_value]) == 'Perlito5::AST::Apply'), function () { return !( bool((v_value._class_.arguments([v_value]) != null))); })) ) { (function () {
+							if ( ((PKG.ref([v_value]) == 'Perlito5::AST::Apply') && !( bool((v_value._class_.arguments([v_value]) != null)))) ) { (function () {
 								((v_value || (v_value = new HashRef({})))._hash_['arguments'] = v_param_list);
 								throw(v_value);
 							})(); };
-							if ( bool(and((PKG.ref([v_value]) == 'Perlito5::AST::Call'), function () { return !( bool((v_value._class_.arguments([v_value]) != null))); })) ) { (function () {
+							if ( ((PKG.ref([v_value]) == 'Perlito5::AST::Call') && !( bool((v_value._class_.arguments([v_value]) != null)))) ) { (function () {
 								((v_value || (v_value = new HashRef({})))._hash_['arguments'] = v_param_list);
 								throw(v_value);
 							})(); };
@@ -5418,7 +5424,7 @@ make_package("main");
 								var v_v = null;
 								if ( bool(PKG.scalar([(v_lexer_stack || (v_lexer_stack = new ArrayRef([])))._array_])) ) { (function () {
 									(v_v = PKG.pop([(v_lexer_stack || (v_lexer_stack = new ArrayRef([])))._array_]));
-									if ( bool(and(and(v_is_first_token, function () { return (((v_v || (v_v = new ArrayRef([])))._array_[0] == 'op')); }), function () { return !( bool(NAMESPACE["Perlito5::Precedence"].is_fixity_type(['prefix', (v_v || (v_v = new ArrayRef([])))._array_[1]]))); })) ) { (function () {
+									if ( ((bool(v_is_first_token) && ((v_v || (v_v = new ArrayRef([])))._array_[0] == 'op')) && !( bool(NAMESPACE["Perlito5::Precedence"].is_fixity_type(['prefix', (v_v || (v_v = new ArrayRef([])))._array_[1]])))) ) { (function () {
 										((v_v || (v_v = new ArrayRef([])))._array_[0] = 'end');
 									})(); };
 								})(); }
@@ -5429,14 +5435,14 @@ make_package("main");
 										throw((new ArrayRef(interpolate_array('end', '*end*'))));
 									})(); };
 									(v_v = v_m._class_.flat([v_m]));
-									if ( bool(and(and(v_is_first_token, function () { return (((v_v || (v_v = new ArrayRef([])))._array_[0] == 'op')); }), function () { return !( bool(NAMESPACE["Perlito5::Precedence"].is_fixity_type(['prefix', (v_v || (v_v = new ArrayRef([])))._array_[1]]))); })) ) { (function () {
+									if ( ((bool(v_is_first_token) && ((v_v || (v_v = new ArrayRef([])))._array_[0] == 'op')) && !( bool(NAMESPACE["Perlito5::Precedence"].is_fixity_type(['prefix', (v_v || (v_v = new ArrayRef([])))._array_[1]])))) ) { (function () {
 										((v_v || (v_v = new ArrayRef([])))._array_[0] = 'end');
 									})(); };
 									if ( ((v_v || (v_v = new ArrayRef([])))._array_[0] != 'end') ) { (function () {
 										(v_last_pos = v_m._class_.to([v_m]));
 									})(); };
 								})(); };
-								if ( bool(and(and(((v_v || (v_v = new ArrayRef([])))._array_[0] == 'postfix_or_term'), function () { return ((v_v || (v_v = new ArrayRef([])))._array_[1] == 'block'); }), function () { return v_last_token_was_space; })) ) { (function () {
+								if ( ((((v_v || (v_v = new ArrayRef([])))._array_[0] == 'postfix_or_term') && ((v_v || (v_v = new ArrayRef([])))._array_[1] == 'block')) && bool(v_last_token_was_space)) ) { (function () {
 									if ( bool(v_self._class_.has_newline_after([v_self,v_str,v_last_pos])._class_.bool([v_self._class_.has_newline_after([v_self,v_str,v_last_pos])])) ) { (function () {
 										(v_terminated = 1);
 										PKG.push([(v_lexer_stack || (v_lexer_stack = new ArrayRef([])))._array_, (new ArrayRef(interpolate_array('end', '*end*')))]);
@@ -5697,9 +5703,9 @@ make_package("main");
 								((v_here || (v_here = new ArrayRef([])))._array_[1])([PKG.substr([v_str, v_pos, (v_p - v_pos)])]);
 								throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', add(v_p, PKG.length([v_delimiter])),'bool', 1,'capture', null]));
 							})(); };
-							for ( ; bool(and((v_p < PKG.length([v_str])), function () { return (and((PKG.substr([v_str, v_p, 1]) != PKG.chr([10])), function () { return (PKG.substr([v_str, v_p, 1]) != PKG.chr([13])); })); }));  ) { (function () {
+							for ( ; (bool((v_p < PKG.length([v_str]))) && ((PKG.substr([v_str, v_p, 1]) != PKG.chr([10])) && (PKG.substr([v_str, v_p, 1]) != PKG.chr([13]))));  ) { (function () {
 								(v_p)++; })() };
-							for ( ; bool(and((v_p < PKG.length([v_str])), function () { return (or((PKG.substr([v_str, v_p, 1]) == PKG.chr([10])), function () { return (PKG.substr([v_str, v_p, 1]) == PKG.chr([13])); })); }));  ) { (function () {
+							for ( ; (bool((v_p < PKG.length([v_str]))) && ((PKG.substr([v_str, v_p, 1]) == PKG.chr([10])) || (PKG.substr([v_str, v_p, 1]) == PKG.chr([13]))));  ) { (function () {
 								(v_p)++; })() }; })() };
 						return (PKG.die([('Can' + String.fromCharCode(39) + 't find string terminator ' + String.fromCharCode(34) + string(v_delimiter) + String.fromCharCode(34) + ' anywhere before EOF')]));
 					}
@@ -5749,7 +5755,7 @@ make_package("main");
 										(v_last_pos = v_m._class_.to([v_m]));
 									})(); };
 								})(); };
-								if ( bool(or(or(or((and(((v_v || (v_v = new ArrayRef([])))._array_[0] == 'postfix_or_term'), function () { return ((v_v || (v_v = new ArrayRef([])))._array_[1] == 'block'); })), function () { return (and(((v_v || (v_v = new ArrayRef([])))._array_[0] == 'term'), function () { return (PKG.ref([(v_v || (v_v = new ArrayRef([])))._array_[1]]) == 'Perlito5::AST::Sub'); })); }), function () { return (and(((v_v || (v_v = new ArrayRef([])))._array_[0] == 'term'), function () { return (PKG.ref([(v_v || (v_v = new ArrayRef([])))._array_[1]]) == 'Perlito5::AST::Do'); })); }), function () { return (and(((v_v || (v_v = new ArrayRef([])))._array_[0] == 'term'), function () { return (PKG.ref([(v_v || (v_v = new ArrayRef([])))._array_[1]]) == 'Perlito5::AST::CompUnit'); })); })) ) { (function () {
+								if ( ((((((v_v || (v_v = new ArrayRef([])))._array_[0] == 'postfix_or_term') && ((v_v || (v_v = new ArrayRef([])))._array_[1] == 'block')) || (((v_v || (v_v = new ArrayRef([])))._array_[0] == 'term') && (PKG.ref([(v_v || (v_v = new ArrayRef([])))._array_[1]]) == 'Perlito5::AST::Sub'))) || (((v_v || (v_v = new ArrayRef([])))._array_[0] == 'term') && (PKG.ref([(v_v || (v_v = new ArrayRef([])))._array_[1]]) == 'Perlito5::AST::Do'))) || (((v_v || (v_v = new ArrayRef([])))._array_[0] == 'term') && (PKG.ref([(v_v || (v_v = new ArrayRef([])))._array_[1]]) == 'Perlito5::AST::CompUnit'))) ) { (function () {
 									if ( bool(v_self._class_.has_newline_after([v_self,v_str,v_last_pos])._class_.bool([v_self._class_.has_newline_after([v_self,v_str,v_last_pos])])) ) { (function () {
 										(v_terminated = 1);
 										PKG.push([(v_lexer_stack || (v_lexer_stack = new ArrayRef([])))._array_, (new ArrayRef(interpolate_array('end', '*end*')))]);
@@ -6113,7 +6119,7 @@ make_package("main");
 						if ( (v_modifier == 'while') ) { (function () {
 							throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_modifier_exp._class_.to([v_modifier_exp]),'bool', 1,'capture', CLASS["Perlito5::AST::While"]._class_.new([CLASS["Perlito5::AST::While"],'cond', (v_modifier_exp._class_.flat([v_modifier_exp]) || (v_modifier_exp._class_.flat([v_modifier_exp]) = new HashRef({})))._hash_['exp'],'body', CLASS["Perlito5::AST::Lit::Block"]._class_.new([CLASS["Perlito5::AST::Lit::Block"],'stmts', (new ArrayRef(interpolate_array((v_res._class_.flat([v_res]) || (v_res._class_.flat([v_res]) = new HashRef({})))._hash_['exp'])))])])]));
 						})(); };
-						if ( bool(or((v_modifier == 'for'), function () { return (v_modifier == 'foreach'); })) ) { (function () {
+						if ( ((v_modifier == 'for') || (v_modifier == 'foreach')) ) { (function () {
 							throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_modifier_exp._class_.to([v_modifier_exp]),'bool', 1,'capture', CLASS["Perlito5::AST::For"]._class_.new([CLASS["Perlito5::AST::For"],'cond', (v_modifier_exp._class_.flat([v_modifier_exp]) || (v_modifier_exp._class_.flat([v_modifier_exp]) = new HashRef({})))._hash_['exp'],'body', CLASS["Perlito5::AST::Lit::Block"]._class_.new([CLASS["Perlito5::AST::Lit::Block"],'stmts', (new ArrayRef(interpolate_array((v_res._class_.flat([v_res]) || (v_res._class_.flat([v_res]) = new HashRef({})))._hash_['exp'])))])])]));
 						})(); };
 						return (PKG.die([('Unexpected statement modifier ' + String.fromCharCode(39) + string(v_modifier) + String.fromCharCode(39))]));
@@ -6156,7 +6162,7 @@ make_package("main");
 										if ( bool((PKG.scalar([(v_num_stack || (v_num_stack = new ArrayRef([])))._array_]) < 2)) ) { (function () {
 											var v_v2 = null;
 											(v_v2 = PKG.pop_term([v_num_stack]));
-											if ( bool(and((PKG.ref([v_v2]) == 'Perlito5::AST::Apply'), function () { return (v_v2._class_.code([v_v2]) == (('list:<' + string((v_last_op || (v_last_op = new ArrayRef([])))._array_[1]) + '>'))); })) ) { (function () {
+											if ( ((PKG.ref([v_v2]) == 'Perlito5::AST::Apply') && (v_v2._class_.code([v_v2]) == (('list:<' + string((v_last_op || (v_last_op = new ArrayRef([])))._array_[1]) + '>')))) ) { (function () {
 												PKG.push([(v_num_stack || (v_num_stack = new ArrayRef([])))._array_, CLASS["Perlito5::AST::Apply"]._class_.new([CLASS["Perlito5::AST::Apply"],'namespace', v_v2._class_.namespace([v_v2]),'code', v_v2._class_.code([v_v2]),'arguments', (new ArrayRef(interpolate_array((v_v2._class_.arguments([v_v2]) || (v_v2._class_.arguments([v_v2]) = new ArrayRef([])))._array_, null)))])]);
 											})(); }
 											else { (function () {
@@ -6169,7 +6175,7 @@ make_package("main");
 											(v_v2 = PKG.pop_term([v_num_stack]));
 											(v_arg = (new ArrayRef(interpolate_array(PKG.pop_term([v_num_stack]), v_v2))));
 										})(); };
-										if ( bool(and(and((PKG.ref([(v_arg || (v_arg = new ArrayRef([])))._array_[0]]) == 'Perlito5::AST::Apply'), function () { return ((v_last_op || (v_last_op = new ArrayRef([])))._array_[0] == 'infix'); }), function () { return (((v_arg || (v_arg = new ArrayRef([])))._array_[0]._class_.code([(v_arg || (v_arg = new ArrayRef([])))._array_[0]]) == ('list:<' + string((v_last_op || (v_last_op = new ArrayRef([])))._array_[1]) + '>'))); })) ) { (function () {
+										if ( (((PKG.ref([(v_arg || (v_arg = new ArrayRef([])))._array_[0]]) == 'Perlito5::AST::Apply') && ((v_last_op || (v_last_op = new ArrayRef([])))._array_[0] == 'infix')) && ((v_arg || (v_arg = new ArrayRef([])))._array_[0]._class_.code([(v_arg || (v_arg = new ArrayRef([])))._array_[0]]) == ('list:<' + string((v_last_op || (v_last_op = new ArrayRef([])))._array_[1]) + '>'))) ) { (function () {
 											PKG.push([(v_num_stack || (v_num_stack = new ArrayRef([])))._array_, CLASS["Perlito5::AST::Apply"]._class_.new([CLASS["Perlito5::AST::Apply"],'namespace', '','code', ((v_arg || (v_arg = new ArrayRef([])))._array_[0])._class_.code([((v_arg || (v_arg = new ArrayRef([])))._array_[0])]),'arguments', (new ArrayRef(interpolate_array((((v_arg || (v_arg = new ArrayRef([])))._array_[0])._class_.arguments([((v_arg || (v_arg = new ArrayRef([])))._array_[0])]) || (((v_arg || (v_arg = new ArrayRef([])))._array_[0])._class_.arguments([((v_arg || (v_arg = new ArrayRef([])))._array_[0])]) = new ArrayRef([])))._array_, (v_arg || (v_arg = new ArrayRef([])))._array_[1])))])]);
 											throw(null);
 										})(); };
@@ -6835,7 +6841,7 @@ make_package("main");
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	(v_count = 0);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.word([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -6845,7 +6851,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -6899,7 +6905,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_pos1 = null;
 	(v_pos1 = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	return (((function () {
@@ -6915,7 +6921,7 @@ make_package("main");
 	})(); }
 })()); }));
 		})()));
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -6982,7 +6988,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_pos1 = null;
 	(v_pos1 = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	return (((function () {
@@ -7012,7 +7018,7 @@ make_package("main");
 	return (( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('bool')]) ? 1 : 0));
 })()); }));
 		})()));
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -7119,7 +7125,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.not_newline([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -7129,7 +7135,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -7147,7 +7153,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.not_newline([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -7157,7 +7163,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -7220,7 +7226,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.not_newline([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -7230,7 +7236,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -7248,7 +7254,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.not_newline([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -7258,7 +7264,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -7312,7 +7318,7 @@ make_package("main");
 									(v_last_match_null = 0);
 									(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 									(v_count = 0);
-									for ( ; bool(and(((function () {
+									for ( ; (bool((function () {
 	var v_pos1 = null;
 	(v_pos1 = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	return (or(or(((function () {
@@ -7321,7 +7327,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.not_newline([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -7331,7 +7337,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -7460,7 +7466,7 @@ make_package("main");
 			})(); }
 		})())));
 })()); }));
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 										if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 											(v_last_match_null = add(v_last_match_null, 1));
 										})(); }
@@ -8078,7 +8084,7 @@ make_package("main");
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	(v_count = 0);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.digit([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -8088,7 +8094,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -8138,7 +8144,7 @@ make_package("main");
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	(v_count = 0);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.digit([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -8148,7 +8154,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -8186,7 +8192,7 @@ make_package("main");
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	(v_count = 0);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.digit([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -8196,7 +8202,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -8229,7 +8235,7 @@ make_package("main");
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	(v_count = 0);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.digit([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -8239,7 +8245,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -8349,7 +8355,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_pos1 = null;
 	(v_pos1 = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	return (((function () {
@@ -8376,7 +8382,7 @@ make_package("main");
 	return (( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('bool')]) ? 1 : 0));
 })()), function () { return (and(('' != PKG.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')], 1])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = add(1, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]))); })); }));
 		})()));
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -8550,7 +8556,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_pos1 = null;
 	(v_pos1 = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	return (((function () {
@@ -8583,7 +8589,7 @@ make_package("main");
 	return (( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('bool')]) ? 1 : 0));
 })()), function () { return (and(('' != PKG.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')], 1])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')] = add(1, (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]))); })); }));
 		})()));
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -8981,7 +8987,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.double_quoted_buf([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -8997,7 +9003,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -9068,7 +9074,7 @@ make_package("main");
 									(v_last_match_null = 0);
 									(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 									(v_count = 0);
-									for ( ; bool(and(((function () {
+									for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.digit([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -9078,7 +9084,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 										if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 											(v_last_match_null = add(v_last_match_null, 1));
 										})(); }
@@ -9123,7 +9129,7 @@ make_package("main");
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
 	(v_count = 0);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = v_grammar._class_.digit([v_grammar,v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -9133,7 +9139,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -9180,7 +9186,7 @@ make_package("main");
 	var v_last_pos = null;
 	(v_last_match_null = 0);
 	(v_last_pos = (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]);
-	for ( ; bool(and(((function () {
+	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = CLASS["Perlito5::Expression"]._class_.delimited_statement([CLASS["Perlito5::Expression"],v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_[('bool')]) ) { return (function () {
@@ -9196,7 +9202,7 @@ make_package("main");
 		else { return (function () {
 			0;
 	})(); }
-})()), function () { return ((v_last_match_null < 2)); }));  ) { (function () {
+})()) && bool((v_last_match_null < 2)));  ) { (function () {
 		if ( (v_last_pos == (v_MATCH || (v_MATCH = new HashRef({})))._hash_[('to')]) ) { (function () {
 			(v_last_match_null = add(v_last_match_null, 1));
 		})(); }
@@ -9579,7 +9585,7 @@ make_package("main");
 						if ( (PKG.scalar([(v_block || (v_block = new ArrayRef([])))._array_]) == 1) ) { (function () {
 							var v_stmt = null;
 							(v_stmt = (v_block || (v_block = new ArrayRef([])))._array_[0]);
-							if ( bool(and(v_stmt._class_.isa([v_stmt,'Perlito5::AST::Apply']), function () { return (v_stmt._class_.code([v_stmt]) == 'circumfix:<( )>'); })) ) { (function () {
+							if ( (bool(v_stmt._class_.isa([v_stmt,'Perlito5::AST::Apply'])) && (v_stmt._class_.code([v_stmt]) == 'circumfix:<( )>')) ) { (function () {
 								var v_args = null;
 								(v_args = v_stmt._class_.arguments([v_stmt]));
 								throw(CLASS["Perlito5::AST::Do"]._class_.new([CLASS["Perlito5::AST::Do"],'block', (v_args || (v_args = new ArrayRef([])))._array_[0]])._class_.simplify([CLASS["Perlito5::AST::Do"]._class_.new([CLASS["Perlito5::AST::Do"],'block', (v_args || (v_args = new ArrayRef([])))._array_[0]])]));
