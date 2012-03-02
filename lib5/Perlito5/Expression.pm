@@ -1293,10 +1293,20 @@ sub here_doc {
     };
     ((my  $p) = $pos);
     ((my  $here) = shift(@Here_doc));
-    Perlito5::Runtime::say(('got a newline and we are looking for a '), $here->[0], (' that ends with '), $here->[2]);
-    ((my  $text) = 'TODO');
-    $here->[1]->($text);
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => undef())))
+    ((my  $delimiter) = $here->[2]);
+    for ( ; (($p < length($str)));  ) {
+        if (((substr($str, $p, length($delimiter)) eq $delimiter))) {
+            $here->[1]->(substr($str, $pos, ($p - $pos)));
+            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($p + length($delimiter))), ('bool' => 1), ('capture' => undef())))
+        };
+        for ( ; ((($p < length($str)) && (((substr($str, $p, 1) ne chr(10)) && (substr($str, $p, 1) ne chr(13))))));  ) {
+            ($p)++
+        };
+        for ( ; ((($p < length($str)) && (((substr($str, $p, 1) eq chr(10)) || (substr($str, $p, 1) eq chr(13))))));  ) {
+            ($p)++
+        }
+    };
+    die(('Can' . chr(39) . 't find string terminator ' . chr(34) . $delimiter . chr(34) . ' anywhere before EOF'))
 };
 sub exp_parse {
     ((my  $self) = $_[0]);

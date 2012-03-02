@@ -833,15 +833,31 @@ package Perlito5::Expression;
 
         my $p = $pos;
         my $here = shift @Here_doc;
-        say "got a newline and we are looking for a ", $here->[0], " that ends with ", $here->[2];
-
-        my $text = 'TODO';
-
-        # this will put the text in the right place in the AST
-        $here->[1]->($text);
-        # move the pointer and return true
-        return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $p, 'bool' => 1, capture => undef);
+        my $delimiter = $here->[2];
+        # say "got a newline and we are looking for a ", $here->[0], " that ends with ", $delimiter;
+        while ( $p < length($str) ) {
+            if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
+                # this will put the text in the right place in the AST
+                $here->[1]->(substr($str, $pos, $p - $pos));
+                # move the pointer and return true
+                return Perlito5::Match->new(
+                    'str' => $str, 'from' => $pos, 'to' => $p + length($delimiter), 'bool' => 1, capture => undef);
+            }
+            # ... next line
+            while (  $p < length($str)
+                  && ( substr($str, $p, 1) ne chr(10) && substr($str, $p, 1) ne chr(13) )
+                  )
+            {
+                $p++
+            }
+            while (  $p < length($str)
+                  && ( substr($str, $p, 1) eq chr(10) || substr($str, $p, 1) eq chr(13) )
+                  )
+            {
+                $p++
+            }
+        }
+        die 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';
     }
 
     sub exp_parse {

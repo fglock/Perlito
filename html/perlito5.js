@@ -5663,7 +5663,7 @@ make_package("main");
 			return(err);
 		}
 	}
-})))]);
+}, v_delimiter)))]);
 						throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_p,'bool', 1,'capture', (new ArrayRef(interpolate_array('term', v_placeholder)))]))
 					}
 					catch(err) {
@@ -5680,19 +5680,28 @@ make_package("main");
 						var v_self = null;
 						var v_str = null;
 						var v_pos = null;
+						var v_p = null;
+						var v_here = null;
+						var v_delimiter = null;
 						(v_self = List__[0]);
 						(v_str = List__[1]);
 						(v_pos = List__[2]);
-						if ( bool(List_Here_doc) ) { (function () {
-							var v_here = null;
-							(v_here = PKG.shift([List_Here_doc]));
-							PKG.say([('got a newline and we are looking for a '), (v_here || (v_here = new ArrayRef([])))._array_[0]]);
-							((v_here || (v_here = new ArrayRef([])))._array_[1])(['GOTIT']);
-						})(); };
-						if ( 1 ) { (function () {
+						if ( !( bool(List_Here_doc)) ) { (function () {
 							throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', null]));
 						})(); };
-						throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', null]))
+						(v_p = v_pos);
+						(v_here = PKG.shift([List_Here_doc]));
+						(v_delimiter = (v_here || (v_here = new ArrayRef([])))._array_[2]);
+						for ( ; bool((v_p < PKG.length([v_str])));  ) { (function () {
+							if ( bool((PKG.substr([v_str, v_p, PKG.length([v_delimiter])]) == v_delimiter)) ) { (function () {
+								((v_here || (v_here = new ArrayRef([])))._array_[1])([PKG.substr([v_str, v_pos, (v_p - v_pos)])]);
+								throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', add(v_p, PKG.length([v_delimiter])),'bool', 1,'capture', null]));
+							})(); };
+							for ( ; bool(and((v_p < PKG.length([v_str])), function () { return (and((PKG.substr([v_str, v_p, 1]) != PKG.chr([10])), function () { return (PKG.substr([v_str, v_p, 1]) != PKG.chr([13])); })); }));  ) { (function () {
+								(v_p)++; })() };
+							for ( ; bool(and((v_p < PKG.length([v_str])), function () { return (or((PKG.substr([v_str, v_p, 1]) == PKG.chr([10])), function () { return (PKG.substr([v_str, v_p, 1]) == PKG.chr([13])); })); }));  ) { (function () {
+								(v_p)++; })() }; })() };
+						return (PKG.die([('Can' + String.fromCharCode(39) + 't find string terminator ' + String.fromCharCode(34) + string(v_delimiter) + String.fromCharCode(34) + ' anywhere before EOF')]));
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
