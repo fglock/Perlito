@@ -774,7 +774,25 @@ package Perlito5::Expression;
         my $str = $_[1];
         my $pos = $_[2];    # $pos points to the first "<" in <<'END'
 
-        if (1) {
+        my $delimiter;
+        my $p = $pos;
+        if ( substr($str, $p, 2) eq '<<' ) {
+            $p += 2;
+            if ( substr($str, $p, 1) eq "'" ) {
+                $p += 1;
+                my $m = Perlito5::Grammar->single_quoted_unescape( $str, $p );
+                if ( $m->{"bool"} ) {
+                    $p = $m->{"to"};
+                    if ( substr($str, $p, 1) eq "'" ) {
+                        $p = $p + 1;
+                        $delimiter = $m->flat();
+                        say "got a here-doc delimiter: [$delimiter]";
+                    }
+                }
+            }
+        }
+
+        if ( !defined $delimiter ) {
             # not a here-doc request, return false
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 0, capture => undef);
@@ -785,7 +803,15 @@ package Perlito5::Expression;
         # ...
 
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 1, capture => undef);
+            'str' => $str, 
+            'from' => $pos, 
+            'to' => $p, 
+            'bool' => 1, 
+            capture => [ 
+                    'term', 
+                    Perlito5::AST::Val::Buf->new( buf => 'HEREDOC placeholder!!!' )
+                ]
+        );
     }
 
     sub here_doc {

@@ -5624,13 +5624,32 @@ make_package("main");
 						var v_self = null;
 						var v_str = null;
 						var v_pos = null;
+						var v_delimiter = null;
+						var v_p = null;
 						(v_self = List__[0]);
 						(v_str = List__[1]);
 						(v_pos = List__[2]);
-						if ( 1 ) { (function () {
+						(v_p = v_pos);
+						if ( bool((PKG.substr([v_str, v_p, 2]) == '<<')) ) { (function () {
+							(v_p = add(v_p, 2));
+							if ( bool((PKG.substr([v_str, v_p, 1]) == (String.fromCharCode(39)))) ) { (function () {
+								var v_m = null;
+								(v_p = add(v_p, 1));
+								(v_m = CLASS["Perlito5::Grammar"]._class_.single_quoted_unescape([CLASS["Perlito5::Grammar"],v_str,v_p]));
+								if ( bool((v_m || (v_m = new HashRef({})))._hash_[('bool')]) ) { (function () {
+									(v_p = (v_m || (v_m = new HashRef({})))._hash_[('to')]);
+									if ( bool((PKG.substr([v_str, v_p, 1]) == (String.fromCharCode(39)))) ) { (function () {
+										(v_p = add(v_p, 1));
+										(v_delimiter = v_m._class_.flat([v_m]));
+										PKG.say([('got a here-doc delimiter: [' + string(v_delimiter) + ']')]);
+									})(); };
+								})(); };
+							})(); };
+						})(); };
+						if ( !( bool((v_delimiter != null))) ) { (function () {
 							throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 0,'capture', null]));
 						})(); };
-						throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', null]))
+						throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_p,'bool', 1,'capture', (new ArrayRef(interpolate_array('term', CLASS["Perlito5::AST::Val::Buf"]._class_.new([CLASS["Perlito5::AST::Val::Buf"],'buf', 'HEREDOC placeholder' + String.fromCharCode(33) + String.fromCharCode(33) + String.fromCharCode(33)]))))]))
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
