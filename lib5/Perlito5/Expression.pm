@@ -1279,9 +1279,9 @@ sub here_doc_wanted {
         return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 0), ('capture' => undef())))
     };
     ((my  $placeholder) = Perlito5::AST::Val::Buf->new(('buf' => 'HEREDOC')));
-    unshift(@Here_doc, ['single_quote', sub  {
+    push(@Here_doc, ['single_quote', sub  {
     ($placeholder->{('buf')} = $_[0])
-}, $delimiter]);
+}, $delimiter] );
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => ['term', $placeholder])))
 };
 sub here_doc {

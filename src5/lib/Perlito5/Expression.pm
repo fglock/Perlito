@@ -800,7 +800,7 @@ package Perlito5::Expression;
         }
 
         my $placeholder = Perlito5::AST::Val::Buf->new( buf => 'HEREDOC' );
-        unshift @Here_doc, [ 
+        push @Here_doc, [ 
             'single_quote', 
             sub { $placeholder->{"buf"} = $_[0] },
             $delimiter,

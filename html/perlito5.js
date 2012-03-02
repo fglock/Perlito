@@ -5651,7 +5651,7 @@ make_package("main");
 							throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 0,'capture', null]));
 						})(); };
 						(v_placeholder = CLASS["Perlito5::AST::Val::Buf"]._class_.new([CLASS["Perlito5::AST::Val::Buf"],'buf', 'HEREDOC']));
-						PKG.unshift([List_Here_doc, (new ArrayRef(interpolate_array('single_quote', function (List__) {
+						PKG.push([List_Here_doc, (new ArrayRef(interpolate_array('single_quote', function (List__) {
 	try {
 		return (((v_placeholder || (v_placeholder = new HashRef({})))._hash_[('buf')] = List__[0]));
 	}
