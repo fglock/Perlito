@@ -42,7 +42,7 @@ TODO list for Perlito5
 
 -- symbol variables like $]
 
--- here-docs
+-- double-quoted here-docs
 
 
 * Perl5 backend
