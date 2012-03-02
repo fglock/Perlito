@@ -765,6 +765,29 @@ package Perlito5::Expression;
         return $self->circumfix_parse($str, $pos, ')');
     }
 
+
+    sub here_doc_wanted {
+        # setup a here-doc request
+        # the actual text will be parsed later, by here_doc()
+
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];    # $pos points to the first "<" in <<'END'
+
+        if (1) {
+            # not a here-doc request, return false
+            return Perlito5::Match->new(
+                'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 0, capture => undef);
+        }
+
+        # now do something
+
+        # ...
+
+        return Perlito5::Match->new(
+            'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 1, capture => undef);
+    }
+
     sub here_doc {
         # here-doc is called just after a newline
 
@@ -773,7 +796,7 @@ package Perlito5::Expression;
         my $pos = $_[2];
 
         if (1) {
-            # we are not expecting a here-doc
+            # we are not expecting a here-doc, return true without moving the pointer
             return Perlito5::Match->new(
                 'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 1, capture => undef);
         }
@@ -785,8 +808,6 @@ package Perlito5::Expression;
         return Perlito5::Match->new(
             'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 1, capture => undef);
     }
-
-
 
     sub exp_parse {
         my $self = $_[0];

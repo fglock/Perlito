@@ -3754,6 +3754,18 @@ make_package("main");
 			return(err);
 		}
 	}
+}, '<<', function (List__) {
+	try {
+		return (CLASS["Perlito5::Expression"]._class_.here_doc_wanted([CLASS["Perlito5::Expression"],List__[0],List__[1]]));
+	}
+	catch(err) {
+		if ( err instanceof Error ) {
+			throw(err);
+		}
+		else {
+			return(err);
+		}
+	}
 })))), (new HashRef(array_to_hash(interpolate_array('our', function (List__) {
 	try {
 		return (CLASS["Perlito5::Expression"]._class_.term_declarator([CLASS["Perlito5::Expression"],List__[0],List__[1]]));
@@ -5597,6 +5609,28 @@ make_package("main");
 						(v_str = List__[1]);
 						(v_pos = List__[2]);
 						throw(v_self._class_.circumfix_parse([v_self,v_str,v_pos,')']))
+					}
+					catch(err) {
+						if ( err instanceof Error ) {
+							throw(err);
+						}
+						else {
+							return(err);
+						}
+					}
+				});
+				make_sub(__PACKAGE__, "here_doc_wanted", function (List__) {
+					try {
+						var v_self = null;
+						var v_str = null;
+						var v_pos = null;
+						(v_self = List__[0]);
+						(v_str = List__[1]);
+						(v_pos = List__[2]);
+						if ( 1 ) { (function () {
+							throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 0,'capture', null]));
+						})(); };
+						throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', null]))
 					}
 					catch(err) {
 						if ( err instanceof Error ) {
