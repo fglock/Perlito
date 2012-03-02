@@ -51,10 +51,15 @@ token ws {
         | \c13 \c10?
         ]
 
+        # TODO - add here-doc blurb here
+
         [
-        |  '=pod'    <.pod_pod_begin>
-        |  '=begin'  <.pod_begin>
-        |  '=for'    <.pod_begin>  # fixme
+        |  '='  [
+                |  'pod'    <.pod_pod_begin>
+                |  'head1'  <.pod_pod_begin>
+                |  'begin'  <.pod_begin>
+                |  'for'    <.pod_begin>  # TODO - fixme: recognize a single paragraph (double-newline)
+                ]
         |  ''
         ]
     |   \s

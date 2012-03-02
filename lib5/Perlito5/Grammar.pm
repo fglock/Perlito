@@ -503,8 +503,11 @@ sub ws {
 })))
 })) && ((do {
     ((my  $pos1) = $MATCH->{('to')});
+    (((do {
+    ((((chr(61) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))) && ((do {
+    ((my  $pos1) = $MATCH->{('to')});
     (((((do {
-    ((((chr(61) . 'pod' eq substr($str, $MATCH->{('to')}, 4)) && (($MATCH->{('to')} = (4 + $MATCH->{('to')}))))) && ((do {
+    (((('pod' eq substr($str, $MATCH->{('to')}, 3)) && (($MATCH->{('to')} = (3 + $MATCH->{('to')}))))) && ((do {
     ((my  $m2) = $grammar->pod_pod_begin($str, $MATCH->{('to')}));
     if (($m2->{('bool')})) {
         ($MATCH->{('to')} = $m2->{('to')});
@@ -516,7 +519,19 @@ sub ws {
 })))
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
-    (((((chr(61) . 'begin' eq substr($str, $MATCH->{('to')}, 6)) && (($MATCH->{('to')} = (6 + $MATCH->{('to')}))))) && ((do {
+    ((((('head1' eq substr($str, $MATCH->{('to')}, 5)) && (($MATCH->{('to')} = (5 + $MATCH->{('to')}))))) && ((do {
+    ((my  $m2) = $grammar->pod_pod_begin($str, $MATCH->{('to')}));
+    if (($m2->{('bool')})) {
+        ($MATCH->{('to')} = $m2->{('to')});
+        1
+    }
+    else {
+        0
+    }
+}))))
+}))) || ((do {
+    ($MATCH->{('to')} = $pos1);
+    ((((('begin' eq substr($str, $MATCH->{('to')}, 5)) && (($MATCH->{('to')} = (5 + $MATCH->{('to')}))))) && ((do {
     ((my  $m2) = $grammar->pod_begin($str, $MATCH->{('to')}));
     if (($m2->{('bool')})) {
         ($MATCH->{('to')} = $m2->{('to')});
@@ -528,7 +543,7 @@ sub ws {
 }))))
 }))) || ((do {
     ($MATCH->{('to')} = $pos1);
-    (((((chr(61) . 'for' eq substr($str, $MATCH->{('to')}, 4)) && (($MATCH->{('to')} = (4 + $MATCH->{('to')}))))) && ((do {
+    ((((('for' eq substr($str, $MATCH->{('to')}, 3)) && (($MATCH->{('to')} = (3 + $MATCH->{('to')}))))) && ((do {
     ((my  $m2) = $grammar->pod_begin($str, $MATCH->{('to')}));
     if (($m2->{('bool')})) {
         ($MATCH->{('to')} = $m2->{('to')});
@@ -538,7 +553,9 @@ sub ws {
         0
     }
 }))))
-}))) || ((do {
+})))
+})))
+})) || ((do {
     ($MATCH->{('to')} = $pos1);
     (1)
 })))
