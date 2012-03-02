@@ -765,6 +765,29 @@ package Perlito5::Expression;
         return $self->circumfix_parse($str, $pos, ')');
     }
 
+    sub here_doc {
+        # here-doc is called just after a newline
+
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+
+        if (1) {
+            # we are not expecting a here-doc
+            return Perlito5::Match->new(
+                'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 1, capture => undef);
+        }
+
+        # now do something
+
+        # ...
+
+        return Perlito5::Match->new(
+            'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 1, capture => undef);
+    }
+
+
+
     sub exp_parse {
         my $self = $_[0];
         my $str = $_[1];

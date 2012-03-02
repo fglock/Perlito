@@ -477,7 +477,7 @@ sub ws {
 })))
 })) || ((do {
     ($MATCH->{('to')} = $pos1);
-    ((((do {
+    (((((do {
     ((my  $pos1) = $MATCH->{('to')});
     (((do {
     ((((chr(10) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))) && ((do {
@@ -502,6 +502,15 @@ sub ws {
 }))))
 })))
 })) && ((do {
+    ((my  $m2) = Perlito5::Expression->here_doc($str, $MATCH->{('to')}));
+    if (($m2->{('bool')})) {
+        ($MATCH->{('to')} = $m2->{('to')});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
     ((my  $pos1) = $MATCH->{('to')});
     (((do {
     ((((chr(61) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))) && ((do {

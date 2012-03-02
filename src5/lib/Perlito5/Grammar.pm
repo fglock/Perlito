@@ -51,7 +51,7 @@ token ws {
         | \c13 \c10?
         ]
 
-        # TODO - add here-doc blurb here
+        <.Perlito5::Expression.here_doc>
 
         [
         |  '='  [
