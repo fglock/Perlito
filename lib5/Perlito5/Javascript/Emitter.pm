@@ -615,8 +615,8 @@ package Perlito5::AST::While;
     sub emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0)));
-        return (('for ( ' . (($self->{('init')} ? ($self->{('init')}->emit_javascript() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('cond')} ? (Perlito5::Javascript::to_bool($self->{('cond')}) . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('continue')} ? ($self->{('continue')}->emit_javascript() . ' ') : ' ')) . ') ' . chr(123) . ' ' . '(function () ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . ' ' . chr(125) . ')()' . ' ' . chr(125)))
+        ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}->stmts()), ('needs_return' => 0), ('create_context' => 1)));
+        return (('for ( ' . (($self->{('init')} ? ($self->{('init')}->emit_javascript() . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('cond')} ? (Perlito5::Javascript::to_bool($self->{('cond')}) . chr(59) . ' ') : chr(59) . ' ')) . (($self->{('continue')} ? ($self->{('continue')}->emit_javascript() . ' ') : ' ')) . ') ' . chr(123) . (chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125)))
     }
 });
 package Perlito5::AST::For;

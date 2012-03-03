@@ -809,15 +809,15 @@ package Perlito5::AST::While;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
+        my $body      = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0, create_context => 1 );
         return
            'for ( '
         .  ( $self->{"init"}     ? $self->{"init"}->emit_javascript()           . '; '  : '; ' )
         .  ( $self->{"cond"}     ? Perlito5::Javascript::to_bool( $self->{"cond"} )       . '; '  : '; ' )
         .  ( $self->{"continue"} ? $self->{"continue"}->emit_javascript()       . ' '   : ' '  )
-        .  ') { '
-            . '(function () {' . "\n" . $body->emit_javascript_indented( $level + 1 )      . ' })()'
-        . ' }'
+        .  ') {' . "\n" 
+            . $body->emit_javascript_indented( $level + 1 ) . "\n"
+        .  Perlito5::Javascript::tab($level) . '}'
     }
 }
 
