@@ -158,11 +158,14 @@ package Perlito5::Javascript::LexicalBlock;
         ((my  $has_local) = $self->has_decl(('local')));
         ((my  $create_context) = ($self->{('create_context')} && $self->has_decl(('my'))));
         ((my  $outer_pkg) = $Perlito5::Javascript::PKG_NAME);
+        ((my  $outer_throw) = $Perlito5::Javascript::THROW);
+        if ($self->{('top_level')}) {
+            ($Perlito5::Javascript::THROW = 0)
+        };
         if ($has_local) {
             ($out = ($out . (Perlito5::Javascript::tab($level) . ('var local_idx ' . chr(61) . ' LOCAL.length' . chr(59) . chr(10)))))
         };
         if (($self->{('top_level')})) {
-            ($out = ($out . (Perlito5::Javascript::tab($level) . ('try ' . chr(123) . chr(10)))));
             ($level)++
         };
         if (($create_context)) {
@@ -227,11 +230,17 @@ package Perlito5::Javascript::LexicalBlock;
             push(@str, (chr(125) . ')()' . chr(59)) )
         };
         ($Perlito5::Javascript::PKG_NAME = $outer_pkg);
-        if (($self->{('top_level')})) {
+        if ((($self->{('top_level')} && $Perlito5::Javascript::THROW))) {
             ($level)--;
-            return (($out . join((chr(10)), map(($tab . $_), @str)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . (($has_local ? 'return cleanup_local(local_idx, err)' : 'return(err)')) . (chr(59) . chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125)))
+            ($out = ($out . (Perlito5::Javascript::tab($level) . ('try ' . chr(123) . chr(10)) . join((chr(10)), map(($tab . $_), @str)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . (($has_local ? 'return cleanup_local(local_idx, err)' : 'return(err)')) . (chr(59) . chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125))))
+        }
+        else {
+            ($out = ($out . join((chr(10)), map(($tab . $_), @str))))
         };
-        return (($out . join((chr(10)), map(($tab . $_), @str))))
+        if ($self->{('top_level')}) {
+            ($Perlito5::Javascript::THROW = $outer_throw)
+        };
+        return ($out)
     }
 });
 package Perlito5::AST::CompUnit;
@@ -552,9 +561,11 @@ package Perlito5::AST::Apply;
             return (emit_javascript_bind($self->{('arguments')}->[0], $self->{('arguments')}->[1], $level))
         };
         if ((($code eq 'return'))) {
+            ($Perlito5::Javascript::THROW = 1);
             return (('throw(' . ((($self->{('arguments')} && @{$self->{('arguments')}}) ? $self->{('arguments')}->[0]->emit_javascript() : 'null')) . ')'))
         };
         if ((($code eq 'goto'))) {
+            ($Perlito5::Javascript::THROW = 1);
             return (('throw((' . $self->{('arguments')}->[0]->emit_javascript() . ')([List__]))'))
         };
         if (($self->{('namespace')})) {

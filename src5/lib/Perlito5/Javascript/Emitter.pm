@@ -224,11 +224,13 @@ package Perlito5::Javascript::LexicalBlock;
         my $has_local = $self->has_decl("local");
         my $create_context = $self->{"create_context"} && $self->has_decl("my");
         my $outer_pkg = $Perlito5::Javascript::PKG_NAME;
+        my $outer_throw = $Perlito5::Javascript::THROW;
+        $Perlito5::Javascript::THROW = 0
+            if $self->{"top_level"};
 
         $out .= Perlito5::Javascript::tab($level) . "var local_idx = LOCAL.length;\n"
             if $has_local;
         if ($self->{"top_level"}) {
-            $out .= Perlito5::Javascript::tab($level) . "try {\n";
             $level++;
         }
         if ( $create_context ) {
@@ -303,9 +305,11 @@ package Perlito5::Javascript::LexicalBlock;
             push @str, "})();";
         }
         $Perlito5::Javascript::PKG_NAME = $outer_pkg;
-        if ($self->{"top_level"}) {
+        if ($self->{"top_level"} && $Perlito5::Javascript::THROW) {
             $level--;
-            return $out . join("\n", map($tab . $_, @str)) . "\n"
+            $out .= 
+                  Perlito5::Javascript::tab($level) . "try {\n"
+                .   join("\n", map($tab . $_, @str)) . "\n"
                 . Perlito5::Javascript::tab($level)   . '}' . "\n"
                 . Perlito5::Javascript::tab($level)   . 'catch(err) {' . "\n"
                 . Perlito5::Javascript::tab($level + 1)   . 'if ( err instanceof Error ) {' . "\n"
@@ -321,7 +325,12 @@ package Perlito5::Javascript::LexicalBlock;
                 . Perlito5::Javascript::tab($level + 1)   . '}' . "\n"
                 . Perlito5::Javascript::tab($level)   . '}';
         }
-        return $out . join("\n", map($tab . $_, @str));
+        else {
+            $out .= join("\n", map($tab . $_, @str));
+        }
+        $Perlito5::Javascript::THROW = $outer_throw
+            if $self->{"top_level"};
+        return $out;
     }
 
 }
@@ -739,6 +748,7 @@ package Perlito5::AST::Apply;
             return emit_javascript_bind( $self->{"arguments"}->[0], $self->{"arguments"}->[1], $level );
         }
         if ($code eq 'return') {
+            $Perlito5::Javascript::THROW = 1;
             return 'throw('
                 .   ( $self->{"arguments"} && @{$self->{"arguments"}} 
                     ? $self->{"arguments"}->[0]->emit_javascript() 
@@ -747,6 +757,7 @@ package Perlito5::AST::Apply;
                 . ')'
         }
         if ($code eq 'goto') {
+            $Perlito5::Javascript::THROW = 1;
             return 'throw((' . $self->{"arguments"}->[0]->emit_javascript() . ')([List__]))'
         }
 
