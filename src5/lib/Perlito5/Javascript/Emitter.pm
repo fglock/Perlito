@@ -62,7 +62,23 @@ package Perlito5::Javascript;
 
     sub to_str {
             my $cond = shift;
-            if ($cond->isa( 'Perlito5::AST::Val::Buf' )) {
+
+            if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
+               && $cond->{"arguments"} && @{$cond->{"arguments"}}
+               ) 
+            {
+                return to_str( $cond->{"arguments"}[0] )
+            }
+
+
+            if  (  ($cond->isa( 'Perlito5::AST::Val::Buf' ))
+                || ($cond->isa( 'Perlito5::AST::Apply' ) 
+                   && (  $cond->code eq 'substr'
+                      || $cond->code eq 'join'
+                      )
+                   )
+                )
+            {
                 return $cond->emit_javascript;
             }
             else {
