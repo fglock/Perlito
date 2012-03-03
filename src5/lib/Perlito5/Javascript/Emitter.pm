@@ -251,15 +251,15 @@ package Perlito5::Javascript::LexicalBlock;
                 my $otherwise = $last_statement->otherwise;
                 $body      = Perlito5::Javascript::LexicalBlock->new( block => $body->stmts, needs_return => 1 );
                 push @str,
-                        'if ( ' . Perlito5::Javascript::to_bool( $cond ) . ' ) { return (function () {' . "\n"
-                        . $tab . $body->emit_javascript_indented($level+1) . "\n"
-                        . Perlito5::Javascript::tab($level) . '})(); }';
+                        'if ( ' . Perlito5::Javascript::to_bool( $cond ) . ' ) {' . "\n"
+                        .   $body->emit_javascript_indented($level+1) . "\n"
+                        . Perlito5::Javascript::tab($level) . '}';
                 if ($otherwise) {
-                    $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $otherwise->stmts, needs_return => 0 );
-                    push @str,
-                          Perlito5::Javascript::tab($level) . 'else { return (function () {' . "\n"
-                        . $tab . $otherwise->emit_javascript_indented($level+1) . "\n"
-                        . Perlito5::Javascript::tab($level) . '})(); }';
+                    $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $otherwise->stmts, needs_return => 1 );
+                    push @str, "\n"
+                        . Perlito5::Javascript::tab($level) . 'else {' . "\n"
+                        .   $otherwise->emit_javascript_indented($level+1) . "\n"
+                        . Perlito5::Javascript::tab($level) . '}';
                 }
             }
             elsif (  $last_statement->isa( 'Perlito5::AST::For' )
