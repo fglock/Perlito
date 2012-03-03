@@ -304,8 +304,12 @@ make_sub("Perlito5::Grammar", "space", function(List__) {
     ]);
 });
 
-function perl5_to_js( source ) {
+function perl5_to_js( source, namespace ) {
     // say( "source: [" + source + "]" );
+
+    var namespace_old = NAMESPACE["Perlito5::Javascript"].v_PKG_NAME;
+    NAMESPACE["Perlito5::Javascript"].v_PKG_NAME = namespace;
+
     match = CLASS["Perlito5::Grammar"].exp_stmts([CLASS["Perlito5::Grammar"], source, 0]);
 
     ast = NAMESPACE.CORE.bless([
@@ -323,6 +327,8 @@ function perl5_to_js( source ) {
     // CORE.say( "ast: [" + perl(ast) + "]" );
     js_code = ast._class_.emit_javascript([ast]);
     // CORE.say( "js-source: [" + js_code + "]" );
+
+    NAMESPACE["Perlito5::Javascript"].v_PKG_NAME = namespace_old;
     return js_code;
 }
 ';

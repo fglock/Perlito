@@ -60,8 +60,6 @@ TODO list for Perlito5
 
 -- bug: negative index in array doesn't work
 
--- bug: packages currently create lexical blocks
-
 -- bug: "my" variables are block-wide; this doesn't work as expected: my $v = $v
    possible fix: rename variables
 

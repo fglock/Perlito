@@ -317,12 +317,12 @@ package Perlito5::AST::CompUnit;
             }
         }
 
-        my $tab = Perlito5::Javascript::tab($level + 1);
+        my $tab = Perlito5::Javascript::tab($level);
         my $class_name = $self->{"name"};
-        my $str = 'make_package("' . $class_name . '");' . "\n"
-            . '(function () {' . "\n"
-            . $tab . 'var __PACKAGE__ = "' . $class_name . '";' . "\n"
-            . $tab . 'var PKG = NAMESPACE[__PACKAGE__];' . "\n";
+        local $Perlito5::Javascript::PKG_NAME;
+        $Perlito5::Javascript::PKG_NAME = $class_name;
+
+        my $str = 'make_package("' . $class_name . '");' . "\n";
 
         for my $decl ( @body ) {
             if ($decl->isa( 'Perlito5::AST::Decl' ) && ( $decl->decl eq 'my' )) {
@@ -349,8 +349,7 @@ package Perlito5::AST::CompUnit;
                 $str = $str . $tab . $decl->emit_javascript_indented( $level + 1 ) . ";\n";
             }
         }
-        $str = $str . '}'
-            . ')()' . "\n";
+        return $str . "\n";
     }
     sub emit_javascript_program {
         my $comp_units = shift;
@@ -467,11 +466,7 @@ package Perlito5::AST::Var;
         my $level = shift;
 
         if ( $self->{"sigil"} eq '*' ) {
-            my $ns = 'PKG';
-            if ($self->{"namespace"}) {
-                $ns = 'NAMESPACE["' . $self->{"namespace"} . '"]';
-            }
-            return $ns . '["' . $self->{"name"} . '"]';
+            return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::Javascript::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
         }
 
         my $ns = '';
@@ -579,7 +574,8 @@ package Perlito5::AST::Apply;
         if ($code eq 'eval') {
             return
                 'eval(perl5_to_js(' 
-                    . Perlito5::Javascript::to_str($self->{"arguments"}->[0])
+                    . Perlito5::Javascript::to_str($self->{"arguments"}->[0]) . ", "
+                    . '"' . $Perlito5::Javascript::PKG_NAME . '"'
                 . '))'
         }
 
@@ -594,9 +590,9 @@ package Perlito5::AST::Apply;
 
         if ($code eq 'shift')      {
             if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return 'PKG.shift([' . join(', ', map( $_->emit_javascript_indented( $level ), @{$self->{"arguments"}} )) . '])'
+                return 'NAMESPACE["' . $Perlito5::Javascript::PKG_NAME . '"].shift([' . join(', ', map( $_->emit_javascript_indented( $level ), @{$self->{"arguments"}} )) . '])'
             }
-            return 'PKG.shift([List__])'
+            return 'NAMESPACE["' . $Perlito5::Javascript::PKG_NAME . '"].shift([List__])'
         }
 
         if ($code eq 'map') {
@@ -655,7 +651,7 @@ package Perlito5::AST::Apply;
                         return 'NAMESPACE["' . $arg->{"namespace"} . '"].' . $arg->{"name"};
                     }
                     else {
-                        return 'PKG.' . $arg->{"name"};
+                        return 'NAMESPACE["' . $Perlito5::Javascript::PKG_NAME . '"].' . $arg->{"name"};
                     }
                 }
             }
@@ -774,7 +770,7 @@ package Perlito5::AST::Apply;
             $code = 'NAMESPACE["' . $self->{"namespace"} . '"].' . $code;
         }
         else {
-            $code = 'PKG.' . $code
+            $code = 'NAMESPACE["' . $Perlito5::Javascript::PKG_NAME . '"].' . $code
         }
         my @args = ();
         push @args, $_->emit_javascript_indented( $level )
@@ -883,10 +879,7 @@ package Perlito5::AST::Decl;
             #         . $self->{"var"}->emit_javascript_indented( $level );
             # }
 
-            my $ns = 'PKG';
-            if ($self->{"var"}{"namespace"}) {
-                $ns = 'NAMESPACE["' . $self->{"var"}{"namespace"} . '"]';
-            }
+            my $ns = 'NAMESPACE["' . ($self->{"var"}{"namespace"} || $Perlito::Javascript::PKG_NAME) . '"]';
 
             return
                   'set_local(' . $ns . ','
@@ -930,7 +923,7 @@ package Perlito5::AST::Sub;
         . Perlito5::Javascript::tab($level) . '}';
 
         ( $self->{"name"}
-          ? 'make_sub(__PACKAGE__, "' . $self->{"name"} . '", ' . $s . ')'
+          ? 'make_sub("' . $Perlito5::Javascript::PKG_NAME . '", "' . $self->{"name"} . '", ' . $s . ')'
           : $s
         )
 
