@@ -186,6 +186,7 @@ package Perlito5::Javascript::LexicalBlock;
         my $out = '';
         my @str;
         my $has_local;
+        my $outer_pkg = $Perlito5::Javascript::PKG_NAME;
 
         for my $decl ( @block ) {
             if ($decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'local') {
@@ -216,6 +217,9 @@ package Perlito5::Javascript::LexicalBlock;
             $last_statement = pop @block;
         }
         for my $decl ( @block ) {
+            if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
+                $Perlito5::Javascript::PKG_NAME = $decl->{"namespace"};
+            }
             if (!( $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my' )) {
                 push @str, $decl->emit_javascript_indented($level) . ';';
             }
@@ -258,6 +262,7 @@ package Perlito5::Javascript::LexicalBlock;
         if ( $has_local ) {
             push @str, 'cleanup_local(local_idx, null);';
         }
+        $Perlito5::Javascript::PKG_NAME = $outer_pkg;
         if ($self->{"top_level"}) {
             $level--;
             return $out . join("\n", map($tab . $_, @str)) . "\n"
@@ -292,7 +297,7 @@ package Perlito5::AST::CompUnit;
         my $level = $_[1];
 
         my $tab = Perlito5::Javascript::tab($level);
-        local $Perlito5::Javascript::PKG_NAME;
+        my $outer_pkg = $Perlito5::Javascript::PKG_NAME;
         $Perlito5::Javascript::PKG_NAME = $self->{"name"};
 
         my $str;
@@ -311,6 +316,7 @@ package Perlito5::AST::CompUnit;
             }
             $str = $str . $tab . $decl->emit_javascript_indented( $level ) . ";\n";
         }
+        $Perlito5::Javascript::PKG_NAME = $outer_pkg;
         return $str . "\n";
     }
     sub emit_javascript_program {

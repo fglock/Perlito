@@ -135,6 +135,7 @@ package Perlito5::Javascript::LexicalBlock;
         ((my  $out) = '');
         (my  @str);
         (my  $has_local);
+        ((my  $outer_pkg) = $Perlito5::Javascript::PKG_NAME);
         for my $decl (@block) {
             if ((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'local')))) {
                 ($has_local = 1)
@@ -164,6 +165,9 @@ package Perlito5::Javascript::LexicalBlock;
             ($last_statement = pop(@block))
         };
         for my $decl (@block) {
+            if ((((ref($decl) eq 'Perlito5::AST::Apply') && ($decl->code() eq 'package')))) {
+                ($Perlito5::Javascript::PKG_NAME = $decl->{('namespace')})
+            };
             if ((!((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my')))))) {
                 push(@str, ($decl->emit_javascript_indented($level) . chr(59)) )
             }
@@ -197,6 +201,7 @@ package Perlito5::Javascript::LexicalBlock;
         if (($has_local)) {
             push(@str, 'cleanup_local(local_idx, null)' . chr(59) )
         };
+        ($Perlito5::Javascript::PKG_NAME = $outer_pkg);
         if (($self->{('top_level')})) {
             ($level)--;
             return (($out . join((chr(10)), map(($tab . $_), @str)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . (($has_local ? 'return cleanup_local(local_idx, err)' : 'return(err)')) . (chr(59) . chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125)))
@@ -214,7 +219,7 @@ package Perlito5::AST::CompUnit;
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         ((my  $tab) = Perlito5::Javascript::tab($level));
-        (local  $Perlito5::Javascript::PKG_NAME);
+        ((my  $outer_pkg) = $Perlito5::Javascript::PKG_NAME);
         ($Perlito5::Javascript::PKG_NAME = $self->{('name')});
         (my  $str);
         for my $decl (@{$self->{('body')}}) {
@@ -232,6 +237,7 @@ package Perlito5::AST::CompUnit;
             };
             ($str = ($str . $tab . $decl->emit_javascript_indented($level) . (chr(59) . chr(10))))
         };
+        ($Perlito5::Javascript::PKG_NAME = $outer_pkg);
         return (($str . (chr(10))))
     };
     sub emit_javascript_program {
