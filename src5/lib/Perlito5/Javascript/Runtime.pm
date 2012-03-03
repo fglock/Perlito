@@ -68,6 +68,8 @@ function make_package(pkg_name) {
     }
 }
 
+make_package("main");
+
 function make_sub(pkg_name, sub_name, func) {
     NAMESPACE[pkg_name][sub_name] = CLASS[pkg_name][sub_name] = func;
 }

@@ -213,33 +213,14 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        (my  @body);
-        ((my  $i) = 0);
-        for ( ; (($i <= scalar(@{$self->{('body')}})));  ) {
-            ((my  $stmt) = $self->{('body')}->[$i]);
-            if ((((ref($stmt) eq 'Perlito5::AST::Apply') && ($stmt->code() eq 'package')))) {
-                ((my  $name) = $stmt->namespace());
-                (my  @stmts);
-                ($i)++;
-                for ( ; ((($i <= scalar(@{$self->{('body')}})) && !((((ref($self->{('body')}->[$i]) eq 'Perlito5::AST::Apply') && ($self->{('body')}->[$i]->code() eq 'package'))))));  ) {
-                    push(@stmts, $self->{('body')}->[$i] );
-                    ($i)++
-                };
-                push(@body, Perlito5::AST::CompUnit->new(('name' => $name), ('body' => \@stmts)) )
-            }
-            else {
-                if (defined($stmt)) {
-                    push(@body, $stmt )
-                };
-                ($i)++
-            }
-        };
         ((my  $tab) = Perlito5::Javascript::tab($level));
-        ((my  $class_name) = $self->{('name')});
         (local  $Perlito5::Javascript::PKG_NAME);
-        ($Perlito5::Javascript::PKG_NAME = $class_name);
-        ((my  $str) = ('make_package(' . chr(34) . $class_name . chr(34) . ')' . chr(59) . (chr(10))));
-        for my $decl (@body) {
+        ($Perlito5::Javascript::PKG_NAME = $self->{('name')});
+        (my  $str);
+        for my $decl (@{$self->{('body')}}) {
+            if ((((ref($decl) eq 'Perlito5::AST::Apply') && ($decl->code() eq 'package')))) {
+                ($Perlito5::Javascript::PKG_NAME = $decl->{('namespace')})
+            };
             if ((($decl->isa('Perlito5::AST::Decl') && (($decl->decl() eq 'my'))))) {
                 ($str = ($str . $tab . $decl->emit_javascript_init() . (chr(10))))
             };
@@ -248,17 +229,8 @@ package Perlito5::AST::CompUnit;
                 if ((($var->isa('Perlito5::AST::Decl') && ($var->decl() eq 'my')))) {
                     ($str = ($str . $tab . $var->emit_javascript_init() . (chr(10))))
                 }
-            }
-        };
-        for my $decl (@body) {
-            if (($decl->isa('Perlito5::AST::Sub'))) {
-                ($str = ($str . $tab . $decl->emit_javascript_indented($level) . (chr(59) . chr(10))))
-            }
-        };
-        for my $decl (@body) {
-            if ((((defined($decl) && (!((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my')))))) && (!(($decl->isa('Perlito5::AST::Sub'))))))) {
-                ($str = ($str . $tab . $decl->emit_javascript_indented($level) . (chr(59) . chr(10))))
-            }
+            };
+            ($str = ($str . $tab . $decl->emit_javascript_indented($level) . (chr(59) . chr(10))))
         };
         return (($str . (chr(10))))
     };
@@ -429,6 +401,9 @@ package Perlito5::AST::Apply;
                 push(@args, $_->emit_javascript() )
             };
             return (('(' . $self->{('code')}->emit_javascript_indented($level) . ')(' . join(',', @args) . ')'))
+        };
+        if ((($code eq 'package'))) {
+            return (('make_package(' . chr(34) . $self->{('namespace')} . chr(34) . ')'))
         };
         if ((($code eq 'infix:<' . chr(61) . '>>'))) {
             return (join(', ', map($_->emit_javascript_indented($level), @{$self->{('arguments')}})))
