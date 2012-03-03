@@ -337,7 +337,7 @@ package Perlito5::AST::CompUnit;
         }
         for my $decl ( @body ) {
             if ($decl->isa( 'Perlito5::AST::Sub' )) {
-                $str = $str . $tab . $decl->emit_javascript_indented( $level + 1 ) . ";\n";
+                $str = $str . $tab . $decl->emit_javascript_indented( $level ) . ";\n";
             }
         }
         for my $decl ( @body ) {
@@ -346,7 +346,7 @@ package Perlito5::AST::CompUnit;
                && (!( $decl->isa( 'Perlito5::AST::Sub')))
                )
             {
-                $str = $str . $tab . $decl->emit_javascript_indented( $level + 1 ) . ";\n";
+                $str = $str . $tab . $decl->emit_javascript_indented( $level ) . ";\n";
             }
         }
         return $str . "\n";

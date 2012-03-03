@@ -252,12 +252,12 @@ package Perlito5::AST::CompUnit;
         };
         for my $decl (@body) {
             if (($decl->isa('Perlito5::AST::Sub'))) {
-                ($str = ($str . $tab . $decl->emit_javascript_indented(($level + 1)) . (chr(59) . chr(10))))
+                ($str = ($str . $tab . $decl->emit_javascript_indented($level) . (chr(59) . chr(10))))
             }
         };
         for my $decl (@body) {
             if ((((defined($decl) && (!((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my')))))) && (!(($decl->isa('Perlito5::AST::Sub'))))))) {
-                ($str = ($str . $tab . $decl->emit_javascript_indented(($level + 1)) . (chr(59) . chr(10))))
+                ($str = ($str . $tab . $decl->emit_javascript_indented($level) . (chr(59) . chr(10))))
             }
         };
         return (($str . (chr(10))))
