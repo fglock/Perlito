@@ -209,15 +209,20 @@ package Perlito5::Javascript::LexicalBlock;
                 }
             }
             else {
-                if ((((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))))) {
-                    push(@str, $last_statement->emit_javascript_indented($level) )
+                if ((($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')))) {
+                    push(@str, ('return(' . ((($last_statement->{('arguments')} && @{$last_statement->{('arguments')}}) ? $last_statement->{('arguments')}->[0]->emit_javascript() : 'null')) . ')') )
                 }
                 else {
-                    if (($has_local)) {
-                        push(@str, ('return cleanup_local(local_idx, (' . $last_statement->emit_javascript_indented(($level + 1)) . '))' . chr(59)) )
+                    if (((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))))) {
+                        push(@str, $last_statement->emit_javascript_indented($level) )
                     }
                     else {
-                        push(@str, ('return (' . $last_statement->emit_javascript_indented(($level + 1)) . ')' . chr(59)) )
+                        if (($has_local)) {
+                            push(@str, ('return cleanup_local(local_idx, (' . $last_statement->emit_javascript_indented(($level + 1)) . '))' . chr(59)) )
+                        }
+                        else {
+                            push(@str, ('return (' . $last_statement->emit_javascript_indented(($level + 1)) . ')' . chr(59)) )
+                        }
                     }
                 }
             }

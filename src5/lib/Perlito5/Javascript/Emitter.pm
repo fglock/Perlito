@@ -280,9 +280,16 @@ package Perlito5::Javascript::LexicalBlock;
                         . Perlito5::Javascript::tab($level) . '}';
                 }
             }
+            elsif ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
+                push @str, 'return('
+                    .   ( $last_statement->{"arguments"} && @{$last_statement->{"arguments"}} 
+                        ? $last_statement->{"arguments"}->[0]->emit_javascript() 
+                        : 'null'
+                        )
+                    . ')'
+            }
             elsif (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
-                  || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
                   )
             {
