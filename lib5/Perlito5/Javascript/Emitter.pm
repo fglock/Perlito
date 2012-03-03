@@ -218,27 +218,11 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        ((my  $tab) = Perlito5::Javascript::tab($level));
         ((my  $outer_pkg) = $Perlito5::Javascript::PKG_NAME);
         ($Perlito5::Javascript::PKG_NAME = $self->{('name')});
-        (my  $str);
-        for my $decl (@{$self->{('body')}}) {
-            if ((((ref($decl) eq 'Perlito5::AST::Apply') && ($decl->code() eq 'package')))) {
-                ($Perlito5::Javascript::PKG_NAME = $decl->{('namespace')})
-            };
-            if ((($decl->isa('Perlito5::AST::Decl') && (($decl->decl() eq 'my'))))) {
-                ($str = ($str . $tab . $decl->emit_javascript_init() . (chr(10))))
-            };
-            if ((($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')))) {
-                ((my  $var) = $decl->arguments()->[0]);
-                if ((($var->isa('Perlito5::AST::Decl') && ($var->decl() eq 'my')))) {
-                    ($str = ($str . $tab . $var->emit_javascript_init() . (chr(10))))
-                }
-            };
-            ($str = ($str . $tab . $decl->emit_javascript_indented($level) . (chr(59) . chr(10))))
-        };
+        ((my  $str) = ('(function () ' . chr(123) . chr(10) . Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}), ('needs_return' => 0))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . (chr(125) . ')()' . chr(10))));
         ($Perlito5::Javascript::PKG_NAME = $outer_pkg);
-        return (($str . (chr(10))))
+        return ($str)
     };
     sub emit_javascript_program {
         ((my  $comp_units) = shift());

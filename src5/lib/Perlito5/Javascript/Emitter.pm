@@ -296,28 +296,15 @@ package Perlito5::AST::CompUnit;
         my $self = $_[0];
         my $level = $_[1];
 
-        my $tab = Perlito5::Javascript::tab($level);
         my $outer_pkg = $Perlito5::Javascript::PKG_NAME;
         $Perlito5::Javascript::PKG_NAME = $self->{"name"};
 
-        my $str;
-        for my $decl ( @{$self->{"body"}} ) {
-            if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
-                $Perlito5::Javascript::PKG_NAME = $decl->{"namespace"};
-            }
-            if ($decl->isa( 'Perlito5::AST::Decl' ) && ( $decl->decl eq 'my' )) {
-                $str = $str . $tab . $decl->emit_javascript_init . "\n";
-            }
-            if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
-                my $var = $decl->arguments[0];
-                if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq 'my') {
-                    $str = $str . $tab . $var->emit_javascript_init . "\n";
-                }
-            }
-            $str = $str . $tab . $decl->emit_javascript_indented( $level ) . ";\n";
-        }
+        my $str = "(function () {\n"
+            .   Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}, needs_return => 0 )->emit_javascript_indented( $level + 1 ) . "\n"
+            . Perlito5::Javascript::tab($level) . "})()\n";
+
         $Perlito5::Javascript::PKG_NAME = $outer_pkg;
-        return $str . "\n";
+        return $str;
     }
     sub emit_javascript_program {
         my $comp_units = shift;
