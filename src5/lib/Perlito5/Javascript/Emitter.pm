@@ -168,6 +168,26 @@ package Perlito5::Javascript::LexicalBlock;
     sub block { $_[0]->{'block'} }
     sub needs_return { $_[0]->{'needs_return'} }
     sub top_level { $_[0]->{'top_level'} }
+    # sub create_context ... 
+
+    sub has_decl {
+        my $self = $_[0];
+        my $type = $_[1];
+        for my $decl ( @{$self->{"block"}} ) {
+            if (defined $decl) {
+                if ($decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq $type) {
+                    return 1;
+                }
+                if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
+                    my $var = $decl->arguments[0];
+                    if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq $type) {
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
 
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
     sub emit_javascript_indented {
@@ -185,18 +205,18 @@ package Perlito5::Javascript::LexicalBlock;
         }
         my $out = '';
         my @str;
-        my $has_local;
+        my $has_local = $self->has_decl("local");
+        my $create_context = $self->{"create_context"} && $self->has_decl("my");
         my $outer_pkg = $Perlito5::Javascript::PKG_NAME;
 
-        for my $decl ( @block ) {
-            if ($decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'local') {
-                $has_local = 1;
-            }
-        }
         $out .= Perlito5::Javascript::tab($level) . "var local_idx = LOCAL.length;\n"
             if $has_local;
         if ($self->{"top_level"}) {
             $out .= Perlito5::Javascript::tab($level) . "try {\n";
+            $level++;
+        }
+        if ( $create_context ) {
+            $out .= Perlito5::Javascript::tab($level) . "(function () {\n";
             $level++;
         }
 
@@ -261,6 +281,10 @@ package Perlito5::Javascript::LexicalBlock;
         }
         if ( $has_local ) {
             push @str, 'cleanup_local(local_idx, null);';
+        }
+        if ( $create_context ) {
+            $level--;
+            push @str, "})();";
         }
         $Perlito5::Javascript::PKG_NAME = $outer_pkg;
         if ($self->{"top_level"}) {
@@ -762,19 +786,17 @@ package Perlito5::AST::If;
         my $self = shift;
         my $level = shift;
         my $cond = $self->{"cond"};
-        my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
-        my $s = 'if ( ' . Perlito5::Javascript::to_bool( $cond ) . ' ) { '
-            . '(function () {' . "\n"
+        my $body  = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0, create_context => 1 );
+        my $s = 'if ( ' . Perlito5::Javascript::to_bool( $cond ) . ' ) {' . "\n"
             .       $body->emit_javascript_indented( $level + 1 ) . "\n"
-            . Perlito5::Javascript::tab($level) . '})(); }';
+            . Perlito5::Javascript::tab($level) . '}';
         if ( @{ $self->{"otherwise"}->stmts } ) {
-            my $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $self->{"otherwise"}->stmts, needs_return => 0 );
+            my $otherwise = Perlito5::Javascript::LexicalBlock->new( block => $self->{"otherwise"}->stmts, needs_return => 0, create_context => 1 );
             $s = $s
                 . "\n"
-                . Perlito5::Javascript::tab($level) . 'else { '
-                .   '(function () {' . "\n"
+                . Perlito5::Javascript::tab($level) . 'else {' . "\n"
                 .       $otherwise->emit_javascript_indented( $level + 1 ) . "\n"
-                . Perlito5::Javascript::tab($level) . '})(); }';
+                . Perlito5::Javascript::tab($level) . '}';
         }
         return $s;
     }
