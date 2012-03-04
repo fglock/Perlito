@@ -46,7 +46,7 @@ join("", (chr(9)) x $level)
         if ((((($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'circumfix:<( )>')) && $cond->{('arguments')}) && @{$cond->{('arguments')}}))) {
             return (to_str($cond->{('arguments')}->[0]))
         };
-        if (((($cond->isa('Perlito5::AST::Val::Buf')) || (($cond->isa('Perlito5::AST::Apply') && ((($cond->code() eq 'substr') || ($cond->code() eq 'join')))))))) {
+        if (((($cond->isa('Perlito5::AST::Val::Buf')) || (($cond->isa('Perlito5::AST::Apply') && (((($cond->code() eq 'substr') || ($cond->code() eq 'join')) || ($cond->code() eq 'list:<.>')))))))) {
             return ($cond->emit_javascript())
         }
         else {

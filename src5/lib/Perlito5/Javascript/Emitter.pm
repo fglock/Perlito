@@ -75,6 +75,7 @@ package Perlito5::Javascript;
                 || ($cond->isa( 'Perlito5::AST::Apply' ) 
                    && (  $cond->code eq 'substr'
                       || $cond->code eq 'join'
+                      || $cond->code eq 'list:<.>'
                       )
                    )
                 )
