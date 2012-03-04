@@ -652,7 +652,7 @@ package Perlito5::AST::For;
         if (($self->{('body')}->sig())) {
             ($sig = $self->{('body')}->sig()->emit_javascript_indented(($level + 1)))
         };
-        ('(function (a_) ' . chr(123) . ' for (var i_ ' . chr(61) . ' 0' . chr(59) . ' i_ < a_.length ' . chr(59) . ' i_++) ' . chr(123) . ' ' . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . ')(a_[i_]) ' . chr(125) . ' ' . chr(125) . ')' . '(' . $cond . ')')
+        ('for (var i_ ' . chr(61) . ' 0, a_ ' . chr(61) . ' (' . $cond . ')' . chr(59) . ' i_ < a_.length ' . chr(59) . ' i_++) ' . chr(123) . ' ' . ('(function (' . $sig . ') ' . chr(123) . chr(10)) . $body->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . ')(a_[i_]) ' . chr(125))
     }
 });
 package Perlito5::AST::Decl;

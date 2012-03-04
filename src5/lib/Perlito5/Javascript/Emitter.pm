@@ -869,11 +869,9 @@ package Perlito5::AST::For;
         if ($self->{"body"}->sig()) {
             $sig = $self->{"body"}->sig->emit_javascript_indented( $level + 1 );
         }
-        '(function (a_) { for (var i_ = 0; i_ < a_.length ; i_++) { '
-            . "(function ($sig) {\n"
+        'for (var i_ = 0, a_ = (' . $cond . '); i_ < a_.length ; i_++) { ' . "(function ($sig) {\n"
                 . $body->emit_javascript_indented( $level + 1 ) . "\n"
-            . Perlito5::Javascript::tab($level) . '})(a_[i_]) } })'
-        . '(' . $cond . ')'
+        . Perlito5::Javascript::tab($level) . '})(a_[i_]) }'
     }
 }
 
