@@ -17,7 +17,7 @@ Dev  2012-02-29
 -- perlito5 calling convention is incompatible with native javascript
    The last commit using native javascript data is "e1e3316b"
 -- native javascript can be accessed with JS::inline('string')
--- reduced generated code size by over 3x
+-- reduced generated code size by 4x
    The browser backend doesn't load the grammar compiler
 
 * Perlito Perl 6:
