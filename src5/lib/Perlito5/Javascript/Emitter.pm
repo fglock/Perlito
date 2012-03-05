@@ -251,16 +251,16 @@ package Perlito5::Javascript::LexicalBlock;
         }
 
         my $tab = Perlito5::Javascript::tab($level);
-        for my $decl ( @block ) {
-            if ($decl->isa( 'Perlito5::AST::Decl' )) {
-                push @str, $decl->emit_javascript_init;
-            }
-            if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
-                if ($decl->{"arguments"}[0]->isa( 'Perlito5::AST::Decl' )) {
-                    push @str, $decl->{"arguments"}[0]->emit_javascript_init;
-                }
-            }
-        }
+        # for my $decl ( @block ) {
+        #     if ($decl->isa( 'Perlito5::AST::Decl' )) {
+        #         push @str, $decl->emit_javascript_init;
+        #     }
+        #     if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
+        #         if ($decl->{"arguments"}[0]->isa( 'Perlito5::AST::Decl' )) {
+        #             push @str, $decl->{"arguments"}[0]->emit_javascript_init;
+        #         }
+        #     }
+        # }
         my $last_statement;
         if ($self->{"needs_return"}) {
             $last_statement = pop @block;
@@ -269,6 +269,16 @@ package Perlito5::Javascript::LexicalBlock;
             if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
                 $Perlito5::Javascript::PKG_NAME = $decl->{"namespace"};
             }
+
+            if ($decl->isa( 'Perlito5::AST::Decl' )) {
+                push @str, $decl->emit_javascript_init;
+            }
+            if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
+                if ($decl->{"arguments"}[0]->isa( 'Perlito5::AST::Decl' )) {
+                    push @str, $decl->{"arguments"}[0]->emit_javascript_init;
+                }
+            }
+
             if (!( $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my' )) {
                 push @str, $decl->emit_javascript_indented($level) . ';';
             }
@@ -374,8 +384,8 @@ package Perlito5::AST::CompUnit;
         my $str = '';
         $Perlito5::Javascript::VAR = [
             { '@_'    => { decl => 'my' },
-              '$_'    => { decl => 'my' },
-              '@ARGV' => { decl => 'my' },
+              '$_'    => { decl => 'my' },  # XXX - "our" ${__PACKAGE__}::_
+              '@ARGV' => { decl => 'my' },  # XXX - "our" @main::ARGV
             }
         ];
         $Perlito5::Javascript::PKG_NAME = 'main';
@@ -492,9 +502,11 @@ package Perlito5::AST::Var;
 
         my $perl5_name = $self->perl5_name;
         # say "looking up $perl5_name";
+        my $decl_type;  # my, our, local
         my $decl = $self->perl5_get_decl( $perl5_name );
         if ( $decl ) {
-            # say "found ", $decl->{"decl"}{"decl"};
+            # say "found ", $decl->{"decl"};
+            $decl_type = $decl->{"decl"};
         }
         else {
             die "Global symbol \"$perl5_name\" requires explicit package name"
@@ -504,6 +516,9 @@ package Perlito5::AST::Var;
 
         if ( $self->{"sigil"} eq '*' ) {
             return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::Javascript::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
+        }
+        if ( $decl_type eq 'our' ) {
+            return 'NAMESPACE["' . ($self->{"namespace"} || $decl->{"namespace"}) . '"]["' . $table->{$self->{"sigil"}} . $self->{"name"} . '"]';
         }
 
         my $ns = '';

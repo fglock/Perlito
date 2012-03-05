@@ -175,16 +175,6 @@ package Perlito5::Javascript::LexicalBlock;
             ($level)++
         };
         ((my  $tab) = Perlito5::Javascript::tab($level));
-        for my $decl (@block) {
-            if (($decl->isa('Perlito5::AST::Decl'))) {
-                push(@str, $decl->emit_javascript_init() )
-            };
-            if ((($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')))) {
-                if (($decl->{('arguments')}->[0]->isa('Perlito5::AST::Decl'))) {
-                    push(@str, $decl->{('arguments')}->[0]->emit_javascript_init() )
-                }
-            }
-        };
         (my  $last_statement);
         if (($self->{('needs_return')})) {
             ($last_statement = pop(@block))
@@ -192,6 +182,14 @@ package Perlito5::Javascript::LexicalBlock;
         for my $decl (@block) {
             if ((((ref($decl) eq 'Perlito5::AST::Apply') && ($decl->code() eq 'package')))) {
                 ($Perlito5::Javascript::PKG_NAME = $decl->{('namespace')})
+            };
+            if (($decl->isa('Perlito5::AST::Decl'))) {
+                push(@str, $decl->emit_javascript_init() )
+            };
+            if ((($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')))) {
+                if (($decl->{('arguments')}->[0]->isa('Perlito5::AST::Decl'))) {
+                    push(@str, $decl->{('arguments')}->[0]->emit_javascript_init() )
+                }
             };
             if ((!((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my')))))) {
                 push(@str, ($decl->emit_javascript_indented($level) . chr(59)) )
@@ -356,9 +354,10 @@ package Perlito5::AST::Var;
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $perl5_name) = $self->perl5_name());
+        (my  $decl_type);
         ((my  $decl) = $self->perl5_get_decl($perl5_name));
         if (($decl)) {
-
+            ($decl_type = $decl->{('decl')})
         }
         else {
             if (($self->{('namespace')} || ($self->{('sigil')} eq '*'))) {
@@ -370,6 +369,9 @@ package Perlito5::AST::Var;
         };
         if ((($self->{('sigil')} eq '*'))) {
             return (('NAMESPACE[' . chr(34) . (($self->{('namespace')} || $Perlito5::Javascript::PKG_NAME)) . chr(34) . '][' . chr(34) . $self->{('name')} . chr(34) . ']'))
+        };
+        if ((($decl_type eq 'our'))) {
+            return (('NAMESPACE[' . chr(34) . (($self->{('namespace')} || $decl->{('namespace')})) . chr(34) . '][' . chr(34) . $table->{$self->{('sigil')}} . $self->{('name')} . chr(34) . ']'))
         };
         ((my  $ns) = '');
         if (($self->{('namespace')})) {
