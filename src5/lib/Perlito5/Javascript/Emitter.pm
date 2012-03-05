@@ -249,12 +249,12 @@ package Perlito5::Javascript::LexicalBlock;
 
         my $tab = Perlito5::Javascript::tab($level);
         for my $decl ( @block ) {
-            if ($decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my') {
+            if ($decl->isa( 'Perlito5::AST::Decl' )) {
                 push @str, $decl->emit_javascript_init;
             }
             if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
                 my $var = $decl->arguments[0];
-                if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq 'my') {
+                if ($var->isa( 'Perlito5::AST::Decl' )) {
                     push @str, $var->emit_javascript_init;
                 }
             }
@@ -276,7 +276,7 @@ package Perlito5::Javascript::LexicalBlock;
                 my $cond      = $last_statement->cond;
                 my $body      = $last_statement->body;
                 my $otherwise = $last_statement->otherwise;
-                $body      = Perlito5::Javascript::LexicalBlock->new( block => $body->stmts, needs_return => 1 );
+                $body         = Perlito5::Javascript::LexicalBlock->new( block => $body->stmts, needs_return => 1 );
                 push @str,
                         'if ( ' . Perlito5::Javascript::to_bool( $cond ) . ' ) {' . "\n"
                         .   $body->emit_javascript_indented($level+1) . "\n"
@@ -925,6 +925,15 @@ package Perlito5::AST::Decl;
                 $str = $str . 'null;';
             }
             return $str;
+        }
+        elsif ($self->{"decl"} eq 'our') {
+            # TODO
+        }
+        elsif ($self->{"decl"} eq 'local') {
+            # TODO
+        }
+        elsif ($self->{"decl"} eq 'state') {
+            # TODO
         }
         else {
             die "not implemented: Perlito5::AST::Decl '" . $self->{"decl"} . "'";

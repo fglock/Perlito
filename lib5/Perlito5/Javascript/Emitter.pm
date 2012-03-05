@@ -174,12 +174,12 @@ package Perlito5::Javascript::LexicalBlock;
         };
         ((my  $tab) = Perlito5::Javascript::tab($level));
         for my $decl (@block) {
-            if ((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my')))) {
+            if (($decl->isa('Perlito5::AST::Decl'))) {
                 push(@str, $decl->emit_javascript_init() )
             };
             if ((($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'infix:<' . chr(61) . '>')))) {
                 ((my  $var) = $decl->arguments()->[0]);
-                if ((($var->isa('Perlito5::AST::Decl') && ($var->decl() eq 'my')))) {
+                if (($var->isa('Perlito5::AST::Decl'))) {
                     push(@str, $var->emit_javascript_init() )
                 }
             }
@@ -688,7 +688,22 @@ package Perlito5::AST::Decl;
             return ($str)
         }
         else {
-            die(('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{('decl')} . (chr(39))))
+            if ((($self->{('decl')} eq 'our'))) {
+
+            }
+            else {
+                if ((($self->{('decl')} eq 'local'))) {
+
+                }
+                else {
+                    if ((($self->{('decl')} eq 'state'))) {
+
+                    }
+                    else {
+                        die(('not implemented: Perlito5::AST::Decl ' . chr(39) . $self->{('decl')} . (chr(39))))
+                    }
+                }
+            }
         }
     }
 });
