@@ -1,6 +1,7 @@
 use v5;
 
 use Perlito5::AST;
+use Perlito5::Dumper;
 
 package Perlito5::Javascript;
 {
@@ -255,9 +256,8 @@ package Perlito5::Javascript::LexicalBlock;
                 push @str, $decl->emit_javascript_init;
             }
             if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
-                my $var = $decl->arguments[0];
-                if ($var->isa( 'Perlito5::AST::Decl' )) {
-                    push @str, $var->emit_javascript_init;
+                if ($decl->{"arguments"}[0]->isa( 'Perlito5::AST::Decl' )) {
+                    push @str, $decl->{"arguments"}[0]->emit_javascript_init;
                 }
             }
         }
@@ -291,17 +291,18 @@ package Perlito5::Javascript::LexicalBlock;
                         . Perlito5::Javascript::tab($level) . '}';
                 }
             }
-            elsif ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
-                push @str, 'return('
-                    .   ( $last_statement->{"arguments"} && @{$last_statement->{"arguments"}} 
-                        ? $last_statement->{"arguments"}->[0]->emit_javascript() 
-                        : 'null'
-                        )
-                    . ')'
-            }
+            # elsif ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
+            #     push @str, 'return('
+            #         .   ( $last_statement->{"arguments"} && @{$last_statement->{"arguments"}} 
+            #             ? $last_statement->{"arguments"}->[0]->emit_javascript() 
+            #             : 'null'
+            #             )
+            #         . ')'
+            # }
             elsif (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
+                  || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
                   )
             {
                 push @str, $last_statement->emit_javascript_indented($level)
@@ -371,7 +372,13 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript_program {
         my $comp_units = shift;
         my $str = '';
-        $Perlito5::Javascript::VAR = [];
+        $Perlito5::Javascript::VAR = [
+            { '@_'    => { decl => 'my' },
+              '$_'    => { decl => 'my' },
+              '@ARGV' => { decl => 'my' },
+            }
+        ];
+        $Perlito5::Javascript::PKG_NAME = 'main';
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_javascript() . "\n";
         }
@@ -483,6 +490,18 @@ package Perlito5::AST::Var;
         my $self = shift;
         my $level = shift;
 
+        my $perl5_name = $self->perl5_name;
+        # say "looking up $perl5_name";
+        my $decl = $self->perl5_get_decl( $perl5_name );
+        if ( $decl ) {
+            # say "found ", $decl->{"decl"}{"decl"};
+        }
+        else {
+            die "Global symbol \"$perl5_name\" requires explicit package name"
+                unless $self->{"namespace"}
+                    || $self->{"sigil"} eq '*';
+        }
+
         if ( $self->{"sigil"} eq '*' ) {
             return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::Javascript::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
         }
@@ -492,6 +511,91 @@ package Perlito5::AST::Var;
             $ns = 'NAMESPACE["' . $self->{"namespace"} . '"].';
         }
         $ns . $table->{$self->{"sigil"}} . $self->{"name"}
+    }
+    sub perl5_name {
+        my $self = shift;
+        $self->{"sigil"}
+        . ( $self->{"namespace"}
+          ? $self->{"namespace"} . '::'
+          : ''
+          )
+        . $self->{"name"}
+    }
+    sub perl5_get_decl {
+        my $self = shift;
+        my $perl5_name = shift;
+        for ( @{ $Perlito5::Javascript::VAR } ) {
+            return $_->{$perl5_name}
+                if exists $_->{$perl5_name}
+        }
+        return undef;
+    }
+}
+
+package Perlito5::AST::Decl;
+{
+    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
+    sub emit_javascript_indented {
+        my $self = shift;
+        my $level = shift;
+        if ($self->{"decl"} eq 'local') {
+
+            # TODO - add grammar support
+            # if ($self->var->isa("Lookup")) {
+            #     return 
+            #         'set_local(' . $self->var->{"obj"}->emit_javascript() . ', '
+            #                      . $self->var->{"index_exp"}->emit_javascript() . ', '
+            #                      . '""); '
+            #         . $self->{"var"}->emit_javascript_indented( $level );
+            # }
+
+            my $ns = 'NAMESPACE["' . ($self->{"var"}{"namespace"} || $Perlito5::Javascript::PKG_NAME) . '"]';
+
+            return
+                  'set_local(' . $ns . ','
+                               . Perlito5::Javascript::escape_string($self->{"var"}{"name"}) . ','
+                               . Perlito5::Javascript::escape_string($self->{"var"}{"sigil"}) . '); ' 
+                . $self->{"var"}->emit_javascript_indented( $level );
+        }
+        $self->{"var"}->emit_javascript_indented( $level );
+    }
+    sub emit_javascript_init {
+        my $self = shift;
+
+        my $env = { decl => $self->{"decl"} };
+        $env->{"namespace"} = $Perlito5::Javascript::PKG_NAME
+            if $self->{"decl"} ne 'my' && $self->{"var"}{"namespace"} eq '';
+        $Perlito5::Javascript::VAR->[0]{ $self->{"var"}->perl5_name } = $env;
+
+        if ($self->{"decl"} eq 'my') {
+            my $str = "";
+            $str = $str . 'var ' . $self->{"var"}->emit_javascript() . ' = ';
+            if ($self->{"var"})->sigil eq '%' {
+                $str = $str . '{};';
+            }
+            elsif ($self->{"var"})->sigil eq '@' {
+                $str = $str . '[];';
+            }
+            else {
+                $str = $str . 'null;';
+            }
+            return $str;
+        }
+        elsif ($self->{"decl"} eq 'our') {
+            # TODO
+            return '// our ' . $self->{"var"}->emit_javascript();
+        }
+        elsif ($self->{"decl"} eq 'local') {
+            # TODO
+            return '// local ' . $self->{"var"}->emit_javascript();
+        }
+        elsif ($self->{"decl"} eq 'state') {
+            # TODO
+            return '// state ' . $self->{"var"}->emit_javascript();
+        }
+        else {
+            die "not implemented: Perlito5::AST::Decl '" . $self->{"decl"} . "'";
+        }
     }
 }
 
@@ -593,10 +697,17 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'eval') {
+            my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::Javascript::VAR );
+            # say "at eval: ", $var_env_perl5;
+            my $m = Perlito5::Expression->term_square( $var_env_perl5, 0 );
+            $m = Perlito5::Expression::expand_list( $m->flat()->[2] );
+            # say Perlito5::Dumper::Dumper( $m );
+            my $var_env_js = '(new ArrayRef(' . Perlito5::Javascript::to_list($m) . '))';
             return
                 'eval(perl5_to_js(' 
                     . Perlito5::Javascript::to_str($self->{"arguments"}->[0]) . ", "
-                    . '"' . $Perlito5::Javascript::PKG_NAME . '"'
+                    . '"' . $Perlito5::Javascript::PKG_NAME . '", '
+                    . $var_env_js
                 . '))'
         }
 
@@ -873,69 +984,17 @@ package Perlito5::AST::For;
         my $body = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
         my $sig  = 'v__';
         if ($self->{"body"}->sig()) {
-            $sig = $self->{"body"}->sig->emit_javascript_indented( $level + 1 );
+
+            # XXX - cleanup: "for" parser throws away the variable declaration, so we need to create it again
+            # mark the variable as "declared"
+            my $v = $self->{"body"}->sig;
+            $Perlito5::Javascript::VAR->[0]{ $v->perl5_name } = { decl => 'my' };
+
+            $sig = $v->emit_javascript_indented( $level + 1 );
         }
         'for (var i_ = 0, a_ = (' . $cond . '); i_ < a_.length ; i_++) { ' . "(function ($sig) {\n"
                 . $body->emit_javascript_indented( $level + 1 ) . "\n"
         . Perlito5::Javascript::tab($level) . '})(a_[i_]) }'
-    }
-}
-
-package Perlito5::AST::Decl;
-{
-    sub emit_javascript { $_[0]->emit_javascript_indented(0) }
-    sub emit_javascript_indented {
-        my $self = shift;
-        my $level = shift;
-        if ($self->{"decl"} eq 'local') {
-
-            # TODO - add grammar support
-            # if ($self->var->isa("Lookup")) {
-            #     return 
-            #         'set_local(' . $self->var->{"obj"}->emit_javascript() . ', '
-            #                      . $self->var->{"index_exp"}->emit_javascript() . ', '
-            #                      . '""); '
-            #         . $self->{"var"}->emit_javascript_indented( $level );
-            # }
-
-            my $ns = 'NAMESPACE["' . ($self->{"var"}{"namespace"} || $Perlito::Javascript::PKG_NAME) . '"]';
-
-            return
-                  'set_local(' . $ns . ','
-                               . Perlito5::Javascript::escape_string($self->{"var"}{"name"}) . ','
-                               . Perlito5::Javascript::escape_string($self->{"var"}{"sigil"}) . '); ' 
-                . $self->{"var"}->emit_javascript_indented( $level );
-        }
-        $self->{"var"}->emit_javascript_indented( $level );
-    }
-    sub emit_javascript_init {
-        my $self = shift;
-        if ($self->{"decl"} eq 'my') {
-            my $str = "";
-            $str = $str . 'var ' . ($self->{"var"})->emit_javascript() . ' = ';
-            if ($self->{"var"})->sigil eq '%' {
-                $str = $str . '{};';
-            }
-            elsif ($self->{"var"})->sigil eq '@' {
-                $str = $str . '[];';
-            }
-            else {
-                $str = $str . 'null;';
-            }
-            return $str;
-        }
-        elsif ($self->{"decl"} eq 'our') {
-            # TODO
-        }
-        elsif ($self->{"decl"} eq 'local') {
-            # TODO
-        }
-        elsif ($self->{"decl"} eq 'state') {
-            # TODO
-        }
-        else {
-            die "not implemented: Perlito5::AST::Decl '" . $self->{"decl"} . "'";
-        }
     }
 }
 

@@ -12,7 +12,11 @@ use Perlito5::Runtime;
 sub compile_p5_to_js {
     my $s = shift;
     my $ast = Perlito5::Grammar->exp_stmts($s, 0);
-    Perlito5::AST::CompUnit->new( name => 'main', body => $ast->flat() )->emit_javascript()
+    Perlito5::AST::CompUnit::emit_javascript_program(
+        [
+            Perlito5::AST::CompUnit->new( name => 'main', body => $ast->flat() )
+        ]
+    );
 }
 
 1;

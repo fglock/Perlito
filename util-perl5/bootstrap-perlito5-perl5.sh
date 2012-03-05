@@ -31,6 +31,7 @@ perl perlito5.pl -Cperl5 src5/lib/Perlito5/Perl5/Emitter.pm   > lib5-new/Perlito
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Perl6/Emitter.pm   > lib5-new/Perlito5/Perl6/Emitter.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Match.pm           > lib5-new/Perlito5/Match.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Runtime.pm         > lib5-new/Perlito5/Runtime.pm
+perl perlito5.pl -Cperl5 src5/lib/Perlito5/Dumper.pm          > lib5-new/Perlito5/Dumper.pm
 
 perl perlito5.pl -Cperl5 src5/util/perlito5.pl                > ./perlito5-new.pl
 
