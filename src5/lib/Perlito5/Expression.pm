@@ -391,7 +391,18 @@ package Perlito5::Expression;
 
     token term_sigil {
         <Perlito5::Grammar.var_sigil>
-            [ '{' <curly_parse>   '}'
+            [ '{' 
+                [
+                | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name> '}'
+                        { $MATCH->{"capture"} = [ 'term', 
+                                Perlito5::AST::Var->new(
+                                        sigil       => $MATCH->{"Perlito5::Grammar.var_sigil"}->flat(),
+                                        namespace   => $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
+                                        name        => $MATCH->{"Perlito5::Grammar.var_name"}->flat(),
+                                    )
+                            ]
+                        }
+                | <curly_parse>   '}'
                     { $MATCH->{"capture"} = [ 'term',  
                             Perlito5::AST::Apply->new( 
                                     'arguments' => [ $MATCH->{"curly_parse"}->flat() ],
@@ -400,6 +411,7 @@ package Perlito5::Expression;
                                 )
                         ] 
                     }
+                ]
             | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name>
                     { $MATCH->{"capture"} = [ 'term', 
                             Perlito5::AST::Var->new(

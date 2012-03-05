@@ -392,7 +392,36 @@ sub term_sigil {
 })) && ((do {
     ((my  $pos1) = $MATCH->{('to')});
     (((do {
-    ((((((chr(123) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))) && ((do {
+    ((((chr(123) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))) && ((do {
+    ((my  $pos1) = $MATCH->{('to')});
+    (((do {
+    (((((do {
+    ((my  $m2) = Perlito5::Grammar->optional_namespace_before_ident($str, $MATCH->{('to')}));
+    if (($m2->{('bool')})) {
+        ($MATCH->{('to')} = $m2->{('to')});
+        ($MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ((my  $m2) = Perlito5::Grammar->var_name($str, $MATCH->{('to')}));
+    if (($m2->{('bool')})) {
+        ($MATCH->{('to')} = $m2->{('to')});
+        ($MATCH->{'Perlito5::Grammar.var_name'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && (((chr(125) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')})))))) && ((do {
+    ($MATCH->{('capture')} = ['term', Perlito5::AST::Var->new(('sigil' => $MATCH->{('Perlito5::Grammar.var_sigil')}->flat()), ('namespace' => $MATCH->{('Perlito5::Grammar.optional_namespace_before_ident')}->flat()), ('name' => $MATCH->{('Perlito5::Grammar.var_name')}->flat()))]);
+    1
+})))
+})) || ((do {
+    ($MATCH->{('to')} = $pos1);
+    (((((do {
     ((my  $m2) = $grammar->curly_parse($str, $MATCH->{('to')}));
     if (($m2->{('bool')})) {
         ($MATCH->{('to')} = $m2->{('to')});
@@ -402,9 +431,11 @@ sub term_sigil {
     else {
         0
     }
-}))) && (((chr(125) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')})))))) && ((do {
+})) && (((chr(125) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')})))))) && ((do {
     ($MATCH->{('capture')} = ['term', Perlito5::AST::Apply->new(('arguments' => [$MATCH->{('curly_parse')}->flat()]), ('code' => ('prefix:<' . $MATCH->{('Perlito5::Grammar.var_sigil')}->flat() . '>')), ('namespace' => ''))]);
     1
+}))))
+})))
 })))
 })) || ((do {
     ($MATCH->{('to')} = $pos1);

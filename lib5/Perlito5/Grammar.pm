@@ -1517,59 +1517,22 @@ sub double_quoted_buf {
     ($MATCH->{('bool')} ? 1 : 0)
 })) && ((do {
     ((my  $pos1) = $MATCH->{('to')});
-    ((((do {
-    ((((do {
-    ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{('to')}), ('to' => $tmp->{('to')}), ('bool' => 1)));
-    ($MATCH->{('bool')} = ((do {
-    ((my  $pos1) = $MATCH->{('to')});
-    ((do {
-    ((((chr(36) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))) && ((do {
-    ((my  $m2) = $grammar->ident($str, $MATCH->{('to')}));
+    (((do {
+    (((do {
+    ((my  $m2) = Perlito5::Expression->term_sigil($str, $MATCH->{('to')}));
     if (($m2->{('bool')})) {
         ($MATCH->{('to')} = $m2->{('to')});
+        ($MATCH->{'Perlito5::Expression.term_sigil'} = $m2);
         1
     }
     else {
         0
     }
-})))
-}))
-})));
-    ($tmp->{('bool')} = ($MATCH->{('bool')} ? 1 : 0));
-    ($MATCH = $tmp);
-    ($MATCH->{('bool')} ? 1 : 0)
 })) && ((do {
-    ((my  $m2) = Perlito5::Expression->operator($str, $MATCH->{('to')}));
-    if (($m2->{('bool')})) {
-        ($MATCH->{('to')} = $m2->{('to')});
-        ($MATCH->{'Perlito5::Expression.operator'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ($MATCH->{('capture')} = ($MATCH->{('Perlito5::Expression.operator')}->flat())->[1]);
+    ($MATCH->{('capture')} = $MATCH->{('Perlito5::Expression.term_sigil')}->flat()->[1]);
     1
 })))
 })) || ((do {
-    ($MATCH->{('to')} = $pos1);
-    ((((((((chr(36) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')}))))) && (((chr(123) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')})))))) && ((do {
-    ((my  $m2) = $grammar->ident($str, $MATCH->{('to')}));
-    if (($m2->{('bool')})) {
-        ($MATCH->{('to')} = $m2->{('to')});
-        ($MATCH->{'ident'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && (((chr(125) eq substr($str, $MATCH->{('to')}, 1)) && (($MATCH->{('to')} = (1 + $MATCH->{('to')})))))) && ((do {
-    ($MATCH->{('capture')} = Perlito5::AST::Var->new(('sigil' => chr(36)), ('name' => $MATCH->{('ident')}->flat())));
-    1
-}))))
-}))) || ((do {
     ($MATCH->{('to')} = $pos1);
     ((((do {
     ((my  $m2) = $grammar->char_any($str, $MATCH->{('to')}));

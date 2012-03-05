@@ -170,15 +170,9 @@ token double_quoted_unescape {
 }
 
 token double_quoted_buf {
-    | <before \$ >
-        [ <before \$ <.ident> > <Perlito5::Expression.operator>
-            { $MATCH->{"capture"} = ($MATCH->{"Perlito5::Expression.operator"}->flat())[1] }
-        | \$\{ <ident> \}
-            { $MATCH->{"capture"} = Perlito5::AST::Var->new(
-                    sigil  => '$',
-                    name   => $MATCH->{"ident"}->flat(),
-                   )
-            }
+    | <before \$ > 
+        [ <Perlito5::Expression.term_sigil>
+            { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1] }
         | <char_any>
             { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
         ]
