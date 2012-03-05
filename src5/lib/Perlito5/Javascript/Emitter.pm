@@ -232,8 +232,10 @@ package Perlito5::Javascript::LexicalBlock;
         my @str;
         my $has_local = $self->has_decl("local");
         my $create_context = $self->{"create_context"} && $self->has_decl("my");
-        my $outer_pkg = $Perlito5::Javascript::PKG_NAME;
+        my $outer_pkg   = $Perlito5::Javascript::PKG_NAME;
         my $outer_throw = $Perlito5::Javascript::THROW;
+        unshift @{ $Perlito5::Javascript::VAR }, {};
+
         $Perlito5::Javascript::THROW = 0
             if $self->{"top_level"};
 
@@ -320,7 +322,6 @@ package Perlito5::Javascript::LexicalBlock;
             $level--;
             push @str, "})();";
         }
-        $Perlito5::Javascript::PKG_NAME = $outer_pkg;
         if ($self->{"top_level"} && $Perlito5::Javascript::THROW) {
             $level--;
             $out .= 
@@ -344,8 +345,10 @@ package Perlito5::Javascript::LexicalBlock;
         else {
             $out .= join("\n", map($tab . $_, @str));
         }
-        $Perlito5::Javascript::THROW = $outer_throw
+        $Perlito5::Javascript::PKG_NAME = $outer_pkg;
+        $Perlito5::Javascript::THROW    = $outer_throw
             if $self->{"top_level"};
+        shift @{ $Perlito5::Javascript::VAR };
         return $out;
     }
 
@@ -360,20 +363,15 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript_indented {
         my $self = $_[0];
         my $level = $_[1];
-
-        my $outer_pkg = $Perlito5::Javascript::PKG_NAME;
-        $Perlito5::Javascript::PKG_NAME = $self->{"name"};
-
         my $str = "(function () {\n"
             .   Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}, needs_return => 0 )->emit_javascript_indented( $level + 1 ) . "\n"
             . Perlito5::Javascript::tab($level) . "})()\n";
-
-        $Perlito5::Javascript::PKG_NAME = $outer_pkg;
         return $str;
     }
     sub emit_javascript_program {
         my $comp_units = shift;
         my $str = '';
+        $Perlito5::Javascript::VAR = [];
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_javascript() . "\n";
         }

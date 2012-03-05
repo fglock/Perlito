@@ -159,6 +159,7 @@ package Perlito5::Javascript::LexicalBlock;
         ((my  $create_context) = ($self->{('create_context')} && $self->has_decl(('my'))));
         ((my  $outer_pkg) = $Perlito5::Javascript::PKG_NAME);
         ((my  $outer_throw) = $Perlito5::Javascript::THROW);
+        unshift(@{$Perlito5::Javascript::VAR}, {});
         if ($self->{('top_level')}) {
             ($Perlito5::Javascript::THROW = 0)
         };
@@ -234,7 +235,6 @@ package Perlito5::Javascript::LexicalBlock;
             ($level)--;
             push(@str, (chr(125) . ')()' . chr(59)) )
         };
-        ($Perlito5::Javascript::PKG_NAME = $outer_pkg);
         if ((($self->{('top_level')} && $Perlito5::Javascript::THROW))) {
             ($level)--;
             ($out = ($out . (Perlito5::Javascript::tab($level) . ('try ' . chr(123) . chr(10)) . join((chr(10)), map(($tab . $_), @str)) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . 'catch(err) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . 'throw(err)' . chr(59) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab(($level + 1)) . 'else ' . chr(123) . (chr(10)) . Perlito5::Javascript::tab(($level + 2)) . (($has_local ? 'return cleanup_local(local_idx, err)' : 'return(err)')) . (chr(59) . chr(10)) . Perlito5::Javascript::tab(($level + 1)) . chr(125) . (chr(10)) . Perlito5::Javascript::tab($level) . chr(125))))
@@ -242,9 +242,11 @@ package Perlito5::Javascript::LexicalBlock;
         else {
             ($out = ($out . join((chr(10)), map(($tab . $_), @str))))
         };
+        ($Perlito5::Javascript::PKG_NAME = $outer_pkg);
         if ($self->{('top_level')}) {
             ($Perlito5::Javascript::THROW = $outer_throw)
         };
+        shift(@{$Perlito5::Javascript::VAR});
         return ($out)
     }
 });
@@ -257,15 +259,13 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        ((my  $outer_pkg) = $Perlito5::Javascript::PKG_NAME);
-        ($Perlito5::Javascript::PKG_NAME = $self->{('name')});
         ((my  $str) = ('(function () ' . chr(123) . chr(10) . Perlito5::Javascript::LexicalBlock->new(('block' => $self->{('body')}), ('needs_return' => 0))->emit_javascript_indented(($level + 1)) . (chr(10)) . Perlito5::Javascript::tab($level) . (chr(125) . ')()' . chr(10))));
-        ($Perlito5::Javascript::PKG_NAME = $outer_pkg);
         return ($str)
     };
     sub emit_javascript_program {
         ((my  $comp_units) = shift());
         ((my  $str) = '');
+        ($Perlito5::Javascript::VAR = []);
         for my $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_javascript() . (chr(10))))
         };
