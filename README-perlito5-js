@@ -59,8 +59,27 @@ Alias
 List (eg. subroutine return value)
 - native []
 
+eval string
+- the compiler gets the current namespace as an argument
+- javascript eval() happens at the current runtime lexical context
+
+eval block
+- ...
+
+do block
+- ...
+
 AUTOLOAD
 - TODO
+
+my
+- ...
+
+local
+- ...
+
+our
+- ...
 
 
 * Javascript resources
