@@ -13,8 +13,6 @@ TODO list for Perlito5
 
 -- add regexes
 
--- add "local", "our"
-
 
 * extensibility
 
@@ -25,9 +23,9 @@ TODO list for Perlito5
 
 -- these should probably go into namespace Perlito5X::*
 
--- Test
+-- Test (implemented as Perlito5::Test)
 
--- Data::Dumper
+-- Data::Dumper (implemented as Perlito5::Dumper)
 
 
 * Parser
@@ -43,6 +41,8 @@ TODO list for Perlito5
 -- symbol variables like $]
 
 -- double-quoted here-docs
+
+-- parse "local $x[1]"
 
 
 * Perl5 backend
@@ -71,7 +71,6 @@ TODO list for Perlito5
 -- in the browser: implement "use" with XMLHttpRequest (what are the security implications?)
 
 -- add symbol tables for scalar, array and hash
--- implement "our", "local"
 
 -- string increment and string ranges
 
