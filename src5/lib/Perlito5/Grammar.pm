@@ -177,23 +177,13 @@ token double_quoted_buf {
             { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
         ]
     | <before \@ >
-        [ <before \@ <.ident> > <Perlito5::Expression.operator> 
+        [ <Perlito5::Expression.term_sigil>
             { $MATCH->{"capture"} = Perlito5::AST::Apply->new(
                     namespace => '',
                     code      => 'join',
                     arguments => [ 
                         Perlito5::AST::Val::Buf->new( buf => ' ' ), 
-                        ($MATCH->{"Perlito5::Expression.operator"}->flat())[1] 
-                    ],
-                )
-            }
-        | \@\{ <exp_stmts> \}
-            { $MATCH->{"capture"} = Perlito5::AST::Apply->new(
-                    namespace => '',
-                    code      => 'join',
-                    arguments => [ 
-                        Perlito5::AST::Val::Buf->new( buf => ' ' ), 
-                        ($MATCH->{"exp_stmts"}->flat())[0] 
+                        ($MATCH->{"Perlito5::Expression.term_sigil"}->flat())[1] 
                     ],
                 )
             }
