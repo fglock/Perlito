@@ -13,7 +13,7 @@ Dev  2012-02-29
 - javascript backend:
 -- symbol tables; typeglobs
 -- references
--- "local"; goto &sub
+-- "local", "our"; goto &sub
 -- perlito5 calling convention is incompatible with native javascript
    The last commit using native javascript data is "e1e3316b"
 -- native javascript can be accessed with JS::inline('string')

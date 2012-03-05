@@ -251,16 +251,6 @@ package Perlito5::Javascript::LexicalBlock;
         }
 
         my $tab = Perlito5::Javascript::tab($level);
-        # for my $decl ( @block ) {
-        #     if ($decl->isa( 'Perlito5::AST::Decl' )) {
-        #         push @str, $decl->emit_javascript_init;
-        #     }
-        #     if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
-        #         if ($decl->{"arguments"}[0]->isa( 'Perlito5::AST::Decl' )) {
-        #             push @str, $decl->{"arguments"}[0]->emit_javascript_init;
-        #         }
-        #     }
-        # }
         my $last_statement;
         if ($self->{"needs_return"}) {
             $last_statement = pop @block;
@@ -564,7 +554,16 @@ package Perlito5::AST::Decl;
             #         . $self->{"var"}->emit_javascript_indented( $level );
             # }
 
-            my $ns = 'NAMESPACE["' . ($self->{"var"}{"namespace"} || $Perlito5::Javascript::PKG_NAME) . '"]';
+            my $perl5_name = $self->{"var"}->perl5_name;
+            # say "looking up $perl5_name";
+            my $decl_namespace = '';
+            my $decl = $self->{"var"}->perl5_get_decl( $perl5_name );
+            if ( $decl && ($decl->{"decl"} eq 'our' || $decl->{"decl"} eq 'local')) {
+                # say "found ", $decl->{"decl"}, " namespace: ", $decl->{"namespace"};
+                $decl_namespace = $decl->{"namespace"};
+            }
+
+            my $ns = 'NAMESPACE["' . ($self->{"var"}{"namespace"} || $decl_namespace || $Perlito5::Javascript::PKG_NAME) . '"]';
 
             return
                   'set_local(' . $ns . ','
@@ -578,9 +577,25 @@ package Perlito5::AST::Decl;
         my $self = shift;
 
         my $env = { decl => $self->{"decl"} };
-        $env->{"namespace"} = $Perlito5::Javascript::PKG_NAME
-            if $self->{"decl"} ne 'my' && $self->{"var"}{"namespace"} eq '';
-        $Perlito5::Javascript::VAR->[0]{ $self->{"var"}->perl5_name } = $env;
+        my $perl5_name = $self->{"var"}->perl5_name;
+        if ( $self->{"decl"} ne 'my' ) {
+
+            die "No package name allowed for variable $perl5_name in \"our\""
+                if $self->{"decl"} eq 'our' && $self->{"var"}{"namespace"};
+
+            if ( $self->{"var"}{"namespace"} eq '' ) {
+                # say "looking up $perl5_name";
+                my $decl_namespace = '';
+                my $decl = $self->{"var"}->perl5_get_decl( $perl5_name );
+                if ( $self->{"decl"} eq 'local' && $decl && ($decl->{"decl"} eq 'our' || $decl->{"decl"} eq 'local')) {
+                    # say "found ", $decl->{"decl"}, " namespace: ", $decl->{"namespace"};
+                    $decl_namespace = $decl->{"namespace"};
+                }
+                $env->{"namespace"} = $decl_namespace || $Perlito5::Javascript::PKG_NAME;
+            }
+        }
+
+        $Perlito5::Javascript::VAR->[0]{ $perl5_name } = $env;
 
         if ($self->{"decl"} eq 'my') {
             my $str = "";

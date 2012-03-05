@@ -403,7 +403,13 @@ package Perlito5::AST::Decl;
         ((my  $self) = shift());
         ((my  $level) = shift());
         if ((($self->{('decl')} eq 'local'))) {
-            ((my  $ns) = ('NAMESPACE[' . chr(34) . (($self->{('var')}->{('namespace')} || $Perlito5::Javascript::PKG_NAME)) . chr(34) . ']'));
+            ((my  $perl5_name) = $self->{('var')}->perl5_name());
+            ((my  $decl_namespace) = '');
+            ((my  $decl) = $self->{('var')}->perl5_get_decl($perl5_name));
+            if ((($decl && ((($decl->{('decl')} eq 'our') || ($decl->{('decl')} eq 'local')))))) {
+                ($decl_namespace = $decl->{('namespace')})
+            };
+            ((my  $ns) = ('NAMESPACE[' . chr(34) . ((($self->{('var')}->{('namespace')} || $decl_namespace) || $Perlito5::Javascript::PKG_NAME)) . chr(34) . ']'));
             return (('set_local(' . $ns . ',' . Perlito5::Javascript::escape_string($self->{('var')}->{('name')}) . ',' . Perlito5::Javascript::escape_string($self->{('var')}->{('sigil')}) . ')' . chr(59) . ' ' . $self->{('var')}->emit_javascript_indented($level)))
         };
         $self->{('var')}->emit_javascript_indented($level)
@@ -411,10 +417,21 @@ package Perlito5::AST::Decl;
     sub emit_javascript_init {
         ((my  $self) = shift());
         ((my  $env) = {('decl' => $self->{('decl')})});
-        if ((($self->{('decl')} ne 'my') && ($self->{('var')}->{('namespace')} eq ''))) {
-            ($env->{('namespace')} = $Perlito5::Javascript::PKG_NAME)
+        ((my  $perl5_name) = $self->{('var')}->perl5_name());
+        if ((($self->{('decl')} ne 'my'))) {
+            if ((($self->{('decl')} eq 'our') && $self->{('var')}->{('namespace')})) {
+                die(('No package name allowed for variable ' . $perl5_name . ' in ' . chr(34) . 'our' . chr(34)))
+            };
+            if ((($self->{('var')}->{('namespace')} eq ''))) {
+                ((my  $decl_namespace) = '');
+                ((my  $decl) = $self->{('var')}->perl5_get_decl($perl5_name));
+                if ((((($self->{('decl')} eq 'local') && $decl) && ((($decl->{('decl')} eq 'our') || ($decl->{('decl')} eq 'local')))))) {
+                    ($decl_namespace = $decl->{('namespace')})
+                };
+                ($env->{('namespace')} = ($decl_namespace || $Perlito5::Javascript::PKG_NAME))
+            }
         };
-        ($Perlito5::Javascript::VAR->[0]->{$self->{('var')}->perl5_name()} = $env);
+        ($Perlito5::Javascript::VAR->[0]->{$perl5_name} = $env);
         if ((($self->{('decl')} eq 'my'))) {
             ((my  $str) = '');
             ($str = ($str . 'var ' . $self->{('var')}->emit_javascript() . ' ' . chr(61) . ' '));
