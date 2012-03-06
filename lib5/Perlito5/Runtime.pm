@@ -17,11 +17,11 @@ sub _replace {
 };
 sub lisp_escape_string {
     ((my  $s) = shift());
-    _replace($s, (chr(92)), (chr(92) . chr(92)))
+    _replace($s, chr(92), chr(92) . chr(92))
 };
 sub to_go_namespace {
     ((my  $s) = shift());
-    _replace($s, ('::'), ('__'))
+    _replace($s, '::', '__')
 };
 1;
 

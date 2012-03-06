@@ -73,7 +73,7 @@ sub is_ident_middle {
     Perlito5::Expression->term_square($_[0], $_[1])
 }), (chr(123) => sub  {
     Perlito5::Expression->term_curly($_[0], $_[1])
-}), ((chr(39)) => sub  {
+}), (chr(39) => sub  {
     Perlito5::Expression->term_quote($_[0], $_[1])
 }), (chr(34) => sub  {
     Perlito5::Expression->term_quote($_[0], $_[1])
@@ -137,7 +137,7 @@ sub op_parse {
         ((my  $term) = substr($str, $pos, $len));
         if ((exists($Term[$len]->{$term}))) {
             ((my  $m) = $Term[$len]->{$term}->($str, $pos));
-            if ($m->{('bool')}) {
+            if ($m->{'bool'}) {
                 return ($m)
             }
         }
@@ -313,10 +313,10 @@ sub precedence_parse {
                 else {
                     if ((is_term($token))) {
                         if ((is_term($last))) {
-                            Perlito5::Runtime::say((chr(35) . '      last:  '), $last);
-                            Perlito5::Runtime::say((chr(35) . '      token: '), $token);
-                            Perlito5::Runtime::say((chr(35) . '      space: '), $last_has_space);
-                            die(('Value tokens must be separated by an operator'))
+                            Perlito5::Runtime::say(chr(35) . '      last:  ', $last);
+                            Perlito5::Runtime::say(chr(35) . '      token: ', $token);
+                            Perlito5::Runtime::say(chr(35) . '      space: ', $last_has_space);
+                            die('Value tokens must be separated by an operator')
                         };
                         ($token->[0] = 'term');
                         push(@{$num_stack}, $token )
@@ -343,7 +343,7 @@ sub precedence_parse {
                             unshift(@{$op_stack}, $token)
                         }
                         else {
-                            die(('Unknown token: ' . chr(39)), $token->[1], (chr(39)))
+                            die('Unknown token: ' . chr(39), $token->[1], chr(39))
                         }
                     }
                 }
@@ -360,7 +360,7 @@ sub precedence_parse {
         }
     };
     if (((defined($token) && (($token->[0] ne 'end'))))) {
-        die(('Unexpected end token: '), $token)
+        die('Unexpected end token: ', $token)
     };
     for ( ; (scalar(@{$op_stack}));  ) {
         $reduce->($op_stack, $num_stack)

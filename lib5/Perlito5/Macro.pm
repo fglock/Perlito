@@ -12,12 +12,12 @@ package Perlito5::AST::Apply;
 ((my  %op) = (('infix:<+' . chr(61) . '>' => 'infix:<+>'), ('infix:<-' . chr(61) . '>' => 'infix:<->'), ('infix:<*' . chr(61) . '>' => 'infix:<*>'), ('infix:<' . chr(47) . chr(61) . '>' => 'infix:<' . chr(47) . '>'), ('infix:<' . chr(124) . chr(124) . chr(61) . '>' => 'infix:<' . chr(124) . chr(124) . '>'), ('infix:<' . chr(38) . chr(38) . chr(61) . '>' => 'infix:<' . chr(38) . chr(38) . '>'), ('infix:<' . chr(124) . chr(61) . '>' => 'infix:<' . chr(124) . '>'), ('infix:<' . chr(38) . chr(61) . '>' => 'infix:<' . chr(38) . '>'), ('infix:<' . chr(47) . chr(47) . chr(61) . '>' => 'infix:<' . chr(47) . chr(47) . '>'), ('infix:<.' . chr(61) . '>' => 'list:<.>')));
 sub op_assign {
     ((my  $self) = $_[0]);
-    ((my  $code) = $self->{('code')});
+    ((my  $code) = $self->{'code'});
     if (ref($code)) {
         return (0)
     };
     if ((exists($op{$code}))) {
-        return (Perlito5::AST::Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => [$self->{('arguments')}->[0], Perlito5::AST::Apply->new(('code' => $op{$code}), ('arguments' => $self->{('arguments')}))])))
+        return (Perlito5::AST::Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => [$self->{'arguments'}->[0], Perlito5::AST::Apply->new(('code' => $op{$code}), ('arguments' => $self->{'arguments'}))])))
     };
     return (0)
 };
@@ -25,11 +25,11 @@ package Perlito5::AST::Do;
 sub simplify {
     ((my  $self) = $_[0]);
     (my  $block);
-    if (($self->{('block')}->isa('Perlito5::AST::Lit::Block'))) {
-        ($block = $self->{('block')}->stmts())
+    if (($self->{'block'}->isa('Perlito5::AST::Lit::Block'))) {
+        ($block = $self->{'block'}->stmts())
     }
     else {
-        ($block = [$self->{('block')}])
+        ($block = [$self->{'block'}])
     };
     if (((scalar(@{$block}) == 1))) {
         ((my  $stmt) = $block->[0]);

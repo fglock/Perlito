@@ -3,6 +3,7 @@ package Perlito5::Grammar;
 use Perlito5::Expression;
 # use Perlito5::Grammar::Regex;
 use Perlito5::Grammar::Control;
+use Perlito5::Grammar::String;
 
 token is_newline {
     | \c10
@@ -126,47 +127,28 @@ token char_any {
     .
 }
 
-token char_any_single_quote {
-    <!before \' > .
-    [ <!before [ \' | \\ ] > . ]*
-}
-
 token single_quoted_unescape {
-    |  \\ \\  <single_quoted_unescape>
-        { $MATCH->{"capture"} = "\\" . $MATCH->{"single_quoted_unescape"}->flat() }
-    |  \\ \'  <single_quoted_unescape>
-        { $MATCH->{"capture"} = '\'' . $MATCH->{"single_quoted_unescape"}->flat() }
-    |  \\   <single_quoted_unescape>
-        { $MATCH->{"capture"} = "\\" . $MATCH->{"single_quoted_unescape"}->flat() }
-    |  <char_any_single_quote> <single_quoted_unescape>
-        { $MATCH->{"capture"} = $MATCH->{"char_any_single_quote"}->flat() . $MATCH->{"single_quoted_unescape"}->flat() }
-    |  ''
-}
-
-token char_any_double_quote {
-    <!before   [ \" | \$ | \@ ] > .
-    [ <!before [ \" | \$ | \@ | \\ ] > . ]*
+    |  \\ \\
+        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => "\\" ) }
+    |  \\ \'
+        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => '\'' ) }
 }
 
 token double_quoted_unescape {
-    |  \\
-        [  c
-            [   \[ <digits> \]
-                { $MATCH->{"capture"} = chr( $MATCH->{"digits"}->flat() ) }
-            |  <digits>
-                { $MATCH->{"capture"} = chr( $MATCH->{"digits"}->flat() ) }
-            ]
-        |  e
-            { $MATCH->{"capture"} = chr(27) }
-        |  n
-            { $MATCH->{"capture"} = "\n" }
-        |  t
-            { $MATCH->{"capture"} = chr(9) }
-        |  <char_any>
-            { $MATCH->{"capture"} = $MATCH->{"char_any"}->flat() }
+    |  c
+        [   \[ <digits> \]
+            { $MATCH->{"capture"} = chr( $MATCH->{"digits"}->flat() ) }
+        |  <digits>
+            { $MATCH->{"capture"} = chr( $MATCH->{"digits"}->flat() ) }
         ]
-    |  <char_any_double_quote>
-        { $MATCH->{"capture"} = $MATCH->{"char_any_double_quote"}->flat() }
+    |  e
+        { $MATCH->{"capture"} = chr(27) }
+    |  n
+        { $MATCH->{"capture"} = "\n" }
+    |  t
+        { $MATCH->{"capture"} = chr(9) }
+    |  <char_any>
+        { $MATCH->{"capture"} = $MATCH->{"char_any"}->flat() }
 }
 
 token double_quoted_buf {
@@ -190,27 +172,15 @@ token double_quoted_buf {
         | <char_any>
             { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
         ]
-    | <double_quoted_unescape>
+    | \\ <double_quoted_unescape>
         { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"double_quoted_unescape"}->flat() ) }
 }
 
 token val_buf {
-    | \" <double_quoted_buf>*      \"
-        {
-            my $args = $MATCH->{"double_quoted_buf"};
-            if (!$args) {
-                $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => '' )
-            }
-            else {
-                $MATCH->{"capture"} = Perlito5::AST::Apply->new(
-                    namespace => '',
-                    code => 'list:<.>',
-                    arguments => [ map( $_->capture, @{$MATCH->{"double_quoted_buf"}} ) ],
-                )
-            }
-        }
-    | \' <single_quoted_unescape>  \'
-        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"single_quoted_unescape"}->flat() ) }
+    | \" <Perlito5::Grammar::String.double_quote_parse>
+        { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar::String.double_quote_parse"}->flat() }
+    | \' <Perlito5::Grammar::String.single_quote_parse>
+        { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar::String.single_quote_parse"}->flat() }
 }
 
 token digits {

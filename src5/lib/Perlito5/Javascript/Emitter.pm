@@ -274,6 +274,16 @@ package Perlito5::Javascript::LexicalBlock;
             }
         }
         if ($self->{"needs_return"} && $last_statement) {
+
+            if ($last_statement->isa( 'Perlito5::AST::Decl' )) {
+                push @str, $last_statement->emit_javascript_init;
+            }
+            if ($last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'infix:<=>') {
+                if ($last_statement->{"arguments"}[0]->isa( 'Perlito5::AST::Decl' )) {
+                    push @str, $last_statement->{"arguments"}[0]->emit_javascript_init;
+                }
+            }
+
             if ($last_statement->isa( 'Perlito5::AST::If' )) {
                 my $cond      = $last_statement->cond;
                 my $body      = $last_statement->body;
@@ -679,6 +689,14 @@ package Perlito5::AST::Apply;
 {
 
     my %op_infix_js = (
+        'infix:<eq>' => ' == ',
+        'infix:<ne>' => ' != ',
+        'infix:<le>' => ' <= ',
+        'infix:<ge>' => ' >= ',
+    );
+    my %op_infix_js_num = (
+        'infix:<==>' => ' == ',
+        'infix:<!=>' => ' != ',
         'infix:<->'  => ' - ',
         'infix:<*>'  => ' * ',
         'infix:</>'  => ' / ',
@@ -686,14 +704,6 @@ package Perlito5::AST::Apply;
         'infix:<<>'  => ' < ',
         'infix:<>=>' => ' >= ',
         'infix:<<=>' => ' <= ',
-
-        'infix:<eq>' => ' == ',
-        'infix:<ne>' => ' != ',
-        'infix:<le>' => ' <= ',
-        'infix:<ge>' => ' >= ',
-
-        'infix:<==>' => ' == ',
-        'infix:<!=>' => ' != ',
     );
 
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
@@ -723,6 +733,11 @@ package Perlito5::AST::Apply;
         if (exists $op_infix_js{$code}) {
             return '(' 
                 . join( $op_infix_js{$code}, map( $_->emit_javascript_indented( $level ), @{$self->{"arguments"}} ))
+                . ')'
+        }
+        if (exists $op_infix_js_num{$code}) {
+            return '(' 
+                . join( $op_infix_js_num{$code}, map( Perlito5::Javascript::to_num($_), @{$self->{"arguments"}} ))
                 . ')'
         }
 

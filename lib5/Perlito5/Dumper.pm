@@ -15,15 +15,15 @@ sub Dumper {
     ((my  $tab) = join("", '    ' x $level));
     ((my  $tab1) = ($tab . '    '));
     if ((($ref eq 'ARRAY'))) {
-        return (('[' . chr(10) . join('', map(($tab1 . Dumper($_, ($level + 1)) . (',' . chr(10))), @{$obj})) . $tab . ']'))
+        return (('[' . chr(10) . join('', map(($tab1 . Dumper($_, ($level + 1)) . ',' . chr(10)), @{$obj})) . $tab . ']'))
     }
     else {
         if ((($ref eq 'HASH'))) {
-            return ((chr(123) . chr(10) . join('', map(($tab1 . (chr(39) . $_ . chr(39) . ' ' . chr(61) . '> ') . Dumper($obj->{$_}, ($level + 1)) . (',' . chr(10))), keys(%{$obj}))) . $tab . chr(125)))
+            return ((chr(123) . chr(10) . join('', map(($tab1 . (chr(39) . $_ . chr(39) . ' ' . chr(61) . '> ') . Dumper($obj->{$_}, ($level + 1)) . ',' . chr(10)), keys(%{$obj}))) . $tab . chr(125)))
         }
         else {
             if (($ref)) {
-                return (('bless(' . ('...') . (', ' . chr(39) . $ref . chr(39) . ')')))
+                return (('bless(' . '...' . (', ' . chr(39) . $ref . chr(39) . ')')))
             }
         }
     };
