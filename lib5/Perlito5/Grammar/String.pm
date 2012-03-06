@@ -327,7 +327,7 @@ sub qw_quote_parse {
     };
     ((my  $m) = $self->string_interpolation_parse($str, $pos, $delimiter, 0));
     if (($m->{'bool'})) {
-        ($m->{'capture'} = Perlito5::AST::Apply->new(('code' => 'prefix:<qw>'), ('arguments' => [$m->flat()]), ('namespace' => '')))
+        ($m->{'capture'} = Perlito5::AST::Apply->new(('code' => 'list:<,>'), ('arguments' => [map(Perlito5::AST::Val::Buf->new(('buf' => $_)), split(' ', $m->flat()->{'buf'}))]), ('namespace' => '')))
     };
     return ($m)
 };

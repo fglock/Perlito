@@ -224,6 +224,25 @@ CORE.ref = function(List__) {
     }
     return "";
 };
+
+CORE.split = function(List__) {
+    var pattern = List__[0];
+    var s       = List__[1];
+    var limit   = List__[2];
+    if (typeof pattern === "string") {
+        if (pattern == " ") {
+            var res;
+            for (var i_ = 0, a_ = s.split(pattern); i_ < a_.length ; i_++) {
+                if (a_[i_] != "") {
+                    res.push(a_[i_])
+                }
+            }
+            return res;
+        }
+    }
+    CORE.die(["not implemented"]);
+};
+
 ';
 } # end of emit_javascript()
 
