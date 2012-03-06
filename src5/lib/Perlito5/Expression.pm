@@ -773,59 +773,6 @@ package Perlito5::Expression;
         return $self->circumfix_parse($str, $pos, ')');
     }
 
-    sub string_interpolation_parse {
-        my $self = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        my $delimiter = $_[3];
-        my $interpolate = $_[4];
-
-        my $p = $pos;
-
-        my @args;
-        while (  $p < length($str)
-              && substr($str, $p, length($delimiter)) ne $delimiter
-              )
-        {
-            my $m = $interpolate
-                    ? Perlito5::Grammar->double_quoted_buf( $str, $p )
-                    : Perlito5::Grammar->single_quoted_unescape( $str, $p );
-            if ( $m->{"bool"} ) {
-                push @args, $m->flat();
-                $p = $m->{"to"};
-            }
-            else {
-                push @args, Perlito5::AST::Val::Buf->new( buf => substr($str, $p, 1) );
-                $p++;
-            }
-        }
-
-        die "Can't find string terminator '$delimiter' anywhere before EOF"
-            if substr($str, $p, length($delimiter)) ne $delimiter;
-
-        $p += length($delimiter);
-
-        my $ast;
-        if (!@args) {
-            $ast = Perlito5::AST::Val::Buf->new( buf => '' )
-        }
-        else {
-            $ast = Perlito5::AST::Apply->new(
-                namespace => '',
-                code => 'list:<.>',
-                arguments => \@args,
-            )
-        }
-        
-        return Perlito5::Match->new(
-            'str' => $str, 
-            'from' => $pos, 
-            'to' => $p, 
-            'bool' => 1, 
-            capture => $ast
-        );
-    }
-
     sub exp_parse {
         my $self = $_[0];
         my $str = $_[1];

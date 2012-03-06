@@ -4214,57 +4214,6 @@ CORE.ref = function(List__) {
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "string_interpolation_parse", function (List__) {
-			try {
-				var v_self = null;
-				(v_self = List__[0]);
-				var v_str = null;
-				(v_str = List__[1]);
-				var v_pos = null;
-				(v_pos = List__[2]);
-				var v_delimiter = null;
-				(v_delimiter = List__[3]);
-				var v_interpolate = null;
-				(v_interpolate = List__[4]);
-				var v_p = null;
-				(v_p = v_pos);
-				var List_args = [];
-				for ( ; ((num(v_p) < num(NAMESPACE["Perlito5::Expression"].length([v_str]))) && (NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, NAMESPACE["Perlito5::Expression"].length([v_delimiter])]) != v_delimiter));  ) {
-					(function () {
-						var v_m = null;
-						(v_m = ( bool(v_interpolate) ? CLASS["Perlito5::Grammar"]._class_.double_quoted_buf([CLASS["Perlito5::Grammar"],v_str,v_p]) : CLASS["Perlito5::Grammar"]._class_.single_quoted_unescape([CLASS["Perlito5::Grammar"],v_str,v_p])));
-						if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
-							NAMESPACE["Perlito5::Expression"].push([List_args, v_m._class_.flat([v_m])]);
-							(v_p = (v_m || (v_m = new HashRef({})))._hash_['to']);
-						}
-						else {
-							NAMESPACE["Perlito5::Expression"].push([List_args, CLASS["Perlito5::AST::Val::Buf"]._class_.new([CLASS["Perlito5::AST::Val::Buf"],'buf', NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, 1])])]);
-							(v_p)++;
-						};
-						})();
-				};
-				if ( (NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, NAMESPACE["Perlito5::Expression"].length([v_delimiter])]) != v_delimiter) ) {
-					NAMESPACE["Perlito5::Expression"].die([('Can' + String.fromCharCode(39) + 't find string terminator ' + String.fromCharCode(39) + string(v_delimiter) + String.fromCharCode(39) + ' anywhere before EOF')]);
-				};
-				(v_p = add(v_p, NAMESPACE["Perlito5::Expression"].length([v_delimiter])));
-				var v_ast = null;
-				if ( !( bool(List_args)) ) {
-					(v_ast = CLASS["Perlito5::AST::Val::Buf"]._class_.new([CLASS["Perlito5::AST::Val::Buf"],'buf', '']));
-				}
-				else {
-					(v_ast = CLASS["Perlito5::AST::Apply"]._class_.new([CLASS["Perlito5::AST::Apply"],'namespace', '','code', 'list:<.>','arguments', (new ArrayRef(List_args))]));
-				};
-				throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_p,'bool', 1,'capture', v_ast]))
-			}
-			catch(err) {
-				if ( err instanceof Error ) {
-					throw(err);
-				}
-				else {
-					return(err);
-				}
-			}
-		});
 		make_sub("Perlito5::Expression", "exp_parse", function (List__) {
 			try {
 				var v_self = null;
