@@ -559,8 +559,8 @@ CORE.split = function(List__) {
     var limit   = List__[2];
     if (typeof pattern === "string") {
         if (pattern == " ") {
-            var res;
-            for (var i_ = 0, a_ = s.split(pattern); i_ < a_.length ; i_++) {
+            var res = [];
+            for (var i_ = 0, a_ = s.split(/(?: |\n)+/); i_ < a_.length ; i_++) {
                 if (a_[i_] != "") {
                     res.push(a_[i_])
                 }
