@@ -36,8 +36,14 @@ sub string_interpolation_parse {
             $p = $m->{"to"};
         }
         else {
-            $buf .= substr($str, $p, 1);
+            my $c = substr($str, $p, 1);
+            $buf .= $c;
             $p++;
+            if ( $c eq chr(10) || $c eq chr(13) ) {
+                # after a newline, check for here-docs
+                my $m = $self->here_doc( $str, $p );
+                $p = $m->{"to"};
+            }
         }
     }
     if ( length $buf ) {
@@ -123,6 +129,12 @@ sub here_doc_wanted {
     );
 }
 
+token newline {
+    | \c10 \c13?
+    | \c13 \c10?
+}
+
+
 sub here_doc {
     # here-doc is called just after a newline
 
@@ -144,9 +156,15 @@ sub here_doc {
         if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
             # this will put the text in the right place in the AST
             $here->[1]->(substr($str, $pos, $p - $pos));
-            # move the pointer and return true
-            return Perlito5::Match->new(
-                'str' => $str, 'from' => $pos, 'to' => $p + length($delimiter), 'bool' => 1, capture => undef);
+            $p += length($delimiter);
+            # say "$p ", length($str);
+            my $m = $self->newline( $str, $p );
+            if ( $p >= length($str) || $m->{"bool"} ) {
+                # return true
+                $p = $m->{"to"} if $m->{"bool"};
+                return Perlito5::Match->new(
+                    'str' => $str, 'from' => $pos, 'to' => $p, 'bool' => 1, capture => undef);
+            }
         }
         # ... next line
         while (  $p < length($str)

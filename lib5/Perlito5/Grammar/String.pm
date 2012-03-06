@@ -36,8 +36,13 @@ sub string_interpolation_parse {
             ($p = $m->{'to'})
         }
         else {
-            ($buf = ($buf . substr($str, $p, 1)));
-            ($p)++
+            ((my  $c) = substr($str, $p, 1));
+            ($buf = ($buf . $c));
+            ($p)++;
+            if (((($c eq chr(10)) || ($c eq chr(13))))) {
+                ((my  $m) = $self->here_doc($str, $p));
+                ($p = $m->{'to'})
+            }
         }
     };
     if ((length($buf))) {
@@ -88,6 +93,38 @@ sub here_doc_wanted {
 }, $delimiter] );
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => ['term', $placeholder])))
 };
+sub newline {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    ((((chr(10) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $last_pos) = $MATCH->{'to'});
+    if ((!(((do {
+    ((chr(13) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+}))))) {
+        ($MATCH->{'to'} = $last_pos)
+    };
+    1
+})))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((((chr(13) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $last_pos) = $MATCH->{'to'});
+    if ((!(((do {
+    ((chr(10) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+}))))) {
+        ($MATCH->{'to'} = $last_pos)
+    };
+    1
+}))))
+})))
+}))));
+    $MATCH
+};
 sub here_doc {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -101,7 +138,14 @@ sub here_doc {
     for ( ; (($p < length($str)));  ) {
         if (((substr($str, $p, length($delimiter)) eq $delimiter))) {
             $here->[1]->(substr($str, $pos, ($p - $pos)));
-            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($p + length($delimiter))), ('bool' => 1), ('capture' => undef())))
+            ($p = ($p + length($delimiter)));
+            ((my  $m) = $self->newline($str, $p));
+            if (((($p >= length($str)) || $m->{'bool'}))) {
+                if ($m->{'bool'}) {
+                    ($p = $m->{'to'})
+                };
+                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => undef())))
+            }
         };
         for ( ; ((($p < length($str)) && (((substr($str, $p, 1) ne chr(10)) && (substr($str, $p, 1) ne chr(13))))));  ) {
             ($p)++
