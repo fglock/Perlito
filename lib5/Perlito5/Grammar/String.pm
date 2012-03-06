@@ -72,6 +72,7 @@ sub here_doc_wanted {
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
     (my  $delimiter);
+    ((my  $type) = 'double_quote');
     ((my  $p) = $pos);
     if (((substr($str, $p, 2) eq '<<'))) {
         ($p = ($p + 2));
@@ -80,7 +81,8 @@ sub here_doc_wanted {
             ((my  $m) = Perlito5::Grammar::String->single_quote_parse($str, $p));
             if (($m->{'bool'})) {
                 ($p = $m->{'to'});
-                ($delimiter = $m->flat()->{'buf'})
+                ($delimiter = $m->flat()->{'buf'});
+                ($type = 'single_quote')
             }
         }
     };
@@ -88,7 +90,7 @@ sub here_doc_wanted {
         return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 0), ('capture' => undef())))
     };
     ((my  $placeholder) = Perlito5::AST::Val::Buf->new(('buf' => 'HEREDOC')));
-    push(@Here_doc, ['single_quote', sub  {
+    push(@Here_doc, [$type, sub  {
     ($placeholder->{'buf'} = $_[0])
 }, $delimiter] );
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => ['term', $placeholder])))

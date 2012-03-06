@@ -5239,6 +5239,8 @@ CORE.ref = function(List__) {
 				var v_pos = null;
 				(v_pos = List__[2]);
 				var v_delimiter = null;
+				var v_type = null;
+				(v_type = 'double_quote');
 				var v_p = null;
 				(v_p = v_pos);
 				if ( (NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_p, 2]) == '<<') ) {
@@ -5251,6 +5253,7 @@ CORE.ref = function(List__) {
 							if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
 								(v_p = (v_m || (v_m = new HashRef({})))._hash_['to']);
 								(v_delimiter = (v_m._class_.flat([v_m]) || (v_m._class_.flat([v_m]) = new HashRef({})))._hash_['buf']);
+								(v_type = 'single_quote');
 							};
 							})();
 					};
@@ -5260,7 +5263,7 @@ CORE.ref = function(List__) {
 				};
 				var v_placeholder = null;
 				(v_placeholder = CLASS["Perlito5::AST::Val::Buf"]._class_.new([CLASS["Perlito5::AST::Val::Buf"],'buf', 'HEREDOC']));
-				NAMESPACE["Perlito5::Grammar::String"].push([List_Here_doc, (new ArrayRef(interpolate_array('single_quote', function (List__) {
+				NAMESPACE["Perlito5::Grammar::String"].push([List_Here_doc, (new ArrayRef(interpolate_array(v_type, function (List__) {
 		return (((v_placeholder || (v_placeholder = new HashRef({})))._hash_['buf'] = List__[0]));
 }, v_delimiter)))]);
 				throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_p,'bool', 1,'capture', (new ArrayRef(interpolate_array('term', v_placeholder)))]))

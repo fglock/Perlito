@@ -90,6 +90,7 @@ sub here_doc_wanted {
     my $pos = $_[2];    # $pos points to the first "<" in <<'END'
 
     my $delimiter;
+    my $type = 'double_quote';
     my $p = $pos;
     if ( substr($str, $p, 2) eq '<<' ) {
         $p += 2;
@@ -99,6 +100,7 @@ sub here_doc_wanted {
             if ( $m->{"bool"} ) {
                 $p = $m->{"to"};
                 $delimiter = $m->flat()->{"buf"};
+                $type = 'single_quote';
                 # say "got a here-doc delimiter: [$delimiter]";
             }
         }
@@ -112,7 +114,7 @@ sub here_doc_wanted {
 
     my $placeholder = Perlito5::AST::Val::Buf->new( buf => 'HEREDOC' );
     push @Here_doc, [
-        'single_quote',
+        $type,
         sub { $placeholder->{"buf"} = $_[0] },
         $delimiter,
     ];
