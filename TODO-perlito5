@@ -2,7 +2,7 @@ TODO list for Perlito5
 
 * Perlito5
 
-- move all internal packages inside Perlito5 namespace
+- move all internal packages inside Perlito5 namespace (done)
 
 
 * basic functionality
@@ -60,7 +60,7 @@ TODO list for Perlito5
 
 -- bug: negative index in array doesn't work
 
--- bug: "my" variables are block-wide; this doesn't work as expected: my $v = $v
+-- bug: "my" variables - this doesn't work as expected: my $v = $v
    possible fix: rename variables
 
 -- bug: variable aliases create copies instead
@@ -86,6 +86,12 @@ TODO list for Perlito5
 
 * Nice to Have
 
+-- subscripts inside string-interpolation
+
+-- $$ prefix as in $$hash{$key}
+
+-- $# prefix as in $#_
+
 -- labels, "next", "last"
 
 -- run the "perl" test suite
@@ -101,7 +107,7 @@ TODO list for Perlito5
 -- proper "use strict" and "use warnings"
 -- use the same error messages and warnings as 'perl'
 
--- __PACKAGE__,  __END__, __LINE__, __DATA__
+-- __PACKAGE__,  __END__, __LINE__, __DATA__, __FILE__
 
 -- BEGIN{}, INIT{}, END{}
 
