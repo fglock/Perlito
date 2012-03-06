@@ -171,14 +171,13 @@ package Perlito5::Javascript;
     sub to_list_preprocess {
         my @items;
         for my $item ( @{$_[0]} ) {
-            if ($item->isa( 'Perlito5::AST::Apply' ) && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' )) {
+            if (  $item->isa( 'Perlito5::AST::Apply' ) 
+               && ( $item->code eq 'circumfix:<( )>' || $item->code eq 'list:<,>' || $item->code eq 'infix:<=>>' )
+               )
+            {
                 for my $arg ( @{ to_list_preprocess($item->arguments) } ) {
                     push( @items, $arg);
                 }
-            }
-            elsif ($item->isa('Perlito5::AST::Apply') && $item->code eq 'infix:<=>>') {
-                push @items, $item->arguments[0];
-                push @items, $item->arguments[1];
             }
             else {
                 push( @items, $item);

@@ -201,6 +201,31 @@ sub add_op {
 # - function call without parentheses
 # - '|' in prefix position
 
+# left        terms and list operators (leftward)
+# left        ->
+# nonassoc    ++ --
+# right       **
+# right       ! ~ \ and unary + and -
+# left        =~ !~
+# left        * / % x
+# left        + - .
+# left        << >>
+# nonassoc    named unary operators
+# nonassoc    < > <= >= lt gt le ge
+# nonassoc    == != <=> eq ne cmp ~~
+# left        &
+# left        | ^
+# left        &&
+# left        || //
+# nonassoc    ..  ...
+# right       ?:
+# right       = += -= *= etc.
+# left        , =>
+# nonassoc    list operators (rightward)
+# right       not
+# left        and
+# left        or xor
+
 my $prec = 100;
 add_op( 'postfix', '.( )',               $prec, { no_space_before => 1 } );
 add_op( 'postfix', '.[ ]',               $prec, { no_space_before => 1 } );
@@ -231,79 +256,93 @@ add_op( 'prefix',   '@',   $prec );
 add_op( 'prefix',   '%',   $prec );
 add_op( 'prefix',   '!',   $prec );
 add_op( 'prefix',   '?',   $prec );
+
+$prec = $prec - 1;
+add_op( 'infix',    '=~',  $prec );
+add_op( 'infix',    '!=',  $prec );
+
 $prec = $prec - 1;
 add_op( 'infix',    '*',   $prec );
 add_op( 'infix',    '/',   $prec );
+add_op( 'infix',    '%',   $prec );
+add_op( 'infix',    'x',   $prec );
+$prec = $prec - 1;
 $prec = $prec - 1;
 add_op( 'infix',    '+',   $prec );
 add_op( 'infix',    '-',   $prec );
-$prec = $prec - 1;
-add_op( 'infix',    'x',   $prec );
-$prec = $prec - 1;
 add_op( 'infix',    '.',   $prec, { assoc => 'list' } );
 $prec = $prec - 1;
-add_op( 'infix',    '&',   $prec, { assoc => 'list' } );
-add_op( 'prefix',   '&',   $prec );
-$prec = $prec - 1;
-add_op( 'infix',    '|',   $prec, { assoc => 'list' } );
-add_op( 'prefix',   '|',   $prec );
-$prec = $prec - 1;
-add_op( 'infix',    '<=>',  $prec );
-#add_op( 'infix',    'leg',  $prec );
-add_op( 'infix',    'cmp',  $prec );
-#add_op( 'infix',    'does', $prec );
-#add_op( 'infix',    'but',  $prec );
-add_op( 'infix',    '..',   $prec );
+add_op( 'infix',    '<<',  $prec );
+add_op( 'infix',    '>>',  $prec );
 
 $prec = $prec - 1;
-add_op( 'infix',    'ne',  $prec, { assoc => 'chain' } );
-add_op( 'infix',    'eq',  $prec, { assoc => 'chain' } );
 add_op( 'infix',    'lt',  $prec, { assoc => 'chain' } );
 add_op( 'infix',    'le',  $prec, { assoc => 'chain' } );
 add_op( 'infix',    'gt',  $prec, { assoc => 'chain' } );
 add_op( 'infix',    'ge',  $prec, { assoc => 'chain' } );
 add_op( 'infix',    '<=',  $prec, { assoc => 'chain' } );
 add_op( 'infix',    '>=',  $prec, { assoc => 'chain' } );
-add_op( 'infix',    '==',  $prec, { assoc => 'chain' } );
-add_op( 'infix',    '!=',  $prec, { assoc => 'chain' } );
 add_op( 'infix',    '<',   $prec, { assoc => 'chain' } );
 add_op( 'infix',    '>',   $prec, { assoc => 'chain' } );
+
+$prec = $prec - 1;
+add_op( 'infix',    '<=>', $prec );
+add_op( 'infix',    'cmp', $prec );
+add_op( 'infix',    '==',  $prec, { assoc => 'chain' } );
+add_op( 'infix',    '!=',  $prec, { assoc => 'chain' } );
+add_op( 'infix',    'ne',  $prec, { assoc => 'chain' } );
+add_op( 'infix',    'eq',  $prec, { assoc => 'chain' } );
+
+$prec = $prec - 1;
+add_op( 'infix',    '&',   $prec, { assoc => 'list' } );
+add_op( 'prefix',   '&',   $prec );
+
+$prec = $prec - 1;
+add_op( 'infix',    '|',   $prec, { assoc => 'list' } );
+add_op( 'prefix',   '|',   $prec );
+add_op( 'infix',    '^',   $prec );
+
+$prec = $prec - 1;
+add_op( 'infix',    '..',  $prec );
+add_op( 'infix',    '...', $prec );
 add_op( 'infix',    '~~',  $prec, { assoc => 'chain' } );
+
 $prec = $prec - 1;
 add_op( 'infix',    '&&',  $prec );
+
 $prec = $prec - 1;
 add_op( 'infix',    '||',  $prec );
 add_op( 'infix',    '//',  $prec );
+
 $prec = $prec - 1;
 add_op( 'ternary',  '?? !!',  $prec );
 add_op( 'ternary',  '? :',  $prec );
+
 $prec = $prec - 1;
 add_op( 'infix',    '=',   $prec, { assoc => 'right' } );
+add_op( 'infix',    '||=', $prec, { assoc => 'right' } );
+add_op( 'infix',    '&&=', $prec, { assoc => 'right' } );
+add_op( 'infix',    '|=',  $prec, { assoc => 'right' } );
+add_op( 'infix',    '&=',  $prec, { assoc => 'right' } );
+add_op( 'infix',    '//=', $prec, { assoc => 'right' } );
+add_op( 'infix',    '+=',  $prec, { assoc => 'right' } );
+add_op( 'infix',    '-=',  $prec, { assoc => 'right' } );
+add_op( 'infix',    '*=',  $prec, { assoc => 'right' } );
+add_op( 'infix',    '/=',  $prec, { assoc => 'right' } );
+add_op( 'infix',    '.=',  $prec, { assoc => 'right' } );
 
-add_op( 'infix',    '||=',   $prec, { assoc => 'right' } );
-add_op( 'infix',    '&&=',   $prec, { assoc => 'right' } );
-add_op( 'infix',    '|=',   $prec, { assoc => 'right' } );
-add_op( 'infix',    '&=',   $prec, { assoc => 'right' } );
-add_op( 'infix',    '//=',   $prec, { assoc => 'right' } );
-add_op( 'infix',    '+=',   $prec, { assoc => 'right' } );
-add_op( 'infix',    '-=',   $prec, { assoc => 'right' } );
-add_op( 'infix',    '*=',   $prec, { assoc => 'right' } );
-add_op( 'infix',    '/=',   $prec, { assoc => 'right' } );
-add_op( 'infix',    '.=',   $prec, { assoc => 'right' } );
-
-$prec = $prec - 1;
-add_op( 'prefix',   'not', $prec );
 $prec = $prec - 1;
 add_op( 'infix',    '=>',  $prec );
 $prec = $prec - 1;
 add_op( 'list',     ',',   $prec, { assoc => 'list' } );
+
 $prec = $prec - 1;
-# TODO - semicolon
-# add_op( 'list',     ';',   $prec, { assoc => 'list' } );
-# $prec = $prec - 1;
+add_op( 'prefix',   'not', $prec );
+$prec = $prec - 1;
 add_op( 'infix',    'and', $prec );
 $prec = $prec - 1;
 add_op( 'infix',    'or',  $prec );
+add_op( 'infix',    'xor', $prec );
 $prec = $prec - 1;
 add_op( 'infix',    '*start*', $prec );
 

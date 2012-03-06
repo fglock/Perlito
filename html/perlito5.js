@@ -1027,19 +1027,13 @@ CORE.ref = function(List__) {
 					try {
 						var List_items = [];
 						for (var i_ = 0, a_ = (interpolate_array((List__[0] || (List__[0] = new ArrayRef([])))._array_)); i_ < a_.length ; i_++) { (function (v_item) {
-							if ( (bool(v_item._class_.isa([v_item,'Perlito5::AST::Apply'])) && ((v_item._class_.code([v_item]) == 'circumfix:<( )>') || (v_item._class_.code([v_item]) == 'list:<,>'))) ) {
+							if ( (bool(v_item._class_.isa([v_item,'Perlito5::AST::Apply'])) && (((v_item._class_.code([v_item]) == 'circumfix:<( )>') || (v_item._class_.code([v_item]) == 'list:<,>')) || (v_item._class_.code([v_item]) == 'infix:<=>>'))) ) {
 								for (var i_ = 0, a_ = (interpolate_array((NAMESPACE["Perlito5::Javascript"].to_list_preprocess([v_item._class_.arguments([v_item])]) || (NAMESPACE["Perlito5::Javascript"].to_list_preprocess([v_item._class_.arguments([v_item])]) = new ArrayRef([])))._array_)); i_ < a_.length ; i_++) { (function (v_arg) {
 									NAMESPACE["Perlito5::Javascript"].push([List_items, v_arg]);
 								})(a_[i_]) };
 							}
 							else {
-								if ( (bool(v_item._class_.isa([v_item,'Perlito5::AST::Apply'])) && (v_item._class_.code([v_item]) == 'infix:<=>>')) ) {
-									NAMESPACE["Perlito5::Javascript"].push([List_items, (v_item._class_.arguments([v_item]) || (v_item._class_.arguments([v_item]) = new ArrayRef([])))._array_[0]]);
-									NAMESPACE["Perlito5::Javascript"].push([List_items, (v_item._class_.arguments([v_item]) || (v_item._class_.arguments([v_item]) = new ArrayRef([])))._array_[1]]);
-								}
-								else {
-									NAMESPACE["Perlito5::Javascript"].push([List_items, v_item]);
-								};
+								NAMESPACE["Perlito5::Javascript"].push([List_items, v_item]);
 							};
 						})(a_[i_]) };
 						throw((new ArrayRef(List_items)))
@@ -2338,38 +2332,47 @@ CORE.ref = function(List__) {
 		NAMESPACE["Perlito5::Precedence"].add_op(['prefix', '!', v_prec]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['prefix', '?', v_prec]);
 		(v_prec = (num(v_prec) - 1));
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '=~', v_prec]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '!=', v_prec]);
+		(v_prec = (num(v_prec) - 1));
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '*', v_prec]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '/', v_prec]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '%', v_prec]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'x', v_prec]);
+		(v_prec = (num(v_prec) - 1));
 		(v_prec = (num(v_prec) - 1));
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '+', v_prec]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '-', v_prec]);
-		(v_prec = (num(v_prec) - 1));
-		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'x', v_prec]);
-		(v_prec = (num(v_prec) - 1));
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '.', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'list'))))]);
 		(v_prec = (num(v_prec) - 1));
-		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '&', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'list'))))]);
-		NAMESPACE["Perlito5::Precedence"].add_op(['prefix', '&', v_prec]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '<<', v_prec]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '>>', v_prec]);
 		(v_prec = (num(v_prec) - 1));
-		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '|', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'list'))))]);
-		NAMESPACE["Perlito5::Precedence"].add_op(['prefix', '|', v_prec]);
-		(v_prec = (num(v_prec) - 1));
-		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '<=>', v_prec]);
-		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'cmp', v_prec]);
-		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '..', v_prec]);
-		(v_prec = (num(v_prec) - 1));
-		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'ne', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
-		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'eq', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'lt', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'le', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'gt', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'ge', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '<=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '>=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
-		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '==', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
-		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '!=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '<', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '>', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
+		(v_prec = (num(v_prec) - 1));
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '<=>', v_prec]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'cmp', v_prec]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '==', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '!=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'ne', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'eq', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
+		(v_prec = (num(v_prec) - 1));
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '&', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'list'))))]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['prefix', '&', v_prec]);
+		(v_prec = (num(v_prec) - 1));
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '|', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'list'))))]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['prefix', '|', v_prec]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '^', v_prec]);
+		(v_prec = (num(v_prec) - 1));
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '..', v_prec]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '...', v_prec]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '~~', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'chain'))))]);
 		(v_prec = (num(v_prec) - 1));
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '&&', v_prec]);
@@ -2392,15 +2395,16 @@ CORE.ref = function(List__) {
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '/=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right'))))]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '.=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right'))))]);
 		(v_prec = (num(v_prec) - 1));
-		NAMESPACE["Perlito5::Precedence"].add_op(['prefix', 'not', v_prec]);
-		(v_prec = (num(v_prec) - 1));
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '=>', v_prec]);
 		(v_prec = (num(v_prec) - 1));
 		NAMESPACE["Perlito5::Precedence"].add_op(['list', ',', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'list'))))]);
 		(v_prec = (num(v_prec) - 1));
+		NAMESPACE["Perlito5::Precedence"].add_op(['prefix', 'not', v_prec]);
+		(v_prec = (num(v_prec) - 1));
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'and', v_prec]);
 		(v_prec = (num(v_prec) - 1));
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'or', v_prec]);
+		NAMESPACE["Perlito5::Precedence"].add_op(['infix', 'xor', v_prec]);
 		(v_prec = (num(v_prec) - 1));
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '*start*', v_prec]);
 		make_sub("Perlito5::Precedence", "precedence_parse", function (List__) {
