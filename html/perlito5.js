@@ -4300,44 +4300,6 @@ CORE.ref = function(List__) {
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "single_quote_parse", function (List__) {
-			try {
-				var v_self = null;
-				(v_self = List__[0]);
-				var v_str = null;
-				(v_str = List__[1]);
-				var v_pos = null;
-				(v_pos = List__[2]);
-				throw(v_self._class_.string_interpolation_parse([v_self,v_str,v_pos,String.fromCharCode(39),0]))
-			}
-			catch(err) {
-				if ( err instanceof Error ) {
-					throw(err);
-				}
-				else {
-					return(err);
-				}
-			}
-		});
-		make_sub("Perlito5::Expression", "double_quote_parse", function (List__) {
-			try {
-				var v_self = null;
-				(v_self = List__[0]);
-				var v_str = null;
-				(v_str = List__[1]);
-				var v_pos = null;
-				(v_pos = List__[2]);
-				throw(v_self._class_.string_interpolation_parse([v_self,v_str,v_pos,'"',1]))
-			}
-			catch(err) {
-				if ( err instanceof Error ) {
-					throw(err);
-				}
-				else {
-					return(err);
-				}
-			}
-		});
 		var List_Here_doc = [];
 		make_sub("Perlito5::Expression", "here_doc_wanted", function (List__) {
 			try {
@@ -4360,7 +4322,6 @@ CORE.ref = function(List__) {
 							if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
 								(v_p = (v_m || (v_m = new HashRef({})))._hash_['to']);
 								(v_delimiter = (v_m._class_.flat([v_m]) || (v_m._class_.flat([v_m]) = new HashRef({})))._hash_['buf']);
-								NAMESPACE["Perlito5::Expression"].say([('got a here-doc delimiter: [' + string(v_delimiter) + ']')]);
 							};
 							})();
 					};
@@ -4401,7 +4362,6 @@ CORE.ref = function(List__) {
 				(v_here = NAMESPACE["Perlito5::Expression"].shift([List_Here_doc]));
 				var v_delimiter = null;
 				(v_delimiter = (v_here || (v_here = new ArrayRef([])))._array_[2]);
-				NAMESPACE["Perlito5::Expression"].say(['got a newline and we are looking for a ', (v_here || (v_here = new ArrayRef([])))._array_[0], ' that ends with ', v_delimiter]);
 				for ( ; (num(v_p) < num(NAMESPACE["Perlito5::Expression"].length([v_str])));  ) {
 					if ( (NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, NAMESPACE["Perlito5::Expression"].length([v_delimiter])]) == v_delimiter) ) {
 						((v_here || (v_here = new ArrayRef([])))._array_[1])([NAMESPACE["Perlito5::Expression"].substr([v_str, v_pos, (num(v_p) - num(v_pos))])]);

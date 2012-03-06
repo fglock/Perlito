@@ -1317,18 +1317,6 @@ sub string_interpolation_parse {
     };
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => $ast)))
 };
-sub single_quote_parse {
-    ((my  $self) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    return ($self->string_interpolation_parse($str, $pos, chr(39), 0))
-};
-sub double_quote_parse {
-    ((my  $self) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    return ($self->string_interpolation_parse($str, $pos, chr(34), 1))
-};
 (my  @Here_doc);
 sub here_doc_wanted {
     ((my  $self) = $_[0]);
@@ -1343,8 +1331,7 @@ sub here_doc_wanted {
             ((my  $m) = Perlito5::Grammar::String->single_quote_parse($str, $p));
             if (($m->{'bool'})) {
                 ($p = $m->{'to'});
-                ($delimiter = $m->flat()->{'buf'});
-                Perlito5::Runtime::say(('got a here-doc delimiter: [' . $delimiter . ']'))
+                ($delimiter = $m->flat()->{'buf'})
             }
         }
     };
@@ -1367,7 +1354,6 @@ sub here_doc {
     ((my  $p) = $pos);
     ((my  $here) = shift(@Here_doc));
     ((my  $delimiter) = $here->[2]);
-    Perlito5::Runtime::say('got a newline and we are looking for a ', $here->[0], ' that ends with ', $delimiter);
     for ( ; (($p < length($str)));  ) {
         if (((substr($str, $p, length($delimiter)) eq $delimiter))) {
             $here->[1]->(substr($str, $pos, ($p - $pos)));

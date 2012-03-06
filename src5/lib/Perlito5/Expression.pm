@@ -830,20 +830,6 @@ package Perlito5::Expression;
         );
     }
 
-    sub single_quote_parse {
-        my $self = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        return $self->string_interpolation_parse($str, $pos, "'", 0);
-    }
-
-    sub double_quote_parse {
-        my $self = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-        return $self->string_interpolation_parse($str, $pos, '"', 1);
-    }
-
     my @Here_doc;
     sub here_doc_wanted {
         # setup a here-doc request
@@ -863,7 +849,7 @@ package Perlito5::Expression;
                 if ( $m->{"bool"} ) {
                     $p = $m->{"to"};
                     $delimiter = $m->flat()->{"buf"};
-                    say "got a here-doc delimiter: [$delimiter]";
+                    # say "got a here-doc delimiter: [$delimiter]";
                 }
             }
         }
@@ -909,7 +895,7 @@ package Perlito5::Expression;
         my $p = $pos;
         my $here = shift @Here_doc;
         my $delimiter = $here->[2];
-        say "got a newline and we are looking for a ", $here->[0], " that ends with ", $delimiter;
+        # say "got a newline and we are looking for a ", $here->[0], " that ends with ", $delimiter;
         while ( $p < length($str) ) {
             if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
                 # this will put the text in the right place in the AST
