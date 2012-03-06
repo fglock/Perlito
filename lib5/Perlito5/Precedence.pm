@@ -75,10 +75,6 @@ sub is_ident_middle {
     Perlito5::Expression->term_square($_[0], $_[1])
 }), (chr(123) => sub  {
     Perlito5::Expression->term_curly($_[0], $_[1])
-}), (chr(39) => sub  {
-    Perlito5::Expression->term_quote($_[0], $_[1])
-}), (chr(34) => sub  {
-    Perlito5::Expression->term_quote($_[0], $_[1])
 }), (chr(35) => sub  {
     Perlito5::Expression->term_space($_[0], $_[1])
 }), (chr(9) => sub  {
@@ -97,8 +93,6 @@ sub is_ident_middle {
     Perlito5::Expression->term_declarator($_[0], $_[1])
 }), ('do' => sub  {
     Perlito5::Expression->term_do($_[0], $_[1])
-}), ('<<' => sub  {
-    Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1])
 })}, {('our' => sub  {
     Perlito5::Expression->term_declarator($_[0], $_[1])
 }), ('sub' => sub  {

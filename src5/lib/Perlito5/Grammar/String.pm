@@ -2,6 +2,22 @@ use v5;
 
 package Perlito5::Grammar::String;
 
+use Perlito5::Precedence;
+
+Perlito5::Precedence::add_term( "'"  => sub { Perlito5::Grammar::String->term_single_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( '"'  => sub { Perlito5::Grammar::String->term_double_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( '<<' => sub { Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1]) } );
+
+token term_double_quote {
+    \" <double_quote_parse>
+        { $MATCH->{"capture"} = [ 'term', $MATCH->{"double_quote_parse"}->flat() ]  }
+}
+token term_single_quote {
+    \' <single_quote_parse>
+        { $MATCH->{"capture"} = [ 'term', $MATCH->{"single_quote_parse"}->flat() ]  }
+}
+
+
 sub string_interpolation_parse {
     my $self = $_[0];
     my $str = $_[1];
@@ -252,13 +268,6 @@ token double_quoted_buf {
         ]
     | \\ <double_quoted_unescape>
         { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"double_quoted_unescape"}->flat() ) }
-}
-
-token val_buf {
-    | \" <double_quote_parse>
-        { $MATCH->{"capture"} = $MATCH->{"double_quote_parse"}->flat() }
-    | \' <single_quote_parse>
-        { $MATCH->{"capture"} = $MATCH->{"single_quote_parse"}->flat() }
 }
 
 1;

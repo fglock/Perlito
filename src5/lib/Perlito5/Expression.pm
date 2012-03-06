@@ -478,10 +478,6 @@ package Perlito5::Expression;
             }
     }
 
-    token term_quote {
-        <Perlito5::Grammar::String.val_buf>    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar::String.val_buf"}->flat() ]  }  # 'moose'
-    }
-
     token term_space {
         <.Perlito5::Grammar.ws>           { $MATCH->{"capture"} = [ 'space',   ' ' ] }
     }

@@ -9,6 +9,68 @@ our $MATCH = Perlito5::Match->new();
 package main;
 use v5;
 package Perlito5::Grammar::String;
+use Perlito5::Precedence;
+Perlito5::Precedence::add_term((chr(39) => sub  {
+    Perlito5::Grammar::String->term_single_quote($_[0], $_[1])
+}));
+Perlito5::Precedence::add_term((chr(34) => sub  {
+    Perlito5::Grammar::String->term_double_quote($_[0], $_[1])
+}));
+Perlito5::Precedence::add_term(('<<' => sub  {
+    Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1])
+}));
+sub term_double_quote {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((((chr(34) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = $grammar->double_quote_parse($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'double_quote_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'capture'} = ['term', $MATCH->{'double_quote_parse'}->flat()]);
+    1
+})))
+}))
+}))));
+    $MATCH
+};
+sub term_single_quote {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((((chr(39) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = $grammar->single_quote_parse($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'single_quote_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'capture'} = ['term', $MATCH->{'single_quote_parse'}->flat()]);
+    1
+})))
+}))
+}))));
+    $MATCH
+};
 sub string_interpolation_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -404,48 +466,6 @@ sub double_quoted_buf {
     }
 }))) && ((do {
     ($MATCH->{'capture'} = Perlito5::AST::Val::Buf->new(('buf' => $MATCH->{'double_quoted_unescape'}->flat())));
-    1
-}))))
-})))
-}))));
-    $MATCH
-};
-sub val_buf {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-    ($MATCH->{'bool'} = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    (((((chr(34) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = $grammar->double_quote_parse($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'double_quote_parse'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'double_quote_parse'}->flat());
-    1
-})))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((((chr(39) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = $grammar->single_quote_parse($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'single_quote_parse'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'single_quote_parse'}->flat());
     1
 }))))
 })))
