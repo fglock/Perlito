@@ -123,66 +123,6 @@ token val_num {
     { $MATCH->{"capture"} = Perlito5::AST::Val::Num->new( num => $MATCH->flat() ) }
 }
 
-token char_any {
-    .
-}
-
-token single_quoted_unescape {
-    |  \\ \\
-        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => "\\" ) }
-    |  \\ \'
-        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => '\'' ) }
-}
-
-token double_quoted_unescape {
-    |  c
-        [   \[ <digits> \]
-            { $MATCH->{"capture"} = chr( $MATCH->{"digits"}->flat() ) }
-        |  <digits>
-            { $MATCH->{"capture"} = chr( $MATCH->{"digits"}->flat() ) }
-        ]
-    |  e
-        { $MATCH->{"capture"} = chr(27) }
-    |  n
-        { $MATCH->{"capture"} = "\n" }
-    |  t
-        { $MATCH->{"capture"} = chr(9) }
-    |  <char_any>
-        { $MATCH->{"capture"} = $MATCH->{"char_any"}->flat() }
-}
-
-token double_quoted_buf {
-    | <before \$ > 
-        [ <Perlito5::Expression.term_sigil>
-            { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1] }
-        | <char_any>
-            { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
-        ]
-    | <before \@ >
-        [ <Perlito5::Expression.term_sigil>
-            { $MATCH->{"capture"} = Perlito5::AST::Apply->new(
-                    namespace => '',
-                    code      => 'join',
-                    arguments => [ 
-                        Perlito5::AST::Val::Buf->new( buf => ' ' ), 
-                        ($MATCH->{"Perlito5::Expression.term_sigil"}->flat())[1] 
-                    ],
-                )
-            }
-        | <char_any>
-            { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
-        ]
-    | \\ <double_quoted_unescape>
-        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"double_quoted_unescape"}->flat() ) }
-}
-
-token val_buf {
-    | \" <Perlito5::Grammar::String.double_quote_parse>
-        { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar::String.double_quote_parse"}->flat() }
-    | \' <Perlito5::Grammar::String.single_quote_parse>
-        { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar::String.single_quote_parse"}->flat() }
-}
-
 token digits {
     \d+
 }

@@ -894,17 +894,17 @@ sub term_quote {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     (((do {
-    ((my  $m2) = Perlito5::Grammar->val_buf($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::String->val_buf($str, $MATCH->{'to'}));
     if (($m2->{'bool'})) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar.val_buf'} = $m2);
+        ($MATCH->{'Perlito5::Grammar::String.val_buf'} = $m2);
         1
     }
     else {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = ['term', $MATCH->{'Perlito5::Grammar.val_buf'}->flat()]);
+    ($MATCH->{'capture'} = ['term', $MATCH->{'Perlito5::Grammar::String.val_buf'}->flat()]);
     1
 })))
 }))

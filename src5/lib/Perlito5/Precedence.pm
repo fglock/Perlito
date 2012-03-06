@@ -52,6 +52,7 @@ my @Term = (
         '&'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
         '*'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
 
+        '.'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
         '0'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
         '1'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
         '2'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
