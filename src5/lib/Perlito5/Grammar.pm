@@ -52,7 +52,7 @@ token ws {
         | \c13 \c10?
         ]
 
-        <.Perlito5::Expression.here_doc>
+        <.Perlito5::Grammar::String.here_doc>
 
         [
         |  '='  [

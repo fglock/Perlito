@@ -503,7 +503,7 @@ sub ws {
 }))))
 })))
 })) && ((do {
-    ((my  $m2) = Perlito5::Expression->here_doc($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::String->here_doc($str, $MATCH->{'to'}));
     if (($m2->{'bool'})) {
         ($MATCH->{'to'} = $m2->{'to'});
         1

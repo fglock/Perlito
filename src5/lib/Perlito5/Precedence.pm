@@ -83,7 +83,7 @@ my @Term = (
     {   '->' => sub { Perlito5::Expression->term_arrow($_[0], $_[1]) },
         'my' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
         'do' => sub { Perlito5::Expression->term_do($_[0], $_[1]) },
-        '<<' => sub { Perlito5::Expression->here_doc_wanted($_[0], $_[1]) },
+        '<<' => sub { Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1]) },
     },
     # 3 chars
     {   'our' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },

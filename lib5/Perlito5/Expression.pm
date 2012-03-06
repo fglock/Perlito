@@ -1317,57 +1317,6 @@ sub string_interpolation_parse {
     };
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => $ast)))
 };
-(my  @Here_doc);
-sub here_doc_wanted {
-    ((my  $self) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    (my  $delimiter);
-    ((my  $p) = $pos);
-    if (((substr($str, $p, 2) eq '<<'))) {
-        ($p = ($p + 2));
-        if (((substr($str, $p, 1) eq chr(39)))) {
-            ($p = ($p + 1));
-            ((my  $m) = Perlito5::Grammar::String->single_quote_parse($str, $p));
-            if (($m->{'bool'})) {
-                ($p = $m->{'to'});
-                ($delimiter = $m->flat()->{'buf'})
-            }
-        }
-    };
-    if ((!(defined($delimiter)))) {
-        return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 0), ('capture' => undef())))
-    };
-    ((my  $placeholder) = Perlito5::AST::Val::Buf->new(('buf' => 'HEREDOC')));
-    push(@Here_doc, ['single_quote', sub  {
-    ($placeholder->{'buf'} = $_[0])
-}, $delimiter] );
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => ['term', $placeholder])))
-};
-sub here_doc {
-    ((my  $self) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    if ((!(@Here_doc))) {
-        return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => undef())))
-    };
-    ((my  $p) = $pos);
-    ((my  $here) = shift(@Here_doc));
-    ((my  $delimiter) = $here->[2]);
-    for ( ; (($p < length($str)));  ) {
-        if (((substr($str, $p, length($delimiter)) eq $delimiter))) {
-            $here->[1]->(substr($str, $pos, ($p - $pos)));
-            return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($p + length($delimiter))), ('bool' => 1), ('capture' => undef())))
-        };
-        for ( ; ((($p < length($str)) && (((substr($str, $p, 1) ne chr(10)) && (substr($str, $p, 1) ne chr(13))))));  ) {
-            ($p)++
-        };
-        for ( ; ((($p < length($str)) && (((substr($str, $p, 1) eq chr(10)) || (substr($str, $p, 1) eq chr(13))))));  ) {
-            ($p)++
-        }
-    };
-    die(('Can' . chr(39) . 't find string terminator ' . chr(34) . $delimiter . chr(34) . ' anywhere before EOF'))
-};
 sub exp_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);

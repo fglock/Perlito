@@ -73,6 +73,99 @@ sub string_interpolation_parse {
     );
 }
 
+
+my @Here_doc;
+sub here_doc_wanted {
+    # setup a here-doc request
+    # the actual text will be parsed later, by here_doc()
+
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];    # $pos points to the first "<" in <<'END'
+
+    my $delimiter;
+    my $p = $pos;
+    if ( substr($str, $p, 2) eq '<<' ) {
+        $p += 2;
+        if ( substr($str, $p, 1) eq "'" ) {
+            $p += 1;
+            my $m = Perlito5::Grammar::String->single_quote_parse( $str, $p );
+            if ( $m->{"bool"} ) {
+                $p = $m->{"to"};
+                $delimiter = $m->flat()->{"buf"};
+                # say "got a here-doc delimiter: [$delimiter]";
+            }
+        }
+    }
+
+    if ( !defined $delimiter ) {
+        # not a here-doc request, return false
+        return Perlito5::Match->new(
+            'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 0, capture => undef);
+    }
+
+    my $placeholder = Perlito5::AST::Val::Buf->new( buf => 'HEREDOC' );
+    push @Here_doc, [
+        'single_quote',
+        sub { $placeholder->{"buf"} = $_[0] },
+        $delimiter,
+    ];
+
+    return Perlito5::Match->new(
+        'str' => $str,
+        'from' => $pos,
+        'to' => $p,
+        'bool' => 1,
+        capture => [
+                'term',
+                $placeholder
+            ]
+    );
+}
+
+sub here_doc {
+    # here-doc is called just after a newline
+
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+
+    if ( !@Here_doc ) {
+        # we are not expecting a here-doc, return true without moving the pointer
+        return Perlito5::Match->new(
+            'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 1, capture => undef);
+    }
+
+    my $p = $pos;
+    my $here = shift @Here_doc;
+    my $delimiter = $here->[2];
+    # say "got a newline and we are looking for a ", $here->[0], " that ends with ", $delimiter;
+    while ( $p < length($str) ) {
+        if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
+            # this will put the text in the right place in the AST
+            $here->[1]->(substr($str, $pos, $p - $pos));
+            # move the pointer and return true
+            return Perlito5::Match->new(
+                'str' => $str, 'from' => $pos, 'to' => $p + length($delimiter), 'bool' => 1, capture => undef);
+        }
+        # ... next line
+        while (  $p < length($str)
+              && ( substr($str, $p, 1) ne chr(10) && substr($str, $p, 1) ne chr(13) )
+              )
+        {
+            $p++
+        }
+        while (  $p < length($str)
+              && ( substr($str, $p, 1) eq chr(10) || substr($str, $p, 1) eq chr(13) )
+              )
+        {
+            $p++
+        }
+    }
+    die 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';
+}
+
+
 sub single_quote_parse {
     my $self = $_[0];
     my $str = $_[1];

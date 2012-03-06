@@ -2204,7 +2204,7 @@ CORE.ref = function(List__) {
 }, 'do', function (List__) {
 		return (CLASS["Perlito5::Expression"]._class_.term_do([CLASS["Perlito5::Expression"],List__[0],List__[1]]));
 }, '<<', function (List__) {
-		return (CLASS["Perlito5::Expression"]._class_.here_doc_wanted([CLASS["Perlito5::Expression"],List__[0],List__[1]]));
+		return (CLASS["Perlito5::Grammar::String"]._class_.here_doc_wanted([CLASS["Perlito5::Grammar::String"],List__[0],List__[1]]));
 })))), (new HashRef(array_to_hash(interpolate_array('our', function (List__) {
 		return (CLASS["Perlito5::Expression"]._class_.term_declarator([CLASS["Perlito5::Expression"],List__[0],List__[1]]));
 }, 'sub', function (List__) {
@@ -4300,91 +4300,6 @@ CORE.ref = function(List__) {
 				}
 			}
 		});
-		var List_Here_doc = [];
-		make_sub("Perlito5::Expression", "here_doc_wanted", function (List__) {
-			try {
-				var v_self = null;
-				(v_self = List__[0]);
-				var v_str = null;
-				(v_str = List__[1]);
-				var v_pos = null;
-				(v_pos = List__[2]);
-				var v_delimiter = null;
-				var v_p = null;
-				(v_p = v_pos);
-				if ( (NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, 2]) == '<<') ) {
-					(v_p = add(v_p, 2));
-					if ( (NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, 1]) == String.fromCharCode(39)) ) {
-						(function () {
-							(v_p = add(v_p, 1));
-							var v_m = null;
-							(v_m = CLASS["Perlito5::Grammar::String"]._class_.single_quote_parse([CLASS["Perlito5::Grammar::String"],v_str,v_p]));
-							if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
-								(v_p = (v_m || (v_m = new HashRef({})))._hash_['to']);
-								(v_delimiter = (v_m._class_.flat([v_m]) || (v_m._class_.flat([v_m]) = new HashRef({})))._hash_['buf']);
-							};
-							})();
-					};
-				};
-				if ( !( bool((v_delimiter != null))) ) {
-					throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 0,'capture', null]));
-				};
-				var v_placeholder = null;
-				(v_placeholder = CLASS["Perlito5::AST::Val::Buf"]._class_.new([CLASS["Perlito5::AST::Val::Buf"],'buf', 'HEREDOC']));
-				NAMESPACE["Perlito5::Expression"].push([List_Here_doc, (new ArrayRef(interpolate_array('single_quote', function (List__) {
-		return (((v_placeholder || (v_placeholder = new HashRef({})))._hash_['buf'] = List__[0]));
-}, v_delimiter)))]);
-				throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_p,'bool', 1,'capture', (new ArrayRef(interpolate_array('term', v_placeholder)))]))
-			}
-			catch(err) {
-				if ( err instanceof Error ) {
-					throw(err);
-				}
-				else {
-					return(err);
-				}
-			}
-		});
-		make_sub("Perlito5::Expression", "here_doc", function (List__) {
-			try {
-				var v_self = null;
-				(v_self = List__[0]);
-				var v_str = null;
-				(v_str = List__[1]);
-				var v_pos = null;
-				(v_pos = List__[2]);
-				if ( !( bool(List_Here_doc)) ) {
-					throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', null]));
-				};
-				var v_p = null;
-				(v_p = v_pos);
-				var v_here = null;
-				(v_here = NAMESPACE["Perlito5::Expression"].shift([List_Here_doc]));
-				var v_delimiter = null;
-				(v_delimiter = (v_here || (v_here = new ArrayRef([])))._array_[2]);
-				for ( ; (num(v_p) < num(NAMESPACE["Perlito5::Expression"].length([v_str])));  ) {
-					if ( (NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, NAMESPACE["Perlito5::Expression"].length([v_delimiter])]) == v_delimiter) ) {
-						((v_here || (v_here = new ArrayRef([])))._array_[1])([NAMESPACE["Perlito5::Expression"].substr([v_str, v_pos, (num(v_p) - num(v_pos))])]);
-						throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', add(v_p, NAMESPACE["Perlito5::Expression"].length([v_delimiter])),'bool', 1,'capture', null]));
-					};
-					for ( ; ((num(v_p) < num(NAMESPACE["Perlito5::Expression"].length([v_str]))) && ((NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, 1]) != NAMESPACE["Perlito5::Expression"].chr([10])) && (NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, 1]) != NAMESPACE["Perlito5::Expression"].chr([13]))));  ) {
-						(v_p)++;
-					};
-					for ( ; ((num(v_p) < num(NAMESPACE["Perlito5::Expression"].length([v_str]))) && ((NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, 1]) == NAMESPACE["Perlito5::Expression"].chr([10])) || (NAMESPACE["Perlito5::Expression"].substr([v_str, v_p, 1]) == NAMESPACE["Perlito5::Expression"].chr([13]))));  ) {
-						(v_p)++;
-					};
-				};
-				return (NAMESPACE["Perlito5::Expression"].die([('Can' + String.fromCharCode(39) + 't find string terminator "' + string(v_delimiter) + '" anywhere before EOF')]));
-			}
-			catch(err) {
-				if ( err instanceof Error ) {
-					throw(err);
-				}
-				else {
-					return(err);
-				}
-			}
-		});
 		make_sub("Perlito5::Expression", "exp_parse", function (List__) {
 			try {
 				var v_self = null;
@@ -5293,6 +5208,91 @@ CORE.ref = function(List__) {
 					};
 				};
 				throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_p,'bool', 1,'capture', v_ast]))
+			}
+			catch(err) {
+				if ( err instanceof Error ) {
+					throw(err);
+				}
+				else {
+					return(err);
+				}
+			}
+		});
+		var List_Here_doc = [];
+		make_sub("Perlito5::Grammar::String", "here_doc_wanted", function (List__) {
+			try {
+				var v_self = null;
+				(v_self = List__[0]);
+				var v_str = null;
+				(v_str = List__[1]);
+				var v_pos = null;
+				(v_pos = List__[2]);
+				var v_delimiter = null;
+				var v_p = null;
+				(v_p = v_pos);
+				if ( (NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_p, 2]) == '<<') ) {
+					(v_p = add(v_p, 2));
+					if ( (NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_p, 1]) == String.fromCharCode(39)) ) {
+						(function () {
+							(v_p = add(v_p, 1));
+							var v_m = null;
+							(v_m = CLASS["Perlito5::Grammar::String"]._class_.single_quote_parse([CLASS["Perlito5::Grammar::String"],v_str,v_p]));
+							if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+								(v_p = (v_m || (v_m = new HashRef({})))._hash_['to']);
+								(v_delimiter = (v_m._class_.flat([v_m]) || (v_m._class_.flat([v_m]) = new HashRef({})))._hash_['buf']);
+							};
+							})();
+					};
+				};
+				if ( !( bool((v_delimiter != null))) ) {
+					throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 0,'capture', null]));
+				};
+				var v_placeholder = null;
+				(v_placeholder = CLASS["Perlito5::AST::Val::Buf"]._class_.new([CLASS["Perlito5::AST::Val::Buf"],'buf', 'HEREDOC']));
+				NAMESPACE["Perlito5::Grammar::String"].push([List_Here_doc, (new ArrayRef(interpolate_array('single_quote', function (List__) {
+		return (((v_placeholder || (v_placeholder = new HashRef({})))._hash_['buf'] = List__[0]));
+}, v_delimiter)))]);
+				throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_p,'bool', 1,'capture', (new ArrayRef(interpolate_array('term', v_placeholder)))]))
+			}
+			catch(err) {
+				if ( err instanceof Error ) {
+					throw(err);
+				}
+				else {
+					return(err);
+				}
+			}
+		});
+		make_sub("Perlito5::Grammar::String", "here_doc", function (List__) {
+			try {
+				var v_self = null;
+				(v_self = List__[0]);
+				var v_str = null;
+				(v_str = List__[1]);
+				var v_pos = null;
+				(v_pos = List__[2]);
+				if ( !( bool(List_Here_doc)) ) {
+					throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', null]));
+				};
+				var v_p = null;
+				(v_p = v_pos);
+				var v_here = null;
+				(v_here = NAMESPACE["Perlito5::Grammar::String"].shift([List_Here_doc]));
+				var v_delimiter = null;
+				(v_delimiter = (v_here || (v_here = new ArrayRef([])))._array_[2]);
+				for ( ; (num(v_p) < num(NAMESPACE["Perlito5::Grammar::String"].length([v_str])));  ) {
+					if ( (NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_p, NAMESPACE["Perlito5::Grammar::String"].length([v_delimiter])]) == v_delimiter) ) {
+						((v_here || (v_here = new ArrayRef([])))._array_[1])([NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_pos, (num(v_p) - num(v_pos))])]);
+						throw(CLASS["Perlito5::Match"]._class_.new([CLASS["Perlito5::Match"],'str', v_str,'from', v_pos,'to', add(v_p, NAMESPACE["Perlito5::Grammar::String"].length([v_delimiter])),'bool', 1,'capture', null]));
+					};
+					for ( ; ((num(v_p) < num(NAMESPACE["Perlito5::Grammar::String"].length([v_str]))) && ((NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_p, 1]) != NAMESPACE["Perlito5::Grammar::String"].chr([10])) && (NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_p, 1]) != NAMESPACE["Perlito5::Grammar::String"].chr([13]))));  ) {
+						(v_p)++;
+					};
+					for ( ; ((num(v_p) < num(NAMESPACE["Perlito5::Grammar::String"].length([v_str]))) && ((NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_p, 1]) == NAMESPACE["Perlito5::Grammar::String"].chr([10])) || (NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_p, 1]) == NAMESPACE["Perlito5::Grammar::String"].chr([13]))));  ) {
+						(v_p)++;
+					};
+				};
+				return (NAMESPACE["Perlito5::Grammar::String"].die([('Can' + String.fromCharCode(39) + 't find string terminator "' + string(v_delimiter) + '" anywhere before EOF')]));
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -6292,7 +6292,7 @@ CORE.ref = function(List__) {
 })()); }));
 })()), function () { return ((function () {
 	var v_m2 = null;
-	(v_m2 = CLASS["Perlito5::Expression"]._class_.here_doc([CLASS["Perlito5::Expression"],v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']]));
+	(v_m2 = CLASS["Perlito5::Grammar::String"]._class_.here_doc([CLASS["Perlito5::Grammar::String"],v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (1);
