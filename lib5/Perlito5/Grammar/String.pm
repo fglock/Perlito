@@ -19,6 +19,12 @@ Perlito5::Precedence::add_term((chr(34) => sub  {
 Perlito5::Precedence::add_term(('<<' => sub  {
     Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1])
 }));
+Perlito5::Precedence::add_term(('q' => sub  {
+    Perlito5::Grammar::String->term_q_quote($_[0], $_[1])
+}));
+Perlito5::Precedence::add_term(('qq' => sub  {
+    Perlito5::Grammar::String->term_qq_quote($_[0], $_[1])
+}));
 sub term_double_quote {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -70,6 +76,171 @@ sub term_single_quote {
 }))
 }))));
     $MATCH
+};
+sub term_q_quote {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((((('q' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    ((chr(35) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((((do {
+    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ((my  $tmp) = $MATCH);
+    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
+    ($MATCH->{'bool'} = ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    ((my  $m2) = Perlito5::Grammar->word($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))
+})));
+    ($tmp->{'bool'} = !($MATCH->{'bool'}));
+    ($MATCH = $tmp);
+    ($MATCH->{'bool'} ? 1 : 0)
+}))) && ((do {
+    ((my  $m2) = $grammar->char_any($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'char_any'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))))
+})))
+}))) && ((do {
+    ((my  $m2) = $grammar->q_quote_parse($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'q_quote_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'capture'} = ['term', $MATCH->{'q_quote_parse'}->flat()]);
+    1
+})))
+}))
+}))));
+    $MATCH
+};
+sub term_qq_quote {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((((('qq' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    ((chr(35) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((((do {
+    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ((my  $tmp) = $MATCH);
+    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
+    ($MATCH->{'bool'} = ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    ((my  $m2) = Perlito5::Grammar->word($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))
+})));
+    ($tmp->{'bool'} = !($MATCH->{'bool'}));
+    ($MATCH = $tmp);
+    ($MATCH->{'bool'} ? 1 : 0)
+}))) && ((do {
+    ((my  $m2) = $grammar->char_any($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'char_any'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))))
+})))
+}))) && ((do {
+    ((my  $m2) = $grammar->qq_quote_parse($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'qq_quote_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'capture'} = ['term', $MATCH->{'qq_quote_parse'}->flat()]);
+    1
+})))
+}))
+}))));
+    $MATCH
+};
+((my  %pair) = ((chr(123) => chr(125)), ('(' => ')'), ('[' => ']'), ('<' => '>')));
+sub q_quote_parse {
+    ((my  $self) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $delimiter) = substr($str, ($pos - 1), 1));
+    if (exists($pair{$delimiter})) {
+        ($delimiter = $pair{$delimiter})
+    };
+    return ($self->string_interpolation_parse($str, $pos, $delimiter, 0))
+};
+sub qq_quote_parse {
+    ((my  $self) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $delimiter) = substr($str, ($pos - 1), 1));
+    if (exists($pair{$delimiter})) {
+        ($delimiter = $pair{$delimiter})
+    };
+    return ($self->string_interpolation_parse($str, $pos, $delimiter, 1))
 };
 sub string_interpolation_parse {
     ((my  $self) = $_[0]);
