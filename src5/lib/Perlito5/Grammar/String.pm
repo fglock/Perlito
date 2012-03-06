@@ -9,6 +9,7 @@ Perlito5::Precedence::add_term( '"'  => sub { Perlito5::Grammar::String->term_do
 Perlito5::Precedence::add_term( '<<' => sub { Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'q'  => sub { Perlito5::Grammar::String->term_q_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'qq' => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( 'qw' => sub { Perlito5::Grammar::String->term_qw_quote($_[0], $_[1]) } );
 
 token term_double_quote {
     \" <double_quote_parse>
@@ -25,6 +26,10 @@ token term_q_quote {
 token term_qq_quote {
     'qq' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qq_quote_parse>
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"qq_quote_parse"}->flat() ]  }
+}
+token term_qw_quote {
+    'qw' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qw_quote_parse>
+        { $MATCH->{"capture"} = [ 'term', $MATCH->{"qw_quote_parse"}->flat() ]  }
 }
 
 
@@ -51,7 +56,23 @@ sub qq_quote_parse {
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
     return $self->string_interpolation_parse($str, $pos, $delimiter, 1);
 }
+sub qw_quote_parse {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $delimiter = substr( $str, $pos-1, 1 );
+    $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
 
+    my $m = $self->string_interpolation_parse($str, $pos, $delimiter, 0);
+    if ( $m->{"bool"} ) {
+        $m->{"capture"} = Perlito5::AST::Apply->new(
+                code      => 'prefix:<qw>',
+                arguments => [ $m->flat() ],
+                namespace => '',
+            );
+    }
+    return $m;
+}
 
 sub string_interpolation_parse {
     my $self = $_[0];
