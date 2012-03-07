@@ -563,8 +563,6 @@ package Perlito5::Expression;
         #
         #   $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{$_} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } '
 
-        # TODO - lookup subroutines in CORE and CORE::GLOBAL if $namespace is not set
-        #        use $Perlito5::CORE_PROTO
 
         ## # TODO
         ## my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
@@ -572,6 +570,11 @@ package Perlito5::Expression;
         ##     # subroutine was predeclared
         ##     my $sig = $Perlito5::PROTO->{$effective_name};
         ##     say "calling $effective_name ($sig)";
+        ## }
+        ## elsif ( exists $Perlito5::CORE_PROTO->{"CORE::$name"} ) {
+        ##     # subroutine comes from CORE
+        ##     my $sig = $Perlito5::CORE_PROTO->{"CORE::$name"};
+        ##     say "calling CORE::$name ($sig)";
         ## }
         ## else {
         ##     say "not found: $effective_name";
