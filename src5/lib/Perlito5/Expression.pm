@@ -538,8 +538,14 @@ package Perlito5::Expression;
 
         # TODO - lookup subroutines in CORE and CORE::GLOBAL if $namespace is not set
 
-        # TODO - how does this work:
+        # TODO - how does this work: (See: perldoc CORE)
         #    $ perl -e ' use strict; sub print { die "here" }; print "123\n"; '
+        #    123
+
+        #    $ perl -e ' use strict; BEGIN { *CORE::GLOBAL::time = sub { die "here" } }; print time . "\n"; '
+        #    here at -e line 1.
+
+        #    $ perl -e ' use strict; BEGIN { *CORE::GLOBAL::print = sub { die "here" } }; print "123\n"; '
         #    123
 
         ## # TODO
