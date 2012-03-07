@@ -1,7 +1,17 @@
 * Perlito5 compiler globals
 
-$Perlito5::PKG_NAME
+
+$Perlito5::PKG_NAME = "main"
 - the current package name (unescaped string)
+
+$Perlito5::PROTO = { 'CORE::join' => '$@' }
+- hashref with subroutine-full-name to prototype mappings
+
+$Perlito5::VAR = [ { '$_'    => { decl => 'our', namespace => 'main' } ]
+- arrayref-of-hashes with variable-short-names to (declaration type, namespace) mappings
+
+$Perlito5::THROW = 1
+- boolean value; tracks if the current subroutine needs to catch a javascript "throw" as a return-value
 
 
 
