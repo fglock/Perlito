@@ -170,6 +170,7 @@ perlito5 [switches] [programfile]
             warn "now parsing";
         }
 
+        $Perlito5::PKG_NAME = 'main';
         my $m = Perlito5::Grammar->exp_stmts($source, 0);
         add_comp_unit($m->flat());
 

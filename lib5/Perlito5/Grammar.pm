@@ -1498,12 +1498,12 @@ sub sub_def {
     ($MATCH->{'to'} = $pos1);
     (((do {
     die('Syntax Error in sub ' . chr(39), $MATCH->{'opt_name'}->flat(), chr(39));
-;
     1
 })))
 })))
 }))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => $MATCH->{'opt_name'}->flat()), ('sig' => $MATCH->{'prototype'}->flat()), ('block' => $MATCH->{'exp_stmts'}->flat())));
+    ((my  $name) = $MATCH->{'opt_name'}->flat());
+    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => $name), ('sig' => $MATCH->{'prototype'}->flat()), ('block' => $MATCH->{'exp_stmts'}->flat())));
     1
 })))
 }))

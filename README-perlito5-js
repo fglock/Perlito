@@ -1,4 +1,11 @@
-* Perlito5 Data model Overview
+* Perlito5 compiler globals
+
+$Perlito5::PKG_NAME
+- the current package name (unescaped string)
+
+
+
+* Perlito5 Javascript Data model Overview
 
 
 method call

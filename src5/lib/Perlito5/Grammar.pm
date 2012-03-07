@@ -159,9 +159,14 @@ token prototype {
 
 token sub_def {
     <opt_name> <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
-    [   \}     | { die 'Syntax Error in sub \'', $MATCH->{"opt_name"}->flat(), '\''; } ]
-    { $MATCH->{"capture"} = Perlito5::AST::Sub->new(
-            name  => $MATCH->{"opt_name"}->flat(), 
+    [   \}     | { die 'Syntax Error in sub \'', $MATCH->{"opt_name"}->flat(), '\'' } ]
+    {
+        my $name = $MATCH->{"opt_name"}->flat();
+        # if ( $name ) {
+        #     say "sub $Perlito5::PKG_NAME :: $name";
+        # }
+        $MATCH->{"capture"} = Perlito5::AST::Sub->new(
+            name  => $name, 
             sig   => $MATCH->{"prototype"}->flat(), 
             block => $MATCH->{"exp_stmts"}->flat() 
         ) 
