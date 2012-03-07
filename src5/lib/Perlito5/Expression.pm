@@ -538,18 +538,26 @@ package Perlito5::Expression;
 
         # TODO - lookup subroutines in CORE and CORE::GLOBAL if $namespace is not set
 
-        # TODO - how does this work: (See: perldoc CORE)
-        #    $ perl -e ' use strict; sub print { die "here" }; print "123\n"; '
-        #    123
+        # Note: how does this work: (See: perldoc CORE)
+        #   $ perl -e ' use strict; sub print { die "here" }; print "123\n"; '
+        #   123
+        #   $ perl -e ' use strict; BEGIN { *CORE::GLOBAL::time = sub { die "here" } }; print time . "\n"; '
+        #   here at -e line 1.
+        #   $ perl -e ' use strict; BEGIN { *CORE::GLOBAL::print = sub { die "here" } }; print "123\n"; '
+        #   123
+        #   $ perl -e ' use strict; use subs "print"; sub print { die "here" }; print "123\n"; '
+        #   123
+        #
+        #   * if it has a prototype it's overridable (thanks rjbs++ in #p5p)
+        #
+        #   $ perl -e ' use strict; use Data::Dumper; print Dumper prototype("CORE::time")  '
+        #   $VAR1 = '';  -> can be overridden
+        #   $ perl -e ' use strict; use Data::Dumper; print Dumper prototype("CORE::print")  '
+        #   $VAR1 = undef;  -> can't be overwritten
 
-        #    $ perl -e ' use strict; BEGIN { *CORE::GLOBAL::time = sub { die "here" } }; print time . "\n"; '
-        #    here at -e line 1.
-
-        #    $ perl -e ' use strict; BEGIN { *CORE::GLOBAL::print = sub { die "here" } }; print "123\n"; '
-        #    123
-
-        #    $ perl -e ' use strict; use subs "print"; sub print { die "here" }; print "123\n"; '
-        #    123
+        #   * list of prototypes in CORE:
+        #
+        #   $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{$_} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } '
 
         ## # TODO
         ## my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;

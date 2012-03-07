@@ -153,7 +153,7 @@ token args_sig {
 token prototype {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
         { $MATCH->{"capture"} = "" . $MATCH->{"args_sig"}->flat() }
-    |   { $MATCH->{"capture"} = '@' }   # default signature
+    |   { $MATCH->{"capture"} = undef }   # default signature
 }
 
 token sub_def {
