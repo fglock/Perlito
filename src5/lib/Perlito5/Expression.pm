@@ -547,6 +547,12 @@ package Perlito5::Expression;
         #   123
         #
         #   * if it has a prototype it's overridable (thanks rjbs++ in #p5p)
+        #   * however, 'chomp' => undef, but I can override it
+        #   * core functions that have undefined prototypes and that are overridable:
+        #   chomp chop glob exec system require chomp glob exec glob system
+        #
+        #   $ perl -e ' use strict; BEGIN { *CORE::GLOBAL::chomp = sub { die "here" } }; print chomp . "\n"; '
+        #   here at -e line 1.
         #
         #   $ perl -e ' use strict; use Data::Dumper; print Dumper prototype("CORE::time")  '
         #   $VAR1 = '';  -> can be overridden
