@@ -90,6 +90,13 @@ sub Perlito5::AST::Var::namespace {
 sub Perlito5::AST::Var::name {
     $_[0]->{'name'}
 };
+sub Perlito5::AST::Var::plain_name {
+    ((my  $self) = shift());
+    if (($self->namespace())) {
+        return (($self->namespace() . '::' . $self->name()))
+    };
+    return ($self->name())
+};
 package Perlito5::AST::Proto;
 sub Perlito5::AST::Proto::new {
     ((my  $class) = shift());

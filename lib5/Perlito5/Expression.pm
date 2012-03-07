@@ -913,147 +913,56 @@ sub Perlito5::Expression::term_space {
     $MATCH
 };
 sub Perlito5::Expression::operator {
-    ((my  $grammar) = $_[0]);
+    ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-    ($MATCH->{'bool'} = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    (((do {
-    ((my  $m2) = Perlito5::Precedence->op_parse($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Precedence.op_parse'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'Perlito5::Precedence.op_parse'}->flat());
-    1
-})))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((((do {
-    ((my  $m2) = Perlito5::Grammar->optional_namespace_before_ident($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar.ident'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((((do {
-    (((do {
-    ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
-    ($MATCH->{'bool'} = ((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    (((do {
-    ((my  $last_pos) = $MATCH->{'to'});
-    if ((!(((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-}))))) {
-        ($MATCH->{'to'} = $last_pos)
+    ((my  $p) = $pos);
+    ((my  $m) = Perlito5::Precedence->op_parse($str, $p));
+    if ($m->{'bool'}) {
+        return ($m)
     };
-    1
-})) && ((('=>' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))))
-}))
-})));
-    ($tmp->{'bool'} = ($MATCH->{'bool'} ? 1 : 0));
-    ($MATCH = $tmp);
-    ($MATCH->{'bool'} ? 1 : 0)
-})) && ((do {
-    ((my  $namespace) = $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}->flat());
-    ((my  $name) = $MATCH->{'Perlito5::Grammar.ident'}->flat());
-    if (($namespace)) {
-        ($name = ($namespace . '::' . $name))
-    };
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Val::Buf->new(('buf' => $name))]);
-    1
-})))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
+    ((my  $m_namespace) = Perlito5::Grammar->optional_namespace_before_ident($str, $p));
+    ($p = $m_namespace->{'to'});
+    ((my  $m_name) = Perlito5::Grammar->ident($str, $p));
+    if ($m_name->{'bool'}) {
+
     }
     else {
-        0
-    }
-})) && ((do {
-    ((my  $m2) = $grammar->list_parse($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'list_parse'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ($MATCH->{'capture'} = ['postfix_or_term', 'funcall', $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}->flat(), $MATCH->{'Perlito5::Grammar.ident'}->flat(), $MATCH->{'list_parse'}->flat()]);
-    1
-}))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((do {
-    ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
-    ($MATCH->{'bool'} = ((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    (('->' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
-}))
-})));
-    ($tmp->{'bool'} = ($MATCH->{'bool'} ? 1 : 0));
-    ($MATCH = $tmp);
-    ($MATCH->{'bool'} ? 1 : 0)
-})) && ((do {
-    ((my  $namespace) = $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}->flat());
-    ((my  $name) = $MATCH->{'Perlito5::Grammar.ident'}->flat());
-    if (($namespace)) {
-        ($name = ($namespace . '::' . $name))
+        return ($m_name)
     };
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Proto->new(('name' => $name))]);
-    1
-}))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((do {
-    ($MATCH->{'capture'} = ['postfix_or_term', 'funcall_no_params', $MATCH->{'Perlito5::Grammar.optional_namespace_before_ident'}->flat(), $MATCH->{'Perlito5::Grammar.ident'}->flat()]);
-    1
-})))
-})))
-}))))
-})))
-}))));
-    $MATCH
+    ($p = $m_name->{'to'});
+    ((my  $name) = $m_name->flat());
+    ((my  $namespace) = $m_namespace->flat());
+    ((my  $full_name) = $name);
+    if ($namespace) {
+        ($full_name = ($namespace . '::' . $name))
+    };
+    (my  $has_space_after);
+    ($m = Perlito5::Grammar->ws($str, $p));
+    if (($m->{'bool'})) {
+        ($has_space_after = 1);
+        ($p = $m->{'to'})
+    };
+    if (((substr($str, $p, 2) eq '=>'))) {
+        ($m_name->{'capture'} = ['term', Perlito5::AST::Val::Buf->new(('buf' => $full_name))]);
+        ($m_name->{'to'} = $p);
+        return ($m_name)
+    };
+    if (((substr($str, $p, 2) eq '->'))) {
+        ($m_name->{'capture'} = ['term', Perlito5::AST::Proto->new(('name' => $full_name))]);
+        ($m_name->{'to'} = $p);
+        return ($m_name)
+    };
+    if (($has_space_after)) {
+        ((my  $m_list) = $self->list_parse($str, $p));
+        if (($m_list->{'bool'})) {
+            ($m_name->{'capture'} = ['postfix_or_term', 'funcall', $namespace, $name, $m_list->flat()]);
+            ($m_name->{'to'} = $m_list->{'to'});
+            return ($m_name)
+        }
+    };
+    ($m_name->{'capture'} = ['postfix_or_term', 'funcall_no_params', $namespace, $name]);
+    return ($m_name)
 };
 sub Perlito5::Expression::has_newline_after {
     ((my  $grammar) = $_[0]);

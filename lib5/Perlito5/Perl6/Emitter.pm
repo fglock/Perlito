@@ -286,13 +286,6 @@ package Perlito5::AST::Var;
             ($ns = ($self->{'namespace'} . '::'))
         };
         ($ns . $self->{'sigil'} . $self->{'name'})
-    };
-    sub Perlito5::AST::Var::plain_name {
-        ((my  $self) = shift());
-        if (($self->namespace())) {
-            return (($self->namespace() . '::' . $self->name()))
-        };
-        return ($self->name())
     }
 });
 package Perlito5::AST::Proto;

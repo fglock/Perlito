@@ -487,41 +487,75 @@ package Perlito5::Expression;
         <.Perlito5::Grammar.ws>           { $MATCH->{"capture"} = [ 'space',   ' ' ] }
     }
 
-    token operator {
-        | <Perlito5::Precedence.op_parse>              { $MATCH->{"capture"} = $MATCH->{"Perlito5::Precedence.op_parse"}->flat()             }
+    sub operator {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
 
-          # other identifiers, barewords
-        | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.ident>
+        # maybe it's an operator or a term
 
-          [
-            <before <.Perlito5::Grammar.ws>? '=>' >   # autoquote
-            { my $namespace = $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat();
-              my $name      = $MATCH->{"Perlito5::Grammar.ident"}->flat();
-              if ($namespace) {
-                $name = $namespace . '::' . $name;
-              }
-              $MATCH->{"capture"} = [ 'term', Perlito5::AST::Val::Buf->new( buf => $name ) ] 
-            }
+        my $p = $pos;
+        my $m = Perlito5::Precedence->op_parse( $str, $p );
+        return $m 
+            if $m->{"bool"};
 
-          | <.Perlito5::Grammar.ws> <list_parse>
-            { $MATCH->{"capture"} = [ 'postfix_or_term', 'funcall',
-                     $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
-                     $MATCH->{"Perlito5::Grammar.ident"}->flat(), 
-                     $MATCH->{"list_parse"}->flat()  
-                   ] 
+        # it's not a known operator or term
+        # maybe it's a bareword
+
+        my $m_namespace = Perlito5::Grammar->optional_namespace_before_ident( $str, $p );
+        $p = $m_namespace->{"to"};
+        my $m_name      = Perlito5::Grammar->ident( $str, $p );
+        return $m_name
+            unless $m_name->{"bool"};
+        $p = $m_name->{"to"};
+
+        my $name = $m_name->flat();
+        my $namespace = $m_namespace->flat();
+        my $full_name = $name;
+        $full_name = $namespace . '::' . $name if $namespace;
+
+        # we've got a bareword
+
+        my $has_space_after;
+        $m = Perlito5::Grammar->ws( $str, $p );
+        if ( $m->{"bool"} ) {
+            $has_space_after = 1;
+            $p = $m->{"to"};
+        }
+
+        if ( substr( $str, $p, 2 ) eq '=>' ) {
+            # autoquote
+            $m_name->{"capture"} = [ 'term', Perlito5::AST::Val::Buf->new( buf => $full_name ) ];
+            $m_name->{"to"} = $p;
+            return $m_name;
+        }
+        if ( substr( $str, $p, 2 ) eq '->' ) {
+            # class-method call
+            $m_name->{"capture"} = [ 'term', Perlito5::AST::Proto->new( name => $full_name ) ];
+            $m_name->{"to"} = $p;
+            return $m_name;
+        }
+
+        if ( $has_space_after ) {
+            # maybe it's a subroutine call
+            my $m_list = $self->list_parse( $str, $p );
+            if ( $m_list->{"bool"} ) {
+                $m_name->{"capture"} = [ 'postfix_or_term', 'funcall',
+                        $namespace,
+                        $name,
+                        $m_list->flat()
+                    ];
+                $m_name->{"to"} = $m_list->{"to"};
+                return $m_name;
             }
-          | <before '->' >
-            { my $namespace = $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat();
-              my $name      = $MATCH->{"Perlito5::Grammar.ident"}->flat();
-              if ($namespace) {
-                $name = $namespace . '::' . $name;
-              }
-              $MATCH->{"capture"} = [ 'term', Perlito5::AST::Proto->new( name => $name )            ]
-            }
-          | { $MATCH->{"capture"} = [ 'postfix_or_term', 'funcall_no_params',
-                     $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
-                     $MATCH->{"Perlito5::Grammar.ident"}->flat()                  ] }
-          ]
+        }
+
+        # it's just a bareword - we will disambiguate later
+        $m_name->{"capture"} = [ 'postfix_or_term', 'funcall_no_params',
+                $namespace,
+                $name
+            ];
+        return $m_name;
     }
 
     token has_newline_after {

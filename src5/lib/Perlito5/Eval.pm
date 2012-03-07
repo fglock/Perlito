@@ -87,15 +87,8 @@ sub eval {
         }
     }
     warn "Interpreter runtime error: variable '", $name, "' not found";
-};
-sub plain_name {
-    my $self = $_[0];
+}
 
-    if ($self->{"namespace"}) {
-        return $self->{"sigil"} . $self->{"namespace"} . '::' . $self->{"name"}
-    }
-    return $self->{"sigil"} . $self->{"name"}
-};
 
 
 package Perlito5::AST::Proto;
@@ -207,11 +200,6 @@ sub eval {
         ($env->[0]){ $name } = undef;
     }
     return undef;
-}
-sub plain_name {
-    my $self = $_[0];
-
-    $self->{"var"}->plain_name;
 }
 
 

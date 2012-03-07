@@ -77,13 +77,6 @@ sub Perlito5::AST::Var::eval {
     };
     warn('Interpreter runtime error: variable ' . chr(39), $name, chr(39) . ' not found')
 };
-sub Perlito5::AST::Var::plain_name {
-    ((my  $self) = $_[0]);
-    if (($self->{'namespace'})) {
-        return (($self->{'sigil'} . $self->{'namespace'} . '::' . $self->{'name'}))
-    };
-    return (($self->{'sigil'} . $self->{'name'}))
-};
 package Perlito5::AST::Proto;
 sub Perlito5::AST::Proto::eval {
     ((my  $self) = $_[0]);
@@ -173,10 +166,6 @@ sub Perlito5::AST::Decl::eval {
         (($env->[0])->{$name} = undef())
     };
     return (undef())
-};
-sub Perlito5::AST::Decl::plain_name {
-    ((my  $self) = $_[0]);
-    $self->{'var'}->plain_name()
 };
 package Perlito5::AST::Sub;
 sub Perlito5::AST::Sub::eval {

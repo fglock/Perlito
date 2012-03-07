@@ -218,14 +218,6 @@ package Perlito5::AST::Var;
         }
         return Perlito5::Perl5::tab($level) . $self->{"sigil"} . $ns . $self->{"name"}
     }
-    sub plain_name {
-        my $self = $_[0];
-
-        if ($self->{"namespace"}) {
-            return $self->{"namespace"} . '::' . $self->{"name"}
-        }
-        return $self->{"name"}
-    }
 }
 
 package Perlito5::AST::Proto;

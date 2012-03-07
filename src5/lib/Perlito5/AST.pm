@@ -53,6 +53,15 @@ sub sigil { $_[0]->{'sigil'} }
 sub namespace { $_[0]->{'namespace'} }
 sub name { $_[0]->{'name'} }
 
+sub plain_name {
+    my $self = shift;
+    if ($self->namespace) {
+        return $self->namespace . '::' . $self->name
+    }
+    return $self->name
+}
+
+
 
 
 package Perlito5::AST::Proto;

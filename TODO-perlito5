@@ -34,7 +34,8 @@ TODO list for Perlito5
 
 -- use an array to represent names that contain '::', because it is more flexible
 
--- implement signatures
+-- implement prototypes (signatures)
+--- *foo = sub () { ... }   # does prototype work here?
 
 -- check that \(@a) and \@a have different meanings
 
@@ -113,4 +114,14 @@ TODO list for Perlito5
 
 -- source code - remove Perl 6 code such as "token"
    (fixed: This is only loaded if the grammar compiler is needed)
+
+-- no warnings 'redefine';
+
+-- *{ $name }{CODE}->();
+
+-- $object->$method_name()
+
+-- local(*{$caller."::a"}) = \my $a;
+
+-- AUTOLOAD
 
