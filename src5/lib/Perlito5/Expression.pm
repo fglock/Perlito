@@ -548,6 +548,9 @@ package Perlito5::Expression;
         #    $ perl -e ' use strict; BEGIN { *CORE::GLOBAL::print = sub { die "here" } }; print "123\n"; '
         #    123
 
+        #    $ perl -e ' use strict; use subs "print"; sub print { die "here" }; print "123\n"; '
+        #    123
+
         ## # TODO
         ## my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
         ## if ( exists $Perlito5::PROTO->{$effective_name} ) {
