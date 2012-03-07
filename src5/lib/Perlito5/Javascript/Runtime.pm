@@ -309,11 +309,11 @@ make_sub("Perlito5::Grammar", "space", function(List__) {
 function perl5_to_js( source, namespace, var_env_js ) {
     // say( "source: [" + source + "]" );
 
-    var var_env_js_old = NAMESPACE["Perlito5::Javascript"].v_VAR;
-    NAMESPACE["Perlito5::Javascript"].v_VAR = var_env_js;
+    var var_env_js_old = NAMESPACE["Perlito5"].v_VAR;
+    NAMESPACE["Perlito5"].v_VAR = var_env_js;
 
-    var namespace_old = NAMESPACE["Perlito5::Javascript"].v_PKG_NAME;
-    NAMESPACE["Perlito5::Javascript"].v_PKG_NAME = namespace;
+    var namespace_old = NAMESPACE["Perlito5"].v_PKG_NAME;
+    NAMESPACE["Perlito5"].v_PKG_NAME = namespace;
 
     match = CLASS["Perlito5::Grammar"].exp_stmts([CLASS["Perlito5::Grammar"], source, 0]);
 
@@ -333,8 +333,8 @@ function perl5_to_js( source, namespace, var_env_js ) {
     js_code = ast._class_.emit_javascript([ast]);
     // CORE.say( "js-source: [" + js_code + "]" );
 
-    NAMESPACE["Perlito5::Javascript"].v_PKG_NAME = namespace_old;
-    NAMESPACE["Perlito5::Javascript"].v_VAR      = var_env_js_old;
+    NAMESPACE["Perlito5"].v_PKG_NAME = namespace_old;
+    NAMESPACE["Perlito5"].v_VAR      = var_env_js_old;
     return js_code;
 }
 ';

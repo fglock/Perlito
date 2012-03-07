@@ -232,11 +232,11 @@ package Perlito5::Javascript::LexicalBlock;
         my @str;
         my $has_local = $self->has_decl("local");
         my $create_context = $self->{"create_context"} && $self->has_decl("my");
-        my $outer_pkg   = $Perlito5::Javascript::PKG_NAME;
-        my $outer_throw = $Perlito5::Javascript::THROW;
-        unshift @{ $Perlito5::Javascript::VAR }, {};
+        my $outer_pkg   = $Perlito5::PKG_NAME;
+        my $outer_throw = $Perlito5::THROW;
+        unshift @{ $Perlito5::VAR }, {};
 
-        $Perlito5::Javascript::THROW = 0
+        $Perlito5::THROW = 0
             if $self->{"top_level"};
 
         $out .= Perlito5::Javascript::tab($level) . "var local_idx = LOCAL.length;\n"
@@ -256,7 +256,7 @@ package Perlito5::Javascript::LexicalBlock;
         }
         for my $decl ( @block ) {
             if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
-                $Perlito5::Javascript::PKG_NAME = $decl->{"namespace"};
+                $Perlito5::PKG_NAME = $decl->{"namespace"};
             }
 
             if ($decl->isa( 'Perlito5::AST::Decl' )) {
@@ -332,7 +332,7 @@ package Perlito5::Javascript::LexicalBlock;
             $level--;
             push @str, "})();";
         }
-        if ($self->{"top_level"} && $Perlito5::Javascript::THROW) {
+        if ($self->{"top_level"} && $Perlito5::THROW) {
             $level--;
             $out .= 
                   Perlito5::Javascript::tab($level) . "try {\n"
@@ -355,10 +355,10 @@ package Perlito5::Javascript::LexicalBlock;
         else {
             $out .= join("\n", map($tab . $_, @str));
         }
-        $Perlito5::Javascript::PKG_NAME = $outer_pkg;
-        $Perlito5::Javascript::THROW    = $outer_throw
+        $Perlito5::PKG_NAME = $outer_pkg;
+        $Perlito5::THROW    = $outer_throw
             if $self->{"top_level"};
-        shift @{ $Perlito5::Javascript::VAR };
+        shift @{ $Perlito5::VAR };
         return $out;
     }
 
@@ -381,13 +381,13 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript_program {
         my $comp_units = shift;
         my $str = '';
-        $Perlito5::Javascript::VAR = [
+        $Perlito5::VAR = [
             { '@_'    => { decl => 'my' },
               '$_'    => { decl => 'my' },  # XXX - "our" ${__PACKAGE__}::_
               '@ARGV' => { decl => 'my' },  # XXX - "our" @main::ARGV
             }
         ];
-        $Perlito5::Javascript::PKG_NAME = 'main';
+        $Perlito5::PKG_NAME = 'main';
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_javascript() . "\n";
         }
@@ -514,7 +514,7 @@ package Perlito5::AST::Var;
         }
 
         if ( $self->{"sigil"} eq '*' ) {
-            return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::Javascript::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
+            return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
         }
         if ( $decl_type eq 'our' ) {
             return 'NAMESPACE["' . ($self->{"namespace"} || $decl->{"namespace"}) . '"]["' . $table->{$self->{"sigil"}} . $self->{"name"} . '"]';
@@ -538,7 +538,7 @@ package Perlito5::AST::Var;
     sub perl5_get_decl {
         my $self = shift;
         my $perl5_name = shift;
-        for ( @{ $Perlito5::Javascript::VAR } ) {
+        for ( @{ $Perlito5::VAR } ) {
             return $_->{$perl5_name}
                 if exists $_->{$perl5_name}
         }
@@ -572,7 +572,7 @@ package Perlito5::AST::Decl;
                 $decl_namespace = $decl->{"namespace"};
             }
 
-            my $ns = 'NAMESPACE["' . ($self->{"var"}{"namespace"} || $decl_namespace || $Perlito5::Javascript::PKG_NAME) . '"]';
+            my $ns = 'NAMESPACE["' . ($self->{"var"}{"namespace"} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
 
             return
                   'set_local(' . $ns . ','
@@ -600,11 +600,11 @@ package Perlito5::AST::Decl;
                     # say "found ", $decl->{"decl"}, " namespace: ", $decl->{"namespace"};
                     $decl_namespace = $decl->{"namespace"};
                 }
-                $env->{"namespace"} = $decl_namespace || $Perlito5::Javascript::PKG_NAME;
+                $env->{"namespace"} = $decl_namespace || $Perlito5::PKG_NAME;
             }
         }
 
-        $Perlito5::Javascript::VAR->[0]{ $perl5_name } = $env;
+        $Perlito5::VAR->[0]{ $perl5_name } = $env;
 
         if ($self->{"decl"} eq 'my') {
             my $str = "";
@@ -741,7 +741,7 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'eval') {
-            my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::Javascript::VAR );
+            my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::VAR );
             # say "at eval: ", $var_env_perl5;
             my $m = Perlito5::Expression->term_square( $var_env_perl5, 0 );
             $m = Perlito5::Expression::expand_list( $m->flat()->[2] );
@@ -750,7 +750,7 @@ package Perlito5::AST::Apply;
             return
                 'eval(perl5_to_js(' 
                     . Perlito5::Javascript::to_str($self->{"arguments"}->[0]) . ", "
-                    . '"' . $Perlito5::Javascript::PKG_NAME . '", '
+                    . '"' . $Perlito5::PKG_NAME . '", '
                     . $var_env_js
                 . '))'
         }
@@ -766,9 +766,9 @@ package Perlito5::AST::Apply;
 
         if ($code eq 'shift')      {
             if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return 'NAMESPACE["' . $Perlito5::Javascript::PKG_NAME . '"].shift([' . join(', ', map( $_->emit_javascript_indented( $level ), @{$self->{"arguments"}} )) . '])'
+                return 'NAMESPACE["' . $Perlito5::PKG_NAME . '"].shift([' . join(', ', map( $_->emit_javascript_indented( $level ), @{$self->{"arguments"}} )) . '])'
             }
-            return 'NAMESPACE["' . $Perlito5::Javascript::PKG_NAME . '"].shift([List__])'
+            return 'NAMESPACE["' . $Perlito5::PKG_NAME . '"].shift([List__])'
         }
 
         if ($code eq 'map') {
@@ -827,7 +827,7 @@ package Perlito5::AST::Apply;
                         return 'NAMESPACE["' . $arg->{"namespace"} . '"].' . $arg->{"name"};
                     }
                     else {
-                        return 'NAMESPACE["' . $Perlito5::Javascript::PKG_NAME . '"].' . $arg->{"name"};
+                        return 'NAMESPACE["' . $Perlito5::PKG_NAME . '"].' . $arg->{"name"};
                     }
                 }
             }
@@ -917,7 +917,7 @@ package Perlito5::AST::Apply;
             return emit_javascript_bind( $self->{"arguments"}->[0], $self->{"arguments"}->[1], $level );
         }
         if ($code eq 'return') {
-            $Perlito5::Javascript::THROW = 1;
+            $Perlito5::THROW = 1;
             return 'throw('
                 .   ( $self->{"arguments"} && @{$self->{"arguments"}} 
                     ? $self->{"arguments"}->[0]->emit_javascript() 
@@ -926,7 +926,7 @@ package Perlito5::AST::Apply;
                 . ')'
         }
         if ($code eq 'goto') {
-            $Perlito5::Javascript::THROW = 1;
+            $Perlito5::THROW = 1;
             return 'throw((' . $self->{"arguments"}->[0]->emit_javascript() . ')([List__]))'
         }
 
@@ -948,7 +948,7 @@ package Perlito5::AST::Apply;
             $code = 'NAMESPACE["' . $self->{"namespace"} . '"].' . $code;
         }
         else {
-            $code = 'NAMESPACE["' . $Perlito5::Javascript::PKG_NAME . '"].' . $code
+            $code = 'NAMESPACE["' . $Perlito5::PKG_NAME . '"].' . $code
         }
         my @args = ();
         push @args, $_->emit_javascript_indented( $level )
@@ -1032,7 +1032,7 @@ package Perlito5::AST::For;
             # XXX - cleanup: "for" parser throws away the variable declaration, so we need to create it again
             # mark the variable as "declared"
             my $v = $self->{"body"}->sig;
-            $Perlito5::Javascript::VAR->[0]{ $v->perl5_name } = { decl => 'my' };
+            $Perlito5::VAR->[0]{ $v->perl5_name } = { decl => 'my' };
 
             $sig = $v->emit_javascript_indented( $level + 1 );
         }
@@ -1054,7 +1054,7 @@ package Perlito5::AST::Sub;
         . Perlito5::Javascript::tab($level) . '}';
 
         ( $self->{"name"}
-          ? 'make_sub("' . $Perlito5::Javascript::PKG_NAME . '", "' . $self->{"name"} . '", ' . $s . ')'
+          ? 'make_sub("' . $Perlito5::PKG_NAME . '", "' . $self->{"name"} . '", ' . $s . ')'
           : $s
         )
 
