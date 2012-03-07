@@ -166,6 +166,12 @@ token sub_def {
         if ( $name ) {
             # say "sub $Perlito5::PKG_NAME :: $name ( $sig )";
             $namespace = $Perlito5::PKG_NAME unless $namespace;
+
+            my $full_name = "${namespace}::$name";
+            warn "Subroutine $full_name redefined"
+                if exists $Perlito5::PROTO->{$full_name};
+
+            $Perlito5::PROTO->{$full_name} = $sig;
         }
         $MATCH->{"capture"} = Perlito5::AST::Sub->new(
             name  => $name, 

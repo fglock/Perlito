@@ -144,6 +144,7 @@ if ((($backend && @ARGV))) {
         warn('now parsing')
     };
     ($Perlito5::PKG_NAME = 'main');
+    ($Perlito5::PROTO = {});
     ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
     add_comp_unit($m->flat());
     ($comp_units = [Perlito5::AST::CompUnit->new(('name' => 'main'), ('body' => $comp_units))]);

@@ -91,6 +91,14 @@ $printer->out( "Using my 'Printer' object\n" );
                 }
                 return true;
             };
+            NAMESPACE.CORE.warn = function(List__) {
+                var i;
+                List__.push("\n");
+                for (i = 0; i < List__.length; i++) {
+		    	    document.getElementById('log-result').value += string(List__[i]);
+                }
+                return true;
+            };
 
 			var source = document.getElementById('source').value;
             var pos = 0;
@@ -120,7 +128,7 @@ $printer->out( "Using my 'Printer' object\n" );
                 time = end - start;
 			    document.getElementById('log-result').value += "Running time: " + time + "ms\n";
 
-                NAMESPACE.CORE.print(["Done.\n"]);
+                NAMESPACE.CORE.print(["\nDone.\n"]);
             }
             catch(err) {
                 document.getElementById('log-result').value += "Error:\n";

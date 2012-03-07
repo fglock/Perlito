@@ -1516,7 +1516,12 @@ sub Perlito5::Grammar::sub_def {
         }
         else {
             ($namespace = $Perlito5::PKG_NAME)
-        }
+        };
+        ((my  $full_name) = ($namespace . '::' . $name));
+        if (exists($Perlito5::PROTO->{$full_name})) {
+            warn(('Subroutine ' . $full_name . ' redefined'))
+        };
+        ($Perlito5::PROTO->{$full_name} = $sig)
     };
     ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => $name), ('namespace' => $namespace), ('sig' => $sig), ('block' => $MATCH->{'exp_stmts'}->flat())));
     1
