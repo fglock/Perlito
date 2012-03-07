@@ -1317,26 +1317,56 @@ sub args_sig {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (((do {
-    ((my  $m2) = Perlito5::Expression->list_parse($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Expression.list_parse'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Sig->new(('positional' => Perlito5::Expression::expand_list($MATCH->{'Perlito5::Expression.list_parse'}->flat()->{'exp'})), ('named' => {})));
-;
-    1
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->{'to'});
+    for ( ; ((((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((((((((((do {
+    ((chr(59) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((chr(92) eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('[' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((']' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('*' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('+' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((chr(64) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((chr(37) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((chr(36) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((chr(38) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 })))
+})) && (($last_match_null < 2))));  ) {
+        if ((($last_pos == $MATCH->{'to'}))) {
+            ($last_match_null = ($last_match_null + 1))
+        }
+        else {
+            ($last_match_null = 0)
+        };
+        ($last_pos = $MATCH->{'to'})
+    };
+    ($MATCH->{'to'} = $last_pos);
+    1
 }))
 }))));
     $MATCH
 };
-sub method_sig {
+sub prototype {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1382,13 +1412,13 @@ sub method_sig {
         0
     }
 }))) && (((')' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'args_sig'}->flat());
+    ($MATCH->{'capture'} = Perlito5::AST::Sig->new(('positional' => [('' . $MATCH->{'args_sig'}->flat())])));
     1
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Sig->new(('positional' => []), ('named' => {})));
+    ($MATCH->{'capture'} = Perlito5::AST::Sig->new(('positional' => [chr(64)])));
     1
 })))
 })))
@@ -1403,7 +1433,7 @@ sub sub_def {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (((((((((((do {
+    ((((((((((do {
     ((my  $m2) = $grammar->opt_name($str, $MATCH->{'to'}));
     if (($m2->{'bool'})) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -1414,19 +1444,10 @@ sub sub_def {
         0
     }
 })) && ((do {
-    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = $grammar->prototype($str, $MATCH->{'to'}));
     if (($m2->{'bool'})) {
         ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ((my  $m2) = $grammar->method_sig($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'method_sig'} = $m2);
+        ($MATCH->{'prototype'} = $m2);
         1
     }
     else {
@@ -1482,7 +1503,7 @@ sub sub_def {
 })))
 })))
 }))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => $MATCH->{'opt_name'}->flat()), ('sig' => $MATCH->{'method_sig'}->flat()), ('block' => $MATCH->{'exp_stmts'}->flat())));
+    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => $MATCH->{'opt_name'}->flat()), ('sig' => $MATCH->{'prototype'}->flat()), ('block' => $MATCH->{'exp_stmts'}->flat())));
     1
 })))
 }))

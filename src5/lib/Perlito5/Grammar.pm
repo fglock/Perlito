@@ -142,31 +142,30 @@ token exp_stmts {
 token opt_name {  <ident>?  }
 
 token args_sig {
-    # TODO - Perlito5::Expression.list_parse / exp_mapping == positional / named
-    <Perlito5::Expression.list_parse>
-    {
-        # say ' positional: ', ($MATCH->{""}->flat()).perl;
-        $MATCH->{"capture"} = Perlito5::AST::Sig->new(
-            positional  => Perlito5::Expression::expand_list($MATCH->{"Perlito5::Expression.list_parse"}->flat()->{'exp'}),
-            named       => { } );
-    }
+    [ ';' | '\\' | '[' | ']' | '*' | '+' | '@' | '%' | '$' | '&' ]*
 }
 
-token method_sig {
+token prototype {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
-        { $MATCH->{"capture"} = $MATCH->{"args_sig"}->flat() }
+        { $MATCH->{"capture"} = Perlito5::AST::Sig->new(
+                                    positional => [ "" . $MATCH->{"args_sig"}->flat() ],
+                                )
+        }
     |   { $MATCH->{"capture"} = Perlito5::AST::Sig->new(
-            positional => [ ],
-            named => { } ) }
+                                    positional => [ '@' ],   # default signature
+                                ) 
+        }
 }
 
 token sub_def {
-    <opt_name>  <.opt_ws>
-    <method_sig>
-    <.opt_ws> \{ <.opt_ws>
-          <exp_stmts> <.opt_ws>
+    <opt_name> <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
     [   \}     | { die 'Syntax Error in sub \'', $MATCH->{"opt_name"}->flat(), '\''; } ]
-    { $MATCH->{"capture"} = Perlito5::AST::Sub->new( name => $MATCH->{"opt_name"}->flat(), sig => $MATCH->{"method_sig"}->flat(), block => $MATCH->{"exp_stmts"}->flat() ) }
+    { $MATCH->{"capture"} = Perlito5::AST::Sub->new(
+            name  => $MATCH->{"opt_name"}->flat(), 
+            sig   => $MATCH->{"prototype"}->flat(), 
+            block => $MATCH->{"exp_stmts"}->flat() 
+        ) 
+    }
 }
 
 

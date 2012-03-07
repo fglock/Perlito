@@ -183,10 +183,9 @@ sub eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     (my  @param_name);
-    for my $field (@{$self->{'sig'}->positional()}) {
-        push(@param_name, $field->plain_name() )
-    };
     ((my  $sub) = sub  {
+    ((my  $env) = shift());
+    ((my  $args) = shift());
     (my  %context);
     ((my  $n) = 0);
     ($context{chr(64) . '_'} = $args);

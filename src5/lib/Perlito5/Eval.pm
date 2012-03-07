@@ -221,11 +221,12 @@ sub eval {
     my $env = $_[1];
 
     my @param_name;
-    for my $field (@{ $self->{"sig"}->positional }) {
-        push( @param_name, $field->plain_name );
-    }
+    # TODO - process $self->{"sig"}->positional
     my $sub =
-            sub ( $env, $args ) {
+            sub {
+                my $env = shift;
+                my $args = shift;
+
                 my %context;
                 my $n = 0;
                 $context{'@_'} = $args;

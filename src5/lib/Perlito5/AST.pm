@@ -111,9 +111,7 @@ sub var { $_[0]->{'var'} }
 
 package Perlito5::AST::Sig;
 sub new { my $class = shift; bless {@_}, $class }
-sub invocant { $_[0]->{'invocant'} }
 sub positional { $_[0]->{'positional'} }
-sub named { $_[0]->{'named'} }
 
 
 
