@@ -267,7 +267,7 @@ sub for {
     else {
         0
     }
-}))) && (((chr(123) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+}))) && ((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
     if (($m2->{'bool'})) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -295,7 +295,7 @@ sub for {
     else {
         0
     }
-}))) && (((chr(125) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+}))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ($MATCH->{'capture'} = Perlito5::AST::For->new(('cond' => $MATCH->{'Perlito5::Expression.paren_parse'}->flat()), ('topic' => undef()), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => $MATCH->{'Perlito5::Grammar.exp_stmts'}->flat()), ('sig' => $MATCH->{'Perlito5::Grammar.var_ident'}->flat())))));
     1
 })))

@@ -13,7 +13,7 @@ use Perlito5::Precedence;
 Perlito5::Precedence::add_term((chr(39) => sub  {
     Perlito5::Grammar::String->term_single_quote($_[0], $_[1])
 }));
-Perlito5::Precedence::add_term((chr(34) => sub  {
+Perlito5::Precedence::add_term(('"' => sub  {
     Perlito5::Grammar::String->term_double_quote($_[0], $_[1])
 }));
 Perlito5::Precedence::add_term(('<<' => sub  {
@@ -36,7 +36,7 @@ sub term_double_quote {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (((((chr(34) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((((('"' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $m2) = $grammar->double_quote_parse($str, $MATCH->{'to'}));
     if (($m2->{'bool'})) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -91,7 +91,7 @@ sub term_q_quote {
     (((((('q' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
-    ((chr(35) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+    (('#' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
@@ -163,7 +163,7 @@ sub term_qq_quote {
     (((((('qq' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
-    ((chr(35) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+    (('#' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
@@ -235,7 +235,7 @@ sub term_qw_quote {
     (((((('qw' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
-    ((chr(35) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+    (('#' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
@@ -296,7 +296,7 @@ sub term_qw_quote {
 }))));
     $MATCH
 };
-((my  %pair) = ((chr(123) => chr(125)), ('(' => ')'), ('[' => ']'), ('<' => '>')));
+((my  %pair) = (('{' => '}'), ('(' => ')'), ('[' => ']'), ('<' => '>')));
 sub q_quote_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -478,7 +478,7 @@ sub here_doc {
             ($p)++
         }
     };
-    die(('Can' . chr(39) . 't find string terminator ' . chr(34) . $delimiter . chr(34) . ' anywhere before EOF'))
+    die(('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF'))
 };
 sub single_quote_parse {
     ((my  $self) = $_[0]);
@@ -490,7 +490,7 @@ sub double_quote_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    return ($self->string_interpolation_parse($str, $pos, chr(34), 1))
+    return ($self->string_interpolation_parse($str, $pos, '"', 1))
 };
 sub char_any {
     ((my  $grammar) = $_[0]);
@@ -622,7 +622,7 @@ sub double_quoted_buf {
     ($MATCH->{'bool'} = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    ((chr(36) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+    (('$' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
 }))
 })));
     ($tmp->{'bool'} = ($MATCH->{'bool'} ? 1 : 0));
@@ -671,7 +671,7 @@ sub double_quoted_buf {
     ($MATCH->{'bool'} = ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    ((chr(64) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+    (('@' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
 }))
 })));
     ($tmp->{'bool'} = ($MATCH->{'bool'} ? 1 : 0));

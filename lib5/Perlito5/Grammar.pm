@@ -295,7 +295,7 @@ sub pod_pod_begin {
     else {
         0
     }
-})) && (((chr(61) . 'cut' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'})))))) && ((do {
+})) && ((('=cut' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'})))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->{'to'});
     for ( ; ((((do {
@@ -375,7 +375,7 @@ sub pod_begin {
     else {
         0
     }
-})) && (((chr(61) . 'end' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'})))))) && ((do {
+})) && ((('=end' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'})))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->{'to'});
     for ( ; ((((do {
@@ -452,7 +452,7 @@ sub ws {
     for ( ; ((((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((do {
-    ((((chr(35) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    (((('#' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->{'to'});
     for ( ; ((((do {
@@ -514,7 +514,7 @@ sub ws {
 }))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
-    ((((chr(61) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    (((('=' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((((do {
     (((('pod' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))) && ((do {
@@ -857,16 +857,16 @@ sub var_sigil {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((((do {
-    ((chr(36) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+    (('$' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((chr(37) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+    (((('%' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((chr(64) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+    (((('@' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((chr(38) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+    (((('&' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((('*' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
@@ -1322,7 +1322,7 @@ sub args_sig {
     for ( ; ((((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((((((((((do {
-    ((chr(59) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+    ((';' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     ((((chr(92) eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))))
@@ -1340,16 +1340,16 @@ sub args_sig {
     (((('+' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((chr(64) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+    (((('@' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((chr(37) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+    (((('%' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((chr(36) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+    (((('$' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((chr(38) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+    (((('&' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
 })))
 })) && (($last_match_null < 2))));  ) {
         if ((($last_pos == $MATCH->{'to'}))) {
@@ -1418,7 +1418,7 @@ sub prototype {
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Sig->new(('positional' => [chr(64)])));
+    ($MATCH->{'capture'} = Perlito5::AST::Sig->new(('positional' => ['@'])));
     1
 })))
 })))
@@ -1462,7 +1462,7 @@ sub sub_def {
     else {
         0
     }
-}))) && (((chr(123) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+}))) && ((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
     if (($m2->{'bool'})) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -1493,7 +1493,7 @@ sub sub_def {
 }))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
-    ((chr(125) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+    (('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {

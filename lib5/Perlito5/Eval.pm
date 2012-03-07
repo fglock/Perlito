@@ -65,7 +65,7 @@ sub eval {
         ($ns = ($self->{'namespace'} . '::'))
     }
     else {
-        if (((($self->{'sigil'} eq chr(64))) && (($self->{'name'} eq 'ARGV')))) {
+        if (((($self->{'sigil'} eq '@')) && (($self->{'name'} eq 'ARGV')))) {
             return (@ARGV)
         }
     };
@@ -97,7 +97,7 @@ sub eval {
     warn('Interpreter TODO: Perlito5::AST::Call');
     ((my  $invocant) = $self->{'invocant'}->eval($env));
     if ((($invocant eq 'self'))) {
-        ($invocant = chr(36) . 'self')
+        ($invocant = '$self')
     };
     warn('Interpreter runtime error: method ' . chr(39), $self->{'method'}, '()' . chr(39) . ' not found')
 };
@@ -188,7 +188,7 @@ sub eval {
     ((my  $args) = shift());
     (my  %context);
     ((my  $n) = 0);
-    ($context{chr(64) . '_'} = $args);
+    ($context{'@_'} = $args);
     for my $name (@param_name) {
         ($context{$name} = ($args->[$n])->eval($env));
         ($n = ($n + 1))

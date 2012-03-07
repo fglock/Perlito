@@ -19,7 +19,7 @@ sub Dumper {
     }
     else {
         if ((($ref eq 'HASH'))) {
-            return ((chr(123) . chr(10) . join('', map(($tab1 . (chr(39) . $_ . chr(39) . ' ' . chr(61) . '> ') . Dumper($obj->{$_}, ($level + 1)) . ',' . chr(10)), keys(%{$obj}))) . $tab . chr(125)))
+            return (('{' . chr(10) . join('', map(($tab1 . (chr(39) . $_ . chr(39) . ' => ') . Dumper($obj->{$_}, ($level + 1)) . ',' . chr(10)), keys(%{$obj}))) . $tab . '}'))
         }
         else {
             if (($ref)) {

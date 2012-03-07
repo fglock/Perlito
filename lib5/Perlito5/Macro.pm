@@ -9,7 +9,7 @@ our $MATCH = Perlito5::Match->new();
 package main;
 use v5;
 package Perlito5::AST::Apply;
-((my  %op) = (('infix:<+' . chr(61) . '>' => 'infix:<+>'), ('infix:<-' . chr(61) . '>' => 'infix:<->'), ('infix:<*' . chr(61) . '>' => 'infix:<*>'), ('infix:<' . chr(47) . chr(61) . '>' => 'infix:<' . chr(47) . '>'), ('infix:<' . chr(124) . chr(124) . chr(61) . '>' => 'infix:<' . chr(124) . chr(124) . '>'), ('infix:<' . chr(38) . chr(38) . chr(61) . '>' => 'infix:<' . chr(38) . chr(38) . '>'), ('infix:<' . chr(124) . chr(61) . '>' => 'infix:<' . chr(124) . '>'), ('infix:<' . chr(38) . chr(61) . '>' => 'infix:<' . chr(38) . '>'), ('infix:<' . chr(47) . chr(47) . chr(61) . '>' => 'infix:<' . chr(47) . chr(47) . '>'), ('infix:<.' . chr(61) . '>' => 'list:<.>')));
+((my  %op) = (('infix:<+=>' => 'infix:<+>'), ('infix:<-=>' => 'infix:<->'), ('infix:<*=>' => 'infix:<*>'), ('infix:</=>' => 'infix:</>'), ('infix:<||=>' => 'infix:<||>'), ('infix:<&&=>' => 'infix:<&&>'), ('infix:<|=>' => 'infix:<|>'), ('infix:<&=>' => 'infix:<&>'), ('infix:<//=>' => 'infix:<//>'), ('infix:<.=>' => 'list:<.>')));
 sub op_assign {
     ((my  $self) = $_[0]);
     ((my  $code) = $self->{'code'});
@@ -17,7 +17,7 @@ sub op_assign {
         return (0)
     };
     if ((exists($op{$code}))) {
-        return (Perlito5::AST::Apply->new(('code' => 'infix:<' . chr(61) . '>'), ('arguments' => [$self->{'arguments'}->[0], Perlito5::AST::Apply->new(('code' => $op{$code}), ('arguments' => $self->{'arguments'}))])))
+        return (Perlito5::AST::Apply->new(('code' => 'infix:<=>'), ('arguments' => [$self->{'arguments'}->[0], Perlito5::AST::Apply->new(('code' => $op{$code}), ('arguments' => $self->{'arguments'}))])))
     };
     return (0)
 };
