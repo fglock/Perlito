@@ -320,16 +320,25 @@ add_op( 'ternary',  '? :',  $prec );
 
 $prec = $prec - 1;
 add_op( 'infix',    '=',   $prec, { assoc => 'right' } );
-add_op( 'infix',    '||=', $prec, { assoc => 'right' } );
-add_op( 'infix',    '&&=', $prec, { assoc => 'right' } );
-add_op( 'infix',    '|=',  $prec, { assoc => 'right' } );
-add_op( 'infix',    '&=',  $prec, { assoc => 'right' } );
-add_op( 'infix',    '//=', $prec, { assoc => 'right' } );
+add_op( 'infix',    '**=', $prec, { assoc => 'right' } );
 add_op( 'infix',    '+=',  $prec, { assoc => 'right' } );
 add_op( 'infix',    '-=',  $prec, { assoc => 'right' } );
 add_op( 'infix',    '*=',  $prec, { assoc => 'right' } );
 add_op( 'infix',    '/=',  $prec, { assoc => 'right' } );
+add_op( 'infix',    'x=',  $prec, { assoc => 'right' } );
+
+add_op( 'infix',    '|=',  $prec, { assoc => 'right' } );
+add_op( 'infix',    '&=',  $prec, { assoc => 'right' } );
 add_op( 'infix',    '.=',  $prec, { assoc => 'right' } );
+
+add_op( 'infix',    '<<=', $prec, { assoc => 'right' } );
+add_op( 'infix',    '>>=', $prec, { assoc => 'right' } );
+add_op( 'infix',    '%=',  $prec, { assoc => 'right' } );
+
+add_op( 'infix',    '||=', $prec, { assoc => 'right' } );
+add_op( 'infix',    '&&=', $prec, { assoc => 'right' } );
+add_op( 'infix',    '^=',  $prec, { assoc => 'right' } );
+add_op( 'infix',    '//=', $prec, { assoc => 'right' } );
 
 $prec = $prec - 1;
 add_op( 'infix',    '=>',  $prec );
