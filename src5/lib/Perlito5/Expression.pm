@@ -536,6 +536,23 @@ package Perlito5::Expression;
             return $m_name;
         }
 
+        # TODO - lookup subroutines in CORE and CORE::GLOBAL if $namespace is not set
+
+        # TODO - how does this work:
+        #    $ perl -e ' use strict; sub print { die "here" }; print "123\n"; '
+        #    123
+
+        ## # TODO
+        ## my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
+        ## if ( exists $Perlito5::PROTO->{$effective_name} ) {
+        ##     # subroutine was predeclared
+        ##     my $sig = $Perlito5::PROTO->{$effective_name};
+        ##     say "calling $effective_name ($sig)";
+        ## }
+        ## else {
+        ##     say "not found: $effective_name";
+        ## }
+
         if ( $has_space_after ) {
             # maybe it's a subroutine call
             my $m_list = $self->list_parse( $str, $p );
