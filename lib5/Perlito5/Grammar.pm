@@ -1423,7 +1423,7 @@ sub Perlito5::Grammar::prototype {
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    ($MATCH->{'capture'} = '@');
+    ($MATCH->{'capture'} = undef());
     1
 })))
 })))

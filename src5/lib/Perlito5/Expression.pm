@@ -536,8 +536,6 @@ package Perlito5::Expression;
             return $m_name;
         }
 
-        # TODO - lookup subroutines in CORE and CORE::GLOBAL if $namespace is not set
-
         # Note: how does this work: (See: perldoc CORE)
         #   $ perl -e ' use strict; sub print { die "here" }; print "123\n"; '
         #   123
@@ -558,6 +556,9 @@ package Perlito5::Expression;
         #   * list of prototypes in CORE:
         #
         #   $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{$_} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } '
+
+        # TODO - lookup subroutines in CORE and CORE::GLOBAL if $namespace is not set
+        #        use $Perlito5::CORE_PROTO
 
         ## # TODO
         ## my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;

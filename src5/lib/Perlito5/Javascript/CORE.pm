@@ -243,6 +243,13 @@ CORE.split = function(List__) {
     CORE.die(["not implemented"]);
 };
 
+CORE.prototype = function(List__, data) {
+    var name = List__[0];
+    // TODO - fully qualify "name" using information from "data"
+    // TODO - lookup in CORE::GLOBAL and CORE
+    NAMESPACE["Perlito5"].v_PROTO._hash_[name]
+};
+
 ';
 } # end of emit_javascript()
 
