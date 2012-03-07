@@ -11,12 +11,12 @@ use v5;
 use Perlito5::AST;
 package Perlito5::Perl6;
 (do {
-    sub tab {
+    sub Perlito5::Perl6::tab {
         ((my  $level) = shift());
 join("", chr(9) x $level)
     };
     ((my  %safe_char) = (('$' => 1), ('%' => 1), ('@' => 1), ('&' => 1), ('_' => 1), (',' => 1), ('.' => 1), (':' => 1), (';' => 1), ('-' => 1), ('+' => 1), ('*' => 1), (' ' => 1), ('(' => 1), (')' => 1), ('<' => 1), ('=' => 1), ('>' => 1), ('[' => 1), (']' => 1), ('{' => 1), ('|' => 1), ('}' => 1)));
-    sub escape_string {
+    sub Perlito5::Perl6::escape_string {
         ((my  $s) = shift());
         (my  @out);
         ((my  $tmp) = '');
@@ -41,7 +41,7 @@ join("", chr(9) x $level)
         };
         return (join(' ~ ', @out))
     };
-    sub to_str {
+    sub Perlito5::Perl6::to_str {
         ((my  $cond) = shift());
         if (($cond->isa('Perlito5::AST::Val::Buf'))) {
             return ($cond->emit_perl6())
@@ -50,7 +50,7 @@ join("", chr(9) x $level)
             return (('(' . $cond->emit_perl6() . ')'))
         }
     };
-    sub to_num {
+    sub Perlito5::Perl6::to_num {
         ((my  $cond) = shift());
         if ((($cond->isa('Perlito5::AST::Val::Int') || $cond->isa('Perlito5::AST::Val::Num')))) {
             return ($cond->emit_perl6())
@@ -59,7 +59,7 @@ join("", chr(9) x $level)
             return (('(' . $cond->emit_perl6() . ')'))
         }
     };
-    sub to_bool {
+    sub Perlito5::Perl6::to_bool {
         ((my  $cond) = shift());
         if ((((((($cond->isa('Perlito5::AST::Val::Int')) || ($cond->isa('Perlito5::AST::Val::Num'))) || (($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'infix:<||>')))) || (($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'infix:<&&>')))) || (($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'prefix:<!>')))))) {
             return ($cond->emit_perl6())
@@ -71,23 +71,23 @@ join("", chr(9) x $level)
 });
 package Perlito5::Perl6::LexicalBlock;
 (do {
-    sub new {
+    sub Perlito5::Perl6::LexicalBlock::new {
         ((my  $class) = shift());
         bless({@_}, $class)
     };
-    sub block {
+    sub Perlito5::Perl6::LexicalBlock::block {
         $_[0]->{'block'}
     };
-    sub needs_return {
+    sub Perlito5::Perl6::LexicalBlock::needs_return {
         $_[0]->{'needs_return'}
     };
-    sub top_level {
+    sub Perlito5::Perl6::LexicalBlock::top_level {
         $_[0]->{'top_level'}
     };
-    sub emit_perl6 {
+    sub Perlito5::Perl6::LexicalBlock::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::Perl6::LexicalBlock::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         if (($self->{'top_level'})) {
@@ -125,11 +125,11 @@ package Perlito5::Perl6::LexicalBlock;
 });
 package Perlito5::AST::CompUnit;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::CompUnit::emit_perl6 {
         ((my  $self) = $_[0]);
         $self->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::CompUnit::emit_perl6_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         (my  @body);
@@ -178,7 +178,7 @@ package Perlito5::AST::CompUnit;
         };
         ($str . '}' . chr(10))
     };
-    sub emit_perl6_program {
+    sub Perlito5::AST::CompUnit::emit_perl6_program {
         ((my  $comp_units) = shift());
         ((my  $str) = '');
         ($str = ($str . 'use Perlito5::Perl6::Runtime;' . chr(10)));
@@ -190,10 +190,10 @@ package Perlito5::AST::CompUnit;
 });
 package Perlito5::AST::Val::Int;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Val::Int::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Val::Int::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . $self->{'int'})
@@ -201,10 +201,10 @@ package Perlito5::AST::Val::Int;
 });
 package Perlito5::AST::Val::Num;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Val::Num::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Val::Num::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . $self->{'num'})
@@ -212,10 +212,10 @@ package Perlito5::AST::Val::Num;
 });
 package Perlito5::AST::Val::Buf;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Val::Buf::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Val::Buf::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . Perlito5::Perl6::escape_string($self->{'buf'}))
@@ -223,10 +223,10 @@ package Perlito5::AST::Val::Buf;
 });
 package Perlito5::AST::Lit::Block;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Lit::Block::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Lit::Block::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $sig) = 'v__');
@@ -238,10 +238,10 @@ package Perlito5::AST::Lit::Block;
 });
 package Perlito5::AST::Index;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Index::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Index::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         if ((($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$')))) {
@@ -253,10 +253,10 @@ package Perlito5::AST::Index;
 });
 package Perlito5::AST::Lookup;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Lookup::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Lookup::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         if ((($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$')))) {
@@ -268,10 +268,10 @@ package Perlito5::AST::Lookup;
 });
 package Perlito5::AST::Var;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Var::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Var::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         if ((($self->{'sigil'} eq '*'))) {
@@ -287,7 +287,7 @@ package Perlito5::AST::Var;
         };
         ($ns . $self->{'sigil'} . $self->{'name'})
     };
-    sub plain_name {
+    sub Perlito5::AST::Var::plain_name {
         ((my  $self) = shift());
         if (($self->namespace())) {
             return (($self->namespace() . '::' . $self->name()))
@@ -297,10 +297,10 @@ package Perlito5::AST::Var;
 });
 package Perlito5::AST::Proto;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Proto::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Proto::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . $self->{'name'})
@@ -308,10 +308,10 @@ package Perlito5::AST::Proto;
 });
 package Perlito5::AST::Call;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Call::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Call::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $invocant) = $self->{'invocant'}->emit_perl6());
@@ -339,10 +339,10 @@ package Perlito5::AST::Call;
 package Perlito5::AST::Apply;
 (do {
     ((my  %op_infix_js) = (('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:<x>' => ' x '), ('infix:<+>' => ' + '), ('infix:<.>' => ' ~ '), ('infix:</>' => ' / '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<eq>' => ' eq '), ('infix:<ne>' => ' ne '), ('infix:<le>' => ' le '), ('infix:<ge>' => ' ge '), ('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<..>' => ' .. '), ('infix:<&&>' => ' && '), ('infix:<||>' => ' || '), ('infix:<and>' => ' and '), ('infix:<or>' => ' or '), ('infix:<//>' => ' // ')));
-    sub emit_perl6 {
+    sub Perlito5::AST::Apply::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Apply::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $apply) = $self->op_assign());
@@ -461,7 +461,7 @@ package Perlito5::AST::Apply;
         };
         (Perlito5::Perl6::tab($level) . $code . '(' . join(', ', @args) . ')')
     };
-    sub emit_perl6_bind {
+    sub Perlito5::AST::Apply::emit_perl6_bind {
         ((my  $parameters) = shift());
         ((my  $arguments) = shift());
         ((my  $level) = shift());
@@ -470,10 +470,10 @@ package Perlito5::AST::Apply;
 });
 package Perlito5::AST::If;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::If::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::If::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $cond) = $self->{'cond'});
@@ -491,10 +491,10 @@ package Perlito5::AST::If;
 });
 package Perlito5::AST::While;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::While::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::While::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $body) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{'body'}->stmts()), ('needs_return' => 0)));
@@ -503,10 +503,10 @@ package Perlito5::AST::While;
 });
 package Perlito5::AST::For;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::For::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::For::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $cond) = $self->{'cond'});
@@ -520,25 +520,25 @@ package Perlito5::AST::For;
 });
 package Perlito5::AST::Decl;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Decl::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Decl::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . $self->{'var'}->emit_perl6())
     };
-    sub emit_perl6_init {
+    sub Perlito5::AST::Decl::emit_perl6_init {
         ((my  $self) = shift());
         ($self->{'decl'} . ' ' . ($self->{'var'})->emit_perl6() . ';')
     }
 });
 package Perlito5::AST::Sub;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Sub::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Sub::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . 'sub ' . (($self->{'name'} ? $self->{'name'} : '')) . '(*@_) {' . chr(10) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{'block'}), ('needs_return' => 1), ('top_level' => 1)))->emit_perl6_indented(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '}')
@@ -546,10 +546,10 @@ package Perlito5::AST::Sub;
 });
 package Perlito5::AST::Do;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Do::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Do::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $block) = $self->simplify()->block());
@@ -558,10 +558,10 @@ package Perlito5::AST::Do;
 });
 package Perlito5::AST::Use;
 (do {
-    sub emit_perl6 {
+    sub Perlito5::AST::Use::emit_perl6 {
         $_[0]->emit_perl6_indented(0)
     };
-    sub emit_perl6_indented {
+    sub Perlito5::AST::Use::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $mod) = $self->{'mod'});

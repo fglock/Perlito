@@ -8,7 +8,7 @@ use Perlito5::Perl5::Runtime;
 our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Precedence;
-sub new {
+sub Perlito5::Precedence::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
@@ -16,97 +16,97 @@ sub new {
 ((my  $Precedence) = {});
 ((my  $Assoc) = {});
 ((my  $Allow_space_before) = {});
-sub is_assoc_type {
+sub Perlito5::Precedence::is_assoc_type {
     ((my  $assoc_type) = shift());
     ((my  $op_name) = shift());
     return ($Assoc->{$assoc_type}->{$op_name})
 };
-sub is_fixity_type {
+sub Perlito5::Precedence::is_fixity_type {
     ((my  $fixity_type) = shift());
     ((my  $op_name) = shift());
     return ($Operator->{$fixity_type}->{$op_name})
 };
-sub is_term {
+sub Perlito5::Precedence::is_term {
     ((my  $token) = shift());
     ((($token->[0] eq 'term')) || (($token->[0] eq 'postfix_or_term')))
 };
-sub is_ident_middle {
+sub Perlito5::Precedence::is_ident_middle {
     ((my  $c) = shift());
     ((((($c ge 'a') && ($c le 'z'))) || ((($c ge '0') && ($c le '9')))) || (($c eq '_')))
 };
 ((my  @Term_chars) = (7, 5, 3, 2, 1));
-((my  @Term) = ({}, {('$' => sub  {
+((my  @Term) = ({}, {('$' => sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}), ('@' => sub  {
+}), ('@' => sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}), ('%' => sub  {
+}), ('%' => sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}), ('&' => sub  {
+}), ('&' => sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}), ('*' => sub  {
+}), ('*' => sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
-}), ('.' => sub  {
+}), ('.' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('0' => sub  {
+}), ('0' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('1' => sub  {
+}), ('1' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('2' => sub  {
+}), ('2' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('3' => sub  {
+}), ('3' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('4' => sub  {
+}), ('4' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('5' => sub  {
+}), ('5' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('6' => sub  {
+}), ('6' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('7' => sub  {
+}), ('7' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('8' => sub  {
+}), ('8' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('9' => sub  {
+}), ('9' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('?' => sub  {
+}), ('?' => sub {
     Perlito5::Expression->term_ternary($_[0], $_[1])
-}), ('(' => sub  {
+}), ('(' => sub {
     Perlito5::Expression->term_paren($_[0], $_[1])
-}), ('[' => sub  {
+}), ('[' => sub {
     Perlito5::Expression->term_square($_[0], $_[1])
-}), ('{' => sub  {
+}), ('{' => sub {
     Perlito5::Expression->term_curly($_[0], $_[1])
-}), ('#' => sub  {
+}), ('#' => sub {
     Perlito5::Expression->term_space($_[0], $_[1])
-}), (chr(9) => sub  {
+}), (chr(9) => sub {
     Perlito5::Expression->term_space($_[0], $_[1])
-}), (chr(10) => sub  {
+}), (chr(10) => sub {
     Perlito5::Expression->term_space($_[0], $_[1])
-}), (chr(12) => sub  {
+}), (chr(12) => sub {
     Perlito5::Expression->term_space($_[0], $_[1])
-}), (chr(13) => sub  {
+}), (chr(13) => sub {
     Perlito5::Expression->term_space($_[0], $_[1])
-}), (chr(32) => sub  {
+}), (chr(32) => sub {
     Perlito5::Expression->term_space($_[0], $_[1])
-})}, {('->' => sub  {
+})}, {('->' => sub {
     Perlito5::Expression->term_arrow($_[0], $_[1])
-}), ('my' => sub  {
+}), ('my' => sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-}), ('do' => sub  {
+}), ('do' => sub {
     Perlito5::Expression->term_do($_[0], $_[1])
-})}, {('our' => sub  {
+})}, {('our' => sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-}), ('sub' => sub  {
+}), ('sub' => sub {
     Perlito5::Expression->term_sub($_[0], $_[1])
-}), ('use' => sub  {
+}), ('use' => sub {
     Perlito5::Expression->term_use($_[0], $_[1])
-})}, {}, {('state' => sub  {
+})}, {}, {('state' => sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-}), ('local' => sub  {
+}), ('local' => sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-})}, {}, {('package' => sub  {
+})}, {}, {('package' => sub {
     Perlito5::Expression->term_package($_[0], $_[1])
 })}));
-sub add_term {
+sub Perlito5::Precedence::add_term {
     ((my  $name) = shift());
     ((my  $param) = shift());
     ($Term[length($name)]->{$name} = $param)
@@ -115,7 +115,7 @@ sub add_term {
 (my  $End_token_chars);
 (my  @Op);
 ((my  @Op_chars) = (3, 2, 1));
-sub op_parse {
+sub Perlito5::Precedence::op_parse {
     ((my  $self) = shift());
     ((my  $str) = shift());
     ((my  $pos) = shift());
@@ -150,7 +150,7 @@ sub op_parse {
     };
     return (Perlito5::Match->new(('bool' => 0)))
 };
-sub add_op {
+sub Perlito5::Precedence::add_op {
     ((my  $fixity) = shift());
     ((my  $name) = shift());
     ((my  $precedence) = shift());
@@ -277,7 +277,7 @@ add_op('infix', 'or', $prec);
 add_op('infix', 'xor', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '*start*', $prec);
-sub precedence_parse {
+sub Perlito5::Precedence::precedence_parse {
     ((my  $self) = shift());
     ((my  $get_token) = $self->{'get_token'});
     ((my  $reduce) = $self->{'reduce'});

@@ -9,7 +9,7 @@ our $MATCH = Perlito5::Match->new();
 package main;
 use v5;
 package Perlito5::AST::CompUnit;
-sub eval {
+sub Perlito5::AST::CompUnit::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $env1) = [{}, @{$env}]);
@@ -18,25 +18,25 @@ sub eval {
     }
 };
 package Perlito5::AST::Val::Int;
-sub eval {
+sub Perlito5::AST::Val::Int::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     (0 + $self->{'int'})
 };
 package Perlito5::AST::Val::Num;
-sub eval {
+sub Perlito5::AST::Val::Num::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     (0 + $self->{'num'})
 };
 package Perlito5::AST::Val::Buf;
-sub eval {
+sub Perlito5::AST::Val::Buf::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     $self->{'buf'}
 };
 package Perlito5::AST::Lit::Block;
-sub eval {
+sub Perlito5::AST::Lit::Block::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $env1) = [{}, @{$env}]);
@@ -45,19 +45,19 @@ sub eval {
     }
 };
 package Perlito5::AST::Index;
-sub eval {
+sub Perlito5::AST::Index::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ($self->{'obj'}->eval($env))->[$self->{'index_exp'}->eval($env)]
 };
 package Perlito5::AST::Lookup;
-sub eval {
+sub Perlito5::AST::Lookup::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ($self->{'obj'}->eval($env))->{$self->{'index_exp'}->eval($env)}
 };
 package Perlito5::AST::Var;
-sub eval {
+sub Perlito5::AST::Var::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $ns) = '');
@@ -77,7 +77,7 @@ sub eval {
     };
     warn('Interpreter runtime error: variable ' . chr(39), $name, chr(39) . ' not found')
 };
-sub plain_name {
+sub Perlito5::AST::Var::plain_name {
     ((my  $self) = $_[0]);
     if (($self->{'namespace'})) {
         return (($self->{'sigil'} . $self->{'namespace'} . '::' . $self->{'name'}))
@@ -85,13 +85,13 @@ sub plain_name {
     return (($self->{'sigil'} . $self->{'name'}))
 };
 package Perlito5::AST::Proto;
-sub eval {
+sub Perlito5::AST::Proto::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ('' . $self->{'name'})
 };
 package Perlito5::AST::Call;
-sub eval {
+sub Perlito5::AST::Call::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     warn('Interpreter TODO: Perlito5::AST::Call');
@@ -102,7 +102,7 @@ sub eval {
     warn('Interpreter runtime error: method ' . chr(39), $self->{'method'}, '()' . chr(39) . ' not found')
 };
 package Perlito5::AST::Apply;
-sub eval {
+sub Perlito5::AST::Apply::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $ns) = '');
@@ -118,7 +118,7 @@ sub eval {
     warn('Interpreter runtime error: subroutine ' . chr(39), $code, '()' . chr(39) . ' not found')
 };
 package Perlito5::AST::If;
-sub eval {
+sub Perlito5::AST::If::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $cond) = $self->{'cond'});
@@ -137,7 +137,7 @@ sub eval {
     return (undef())
 };
 package Perlito5::AST::For;
-sub eval {
+sub Perlito5::AST::For::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $cond) = $self->{'cond'});
@@ -152,19 +152,19 @@ sub eval {
     return (undef())
 };
 package When;
-sub eval {
+sub When::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     die('TODO - When')
 };
 package Perlito5::AST::While;
-sub eval {
+sub Perlito5::AST::While::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     die('TODO - Perlito5::AST::While')
 };
 package Perlito5::AST::Decl;
-sub eval {
+sub Perlito5::AST::Decl::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $decl) = $self->{'decl'});
@@ -174,16 +174,16 @@ sub eval {
     };
     return (undef())
 };
-sub plain_name {
+sub Perlito5::AST::Decl::plain_name {
     ((my  $self) = $_[0]);
     $self->{'var'}->plain_name()
 };
 package Perlito5::AST::Sub;
-sub eval {
+sub Perlito5::AST::Sub::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     (my  @param_name);
-    ((my  $sub) = sub  {
+    ((my  $sub) = sub {
     ((my  $env) = shift());
     ((my  $args) = shift());
     (my  %context);
@@ -206,7 +206,7 @@ sub eval {
     return ($sub)
 };
 package Perlito5::AST::Do;
-sub eval {
+sub Perlito5::AST::Do::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $env1) = [{}, @{$env}]);
@@ -215,7 +215,7 @@ sub eval {
     }
 };
 package Perlito5::AST::Use;
-sub eval {
+sub Perlito5::AST::Use::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     warn('Interpreter TODO: Perlito5::AST::Use');

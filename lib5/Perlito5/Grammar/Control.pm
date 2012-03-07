@@ -8,7 +8,7 @@ use Perlito5::Perl5::Runtime;
 our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Grammar;
-sub unless {
+sub Perlito5::Grammar::unless {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -47,7 +47,7 @@ sub unless {
 }))));
     $MATCH
 };
-sub if {
+sub Perlito5::Grammar::if {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -153,7 +153,7 @@ sub if {
 }))));
     $MATCH
 };
-sub when {
+sub Perlito5::Grammar::when {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -192,7 +192,7 @@ sub when {
 }))));
     $MATCH
 };
-sub for {
+sub Perlito5::Grammar::for {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -325,7 +325,7 @@ sub for {
 }))));
     $MATCH
 };
-sub while {
+sub Perlito5::Grammar::while {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);

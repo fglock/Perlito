@@ -9,215 +9,215 @@ our $MATCH = Perlito5::Match->new();
 package main;
 use v5;
 package Perlito5::AST::CompUnit;
-sub new {
+sub Perlito5::AST::CompUnit::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub name {
+sub Perlito5::AST::CompUnit::name {
     $_[0]->{'name'}
 };
-sub body {
+sub Perlito5::AST::CompUnit::body {
     $_[0]->{'body'}
 };
 package Perlito5::AST::Val::Int;
-sub new {
+sub Perlito5::AST::Val::Int::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub int {
+sub Perlito5::AST::Val::Int::int {
     $_[0]->{'int'}
 };
 package Perlito5::AST::Val::Num;
-sub new {
+sub Perlito5::AST::Val::Num::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub num {
+sub Perlito5::AST::Val::Num::num {
     $_[0]->{'num'}
 };
 package Perlito5::AST::Val::Buf;
-sub new {
+sub Perlito5::AST::Val::Buf::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub buf {
+sub Perlito5::AST::Val::Buf::buf {
     $_[0]->{'buf'}
 };
 package Perlito5::AST::Lit::Block;
-sub new {
+sub Perlito5::AST::Lit::Block::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub sig {
+sub Perlito5::AST::Lit::Block::sig {
     $_[0]->{'sig'}
 };
-sub stmts {
+sub Perlito5::AST::Lit::Block::stmts {
     $_[0]->{'stmts'}
 };
 package Perlito5::AST::Index;
-sub new {
+sub Perlito5::AST::Index::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub obj {
+sub Perlito5::AST::Index::obj {
     $_[0]->{'obj'}
 };
-sub index_exp {
+sub Perlito5::AST::Index::index_exp {
     $_[0]->{'index_exp'}
 };
 package Perlito5::AST::Lookup;
-sub new {
+sub Perlito5::AST::Lookup::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub obj {
+sub Perlito5::AST::Lookup::obj {
     $_[0]->{'obj'}
 };
-sub index_exp {
+sub Perlito5::AST::Lookup::index_exp {
     $_[0]->{'index_exp'}
 };
 package Perlito5::AST::Var;
-sub new {
+sub Perlito5::AST::Var::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub sigil {
+sub Perlito5::AST::Var::sigil {
     $_[0]->{'sigil'}
 };
-sub namespace {
+sub Perlito5::AST::Var::namespace {
     $_[0]->{'namespace'}
 };
-sub name {
+sub Perlito5::AST::Var::name {
     $_[0]->{'name'}
 };
 package Perlito5::AST::Proto;
-sub new {
+sub Perlito5::AST::Proto::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub name {
+sub Perlito5::AST::Proto::name {
     $_[0]->{'name'}
 };
 package Perlito5::AST::Call;
-sub new {
+sub Perlito5::AST::Call::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub invocant {
+sub Perlito5::AST::Call::invocant {
     $_[0]->{'invocant'}
 };
-sub method {
+sub Perlito5::AST::Call::method {
     $_[0]->{'method'}
 };
-sub arguments {
+sub Perlito5::AST::Call::arguments {
     $_[0]->{'arguments'}
 };
 package Perlito5::AST::Apply;
-sub new {
+sub Perlito5::AST::Apply::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub code {
+sub Perlito5::AST::Apply::code {
     $_[0]->{'code'}
 };
-sub arguments {
+sub Perlito5::AST::Apply::arguments {
     $_[0]->{'arguments'}
 };
-sub namespace {
+sub Perlito5::AST::Apply::namespace {
     $_[0]->{'namespace'}
 };
 package Perlito5::AST::If;
-sub new {
+sub Perlito5::AST::If::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub cond {
+sub Perlito5::AST::If::cond {
     $_[0]->{'cond'}
 };
-sub body {
+sub Perlito5::AST::If::body {
     $_[0]->{'body'}
 };
-sub otherwise {
+sub Perlito5::AST::If::otherwise {
     $_[0]->{'otherwise'}
 };
 package Perlito5::AST::While;
-sub new {
+sub Perlito5::AST::While::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub init {
+sub Perlito5::AST::While::init {
     $_[0]->{'init'}
 };
-sub cond {
+sub Perlito5::AST::While::cond {
     $_[0]->{'cond'}
 };
-sub continue {
+sub Perlito5::AST::While::continue {
     $_[0]->{'continue'}
 };
-sub body {
+sub Perlito5::AST::While::body {
     $_[0]->{'body'}
 };
 package Perlito5::AST::For;
-sub new {
+sub Perlito5::AST::For::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub cond {
+sub Perlito5::AST::For::cond {
     $_[0]->{'cond'}
 };
-sub body {
+sub Perlito5::AST::For::body {
     $_[0]->{'body'}
 };
 package Perlito5::AST::Decl;
-sub new {
+sub Perlito5::AST::Decl::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub decl {
+sub Perlito5::AST::Decl::decl {
     $_[0]->{'decl'}
 };
-sub type {
+sub Perlito5::AST::Decl::type {
     $_[0]->{'type'}
 };
-sub var {
+sub Perlito5::AST::Decl::var {
     $_[0]->{'var'}
 };
 package Perlito5::AST::Sig;
-sub new {
+sub Perlito5::AST::Sig::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub positional {
+sub Perlito5::AST::Sig::positional {
     $_[0]->{'positional'}
 };
 package Perlito5::AST::Sub;
-sub new {
+sub Perlito5::AST::Sub::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub name {
+sub Perlito5::AST::Sub::name {
     $_[0]->{'name'}
 };
-sub sig {
+sub Perlito5::AST::Sub::sig {
     $_[0]->{'sig'}
 };
-sub block {
+sub Perlito5::AST::Sub::block {
     $_[0]->{'block'}
 };
 package Perlito5::AST::Do;
-sub new {
+sub Perlito5::AST::Do::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub block {
+sub Perlito5::AST::Do::block {
     $_[0]->{'block'}
 };
 package Perlito5::AST::Use;
-sub new {
+sub Perlito5::AST::Use::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub mod {
+sub Perlito5::AST::Use::mod {
     $_[0]->{'mod'}
 };
 

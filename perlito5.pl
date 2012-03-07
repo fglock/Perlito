@@ -37,11 +37,11 @@ if (($verbose)) {
     warn(('// ARGV: ' . join(' ', @ARGV)))
 };
 (my  %module_seen);
-sub modulename_to_filename {
+sub Perlito::modulename_to_filename {
     ((my  $s) = shift());
     return (Perlito5::Runtime::_replace($s, '::', '/'))
 };
-sub expand_use {
+sub Perlito::expand_use {
     ((my  $stmt) = shift());
     ((my  $module_name) = $stmt->mod());
     if (((($module_name eq 'v5') || ($module_name eq 'strict')) || ($module_name eq 'feature'))) {
@@ -64,7 +64,7 @@ sub expand_use {
         }
     }
 };
-sub add_comp_unit {
+sub Perlito::add_comp_unit {
     ((my  $parse) = shift());
     for my $comp_unit (@{$parse}) {
         if ((($expand_use && $comp_unit->isa('Perlito5::AST::Use')))) {

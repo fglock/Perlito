@@ -13,20 +13,20 @@ package Perlito5::Test;
 (my  $num_of_tests_badpass);
 (my  $num_of_tests_planned);
 (my  $testing_started);
-sub plan {
+sub Perlito5::Test::plan {
     ((my  $number_of_tests) = shift());
     ($testing_started = 1);
     ($num_of_tests_planned = $number_of_tests);
     Perlito5::Runtime::say(('1..' . $number_of_tests))
 };
-sub ok {
+sub Perlito5::Test::ok {
     ((my  $cond) = shift());
     ((my  $desc) = shift());
     ((my  $todo) = shift());
     ((my  $depends) = shift());
     Perlito5::Test::proclaim($cond, ('ok! ' . $desc), $todo, $depends)
 };
-sub is {
+sub Perlito5::Test::is {
     ((my  $got) = shift());
     ((my  $expected) = shift());
     ((my  $desc) = shift());
@@ -35,7 +35,7 @@ sub is {
     ((my  $test) = ($got eq $expected));
     Perlito5::Test::proclaim($test, ('is! ' . $desc), $todo, $got, $expected, $depends)
 };
-sub is_deeply {
+sub Perlito5::Test::is_deeply {
     ((my  $got) = shift());
     ((my  $expected) = shift());
     ((my  $desc) = shift());
@@ -46,7 +46,7 @@ sub is_deeply {
     ((my  $test) = (($got_perl eq $expected_perl)));
     Perlito5::Test::proclaim($test, ('is deeply! ' . $desc), $todo, $got_perl, $expected_perl, $depends)
 };
-sub isnt {
+sub Perlito5::Test::isnt {
     ((my  $got) = shift());
     ((my  $expected) = shift());
     ((my  $desc) = shift());
@@ -55,7 +55,7 @@ sub isnt {
     ((my  $test) = !((($got eq $expected))));
     Perlito5::Test::proclaim($test, ('isnt! ' . $desc), $todo, $got, $expected, $depends, {('negate' => 1)})
 };
-sub cmp_ok {
+sub Perlito5::Test::cmp_ok {
     ((my  $got) = shift());
     ((my  $compare_func) = shift());
     ((my  $expected) = shift());
@@ -64,46 +64,46 @@ sub cmp_ok {
     ((my  $depends) = shift());
     Perlito5::Runtime::say('### Perlito5::Test::cmp_ok not implemented')
 };
-sub like {
+sub Perlito5::Test::like {
     Perlito5::Runtime::say('### Perlito5::Test::like not implemented')
 };
-sub unlike {
+sub Perlito5::Test::unlike {
     Perlito5::Runtime::say('### Perlito5::Test::unlike not implemented')
 };
-sub eval_dies_ok {
+sub Perlito5::Test::eval_dies_ok {
     Perlito5::Runtime::say('### Perlito5::Test::eval_dies_ok not implemented')
 };
-sub isa_ok {
+sub Perlito5::Test::isa_ok {
     Perlito5::Runtime::say('### Perlito5::Test::isa_ok not implemented')
 };
-sub use_ok {
+sub Perlito5::Test::use_ok {
     Perlito5::Runtime::say('### Perlito5::Test::use_ok not implemented')
 };
-sub throws_ok {
+sub Perlito5::Test::throws_ok {
     Perlito5::Runtime::say('### Perlito5::Test::throws_ok not implemented')
 };
-sub dies_ok {
+sub Perlito5::Test::dies_ok {
     Perlito5::Runtime::say('### Perlito5::Test::dies_ok not implemented')
 };
-sub lives_ok {
+sub Perlito5::Test::lives_ok {
     Perlito5::Runtime::say('### Perlito5::Test::lives_ok not implemented')
 };
-sub skip {
+sub Perlito5::Test::skip {
     ((my  $reason) = shift());
     ((my  $depends) = shift());
     Perlito5::Test::proclaim(1, '', ('skip ' . $reason), $depends)
 };
-sub pass {
+sub Perlito5::Test::pass {
     ((my  $desc) = shift());
     Perlito5::Test::proclaim(1, ('pass! ' . $desc))
 };
-sub flunk {
+sub Perlito5::Test::flunk {
     ((my  $desc) = shift());
     ((my  $todo) = shift());
     ((my  $depends) = shift());
     Perlito5::Test::proclaim(0, ('flunk! ' . $desc), $todo, $depends)
 };
-sub proclaim {
+sub Perlito5::Test::proclaim {
     ((my  $cond) = shift());
     ((my  $desc) = shift());
     ((my  $todo) = shift());
@@ -122,14 +122,14 @@ sub proclaim {
     };
     return ($cond)
 };
-sub report_failure {
+sub Perlito5::Test::report_failure {
     ((my  $todo) = shift());
     ((my  $got) = shift());
     ((my  $expected) = shift());
     ((my  $negate) = shift());
     Perlito5::Runtime::say('### Perlito5::Test::report_failure not implemented')
 };
-sub test_ends {
+sub Perlito5::Test::test_ends {
     if ((!($testing_started))) {
         return ()
     };

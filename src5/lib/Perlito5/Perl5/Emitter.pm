@@ -530,10 +530,13 @@ package Perlito5::AST::Sub;
         my $self = $_[0];
         my $level = $_[1];
         
+        my $name = '';
+        $name = $self->{"namespace"} . "::" . $self->{"name"} . " "
+            if $self->{"name"};
+
         my $sig = $self->{"sig"};
-        my $pos = $sig->positional;
         my $i = 0;
-          Perlito5::Perl5::tab($level) . 'sub ' . $self->{"name"} . " \{\n"
+          Perlito5::Perl5::tab($level) . 'sub ' . $name . "{\n"
         .   join(";\n", map( $_->emit_perl5_indented( $level + 1 ), @{$self->{"block"}} )) . "\n"
         . Perlito5::Perl5::tab($level) . "}"
     }

@@ -470,9 +470,14 @@ package Perlito5::Expression;
 
     token term_package {
         'package' <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
-            { $MATCH->{"capture"} = [ 'term',
+            {
+                my $name = $MATCH->{"Perlito5::Grammar.full_ident"}->flat();
+                $Perlito5::PKG_NAME = $name;
+                $MATCH->{"capture"} = [ 'term',
                      Perlito5::AST::Apply->new(
-                        code => 'package', arguments => [], namespace => $MATCH->{"Perlito5::Grammar.full_ident"}->flat() 
+                        code      => 'package',
+                        arguments => [], 
+                        namespace => $name
                      )
                    ]
             }

@@ -132,9 +132,14 @@ token val_int {
     { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => $MATCH->flat() ) }
 }
 
+my @PKG;
 token exp_stmts {
+    {
+        push @PKG, $Perlito5::PKG_NAME
+    }
     <Perlito5::Expression.delimited_statement>*
     { 
+        $Perlito5::PKG_NAME = pop @PKG;
         $MATCH->{"capture"} = [ map( $_->capture, @{ $MATCH->{"Perlito5::Expression.delimited_statement"} } ) ]
     }
 }
@@ -147,14 +152,8 @@ token args_sig {
 
 token prototype {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
-        { $MATCH->{"capture"} = Perlito5::AST::Sig->new(
-                                    positional => [ "" . $MATCH->{"args_sig"}->flat() ],
-                                )
-        }
-    |   { $MATCH->{"capture"} = Perlito5::AST::Sig->new(
-                                    positional => [ '@' ],   # default signature
-                                ) 
-        }
+        { $MATCH->{"capture"} = "" . $MATCH->{"args_sig"}->flat() }
+    |   { $MATCH->{"capture"} = '@' }   # default signature
 }
 
 token sub_def {
@@ -162,12 +161,16 @@ token sub_def {
     [   \}     | { die 'Syntax Error in sub \'', $MATCH->{"opt_name"}->flat(), '\'' } ]
     {
         my $name = $MATCH->{"opt_name"}->flat();
-        # if ( $name ) {
-        #     say "sub $Perlito5::PKG_NAME :: $name";
-        # }
+        my $sig  = $MATCH->{"prototype"}->flat();
+        my $namespace;  # TODO
+        if ( $name ) {
+            # say "sub $Perlito5::PKG_NAME :: $name ( $sig )";
+            $namespace = $Perlito5::PKG_NAME unless $namespace;
+        }
         $MATCH->{"capture"} = Perlito5::AST::Sub->new(
             name  => $name, 
-            sig   => $MATCH->{"prototype"}->flat(), 
+            namespace => $namespace,
+            sig   => $sig, 
             block => $MATCH->{"exp_stmts"}->flat() 
         ) 
     }

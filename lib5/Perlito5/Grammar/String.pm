@@ -10,25 +10,25 @@ package main;
 use v5;
 package Perlito5::Grammar::String;
 use Perlito5::Precedence;
-Perlito5::Precedence::add_term((chr(39) => sub  {
+Perlito5::Precedence::add_term((chr(39) => sub {
     Perlito5::Grammar::String->term_single_quote($_[0], $_[1])
 }));
-Perlito5::Precedence::add_term(('"' => sub  {
+Perlito5::Precedence::add_term(('"' => sub {
     Perlito5::Grammar::String->term_double_quote($_[0], $_[1])
 }));
-Perlito5::Precedence::add_term(('<<' => sub  {
+Perlito5::Precedence::add_term(('<<' => sub {
     Perlito5::Grammar::String->here_doc_wanted($_[0], $_[1])
 }));
-Perlito5::Precedence::add_term(('q' => sub  {
+Perlito5::Precedence::add_term(('q' => sub {
     Perlito5::Grammar::String->term_q_quote($_[0], $_[1])
 }));
-Perlito5::Precedence::add_term(('qq' => sub  {
+Perlito5::Precedence::add_term(('qq' => sub {
     Perlito5::Grammar::String->term_qq_quote($_[0], $_[1])
 }));
-Perlito5::Precedence::add_term(('qw' => sub  {
+Perlito5::Precedence::add_term(('qw' => sub {
     Perlito5::Grammar::String->term_qw_quote($_[0], $_[1])
 }));
-sub term_double_quote {
+sub Perlito5::Grammar::String::term_double_quote {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -54,7 +54,7 @@ sub term_double_quote {
 }))));
     $MATCH
 };
-sub term_single_quote {
+sub Perlito5::Grammar::String::term_single_quote {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -80,7 +80,7 @@ sub term_single_quote {
 }))));
     $MATCH
 };
-sub term_q_quote {
+sub Perlito5::Grammar::String::term_q_quote {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -152,7 +152,7 @@ sub term_q_quote {
 }))));
     $MATCH
 };
-sub term_qq_quote {
+sub Perlito5::Grammar::String::term_qq_quote {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -224,7 +224,7 @@ sub term_qq_quote {
 }))));
     $MATCH
 };
-sub term_qw_quote {
+sub Perlito5::Grammar::String::term_qw_quote {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -297,7 +297,7 @@ sub term_qw_quote {
     $MATCH
 };
 ((my  %pair) = (('{' => '}'), ('(' => ')'), ('[' => ']'), ('<' => '>')));
-sub q_quote_parse {
+sub Perlito5::Grammar::String::q_quote_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -307,7 +307,7 @@ sub q_quote_parse {
     };
     return ($self->string_interpolation_parse($str, $pos, $delimiter, 0))
 };
-sub qq_quote_parse {
+sub Perlito5::Grammar::String::qq_quote_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -317,7 +317,7 @@ sub qq_quote_parse {
     };
     return ($self->string_interpolation_parse($str, $pos, $delimiter, 1))
 };
-sub qw_quote_parse {
+sub Perlito5::Grammar::String::qw_quote_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -331,7 +331,7 @@ sub qw_quote_parse {
     };
     return ($m)
 };
-sub string_interpolation_parse {
+sub Perlito5::Grammar::String::string_interpolation_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -389,7 +389,7 @@ sub string_interpolation_parse {
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => $ast)))
 };
 (my  @Here_doc);
-sub here_doc_wanted {
+sub Perlito5::Grammar::String::here_doc_wanted {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -412,12 +412,12 @@ sub here_doc_wanted {
         return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 0), ('capture' => undef())))
     };
     ((my  $placeholder) = Perlito5::AST::Val::Buf->new(('buf' => 'HEREDOC')));
-    push(@Here_doc, [$type, sub  {
+    push(@Here_doc, [$type, sub {
     ($placeholder->{'buf'} = $_[0])
 }, $delimiter] );
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => ['term', $placeholder])))
 };
-sub newline {
+sub Perlito5::Grammar::String::newline {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -449,7 +449,7 @@ sub newline {
 }))));
     $MATCH
 };
-sub here_doc {
+sub Perlito5::Grammar::String::here_doc {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -480,19 +480,19 @@ sub here_doc {
     };
     die(('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF'))
 };
-sub single_quote_parse {
+sub Perlito5::Grammar::String::single_quote_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
     return ($self->string_interpolation_parse($str, $pos, chr(39), 0))
 };
-sub double_quote_parse {
+sub Perlito5::Grammar::String::double_quote_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
     return ($self->string_interpolation_parse($str, $pos, '"', 1))
 };
-sub char_any {
+sub Perlito5::Grammar::String::char_any {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -505,7 +505,7 @@ sub char_any {
 }))));
     $MATCH
 };
-sub single_quoted_unescape {
+sub Perlito5::Grammar::String::single_quoted_unescape {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -527,7 +527,7 @@ sub single_quoted_unescape {
 }))));
     $MATCH
 };
-sub double_quoted_unescape {
+sub Perlito5::Grammar::String::double_quoted_unescape {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -608,7 +608,7 @@ sub double_quoted_unescape {
 }))));
     $MATCH
 };
-sub double_quoted_buf {
+sub Perlito5::Grammar::String::double_quoted_buf {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);

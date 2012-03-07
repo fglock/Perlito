@@ -1053,11 +1053,18 @@ package Perlito5::AST::Sub;
         .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"block"}, needs_return => 1, top_level => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
         . Perlito5::Javascript::tab($level) . '}';
 
-        ( $self->{"name"}
-          ? 'make_sub("' . $Perlito5::PKG_NAME . '", "' . $self->{"name"} . '", ' . $s . ')'
-          : $s
-        )
+        if ( $self->{"name"} ) {
 
+            if ( $Perlito5::PKG_NAME ne $self->{"namespace"} ) {
+                # diagnostics: we are migrating from emit-time namespace to parse-time namespace resolution
+                die "bad sub namespace $Perlito5::PKG_NAME ne ", $self->{"namespace"};
+            }
+
+            return 'make_sub("' . $self->{"namespace"} . '", "' . $self->{"name"} . '", ' . $s . ')'
+        }
+        else {
+            return $s;
+        }
     }
 }
 

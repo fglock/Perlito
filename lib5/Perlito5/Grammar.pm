@@ -11,7 +11,7 @@ package Perlito5::Grammar;
 use Perlito5::Expression;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::String;
-sub is_newline {
+sub Perlito5::Grammar::is_newline {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -27,7 +27,7 @@ sub is_newline {
 }))));
     $MATCH
 };
-sub not_newline {
+sub Perlito5::Grammar::not_newline {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -59,7 +59,7 @@ sub not_newline {
 }))));
     $MATCH
 };
-sub ident {
+sub Perlito5::Grammar::ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -116,7 +116,7 @@ sub ident {
 }))));
     $MATCH
 };
-sub full_ident {
+sub Perlito5::Grammar::full_ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -166,7 +166,7 @@ sub full_ident {
 }))));
     $MATCH
 };
-sub namespace_before_ident {
+sub Perlito5::Grammar::namespace_before_ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -240,7 +240,7 @@ sub namespace_before_ident {
 }))));
     $MATCH
 };
-sub optional_namespace_before_ident {
+sub Perlito5::Grammar::optional_namespace_before_ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -278,7 +278,7 @@ sub optional_namespace_before_ident {
 }))));
     $MATCH
 };
-sub pod_pod_begin {
+sub Perlito5::Grammar::pod_pod_begin {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -358,7 +358,7 @@ sub pod_pod_begin {
 }))));
     $MATCH
 };
-sub pod_begin {
+sub Perlito5::Grammar::pod_begin {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -438,7 +438,7 @@ sub pod_begin {
 }))));
     $MATCH
 };
-sub ws {
+sub Perlito5::Grammar::ws {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -599,7 +599,7 @@ sub ws {
 }))));
     $MATCH
 };
-sub opt_ws {
+sub Perlito5::Grammar::opt_ws {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -625,7 +625,7 @@ sub opt_ws {
 }))));
     $MATCH
 };
-sub opt_ws2 {
+sub Perlito5::Grammar::opt_ws2 {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -651,7 +651,7 @@ sub opt_ws2 {
 }))));
     $MATCH
 };
-sub opt_ws3 {
+sub Perlito5::Grammar::opt_ws3 {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -677,7 +677,7 @@ sub opt_ws3 {
 }))));
     $MATCH
 };
-sub declarator {
+sub Perlito5::Grammar::declarator {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -699,7 +699,7 @@ sub declarator {
 }))));
     $MATCH
 };
-sub exp_stmts2 {
+sub Perlito5::Grammar::exp_stmts2 {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -725,7 +725,7 @@ sub exp_stmts2 {
 }))));
     $MATCH
 };
-sub exp {
+sub Perlito5::Grammar::exp {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -751,7 +751,7 @@ sub exp {
 }))));
     $MATCH
 };
-sub exp2 {
+sub Perlito5::Grammar::exp2 {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -777,7 +777,7 @@ sub exp2 {
 }))));
     $MATCH
 };
-sub opt_ident {
+sub Perlito5::Grammar::opt_ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -809,7 +809,7 @@ sub opt_ident {
 }))));
     $MATCH
 };
-sub opt_type {
+sub Perlito5::Grammar::opt_type {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -849,7 +849,7 @@ sub opt_type {
 }))));
     $MATCH
 };
-sub var_sigil {
+sub Perlito5::Grammar::var_sigil {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -874,7 +874,7 @@ sub var_sigil {
 }))));
     $MATCH
 };
-sub var_name {
+sub Perlito5::Grammar::var_name {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -908,7 +908,7 @@ sub var_name {
 }))));
     $MATCH
 };
-sub var_ident {
+sub Perlito5::Grammar::var_ident {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -954,7 +954,7 @@ sub var_ident {
 }))));
     $MATCH
 };
-sub exponent {
+sub Perlito5::Grammar::exponent {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1011,7 +1011,7 @@ sub exponent {
 }))));
     $MATCH
 };
-sub val_num {
+sub Perlito5::Grammar::val_num {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1155,7 +1155,7 @@ sub val_num {
 }))));
     $MATCH
 };
-sub digits {
+sub Perlito5::Grammar::digits {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1191,7 +1191,7 @@ sub digits {
 }))));
     $MATCH
 };
-sub val_int {
+sub Perlito5::Grammar::val_int {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1232,7 +1232,8 @@ sub val_int {
 }))));
     $MATCH
 };
-sub exp_stmts {
+(my  @PKG);
+sub Perlito5::Grammar::exp_stmts {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1240,7 +1241,10 @@ sub exp_stmts {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (((do {
+    ((((do {
+    push(@PKG, $Perlito5::PKG_NAME );
+    1
+})) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->{'to'});
     for ( ; ((((do {
@@ -1269,7 +1273,8 @@ sub exp_stmts {
     };
     ($MATCH->{'to'} = $last_pos);
     1
-})) && ((do {
+}))) && ((do {
+    ($Perlito5::PKG_NAME = pop(@PKG));
     ($MATCH->{'capture'} = [map($_->capture(), @{$MATCH->{'Perlito5::Expression.delimited_statement'}})]);
     1
 })))
@@ -1277,7 +1282,7 @@ sub exp_stmts {
 }))));
     $MATCH
 };
-sub opt_name {
+sub Perlito5::Grammar::opt_name {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1309,7 +1314,7 @@ sub opt_name {
 }))));
     $MATCH
 };
-sub args_sig {
+sub Perlito5::Grammar::args_sig {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1366,7 +1371,7 @@ sub args_sig {
 }))));
     $MATCH
 };
-sub prototype {
+sub Perlito5::Grammar::prototype {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1412,20 +1417,20 @@ sub prototype {
         0
     }
 }))) && (((')' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Sig->new(('positional' => [('' . $MATCH->{'args_sig'}->flat())])));
+    ($MATCH->{'capture'} = ('' . $MATCH->{'args_sig'}->flat()));
     1
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Sig->new(('positional' => ['@'])));
+    ($MATCH->{'capture'} = '@');
     1
 })))
 })))
 }))));
     $MATCH
 };
-sub sub_def {
+sub Perlito5::Grammar::sub_def {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1503,7 +1508,17 @@ sub sub_def {
 })))
 }))) && ((do {
     ((my  $name) = $MATCH->{'opt_name'}->flat());
-    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => $name), ('sig' => $MATCH->{'prototype'}->flat()), ('block' => $MATCH->{'exp_stmts'}->flat())));
+    ((my  $sig) = $MATCH->{'prototype'}->flat());
+    (my  $namespace);
+    if (($name)) {
+        if ($namespace) {
+
+        }
+        else {
+            ($namespace = $Perlito5::PKG_NAME)
+        }
+    };
+    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => $name), ('namespace' => $namespace), ('sig' => $sig), ('block' => $MATCH->{'exp_stmts'}->flat())));
     1
 })))
 }))

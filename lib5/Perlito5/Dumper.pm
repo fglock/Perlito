@@ -8,7 +8,7 @@ use Perlito5::Perl5::Runtime;
 our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Dumper;
-sub Dumper {
+sub Perlito5::Dumper::Dumper {
     ((my  $obj) = $_[0]);
     ((my  $level) = ($_[1] || 0));
     ((my  $ref) = ref($obj));

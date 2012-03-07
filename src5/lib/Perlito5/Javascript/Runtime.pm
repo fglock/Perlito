@@ -69,6 +69,10 @@ function make_package(pkg_name) {
 }
 
 make_package("main");
+make_package("Perlito5");
+make_package("Perlito5::IO");
+make_package("Perlito5::Runtime");
+make_package("Perlito5::Grammar");
 
 function make_sub(pkg_name, sub_name, func) {
     NAMESPACE[pkg_name][sub_name] = CLASS[pkg_name][sub_name] = func;
@@ -111,10 +115,6 @@ function ScalarRef(o) {
     this._ref_ = "SCALAR";
     this.bool = function() { return 1 };
 }
-
-make_package("Perlito5::IO");
-make_package("Perlito5::Runtime");
-make_package("Perlito5::Grammar");
 
 make_sub("Perlito5::IO", "slurp", function(List__) {
     var filename = List__[0];

@@ -8,18 +8,18 @@ use Perlito5::Perl5::Runtime;
 our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Runtime;
-sub _replace {
+sub Perlito5::Runtime::_replace {
     ((my  $s) = shift());
     ((my  $old) = shift());
     ((my  $new) = shift());
     ((my  $p) = index($s, $old));
     (($p >= 0) ? (substr($s, 0, $p) . $new . _replace(substr($s, ($p + length($old))), $old, $new)) : $s)
 };
-sub lisp_escape_string {
+sub Perlito5::Runtime::lisp_escape_string {
     ((my  $s) = shift());
     _replace($s, chr(92), chr(92) . chr(92))
 };
-sub to_go_namespace {
+sub Perlito5::Runtime::to_go_namespace {
     ((my  $s) = shift());
     _replace($s, '::', '__')
 };

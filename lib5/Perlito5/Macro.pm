@@ -10,7 +10,7 @@ package main;
 use v5;
 package Perlito5::AST::Apply;
 ((my  %op) = (('infix:<+=>' => 'infix:<+>'), ('infix:<-=>' => 'infix:<->'), ('infix:<*=>' => 'infix:<*>'), ('infix:</=>' => 'infix:</>'), ('infix:<||=>' => 'infix:<||>'), ('infix:<&&=>' => 'infix:<&&>'), ('infix:<|=>' => 'infix:<|>'), ('infix:<&=>' => 'infix:<&>'), ('infix:<//=>' => 'infix:<//>'), ('infix:<.=>' => 'list:<.>')));
-sub op_assign {
+sub Perlito5::AST::Apply::op_assign {
     ((my  $self) = $_[0]);
     ((my  $code) = $self->{'code'});
     if (ref($code)) {
@@ -22,7 +22,7 @@ sub op_assign {
     return (0)
 };
 package Perlito5::AST::Do;
-sub simplify {
+sub Perlito5::AST::Do::simplify {
     ((my  $self) = $_[0]);
     (my  $block);
     if (($self->{'block'}->isa('Perlito5::AST::Lit::Block'))) {
