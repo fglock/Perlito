@@ -250,6 +250,7 @@ $prec = $prec - 1;
 add_op( 'prefix',   '\\',  $prec );
 add_op( 'prefix',   '+',   $prec );
 add_op( 'prefix',   '-',   $prec );
+add_op( 'prefix',   '~',   $prec );
 add_op( 'prefix',   '$',   $prec );
 add_op( 'prefix',   '&',   $prec );
 add_op( 'prefix',   '*',   $prec );

@@ -703,6 +703,11 @@ package Perlito5::AST::Apply;
         'infix:<<>'  => ' < ',
         'infix:<>=>' => ' >= ',
         'infix:<<=>' => ' <= ',
+        'infix:<&>'  => ' & ',
+        'infix:<|>'  => ' | ',
+        'infix:<^>'  => ' ^ ',
+        'infix:<>>>' => ' >>> ',
+        'infix:<<<>' => ' << ',
     );
 
     sub emit_javascript { $_[0]->emit_javascript_indented(0) }
@@ -738,6 +743,19 @@ package Perlito5::AST::Apply;
             return '(' 
                 . join( $op_infix_js_num{$code}, map( Perlito5::Javascript::to_num($_), @{$self->{"arguments"}} ))
                 . ')'
+        }
+
+        if ( $code eq 'prefix:<!>' ) {
+            return '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] ) . ')';
+        }
+        if ( $code eq 'prefix:<~>' ) {
+            return '~( ' . Perlito5::Javascript::to_num( $self->{"arguments"}->[0] ) . ')';
+        }
+        if ( $code eq 'prefix:<->' ) {
+            return '-( ' . $self->{"arguments"}->[0]->emit_javascript() . ')';
+        }
+        if ($code eq 'prefix:<+>') { 
+            return '('  . $self->{"arguments"}->[0]->emit_javascript()  . ')' 
         }
 
         if ($code eq 'eval') {
@@ -784,10 +802,6 @@ package Perlito5::AST::Apply;
                         . '}; '
                         . 'return out;'
                     . ' })(' . $list->emit_javascript() . ')'
-        }
-
-        if ( $code eq 'prefix:<!>' ) {
-            return '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] ) . ')';
         }
 
         if ( $code eq 'prefix:<$>' ) {
@@ -851,7 +865,6 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'infix:<+>')  { return 'add' . '('  . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
-        if ($code eq 'prefix:<+>') { return '('  . $self->{"arguments"}->[0]->emit_javascript()  . ')' }
 
         if ($code eq 'infix:<..>') {
             return '(function (a) { '

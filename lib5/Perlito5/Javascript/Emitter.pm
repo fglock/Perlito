@@ -514,7 +514,7 @@ package Perlito5::AST::Call;
 package Perlito5::AST::Apply;
 (do {
     ((my  %op_infix_js) = (('infix:<eq>' => ' == '), ('infix:<ne>' => ' != '), ('infix:<le>' => ' <= '), ('infix:<ge>' => ' >= ')));
-    ((my  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= ')));
+    ((my  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<>>>' => ' >>> '), ('infix:<<<>' => ' << ')));
     sub Perlito5::AST::Apply::emit_javascript {
         $_[0]->emit_javascript_indented(0)
     };
@@ -545,6 +545,18 @@ package Perlito5::AST::Apply;
         if ((exists($op_infix_js_num{$code}))) {
             return (('(' . join($op_infix_js_num{$code}, map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')'))
         };
+        if ((($code eq 'prefix:<!>'))) {
+            return (('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ')'))
+        };
+        if ((($code eq 'prefix:<~>'))) {
+            return (('~( ' . Perlito5::Javascript::to_num($self->{'arguments'}->[0]) . ')'))
+        };
+        if ((($code eq 'prefix:<->'))) {
+            return (('-( ' . $self->{'arguments'}->[0]->emit_javascript() . ')'))
+        };
+        if ((($code eq 'prefix:<+>'))) {
+            return (('(' . $self->{'arguments'}->[0]->emit_javascript() . ')'))
+        };
         if ((($code eq 'eval'))) {
             ((my  $var_env_perl5) = Perlito5::Dumper::Dumper($Perlito5::VAR));
             ((my  $m) = Perlito5::Expression->term_square($var_env_perl5, 0));
@@ -571,9 +583,6 @@ package Perlito5::AST::Apply;
             ((my  $fun) = $self->{'arguments'}->[0]);
             ((my  $list) = $self->{'arguments'}->[1]);
             return (('(function (a_) { ' . 'var out = []; ' . 'if ( a_ == null ) { return out; }; ' . 'for(var i = 0; i < a_.length; i++) { ' . 'var v__ = a_[i]; ' . 'out.push(' . $fun->emit_javascript_indented($level) . ')' . '}; ' . 'return out;' . ' })(' . $list->emit_javascript() . ')'))
-        };
-        if ((($code eq 'prefix:<!>'))) {
-            return (('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ')'))
         };
         if ((($code eq 'prefix:<$>'))) {
             ((my  $arg) = $self->{'arguments'}->[0]);
@@ -633,9 +642,6 @@ package Perlito5::AST::Apply;
         };
         if ((($code eq 'infix:<+>'))) {
             return (('add' . '(' . join(', ', map($_->emit_javascript(), @{$self->{'arguments'}})) . ')'))
-        };
-        if ((($code eq 'prefix:<+>'))) {
-            return (('(' . $self->{'arguments'}->[0]->emit_javascript() . ')'))
         };
         if ((($code eq 'infix:<..>'))) {
             return (('(function (a) { ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript() . ', l=' . $self->{'arguments'}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])'))

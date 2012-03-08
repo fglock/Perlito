@@ -188,6 +188,7 @@ add_op('infix', '**', $prec, {('assoc' => 'right')});
 add_op('prefix', chr(92), $prec);
 add_op('prefix', '+', $prec);
 add_op('prefix', '-', $prec);
+add_op('prefix', '~', $prec);
 add_op('prefix', '$', $prec);
 add_op('prefix', '&', $prec);
 add_op('prefix', '*', $prec);
