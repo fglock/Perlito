@@ -197,7 +197,7 @@ add_op('prefix', '!', $prec);
 add_op('prefix', '?', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '=~', $prec);
-add_op('infix', '!=', $prec);
+add_op('infix', '!~', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '*', $prec);
 add_op('infix', '/', $prec);

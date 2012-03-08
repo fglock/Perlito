@@ -219,7 +219,7 @@ package Perlito5::AST::Apply;
             ($ns = ($self->{'namespace'} . '::'))
         };
         ((my  $code) = ($ns . $self->{'code'}));
-        if ((ref(($code ne '')))) {
+        if (((ref($code) ne ''))) {
             return ((Perlito5::Perl5::tab($level) . '(' . $self->{'code'}->emit_perl5() . ')->(' . join(', ', map($_->emit_perl5(), @{$self->{'arguments'}})) . ')'))
         };
         if ((exists($op_infix_perl5{$code}))) {

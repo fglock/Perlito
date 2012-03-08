@@ -999,10 +999,76 @@ sub Perlito5::Expression::has_no_comma_or_colon_after {
 }))));
     $MATCH
 };
-((my  $List_end_token) = [{}, {(':' => 1), (']' => 1), (')' => 1), ('}' => 1), (';' => 1)}, {('or' => 1), ('if' => 1)}, {('for' => 1), ('and' => 1)}, {('else' => 1), ('when' => 1)}, {('while' => 1), ('elsif' => 1)}, {('unless' => 1)}, {('foreach' => 1)}]);
+((my  $Argument_end_token) = [{}, {(':' => 1), (']' => 1), (')' => 1), ('}' => 1), (';' => 1), (',' => 1), ('<' => 1), ('>' => 1), ('=' => 1), ('&' => 1), ('|' => 1), ('^' => 1)}, {('or' => 1), ('if' => 1), ('=>' => 1), ('lt' => 1), ('le' => 1), ('gt' => 1), ('ge' => 1), ('<=' => 1), ('>=' => 1), ('==' => 1), ('!=' => 1), ('ne' => 1), ('eq' => 1), ('..' => 1), ('~~' => 1), ('&&' => 1), ('||' => 1), ('+=' => 1), ('-=' => 1), ('*=' => 1), ('/=' => 1), ('x=' => 1), ('|=' => 1), ('&=' => 1), ('.=' => 1), ('^=' => 1), ('%=' => 1), ('//' => 1)}, {('for' => 1), ('and' => 1), ('xor' => 1), ('...' => 1), ('<=>' => 1), ('cmp' => 1), ('<<=' => 1), ('>>=' => 1), ('||=' => 1), ('&&=' => 1), ('//=' => 1), ('**=' => 1)}, {('when' => 1)}, {('while' => 1)}, {('unless' => 1)}, {('foreach' => 1)}]);
+((my  $Argument_end_token_chars) = [7, 6, 5, 4, 3, 2, 1]);
+((my  $List_end_token) = [{}, {(':' => 1), (']' => 1), (')' => 1), ('}' => 1), (';' => 1)}, {('or' => 1), ('if' => 1)}, {('for' => 1), ('and' => 1), ('xor' => 1)}, {('else' => 1), ('when' => 1)}, {('while' => 1), ('elsif' => 1)}, {('unless' => 1)}, {('foreach' => 1)}]);
 ((my  $List_end_token_chars) = [7, 6, 5, 4, 3, 2, 1]);
 ((my  $Expr_end_token) = [{}, {(']' => 1), (')' => 1), ('}' => 1), (';' => 1)}, {('if' => 1)}, {('for' => 1)}, {('else' => 1), ('when' => 1)}, {('while' => 1), ('elsif' => 1)}, {('unless' => 1)}, {('foreach' => 1)}]);
 ((my  $Expr_end_token_chars) = [7, 6, 5, 4, 3, 2, 1]);
+sub Perlito5::Expression::argument_parse {
+    ((my  $self) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    (my  $expr);
+    ((my  $last_pos) = $pos);
+    ((my  $is_first_token) = 1);
+    ((my  $lexer_stack) = []);
+    ((my  $terminated) = 0);
+    ((my  $last_token_was_space) = 1);
+    ((my  $get_token) = sub {
+    (my  $v);
+    if ((scalar(@{$lexer_stack}))) {
+        ($v = pop(@{$lexer_stack}));
+        if (((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1])))))) {
+            ($v->[0] = 'end')
+        }
+    }
+    else {
+        ((my  $m) = Perlito5::Precedence->op_parse($str, $last_pos));
+        if ((!($m->bool()))) {
+            return (['end', '*end*'])
+        };
+        ($v = $m->flat());
+        if (((($is_first_token && (($v->[0] eq 'op'))) && !((Perlito5::Precedence::is_fixity_type('prefix', $v->[1])))))) {
+            ($v->[0] = 'end')
+        };
+        if ((($v->[0] ne 'end'))) {
+            ($last_pos = $m->to())
+        }
+    };
+    if ((((($v->[0] eq 'postfix_or_term') && ($v->[1] eq 'block')) && $last_token_was_space))) {
+        if (($self->has_newline_after($str, $last_pos)->bool())) {
+            ($terminated = 1);
+            push(@{$lexer_stack}, ['end', '*end*'] )
+        }
+        else {
+            if (($self->has_no_comma_or_colon_after($str, $last_pos)->bool())) {
+                ($terminated = 1);
+                push(@{$lexer_stack}, ['end', '*end*'] )
+            }
+        }
+    };
+    ($last_token_was_space = (($v->[0] eq 'space')));
+    ($is_first_token = 0);
+    return ($v)
+});
+    ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => $Argument_end_token), ('end_token_chars' => $Argument_end_token_chars)));
+    ((my  $res) = $prec->precedence_parse());
+    if (((scalar(@{$res}) == 0))) {
+        return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => {('exp' => '*undef*'), ('end_block' => undef()), ('terminated' => undef())})))
+    };
+    (my  $block);
+    if (((scalar(@{$res}) > 1))) {
+        ($block = pop(@{$res}));
+        ($block = Perlito5::AST::Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
+    };
+    ((my  $result) = pop_term($res));
+    if (((scalar(@{$res}) > 0))) {
+        ($block = pop(@{$res}));
+        ($block = Perlito5::AST::Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
+    };
+    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('bool' => 1), ('capture' => {('exp' => $result), ('end_block' => $block), ('terminated' => $terminated)})))
+};
 sub Perlito5::Expression::list_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);

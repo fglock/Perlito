@@ -343,7 +343,7 @@ package Perlito5::AST::Apply;
             return ($apply->emit_perl6_indented($level))
         };
         ((my  $code) = $self->{'code'});
-        if ((ref(($code ne '')))) {
+        if (((ref($code) ne ''))) {
             ((my  @args) = ());
             for (@{$self->{'arguments'}}) {
                 push(@args, $_->emit_perl6() )

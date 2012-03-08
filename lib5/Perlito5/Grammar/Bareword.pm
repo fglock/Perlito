@@ -78,6 +78,45 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         ($m_name->{'to'} = $p);
         return ($m_name)
     };
+    if (((defined($sig) && ($sig eq '_')))) {
+        (my  $m);
+        (my  $arg);
+        if (((substr($str, $p, 1) eq '('))) {
+            ($m = Perlito5::Expression->term_paren($str, $p));
+            if ((!($m->{'bool'}))) {
+                return ($m)
+            };
+            ($p = $m->{'to'});
+            ($arg = $m->{'capture'}->[2]);
+            ($arg = Perlito5::Expression::expand_list($arg));
+            ((my  $v) = shift(@{$arg}));
+            if (@{$arg}) {
+                die(('Too many arguments for ' . $name))
+            };
+            ($arg = $v)
+        }
+        else {
+            ($m = Perlito5::Expression->argument_parse($str, $p));
+            ($arg = $m->{'capture'}->{'exp'});
+            if ((($arg eq '*undef*'))) {
+                ($arg = undef())
+            }
+            else {
+                if ((((ref($arg) eq 'Perlito5::AST::Apply') && ($arg->{'code'} eq 'circumfix:<( )>')))) {
+                    ((my  $v) = shift(@{$arg->{'arguments'}}));
+                    if (@{$arg->{'arguments'}}) {
+                        die(('Too many arguments for ' . $name))
+                    };
+                    ($arg = $v)
+                }
+            }
+        };
+        if ((!(defined($arg)))) {
+            ($arg = Perlito5::AST::Var->new(('namespace' => ''), ('name' => '_'), ('sigil' => '$')))
+        };
+        ($m->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => [$arg]))]);
+        return ($m)
+    };
     if (($has_space_after)) {
         ((my  $m_list) = Perlito5::Expression->list_parse($str, $p));
         if (($m_list->{'bool'})) {

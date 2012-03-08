@@ -497,6 +497,84 @@ package Perlito5::Expression;
         <.Perlito5::Grammar.ws> <!before [ ',' | ':' ]> .
     }
 
+    my $Argument_end_token = [ 
+        # 0 chars
+        {},
+        # 1 chars
+        {   ':' => 1,
+            ']' => 1,
+            ')' => 1,
+            '}' => 1,
+            ';' => 1,
+            ',' => 1,
+            '<' => 1,   
+            '>' => 1,   
+            '=' => 1,   
+            '&' => 1,   
+            '|' => 1,   
+            '^' => 1,   
+        },
+        # 2 chars
+        {   'or' => 1,
+            'if' => 1,
+            '=>' => 1,
+            'lt' => 1,  
+            'le' => 1,  
+            'gt' => 1,  
+            'ge' => 1,  
+            '<=' => 1,  
+            '>=' => 1,  
+            '==' => 1,  
+            '!=' => 1,  
+            'ne' => 1,  
+            'eq' => 1,  
+            '..' => 1,  
+            '~~' => 1,  
+            '&&' => 1,  
+            '||' => 1,  
+            '+=' => 1,  
+            '-=' => 1,  
+            '*=' => 1,  
+            '/=' => 1,  
+            'x=' => 1,  
+            '|=' => 1,  
+            '&=' => 1,  
+            '.=' => 1,  
+            '^=' => 1,  
+            '%=' => 1,  
+            '//' => 1,  
+       },
+        # 3 chars
+        {   'for' => 1,
+            'and' => 1,
+            'xor' => 1,
+            '...' => 1, 
+            '<=>' => 1, 
+            'cmp' => 1, 
+            '<<=' => 1, 
+            '>>=' => 1, 
+            '||=' => 1, 
+            '&&=' => 1, 
+            '//=' => 1, 
+            '**=' => 1, 
+       },
+        # 4 chars
+        {   # 'else' => 1,
+            'when' => 1,
+        },
+        # 5 chars
+        {   'while' => 1,
+            # 'elsif' => 1,
+        },
+        # 6 chars
+        {   'unless' => 1,
+        },
+        # 7 chars
+        {   'foreach' => 1,
+        },
+    ];
+    my $Argument_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
+
 
     my $List_end_token = [ 
         # 0 chars
@@ -565,6 +643,113 @@ package Perlito5::Expression;
         },
     ];
     my $Expr_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
+
+
+    sub argument_parse {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+       
+        # say "# argument_parse: input ",$str," at ",$pos;
+        my $expr;
+        my $last_pos = $pos;
+        my $is_first_token = 1;
+        my $lexer_stack = [];
+        my $terminated = 0;
+        my $last_token_was_space = 1;
+        my $get_token = sub {
+            my $v;
+            if (scalar(@$lexer_stack)) {
+                $v = pop @$lexer_stack;
+                if  (  $is_first_token
+                    && ($v->[0] eq 'op')
+                    && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
+                    )
+                {
+                    # say "# finishing list - first token is: ", $v->[1];
+                    $v->[0] = 'end';
+                }
+            }
+            else {
+                my $m = Perlito5::Precedence->op_parse($str, $last_pos);
+                # say "# list lexer got: " . $m->perl;
+                if (!$m->bool) {
+                    return [ 'end', '*end*' ];
+                }
+                $v = $m->flat();
+                if  (  $is_first_token
+                    && ($v->[0] eq 'op')
+                    && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
+                    )
+                {
+                    # say "# finishing list - first token is: ", $v->[1];
+                    $v->[0] = 'end';
+                }
+                if ($v->[0] ne 'end') {
+                    $last_pos = $m->to;
+                }
+            }
+            # say "# list_lexer got " . $v->perl;
+
+            # say "# list_lexer " . $v->perl;
+
+            if (   $v->[0] eq 'postfix_or_term'
+                && $v->[1] eq 'block'
+                && $last_token_was_space
+               )
+            {
+                if ($self->has_newline_after($str, $last_pos)->bool) {
+                    # a block followed by newline terminates the expression
+                    $terminated = 1;
+                    push( @$lexer_stack,  [ 'end', '*end*' ] );
+                }
+                elsif ($self->has_no_comma_or_colon_after($str, $last_pos)->bool) {
+                    # a sequence ( block - space - not_comma_or_colon ) terminates the list
+                    $terminated = 1;
+                    push( @$lexer_stack,  [ 'end', '*end*' ] );
+                }
+            }
+            $last_token_was_space = ($v->[0] eq 'space');
+            $is_first_token = 0;
+
+            return $v;
+        };
+        my $prec = Perlito5::Precedence->new(
+            get_token       => $get_token, 
+            reduce          => $reduce_to_ast,
+            end_token       => $Argument_end_token,
+            end_token_chars => $Argument_end_token_chars,
+        );
+        my $res = $prec->precedence_parse;
+        # say "# list_lexer return: ", $res->perl;
+        if (scalar(@$res) == 0) {
+            return Perlito5::Match->new(
+                'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
+                capture => {
+                    exp        => '*undef*',
+                    end_block  => undef,
+                    terminated => undef } )
+        }
+        # if the expression terminates in a block, the block was pushed to num_stack
+        my $block;
+        if (scalar(@$res) > 1) {
+            $block = pop @$res; # pop_term($res);
+            $block = Perlito5::AST::Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
+            # say "# list exp terminated with a block: ", $block->perl;
+        }
+        my $result = pop_term($res);
+        if (scalar(@$res) > 0) {
+            $block = pop @$res; # pop_term($res);
+            $block = Perlito5::AST::Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
+            # say "# list exp terminated with a block (2): ", $block->perl;
+        }
+        return Perlito5::Match->new(
+            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
+            capture => {
+                exp        => $result,
+                end_block  => $block,
+                terminated => $terminated } )
+    }
 
 
     sub list_parse {
