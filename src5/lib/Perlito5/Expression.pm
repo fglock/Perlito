@@ -515,6 +515,7 @@ package Perlito5::Expression;
         # 3 chars
         {   'for' => 1,
             'and' => 1,
+            'xor' => 1,
         },
         # 4 chars
         {   'else' => 1,

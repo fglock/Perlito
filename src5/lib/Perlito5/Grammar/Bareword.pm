@@ -136,6 +136,37 @@ package Perlito5::Grammar::Bareword;
             return $m_name;
         }
 
+
+        # if ( defined($sig) && $sig eq '_' ) {
+        #     # TODO - '_;$'
+
+        #     # empty sig - we allow (), but only if it is empty
+        #     if ( substr($str, $p, 1) eq '(' ) {
+        #         $p++;
+        #         my $m = Perlito5::Grammar->ws( $str, $p );
+        #         if ($m->{"bool"}) {
+        #             $p = $m->{"to"}
+        #         }
+        #         if ( substr($str, $p, 1) ne ')' ) {
+        #             die "syntax error near ", substr( $str, $pos, 10 );
+        #         }
+        #         $p++;
+        #     }
+
+        #     $m_name->{"capture"} = [ 'term', 
+        #             Perlito5::AST::Apply->new(
+        #                 code => $name,
+        #                 namespace => $namespace,
+        #                 arguments => []
+        #             )
+        #         ];
+        #     $m_name->{"to"} = $p;
+        #     return $m_name;
+        # }
+
+
+
+
         if ( $has_space_after ) {
             # maybe it's a subroutine call
             my $m_list = Perlito5::Expression->list_parse( $str, $p );
