@@ -136,7 +136,7 @@ package Perlito5::Grammar::Bareword;
                 return $m_name;
             }
 
-            if ( $sig eq '_' || $sig eq '$' ) {
+            if ( $sig eq '_' || $sig eq '$' || $sig eq ';$' ) {
                 my $m;
                 my $arg;
                 if ( substr($str, $p, 1) eq '(' ) {
@@ -163,20 +163,26 @@ package Perlito5::Grammar::Bareword;
                         $arg = $v;
                     }
                 }
-                if ( !defined $arg ) {
+                my @args;
+                if ( defined $arg ) {
+                    push @args, $arg;
+                }
+                else {
                     die "Not enough arguments for $name"
                         if $sig eq '$';
-                    $arg = Perlito5::AST::Var->new(
+                    push @args, Perlito5::AST::Var->new(
                                 namespace => '',
                                 name      => '_',
                                 sigil     => '$'
-                            );
+                            )
+                        if $sig eq '_';
+                    # ';$' --> ignore the missing arg
                 }
                 $m->{"capture"} = [ 'term', 
                         Perlito5::AST::Apply->new(
                             code      => $name,
                             namespace => $namespace,
-                            arguments => [$arg]
+                            arguments => \@args
                         )
                     ];
                 return $m;

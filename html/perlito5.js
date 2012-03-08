@@ -2700,7 +2700,7 @@ CORE.prototype = function(List__, data) {
 						((v_m_name || (v_m_name = new HashRef({})))._hash_['to'] = v_p);
 						throw(v_m_name);
 					};
-					if ( ((v_sig == '_') || (v_sig == '$')) ) {
+					if ( (((v_sig == '_') || (v_sig == '$')) || (v_sig == ';$')) ) {
 						(function () {
 							var v_m = null;
 							var v_arg = null;
@@ -2740,13 +2740,19 @@ CORE.prototype = function(List__, data) {
 									};
 								};
 							};
-							if ( !( bool((v_arg != null))) ) {
+							var List_args = [];
+							if ( bool((v_arg != null)) ) {
+								NAMESPACE["Perlito5::Grammar::Bareword"].push([List_args, v_arg]);
+							}
+							else {
 								if ( (v_sig == '$') ) {
 									NAMESPACE["Perlito5::Grammar::Bareword"].die([('Not enough arguments for ' + string(v_name))]);
 								};
-								(v_arg = CLASS["Perlito5::AST::Var"]._class_.new([CLASS["Perlito5::AST::Var"],'namespace', '','name', '_','sigil', '$']));
+								if ( (v_sig == '_') ) {
+									NAMESPACE["Perlito5::Grammar::Bareword"].push([List_args, CLASS["Perlito5::AST::Var"]._class_.new([CLASS["Perlito5::AST::Var"],'namespace', '','name', '_','sigil', '$'])]);
+								};
 							};
-							((v_m || (v_m = new HashRef({})))._hash_['capture'] = (new ArrayRef(interpolate_array('term', CLASS["Perlito5::AST::Apply"]._class_.new([CLASS["Perlito5::AST::Apply"],'code', v_name,'namespace', v_namespace,'arguments', (new ArrayRef(interpolate_array(v_arg)))])))));
+							((v_m || (v_m = new HashRef({})))._hash_['capture'] = (new ArrayRef(interpolate_array('term', CLASS["Perlito5::AST::Apply"]._class_.new([CLASS["Perlito5::AST::Apply"],'code', v_name,'namespace', v_namespace,'arguments', (new ArrayRef(List_args))])))));
 							throw(v_m);
 							})();
 					};

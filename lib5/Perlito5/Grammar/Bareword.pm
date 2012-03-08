@@ -79,7 +79,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             ($m_name->{'to'} = $p);
             return ($m_name)
         };
-        if (((($sig eq '_') || ($sig eq '$')))) {
+        if ((((($sig eq '_') || ($sig eq '$')) || ($sig eq ';$')))) {
             (my  $m);
             (my  $arg);
             if (((substr($str, $p, 1) eq '('))) {
@@ -112,13 +112,19 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                     }
                 }
             };
-            if ((!(defined($arg)))) {
+            (my  @args);
+            if ((defined($arg))) {
+                push(@args, $arg )
+            }
+            else {
                 if (($sig eq '$')) {
                     die(('Not enough arguments for ' . $name))
                 };
-                ($arg = Perlito5::AST::Var->new(('namespace' => ''), ('name' => '_'), ('sigil' => '$')))
+                if (($sig eq '_')) {
+                    push(@args, Perlito5::AST::Var->new(('namespace' => ''), ('name' => '_'), ('sigil' => '$')) )
+                }
             };
-            ($m->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => [$arg]))]);
+            ($m->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => \@args))]);
             return ($m)
         }
     };
