@@ -34,7 +34,9 @@ TODO list for Perlito5
 
 -- use an array to represent names that contain '::', because it is more flexible
 
--- implement prototypes (signatures)
+-- prototypes (signatures)
+--- done: "empty" _ $ ;$
+--- check that undeclared barewords give the right error
 --- *foo = sub () { ... }   # does prototype work here?
 
 -- check that \(@a) and \@a have different meanings
