@@ -153,7 +153,7 @@ token args_sig {
 token prototype {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
         { $MATCH->{"capture"} = "" . $MATCH->{"args_sig"}->flat() }
-    |   { $MATCH->{"capture"} = undef }   # default signature
+    |   { $MATCH->{"capture"} = '*undef*' }   # default signature
 }
 
 token sub_def {
@@ -162,6 +162,7 @@ token sub_def {
     {
         my $name = $MATCH->{"opt_name"}->flat();
         my $sig  = $MATCH->{"prototype"}->flat();
+        $sig = undef if $sig eq '*undef*';
         my $namespace;  # TODO
         if ( $name ) {
             # say "sub $Perlito5::PKG_NAME :: $name ( $sig )";

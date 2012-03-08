@@ -109,33 +109,32 @@ package Perlito5::Grammar::Bareword;
 
         # say "calling $effective_name ($sig)";
 
-        ## if ( defined($sig) && $sig eq '' ) {
+        if ( defined($sig) && $sig eq '' ) {
+            # empty sig - we allow (), but only if it is empty
+            if ( substr($str, $p, 1) eq '(' ) {
+                $p++;
+                my $m = Perlito5::Grammar->ws( $str, $p );
+                if ($m->{"bool"}) {
+                    $p = $m->{"to"}
+                }
+                if ( substr($str, $p, 1) ne ')' ) {
+                    die "syntax error near ", substr( $str, $pos, 10 );
+                }
+                $p++;
+            }
 
-        ##     # empty sig - we allow (), but only if it is empty
+            # TODO - "subs with empty protos are candidates for inlining"
 
-        ##     if ( substr($str, $p, 1) eq '(' ) {
-        ##         my $p0 = $p;
-        ##         $p++
-        ##         my $m = Perlito5::Grammar->ws( $str, $p );
-        ##         if ($m->{"bool"}) {
-        ##             $p = $m->{"to"}
-        ##         }
-        ##         if ( substr($str, $p, 1) ne ')' ) {
-        ##             die "syntax error near ", substr($str, $p0, 5);
-        ##         }
-        ##         $p++;
-        ##     }
-
-        ##     # TODO - "this is a candidate for inlining"
-
-        ##     $m_name->{"capture"} = [ 'postfix_or_term', 'funcall',
-        ##             $namespace,
-        ##             $name,
-        ##             { exp => [] }
-        ##         ];
-        ##     $m_name->{"to"} = $p;
-        ##     return $m_name;
-        ## }
+            $m_name->{"capture"} = [ 'term', 
+                    Perlito5::AST::Apply->new(
+                        code => $name,
+                        namespace => $namespace,
+                        arguments => []
+                    )
+                ];
+            $m_name->{"to"} = $p;
+            return $m_name;
+        }
 
         if ( $has_space_after ) {
             # maybe it's a subroutine call

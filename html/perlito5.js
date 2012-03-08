@@ -2673,6 +2673,25 @@ CORE.prototype = function(List__, data) {
 						throw(v_m_name);
 					};
 				};
+				if ( (bool((v_sig != null)) && (v_sig == '')) ) {
+					if ( (NAMESPACE["Perlito5::Grammar::Bareword"].substr([v_str, v_p, 1]) == '(') ) {
+						(function () {
+							(v_p)++;
+							var v_m = null;
+							(v_m = CLASS["Perlito5::Grammar"]._class_.ws([CLASS["Perlito5::Grammar"],v_str,v_p]));
+							if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+								(v_p = (v_m || (v_m = new HashRef({})))._hash_['to']);
+							};
+							if ( (NAMESPACE["Perlito5::Grammar::Bareword"].substr([v_str, v_p, 1]) != ')') ) {
+								NAMESPACE["Perlito5::Grammar::Bareword"].die(['syntax error near ', NAMESPACE["Perlito5::Grammar::Bareword"].substr([v_str, v_pos, 10])]);
+							};
+							(v_p)++;
+							})();
+					};
+					((v_m_name || (v_m_name = new HashRef({})))._hash_['capture'] = (new ArrayRef(interpolate_array('term', CLASS["Perlito5::AST::Apply"]._class_.new([CLASS["Perlito5::AST::Apply"],'code', v_name,'namespace', v_namespace,'arguments', (new ArrayRef([]))])))));
+					((v_m_name || (v_m_name = new HashRef({})))._hash_['to'] = v_p);
+					throw(v_m_name);
+				};
 				if ( bool(v_has_space_after) ) {
 					(function () {
 						var v_m_list = null;
@@ -7764,7 +7783,7 @@ CORE.prototype = function(List__, data) {
 })()), function () { return ((function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return ((((function () {
-			((v_MATCH || (v_MATCH = new HashRef({})))._hash_['capture'] = null);
+			((v_MATCH || (v_MATCH = new HashRef({})))._hash_['capture'] = '*undef*');
 			return (1);
 		})())));
 })()); }));
@@ -7870,6 +7889,9 @@ CORE.prototype = function(List__, data) {
 	(v_name = (v_MATCH || (v_MATCH = new HashRef({})))._hash_['opt_name']._class_.flat([(v_MATCH || (v_MATCH = new HashRef({})))._hash_['opt_name']]));
 	var v_sig = null;
 	(v_sig = (v_MATCH || (v_MATCH = new HashRef({})))._hash_['prototype']._class_.flat([(v_MATCH || (v_MATCH = new HashRef({})))._hash_['prototype']]));
+	if ( (v_sig == '*undef*') ) {
+		(v_sig = null);
+	};
 	var v_namespace = null;
 	if ( bool(v_name) ) {
 		(function () {

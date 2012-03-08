@@ -1423,7 +1423,7 @@ sub Perlito5::Grammar::prototype {
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    ($MATCH->{'capture'} = undef());
+    ($MATCH->{'capture'} = '*undef*');
     1
 })))
 })))
@@ -1509,6 +1509,9 @@ sub Perlito5::Grammar::sub_def {
 }))) && ((do {
     ((my  $name) = $MATCH->{'opt_name'}->flat());
     ((my  $sig) = $MATCH->{'prototype'}->flat());
+    if (($sig eq '*undef*')) {
+        ($sig = undef())
+    };
     (my  $namespace);
     if (($name)) {
         if ($namespace) {
