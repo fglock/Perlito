@@ -172,7 +172,8 @@ sub op_parse {
         }
     }
 
-    return Perlito5::Match->new( bool => 0 );
+    return Perlito5::Grammar::Bareword->term_bareword( $str, $pos );
+    # return Perlito5::Match->new( bool => 0 );
 }
 
 sub add_op {

@@ -913,17 +913,6 @@ sub Perlito5::Expression::term_space {
 }))));
     $MATCH
 };
-sub Perlito5::Expression::operator {
-    ((my  $self) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $p) = $pos);
-    ((my  $m) = Perlito5::Precedence->op_parse($str, $p));
-    if ($m->{'bool'}) {
-        return ($m)
-    };
-    return (Perlito5::Grammar::Bareword->term_bareword($str, $p))
-};
 sub Perlito5::Expression::has_newline_after {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -1033,7 +1022,7 @@ sub Perlito5::Expression::list_parse {
         }
     }
     else {
-        ((my  $m) = $self->operator($str, $last_pos));
+        ((my  $m) = Perlito5::Precedence->op_parse($str, $last_pos));
         if ((!($m->bool()))) {
             return (['end', '*end*'])
         };
@@ -1086,7 +1075,7 @@ sub Perlito5::Expression::circumfix_parse {
     (my  $expr);
     ((my  $last_pos) = $pos);
     ((my  $get_token) = sub {
-    ((my  $m) = $self->operator($str, $last_pos));
+    ((my  $m) = Perlito5::Precedence->op_parse($str, $last_pos));
     if ((!($m->bool()))) {
         die('Expected closing delimiter: ', $delimiter, ' near ', $last_pos)
     };
@@ -1144,7 +1133,7 @@ sub Perlito5::Expression::exp_parse {
         ($v = pop(@{$lexer_stack}))
     }
     else {
-        ((my  $m) = $self->operator($str, $last_pos));
+        ((my  $m) = Perlito5::Precedence->op_parse($str, $last_pos));
         if ((!($m->bool()))) {
             return (['end', '*end*'])
         };

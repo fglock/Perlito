@@ -148,7 +148,7 @@ sub Perlito5::Precedence::op_parse {
             }
         }
     };
-    return (Perlito5::Match->new(('bool' => 0)))
+    return (Perlito5::Grammar::Bareword->term_bareword($str, $pos))
 };
 sub Perlito5::Precedence::add_op {
     ((my  $fixity) = shift());

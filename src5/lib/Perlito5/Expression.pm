@@ -488,18 +488,6 @@ package Perlito5::Expression;
         <.Perlito5::Grammar.ws>           { $MATCH->{"capture"} = [ 'space',   ' ' ] }
     }
 
-    sub operator {
-        my $self = $_[0];
-        my $str = $_[1];
-        my $pos = $_[2];
-
-        my $p = $pos;
-        my $m = Perlito5::Precedence->op_parse( $str, $p );
-        return $m 
-            if $m->{"bool"};
-        return Perlito5::Grammar::Bareword->term_bareword( $str, $p );
-    }
-
     token has_newline_after {
         |    '#'
         |    <.Perlito5::Grammar.is_newline>
@@ -604,7 +592,7 @@ package Perlito5::Expression;
                 }
             }
             else {
-                my $m = $self->operator($str, $last_pos);
+                my $m = Perlito5::Precedence->op_parse($str, $last_pos);
                 # say "# list lexer got: " . $m->perl;
                 if (!$m->bool) {
                     return [ 'end', '*end*' ];
@@ -694,7 +682,7 @@ package Perlito5::Expression;
         my $expr;
         my $last_pos = $pos;
         my $get_token = sub {
-            my $m = $self->operator($str, $last_pos);
+            my $m = Perlito5::Precedence->op_parse($str, $last_pos);
             if (!$m->bool) {
                 die "Expected closing delimiter: ", $delimiter, ' near ', $last_pos;
             }
@@ -770,7 +758,7 @@ package Perlito5::Expression;
                 $v = pop @$lexer_stack;
             }
             else {
-                my $m = $self->operator($str, $last_pos);
+                my $m = Perlito5::Precedence->op_parse($str, $last_pos);
                 # say "# exp lexer got: " . $m->perl;
                 if (!$m->bool) {
                     return [ 'end', '*end*' ];
