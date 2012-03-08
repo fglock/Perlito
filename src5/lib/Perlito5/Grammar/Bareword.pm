@@ -105,8 +105,37 @@ package Perlito5::Grammar::Bareword;
             return $m_name;
         }
 
-        # TODO
+        # TODO - parse the parameter list according to the sig
+
         # say "calling $effective_name ($sig)";
+
+        ## if ( defined($sig) && $sig eq '' ) {
+
+        ##     # empty sig - we allow (), but only if it is empty
+
+        ##     if ( substr($str, $p, 1) eq '(' ) {
+        ##         my $p0 = $p;
+        ##         $p++
+        ##         my $m = Perlito5::Grammar->ws( $str, $p );
+        ##         if ($m->{"bool"}) {
+        ##             $p = $m->{"to"}
+        ##         }
+        ##         if ( substr($str, $p, 1) ne ')' ) {
+        ##             die "syntax error near ", substr($str, $p0, 5);
+        ##         }
+        ##         $p++;
+        ##     }
+
+        ##     # TODO - "this is a candidate for inlining"
+
+        ##     $m_name->{"capture"} = [ 'postfix_or_term', 'funcall',
+        ##             $namespace,
+        ##             $name,
+        ##             { exp => [] }
+        ##         ];
+        ##     $m_name->{"to"} = $p;
+        ##     return $m_name;
+        ## }
 
         if ( $has_space_after ) {
             # maybe it's a subroutine call
