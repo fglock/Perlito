@@ -71,21 +71,42 @@ package Perlito5::Grammar::Bareword;
         #   $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{$_} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } '
 
 
-        ## # TODO
-        ## my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
-        ## if ( exists $Perlito5::PROTO->{$effective_name} ) {
-        ##     # subroutine was predeclared
-        ##     my $sig = $Perlito5::PROTO->{$effective_name};
-        ##     say "calling $effective_name ($sig)";
-        ## }
-        ## elsif ( exists $Perlito5::CORE_PROTO->{"CORE::$name"} ) {
-        ##     # subroutine comes from CORE
-        ##     my $sig = $Perlito5::CORE_PROTO->{"CORE::$name"};
-        ##     say "calling CORE::$name ($sig)";
-        ## }
-        ## else {
-        ##     say "not found: $effective_name";
-        ## }
+        my $effective_name = ( $namespace || $Perlito5::PKG_NAME ) . '::' . $name;
+        my $sig;
+        if ( exists $Perlito5::PROTO->{$effective_name} ) {
+            # subroutine was predeclared
+            $sig = $Perlito5::PROTO->{$effective_name};
+        }
+        elsif ( (!$namespace || $namespace eq 'CORE')
+              && exists $Perlito5::CORE_PROTO->{"CORE::$name"} 
+              )
+        {
+            # TODO - CORE::GLOBAL
+
+            # subroutine comes from CORE
+
+            ## XXX - this breaks perl: "CORE::say is not a keyword"
+            ## $namespace = "CORE";
+
+            $effective_name = "CORE::$name";
+            $sig = $Perlito5::CORE_PROTO->{$effective_name};
+        }
+        else {
+            # TODO - add error messages if needed
+            # Bareword "X" not allowed while "strict subs" in use
+
+            # warn "not found: $effective_name";
+
+            # it's just a bareword - we will disambiguate later
+            $m_name->{"capture"} = [ 'postfix_or_term', 'funcall_no_params',
+                    $namespace,
+                    $name
+                ];
+            return $m_name;
+        }
+
+        # TODO
+        # say "calling $effective_name ($sig)";
 
         if ( $has_space_after ) {
             # maybe it's a subroutine call

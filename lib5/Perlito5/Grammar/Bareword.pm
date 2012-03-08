@@ -47,6 +47,21 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         ($m_name->{'to'} = $p);
         return ($m_name)
     };
+    ((my  $effective_name) = ((($namespace || $Perlito5::PKG_NAME)) . '::' . $name));
+    (my  $sig);
+    if ((exists($Perlito5::PROTO->{$effective_name}))) {
+        ($sig = $Perlito5::PROTO->{$effective_name})
+    }
+    else {
+        if (((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)})))) {
+            ($effective_name = ('CORE::' . $name));
+            ($sig = $Perlito5::CORE_PROTO->{$effective_name})
+        }
+        else {
+            ($m_name->{'capture'} = ['postfix_or_term', 'funcall_no_params', $namespace, $name]);
+            return ($m_name)
+        }
+    };
     if (($has_space_after)) {
         ((my  $m_list) = Perlito5::Expression->list_parse($str, $p));
         if (($m_list->{'bool'})) {

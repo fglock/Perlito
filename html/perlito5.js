@@ -2657,6 +2657,22 @@ CORE.prototype = function(List__, data) {
 					((v_m_name || (v_m_name = new HashRef({})))._hash_['to'] = v_p);
 					throw(v_m_name);
 				};
+				var v_effective_name = null;
+				(v_effective_name = (string(or(v_namespace, function () { return NAMESPACE["Perlito5"].v_PKG_NAME; })) + '::' + string(v_name)));
+				var v_sig = null;
+				if ( bool((NAMESPACE["Perlito5"].v_PROTO)._hash_.hasOwnProperty(v_effective_name)) ) {
+					(v_sig = (NAMESPACE["Perlito5"].v_PROTO || (NAMESPACE["Perlito5"].v_PROTO = new HashRef({})))._hash_[v_effective_name]);
+				}
+				else {
+					if ( ((!( bool(v_namespace)) || (v_namespace == 'CORE')) && bool((NAMESPACE["Perlito5"].v_CORE_PROTO)._hash_.hasOwnProperty(('CORE::' + string(v_name))))) ) {
+						(v_effective_name = ('CORE::' + string(v_name)));
+						(v_sig = (NAMESPACE["Perlito5"].v_CORE_PROTO || (NAMESPACE["Perlito5"].v_CORE_PROTO = new HashRef({})))._hash_[v_effective_name]);
+					}
+					else {
+						((v_m_name || (v_m_name = new HashRef({})))._hash_['capture'] = (new ArrayRef(interpolate_array('postfix_or_term', 'funcall_no_params', v_namespace, v_name))));
+						throw(v_m_name);
+					};
+				};
 				if ( bool(v_has_space_after) ) {
 					(function () {
 						var v_m_list = null;
