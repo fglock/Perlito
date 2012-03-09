@@ -334,7 +334,20 @@ package Perlito5::AST::Apply;
             return Perlito5::Perl5::tab($level) . $op_prefix_perl5{$code} . '('   . join(', ', map( $_->emit_perl5, @{$self->{"arguments"}} )) . ')'
         }
 
-        if ($self->{"code"} eq 'package')   { return Perlito5::Perl5::tab($level) . 'package ' . $self->{"namespace"} }
+        if ($self->{"code"} eq 'p5:s') {
+            return Perlito5::Perl5::tab($level)
+                . 's!' . $self->{"arguments"}->[0]->{"buf"}   # emit_perl5() 
+                .  '!' . $self->{"arguments"}->[1]->{"buf"}   # emit_perl5()
+                .  '!' . $self->{"arguments"}->[2];
+
+        }
+        if ($self->{"code"} eq 'p5:m') {
+            return Perlito5::Perl5::tab($level)
+                . 'm!' . $self->{"arguments"}->[0]->{"buf"}   # emit_perl5() 
+                .  '!' . $self->{"arguments"}->[1];
+        }
+
+        if ($self->{"code"} eq 'package')    { return Perlito5::Perl5::tab($level) . 'package ' . $self->{"namespace"} }
         if ($code eq 'undef')      { return Perlito5::Perl5::tab($level) . 'undef()' }
 
         if ($code eq 'scalar')     { return Perlito5::Perl5::tab($level) . 'scalar(' . ($self->{"arguments"}->[0]->emit_perl5) . ')' }

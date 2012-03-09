@@ -37,21 +37,18 @@ token term_qw_quote {
 token term_slash_quote {
     '/' <m_quote_parse>
         { 
-            warn "TODO - /regex/x";
             $MATCH->{"capture"} = [ 'term', $MATCH->{"m_quote_parse"}->flat() ]  
         }
 };
 token term_m_quote {
     'm' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <m_quote_parse>
         {
-            warn "TODO - m/regex/x";
             $MATCH->{"capture"} = [ 'term', $MATCH->{"m_quote_parse"}->flat() ]  
         }
 };
 token term_s_quote {
     's' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <s_quote_parse>
         { 
-            warn "TODO - s/regex/xxx/x";
             $MATCH->{"capture"} = [ 'term', $MATCH->{"s_quote_parse"}->flat() ]  
         }
 };
@@ -114,7 +111,7 @@ sub m_quote_parse {
     $m = Perlito5::Grammar->ident($str, $p);
     if ( $m->{"bool"} ) {
         $modifiers = $m->flat();
-        $part1->{"to"} = $p;
+        $part1->{"to"} = $m->{"to"};
     }
 
     $part1->{"capture"} = Perlito5::AST::Apply->new( 
@@ -138,12 +135,12 @@ sub s_quote_parse {
     my $m;
     my $p = $part1->{"to"};
     if ( exists $pair{$delimiter} ) {
-        warn "pair delimiter $delimiter at $p";
+        # warn "pair delimiter $delimiter at $p";
         $m = Perlito5::Grammar->opt_ws($str, $p);
         $p = $m->{"to"};
         $delimiter = substr( $str, $p, 1 );
         $p++;
-        warn "second delimiter $delimiter";
+        # warn "second delimiter $delimiter";
         $closing_delimiter = $delimiter;
         $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
         $part2 = $self->string_interpolation_parse($str, $p, $closing_delimiter, 1);
@@ -159,7 +156,7 @@ sub s_quote_parse {
     $m = Perlito5::Grammar->ident($str, $p);
     if ( $m->{"bool"} ) {
         $modifiers = $m->flat();
-        $part2->{"to"} = $p;
+        $part2->{"to"} = $m->{"to"};
     }
 
     $part2->{"capture"} = Perlito5::AST::Apply->new( 

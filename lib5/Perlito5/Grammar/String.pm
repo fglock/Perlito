@@ -314,18 +314,17 @@ sub Perlito5::Grammar::String::term_slash_quote {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     ((((('/' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = $grammar->qw_quote_parse($str, $MATCH->{'to'}));
+    ((my  $m2) = $grammar->m_quote_parse($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'qw_quote_parse'} = $m2);
+        ($MATCH->{'m_quote_parse'} = $m2);
         1
     }
     else {
         0
     }
 }))) && ((do {
-    warn('TODO - /regex/x');
-    ($MATCH->{'capture'} = ['term', $MATCH->{'qw_quote_parse'}->flat()]);
+    ($MATCH->{'capture'} = ['term', $MATCH->{'m_quote_parse'}->flat()]);
     1
 })))
 }))
@@ -387,18 +386,17 @@ sub Perlito5::Grammar::String::term_m_quote {
 }))))
 })))
 }))) && ((do {
-    ((my  $m2) = $grammar->qw_quote_parse($str, $MATCH->{'to'}));
+    ((my  $m2) = $grammar->m_quote_parse($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'qw_quote_parse'} = $m2);
+        ($MATCH->{'m_quote_parse'} = $m2);
         1
     }
     else {
         0
     }
 }))) && ((do {
-    warn('TODO - m/regex/x');
-    ($MATCH->{'capture'} = ['term', $MATCH->{'qw_quote_parse'}->flat()]);
+    ($MATCH->{'capture'} = ['term', $MATCH->{'m_quote_parse'}->flat()]);
     1
 })))
 }))
@@ -470,7 +468,6 @@ sub Perlito5::Grammar::String::term_s_quote {
         0
     }
 }))) && ((do {
-    warn('TODO - s/regex/xxx/x');
     ($MATCH->{'capture'} = ['term', $MATCH->{'s_quote_parse'}->flat()]);
     1
 })))
@@ -513,6 +510,33 @@ sub Perlito5::Grammar::String::qw_quote_parse {
     };
     return ($m)
 };
+sub Perlito5::Grammar::String::m_quote_parse {
+    ((my  $self) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $delimiter) = substr($str, ($pos - 1), 1));
+    ((my  $closing_delimiter) = $delimiter);
+    if (exists($pair{$delimiter})) {
+        ($closing_delimiter = $pair{$delimiter})
+    };
+    ((my  $part1) = $self->string_interpolation_parse($str, $pos, $closing_delimiter, 1));
+    if ($part1->{'bool'}) {
+
+    }
+    else {
+        return ($part1)
+    };
+    (my  $m);
+    ((my  $p) = $part1->{'to'});
+    ((my  $modifiers) = '');
+    ($m = Perlito5::Grammar->ident($str, $p));
+    if ($m->{'bool'}) {
+        ($modifiers = $m->flat());
+        ($part1->{'to'} = $m->{'to'})
+    };
+    ($part1->{'capture'} = Perlito5::AST::Apply->new(('code' => 'p5:m'), ('arguments' => [$part1->flat(), $modifiers]), ('namespace' => '')));
+    return ($part1)
+};
 sub Perlito5::Grammar::String::s_quote_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -530,13 +554,13 @@ sub Perlito5::Grammar::String::s_quote_parse {
         return ($part1)
     };
     (my  $part2);
+    (my  $m);
     ((my  $p) = $part1->{'to'});
     if (exists($pair{$delimiter})) {
-        ((my  $m) = Perlito5::Grammar->opt_ws($str, $p));
-        ((my  $p) = $m->{'to'});
-        ((my  $delimiter) = substr($str, $p, 1));
+        ($m = Perlito5::Grammar->opt_ws($str, $p));
+        ($p = $m->{'to'});
+        ($delimiter = substr($str, $p, 1));
         ($p)++;
-        warn(('second delimiter ' . $delimiter));
         ($closing_delimiter = $delimiter);
         if (exists($pair{$delimiter})) {
             ($closing_delimiter = $pair{$delimiter})
@@ -558,7 +582,14 @@ sub Perlito5::Grammar::String::s_quote_parse {
             return ($part2)
         }
     };
-    ($part2->{'capture'} = Perlito5::AST::Apply->new(('code' => 'circumfix:<[ ]>'), ('arguments' => [$part1->flat(), $part2->flat()]), ('namespace' => '')));
+    ($p = $part2->{'to'});
+    ((my  $modifiers) = '');
+    ($m = Perlito5::Grammar->ident($str, $p));
+    if ($m->{'bool'}) {
+        ($modifiers = $m->flat());
+        ($part2->{'to'} = $m->{'to'})
+    };
+    ($part2->{'capture'} = Perlito5::AST::Apply->new(('code' => 'p5:s'), ('arguments' => [$part1->flat(), $part2->flat(), $modifiers]), ('namespace' => '')));
     return ($part2)
 };
 sub Perlito5::Grammar::String::string_interpolation_parse {

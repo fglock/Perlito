@@ -739,6 +739,16 @@ package Perlito5::AST::Apply;
                 for @{$self->{"arguments"}};
             return '(' . $self->{"code"}->emit_javascript_indented( $level ) . ')(' . join(',', @args) . ')';
         }
+        if ($code eq 'p5:s') {
+            return 
+                  '.replace(/' . $self->{"arguments"}->[0]->{"buf"} . '/' . $self->{"arguments"}->[2] . ', '
+                .  $self->{"arguments"}->[1]->emit_javascript() . ')';
+
+        }
+        if ($code eq 'p5:m') {
+            return 
+                  '.match(/' . $self->{"arguments"}->[0]->{"buf"} . '/' . $self->{"arguments"}->[1] . ')';
+        }
         if ($code eq 'package') {
             return 'make_package("' . $self->{"namespace"} . '")';
         }
