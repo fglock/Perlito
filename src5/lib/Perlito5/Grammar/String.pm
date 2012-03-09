@@ -108,11 +108,13 @@ sub s_quote_parse {
     return $part1 unless $part1->{"bool"};
 
     my $part2;
+    my $m;
     my $p = $part1->{"to"};
     if ( exists $pair{$delimiter} ) {
-        my $m = Perlito5::Grammar->opt_ws($str, $p);
-        my $p = $m->{"to"};
-        my $delimiter = substr( $str, $p, 1 );
+        warn "pair delimiter $delimiter at $p";
+        $m = Perlito5::Grammar->opt_ws($str, $p);
+        $p = $m->{"to"};
+        $delimiter = substr( $str, $p, 1 );
         $p++;
         warn "second delimiter $delimiter";
         $closing_delimiter = $delimiter;

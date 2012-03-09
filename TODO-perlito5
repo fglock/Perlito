@@ -53,6 +53,9 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- bug: variable redeclaration does not work
+-- javascript "var" erases the outer value within the whole current lexical scope
+
 -- create target-specific versions of the runtime
 -- add browser, v8, node.js runtimes
 
