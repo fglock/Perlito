@@ -1282,38 +1282,6 @@ sub Perlito5::Grammar::exp_stmts {
 }))));
     $MATCH
 };
-sub Perlito5::Grammar::opt_name {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-    ($MATCH->{'bool'} = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    ((my  $last_pos) = $MATCH->{'to'});
-    if ((!(((do {
-    ((my  $m2) = $grammar->ident($str, $MATCH->{'to'}));
-    if (($m2->{'bool'})) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        if ((exists($MATCH->{'ident'}))) {
-            push(@{$MATCH->{'ident'}}, $m2 )
-        }
-        else {
-            ($MATCH->{'ident'} = [$m2])
-        };
-        1
-    }
-    else {
-        0
-    }
-}))))) {
-        ($MATCH->{'to'} = $last_pos)
-    };
-    1
-}))
-}))));
-    $MATCH
-};
 sub Perlito5::Grammar::args_sig {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -1430,7 +1398,85 @@ sub Perlito5::Grammar::prototype {
 }))));
     $MATCH
 };
-sub Perlito5::Grammar::sub_def {
+sub Perlito5::Grammar::anon_sub_def {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((((((((do {
+    ((my  $m2) = $grammar->prototype($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'prototype'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = $grammar->exp_stmts($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'exp_stmts'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
+    die('Syntax Error in anon sub');
+    1
+})))
+})))
+}))) && ((do {
+    ((my  $sig) = $MATCH->{'prototype'}->flat());
+    if (($sig eq '*undef*')) {
+        ($sig = undef())
+    };
+    ($MATCH->{'capture'} = Perlito5::AST::Sub->new(('name' => undef()), ('namespace' => undef()), ('sig' => $sig), ('block' => $MATCH->{'exp_stmts'}->flat())));
+    1
+})))
+}))
+}))));
+    $MATCH
+};
+sub Perlito5::Grammar::named_sub_def {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1439,10 +1485,10 @@ sub Perlito5::Grammar::sub_def {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     ((((((((((do {
-    ((my  $m2) = $grammar->opt_name($str, $MATCH->{'to'}));
+    ((my  $m2) = $grammar->ident($str, $MATCH->{'to'}));
     if (($m2->{'bool'})) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'opt_name'} = $m2);
+        ($MATCH->{'ident'} = $m2);
         1
     }
     else {
@@ -1502,12 +1548,12 @@ sub Perlito5::Grammar::sub_def {
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    die('Syntax Error in sub ' . chr(39), $MATCH->{'opt_name'}->flat(), chr(39));
+    die('Syntax Error in sub ' . chr(39), $MATCH->{'ident'}->flat(), chr(39));
     1
 })))
 })))
 }))) && ((do {
-    ((my  $name) = $MATCH->{'opt_name'}->flat());
+    ((my  $name) = $MATCH->{'ident'}->flat());
     ((my  $sig) = $MATCH->{'prototype'}->flat());
     if (($sig eq '*undef*')) {
         ($sig = undef())

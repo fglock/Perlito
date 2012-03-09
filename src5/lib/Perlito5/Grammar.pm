@@ -8,23 +8,23 @@ use Perlito5::Grammar::String;
 token is_newline {
     | \c10
     | \c13
-}
+};
 
 token not_newline {
     <!before \n> .
-}
+};
 
 token ident {
     <!before \d > <.word>+
-}
+};
 
 token full_ident {
     <.ident>  [ '::' <.ident> ]*
-}
+};
 
 token namespace_before_ident {
     <.ident> <before '::'>   [ '::' <.ident> <before '::'> ]*
-}
+};
 token optional_namespace_before_ident {
     | <namespace_before_ident> '::'
         { $MATCH->{"capture"} = $MATCH->{"namespace_before_ident"}->flat() }
@@ -32,17 +32,17 @@ token optional_namespace_before_ident {
         { $MATCH->{"capture"} = 'main' }
     | ''
         { $MATCH->{"capture"} = '' }
-}
+};
 
 token pod_pod_begin {
     |   \n '=cut' \N*
     |   . \N* <.pod_pod_begin>
-}
+};
 
 token pod_begin {
     |   \n '=end' \N*
     |   . \N* <.pod_begin>
-}
+};
 
 token ws {
     [
@@ -65,41 +65,41 @@ token ws {
         ]
     |   \s
     ]+
-}
+};
 
-token opt_ws  {  <.ws>?  }
-token opt_ws2 {  <.ws>?  }
-token opt_ws3 {  <.ws>?  }
+token opt_ws  {  <.ws>?  };
+token opt_ws2 {  <.ws>?  };
+token opt_ws3 {  <.ws>?  };
 
 token declarator {
      'my' | 'state' | 'our' | 'local'
-}
+};
 
-token exp_stmts2 { <exp_stmts> { $MATCH->{"capture"} = $MATCH->{"exp_stmts"}->flat() } }
+token exp_stmts2 { <exp_stmts> { $MATCH->{"capture"} = $MATCH->{"exp_stmts"}->flat() } };
 
 token exp {
     <Perlito5::Expression.exp_parse>
         { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.exp_parse"}->flat() }
-}
+};
 
 token exp2 {
     <Perlito5::Expression.exp_parse>
         { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.exp_parse"}->flat() }
-}
+};
 
 token opt_ident {
     | <ident>  { $MATCH->{"capture"} = $MATCH->{"ident"}->flat() }
     | ''       { $MATCH->{"capture"} = 'postcircumfix:<( )>' }
-}
+};
 
 token opt_type {
     |   '::'?  <full_ident>   { $MATCH->{"capture"} = $MATCH->{"full_ident"}->flat() }
     |   ''                    { $MATCH->{"capture"} = '' }
-}
+};
 
-token var_sigil     { \$ |\% |\@ |\& | \* }
+token var_sigil     { \$ |\% |\@ |\& | \* };
 
-token var_name      { <full_ident> | <digit> }
+token var_name      { <full_ident> | <digit> };
 
 token var_ident {
     <var_sigil> <optional_namespace_before_ident> <var_name>
@@ -110,27 +110,27 @@ token var_ident {
             name        => $MATCH->{"var_name"}->flat(),
         )
     }
-}
+};
 
 token exponent {
     [ 'e' | 'E' ]  [ '+' | '-' | '' ]  \d+
-}
+};
 
 token val_num {
     [   \. \d+    <.exponent>?
     |   \d+     [ <.exponent>  |   \. \d+  <.exponent>? ]
     ]
     { $MATCH->{"capture"} = Perlito5::AST::Val::Num->new( num => $MATCH->flat() ) }
-}
+};
 
 token digits {
     \d+
-}
+};
 
 token val_int {
     \d+
     { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => $MATCH->flat() ) }
-}
+};
 
 my @PKG;
 token exp_stmts {
@@ -142,25 +142,39 @@ token exp_stmts {
         $Perlito5::PKG_NAME = pop @PKG;
         $MATCH->{"capture"} = [ map( $_->capture, @{ $MATCH->{"Perlito5::Expression.delimited_statement"} } ) ]
     }
-}
-
-token opt_name {  <ident>?  }
+};
 
 token args_sig {
     [ ';' | '\\' | '[' | ']' | '*' | '+' | '@' | '%' | '$' | '&' ]*
-}
+};
 
 token prototype {
     |   <.opt_ws> \( <.opt_ws>  <args_sig>  <.opt_ws>  \)
         { $MATCH->{"capture"} = "" . $MATCH->{"args_sig"}->flat() }
     |   { $MATCH->{"capture"} = '*undef*' }   # default signature
-}
+};
 
-token sub_def {
-    <opt_name> <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
-    [   \}     | { die 'Syntax Error in sub \'', $MATCH->{"opt_name"}->flat(), '\'' } ]
+token anon_sub_def {
+    <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
+    [   \}     | { die 'Syntax Error in anon sub' } ]
     {
-        my $name = $MATCH->{"opt_name"}->flat();
+        my $sig  = $MATCH->{"prototype"}->flat();
+        $sig = undef if $sig eq '*undef*';
+        $MATCH->{"capture"} = Perlito5::AST::Sub->new(
+            name  => undef, 
+            namespace => undef,
+            sig   => $sig, 
+            block => $MATCH->{"exp_stmts"}->flat() 
+        ) 
+    }
+};
+
+
+token named_sub_def {
+    <ident> <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
+    [   \}     | { die 'Syntax Error in sub \'', $MATCH->{"ident"}->flat(), '\'' } ]
+    {
+        my $name = $MATCH->{"ident"}->flat();
         my $sig  = $MATCH->{"prototype"}->flat();
         $sig = undef if $sig eq '*undef*';
         my $namespace;  # TODO
@@ -181,7 +195,7 @@ token sub_def {
             block => $MATCH->{"exp_stmts"}->flat() 
         ) 
     }
-}
+};
 
 
 =begin

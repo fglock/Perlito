@@ -18,10 +18,10 @@ sub Perlito5::Grammar::Regex::token {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     (((((((do {
-    ((my  $m2) = Perlito5::Grammar->opt_name($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->{'to'}));
     if (($m2->{'bool'})) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar.opt_name'} = $m2);
+        ($MATCH->{'Perlito5::Grammar.ident'} = $m2);
         1
     }
     else {
@@ -47,8 +47,8 @@ sub Perlito5::Grammar::Regex::token {
         0
     }
 }))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ((my  $source) = ($MATCH->{'Perlito5::Grammar.opt_name'}->flat() . '{ ' . 'my $grammar = $_[0]; ' . 'my $str     = $_[1]; ' . 'my $pos     = $_[2]; ' . 'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' . '$MATCH->{"bool"} = ( ' . $MATCH->{'Perlito5::Grammar::Regex.rule'}->flat()->emit_perl5() . '); ' . '$MATCH; ' . '}'));
-    ((my  $ast) = Perlito5::Grammar->sub_def($source, 0));
+    ((my  $source) = ($MATCH->{'Perlito5::Grammar.ident'}->flat() . '{ ' . 'my $grammar = $_[0]; ' . 'my $str     = $_[1]; ' . 'my $pos     = $_[2]; ' . 'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' . '$MATCH->{"bool"} = ( ' . $MATCH->{'Perlito5::Grammar::Regex.rule'}->flat()->emit_perl5() . '); ' . '$MATCH; ' . '}'));
+    ((my  $ast) = Perlito5::Grammar->named_sub_def($source, 0));
     ($MATCH->{'capture'} = $ast->flat());
 ;
     1

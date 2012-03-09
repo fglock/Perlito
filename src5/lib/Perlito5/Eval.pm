@@ -75,7 +75,7 @@ sub eval {
         $ns = $self->{"namespace"} . '::';
     }
     else {
-        if ($self->{"sigil"} eq '@') && ($self->{"name"} eq 'ARGV') {
+        if (($self->{"sigil"} eq '@') && ($self->{"name"} eq 'ARGV')) {
             return @ARGV
         }
     }

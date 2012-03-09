@@ -113,7 +113,7 @@ package Perlito5::AST::Lit::Block;
     sub Perlito5::AST::Lit::Block::emit_perl5_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        (Perlito5::Perl5::tab($level) . 'sub {' . chr(10) . join(';' . chr(10), map($_->emit_perl5_indented(($level + 1)), @{$self->{'stmts'}})) . chr(10) . Perlito5::Perl5::tab($level) . '}')
+        (Perlito5::Perl5::tab($level) . 'for ($_) {' . chr(10) . join(';' . chr(10), map($_->emit_perl5_indented(($level + 1)), @{$self->{'stmts'}})) . chr(10) . Perlito5::Perl5::tab($level) . '}')
     }
 });
 package Perlito5::AST::Index;

@@ -91,10 +91,6 @@ package Perlito5::Expression;
             }
             if ($v->[1] eq 'methcall') {
                 # say "#   Perlito5::AST::Call ", ($v->[2])->perl;
-                if ($v->[3]){'end_block'} {
-                    # say "# pop_term: found end_block in Perlito5::AST::Call";
-                    unshift( @$num_stack, ($v->[3]){'end_block'} );
-                }
                 my $param_list = expand_list( ($v->[3]){'exp'} );
                 $v = Perlito5::AST::Call->new( invocant => undef, method => $v->[2], arguments => $param_list );
                 # say "#     ", $v->perl;
@@ -102,10 +98,6 @@ package Perlito5::Expression;
             }
             if ($v->[1] eq 'funcall') {
                 # say "#   Perlito5::AST::Apply ", ($v->[2])->perl;
-                if ($v->[4]){'end_block'} {
-                    # say "# pop_term: found end_block in Perlito5::AST::Apply";
-                    unshift( @$num_stack, ($v->[4]){'end_block'} );
-                }
                 my $param_list = expand_list( ($v->[4]){'exp'} );
                 $v = Perlito5::AST::Apply->new( code => $v->[3], arguments => $param_list, namespace => $v->[2] );
                 # say "#     ", $v->perl;
@@ -375,7 +367,7 @@ package Perlito5::Expression;
                   { $MATCH->{"capture"} = [ 'postfix_or_term',
                            'methcall',
                            $MATCH->{"Perlito5::Grammar.ident"}->flat(),
-                           { end_block => undef,
+                           { 
                              exp       => $MATCH->{"paren_parse"}->flat(),
                              terminated => 0,
                            },
@@ -388,7 +380,7 @@ package Perlito5::Expression;
                   }
                 ]
             ]
-    }
+    };
 
     token term_sigil {
         <Perlito5::Grammar.var_sigil>
@@ -423,51 +415,51 @@ package Perlito5::Expression;
                         ]
                     }
             ]
-    }
+    };
 
     token term_digit {
           <Perlito5::Grammar.val_num>    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.val_num"}->flat() ]  }  # 123.456
         | <Perlito5::Grammar.val_int>    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.val_int"}->flat() ]  }  # 123
-    }
+    };
 
     token term_ternary {
         '?'  <ternary5_parse> ':'
                     { $MATCH->{"capture"} = [ 'op',          '?? !!', $MATCH->{"ternary5_parse"}->flat()  ] }
-    }
+    };
     
     token term_paren {
         '('  <paren_parse>   ')'        { $MATCH->{"capture"} = [ 'postfix_or_term',  '( )',   $MATCH->{"paren_parse"}->flat()   ] }
-    }
+    };
 
     token term_square {
         '['  <square_parse>  ']'      { $MATCH->{"capture"} = [ 'postfix_or_term',  '[ ]',   $MATCH->{"square_parse"}->flat()  ] }
-    }
+    };
 
     token term_curly {
         '{'  <.Perlito5::Grammar.ws>?
                <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.ws>? '}'
                     { $MATCH->{"capture"} = [ 'postfix_or_term', 'block', $MATCH->{"Perlito5::Grammar.exp_stmts"}->flat() ] }
-    }
+    };
 
     token term_declarator {
         <Perlito5::Grammar.declarator> <.Perlito5::Grammar.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
             { $MATCH->{"capture"} = [ 'term', Perlito5::AST::Decl->new( decl => $MATCH->{"Perlito5::Grammar.declarator"}->flat(), type => $MATCH->{"Perlito5::Grammar.opt_type"}->flat(), var => $MATCH->{"Perlito5::Grammar.var_ident"}->flat() ) ] }
-    }
+    };
 
     token term_sub {
-        'sub' <.Perlito5::Grammar.ws> <Perlito5::Grammar.sub_def>
-                    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.sub_def"}->flat()     ] }
-    }
+        'sub' <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.anon_sub_def>
+                    { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.anon_sub_def"}->flat()     ] }
+    };
 
     token term_do {
         'do' <.Perlito5::Grammar.ws> <statement_parse>
                     { $MATCH->{"capture"} = [ 'term', Perlito5::AST::Do->new( block => $MATCH->{"statement_parse"}->flat() ) ] }
-    }
+    };
 
     token term_use {
         'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
             { $MATCH->{"capture"} = [ 'term', Perlito5::AST::Use->new( mod => $MATCH->{"Perlito5::Grammar.full_ident"}->flat() ) ] }
-    }
+    };
 
     token term_package {
         'package' <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
@@ -482,20 +474,20 @@ package Perlito5::Expression;
                      )
                    ]
             }
-    }
+    };
 
     token term_space {
         <.Perlito5::Grammar.ws>           { $MATCH->{"capture"} = [ 'space',   ' ' ] }
-    }
+    };
 
     token has_newline_after {
         |    '#'
         |    <.Perlito5::Grammar.is_newline>
         |    <.Perlito5::Grammar.space>  <.has_newline_after>
-    }
+    };
     token has_no_comma_or_colon_after {
         <.Perlito5::Grammar.ws> <!before [ ',' | ':' ]> .
-    }
+    };
 
     my $Argument_end_token = [ 
         # 0 chars
@@ -645,6 +637,23 @@ package Perlito5::Expression;
     my $Expr_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
 
+    sub op_parse_spc {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+        my $last_is_term = $_[3];
+
+        my $m = Perlito5::Precedence->op_parse($str, $pos, $last_is_term);
+        if (!$m->{"bool"}) {
+            return $m;
+        }
+        my $spc = Perlito5::Grammar->ws($str, $m->{"to"});
+        if ($spc->{"bool"}) {
+            $m->{"to"} = $spc->{"to"};
+        }
+        return $m;
+    }
+
     sub argument_parse {
         my $self = $_[0];
         my $str = $_[1];
@@ -657,6 +666,7 @@ package Perlito5::Expression;
         my $lexer_stack = [];
         my $terminated = 0;
         my $last_token_was_space = 1;
+        my $last_is_term;
         my $get_token = sub {
             my $v;
             if (scalar(@$lexer_stack)) {
@@ -671,12 +681,13 @@ package Perlito5::Expression;
                 }
             }
             else {
-                my $m = Perlito5::Precedence->op_parse($str, $last_pos);
+                my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
                 # say "# list lexer got: " . $m->perl;
                 if (!$m->bool) {
                     return [ 'end', '*end*' ];
                 }
                 $v = $m->flat();
+                $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
                 if  (  $is_first_token
                     && ($v->[0] eq 'op')
                     && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
@@ -727,7 +738,6 @@ package Perlito5::Expression;
                 'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
                 capture => {
                     exp        => '*undef*',
-                    end_block  => undef,
                     terminated => undef } )
         }
         # if the expression terminates in a block, the block was pushed to num_stack
@@ -747,7 +757,6 @@ package Perlito5::Expression;
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
             capture => {
                 exp        => $result,
-                end_block  => $block,
                 terminated => $terminated } )
     }
 
@@ -764,6 +773,7 @@ package Perlito5::Expression;
         my $lexer_stack = [];
         my $terminated = 0;
         my $last_token_was_space = 1;
+        my $last_is_term;
         my $get_token = sub {
             my $v;
             if (scalar(@$lexer_stack)) {
@@ -778,12 +788,13 @@ package Perlito5::Expression;
                 }
             }
             else {
-                my $m = Perlito5::Precedence->op_parse($str, $last_pos);
+                my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
                 # say "# list lexer got: " . $m->perl;
                 if (!$m->bool) {
                     return [ 'end', '*end*' ];
                 }
                 $v = $m->flat();
+                $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
                 if  (  $is_first_token
                     && ($v->[0] eq 'op')
                     && !(Perlito5::Precedence::is_fixity_type('prefix', $v->[1]))
@@ -834,27 +845,13 @@ package Perlito5::Expression;
                 'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
                 capture => {
                     exp        => '*undef*',
-                    end_block  => undef,
                     terminated => undef } )
         }
-        # if the expression terminates in a block, the block was pushed to num_stack
-        my $block;
-        if (scalar(@$res) > 1) {
-            $block = pop @$res; # pop_term($res);
-            $block = Perlito5::AST::Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
-            # say "# list exp terminated with a block: ", $block->perl;
-        }
         my $result = pop_term($res);
-        if (scalar(@$res) > 0) {
-            $block = pop @$res; # pop_term($res);
-            $block = Perlito5::AST::Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
-            # say "# list exp terminated with a block (2): ", $block->perl;
-        }
         return Perlito5::Match->new(
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
             capture => {
                 exp        => $result,
-                end_block  => $block,
                 terminated => $terminated } )
     }
 
@@ -867,12 +864,14 @@ package Perlito5::Expression;
         # say "# circumfix_parse input: ",$str," at ",$pos;
         my $expr;
         my $last_pos = $pos;
+        my $last_is_term;
         my $get_token = sub {
-            my $m = Perlito5::Precedence->op_parse($str, $last_pos);
+            my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
             if (!$m->bool) {
                 die "Expected closing delimiter: ", $delimiter, ' near ', $last_pos;
             }
             my $v = $m->flat();
+            $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
             if ($v->[0] ne 'end') {
                 $last_pos = $m->to;
             }
@@ -938,37 +937,25 @@ package Perlito5::Expression;
         my $last_pos = $pos;
         my $lexer_stack = [];
         my $terminated = 0;
+        my $last_is_term;
         my $get_token = sub {
             my $v;
             if (scalar(@$lexer_stack)) {
                 $v = pop @$lexer_stack;
             }
             else {
-                my $m = Perlito5::Precedence->op_parse($str, $last_pos);
+                my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
                 # say "# exp lexer got: " . $m->perl;
                 if (!$m->bool) {
                     return [ 'end', '*end*' ];
                 }
                 $v = $m->flat();
+                $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
                 if ($v->[0] ne 'end') {
                     $last_pos = $m->to;
                 }
             }
             # say "# exp_lexer got " . $v->perl;
-
-            if  (  ( $v->[0] eq 'postfix_or_term' && $v->[1] eq 'block' )
-                || ( $v->[0] eq 'term' && ref($v->[1]) eq 'Perlito5::AST::Sub' )
-                || ( $v->[0] eq 'term' && ref($v->[1]) eq 'Perlito5::AST::Do' )
-                || ( $v->[0] eq 'term' && ref($v->[1]) eq 'Perlito5::AST::CompUnit' )
-                )
-            {
-                # a block followed by newline terminates the expression
-                if ($self->has_newline_after($str, $last_pos)->bool) {
-                    $terminated = 1;
-                    push( @$lexer_stack,  [ 'end', '*end*' ] );
-                }
-            }
-
             return $v;
         };
         my $prec = Perlito5::Precedence->new(
@@ -983,27 +970,12 @@ package Perlito5::Expression;
             # say "# exp terminated with false";
             return Perlito5::Match->new(bool => 0);
         }
-        # if the expression terminates in a block, the block was pushed to num_stack
-        my $block;
-        if (scalar(@$res) > 1) {
-            $block = pop @$res; # pop_term($res);
-            $block = Perlito5::AST::Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
-            # say "# exp terminated with a block: ", $block->perl;
-        }
         my $result = pop_term($res);
-        if (scalar(@$res) > 0) {
-            $block = pop @$res; # pop_term($res);
-            if (!( ref($block) eq 'Perlito5::AST::Lit::Block' )) {
-                $block = Perlito5::AST::Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
-            }
-            # say "# exp terminated with a block (2): ", $block->perl;
-        }
         # say "# exp_parse result: ", $result->perl;
         return Perlito5::Match->new(
             'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
             capture => {
                 exp        => $result,
-                end_block  => $block,
                 terminated => $terminated } )
     }
 
@@ -1013,11 +985,13 @@ package Perlito5::Expression;
         | <Perlito5::Grammar.when>   { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.when"}->flat()   }
         | <Perlito5::Grammar.for>    { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.for"}->flat()    }
         | <Perlito5::Grammar.while>  { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.while"}->flat()  }
-    }
+        | 'sub' <.Perlito5::Grammar.ws> <Perlito5::Grammar.named_sub_def>
+                              { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.named_sub_def"}->flat() }
+    };
 
     token statement_modifier {
         'if' | 'unless' | 'when' | 'foreach' | 'for' | 'while'
-    }
+    };
 
     token delimited_statement {
         <.Perlito5::Grammar.ws>?
@@ -1025,7 +999,7 @@ package Perlito5::Expression;
         | <statement_parse> ';'? <.Perlito5::Grammar.ws>?
             { $MATCH->{"capture"} = $MATCH->{"statement_parse"}->flat() }
         ]
-    }
+    };
 
     sub statement_parse {
         my $self = $_[0];
@@ -1037,11 +1011,37 @@ package Perlito5::Expression;
         my $last_pos = $pos;
         my $lexer_stack = [];
         my $res;
+
+        # the rule for subroutines seems to be: 
+        # named subs are statements,
+        # anonymous subs are plain terms.
+
         $res = $self->exp_stmt($str, $pos);
-        if ($res->bool) {
+        if ($res->{"bool"}) {
             # say "# statement result: ", $res->perl;
             return $res;
         }
+
+        if ( substr($str, $pos, 1) eq '{' ) {
+            # do we recognize a bare block in this position?
+            # warn "maybe bareblock at $pos";
+            my $m = $self->term_curly($str, $pos);
+            if ($m->{"bool"}) {
+                my $v = $m->flat();
+
+                # TODO - this is not recognized as a statement: { 123 => 4;}
+                # TODO - this is not recognized as a syntax error: { 123 => 4 }{2}
+
+                $v = Perlito5::AST::Lit::Block->new( stmts => $v->[2], sig => $v->[3] );
+                $v = block_or_hash($v);
+
+                if ( ref($v) eq 'Perlito5::AST::Lit::Block' ) {
+                    $m->{"capture"} = $v;
+                    return $m;
+                }
+            }
+        }
+
         $res = $self->exp_parse($str, $pos);
         if (!$res->bool) {
             # say "# not a statement or expression";
@@ -1050,10 +1050,6 @@ package Perlito5::Expression;
         if ( ref( $res->flat()->{'exp'} ) eq 'Perlito5::AST::Lit::Block' ) {
             # standalone block
             $res->flat()->{'exp'} = Perlito5::AST::Do->new(block => $res->flat()->{'exp'});
-        }
-        if ($res->flat()->{'end_block'}) {
-            # warn "Block: ", $res->flat()->{'end_block'}->perl;
-            die "Unexpected block after expression near ", $pos;
         }
         if ($res->flat()->{'terminated'}) {
             # say "# statement expression terminated result: ", $res->perl;
@@ -1072,10 +1068,6 @@ package Perlito5::Expression;
         # say "# statement modifier [", $modifier->flat(), "] exp: ", $modifier_exp->perl;
         if (!$modifier_exp->bool) {
             die "Expected expression after '", $modifier->flat(), "'";
-        }
-        if ($modifier_exp->flat()->{'end_block'}) {
-            # warn "Block: ", $modifier_exp->flat()->{'end_block'}->perl;
-            die "Unexpected block after expression near ", $modifier->to;
         }
         # TODO - require a statement terminator
         # say "# statement_parse modifier result: ", $modifier_exp->perl;

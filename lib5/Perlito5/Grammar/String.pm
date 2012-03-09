@@ -28,6 +28,9 @@ Perlito5::Precedence::add_term(('qq' => sub {
 Perlito5::Precedence::add_term(('qw' => sub {
     Perlito5::Grammar::String->term_qw_quote($_[0], $_[1])
 }));
+Perlito5::Precedence::add_term(('/' => sub {
+    Perlito5::Grammar::String->term_slash_quote($_[0], $_[1])
+}));
 sub Perlito5::Grammar::String::term_double_quote {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -279,6 +282,32 @@ sub Perlito5::Grammar::String::term_qw_quote {
 }))))
 })))
 }))) && ((do {
+    ((my  $m2) = $grammar->qw_quote_parse($str, $MATCH->{'to'}));
+    if (($m2->{'bool'})) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'qw_quote_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'capture'} = ['term', $MATCH->{'qw_quote_parse'}->flat()]);
+    1
+})))
+}))
+}))));
+    $MATCH
+};
+sub Perlito5::Grammar::String::term_slash_quote {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    ((((('/' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $m2) = $grammar->qw_quote_parse($str, $MATCH->{'to'}));
     if (($m2->{'bool'})) {
         ($MATCH->{'to'} = $m2->{'to'});

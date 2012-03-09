@@ -10,27 +10,32 @@ Perlito5::Precedence::add_term( '<<' => sub { Perlito5::Grammar::String->here_do
 Perlito5::Precedence::add_term( 'q'  => sub { Perlito5::Grammar::String->term_q_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'qq' => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'qw' => sub { Perlito5::Grammar::String->term_qw_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( '/'  => sub { Perlito5::Grammar::String->term_slash_quote($_[0], $_[1]) } );
 
 token term_double_quote {
     \" <double_quote_parse>
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"double_quote_parse"}->flat() ]  }
-}
+};
 token term_single_quote {
     \' <single_quote_parse>
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"single_quote_parse"}->flat() ]  }
-}
+};
 token term_q_quote {
     'q' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <q_quote_parse>
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"q_quote_parse"}->flat() ]  }
-}
+};
 token term_qq_quote {
     'qq' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qq_quote_parse>
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"qq_quote_parse"}->flat() ]  }
-}
+};
 token term_qw_quote {
     'qw' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qw_quote_parse>
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"qw_quote_parse"}->flat() ]  }
-}
+};
+token term_slash_quote {
+    '/' <qw_quote_parse>
+        { $MATCH->{"capture"} = [ 'term', $MATCH->{"qw_quote_parse"}->flat() ]  }
+};
 
 
 my %pair = (
@@ -206,7 +211,7 @@ sub here_doc_wanted {
 token newline {
     | \c10 \c13?
     | \c13 \c10?
-}
+};
 
 
 sub here_doc {
@@ -275,14 +280,14 @@ sub double_quote_parse {
 
 token char_any {
     .
-}
+};
 
 token single_quoted_unescape {
     |  \\ \\
         { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => "\\" ) }
     |  \\ \'
         { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => '\'' ) }
-}
+};
 
 token double_quoted_unescape {
     |  c
@@ -299,7 +304,7 @@ token double_quoted_unescape {
         { $MATCH->{"capture"} = chr(9) }
     |  <char_any>
         { $MATCH->{"capture"} = $MATCH->{"char_any"}->flat() }
-}
+};
 
 token double_quoted_buf {
     | <before \$ >
@@ -324,7 +329,7 @@ token double_quoted_buf {
         ]
     | \\ <double_quoted_unescape>
         { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"double_quoted_unescape"}->flat() ) }
-}
+};
 
 1;
 

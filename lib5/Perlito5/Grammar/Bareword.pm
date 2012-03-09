@@ -31,10 +31,8 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     if ($namespace) {
         ($full_name = ($namespace . '::' . $name))
     };
-    (my  $has_space_after);
     ((my  $m) = Perlito5::Grammar->ws($str, $p));
     if (($m->{'bool'})) {
-        ($has_space_after = 1);
         ($p = $m->{'to'})
     };
     if (((substr($str, $p, 2) eq '=>'))) {
@@ -58,8 +56,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             ($sig = $Perlito5::CORE_PROTO->{$effective_name})
         }
         else {
-            ($m_name->{'capture'} = ['postfix_or_term', 'funcall_no_params', $namespace, $name]);
-            return ($m_name)
+            ($sig = undef())
         }
     };
     if ((defined($sig))) {
@@ -128,13 +125,21 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             return ($m)
         }
     };
-    if (($has_space_after)) {
-        ((my  $m_list) = Perlito5::Expression->list_parse($str, $p));
-        if (($m_list->{'bool'})) {
-            ($m_name->{'capture'} = ['postfix_or_term', 'funcall', $namespace, $name, $m_list->flat()]);
-            ($m_name->{'to'} = $m_list->{'to'});
-            return ($m_name)
-        }
+    if (((substr($str, $p, 1) eq '('))) {
+        ($m = Perlito5::Expression->term_paren($str, $p));
+        if ((!($m->{'bool'}))) {
+            return ($m)
+        };
+        ((my  $arg) = $m->{'capture'}->[2]);
+        ($arg = Perlito5::Expression::expand_list($arg));
+        ($m->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $name), ('namespace' => $namespace), ('arguments' => $arg))]);
+        return ($m)
+    };
+    ((my  $m_list) = Perlito5::Expression->list_parse($str, $p));
+    if (($m_list->{'bool'})) {
+        ($m_name->{'capture'} = ['postfix_or_term', 'funcall', $namespace, $name, $m_list->flat()]);
+        ($m_name->{'to'} = $m_list->{'to'});
+        return ($m_name)
     };
     ($m_name->{'capture'} = ['postfix_or_term', 'funcall_no_params', $namespace, $name]);
     return ($m_name)

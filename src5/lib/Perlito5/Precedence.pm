@@ -15,7 +15,6 @@ sub new {
 my $Operator = {};
 my $Precedence = {};    # integer 0..100
 my $Assoc = {};         # right, left, list
-my $Allow_space_before = {};
 
 sub is_assoc_type {
     my $assoc_type = shift;
@@ -41,6 +40,21 @@ sub is_ident_middle {
     || ($c eq '_')
 }
 
+my @Parsed_op_chars = (2, 1);
+my @Parsed_op = (
+    { # 0 chars
+    },
+    { # 1 char
+        '?'  => sub { Perlito5::Expression->term_ternary($_[0], $_[1]) },
+        '('  => sub { Perlito5::Expression->term_paren($_[0], $_[1]) },
+        '['  => sub { Perlito5::Expression->term_square($_[0], $_[1]) },
+        '{'  => sub { Perlito5::Expression->term_curly($_[0], $_[1]) },
+    },
+    { # 2 chars
+        '->' => sub { Perlito5::Expression->term_arrow($_[0], $_[1]) },
+    },
+);
+
 my @Term_chars = (7, 5, 3, 2, 1);
 my @Term = (
     # 0 chars
@@ -64,11 +78,6 @@ my @Term = (
         '8'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
         '9'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
 
-        '?'  => sub { Perlito5::Expression->term_ternary($_[0], $_[1]) },
-        '('  => sub { Perlito5::Expression->term_paren($_[0], $_[1]) },
-        '['  => sub { Perlito5::Expression->term_square($_[0], $_[1]) },
-        '{'  => sub { Perlito5::Expression->term_curly($_[0], $_[1]) },
-
         '#'     => sub { Perlito5::Expression->term_space($_[0], $_[1]) }, 
         chr(9)  => sub { Perlito5::Expression->term_space($_[0], $_[1]) }, 
         chr(10) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },
@@ -77,7 +86,7 @@ my @Term = (
         chr(32) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },
     },
     # 2 chars
-    {   '->' => sub { Perlito5::Expression->term_arrow($_[0], $_[1]) },
+    {
         'my' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
         'do' => sub { Perlito5::Expression->term_do($_[0], $_[1]) },
     },
@@ -116,6 +125,7 @@ sub op_parse {
     my $self = shift;
     my $str  = shift;
     my $pos  = shift;
+    my $last_is_term = shift;
 
     for my $len ( @$End_token_chars ) {
         my $term = substr($str, $pos, $len);
@@ -137,20 +147,32 @@ sub op_parse {
         }
     }
 
-    for my $len ( @Term_chars ) {
-        my $term = substr($str, $pos, $len);
-        if (exists($Term[$len]{$term})) {
-            # my $c1 = substr($str, $pos+$len-1, 1);
-            # my $c2 = substr($str, $pos+$len, 1);
-            # if (!(is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ))) {
-            #     # it looks like a token, and it is not one of these cases:
-            #     #   if_more
-            #     #   if(...)
-                my $m = $Term[$len]{$term}->($str, $pos);
-                return $m if $m->{"bool"};
-            # }
+    if ( !$last_is_term ) {
+        for my $len ( @Term_chars ) {
+            my $term = substr($str, $pos, $len);
+            if (exists($Term[$len]{$term})) {
+                # my $c1 = substr($str, $pos+$len-1, 1);
+                # my $c2 = substr($str, $pos+$len, 1);
+                # if (!(is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ))) {
+                #     # it looks like a token, and it is not one of these cases:
+                #     #   if_more
+                #     #   if(...)
+                    my $m = $Term[$len]{$term}->($str, $pos);
+                    return $m if $m->{"bool"};
+                # }
+            }
         }
     }
+
+    # check for operators that need special parsing
+    for my $len ( @Parsed_op_chars ) {
+        my $op = substr($str, $pos, $len);
+        if (exists($Parsed_op[$len]{$op})) {
+            my $m = $Parsed_op[$len]{$op}->($str, $pos);
+            return $m if $m->{"bool"};
+        }
+    }
+
 
     for my $len ( @Op_chars ) {
         my $op = substr($str, $pos, $len);
@@ -189,7 +211,6 @@ sub add_op {
     $Operator->{$fixity}{$name} = 1;
     $Precedence->{$name}        = $precedence;
     $Assoc->{$assoc}{$name}     = 1;
-    $Allow_space_before->{$fixity}{$name} = $param->{'no_space_before'} ? 0 : 1;
     $Op[ length($name) ]{$name} = 1;
 }
 
@@ -228,36 +249,38 @@ sub add_op {
 # left        or xor
 
 my $prec = 100;
-add_op( 'postfix', '.( )',               $prec, { no_space_before => 1 } );
-add_op( 'postfix', '.[ ]',               $prec, { no_space_before => 1 } );
-add_op( 'postfix', '.{ }',               $prec, { no_space_before => 1 } );
-add_op( 'postfix', '( )',                $prec, { no_space_before => 1 } );
-add_op( 'postfix', '[ ]',                $prec, { no_space_before => 1 } );
-add_op( 'postfix', 'funcall',            $prec, { no_space_before => 1 } );
-add_op( 'postfix', 'funcall_no_params',  $prec, { no_space_before => 1 } );
-add_op( 'postfix', 'methcall',           $prec, { no_space_before => 1 } );
-add_op( 'postfix', 'methcall_no_params', $prec, { no_space_before => 1 } );
-add_op( 'postfix', 'block',              $prec, { no_space_before => 1 } );
-add_op( 'postfix', 'hash',               $prec, { no_space_before => 1 } );
-$prec = $prec - 1;
-add_op( 'prefix',   '++',  $prec );
-add_op( 'prefix',   '--',  $prec );
-add_op( 'postfix',  '++',  $prec, { no_space_before => 1 } );
-add_op( 'postfix',  '--',  $prec, { no_space_before => 1 } );
-$prec = $prec - 1;
-add_op( 'infix',    '**',  $prec, { assoc => 'right' } );
-$prec = $prec - 1;
-add_op( 'prefix',   '\\',  $prec );
-add_op( 'prefix',   '+',   $prec );
-add_op( 'prefix',   '-',   $prec );
-add_op( 'prefix',   '~',   $prec );
+add_op( 'postfix', '.( )',               $prec, );
+add_op( 'postfix', '.[ ]',               $prec, );
+add_op( 'postfix', '.{ }',               $prec, );
+add_op( 'postfix', '( )',                $prec, );
+add_op( 'postfix', '[ ]',                $prec, );
+add_op( 'postfix', 'funcall',            $prec, );
+add_op( 'postfix', 'funcall_no_params',  $prec, );
+add_op( 'postfix', 'methcall',           $prec, );
+add_op( 'postfix', 'methcall_no_params', $prec, );
+add_op( 'postfix', 'block',              $prec, );
+add_op( 'postfix', 'hash',               $prec, );
 add_op( 'prefix',   '$',   $prec );
 add_op( 'prefix',   '&',   $prec );
 add_op( 'prefix',   '*',   $prec );
 add_op( 'prefix',   '@',   $prec );
 add_op( 'prefix',   '%',   $prec );
+
+$prec = $prec - 1;
+add_op( 'prefix',   '++',  $prec );
+add_op( 'prefix',   '--',  $prec );
+add_op( 'postfix',  '++',  $prec,);
+add_op( 'postfix',  '--',  $prec,);
+
+$prec = $prec - 1;
+add_op( 'infix',    '**',  $prec, { assoc => 'right' } );
+
+$prec = $prec - 1;
+add_op( 'prefix',   '\\',  $prec );
+add_op( 'prefix',   '+',   $prec );
+add_op( 'prefix',   '-',   $prec );
+add_op( 'prefix',   '~',   $prec );
 add_op( 'prefix',   '!',   $prec );
-add_op( 'prefix',   '?',   $prec );
 
 $prec = $prec - 1;
 add_op( 'infix',    '=~',  $prec );
@@ -268,14 +291,17 @@ add_op( 'infix',    '*',   $prec );
 add_op( 'infix',    '/',   $prec );
 add_op( 'infix',    '%',   $prec );
 add_op( 'infix',    'x',   $prec );
-$prec = $prec - 1;
+
 $prec = $prec - 1;
 add_op( 'infix',    '+',   $prec );
 add_op( 'infix',    '-',   $prec );
 add_op( 'infix',    '.',   $prec, { assoc => 'list' } );
+
 $prec = $prec - 1;
 add_op( 'infix',    '<<',  $prec );
 add_op( 'infix',    '>>',  $prec );
+
+# named unary operators - these are parsed by the "Grammar::Bareword" module
 
 $prec = $prec - 1;
 add_op( 'infix',    'lt',  $prec, { assoc => 'chain' } );
@@ -369,16 +395,15 @@ sub precedence_parse {
     my $op_stack  = [];   # [category, name]
     my $num_stack = [];
     my $last      = ['op', '*start*'];
-    my $last_has_space = 0;
     my $token     = $get_token->();
     # say "# precedence get_token: (0) ", $token->perl;
-    if ($token->[0]) eq 'space' {
+    if ($token->[0] eq 'space') {
         $token = $get_token->()
     }
-    while (defined($token)) && ($token->[0] ne 'end') {
+    while ((defined($token)) && ($token->[0] ne 'end')) {
         # say "# precedence      last: (1) ", $last->perl;
         # say "# precedence get_token: (1) ", $token->perl;
-        if ($token->[1] eq ',') && ( ($last->[1] eq '*start*') || ($last->[1] eq ',') ) {
+        if (($token->[1] eq ',') && ( ($last->[1] eq '*start*') || ($last->[1] eq ',') )) {
             # allow (,,,)
             push( @$num_stack, ['term', undef] );
         }
@@ -386,21 +411,18 @@ sub precedence_parse {
             $token->[0] = 'prefix';
             unshift( @$op_stack, $token);
         }
-        elsif ($Operator->{'postfix'}){$token->[1]} && is_term($last)
-            && (  $Allow_space_before->{'postfix'}{$token->[1]}
-               || !($last_has_space)
-               )
+        elsif ( ($Operator->{'postfix'}){$token->[1]} && is_term($last) )
         {
             my $pr = $Precedence->{$token->[1]};
-            while scalar(@$op_stack) && ($pr <= $Precedence->{ ($op_stack->[0])[1] }) {
+            while (scalar(@$op_stack) && ($pr <= $Precedence->{ ($op_stack->[0])[1] })) {
                 $reduce->($op_stack, $num_stack);
             }
-            if ($token->[0]) ne 'postfix_or_term' {
+            if ($token->[0] ne 'postfix_or_term') {
                 $token->[0] = 'postfix';
             }
             unshift( @$op_stack, $token);
         }
-        elsif ($token->[1] eq 'block') && is_term($last) && $last_has_space {
+        elsif (($token->[1] eq 'block') && is_term($last)) {
             # a block in this position terminates the current expression
             # say "# there is a block after the expression: ", $token->perl;
             while (scalar(@$op_stack)) {
@@ -412,14 +434,9 @@ sub precedence_parse {
             return $num_stack;
         }
         elsif (is_term($token)) {
-            # say "# ** two terms in a row ";
-            # say "#      last:  ", $last->perl;
-            # say "#      token: ", $token->perl;
-            # say "#      space: ", $last_has_space;
             if (is_term($last)) {
                 say "#      last:  ", $last;
                 say "#      token: ", $token;
-                say "#      space: ", $last_has_space;
                 die "Value tokens must be separated by an operator";
             }
             $token->[0] = 'term';
@@ -453,10 +470,6 @@ sub precedence_parse {
         # say "# precedence get_token: (2) ", $token->perl;
         if ($token->[0] eq 'space') {
             $token = $get_token->();
-            $last_has_space = 1;
-        }
-        else {
-            $last_has_space = 0;
         }
     }
     if (defined($token) && ($token->[0] ne 'end')) {

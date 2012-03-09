@@ -152,7 +152,7 @@ package Perlito5::AST::Lit::Block;
         my $self = $_[0];
         my $level = $_[1];
         
-          Perlito5::Perl5::tab($level) . "sub \{\n"
+          Perlito5::Perl5::tab($level) . "for (\$_) {\n"
         .   join(";\n", map( $_->emit_perl5_indented( $level + 1 ), @{$self->{"stmts"}} )) . "\n"
         . Perlito5::Perl5::tab($level) . "}"
     }

@@ -15,7 +15,6 @@ sub Perlito5::Precedence::new {
 ((my  $Operator) = {});
 ((my  $Precedence) = {});
 ((my  $Assoc) = {});
-((my  $Allow_space_before) = {});
 sub Perlito5::Precedence::is_assoc_type {
     ((my  $assoc_type) = shift());
     ((my  $op_name) = shift());
@@ -34,6 +33,18 @@ sub Perlito5::Precedence::is_ident_middle {
     ((my  $c) = shift());
     ((((($c ge 'a') && ($c le 'z'))) || ((($c ge '0') && ($c le '9')))) || (($c eq '_')))
 };
+((my  @Parsed_op_chars) = (2, 1));
+((my  @Parsed_op) = ({}, {('?' => sub {
+    Perlito5::Expression->term_ternary($_[0], $_[1])
+}), ('(' => sub {
+    Perlito5::Expression->term_paren($_[0], $_[1])
+}), ('[' => sub {
+    Perlito5::Expression->term_square($_[0], $_[1])
+}), ('{' => sub {
+    Perlito5::Expression->term_curly($_[0], $_[1])
+})}, {('->' => sub {
+    Perlito5::Expression->term_arrow($_[0], $_[1])
+})}));
 ((my  @Term_chars) = (7, 5, 3, 2, 1));
 ((my  @Term) = ({}, {('$' => sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
@@ -67,14 +78,6 @@ sub Perlito5::Precedence::is_ident_middle {
     Perlito5::Expression->term_digit($_[0], $_[1])
 }), ('9' => sub {
     Perlito5::Expression->term_digit($_[0], $_[1])
-}), ('?' => sub {
-    Perlito5::Expression->term_ternary($_[0], $_[1])
-}), ('(' => sub {
-    Perlito5::Expression->term_paren($_[0], $_[1])
-}), ('[' => sub {
-    Perlito5::Expression->term_square($_[0], $_[1])
-}), ('{' => sub {
-    Perlito5::Expression->term_curly($_[0], $_[1])
 }), ('#' => sub {
     Perlito5::Expression->term_space($_[0], $_[1])
 }), (chr(9) => sub {
@@ -87,9 +90,7 @@ sub Perlito5::Precedence::is_ident_middle {
     Perlito5::Expression->term_space($_[0], $_[1])
 }), (chr(32) => sub {
     Perlito5::Expression->term_space($_[0], $_[1])
-})}, {('->' => sub {
-    Perlito5::Expression->term_arrow($_[0], $_[1])
-}), ('my' => sub {
+})}, {('my' => sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
 }), ('do' => sub {
     Perlito5::Expression->term_do($_[0], $_[1])
@@ -119,6 +120,7 @@ sub Perlito5::Precedence::op_parse {
     ((my  $self) = shift());
     ((my  $str) = shift());
     ((my  $pos) = shift());
+    ((my  $last_is_term) = shift());
     for my $len (@{$End_token_chars}) {
         ((my  $term) = substr($str, $pos, $len));
         if ((exists($End_token->[$len]->{$term}))) {
@@ -129,10 +131,21 @@ sub Perlito5::Precedence::op_parse {
             }
         }
     };
-    for my $len (@Term_chars) {
-        ((my  $term) = substr($str, $pos, $len));
-        if ((exists($Term[$len]->{$term}))) {
-            ((my  $m) = $Term[$len]->{$term}->($str, $pos));
+    if ((!($last_is_term))) {
+        for my $len (@Term_chars) {
+            ((my  $term) = substr($str, $pos, $len));
+            if ((exists($Term[$len]->{$term}))) {
+                ((my  $m) = $Term[$len]->{$term}->($str, $pos));
+                if ($m->{'bool'}) {
+                    return ($m)
+                }
+            }
+        }
+    };
+    for my $len (@Parsed_op_chars) {
+        ((my  $op) = substr($str, $pos, $len));
+        if ((exists($Parsed_op[$len]->{$op}))) {
+            ((my  $m) = $Parsed_op[$len]->{$op}->($str, $pos));
             if ($m->{'bool'}) {
                 return ($m)
             }
@@ -162,26 +175,30 @@ sub Perlito5::Precedence::add_op {
     ($Operator->{$fixity}->{$name} = 1);
     ($Precedence->{$name} = $precedence);
     ($Assoc->{$assoc}->{$name} = 1);
-    ($Allow_space_before->{$fixity}->{$name} = ($param->{'no_space_before'} ? 0 : 1));
     ($Op[length($name)]->{$name} = 1)
 };
 ((my  $prec) = 100);
-add_op('postfix', '.( )', $prec, {('no_space_before' => 1)});
-add_op('postfix', '.[ ]', $prec, {('no_space_before' => 1)});
-add_op('postfix', '.{ }', $prec, {('no_space_before' => 1)});
-add_op('postfix', '( )', $prec, {('no_space_before' => 1)});
-add_op('postfix', '[ ]', $prec, {('no_space_before' => 1)});
-add_op('postfix', 'funcall', $prec, {('no_space_before' => 1)});
-add_op('postfix', 'funcall_no_params', $prec, {('no_space_before' => 1)});
-add_op('postfix', 'methcall', $prec, {('no_space_before' => 1)});
-add_op('postfix', 'methcall_no_params', $prec, {('no_space_before' => 1)});
-add_op('postfix', 'block', $prec, {('no_space_before' => 1)});
-add_op('postfix', 'hash', $prec, {('no_space_before' => 1)});
+add_op('postfix', '.( )', $prec);
+add_op('postfix', '.[ ]', $prec);
+add_op('postfix', '.{ }', $prec);
+add_op('postfix', '( )', $prec);
+add_op('postfix', '[ ]', $prec);
+add_op('postfix', 'funcall', $prec);
+add_op('postfix', 'funcall_no_params', $prec);
+add_op('postfix', 'methcall', $prec);
+add_op('postfix', 'methcall_no_params', $prec);
+add_op('postfix', 'block', $prec);
+add_op('postfix', 'hash', $prec);
+add_op('prefix', '$', $prec);
+add_op('prefix', '&', $prec);
+add_op('prefix', '*', $prec);
+add_op('prefix', '@', $prec);
+add_op('prefix', '%', $prec);
 ($prec = ($prec - 1));
 add_op('prefix', '++', $prec);
 add_op('prefix', '--', $prec);
-add_op('postfix', '++', $prec, {('no_space_before' => 1)});
-add_op('postfix', '--', $prec, {('no_space_before' => 1)});
+add_op('postfix', '++', $prec);
+add_op('postfix', '--', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '**', $prec, {('assoc' => 'right')});
 ($prec = ($prec - 1));
@@ -189,13 +206,7 @@ add_op('prefix', chr(92), $prec);
 add_op('prefix', '+', $prec);
 add_op('prefix', '-', $prec);
 add_op('prefix', '~', $prec);
-add_op('prefix', '$', $prec);
-add_op('prefix', '&', $prec);
-add_op('prefix', '*', $prec);
-add_op('prefix', '@', $prec);
-add_op('prefix', '%', $prec);
 add_op('prefix', '!', $prec);
-add_op('prefix', '?', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '=~', $prec);
 add_op('infix', '!~', $prec);
@@ -204,7 +215,6 @@ add_op('infix', '*', $prec);
 add_op('infix', '/', $prec);
 add_op('infix', '%', $prec);
 add_op('infix', 'x', $prec);
-($prec = ($prec - 1));
 ($prec = ($prec - 1));
 add_op('infix', '+', $prec);
 add_op('infix', '-', $prec);
@@ -289,13 +299,12 @@ sub Perlito5::Precedence::precedence_parse {
     ((my  $op_stack) = []);
     ((my  $num_stack) = []);
     ((my  $last) = ['op', '*start*']);
-    ((my  $last_has_space) = 0);
     ((my  $token) = $get_token->());
-    if ((($token->[0]) eq 'space')) {
+    if ((($token->[0] eq 'space'))) {
         ($token = $get_token->())
     };
-    for ( ; ((defined($token)) && (($token->[0] ne 'end')));  ) {
-        if (((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ',')))))) {
+    for ( ; (((defined($token)) && (($token->[0] ne 'end'))));  ) {
+        if ((((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ','))))))) {
             push(@{$num_stack}, ['term', undef()] )
         };
         if ((($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !((is_term($last)))))))) {
@@ -303,18 +312,18 @@ sub Perlito5::Precedence::precedence_parse {
             unshift(@{$op_stack}, $token)
         }
         else {
-            if (((($Operator->{'postfix'})->{$token->[1]} && is_term($last)) && (($Allow_space_before->{'postfix'}->{$token->[1]} || !(($last_has_space)))))) {
+            if (((($Operator->{'postfix'})->{$token->[1]} && is_term($last)))) {
                 ((my  $pr) = $Precedence->{$token->[1]});
-                for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
+                for ( ; ((scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))));  ) {
                     $reduce->($op_stack, $num_stack)
                 };
-                if ((($token->[0]) ne 'postfix_or_term')) {
+                if ((($token->[0] ne 'postfix_or_term'))) {
                     ($token->[0] = 'postfix')
                 };
                 unshift(@{$op_stack}, $token)
             }
             else {
-                if ((((($token->[1] eq 'block')) && is_term($last)) && $last_has_space)) {
+                if ((((($token->[1] eq 'block')) && is_term($last)))) {
                     for ( ; (scalar(@{$op_stack}));  ) {
                         $reduce->($op_stack, $num_stack)
                     };
@@ -328,7 +337,6 @@ sub Perlito5::Precedence::precedence_parse {
                         if ((is_term($last))) {
                             Perlito5::Runtime::say('#      last:  ', $last);
                             Perlito5::Runtime::say('#      token: ', $token);
-                            Perlito5::Runtime::say('#      space: ', $last_has_space);
                             die('Value tokens must be separated by an operator')
                         };
                         ($token->[0] = 'term');
@@ -365,11 +373,7 @@ sub Perlito5::Precedence::precedence_parse {
         ($last = $token);
         ($token = $get_token->());
         if ((($token->[0] eq 'space'))) {
-            ($token = $get_token->());
-            ($last_has_space = 1)
-        }
-        else {
-            ($last_has_space = 0)
+            ($token = $get_token->())
         }
     };
     if (((defined($token) && (($token->[0] ne 'end'))))) {

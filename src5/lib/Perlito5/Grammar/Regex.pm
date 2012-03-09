@@ -9,12 +9,12 @@ use Perlito5::Precedence;
 
 
 token token {
-    <Perlito5::Grammar.opt_name>  <.Perlito5::Grammar.opt_ws> \{
+    <Perlito5::Grammar.ident>  <.Perlito5::Grammar.opt_ws> \{
         <Perlito5::Grammar::Regex.rule>
     \}
     {
         #say 'Token was compiled into: ', ($MATCH->{"Perlito5::Grammar::Regex.rule"}->flat())->perl;
-        my $source = $MATCH->{"Perlito5::Grammar.opt_name"}->flat()
+        my $source = $MATCH->{"Perlito5::Grammar.ident"}->flat()
             . '{ ' .
                 'my $grammar = $_[0]; ' .
                 'my $str     = $_[1]; ' .
@@ -26,16 +26,16 @@ token token {
                 '$MATCH; '
             . '}';
         #say 'Intermediate code: ', $source;
-        my $ast = Perlito5::Grammar->sub_def( $source, 0 );
+        my $ast = Perlito5::Grammar->named_sub_def( $source, 0 );
         # say 'Intermediate ast: ', $ast->flat;
         $MATCH->{"capture"} = $ast->flat();
     }
-}
+};
 
 token term_token {
     'token' <.Perlito5::Grammar.ws> <token>
                 { $MATCH->{"capture"} = [ 'term', $MATCH->{"token"}->flat()       ] }
-}
+};
 
 Perlito5::Precedence::add_term( 'token', sub { Perlito5::Grammar::Regex->term_token($_[0], $_[1]) } );
 
@@ -43,16 +43,16 @@ Perlito5::Precedence::add_term( 'token', sub { Perlito5::Grammar::Regex->term_to
 # this is the "grammar grammar"
 
 
-token ws {  <.Perlito5::Grammar.ws>  }
+token ws {  <.Perlito5::Grammar.ws>  };
 
-token any { . }
+token any { . };
 
 token literal {
     [
     |  \\ .
     |  <!before \' > .
     ]*
-}
+};
 
 token metasyntax_exp {
     [
@@ -62,7 +62,7 @@ token metasyntax_exp {
     |  \<  <.metasyntax_exp>  \>
     |  <!before \> > .
     ]+
-}
+};
 
 token string_code {
     [
@@ -71,12 +71,12 @@ token string_code {
     |  \{  <.string_code> \}
     |  <!before \} > .
     ]+
-}
+};
 
 token parsed_code {
     <.string_code>
     { $MATCH->{"capture"} = $MATCH->flat() }
-}
+};
 
 token rule_terms {
     |   '<before'
@@ -116,7 +116,7 @@ token rule_terms {
         <rule> ']'
         { $MATCH->{"capture"} = $MATCH->{"rule"}->flat() }
 
-}
+};
 
 token rule_term {
     |
@@ -127,11 +127,11 @@ token rule_term {
         }
     |  <!before \] | \} | \) | \> | \: | \? | \+ | \* | \| | \& | \/ > <any>   # TODO - <...>* - optimize!
         { $MATCH->{"capture"} = Rul::Constant->new( constant => $MATCH->{"any"}->flat() ) }
-}
+};
 
-token quant_exp  {   \? | \* | \+  }
+token quant_exp  {   \? | \* | \+  };
 
-token greedy_exp {   \?  |  \+  |  ''  }
+token greedy_exp {   \?  |  \+  |  ''  };
 
 token quantifier {
     <Perlito5::Grammar.opt_ws>
@@ -152,7 +152,7 @@ token quantifier {
     |
         { $MATCH->{"capture"} = $MATCH->{"rule_term"}->flat() }
     ]
-}
+};
 
 token concat_list {
     <quantifier>
@@ -164,12 +164,12 @@ token concat_list {
     ]
     |
         { $MATCH->{"capture"} = [] }
-}
+};
 
 token concat_exp {
     <concat_list>
     { $MATCH->{"capture"} = Rul::Concat->new( concat => $MATCH->{"concat_list"}->flat() ) }
-}
+};
 
 token or_list_exp {
     <concat_exp>
@@ -182,7 +182,7 @@ token or_list_exp {
     ]
     |
         { $MATCH->{"capture"} = [] }
-}
+};
 
 token rule {
     [ <.ws>? '|' | '' ]
@@ -192,7 +192,7 @@ token rule {
         # say 'found Rule';
         $MATCH->{"capture"} = Rul::Or->new( or_list => $MATCH->{"or_list_exp"}->flat() )
     }
-}
+};
 
 =begin
 

@@ -50,7 +50,7 @@ sub expand_use {
     if (!($module_seen{$module_name})) {
         $module_seen{$module_name} = 1;
         # say "  now use: ", $module_name;
-        if ($backend eq 'perl5') || ($backend eq 'ast-perl5') {
+        if ($backend eq 'perl5' || $backend eq 'ast-perl5') {
             # skip 'use' statements for this backend
         }
         else {
@@ -67,6 +67,8 @@ sub expand_use {
             # compile; push AST into comp_units
             # warn $source;
             my $m = Perlito5::Grammar->exp_stmts($source, 0);
+            die "Syntax Error near ", $m->{"to"}
+                if $m->{"to"} != length($source);
             add_comp_unit(
                 [
                     Perlito5::AST::CompUnit->new(
@@ -100,7 +102,7 @@ sub add_comp_unit {
     }
 }
 
-    if ($ARGV[0] eq '-v') || ($ARGV[0] eq '--verbose') {
+    if (($ARGV[0] eq '-v') || ($ARGV[0] eq '--verbose')) {
         $verbose = 1;
         shift @ARGV;
     }
@@ -108,8 +110,11 @@ sub add_comp_unit {
         $backend = substr($ARGV[0], 2, 10);
         $execute = 0;
         shift @ARGV;
-        if ($backend eq 'perl5') || ($backend eq 'python') || ($backend eq 'ruby') 
-            || $backend eq 'perl6'
+        if (  $backend eq 'perl5' 
+           || $backend eq 'python' 
+           || $backend eq 'ruby'
+           || $backend eq 'perl6'
+           )
         {
             $expand_use = 0;
         }
@@ -118,16 +123,16 @@ sub add_comp_unit {
         $backend = substr($ARGV[0], 2, 10);
         $execute = 1;
         shift @ARGV;
-        if ($backend eq 'perl5') || ($backend eq 'python') || ($backend eq 'ruby') {
+        if (($backend eq 'perl5') || ($backend eq 'python') || ($backend eq 'ruby')) {
             $expand_use = 0;
         }
     }
-    if ($ARGV[0] eq '-V') || ($ARGV[0] eq '--version') {
+    if (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
         $backend = '';
         say $_V6_COMPILER_NAME, " ", $_V6_COMPILER_VERSION;
         shift @ARGV;
     }
-    elsif ($ARGV[0] eq '-h') || ($ARGV[0] eq '--help') || ($backend eq '') {
+    elsif (($ARGV[0] eq '-h') || ($ARGV[0] eq '--help') || ($backend eq '')) {
         $backend = '';
         say $_V6_COMPILER_NAME, " ", $_V6_COMPILER_VERSION, "
 perlito5 [switches] [programfile]
@@ -173,6 +178,8 @@ perlito5 [switches] [programfile]
         $Perlito5::PKG_NAME = 'main';
         $Perlito5::PROTO    = {};
         my $m = Perlito5::Grammar->exp_stmts($source, 0);
+        die "Syntax Error near ", $m->{"to"}
+            if $m->{"to"} != length($source);
         add_comp_unit($m->flat());
 
         $comp_units = [

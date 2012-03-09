@@ -309,11 +309,7 @@ package Perlito5::AST::Lit::Block;
     sub Perlito5::AST::Lit::Block::emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $sig) = 'v__');
-        if (($self->{'sig'})) {
-            ($sig = $self->{'sig'}->emit_javascript_indented(($level + 1)))
-        };
-        return ((Perlito5::Javascript::tab($level) . ('(function (' . $sig . ') {' . chr(10)) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{'stmts'}), ('needs_return' => 1)))->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '})'))
+        Perlito5::AST::For->new(('cond' => Perlito5::AST::Val::Int->new(('int' => 0))), ('topic' => undef()), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => $self->{'stmts'}))))->emit_javascript_indented($level)
     }
 });
 package Perlito5::AST::Index;
@@ -437,11 +433,11 @@ package Perlito5::AST::Decl;
         if ((($self->{'decl'} eq 'my'))) {
             ((my  $str) = '');
             ($str = ($str . 'var ' . $self->{'var'}->emit_javascript() . ' = '));
-            if ((($self->{'var'})->sigil() eq '%')) {
+            if ((($self->{'var'}->sigil() eq '%'))) {
                 ($str = ($str . '{};'))
             }
             else {
-                if ((($self->{'var'})->sigil() eq '@')) {
+                if ((($self->{'var'}->sigil() eq '@'))) {
                     ($str = ($str . '[];'))
                 }
                 else {
@@ -646,14 +642,14 @@ package Perlito5::AST::Apply;
         if ((($code eq 'infix:<..>'))) {
             return (('(function (a) { ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript() . ', l=' . $self->{'arguments'}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])'))
         };
-        if ((($code eq 'infix:<&&>') || ($code eq 'infix:<and>'))) {
+        if (((($code eq 'infix:<&&>') || ($code eq 'infix:<and>')))) {
             return (('and' . '(' . $self->{'arguments'}->[0]->emit_javascript() . ', ' . 'function () { return ' . $self->{'arguments'}->[1]->emit_javascript() . '; })'))
         };
-        if ((($code eq 'infix:<||>') || ($code eq 'infix:<or>'))) {
+        if (((($code eq 'infix:<||>') || ($code eq 'infix:<or>')))) {
             return (('or' . '(' . $self->{'arguments'}->[0]->emit_javascript() . ', ' . 'function () { return ' . $self->{'arguments'}->[1]->emit_javascript() . '; })'))
         };
         if ((($code eq 'infix:<//>'))) {
-            return ((('defined_or') . '(' . $self->{'arguments'}->[0]->emit_javascript() . ', ' . 'function () { return ' . $self->{'arguments'}->[1]->emit_javascript() . '; })'))
+            return (('defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript() . ', ' . 'function () { return ' . $self->{'arguments'}->[1]->emit_javascript() . '; })'))
         };
         if ((($code eq 'exists'))) {
             ((my  $arg) = $self->{'arguments'}->[0]);
@@ -712,11 +708,11 @@ package Perlito5::AST::Apply;
         ((my  $parameters) = shift());
         ((my  $arguments) = shift());
         ((my  $level) = shift());
-        if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '@')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '@')))) {
+        if (((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '@')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '@'))))) {
             return (('(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments]) . ')'))
         }
         else {
-            if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '%')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '%')))) {
+            if (((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '%')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '%'))))) {
                 return (('(' . $parameters->emit_javascript() . ' = array_to_hash(' . Perlito5::Javascript::to_list([$arguments]) . '))'))
             }
         };

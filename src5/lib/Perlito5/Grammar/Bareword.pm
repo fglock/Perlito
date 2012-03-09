@@ -23,10 +23,10 @@ package Perlito5::Grammar::Bareword;
 
         # we've got a bareword
 
-        my $has_space_after;
+        # my $has_space_after;
         my $m = Perlito5::Grammar->ws( $str, $p );
         if ( $m->{"bool"} ) {
-            $has_space_after = 1;
+            # $has_space_after = 1;
             $p = $m->{"to"};
         }
 
@@ -97,12 +97,14 @@ package Perlito5::Grammar::Bareword;
 
             # warn "not found: $effective_name";
 
-            # it's just a bareword - we will disambiguate later
-            $m_name->{"capture"} = [ 'postfix_or_term', 'funcall_no_params',
-                    $namespace,
-                    $name
-                ];
-            return $m_name;
+            ## # it's just a bareword - we will disambiguate later
+            ## $m_name->{"capture"} = [ 'postfix_or_term', 'funcall_no_params',
+            ##         $namespace,
+            ##         $name
+            ##     ];
+            ## return $m_name;
+
+            $sig = undef;
         }
 
         # TODO - parse the parameter list according to the sig
@@ -190,18 +192,37 @@ package Perlito5::Grammar::Bareword;
 
         } # / defined $sig
 
-        if ( $has_space_after ) {
-            # maybe it's a subroutine call
-            my $m_list = Perlito5::Expression->list_parse( $str, $p );
-            if ( $m_list->{"bool"} ) {
-                $m_name->{"capture"} = [ 'postfix_or_term', 'funcall',
-                        $namespace,
-                        $name,
-                        $m_list->flat()
-                    ];
-                $m_name->{"to"} = $m_list->{"to"};
-                return $m_name;
-            }
+
+        # no sig
+
+
+        # maybe it's a subroutine call
+
+        if ( substr($str, $p, 1) eq '(' ) {
+            $m = Perlito5::Expression->term_paren( $str, $p );
+            if ( !$m->{"bool"} ) { return $m };
+            my $arg = $m->{"capture"}[2];
+            $arg = Perlito5::Expression::expand_list( $arg );
+            $m->{"capture"} = [ 'term', 
+                    Perlito5::AST::Apply->new(
+                        code      => $name,
+                        namespace => $namespace,
+                        arguments => $arg
+                    )
+                ];
+            return $m;
+        }
+
+
+        my $m_list = Perlito5::Expression->list_parse( $str, $p );
+        if ( $m_list->{"bool"} ) {
+            $m_name->{"capture"} = [ 'postfix_or_term', 'funcall',
+                    $namespace,
+                    $name,
+                    $m_list->flat()
+                ];
+            $m_name->{"to"} = $m_list->{"to"};
+            return $m_name;
         }
 
         # it's just a bareword - we will disambiguate later

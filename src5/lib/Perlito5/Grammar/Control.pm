@@ -1,75 +1,78 @@
 package Perlito5::Grammar;
 
 token unless {
-    unless <.ws> <exp>
+    unless <.opt_ws> <Perlito5::Expression.term_paren>
+       <.opt_ws> <Perlito5::Expression.term_curly>
+
         {
-            my $body = $MATCH->{"exp"}->flat()->{'end_block'};
+            my $body = $MATCH->{"Perlito5::Expression.term_curly"}->flat()->[2];
             if (!defined($body)) {
                 die "Missing code block in 'unless'";
             }
             $MATCH->{"capture"} = Perlito5::AST::If->new(
-                cond => $MATCH->{"exp"}->flat()->{'exp'},
-                body => Perlito5::AST::Lit::Block->new(stmts => [ ]),
-                otherwise => $body,
+                cond      => $MATCH->{"Perlito5::Expression.term_paren"}->flat()->[2],
+                body      => Perlito5::AST::Lit::Block->new(stmts => [ ]),
+                otherwise => Perlito5::AST::Lit::Block->new(stmts => $body),
              )
         }
-}
+
+};
 
 token if {
-    if <.ws> <exp>
+    if <.opt_ws> <Perlito5::Expression.term_paren>
+       <.opt_ws> <Perlito5::Expression.term_curly>
     [
         <.opt_ws>
-        else <exp2>
+        else <.opt_ws>
+            '{' <.opt_ws>
+                <Perlito5::Grammar.exp_stmts>
+                <.opt_ws>
+            '}'
         {
-            my $body = $MATCH->{"exp"}->flat()->{'end_block'};
-            my $otherwise = ($MATCH->{"exp2"}->flat()){'exp'};
+            my $body = $MATCH->{"Perlito5::Expression.term_curly"}->flat()->[2];
             if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
-            if (!(defined($otherwise))) {
-                die "Missing code block in 'else'";
-            }
-            # if (ref($otherwise) eq 'Lit::Hash') {
-            #     $otherwise = Perlito5::AST::Lit::Block->new( stmts => $otherwise->hash1 );
-            # }
-            $MATCH->{"capture"} = Perlito5::AST::If->new(
-                cond      => $MATCH->{"exp"}->flat()->{'exp'},
-                body      => $body,
-                otherwise => $otherwise,
+            $MATCH->{"capture"} = Perlito5::AST::If->new( 
+                cond      => $MATCH->{"Perlito5::Expression.term_paren"}->flat()->[2],
+                body      => Perlito5::AST::Lit::Block->new( stmts => $body),
+                otherwise => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{"Perlito5::Grammar.exp_stmts"}->flat() || [] )
             )
         }
     |
         <.opt_ws>
         els <if>
         {
-            my $body = $MATCH->{"exp"}->flat()->{'end_block'};
+            my $body = $MATCH->{"Perlito5::Expression.term_curly"}->flat()->[2];
             if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
             $MATCH->{"capture"} = Perlito5::AST::If->new(
-                cond => $MATCH->{"exp"}->flat()->{'exp'},
-                body => $body,
+                cond      => $MATCH->{"Perlito5::Expression.term_paren"}->flat()->[2],
+                body      => Perlito5::AST::Lit::Block->new( stmts => $body),
                 otherwise => Perlito5::AST::Lit::Block->new( stmts => [ $MATCH->{"if"}->flat() ] ),
             )
         }
     |
         {
-            my $body = $MATCH->{"exp"}->flat()->{'end_block'};
+            my $body = $MATCH->{"Perlito5::Expression.term_curly"}->flat()->[2];
             if (!defined($body)) {
                 die "Missing code block in 'if'";
             }
             $MATCH->{"capture"} = Perlito5::AST::If->new(
-                cond => $MATCH->{"exp"}->flat()->{'exp'},
-                body => $body,
+                cond      => $MATCH->{"Perlito5::Expression.term_paren"}->flat()->[2],
+                body      => Perlito5::AST::Lit::Block->new(stmts => $body),
                 otherwise => Perlito5::AST::Lit::Block->new(stmts => [ ]),
              )
         }
     ]
-}
+};
 
 token when {
     when <.ws> <exp>
     {
+        die "when - not implemented";
+
         my $body = $MATCH->{"exp"}->flat()->{'end_block'};
         if (!defined($body)) {
             die "Missing code block in 'when'";
@@ -78,12 +81,12 @@ token when {
                 parameters => $MATCH->{"exp"}->flat()->{'exp'},
                 body       => $body )
     }
-}
+};
 
 token for {
-    for 'each'? <.ws> 
+    for 'each'?
     [
-        my <.ws> <Perlito5::Grammar.var_ident> <.opt_ws> 
+        <.ws> my <.opt_ws> <Perlito5::Grammar.var_ident> <.opt_ws> 
             '(' <Perlito5::Expression.paren_parse>   ')' <.opt_ws>
             '{' <.opt_ws>
                 <Perlito5::Grammar.exp_stmts>
@@ -97,29 +100,36 @@ token for {
                  )
         }
     |
-        <exp>
+        <.opt_ws>
+            '(' <Perlito5::Expression.paren_parse>   ')' <.opt_ws>
+            '{' <.opt_ws>
+                <Perlito5::Grammar.exp_stmts>
+                <.opt_ws>
+            '}'
         {
-            my $body = $MATCH->{"exp"}->flat()->{'end_block'};
-            if (!defined($body)) {
-                die "Missing code block in 'when'";
-            }
-            $MATCH->{"capture"} = Perlito5::AST::For->new( cond => $MATCH->{"exp"}->flat()->{'exp'}, topic => undef, body => $body )
+            $MATCH->{"capture"} = Perlito5::AST::For->new( 
+                    cond  => $MATCH->{"Perlito5::Expression.paren_parse"}->flat(), 
+                    topic => undef, 
+                    body  => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{"Perlito5::Grammar.exp_stmts"}->flat(), sig => undef )
+                 )
         }
     ]
-}
+};
 
 token while {
-    while <.ws> <exp>
-    {
-        my $body = $MATCH->{"exp"}->flat()->{'end_block'};
-        if (!defined($body)) {
-            die "Missing code block in 'while'";
+    while <.opt_ws>
+            '(' <Perlito5::Expression.paren_parse>   ')' <.opt_ws>
+            '{' <.opt_ws>
+                <Perlito5::Grammar.exp_stmts>
+                <.opt_ws>
+            '}'
+        {
+            $MATCH->{"capture"} = Perlito5::AST::While->new( 
+                    cond  => $MATCH->{"Perlito5::Expression.paren_parse"}->flat(), 
+                    body  => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{"Perlito5::Grammar.exp_stmts"}->flat(), sig => undef )
+                 )
         }
-        $MATCH->{"capture"} = Perlito5::AST::While->new(
-                cond => $MATCH->{"exp"}->flat()->{'exp'},
-                body => $body )
-    }
-}
+};
 
 =begin
 
