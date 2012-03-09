@@ -2,7 +2,7 @@ TODO list for Perlito5
 
 * Perlito5
 
-- move all internal packages inside Perlito5 namespace (done)
+- fix regex delimiters, or escape the regexes 
 
 
 * basic functionality
@@ -10,11 +10,6 @@ TODO list for Perlito5
 -- add "map" block
 
 -- add "grep", "sort"
-
--- add regexes
-
-
-* extensibility
 
 -- add "require"
 
@@ -30,8 +25,9 @@ TODO list for Perlito5
 
 * Parser
 
--- maybe use "prefix + proto" to represent variables, because it is more flexible; remove 'Var'
+-- parse the regexes
 
+-- maybe use "prefix + proto" to represent variables, because it is more flexible; remove 'Var'
 -- use an array to represent names that contain '::', because it is more flexible
 
 -- prototypes (signatures)
@@ -53,8 +49,18 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- check that @_, $_ and other special variables are in the right context (lexical, global, package global)
+
+-- add an object system
+
+-- add regex compiler
+-- /e modifier
+-- support all perl5 regex syntax
+
 -- bug: variable redeclaration does not work
 -- javascript "var" erases the outer value within the whole current lexical scope
+-- bug: "my" variables - this doesn't work as expected: my $v = $v
+   possible fix: rename variables
 
 -- create target-specific versions of the runtime
 -- add browser, v8, node.js runtimes
@@ -65,9 +71,6 @@ TODO list for Perlito5
 -- array interpolation in argument lists
 
 -- bug: negative index in array doesn't work
-
--- bug: "my" variables - this doesn't work as expected: my $v = $v
-   possible fix: rename variables
 
 -- bug: variable aliases create copies instead
 
@@ -94,8 +97,6 @@ TODO list for Perlito5
 
 -- subscripts inside string-interpolation
 
--- $$ prefix as in $$hash{$key}
-
 -- $# prefix as in $#_
 
 -- labels, "next", "last"
@@ -106,12 +107,11 @@ TODO list for Perlito5
 
 -- import
 
--- require plain perl5 syntax (any perl6 is a syntax error)
-
 -- run perltidy on the source code
 
 -- proper "use strict" and "use warnings"
 -- use the same error messages and warnings as 'perl'
+-- no warnings 'redefine';
 
 -- __PACKAGE__,  __END__, __LINE__, __DATA__, __FILE__
 
@@ -119,8 +119,6 @@ TODO list for Perlito5
 
 -- source code - remove Perl 6 code such as "token"
    (fixed: This is only loaded if the grammar compiler is needed)
-
--- no warnings 'redefine';
 
 -- *{ $name }{CODE}->();
 

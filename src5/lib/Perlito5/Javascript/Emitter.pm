@@ -381,13 +381,13 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript_program {
         my $comp_units = shift;
         my $str = '';
+        $Perlito5::PKG_NAME = 'main';
         $Perlito5::VAR = [
-            { '@_'    => { decl => 'my' },
-              '$_'    => { decl => 'my' },  # XXX - "our" ${__PACKAGE__}::_
-              '@ARGV' => { decl => 'my' },  # XXX - "our" @main::ARGV
+            { '@_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+              '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+              '@ARGV' => { decl => 'our', namespace => $Perlito5::PKG_NAME },
             }
         ];
-        $Perlito5::PKG_NAME = 'main';
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_javascript() . "\n";
         }
