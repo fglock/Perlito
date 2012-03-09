@@ -35,17 +35,17 @@ token term_qw_quote {
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"qw_quote_parse"}->flat() ]  }
 };
 token term_slash_quote {
-    '/' <qw_quote_parse>
+    '/' <m_quote_parse>
         { 
             warn "TODO - /regex/x";
-            $MATCH->{"capture"} = [ 'term', $MATCH->{"qw_quote_parse"}->flat() ]  
+            $MATCH->{"capture"} = [ 'term', $MATCH->{"m_quote_parse"}->flat() ]  
         }
 };
 token term_m_quote {
-    'm' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qw_quote_parse>
+    'm' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <m_quote_parse>
         {
             warn "TODO - m/regex/x";
-            $MATCH->{"capture"} = [ 'term', $MATCH->{"qw_quote_parse"}->flat() ]  
+            $MATCH->{"capture"} = [ 'term', $MATCH->{"m_quote_parse"}->flat() ]  
         }
 };
 token term_s_quote {
@@ -97,6 +97,33 @@ sub qw_quote_parse {
     }
     return $m;
 }
+sub m_quote_parse {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $delimiter = substr( $str, $pos-1, 1 );
+    my $closing_delimiter = $delimiter;
+    $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
+    my $part1 = $self->string_interpolation_parse($str, $pos, $closing_delimiter, 1);
+    return $part1 unless $part1->{"bool"};
+
+    my $m;
+    my $p = $part1->{"to"};
+
+    my $modifiers = '';
+    $m = Perlito5::Grammar->ident($str, $p);
+    if ( $m->{"bool"} ) {
+        $modifiers = $m->flat();
+        $part1->{"to"} = $p;
+    }
+
+    $part1->{"capture"} = Perlito5::AST::Apply->new( 
+        code => 'p5:m',
+        arguments => [ $part1->flat(), $modifiers ],
+        namespace => ''
+    );
+    return $part1;
+}
 sub s_quote_parse {
     my $self = $_[0];
     my $str = $_[1];
@@ -127,9 +154,17 @@ sub s_quote_parse {
         return $part2 unless $part2->{"bool"};
     }
 
+    $p = $part2->{"to"};
+    my $modifiers = '';
+    $m = Perlito5::Grammar->ident($str, $p);
+    if ( $m->{"bool"} ) {
+        $modifiers = $m->flat();
+        $part2->{"to"} = $p;
+    }
+
     $part2->{"capture"} = Perlito5::AST::Apply->new( 
-        code => 'circumfix:<[ ]>',
-        arguments => [ $part1->flat(), $part2->flat() ],
+        code => 'p5:s',
+        arguments => [ $part1->flat(), $part2->flat(), $modifiers ],
         namespace => ''
     );
     return $part2;

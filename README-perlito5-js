@@ -114,6 +114,24 @@ https://github.com/audreyt/pugs/tree/master/perl5/PIL2JS
 - Pugs Perl6 in javascript
 
 
+* Regex
+
+- modifiers: g i m
+
+- slashes must be escaped
+
+- From http://www.regular-expressions.info/javascript.html
+
+    No \A or \Z anchors to match the start or end of the string. Use a caret or dollar instead.
+    Lookbehind is not supported at all. Lookahead is fully supported.
+    No atomic grouping or possessive quantifiers
+    No Unicode support, except for matching single characters with
+    No named capturing groups. Use numbered capturing groups instead.
+    No mode modifiers to set matching options within the regular expression.
+    No conditionals.
+    No regular expression comments. 
+
+
 * Cell-based aliasing (TODO)
 
 
