@@ -64,6 +64,10 @@ package Main;
 my $printer = Printer->new;
 $printer->out( "Using my 'Printer' object\n" );
 
+my $s = "the text will be replaced";
+$s =~ s {will be} {was};
+say $s;
+
 </textarea><br/>
 		<input type="button" value="Execute" onclick="execute()"/>
 

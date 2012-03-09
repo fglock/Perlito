@@ -511,6 +511,32 @@ package Perlito5::AST::Apply;
 for ($_) {
     ((my  %op_infix_js) = (('infix:<eq>' => ' == '), ('infix:<ne>' => ' != '), ('infix:<le>' => ' <= '), ('infix:<ge>' => ' >= ')));
     ((my  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<>>>' => ' >>> '), ('infix:<<<>' => ' << ')));
+    sub Perlito5::AST::Apply::emit_regex_javascript {
+        ((my  $op) = shift());
+        ((my  $var) = shift());
+        ((my  $regex) = shift());
+        (my  $str);
+        ((my  $code) = $regex->{'code'});
+        ((my  $regex_args) = $regex->{'arguments'});
+        if (($code eq 'p5:s')) {
+            ($str = ($var->emit_javascript() . ' = ' . $var->emit_javascript() . '.replace(/' . $regex_args->[0]->{'buf'} . '/' . $regex_args->[2] . ', ' . $regex_args->[1]->emit_javascript() . ')'))
+        }
+        else {
+            if (($code eq 'p5:m')) {
+                ($str = ($var->emit_javascript() . '.match(/' . $regex_args->[0]->{'buf'} . '/' . $regex_args->[1] . ')'))
+            }
+            else {
+                die(('Error: regex emitter - unknown operator ' . $code))
+            }
+        };
+        if (($op eq '=~')) {
+            return ($str)
+        };
+        if (($op eq '!~')) {
+            return (('!(' . $str . ')'))
+        };
+        die('Error: regex emitter')
+    };
     sub Perlito5::AST::Apply::emit_javascript {
         $_[0]->emit_javascript_indented(0)
     };
@@ -529,11 +555,17 @@ for ($_) {
             };
             return (('(' . $self->{'code'}->emit_javascript_indented($level) . ')(' . join(',', @args) . ')'))
         };
+        if (($code eq 'infix:<=~>')) {
+            return (emit_regex_javascript('=~', $self->{'arguments'}->[0], $self->{'arguments'}->[1]))
+        };
+        if (($code eq 'infix:<!~>')) {
+            return (emit_regex_javascript('!~', $self->{'arguments'}->[0], $self->{'arguments'}->[1]))
+        };
         if (($code eq 'p5:s')) {
-            return (('.replace(/' . $self->{'arguments'}->[0]->{'buf'} . '/' . $self->{'arguments'}->[2] . ', ' . $self->{'arguments'}->[1]->emit_javascript() . ')'))
+            return (emit_regex_javascript('=~', Perlito5::AST::Var->new(('sigil' => '$'), ('namespace' => ''), ('name' => '_')), $self))
         };
         if (($code eq 'p5:m')) {
-            return (('.match(/' . $self->{'arguments'}->[0]->{'buf'} . '/' . $self->{'arguments'}->[1] . ')'))
+            return (emit_regex_javascript('=~', Perlito5::AST::Var->new(('sigil' => '$'), ('namespace' => ''), ('name' => '_')), $self))
         };
         if (($code eq 'package')) {
             return (('make_package("' . $self->{'namespace'} . '")'))
