@@ -49,6 +49,8 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- emit array/hash slices: @a[@x], @a{@x}
+
 -- check that @_, $_ and other special variables are in the right context (lexical, global, package global)
 
 -- add an object system
