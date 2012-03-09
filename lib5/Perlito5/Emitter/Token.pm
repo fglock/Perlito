@@ -16,13 +16,13 @@ sub Rul::new {
 sub Rul::constant {
     ((my  $str) = shift());
     ((my  $len) = length($str));
-    if ((($str eq chr(92)))) {
+    if (($str eq chr(92))) {
         ($str = chr(92) . chr(92))
     };
-    if ((($str eq chr(39)))) {
+    if (($str eq chr(39))) {
         ($str = chr(92) . chr(39))
     };
-    if (($len)) {
+    if ($len) {
         ('( ' . chr(39) . $str . chr(39) . ' eq substr( $str, $MATCH->{"to"}, ' . $len . ') ' . '&& ( $MATCH->{"to"} = ' . $len . ' + $MATCH->{"to"} )' . ')')
     }
     else {
@@ -54,18 +54,18 @@ sub Rul::Quantifier::ws3 {
 };
 sub Rul::Quantifier::emit_perl5 {
     ((my  $self) = $_[0]);
-    if (((($self->{'quant'} eq '') && ($self->{'greedy'} eq '')))) {
+    if ((($self->{'quant'} eq '') && ($self->{'greedy'} eq ''))) {
         return ($self->{'term'}->emit_perl5())
     };
-    if (((($self->{'quant'} eq '+') && ($self->{'greedy'} eq '')))) {
+    if ((($self->{'quant'} eq '+') && ($self->{'greedy'} eq ''))) {
         $self->{'term'}->set_captures_to_array();
         return (('(do { ' . 'my $last_match_null = 0; ' . 'my $last_pos = $MATCH->{"to"}; ' . 'my $count = 0; ' . 'while (' . $self->{'term'}->emit_perl5() . ' && ($last_match_null < 2)) ' . '{ ' . 'if ($last_pos == $MATCH->{"to"}) { ' . '$last_match_null = $last_match_null + 1; ' . '} ' . 'else { ' . '$last_match_null = 0; ' . '}; ' . '$last_pos = $MATCH->{"to"}; ' . '$count = $count + 1; ' . '}; ' . '$MATCH->{"to"} = $last_pos; ' . '$count > 0; ' . '})'))
     };
-    if (((($self->{'quant'} eq '*') && ($self->{'greedy'} eq '')))) {
+    if ((($self->{'quant'} eq '*') && ($self->{'greedy'} eq ''))) {
         $self->{'term'}->set_captures_to_array();
         return (('(do { ' . 'my $last_match_null = 0; ' . 'my $last_pos = $MATCH->{"to"}; ' . 'while (' . $self->{'term'}->emit_perl5() . ' && ($last_match_null < 2)) ' . '{ ' . 'if ($last_pos == $MATCH->{"to"}) { ' . '$last_match_null = $last_match_null + 1; ' . '} ' . 'else { ' . '$last_match_null = 0; ' . '}; ' . '$last_pos = $MATCH->{"to"}; ' . '}; ' . '$MATCH->{"to"} = $last_pos; ' . '1 ' . '})'))
     };
-    if (((($self->{'quant'} eq '?') && ($self->{'greedy'} eq '')))) {
+    if ((($self->{'quant'} eq '?') && ($self->{'greedy'} eq ''))) {
         $self->{'term'}->set_captures_to_array();
         return (('(do { ' . 'my $last_pos = $MATCH->{"to"}; ' . 'if (!(do {' . $self->{'term'}->emit_perl5() . '})) ' . '{ ' . '$MATCH->{"to"} = $last_pos; ' . '}; ' . '1 ' . '})'))
     };
@@ -123,11 +123,11 @@ sub Rul::Perlito5::AST::Subrule::emit_perl5 {
     ((my  $self) = $_[0]);
     ((my  $meth) = (((1 + index($self->{'metasyntax'}, '.'))) ? Perlito5::Runtime::_replace($self->{'metasyntax'}, '.', '->') : (('$grammar->' . $self->{'metasyntax'}))));
     (my  $code);
-    if ((($self->{'captures'} == 1))) {
+    if (($self->{'captures'} == 1)) {
         ($code = ('if ($m2->{"bool"}) { $MATCH->{"to"} = $m2->{"to"}; $MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '} = $m2; 1 } else { 0 }; '))
     }
     else {
-        if ((($self->{'captures'} > 1))) {
+        if (($self->{'captures'} > 1)) {
             ($code = ('if ($m2->{"bool"}) { ' . '$MATCH->{"to"} = $m2->{"to"}; ' . 'if (exists $MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '}) { ' . 'push @{ $MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '} }, $m2; ' . '} ' . 'else { ' . '$MATCH->{' . chr(39) . $self->{'metasyntax'} . chr(39) . '} = [ $m2 ]; ' . '}; ' . '1 ' . '} else { 0 }; '))
         }
         else {
@@ -138,7 +138,7 @@ sub Rul::Perlito5::AST::Subrule::emit_perl5 {
 };
 sub Rul::Perlito5::AST::Subrule::set_captures_to_array {
     ((my  $self) = $_[0]);
-    if ((($self->{'captures'} > 0))) {
+    if (($self->{'captures'} > 0)) {
         ($self->{'captures'} = ($self->{'captures'} + 1))
     }
 };
@@ -181,19 +181,19 @@ sub Rul::SpecialChar::char {
 sub Rul::SpecialChar::emit_perl5 {
     ((my  $self) = $_[0]);
     ((my  $char) = $self->{'char'});
-    if ((($char eq 'n'))) {
+    if (($char eq 'n')) {
         return (Rul::Perlito5::AST::Subrule->new(('metasyntax' => 'is_newline'), ('captures' => 0))->emit_perl5())
     };
-    if ((($char eq 'N'))) {
+    if (($char eq 'N')) {
         return (Rul::Perlito5::AST::Subrule->new(('metasyntax' => 'not_newline'), ('captures' => 0))->emit_perl5())
     };
-    if ((($char eq 'd'))) {
+    if (($char eq 'd')) {
         return (Rul::Perlito5::AST::Subrule->new(('metasyntax' => 'digit'), ('captures' => 0))->emit_perl5())
     };
-    if ((($char eq 's'))) {
+    if (($char eq 's')) {
         return (Rul::Perlito5::AST::Subrule->new(('metasyntax' => 'space'), ('captures' => 0))->emit_perl5())
     };
-    if ((($char eq 't'))) {
+    if (($char eq 't')) {
         return (Rul::constant(chr(9)))
     };
     return (Rul::constant($char))

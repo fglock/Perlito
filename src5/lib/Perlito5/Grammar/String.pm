@@ -11,6 +11,8 @@ Perlito5::Precedence::add_term( 'q'  => sub { Perlito5::Grammar::String->term_q_
 Perlito5::Precedence::add_term( 'qq' => sub { Perlito5::Grammar::String->term_qq_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'qw' => sub { Perlito5::Grammar::String->term_qw_quote($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( '/'  => sub { Perlito5::Grammar::String->term_slash_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( 'm'  => sub { Perlito5::Grammar::String->term_m_quote($_[0], $_[1]) } );
+Perlito5::Precedence::add_term( 's'  => sub { Perlito5::Grammar::String->term_s_quote($_[0], $_[1]) } );
 
 token term_double_quote {
     \" <double_quote_parse>
@@ -34,7 +36,24 @@ token term_qw_quote {
 };
 token term_slash_quote {
     '/' <qw_quote_parse>
-        { $MATCH->{"capture"} = [ 'term', $MATCH->{"qw_quote_parse"}->flat() ]  }
+        { 
+            warn "TODO - /regex/x";
+            $MATCH->{"capture"} = [ 'term', $MATCH->{"qw_quote_parse"}->flat() ]  
+        }
+};
+token term_m_quote {
+    'm' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qw_quote_parse>
+        {
+            warn "TODO - m/regex/x";
+            $MATCH->{"capture"} = [ 'term', $MATCH->{"qw_quote_parse"}->flat() ]  
+        }
+};
+token term_s_quote {
+    's' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <s_quote_parse>
+        { 
+            warn "TODO - s/regex/xxx/x";
+            $MATCH->{"capture"} = [ 'term', $MATCH->{"s_quote_parse"}->flat() ]  
+        }
 };
 
 
@@ -77,6 +96,41 @@ sub qw_quote_parse {
             );
     }
     return $m;
+}
+sub s_quote_parse {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $delimiter = substr( $str, $pos-1, 1 );
+    my $closing_delimiter = $delimiter;
+    $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
+    my $part1 = $self->string_interpolation_parse($str, $pos, $closing_delimiter, 1);
+    return $part1 unless $part1->{"bool"};
+
+    my $part2;
+    my $p = $part1->{"to"};
+    if ( exists $pair{$delimiter} ) {
+        my $m = Perlito5::Grammar->opt_ws($str, $p);
+        my $p = $m->{"to"};
+        my $delimiter = substr( $str, $p, 1 );
+        $p++;
+        warn "second delimiter $delimiter";
+        $closing_delimiter = $delimiter;
+        $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
+        $part2 = $self->string_interpolation_parse($str, $p, $closing_delimiter, 1);
+        return $part2 unless $part2->{"bool"};
+    }
+    else {
+        $part2 = $self->string_interpolation_parse($str, $p, $closing_delimiter, 1);
+        return $part2 unless $part2->{"bool"};
+    }
+
+    $part2->{"capture"} = Perlito5::AST::Apply->new( 
+        code => 'circumfix:<[ ]>',
+        arguments => [ $part1->flat(), $part2->flat() ],
+        namespace => ''
+    );
+    return $part2;
 }
 
 sub string_interpolation_parse {

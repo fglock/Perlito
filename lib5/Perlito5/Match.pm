@@ -30,8 +30,8 @@ sub Perlito5::Match::capture {
 };
 sub Perlito5::Match::flat {
     ((my  $self) = $_[0]);
-    if (($self->{'bool'})) {
-        if ((defined($self->{'capture'}))) {
+    if ($self->{'bool'}) {
+        if (defined($self->{'capture'})) {
             return ($self->{'capture'})
         };
         return (substr($self->{'str'}, $self->{'from'}, (($self->{'to'} - $self->{'from'}))))

@@ -123,18 +123,18 @@ sub Perlito5::Precedence::op_parse {
     ((my  $last_is_term) = shift());
     for my $len (@{$End_token_chars}) {
         ((my  $term) = substr($str, $pos, $len));
-        if ((exists($End_token->[$len]->{$term}))) {
+        if (exists($End_token->[$len]->{$term})) {
             ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
             ((my  $c2) = substr($str, ($pos + $len), 1));
-            if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))))) {
+            if (!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))))) {
                 return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => ['end', $term])))
             }
         }
     };
-    if ((!($last_is_term))) {
+    if (!($last_is_term)) {
         for my $len (@Term_chars) {
             ((my  $term) = substr($str, $pos, $len));
-            if ((exists($Term[$len]->{$term}))) {
+            if (exists($Term[$len]->{$term})) {
                 ((my  $m) = $Term[$len]->{$term}->($str, $pos));
                 if ($m->{'bool'}) {
                     return ($m)
@@ -144,7 +144,7 @@ sub Perlito5::Precedence::op_parse {
     };
     for my $len (@Parsed_op_chars) {
         ((my  $op) = substr($str, $pos, $len));
-        if ((exists($Parsed_op[$len]->{$op}))) {
+        if (exists($Parsed_op[$len]->{$op})) {
             ((my  $m) = $Parsed_op[$len]->{$op}->($str, $pos));
             if ($m->{'bool'}) {
                 return ($m)
@@ -153,10 +153,10 @@ sub Perlito5::Precedence::op_parse {
     };
     for my $len (@Op_chars) {
         ((my  $op) = substr($str, $pos, $len));
-        if ((exists($Op[$len]->{$op}))) {
+        if (exists($Op[$len]->{$op})) {
             ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
             ((my  $c2) = substr($str, ($pos + $len), 1));
-            if ((!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '(')))))))) {
+            if (!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))))) {
                 return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => 1), ('capture' => ['op', $op])))
             }
         }
@@ -168,7 +168,7 @@ sub Perlito5::Precedence::add_op {
     ((my  $name) = shift());
     ((my  $precedence) = shift());
     ((my  $param) = shift());
-    if ((!((defined($param))))) {
+    if (!((defined($param)))) {
         ($param = {})
     };
     ((my  $assoc) = ($param->{'assoc'} || 'left'));
@@ -300,31 +300,31 @@ sub Perlito5::Precedence::precedence_parse {
     ((my  $num_stack) = []);
     ((my  $last) = ['op', '*start*']);
     ((my  $token) = $get_token->());
-    if ((($token->[0] eq 'space'))) {
+    if (($token->[0] eq 'space')) {
         ($token = $get_token->())
     };
-    for ( ; (((defined($token)) && (($token->[0] ne 'end'))));  ) {
-        if ((((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ','))))))) {
+    for ( ; ((defined($token)) && (($token->[0] ne 'end')));  ) {
+        if (((($token->[1] eq ',')) && (((($last->[1] eq '*start*')) || (($last->[1] eq ',')))))) {
             push(@{$num_stack}, ['term', undef()] )
         };
-        if ((($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !((is_term($last)))))))) {
+        if (($Operator->{'prefix'}->{$token->[1]} && (((($last->[1] eq '*start*')) || !((is_term($last))))))) {
             ($token->[0] = 'prefix');
             unshift(@{$op_stack}, $token)
         }
         else {
-            if (((($Operator->{'postfix'})->{$token->[1]} && is_term($last)))) {
+            if ((($Operator->{'postfix'})->{$token->[1]} && is_term($last))) {
                 ((my  $pr) = $Precedence->{$token->[1]});
-                for ( ; ((scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))));  ) {
+                for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
                     $reduce->($op_stack, $num_stack)
                 };
-                if ((($token->[0] ne 'postfix_or_term'))) {
+                if (($token->[0] ne 'postfix_or_term')) {
                     ($token->[0] = 'postfix')
                 };
                 unshift(@{$op_stack}, $token)
             }
             else {
-                if ((((($token->[1] eq 'block')) && is_term($last)))) {
-                    for ( ; (scalar(@{$op_stack}));  ) {
+                if (((($token->[1] eq 'block')) && is_term($last))) {
+                    for ( ; scalar(@{$op_stack});  ) {
                         $reduce->($op_stack, $num_stack)
                     };
                     push(@{$num_stack}, $token );
@@ -333,8 +333,8 @@ sub Perlito5::Precedence::precedence_parse {
                     return ($num_stack)
                 }
                 else {
-                    if ((is_term($token))) {
-                        if ((is_term($last))) {
+                    if (is_term($token)) {
+                        if (is_term($last)) {
                             Perlito5::Runtime::say('#      last:  ', $last);
                             Perlito5::Runtime::say('#      token: ', $token);
                             die('Value tokens must be separated by an operator')
@@ -343,19 +343,19 @@ sub Perlito5::Precedence::precedence_parse {
                         push(@{$num_stack}, $token )
                     }
                     else {
-                        if (($Precedence->{$token->[1]})) {
+                        if ($Precedence->{$token->[1]}) {
                             ((my  $pr) = $Precedence->{$token->[1]});
-                            if (($Assoc->{'right'}->{$token->[1]})) {
-                                for ( ; ((scalar(@{$op_stack}) && (($pr < $Precedence->{($op_stack->[0])->[1]}))));  ) {
+                            if ($Assoc->{'right'}->{$token->[1]}) {
+                                for ( ; (scalar(@{$op_stack}) && (($pr < $Precedence->{($op_stack->[0])->[1]})));  ) {
                                     $reduce->($op_stack, $num_stack)
                                 }
                             }
                             else {
-                                for ( ; ((scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]}))));  ) {
+                                for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
                                     $reduce->($op_stack, $num_stack)
                                 }
                             };
-                            if (($Operator->{'ternary'}->{$token->[1]})) {
+                            if ($Operator->{'ternary'}->{$token->[1]}) {
                                 ($token->[0] = 'ternary')
                             }
                             else {
@@ -372,14 +372,14 @@ sub Perlito5::Precedence::precedence_parse {
         };
         ($last = $token);
         ($token = $get_token->());
-        if ((($token->[0] eq 'space'))) {
+        if (($token->[0] eq 'space')) {
             ($token = $get_token->())
         }
     };
-    if (((defined($token) && (($token->[0] ne 'end'))))) {
+    if ((defined($token) && (($token->[0] ne 'end')))) {
         die('Unexpected end token: ', $token)
     };
-    for ( ; (scalar(@{$op_stack}));  ) {
+    for ( ; scalar(@{$op_stack});  ) {
         $reduce->($op_stack, $num_stack)
     };
     ($End_token = $last_end_token);

@@ -113,7 +113,7 @@ sub Perlito5::Test::proclaim {
     ((my  $negate) = shift());
     ($testing_started = 1);
     ($num_of_tests_run = ($num_of_tests_run + 1));
-    if (($cond)) {
+    if ($cond) {
         Perlito5::Runtime::say('ok ', $num_of_tests_run)
     }
     else {
@@ -130,16 +130,16 @@ sub Perlito5::Test::report_failure {
     Perlito5::Runtime::say('### Perlito5::Test::report_failure not implemented')
 };
 sub Perlito5::Test::test_ends {
-    if ((!($testing_started))) {
+    if (!($testing_started)) {
         return ()
     };
-    if ((!($num_of_tests_planned))) {
+    if (!($num_of_tests_planned)) {
         Perlito5::Runtime::say(('1..' . $num_of_tests_run))
     };
-    if ((($num_of_tests_planned != $num_of_tests_run))) {
+    if (($num_of_tests_planned != $num_of_tests_run)) {
         Perlito5::Runtime::say(('# Looks like you planned ' . $num_of_tests_planned . ' tests, but ran ' . $num_of_tests_run))
     };
-    if (($num_of_tests_failed)) {
+    if ($num_of_tests_failed) {
         Perlito5::Runtime::say(('# Looks like you failed ' . $num_of_tests_failed . ' tests of ' . $num_of_tests_run))
     };
     ($num_of_tests_run = 0);

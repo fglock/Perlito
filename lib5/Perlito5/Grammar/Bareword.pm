@@ -32,26 +32,26 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         ($full_name = ($namespace . '::' . $name))
     };
     ((my  $m) = Perlito5::Grammar->ws($str, $p));
-    if (($m->{'bool'})) {
+    if ($m->{'bool'}) {
         ($p = $m->{'to'})
     };
-    if (((substr($str, $p, 2) eq '=>'))) {
+    if ((substr($str, $p, 2) eq '=>')) {
         ($m_name->{'capture'} = ['term', Perlito5::AST::Val::Buf->new(('buf' => $full_name))]);
         ($m_name->{'to'} = $p);
         return ($m_name)
     };
-    if (((substr($str, $p, 2) eq '->'))) {
+    if ((substr($str, $p, 2) eq '->')) {
         ($m_name->{'capture'} = ['term', Perlito5::AST::Proto->new(('name' => $full_name))]);
         ($m_name->{'to'} = $p);
         return ($m_name)
     };
     ((my  $effective_name) = ((($namespace || $Perlito5::PKG_NAME)) . '::' . $name));
     (my  $sig);
-    if ((exists($Perlito5::PROTO->{$effective_name}))) {
+    if (exists($Perlito5::PROTO->{$effective_name})) {
         ($sig = $Perlito5::PROTO->{$effective_name})
     }
     else {
-        if (((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)})))) {
+        if ((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))) {
             ($effective_name = ('CORE::' . $name));
             ($sig = $Perlito5::CORE_PROTO->{$effective_name})
         }
@@ -59,15 +59,15 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             ($sig = undef())
         }
     };
-    if ((defined($sig))) {
-        if ((($sig eq ''))) {
-            if (((substr($str, $p, 1) eq '('))) {
+    if (defined($sig)) {
+        if (($sig eq '')) {
+            if ((substr($str, $p, 1) eq '(')) {
                 ($p)++;
                 ((my  $m) = Perlito5::Grammar->ws($str, $p));
-                if (($m->{'bool'})) {
+                if ($m->{'bool'}) {
                     ($p = $m->{'to'})
                 };
-                if (((substr($str, $p, 1) ne ')'))) {
+                if ((substr($str, $p, 1) ne ')')) {
                     die('syntax error near ', substr($str, $pos, 10))
                 };
                 ($p)++
@@ -76,12 +76,12 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             ($m_name->{'to'} = $p);
             return ($m_name)
         };
-        if ((((($sig eq '_') || ($sig eq '$')) || ($sig eq ';$')))) {
+        if (((($sig eq '_') || ($sig eq '$')) || ($sig eq ';$'))) {
             (my  $m);
             (my  $arg);
-            if (((substr($str, $p, 1) eq '('))) {
+            if ((substr($str, $p, 1) eq '(')) {
                 ($m = Perlito5::Expression->term_paren($str, $p));
-                if ((!($m->{'bool'}))) {
+                if (!($m->{'bool'})) {
                     return ($m)
                 };
                 ($p = $m->{'to'});
@@ -96,11 +96,11 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             else {
                 ($m = Perlito5::Expression->argument_parse($str, $p));
                 ($arg = $m->{'capture'}->{'exp'});
-                if ((($arg eq '*undef*'))) {
+                if (($arg eq '*undef*')) {
                     ($arg = undef())
                 }
                 else {
-                    if ((((ref($arg) eq 'Perlito5::AST::Apply') && ($arg->{'code'} eq 'circumfix:<( )>')))) {
+                    if (((ref($arg) eq 'Perlito5::AST::Apply') && ($arg->{'code'} eq 'circumfix:<( )>'))) {
                         ((my  $v) = shift(@{$arg->{'arguments'}}));
                         if (@{$arg->{'arguments'}}) {
                             die(('Too many arguments for ' . $name))
@@ -110,7 +110,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
                 }
             };
             (my  @args);
-            if ((defined($arg))) {
+            if (defined($arg)) {
                 push(@args, $arg )
             }
             else {
@@ -125,9 +125,9 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             return ($m)
         }
     };
-    if (((substr($str, $p, 1) eq '('))) {
+    if ((substr($str, $p, 1) eq '(')) {
         ($m = Perlito5::Expression->term_paren($str, $p));
-        if ((!($m->{'bool'}))) {
+        if (!($m->{'bool'})) {
             return ($m)
         };
         ((my  $arg) = $m->{'capture'}->[2]);
@@ -136,7 +136,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         return ($m)
     };
     ((my  $m_list) = Perlito5::Expression->list_parse($str, $p));
-    if (($m_list->{'bool'})) {
+    if ($m_list->{'bool'}) {
         ($m_name->{'capture'} = ['postfix_or_term', 'funcall', $namespace, $name, $m_list->flat()]);
         ($m_name->{'to'} = $m_list->{'to'});
         return ($m_name)

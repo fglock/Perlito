@@ -61,17 +61,17 @@ sub Perlito5::AST::Var::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $ns) = '');
-    if (($self->{'namespace'})) {
+    if ($self->{'namespace'}) {
         ($ns = ($self->{'namespace'} . '::'))
     }
     else {
-        if ((((($self->{'sigil'} eq '@')) && (($self->{'name'} eq 'ARGV'))))) {
+        if (((($self->{'sigil'} eq '@')) && (($self->{'name'} eq 'ARGV')))) {
             return (@ARGV)
         }
     };
     ((my  $name) = ($self->{'sigil'} . $ns . $self->{'name'}));
     for my $e (@{$env}) {
-        if ((exists($e->{$name}))) {
+        if (exists($e->{$name})) {
             return ($e->{$name})
         }
     };
@@ -89,7 +89,7 @@ sub Perlito5::AST::Call::eval {
     ((my  $env) = $_[1]);
     warn('Interpreter TODO: Perlito5::AST::Call');
     ((my  $invocant) = $self->{'invocant'}->eval($env));
-    if ((($invocant eq 'self'))) {
+    if (($invocant eq 'self')) {
         ($invocant = '$self')
     };
     warn('Interpreter runtime error: method ' . chr(39), $self->{'method'}, '()' . chr(39) . ' not found')
@@ -99,13 +99,13 @@ sub Perlito5::AST::Apply::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $ns) = '');
-    if (($self->{'namespace'})) {
+    if ($self->{'namespace'}) {
         ($ns = ($self->{'namespace'} . '::'))
     };
     ((my  $code) = ($ns . $self->{'code'}));
     for my $e (@{$env}) {
-        if ((exists($e->{$code}))) {
-            return (($e->{$code}->($env, @{$self->{'arguments'}})))
+        if (exists($e->{$code})) {
+            return ($e->{$code}->($env, @{$self->{'arguments'}}))
         }
     };
     warn('Interpreter runtime error: subroutine ' . chr(39), $code, '()' . chr(39) . ' not found')
@@ -115,7 +115,7 @@ sub Perlito5::AST::If::eval {
     ((my  $self) = $_[0]);
     ((my  $env) = $_[1]);
     ((my  $cond) = $self->{'cond'});
-    if (($cond->eval($env))) {
+    if ($cond->eval($env)) {
         ((my  $env1) = [{}, @{$env}]);
         for my $stmt (@{($self->{'body'})->stmts()}) {
             $stmt->eval($env1)
@@ -162,7 +162,7 @@ sub Perlito5::AST::Decl::eval {
     ((my  $env) = $_[1]);
     ((my  $decl) = $self->{'decl'});
     ((my  $name) = $self->{'var'}->plain_name());
-    if ((!((exists(($env->[0])->{$name}))))) {
+    if (!((exists($env->[0])->{$name}))) {
         (($env->[0])->{$name} = undef())
     };
     return (undef())
@@ -189,7 +189,7 @@ sub Perlito5::AST::Sub::eval {
     };
     return ($r)
 });
-    if (($self->{'name'})) {
+    if ($self->{'name'}) {
         (($env->[0])->{$self->{'name'}} = $sub)
     };
     return ($sub)

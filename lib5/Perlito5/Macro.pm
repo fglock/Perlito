@@ -16,7 +16,7 @@ sub Perlito5::AST::Apply::op_assign {
     if (ref($code)) {
         return (0)
     };
-    if ((exists($op{$code}))) {
+    if (exists($op{$code})) {
         return (Perlito5::AST::Apply->new(('code' => 'infix:<=>'), ('arguments' => [$self->{'arguments'}->[0], Perlito5::AST::Apply->new(('code' => $op{$code}), ('arguments' => $self->{'arguments'}))])))
     };
     return (0)
@@ -25,19 +25,19 @@ package Perlito5::AST::Do;
 sub Perlito5::AST::Do::simplify {
     ((my  $self) = $_[0]);
     (my  $block);
-    if (($self->{'block'}->isa('Perlito5::AST::Lit::Block'))) {
+    if ($self->{'block'}->isa('Perlito5::AST::Lit::Block')) {
         ($block = $self->{'block'}->stmts())
     }
     else {
         ($block = [$self->{'block'}])
     };
-    if (((scalar(@{$block}) == 1))) {
+    if ((scalar(@{$block}) == 1)) {
         ((my  $stmt) = $block->[0]);
-        if ((($stmt->isa('Perlito5::AST::Apply') && ($stmt->code() eq 'circumfix:<( )>')))) {
+        if (($stmt->isa('Perlito5::AST::Apply') && ($stmt->code() eq 'circumfix:<( )>'))) {
             ((my  $args) = $stmt->arguments());
             return (Perlito5::AST::Do->new(('block' => $args->[0]))->simplify())
         };
-        if (($stmt->isa('Perlito5::AST::Do'))) {
+        if ($stmt->isa('Perlito5::AST::Do')) {
             return ($stmt->simplify())
         }
     };

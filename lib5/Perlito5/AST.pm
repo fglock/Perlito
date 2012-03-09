@@ -92,7 +92,7 @@ sub Perlito5::AST::Var::name {
 };
 sub Perlito5::AST::Var::plain_name {
     ((my  $self) = shift());
-    if (($self->namespace())) {
+    if ($self->namespace()) {
         return (($self->namespace() . '::' . $self->name()))
     };
     return ($self->name())
