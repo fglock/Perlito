@@ -57,7 +57,6 @@ if (typeof NAMESPACE !== "object") {
 function make_package(pkg_name) {
     if (!CLASS.hasOwnProperty(pkg_name)) {
         var tmp = function () {};
-        tmp.prototype = CLASS.UNIVERSAL;
         CLASS[pkg_name] = new tmp();
         CLASS[pkg_name]._ref_ = pkg_name;
         CLASS[pkg_name]._class_ = CLASS[pkg_name];  // XXX memory leak
@@ -72,10 +71,22 @@ function make_package(pkg_name) {
 }
 
 function _call_(invocant, method, list) {
-    // TODO - @ISA class lookup
-    // TODO - AUTOLOAD
     list.unshift(invocant);
-    return invocant._class_[method](list) 
+
+    if ( invocant._class_.hasOwnProperty(method) ) {
+        return invocant._class_[method](list) 
+    }
+
+    // TODO - @ISA class lookup
+
+    if ( CLASS.UNIVERSAL.hasOwnProperty(method) ) {
+        return CLASS.UNIVERSAL[method](list) 
+    }
+
+    // TODO - cache the methods that were already looked up
+    // TODO - AUTOLOAD
+
+    CLASS.CORE.die(["method not found: ", method]);
 }
 
 make_package("main");
