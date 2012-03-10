@@ -500,11 +500,11 @@ for ($_) {
             };
             return (('(' . $invocant . ')([' . join(',', @args) . '])'))
         };
-        ((my  @args) = ($invocant));
+        (my  @args);
         for (@{$self->{'arguments'}}) {
             push(@args, $_->emit_javascript() )
         };
-        return (($invocant . '._class_.' . $meth . '([' . join(',', @args) . '])'))
+        return (('_call_(' . $invocant . ', "' . $meth . '", [' . join(',', @args) . '])'))
     }
 };
 package Perlito5::AST::Apply;

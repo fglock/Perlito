@@ -68,6 +68,11 @@ function make_package(pkg_name) {
     }
 }
 
+function _call_(invocant, method, list) {
+    list.unshift(invocant);
+    return invocant._class_[method](list) 
+}
+
 make_package("main");
 make_package("Perlito5");
 make_package("Perlito5::IO");

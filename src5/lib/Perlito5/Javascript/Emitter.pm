@@ -688,10 +688,10 @@ package Perlito5::AST::Call;
                 for @{$self->{"arguments"}};
             return '(' . $invocant . ')([' . join(',', @args) . '])';
         }
-        my @args = ($invocant);
+        my @args;
         push @args, $_->emit_javascript
             for @{$self->{"arguments"}};
-        return $invocant . '._class_.' . $meth . '([' . join(',', @args) . '])'
+        return '_call_(' . $invocant . ', "' . $meth . '", [' . join(',', @args) . '])'
     }
 }
 
