@@ -123,7 +123,7 @@ say "it was indeed" if $s =~ /was/;
 
                 // compile
                 var start = new Date().getTime();
-                var js_source = CLASS["Perlito5"].compile_p5_to_js([source]);
+                var js_source = NAMESPACE["Perlito5"].compile_p5_to_js([source]);
                 var end = new Date().getTime();
                 var time = end - start;
 			    document.getElementById('log-result').value +=  "Compilation time: " + time + "ms\n";

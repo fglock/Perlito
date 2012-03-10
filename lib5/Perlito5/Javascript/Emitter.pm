@@ -474,7 +474,7 @@ for ($_) {
     sub Perlito5::AST::Proto::emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ('CLASS["' . $self->{'name'} . '"]')
+        ('NAMESPACE["' . $self->{'name'} . '"]')
     }
 };
 package Perlito5::AST::Call;

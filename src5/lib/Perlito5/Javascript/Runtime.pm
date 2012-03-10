@@ -24,46 +24,41 @@ sub emit_javascript {
 
 if (typeof NAMESPACE !== "object") {
     NAMESPACE = {};
-    CLASS = {};
     LOCAL = [];
 
     var universal = function () {};
-    CLASS.UNIVERSAL = new universal();
-    CLASS.UNIVERSAL._ref_ = "UNIVERSAL";
-    CLASS.UNIVERSAL.isa = function (List__) {
+    NAMESPACE.UNIVERSAL = new universal();
+    NAMESPACE.UNIVERSAL._ref_ = "UNIVERSAL";
+    NAMESPACE.UNIVERSAL.isa = function (List__) {
+        // TODO - use @ISA
         return List__[0]._class_._ref_ == List__[1]
     };
-    CLASS.UNIVERSAL.can = function (List__) {
+    NAMESPACE.UNIVERSAL.can = function (List__) {
         var o = List__[0];
         var s = List__[1];
         if ( s.indexOf("::") == -1 ) {
+            // TODO - use _method_lookup_
             return o._class_[s]
         }
         var c = s.split("::");
         s = c.pop(); 
-        return CLASS[c.join("::")][s]
+        // TODO - use _method_lookup_
+        return _method_lookup_(s, c.join("::"), {});
     };
-    CLASS.UNIVERSAL.DOES = CLASS.UNIVERSAL.can;
-
-    NAMESPACE.UNIVERSAL = new universal();
+    NAMESPACE.UNIVERSAL.DOES = NAMESPACE.UNIVERSAL.can;
 
     var core = function () {};
-    CLASS.CORE = new core();
-    CLASS.CORE._ref_ = "CORE";
-
     NAMESPACE.CORE = new core();
+    NAMESPACE.CORE._ref_ = "CORE";
 }
 
 function make_package(pkg_name) {
-    if (!CLASS.hasOwnProperty(pkg_name)) {
-        var tmp = function () {};
-        CLASS[pkg_name] = new tmp();
-        CLASS[pkg_name]._ref_ = pkg_name;
-        CLASS[pkg_name]._class_ = CLASS[pkg_name];  // XXX memory leak
-
+    if (!NAMESPACE.hasOwnProperty(pkg_name)) {
         var tmp = function () {};
         tmp.prototype = NAMESPACE.CORE;
         NAMESPACE[pkg_name] = new tmp();
+        NAMESPACE[pkg_name]._ref_ = pkg_name;
+        NAMESPACE[pkg_name]._class_ = NAMESPACE[pkg_name];  // XXX memory leak
 
         // TODO - add the other package global variables
         NAMESPACE[pkg_name]["List_ISA"] = [];
@@ -98,8 +93,8 @@ function _call_(invocant, method, list) {
     if (m) {
         return m(list)
     }
-    if ( CLASS.UNIVERSAL.hasOwnProperty(method) ) {
-        return CLASS.UNIVERSAL[method](list) 
+    if ( NAMESPACE.UNIVERSAL.hasOwnProperty(method) ) {
+        return NAMESPACE.UNIVERSAL[method](list) 
     }
     // TODO - cache the methods that were already looked up
     NAMESPACE.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
@@ -112,7 +107,7 @@ make_package("Perlito5::Runtime");
 make_package("Perlito5::Grammar");
 
 function make_sub(pkg_name, sub_name, func) {
-    NAMESPACE[pkg_name][sub_name] = CLASS[pkg_name][sub_name] = func;
+    NAMESPACE[pkg_name][sub_name] = func;
 }
 
 function set_local(namespace, name, sigil) {
@@ -162,7 +157,7 @@ make_sub("Perlito5::IO", "slurp", function(List__) {
         // v8
         return read(filename);
     }
-    CLASS.CORE.die(["Perlito5::IO::slurp() not implemented"]);
+    NAMESPACE.CORE.die(["Perlito5::IO::slurp() not implemented"]);
 });
 
 interpolate_array = function() {
@@ -309,7 +304,7 @@ make_sub("Perlito5::Grammar", "word", function(List__) {
             to: v_pos + 1,
             bool: v_str.substr(v_pos, 1).match(/\w/) != null,
         }),
-        CLASS["Perlito5::Match"]
+        NAMESPACE["Perlito5::Match"]
     ]);
 });
 
@@ -324,7 +319,7 @@ make_sub("Perlito5::Grammar", "digit", function(List__) {
             to:   v_pos + 1,
             bool: v_str.substr(v_pos, 1).match(/\d/) != null,
         }),
-        CLASS["Perlito5::Match"]
+        NAMESPACE["Perlito5::Match"]
     ]);
 });
 
@@ -339,7 +334,7 @@ make_sub("Perlito5::Grammar", "space", function(List__) {
             to:   v_pos + 1,
             bool: v_str.substr(v_pos, 1).match(/\s/) != null,
         }),
-        CLASS["Perlito5::Match"]
+        NAMESPACE["Perlito5::Match"]
     ]);
 });
 
@@ -352,7 +347,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
     var namespace_old = NAMESPACE["Perlito5"].v_PKG_NAME;
     NAMESPACE["Perlito5"].v_PKG_NAME = namespace;
 
-    match = CLASS["Perlito5::Grammar"].exp_stmts([CLASS["Perlito5::Grammar"], source, 0]);
+    match = NAMESPACE["Perlito5::Grammar"].exp_stmts([NAMESPACE["Perlito5::Grammar"], source, 0]);
 
     ast = NAMESPACE.CORE.bless([
         new HashRef({
@@ -360,10 +355,10 @@ function perl5_to_js( source, namespace, var_env_js ) {
                         new HashRef({
                             stmts:   match._class_.flat([match]),
                         }),
-                        CLASS["Perlito5::AST::Lit::Block"]
+                        NAMESPACE["Perlito5::AST::Lit::Block"]
                     ]),
         }),
-        CLASS["Perlito5::AST::Do"]
+        NAMESPACE["Perlito5::AST::Do"]
     ]);
 
     // CORE.say( "ast: [" + perl(ast) + "]" );

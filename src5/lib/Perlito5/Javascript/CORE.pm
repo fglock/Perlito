@@ -76,10 +76,10 @@ CORE.bless = function(List__) {
         o._class_ = pkg_name;
         return o;
     }
-    if (!CLASS.hasOwnProperty(pkg_name)) {
+    if (!NAMESPACE.hasOwnProperty(pkg_name)) {
         make_package(pkg_name);
     }
-    o._class_ = CLASS[pkg_name];
+    o._class_ = NAMESPACE[pkg_name];
     return o;
 };
 

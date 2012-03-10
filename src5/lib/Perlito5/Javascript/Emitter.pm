@@ -660,7 +660,7 @@ package Perlito5::AST::Proto;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        'CLASS["' . $self->{"name"} . '"]'
+        'NAMESPACE["' . $self->{"name"} . '"]'
     }
 }
 
