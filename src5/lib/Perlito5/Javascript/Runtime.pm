@@ -22,6 +22,8 @@ sub emit_javascript {
 //
 // See http://www.perl.com/perl/misc/Artistic.html
 
+var isNode = true;
+
 if (typeof NAMESPACE !== "object") {
     NAMESPACE = {};
     LOCAL = [];
@@ -126,7 +128,9 @@ function cleanup_local(idx, value) {
     return value;
 }
 
-if (typeof arguments === "object") {
+if (typeof isNode != "undefined") {
+    List_ARGV = process.argv.splice(2);
+} else if (typeof arguments === "object") {
     List_ARGV = arguments;
 }
 
@@ -148,17 +152,24 @@ function ScalarRef(o) {
     this.bool = function() { return 1 };
 }
 
-make_sub("Perlito5::IO", "slurp", function(List__) {
-    var filename = List__[0];
-    if (typeof readFile == "function") {
-        return readFile(filename);
-    }
-    if (typeof read == "function") {
-        // v8
-        return read(filename);
-    }
-    NAMESPACE.CORE.die(["Perlito5::IO::slurp() not implemented"]);
-});
+if (isNode) {
+    var fs = require("fs");
+    make_sub("Perlito5::IO", "slurp", function(List__) {
+        return fs.readFileSync(List__[0],"utf8");
+    });
+} else {
+    make_sub("Perlito5::IO", "slurp", function(List__) {
+        var filename = List__[0];
+        if (typeof readFile == "function") {
+            return readFile(filename);
+        }
+        if (typeof read == "function") {
+            // v8
+            return read(filename);
+        }
+        NAMESPACE.CORE.die(["Perlito5::IO::slurp() not implemented"]);
+    });
+}
 
 interpolate_array = function() {
     var res = [];

@@ -25,25 +25,37 @@ sub emit_javascript {
 
 var CORE = NAMESPACE.CORE;
 
-var _print_buf = "";
-CORE.print = function(List__) {
-    var i;
-    for (i = 0; i < List__.length; i++) {
-        var s = string(List__[i]);
-        if (s.substr(s.length - 2, 2) == "\n") {
-            print(_print_buf + s.substr(0, s.length - 2));
-            _print_buf = "";
+var isNode = typeof require != "undefined";
+if (isNode) {
+    CORE.print = function(List__) {
+        var i;
+        for (i = 0; i < List__.length; i++) {
+            var s = string(List__[i]);
+            process.stdout.write(s);
         }
-        else if (s.substr(s.length - 1, 1) == "\n") {
-            print(_print_buf + s.substr(0, s.length - 1));
-            _print_buf = "";
-        }
-        else {
-            _print_buf = _print_buf + s;
-        }
+        return true;
     }
-    return true;
-};
+} else {
+    var _print_buf = "";
+    CORE.print = function(List__) {
+        var i;
+        for (i = 0; i < List__.length; i++) {
+            var s = string(List__[i]);
+            if (s.substr(s.length - 2, 2) == "\n") {
+                print(_print_buf + s.substr(0, s.length - 2));
+                _print_buf = "";
+            }
+            else if (s.substr(s.length - 1, 1) == "\n") {
+                print(_print_buf + s.substr(0, s.length - 1));
+                _print_buf = "";
+            }
+            else {
+                _print_buf = _print_buf + s;
+            }
+        }
+        return true;
+    };
+}
 
 CORE.say = function(List__) {
     CORE.print(List__);
