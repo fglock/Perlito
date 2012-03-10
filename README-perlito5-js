@@ -22,7 +22,7 @@ $Perlito5::THROW = 1
 
 
 method call
-- lookup the method in the _class_ attribute; follow the class hierarchy until the UNIVERSAL base class.
+- lookup the method in the _class_ attribute; follow the class hierarchy through @ISA until the UNIVERSAL base class.
 - do a native call on the method.
 - the argument list is the named array "List__" (that is, "@_").
 - additional arguments can be used to pass out-of-band data, such as: caller(), wantarray()
