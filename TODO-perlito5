@@ -53,7 +53,7 @@ TODO list for Perlito5
 
 -- check that @_, $_ and other special variables are in the right context (lexical, global, package global)
 
--- add an object system
+-- add alternate mro's
 
 -- add regex compiler
 -- /e modifier

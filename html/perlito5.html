@@ -50,10 +50,13 @@ my $str = ' say("this was compiled at $time") ';
 $time = 'Run-time';
 eval $str;
 
-package Printer;
+package BasePrinter;
     sub new { 
         bless {}, $_[0] 
     }
+
+package Printer;
+    our @ISA = qw/ BasePrinter /;
     sub out { 
         JS::inline('document.getElementById("print-result").value') = 
         JS::inline('document.getElementById("print-result").value') . $_[1];

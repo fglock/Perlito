@@ -11,6 +11,8 @@ Dev  2012-02-29
 -- use native data structures and ops
 
 - javascript backend:
+-- @ISA
+-- regexes (using javascript native regex)
 -- symbol tables; typeglobs
 -- references
 -- "local", "our"; goto &sub

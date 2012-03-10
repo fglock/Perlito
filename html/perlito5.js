@@ -61,7 +61,7 @@ function make_package(pkg_name) {
         NAMESPACE[pkg_name] = new tmp();
 
         // TODO - add the other package global variables
-        NAMESPACE[pkg_name]["v_ISA"] = [];
+        NAMESPACE[pkg_name]["List_ISA"] = [];
     }
 }
 
@@ -71,7 +71,7 @@ function _method_lookup_(method, class_name, seen) {
     if ( c.hasOwnProperty(method) ) {
         return c[method]
     }
-    var isa = c.v_ISA;
+    var isa = c.List_ISA;
     for (var i = 0; i < isa.length; i++) {
         if (!seen[isa[i]]) {
             var m = _method_lookup_(method, isa[i]);
@@ -97,7 +97,7 @@ function _call_(invocant, method, list) {
         return CLASS.UNIVERSAL[method](list) 
     }
     // TODO - cache the methods that were already looked up
-    CLASS.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
+    NAMESPACE.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
 }
 
 make_package("main");
