@@ -104,6 +104,9 @@ sub m_quote_parse {
     my $part1 = $self->string_interpolation_parse($str, $pos, $closing_delimiter, 1);
     return $part1 unless $part1->{"bool"};
 
+    # TODO - call the regex compiler
+    my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{"to"} - $pos - 1 ) );
+
     my $m;
     my $p = $part1->{"to"};
 
@@ -116,7 +119,7 @@ sub m_quote_parse {
 
     $part1->{"capture"} = Perlito5::AST::Apply->new( 
         code => 'p5:m',
-        arguments => [ $part1->flat(), $modifiers ],
+        arguments => [ $str_regex, $modifiers ],
         namespace => ''
     );
     return $part1;
@@ -130,6 +133,9 @@ sub s_quote_parse {
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
     my $part1 = $self->string_interpolation_parse($str, $pos, $closing_delimiter, 1);
     return $part1 unless $part1->{"bool"};
+
+    # TODO - call the regex compiler
+    my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{"to"} - $pos - 1 ) );
 
     my $part2;
     my $m;
@@ -161,7 +167,7 @@ sub s_quote_parse {
 
     $part2->{"capture"} = Perlito5::AST::Apply->new( 
         code => 'p5:s',
-        arguments => [ $part1->flat(), $part2->flat(), $modifiers ],
+        arguments => [ $str_regex, $part2->flat(), $modifiers ],
         namespace => ''
     );
     return $part2;

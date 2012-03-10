@@ -5,6 +5,16 @@ use Perlito5::Expression;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::String;
 
+sub word {
+    bless {
+        str  => $_[1],
+        from => $_[2],
+        to   => $_[2] + 1,
+        bool => substr( $_[1], $_[2], 1 ) =~ m/\w/,
+      },
+      'Perlito5::Match';
+}
+
 token is_newline {
     | \c10
     | \c13

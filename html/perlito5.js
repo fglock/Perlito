@@ -288,21 +288,6 @@ str_replicate = function(o, n) {
     return n ? Array(n + 1).join(o) : "";
 };
 
-make_sub("Perlito5::Grammar", "word", function(List__) {
-    var v_grammar = List__[0];
-    var v_str     = List__[1];
-    var v_pos     = List__[2];
-    return NAMESPACE.CORE.bless([
-        new HashRef({
-            str: v_str,
-            from: v_pos,
-            to: v_pos + 1,
-            bool: v_str.substr(v_pos, 1).match(/\w/) != null,
-        }),
-        NAMESPACE["Perlito5::Match"]
-    ]);
-});
-
 make_sub("Perlito5::Grammar", "digit", function(List__) {
     var v_grammar = List__[0];
     var v_str     = List__[1];
@@ -6226,6 +6211,8 @@ CORE.prototype = function(List__, data) {
 				else {
 					throw(v_part1);
 				};
+				var v_str_regex = null;
+				(v_str_regex = _call_(NAMESPACE["Perlito5::AST::Val::Buf"], "new", ['buf', NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_pos, (num((num((v_part1 || (v_part1 = new HashRef({})))._hash_['to']) - num(v_pos))) - 1)])]));
 				var v_m = null;
 				var v_p = null;
 				(v_p = (v_part1 || (v_part1 = new HashRef({})))._hash_['to']);
@@ -6236,7 +6223,7 @@ CORE.prototype = function(List__, data) {
 					(v_modifiers = _call_(v_m, "flat", []));
 					((v_part1 || (v_part1 = new HashRef({})))._hash_['to'] = (v_m || (v_m = new HashRef({})))._hash_['to']);
 				};
-				((v_part1 || (v_part1 = new HashRef({})))._hash_['capture'] = _call_(NAMESPACE["Perlito5::AST::Apply"], "new", ['code', 'p5:m','arguments', (new ArrayRef(interpolate_array(_call_(v_part1, "flat", []), v_modifiers))),'namespace', '']));
+				((v_part1 || (v_part1 = new HashRef({})))._hash_['capture'] = _call_(NAMESPACE["Perlito5::AST::Apply"], "new", ['code', 'p5:m','arguments', (new ArrayRef(interpolate_array(v_str_regex, v_modifiers))),'namespace', '']));
 				throw(v_part1)
 			}
 			catch(err) {
@@ -6271,6 +6258,8 @@ CORE.prototype = function(List__, data) {
 				else {
 					throw(v_part1);
 				};
+				var v_str_regex = null;
+				(v_str_regex = _call_(NAMESPACE["Perlito5::AST::Val::Buf"], "new", ['buf', NAMESPACE["Perlito5::Grammar::String"].substr([v_str, v_pos, (num((num((v_part1 || (v_part1 = new HashRef({})))._hash_['to']) - num(v_pos))) - 1)])]));
 				var v_part2 = null;
 				var v_m = null;
 				var v_p = null;
@@ -6309,7 +6298,7 @@ CORE.prototype = function(List__, data) {
 					(v_modifiers = _call_(v_m, "flat", []));
 					((v_part2 || (v_part2 = new HashRef({})))._hash_['to'] = (v_m || (v_m = new HashRef({})))._hash_['to']);
 				};
-				((v_part2 || (v_part2 = new HashRef({})))._hash_['capture'] = _call_(NAMESPACE["Perlito5::AST::Apply"], "new", ['code', 'p5:s','arguments', (new ArrayRef(interpolate_array(_call_(v_part1, "flat", []), _call_(v_part2, "flat", []), v_modifiers))),'namespace', '']));
+				((v_part2 || (v_part2 = new HashRef({})))._hash_['capture'] = _call_(NAMESPACE["Perlito5::AST::Apply"], "new", ['code', 'p5:s','arguments', (new ArrayRef(interpolate_array(v_str_regex, _call_(v_part2, "flat", []), v_modifiers))),'namespace', '']));
 				throw(v_part2)
 			}
 			catch(err) {
@@ -6876,6 +6865,9 @@ CORE.prototype = function(List__, data) {
 ;
 		// use Perlito5::Grammar::String
 ;
+		make_sub("Perlito5::Grammar", "word", function (List__) {
+				return (NAMESPACE["Perlito5::Grammar"].bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', add(List__[2], 1), 'bool', NAMESPACE["Perlito5::Grammar"].substr([List__[1], List__[2], 1]).match(/\w/))))), 'Perlito5::Match']));
+		});
 		make_sub("Perlito5::Grammar", "is_newline", function (List__) {
 				var v_grammar = null;
 				(v_grammar = List__[0]);

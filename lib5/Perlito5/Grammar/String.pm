@@ -526,6 +526,7 @@ sub Perlito5::Grammar::String::m_quote_parse {
     else {
         return ($part1)
     };
+    ((my  $str_regex) = Perlito5::AST::Val::Buf->new(('buf' => substr($str, $pos, (($part1->{'to'} - $pos) - 1)))));
     (my  $m);
     ((my  $p) = $part1->{'to'});
     ((my  $modifiers) = '');
@@ -534,7 +535,7 @@ sub Perlito5::Grammar::String::m_quote_parse {
         ($modifiers = $m->flat());
         ($part1->{'to'} = $m->{'to'})
     };
-    ($part1->{'capture'} = Perlito5::AST::Apply->new(('code' => 'p5:m'), ('arguments' => [$part1->flat(), $modifiers]), ('namespace' => '')));
+    ($part1->{'capture'} = Perlito5::AST::Apply->new(('code' => 'p5:m'), ('arguments' => [$str_regex, $modifiers]), ('namespace' => '')));
     return ($part1)
 };
 sub Perlito5::Grammar::String::s_quote_parse {
@@ -553,6 +554,7 @@ sub Perlito5::Grammar::String::s_quote_parse {
     else {
         return ($part1)
     };
+    ((my  $str_regex) = Perlito5::AST::Val::Buf->new(('buf' => substr($str, $pos, (($part1->{'to'} - $pos) - 1)))));
     (my  $part2);
     (my  $m);
     ((my  $p) = $part1->{'to'});
@@ -589,7 +591,7 @@ sub Perlito5::Grammar::String::s_quote_parse {
         ($modifiers = $m->flat());
         ($part2->{'to'} = $m->{'to'})
     };
-    ($part2->{'capture'} = Perlito5::AST::Apply->new(('code' => 'p5:s'), ('arguments' => [$part1->flat(), $part2->flat(), $modifiers]), ('namespace' => '')));
+    ($part2->{'capture'} = Perlito5::AST::Apply->new(('code' => 'p5:s'), ('arguments' => [$str_regex, $part2->flat(), $modifiers]), ('namespace' => '')));
     return ($part2)
 };
 sub Perlito5::Grammar::String::string_interpolation_parse {
