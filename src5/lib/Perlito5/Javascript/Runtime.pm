@@ -65,10 +65,15 @@ function make_package(pkg_name) {
         var tmp = function () {};
         tmp.prototype = NAMESPACE.CORE;
         NAMESPACE[pkg_name] = new tmp();
+
+        // TODO - add the other package global variables
+        NAMESPACE[pkg_name]["v_ISA"] = [];
     }
 }
 
 function _call_(invocant, method, list) {
+    // TODO - @ISA class lookup
+    // TODO - AUTOLOAD
     list.unshift(invocant);
     return invocant._class_[method](list) 
 }
