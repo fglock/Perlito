@@ -94,7 +94,7 @@ function _call_(invocant, method, list) {
     if ( invocant._class_.hasOwnProperty(method) ) {
         return invocant._class_[method](list) 
     }
-    var m = _method_lookup_(method, invocant._ref_, {});
+    var m = _method_lookup_(method, invocant._class_._ref_, {});
     if (m) {
         return m(list)
     }

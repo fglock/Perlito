@@ -65,23 +65,39 @@ function make_package(pkg_name) {
     }
 }
 
+function _method_lookup_(method, class_name, seen) {
+    // default mro
+    c = NAMESPACE[class_name];
+    if ( c.hasOwnProperty(method) ) {
+        return c[method]
+    }
+    var isa = c.v_ISA;
+    for (var i = 0; i < isa.length; i++) {
+        if (!seen[isa[i]]) {
+            var m = _method_lookup_(method, isa[i]);
+            if (m) {
+                return m 
+            }
+            seen[isa[i]]++;
+        }
+    }
+    // TODO - AUTOLOAD
+}
+
 function _call_(invocant, method, list) {
     list.unshift(invocant);
-
     if ( invocant._class_.hasOwnProperty(method) ) {
         return invocant._class_[method](list) 
     }
-
-    // TODO - @ISA class lookup
-
+    var m = _method_lookup_(method, invocant._class_._ref_, {});
+    if (m) {
+        return m(list)
+    }
     if ( CLASS.UNIVERSAL.hasOwnProperty(method) ) {
         return CLASS.UNIVERSAL[method](list) 
     }
-
     // TODO - cache the methods that were already looked up
-    // TODO - AUTOLOAD
-
-    CLASS.CORE.die(["method not found: ", method]);
+    CLASS.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
 }
 
 make_package("main");
