@@ -70,6 +70,8 @@ $printer->out( "Using my 'Printer' object\n" );
 my $s = "the text will be replaced";
 $s =~ s {will be} {was};
 say $s;
+say "oops - it was not" if $s !~ /was/;
+say "it was indeed" if $s =~ /was/;
 
 </textarea><br/>
 		<input type="button" value="Execute" onclick="execute()"/>
