@@ -261,7 +261,7 @@ for ($_) {
         ((my  $comp_units) = shift());
         ((my  $str) = '');
         ($Perlito5::PKG_NAME = 'main');
-        ($Perlito5::VAR = [{('@_' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)}), ('$_' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)}), ('@ARGV' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)})}]);
+        ($Perlito5::VAR = [{('@_' => {('decl' => 'my')}), ('$_' => {('decl' => 'my')}), ('@ARGV' => {('decl' => 'my')})}]);
         for my $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_javascript() . chr(10)))
         };
