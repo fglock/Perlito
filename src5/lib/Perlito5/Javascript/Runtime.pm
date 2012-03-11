@@ -22,7 +22,7 @@ sub emit_javascript {
 //
 // See http://www.perl.com/perl/misc/Artistic.html
 
-var isNode = true;
+var isNode = typeof require != "undefined";
 
 if (typeof NAMESPACE !== "object") {
     NAMESPACE = {};
@@ -128,7 +128,7 @@ function cleanup_local(idx, value) {
     return value;
 }
 
-if (typeof isNode != "undefined") {
+if (isNode) {
     List_ARGV = process.argv.splice(2);
 } else if (typeof arguments === "object") {
     List_ARGV = arguments;

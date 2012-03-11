@@ -17,7 +17,7 @@
 //
 // See http://www.perl.com/perl/misc/Artistic.html
 
-var isNode = true;
+var isNode = typeof require != "undefined";
 
 if (typeof NAMESPACE !== "object") {
     NAMESPACE = {};
@@ -123,7 +123,7 @@ function cleanup_local(idx, value) {
     return value;
 }
 
-if (typeof isNode != "undefined") {
+if (isNode) {
     List_ARGV = process.argv.splice(2);
 } else if (typeof arguments === "object") {
     List_ARGV = arguments;
@@ -298,21 +298,6 @@ str_replicate = function(o, n) {
     n = num(n);
     return n ? Array(n + 1).join(o) : "";
 };
-
-make_sub("Perlito5::Grammar", "digit", function(List__) {
-    var v_grammar = List__[0];
-    var v_str     = List__[1];
-    var v_pos     = List__[2];
-    return NAMESPACE.CORE.bless([
-        new HashRef({
-            str:  v_str,
-            from: v_pos,
-            to:   v_pos + 1,
-            bool: v_str.substr(v_pos, 1).match(/\d/) != null,
-        }),
-        NAMESPACE["Perlito5::Match"]
-    ]);
-});
 
 make_sub("Perlito5::Grammar", "space", function(List__) {
     var v_grammar = List__[0];
