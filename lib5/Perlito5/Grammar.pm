@@ -14,6 +14,9 @@ use Perlito5::Grammar::String;
 sub Perlito5::Grammar::word {
     bless({('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1)), ('bool' => (substr($_[1], $_[2], 1) =~ m!\w!))}, 'Perlito5::Match')
 };
+sub Perlito5::Grammar::digit {
+    bless({('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1)), ('bool' => (substr($_[1], $_[2], 1) =~ m!\d!))}, 'Perlito5::Match')
+};
 sub Perlito5::Grammar::is_newline {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);

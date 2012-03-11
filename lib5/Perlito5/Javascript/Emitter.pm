@@ -523,7 +523,7 @@ for ($_) {
         }
         else {
             if (($code eq 'p5:m')) {
-                ($str = ($var->emit_javascript() . '.match(/' . $regex_args->[0]->{'buf'} . '/' . $regex_args->[1] . ')'))
+                ($str = ('(' . $var->emit_javascript() . '.match(/' . $regex_args->[0]->{'buf'} . '/' . $regex_args->[1] . ')' . ' ? 1 : 0)'))
             }
             else {
                 die(('Error: regex emitter - unknown operator ' . $code))
