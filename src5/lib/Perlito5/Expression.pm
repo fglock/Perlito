@@ -405,6 +405,15 @@ package Perlito5::Expression;
                         ] 
                     }
                 ]
+            | '^' <Perlito5::Grammar.word>
+                    { $MATCH->{"capture"} = [ 'term', 
+                            Perlito5::AST::Var->new(
+                                    sigil       => $MATCH->{"Perlito5::Grammar.var_sigil"}->flat(),
+                                    namespace   => '',
+                                    name        => '^' . $MATCH->{"Perlito5::Grammar.word"}->flat(),
+                                )
+                        ]
+                    }
             | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name>
                     { $MATCH->{"capture"} = [ 'term', 
                             Perlito5::AST::Var->new(

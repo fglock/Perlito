@@ -386,7 +386,7 @@ sub Perlito5::Expression::term_sigil {
     }
 })) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
-    (((do {
+    ((((do {
     (((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
@@ -433,6 +433,22 @@ sub Perlito5::Expression::term_sigil {
 })))
 })))
 })) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((((('^' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->word($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Grammar.word'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Var->new(('sigil' => $MATCH->{'Perlito5::Grammar.var_sigil'}->flat()), ('namespace' => ''), ('name' => ('^' . $MATCH->{'Perlito5::Grammar.word'}->flat())))]);
+    1
+}))))
+}))) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
     ((my  $m2) = Perlito5::Grammar->optional_namespace_before_ident($str, $MATCH->{'to'}));
