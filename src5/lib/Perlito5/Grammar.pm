@@ -25,6 +25,16 @@ sub digit {
       'Perlito5::Match';
 }
 
+sub space {
+    bless {
+        str  => $_[1],
+        from => $_[2],
+        to   => $_[2] + 1,
+        bool => substr( $_[1], $_[2], 1 ) =~ m/\s/,
+      },
+      'Perlito5::Match';
+}
+
 token is_newline {
     | \c10
     | \c13

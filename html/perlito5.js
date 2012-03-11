@@ -299,21 +299,6 @@ str_replicate = function(o, n) {
     return n ? Array(n + 1).join(o) : "";
 };
 
-make_sub("Perlito5::Grammar", "space", function(List__) {
-    var v_grammar = List__[0];
-    var v_str     = List__[1];
-    var v_pos     = List__[2];
-    return NAMESPACE.CORE.bless([
-        new HashRef({
-            str:  v_str,
-            from: v_pos,
-            to:   v_pos + 1,
-            bool: v_str.substr(v_pos, 1).match(/\s/) != null,
-        }),
-        NAMESPACE["Perlito5::Match"]
-    ]);
-});
-
 function perl5_to_js( source, namespace, var_env_js ) {
     // say( "source: [" + source + "]" );
 
@@ -6878,6 +6863,9 @@ CORE.prototype = function(List__, data) {
 		});
 		make_sub("Perlito5::Grammar", "digit", function (List__) {
 				return (NAMESPACE["Perlito5::Grammar"].bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', add(List__[2], 1), 'bool', (NAMESPACE["Perlito5::Grammar"].substr([List__[1], List__[2], 1]).match(/\d/) ? 1 : 0))))), 'Perlito5::Match']));
+		});
+		make_sub("Perlito5::Grammar", "space", function (List__) {
+				return (NAMESPACE["Perlito5::Grammar"].bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', add(List__[2], 1), 'bool', (NAMESPACE["Perlito5::Grammar"].substr([List__[1], List__[2], 1]).match(/\s/) ? 1 : 0))))), 'Perlito5::Match']));
 		});
 		make_sub("Perlito5::Grammar", "is_newline", function (List__) {
 				var v_grammar = null;

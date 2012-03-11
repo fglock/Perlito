@@ -3,18 +3,6 @@ use v5;
 
 use Perlito5::Match;
 
-package Perlito5::Grammar;
-    sub space {
-        # my $grammar = $_[0];
-        bless {
-            str  => $_[1],
-            from => $_[2],
-            to   => $_[2] + 1,
-            bool => substr( $_[1], $_[2] ) =~ m/^([[:space:]])/ ? 1 : 0,
-          },
-          'Perlito5::Match';
-    }
-
 package Perlito5::IO;
 
     sub slurp {
