@@ -11,6 +11,11 @@ Running the tests using perl6:
     . util-perl6/setup-perlito5-perl6.sh
     find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
 
+Running the tests using node.js:
+
+    # see below how to create perlito5.js
+    node perlito5.js -Bjs t5/01-sanity.t
+
 Compile the compiler to Javascript into perlito5.js:
 
 -- using perlito5.pl:

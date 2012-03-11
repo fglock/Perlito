@@ -6,6 +6,7 @@ Dev  2012-02-29
 -- moved the non-standard "token" grammar to a module
 - here-docs
 - new Perl5-in-Perl6 backend (experimental)
+- new option -Bjs
 
 - perl5 backend:
 -- use native data structures and ops
