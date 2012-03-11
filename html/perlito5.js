@@ -17,6 +17,8 @@
 //
 // See http://www.perl.com/perl/misc/Artistic.html
 
+var isNode = true;
+
 if (typeof NAMESPACE !== "object") {
     NAMESPACE = {};
     LOCAL = [];
@@ -121,7 +123,9 @@ function cleanup_local(idx, value) {
     return value;
 }
 
-if (typeof arguments === "object") {
+if (typeof isNode != "undefined") {
+    List_ARGV = process.argv.splice(2);
+} else if (typeof arguments === "object") {
     List_ARGV = arguments;
 }
 
@@ -143,17 +147,24 @@ function ScalarRef(o) {
     this.bool = function() { return 1 };
 }
 
-make_sub("Perlito5::IO", "slurp", function(List__) {
-    var filename = List__[0];
-    if (typeof readFile == "function") {
-        return readFile(filename);
-    }
-    if (typeof read == "function") {
-        // v8
-        return read(filename);
-    }
-    NAMESPACE.CORE.die(["Perlito5::IO::slurp() not implemented"]);
-});
+if (isNode) {
+    var fs = require("fs");
+    make_sub("Perlito5::IO", "slurp", function(List__) {
+        return fs.readFileSync(List__[0],"utf8");
+    });
+} else {
+    make_sub("Perlito5::IO", "slurp", function(List__) {
+        var filename = List__[0];
+        if (typeof readFile == "function") {
+            return readFile(filename);
+        }
+        if (typeof read == "function") {
+            // v8
+            return read(filename);
+        }
+        NAMESPACE.CORE.die(["Perlito5::IO::slurp() not implemented"]);
+    });
+}
 
 interpolate_array = function() {
     var res = [];
@@ -288,6 +299,21 @@ str_replicate = function(o, n) {
     return n ? Array(n + 1).join(o) : "";
 };
 
+make_sub("Perlito5::Grammar", "digit", function(List__) {
+    var v_grammar = List__[0];
+    var v_str     = List__[1];
+    var v_pos     = List__[2];
+    return NAMESPACE.CORE.bless([
+        new HashRef({
+            str:  v_str,
+            from: v_pos,
+            to:   v_pos + 1,
+            bool: v_str.substr(v_pos, 1).match(/\d/) != null,
+        }),
+        NAMESPACE["Perlito5::Match"]
+    ]);
+});
+
 make_sub("Perlito5::Grammar", "space", function(List__) {
     var v_grammar = List__[0];
     var v_str     = List__[1];
@@ -355,25 +381,37 @@ function perl5_to_js( source, namespace, var_env_js ) {
 
 var CORE = NAMESPACE.CORE;
 
-var _print_buf = "";
-CORE.print = function(List__) {
-    var i;
-    for (i = 0; i < List__.length; i++) {
-        var s = string(List__[i]);
-        if (s.substr(s.length - 2, 2) == "\n") {
-            print(_print_buf + s.substr(0, s.length - 2));
-            _print_buf = "";
+var isNode = typeof require != "undefined";
+if (isNode) {
+    CORE.print = function(List__) {
+        var i;
+        for (i = 0; i < List__.length; i++) {
+            var s = string(List__[i]);
+            process.stdout.write(s);
         }
-        else if (s.substr(s.length - 1, 1) == "\n") {
-            print(_print_buf + s.substr(0, s.length - 1));
-            _print_buf = "";
-        }
-        else {
-            _print_buf = _print_buf + s;
-        }
+        return true;
     }
-    return true;
-};
+} else {
+    var _print_buf = "";
+    CORE.print = function(List__) {
+        var i;
+        for (i = 0; i < List__.length; i++) {
+            var s = string(List__[i]);
+            if (s.substr(s.length - 2, 2) == "\n") {
+                print(_print_buf + s.substr(0, s.length - 2));
+                _print_buf = "";
+            }
+            else if (s.substr(s.length - 1, 1) == "\n") {
+                print(_print_buf + s.substr(0, s.length - 1));
+                _print_buf = "";
+            }
+            else {
+                _print_buf = _print_buf + s;
+            }
+        }
+        return true;
+    };
+}
 
 CORE.say = function(List__) {
     CORE.print(List__);
