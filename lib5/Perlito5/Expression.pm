@@ -898,6 +898,70 @@ sub Perlito5::Expression::term_package {
 }))));
     $MATCH
 };
+sub Perlito5::Expression::term_eval {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((((((((('eval' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = $grammar->exp_stmts($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'exp_stmts'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
+    die('Syntax Error in eval block');
+    1
+})))
+})))
+}))) && ((do {
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => 'eval'), ('arguments' => [Perlito5::AST::Sub->new(('name' => undef()), ('namespace' => undef()), ('sig' => ''), ('block' => $MATCH->{'exp_stmts'}->flat()))]), ('namespace' => ''))]);
+    1
+})))
+}))
+}))));
+    $MATCH
+};
 sub Perlito5::Expression::term_space {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
