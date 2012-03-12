@@ -838,18 +838,37 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'eval') {
+            $Perlito5::THROW = 1;   # we can return() from inside eval
             my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::VAR );
             # say "at eval: ", $var_env_perl5;
             my $m = Perlito5::Expression->term_square( $var_env_perl5, 0 );
             $m = Perlito5::Expression::expand_list( $m->flat()->[2] );
             # say Perlito5::Dumper::Dumper( $m );
             my $var_env_js = '(new ArrayRef(' . Perlito5::Javascript::to_list($m) . '))';
+
+            # TODO - test return() from inside eval
+
             return
-                'eval(perl5_to_js(' 
-                    . Perlito5::Javascript::to_str($self->{"arguments"}->[0]) . ", "
-                    . '"' . $Perlito5::PKG_NAME . '", '
-                    . $var_env_js
-                . '))'
+                "(function () {\n"
+                    . "var r = null;\n"
+                    . "try {\n"
+                        . 'r = eval(perl5_to_js(' 
+                            . Perlito5::Javascript::to_str($self->{"arguments"}->[0]) . ", "
+                            . '"' . $Perlito5::PKG_NAME . '", '
+                            . $var_env_js
+                        . "))\n"
+                    . "}\n"
+                    . "catch(err) {\n"
+                    .    "if ( err instanceof Error ) {\n"
+                    .        "// TODO - set \$@ with (err)\n"
+                    .    "}\n"
+                    .    "else {\n"
+                    .        "throw(err);\n"   # return() value
+                    .    "}\n"
+                    . "}\n"
+                    . "return r;\n"
+                . "})()"
+
         }
 
         if ($code eq 'undef')      {
