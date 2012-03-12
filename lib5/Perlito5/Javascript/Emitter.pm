@@ -846,7 +846,7 @@ for ($_) {
     sub Perlito5::AST::Use::emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ('// use ' . $self->{'mod'} . chr(10))
+        ('// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10))
     }
 };
 

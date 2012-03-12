@@ -419,9 +419,9 @@ for ($_) {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         if ((($self->{'mod'} eq 'strict') || ($self->{'mod'} eq 'feature'))) {
-            return ((chr(10) . Perlito5::Perl5::tab($level) . '# use ' . $self->{'mod'} . chr(10)))
+            return ((chr(10) . Perlito5::Perl5::tab($level) . '# ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10)))
         };
-        (Perlito5::Perl5::tab($level) . 'use ' . $self->{'mod'})
+        (Perlito5::Perl5::tab($level) . $self->{'code'} . ' ' . $self->{'mod'})
     }
 };
 

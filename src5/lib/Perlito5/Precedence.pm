@@ -88,7 +88,7 @@ my @Term = (
     # 2 chars
     {
         'my' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
-        'no' => sub { Perlito5::Expression->term_package($_[0], $_[1]) },
+        'no' => sub { Perlito5::Expression->term_use($_[0], $_[1]) },
         'do' => sub { Perlito5::Expression->term_do($_[0], $_[1]) },
     },
     # 3 chars

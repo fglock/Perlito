@@ -582,9 +582,9 @@ package Perlito5::AST::Use;
             )
         {
             return "\n"
-                . Perlito5::Perl5::tab($level) . "# use " . $self->{"mod"} . "\n"
+                . Perlito5::Perl5::tab($level) . "# " . $self->{"code"} . " " . $self->{"mod"} . "\n"
         }
-        Perlito5::Perl5::tab($level) . 'use ' . $self->{"mod"}
+        Perlito5::Perl5::tab($level) . $self->{"code"} . ' ' . $self->{"mod"}
     }
 }
 

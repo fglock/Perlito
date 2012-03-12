@@ -93,7 +93,7 @@ sub Perlito5::Precedence::is_ident_middle {
 })}, {('my' => sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
 }), ('no' => sub {
-    Perlito5::Expression->term_package($_[0], $_[1])
+    Perlito5::Expression->term_use($_[0], $_[1])
 }), ('do' => sub {
     Perlito5::Expression->term_do($_[0], $_[1])
 })}, {('our' => sub {

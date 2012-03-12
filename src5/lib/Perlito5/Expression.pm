@@ -465,21 +465,29 @@ package Perlito5::Expression;
                     { $MATCH->{"capture"} = [ 'term', Perlito5::AST::Do->new( block => $MATCH->{"statement_parse"}->flat() ) ] }
     };
 
+    token use_decl { 'use' | 'no' };
+
     token term_use {
-        'use'   <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
-            { $MATCH->{"capture"} = [ 'term', Perlito5::AST::Use->new( mod => $MATCH->{"Perlito5::Grammar.full_ident"}->flat() ) ] }
+        <use_decl> <.Perlito5::Grammar.ws>
+            <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <list_parse>
+            {
+                $MATCH->{"capture"} = [ 'term', 
+                    Perlito5::AST::Use->new( 
+                        code => $MATCH->{"use_decl"}->flat(),
+                        mod  => $MATCH->{"Perlito5::Grammar.full_ident"}->flat() 
+                    ) 
+                  ] 
+            }
     };
 
-    token package_decl { 'package' | 'no' };
-
     token term_package {
-        <package_decl> <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
+        'package' <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
             {
                 my $name = $MATCH->{"Perlito5::Grammar.full_ident"}->flat();
                 $Perlito5::PKG_NAME = $name;
                 $MATCH->{"capture"} = [ 'term',
                      Perlito5::AST::Apply->new(
-                        code      => $MATCH->{"package_decl"}->flat(),
+                        code      => 'package',
                         arguments => [], 
                         namespace => $name
                      )

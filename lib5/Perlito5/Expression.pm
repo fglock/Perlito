@@ -790,6 +790,22 @@ sub Perlito5::Expression::term_do {
 }))));
     $MATCH
 };
+sub Perlito5::Expression::use_decl {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('use' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('no' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))))
+})))
+}))));
+    $MATCH
+};
 sub Perlito5::Expression::term_use {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -798,7 +814,17 @@ sub Perlito5::Expression::term_use {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (((((((('use' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))) && ((do {
+    (((((((do {
+    ((my  $m2) = $grammar->use_decl($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'use_decl'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
     ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -854,26 +880,10 @@ sub Perlito5::Expression::term_use {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Use->new(('mod' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat()))]);
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Use->new(('code' => $MATCH->{'use_decl'}->flat()), ('mod' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat()))]);
     1
 })))
 }))
-}))));
-    $MATCH
-};
-sub Perlito5::Expression::package_decl {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-    ($MATCH->{'bool'} = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    (('package' eq substr($str, $MATCH->{'to'}, 7)) && (($MATCH->{'to'} = (7 + $MATCH->{'to'}))))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((('no' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))))
-})))
 }))));
     $MATCH
 };
@@ -885,17 +895,7 @@ sub Perlito5::Expression::term_package {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (((((do {
-    ((my  $m2) = $grammar->package_decl($str, $MATCH->{'to'}));
-    if ($m2->{'bool'}) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'package_decl'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
+    (((((('package' eq substr($str, $MATCH->{'to'}, 7)) && (($MATCH->{'to'} = (7 + $MATCH->{'to'}))))) && ((do {
     ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -917,7 +917,7 @@ sub Perlito5::Expression::term_package {
 }))) && ((do {
     ((my  $name) = $MATCH->{'Perlito5::Grammar.full_ident'}->flat());
     ($Perlito5::PKG_NAME = $name);
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $MATCH->{'package_decl'}->flat()), ('arguments' => []), ('namespace' => $name))]);
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => 'package'), ('arguments' => []), ('namespace' => $name))]);
     1
 })))
 }))
