@@ -52,6 +52,10 @@ if (typeof NAMESPACE !== "object") {
     core_global.prototype = NAMESPACE.CORE;
     NAMESPACE["CORE::GLOBAL"] = new core_global();
     NAMESPACE["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";
+
+    p5_error = function (v) {
+        this.v = v;
+    };
 }
 
 function make_package(pkg_name) {
@@ -103,6 +107,8 @@ function _call_(invocant, method, list) {
 }
 
 make_package("main");
+NAMESPACE["main"]["v_@"] = [];   // $@
+
 make_package("Perlito5");
 make_package("Perlito5::IO");
 make_package("Perlito5::Runtime");
@@ -313,13 +319,17 @@ function perl5_to_js( source, namespace, var_env_js ) {
     var namespace_old = NAMESPACE["Perlito5"].v_PKG_NAME;
     NAMESPACE["Perlito5"].v_PKG_NAME = namespace;
 
-    match = NAMESPACE["Perlito5::Grammar"].exp_stmts([NAMESPACE["Perlito5::Grammar"], source, 0]);
+    match = _call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", [source, 0]);
+
+    if ( !match._hash_.bool || match._hash_.to != source.length ) {
+        CORE.die(["Syntax error in eval near pos ", match._hash_.to]);
+    }
 
     ast = NAMESPACE.CORE.bless([
         new HashRef({
             block:  NAMESPACE.CORE.bless([
                         new HashRef({
-                            stmts:   match._class_.flat([match]),
+                            stmts:   _call_(match, "flat", []),
                         }),
                         NAMESPACE["Perlito5::AST::Lit::Block"]
                     ]),
@@ -328,7 +338,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
     ]);
 
     // CORE.say( "ast: [" + perl(ast) + "]" );
-    js_code = ast._class_.emit_javascript([ast]);
+    js_code = _call_(ast, "emit_javascript", []);
     // CORE.say( "js-source: [" + js_code + "]" );
 
     NAMESPACE["Perlito5"].v_PKG_NAME = namespace_old;
@@ -399,7 +409,7 @@ CORE.die = function(List__) {
     for (i = 0; i < List__.length; i++) {
         s = s + string(List__[i]);
     }
-    throw(new Error("Died: " + s));
+    throw(new p5_error("Died: " + s));
 };
 
 CORE.warn = function(List__) {
@@ -1318,7 +1328,7 @@ CORE.prototype = function(List__, data) {
 					var v_str = null;
 					(v_str = '');
 					(NAMESPACE["Perlito5"].v_PKG_NAME = 'main');
-					(NAMESPACE["Perlito5"].v_VAR = (new ArrayRef(interpolate_array((new HashRef(array_to_hash(interpolate_array('@_', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '$_', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '@ARGV', (new HashRef(array_to_hash(interpolate_array('decl', 'my'))))))))))));
+					(NAMESPACE["Perlito5"].v_VAR = (new ArrayRef(interpolate_array((new HashRef(array_to_hash(interpolate_array('@_', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '$_', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '@ARGV', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '$@', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main'))))))))))));
 					for (var i_ = 0, a_ = (interpolate_array((v_comp_units || (v_comp_units = new ArrayRef([])))._array_)); i_ < a_.length ; i_++) { (function (v_comp_unit) {
 						(v_str = (string(v_str) + string(_call_(v_comp_unit, "emit_javascript", [])) + String.fromCharCode(10)));
 					})(a_[i_]) };
@@ -1818,7 +1828,7 @@ CORE.prototype = function(List__, data) {
 							(v_m = NAMESPACE["Perlito5::Expression"].expand_list([(_call_(v_m, "flat", []) || (_call_(v_m, "flat", []) = new ArrayRef([])))._array_[2]]));
 							var v_var_env_js = null;
 							(v_var_env_js = ('(new ArrayRef(' + string(NAMESPACE["Perlito5::Javascript"].to_list([v_m])) + '))'));
-							throw(('(function () {' + String.fromCharCode(10) + 'var r = null;' + String.fromCharCode(10) + 'try {' + String.fromCharCode(10) + 'r = eval(perl5_to_js(' + string(NAMESPACE["Perlito5::Javascript"].to_str([((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]])) + ', ' + '"' + string(NAMESPACE["Perlito5"].v_PKG_NAME) + '", ' + string(v_var_env_js) + '))' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'catch(err) {' + String.fromCharCode(10) + 'if ( err instanceof Error ) {' + String.fromCharCode(10) + '// TODO - set $@ with (err)' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'else {' + String.fromCharCode(10) + 'throw(err);' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'return r;' + String.fromCharCode(10) + '})()'));
+							throw(('(function () {' + String.fromCharCode(10) + 'var r = null;' + String.fromCharCode(10) + 'NAMESPACE["main"]["v_@"] = "";' + String.fromCharCode(10) + 'try {' + String.fromCharCode(10) + 'r = eval(perl5_to_js(' + string(NAMESPACE["Perlito5::Javascript"].to_str([((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]])) + ', ' + '"' + string(NAMESPACE["Perlito5"].v_PKG_NAME) + '", ' + string(v_var_env_js) + '))' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'catch(err) {' + String.fromCharCode(10) + 'if ( err instanceof p5_error ) {' + String.fromCharCode(10) + 'NAMESPACE["main"]["v_@"] = err.v;' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'else if ( err instanceof Error ) {' + String.fromCharCode(10) + 'NAMESPACE["main"]["v_@"] = err;' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'else {' + String.fromCharCode(10) + 'throw(err);' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'return r;' + String.fromCharCode(10) + '})()'));
 							})();
 					};
 					if ( (v_code == 'undef') ) {
