@@ -57,6 +57,10 @@ if (typeof NAMESPACE !== "object") {
     core_global.prototype = NAMESPACE.CORE;
     NAMESPACE["CORE::GLOBAL"] = new core_global();
     NAMESPACE["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";
+
+    p5_error = function (v) {
+        this.v = v;
+    };
 }
 
 function make_package(pkg_name) {
@@ -108,6 +112,8 @@ function _call_(invocant, method, list) {
 }
 
 make_package("main");
+NAMESPACE["main"]["v_@"] = [];   // $@
+
 make_package("Perlito5");
 make_package("Perlito5::IO");
 make_package("Perlito5::Runtime");
@@ -132,11 +138,6 @@ function cleanup_local(idx, value) {
     }
     return value;
 }
-
-var p5_error = function (v) {
-    this.v = v;
-};
-p5_error.prototype = new Error;
 
 if (isNode) {
     List_ARGV = process.argv.splice(2);

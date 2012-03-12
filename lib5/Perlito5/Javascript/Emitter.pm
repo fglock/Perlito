@@ -261,7 +261,7 @@ for ($_) {
         ((my  $comp_units) = shift());
         ((my  $str) = '');
         ($Perlito5::PKG_NAME = 'main');
-        ($Perlito5::VAR = [{('@_' => {('decl' => 'my')}), ('$_' => {('decl' => 'my')}), ('@ARGV' => {('decl' => 'my')})}]);
+        ($Perlito5::VAR = [{('@_' => {('decl' => 'my')}), ('$_' => {('decl' => 'my')}), ('@ARGV' => {('decl' => 'my')}), ('$@' => {('decl' => 'our'), ('namespace' => 'main')})}]);
         for my $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_javascript() . chr(10)))
         };
@@ -597,7 +597,7 @@ for ($_) {
             ((my  $m) = Perlito5::Expression->term_square($var_env_perl5, 0));
             ($m = Perlito5::Expression::expand_list($m->flat()->[2]));
             ((my  $var_env_js) = ('(new ArrayRef(' . Perlito5::Javascript::to_list($m) . '))'));
-            return (('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'try {' . chr(10) . 'r = eval(perl5_to_js(' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . '))' . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . 'v_ERR = err.v; // TODO - set $@ with (err)' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'v_ERR = err; // TODO - set $@ with (err)' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()'))
+            return (('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'NAMESPACE["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = eval(perl5_to_js(' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . '))' . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . 'NAMESPACE["main"]["v_@"] = err.v;' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'NAMESPACE["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()'))
         };
         if (($code eq 'undef')) {
             if (($self->{'arguments'} && @{$self->{'arguments'}})) {

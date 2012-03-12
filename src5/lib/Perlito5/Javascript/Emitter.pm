@@ -386,6 +386,7 @@ package Perlito5::AST::CompUnit;
             { '@_'    => { decl => 'my' },
               '$_'    => { decl => 'my' },
               '@ARGV' => { decl => 'my' },
+              '$@'    => { decl => 'our', namespace => 'main' },
             }
             ## TODO
             ## { '@_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
@@ -851,6 +852,7 @@ package Perlito5::AST::Apply;
             return
                 "(function () {\n"
                     . "var r = null;\n"
+                    . 'NAMESPACE["main"]["v_@"] = "";' . "\n"
                     . "try {\n"
                         . 'r = eval(perl5_to_js(' 
                             . Perlito5::Javascript::to_str($self->{"arguments"}->[0]) . ", "
@@ -860,10 +862,10 @@ package Perlito5::AST::Apply;
                     . "}\n"
                     . "catch(err) {\n"
                     .    "if ( err instanceof p5_error ) {\n"
-                    .        "v_ERR = err.v; // TODO - set \$@ with (err)\n"
+                    .        'NAMESPACE["main"]["v_@"] = err.v;' . "\n"
                     .    "}\n"
                     .    "else if ( err instanceof Error ) {\n"
-                    .        "v_ERR = err; // TODO - set \$@ with (err)\n"
+                    .        'NAMESPACE["main"]["v_@"] = err;' . "\n"
                     .    "}\n"
                     .    "else {\n"
                     .        "throw(err);\n"   # return() value
