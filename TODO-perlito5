@@ -37,7 +37,7 @@ TODO list for Perlito5
 
 -- check that \(@a) and \@a have different meanings
 
--- symbol variables like $]
+-- symbol variables like $] ${"main::\$"}
 -- $ perl -Ilib5 perlito5.pl -Cperl5 -e ' my $x; $$$x; $$ '
    missing value after operator 'x' at lib5/Perlito5/Expression.pm line 240.
 

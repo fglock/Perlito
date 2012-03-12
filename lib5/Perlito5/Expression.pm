@@ -382,7 +382,7 @@ sub Perlito5::Expression::term_special_var {
             ($len = 2)
         }
     };
-    ((my  $m) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => $len), ('capture' => undef())));
+    ((my  $m) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => 0), ('capture' => undef())));
     if ($len) {
         ((my  $c0) = substr($str, (($pos + $len) - 1), 1));
         ((my  $c1) = substr($str, ($pos + $len), 1));
@@ -563,7 +563,7 @@ sub Perlito5::Expression::term_sigil {
         0
     }
 })) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'term_special_var'}->flat());
+    ($MATCH->{'capture'} = $MATCH->{'term_special_var'}->{'capture'});
     1
 }))))
 })))

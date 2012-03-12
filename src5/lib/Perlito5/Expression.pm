@@ -450,7 +450,7 @@ package Perlito5::Expression;
             str     => $str,
             from    => $pos,
             to      => $pos + $len,
-            bool    => $len,
+            bool    => 0,
             capture => undef
         );
         if ( $len ) {
@@ -537,7 +537,7 @@ package Perlito5::Expression;
                     }
             ]
         | <term_special_var>
-                { $MATCH->{"capture"} = $MATCH->{"term_special_var"}->flat() }
+                { $MATCH->{"capture"} = $MATCH->{"term_special_var"}->{"capture"} }
     };
 
     token term_digit {
