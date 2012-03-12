@@ -426,22 +426,36 @@ package Perlito5::Expression;
         '@_'  => 1,
         '$#'  => 1,
         '$*'  => 1,
+
+        '$#+'  => 1,    # $# + @+
+        '$#-'  => 1,    # $# + @-
+        '$#_'  => 1,    # $# + @_
     );
     sub term_special_var {
         my $self = $_[0];
         my $str = $_[1];
         my $pos = $_[2];
-        my $s = substr( $str, $pos, 2 );
+        my $len = 0;
+        my $s = substr( $str, $pos, 3 );
+        if ( exists $special_var{$s} ) {
+            $len = 3;
+        }
+        else {
+            $s = substr( $str, $pos, 2 );
+            if ( exists $special_var{$s} ) {
+                $len = 2;
+            }
+        }
         my $m = Perlito5::Match->new(
             str     => $str,
             from    => $pos,
-            to      => $pos + 2,
-            bool    => 0,
+            to      => $pos + $len,
+            bool    => $len,
             capture => undef
         );
-        if ( exists $special_var{$s} ) {
-            my $c0 = substr( $str, $pos + 1, 1 );
-            my $c1 = substr( $str, $pos + 2, 1 );
+        if ( $len ) {
+            my $c0 = substr( $str, $pos + $len - 1, 1 );
+            my $c1 = substr( $str, $pos + $len, 1 );
             if  ( 
                     ( $c0 eq '$' || $c0 eq '@' || $c0 eq '%' || $c0 eq '*' || $c0 eq '&' )
                 &&  
@@ -459,9 +473,9 @@ package Perlito5::Expression;
                 $m->{"bool"} = 1;
                 $m->{"capture"} = [ 'term', 
                                     Perlito5::AST::Var->new(
-                                            sigil       => substr($s, 0, 1),
+                                            sigil       => substr($s, 0, $len - 1),
                                             namespace   => '',
-                                            name        => substr($s, 1, 1)
+                                            name        => substr($s, $len - 1, 1)
                                         )
                                   ];
             }
@@ -469,14 +483,16 @@ package Perlito5::Expression;
         return $m;
     }
 
+    token var_sigil_or_pseudo     { '$#' | \$ |\% |\@ |\& | \* };
+
     token term_sigil {
-        <Perlito5::Grammar.var_sigil>
+        <var_sigil_or_pseudo>
             [ '{' 
                 [
                 | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name> '}'
                         { $MATCH->{"capture"} = [ 'term', 
                                 Perlito5::AST::Var->new(
-                                        sigil       => $MATCH->{"Perlito5::Grammar.var_sigil"}->flat(),
+                                        sigil       => $MATCH->{"var_sigil_or_pseudo"}->flat(),
                                         namespace   => $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
                                         name        => $MATCH->{"Perlito5::Grammar.var_name"}->flat(),
                                     )
@@ -485,7 +501,7 @@ package Perlito5::Expression;
                 | '^' <Perlito5::Grammar.var_name> '}'
                         { $MATCH->{"capture"} = [ 'term', 
                                 Perlito5::AST::Var->new(
-                                        sigil       => $MATCH->{"Perlito5::Grammar.var_sigil"}->flat(),
+                                        sigil       => $MATCH->{"var_sigil_or_pseudo"}->flat(),
                                         namespace   => '',
                                         name        => '^' . $MATCH->{"Perlito5::Grammar.var_name"}->flat(),
                                     )
@@ -495,7 +511,7 @@ package Perlito5::Expression;
                     { $MATCH->{"capture"} = [ 'term',  
                             Perlito5::AST::Apply->new( 
                                     'arguments' => [ $MATCH->{"curly_parse"}->flat() ],
-                                    'code'      => 'prefix:<' . $MATCH->{"Perlito5::Grammar.var_sigil"}->flat() . '>', 
+                                    'code'      => 'prefix:<' . $MATCH->{"var_sigil_or_pseudo"}->flat() . '>', 
                                     'namespace' => ''
                                 )
                         ] 
@@ -504,7 +520,7 @@ package Perlito5::Expression;
             | '^' <Perlito5::Grammar.word>
                     { $MATCH->{"capture"} = [ 'term', 
                             Perlito5::AST::Var->new(
-                                    sigil       => $MATCH->{"Perlito5::Grammar.var_sigil"}->flat(),
+                                    sigil       => $MATCH->{"var_sigil_or_pseudo"}->flat(),
                                     namespace   => '',
                                     name        => '^' . $MATCH->{"Perlito5::Grammar.word"}->flat(),
                                 )
@@ -513,7 +529,7 @@ package Perlito5::Expression;
             | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name>
                     { $MATCH->{"capture"} = [ 'term', 
                             Perlito5::AST::Var->new(
-                                    sigil       => $MATCH->{"Perlito5::Grammar.var_sigil"}->flat(),
+                                    sigil       => $MATCH->{"var_sigil_or_pseudo"}->flat(),
                                     namespace   => $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
                                     name        => $MATCH->{"Perlito5::Grammar.var_name"}->flat(),
                                 )
