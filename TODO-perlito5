@@ -51,6 +51,8 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- "autoload" the compiler if eval-string is used (eval-string needs the compiler at run-time)
+
 -- symbol variables like $] ${"main::\$"} $#_
 -- check that @_, $_, $a, $b and other special variables are in the right context (lexical, global, package global)
 
