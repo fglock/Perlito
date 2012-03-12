@@ -763,7 +763,7 @@ sub Perlito5::Expression::term_do {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (((((('do' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
+    ((((((('do' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
     ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -772,6 +772,18 @@ sub Perlito5::Expression::term_do {
     else {
         0
     }
+}))) && ((do {
+    ((my  $tmp) = $MATCH);
+    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
+    ($MATCH->{'bool'} = ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+}))
+})));
+    ($tmp->{'bool'} = ($MATCH->{'bool'} ? 1 : 0));
+    ($MATCH = $tmp);
+    ($MATCH->{'bool'} ? 1 : 0)
 }))) && ((do {
     ((my  $m2) = $grammar->statement_parse($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {

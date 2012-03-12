@@ -3831,7 +3831,7 @@ CORE.prototype = function(List__, data) {
 					var v_pos1 = null;
 					(v_pos1 = (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']);
 					return (((function () {
-							return (and(and(and((and(('do' == NAMESPACE["Perlito5::Expression"].substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = add(2, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']))); })), function () { return ((function () {
+							return (and(and(and(and((and(('do' == NAMESPACE["Perlito5::Expression"].substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = add(2, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']))); })), function () { return ((function () {
 	var v_m2 = null;
 	(v_m2 = _call_(NAMESPACE["Perlito5::Grammar"], "ws", [v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']]));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
@@ -3842,6 +3842,20 @@ CORE.prototype = function(List__, data) {
 	else {
 		return (0);
 	}
+})()); }), function () { return ((function () {
+	var v_tmp = null;
+	(v_tmp = v_MATCH);
+	(v_MATCH = _call_(NAMESPACE["Perlito5::Match"], "new", ['str', v_str,'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'],'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'],'bool', 1]));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = ((function () {
+		var v_pos1 = null;
+		(v_pos1 = (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']);
+		return (((function () {
+				return (and(('{' == NAMESPACE["Perlito5::Expression"].substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = add(1, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']))); }));
+			})()));
+	})()));
+	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = ( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0));
+	(v_MATCH = v_tmp);
+	return (( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0));
 })()); }), function () { return ((function () {
 	var v_m2 = null;
 	(v_m2 = _call_(v_grammar, "statement_parse", [v_str,(v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']]));
