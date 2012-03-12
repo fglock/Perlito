@@ -612,7 +612,7 @@ package Perlito5::Expression;
 
     token term_eval {
         # Note: this is eval-block; eval-string is parsed as a normal subroutine
-        'eval' <.Perlito5::Grammar.ws> <before '{'> <statement_parse>
+        'eval' <.Perlito5::Grammar.opt_ws> <before '{'> <statement_parse>
             {
                 $MATCH->{"capture"} = [ 'term',
                      Perlito5::AST::Apply->new(
@@ -621,6 +621,27 @@ package Perlito5::Expression;
                             Perlito5::AST::Do->new(
                                 block => $MATCH->{"statement_parse"}->flat()
                             )
+                        ], 
+                        namespace => ''
+                     )
+                   ]
+            }
+    };
+
+    token map_or_sort { 'map' | 'sort' };
+
+    token term_map_or_sort {
+        # Note: this is eval-block; eval-string is parsed as a normal subroutine
+        <map_or_sort> <.Perlito5::Grammar.opt_ws> <before '{'> <statement_parse> <list_parse>
+            {
+                $MATCH->{"capture"} = [ 'term',
+                     Perlito5::AST::Apply->new(
+                        code      => $MATCH->{"map_or_sort"}->flat(),
+                        arguments => [
+                            Perlito5::AST::Do->new(
+                                block => $MATCH->{"statement_parse"}->flat()
+                            ),
+                            @{ expand_list($MATCH->{"list_parse"}->flat()->{"exp"}) }
                         ], 
                         namespace => ''
                      )
@@ -962,23 +983,7 @@ package Perlito5::Expression;
             # say "# list_lexer got " . $v->perl;
 
             # say "# list_lexer " . $v->perl;
-
-            if (   $v->[0] eq 'postfix_or_term'
-                && $v->[1] eq 'block'
-                && $last_token_was_space
-               )
-            {
-                if ($self->has_newline_after($str, $last_pos)->bool) {
-                    # a block followed by newline terminates the expression
-                    $terminated = 1;
-                    push( @$lexer_stack,  [ 'end', '*end*' ] );
-                }
-                elsif ($self->has_no_comma_or_colon_after($str, $last_pos)->bool) {
-                    # a sequence ( block - space - not_comma_or_colon ) terminates the list
-                    $terminated = 1;
-                    push( @$lexer_stack,  [ 'end', '*end*' ] );
-                }
-            }
+            
             $last_token_was_space = ($v->[0] eq 'space');
             $is_first_token = 0;
 

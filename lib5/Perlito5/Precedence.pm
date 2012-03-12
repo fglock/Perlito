@@ -102,8 +102,12 @@ sub Perlito5::Precedence::is_ident_middle {
     Perlito5::Expression->term_sub($_[0], $_[1])
 }), ('use' => sub {
     Perlito5::Expression->term_use($_[0], $_[1])
+}), ('map' => sub {
+    Perlito5::Expression->term_map_or_sort($_[0], $_[1])
 })}, {('eval' => sub {
     Perlito5::Expression->term_eval($_[0], $_[1])
+}), ('sort' => sub {
+    Perlito5::Expression->term_map_or_sort($_[0], $_[1])
 })}, {('state' => sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
 }), ('local' => sub {
