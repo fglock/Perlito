@@ -20,6 +20,52 @@ sub to_go_namespace {
     _replace($s, "::", "__");
 }
 
+
+# the special variables list
+# obtained with:
+# $ perldoc -u perlvar | perl -ne ' /^\s*$/ && next; if (/^=item\s+([^\n]+)/) { push @item, $1; print "@item - $_" } else { if (@item) { push @xx, [@item]; print "push\n"; @item = () } }; END {use Data::Dumper; print Dumper \@xx} '
+
+$Perlito5::SPECIAL_VAR = {
+          '$_' => 'ARG',
+          '$&' => '$MATCH',
+          '$`' => '$PREMATCH',
+          '$\'' => '$POSTMATCH',
+          '$+' => '$LAST_PAREN_MATCH',
+          '@+' => '@LAST_MATCH_END',
+          '%+' => '%LAST_PAREN_MATCH',
+
+          '@-' => '@LAST_MATCH_START',
+          '$|' => 'autoflush',
+          '$/' => '$RS',
+          '@_' => '@ARG',
+          '< $' => '$EUID',
+          '$.' => '$NR',
+          '< $< ' => '$UID',
+          '$(' => '$GID',
+          '$#' => undef,
+          '$@' => '$EVAL_ERROR',
+          '$=' => '$FORMAT_LINES_PER_PAGE',
+          '$,' => '$OFS',
+          '$?' => '$CHILD_ERROR',
+          '$*' => undef,
+          '$[' => undef,
+          '$$' => '$PID',
+          '%-' => undef,
+          '$~' => '$FORMAT_NAME',
+          '$-' => '$FORMAT_LINES_LEFT',
+          '$&' => '$MATCH',
+          '$%' => '$FORMAT_PAGE_NUMBER',
+          '$)' => '$EGID',
+          '$]' => undef,
+          '$!' => '$ERRNO',
+          '$;' => '$SUBSEP',
+          '$\\' => '$ORS',
+          '%!' => undef,
+          '$"' => '$LIST_SEPARATOR',
+          '$_' => '$ARG',
+          '$:' => 'FORMAT_LINE_BREAK_CHARACTERS'
+        };
+
 # the CORE prototype list
 # obtained with:
 # $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{"CORE::$_"} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } ' > ~/tmp/core.pm

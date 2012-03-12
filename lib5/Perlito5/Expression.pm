@@ -366,6 +366,26 @@ sub Perlito5::Expression::term_arrow {
 }))));
     $MATCH
 };
+((my  %special_var) = (('$_' => 1), ('$&' => 1), ('$`' => 1), ('$' . chr(39) => 1), ('$+' => 1), ('@+' => 1), ('%+' => 1), ('$.' => 1), ('$/' => 1), ('$|' => 1), ('$,' => 1), ('$' . chr(92) => 1), ('$"' => 1), ('$;' => 1), ('$%' => 1), ('$=' => 1), ('$-' => 1), ('@-' => 1), ('%-' => 1), ('$~' => 1), ('$^' => 1), ('$:' => 1), ('$?' => 1), ('$!' => 1), ('%!' => 1), ('$@' => 1), ('$$' => 1), ('$<' => 1), ('$>' => 1), ('$(' => 1), ('$)' => 1), ('$[' => 1), ('$]' => 1), ('@_' => 1), ('$#' => 1), ('$*' => 1)));
+sub Perlito5::Expression::term_special_var {
+    ((my  $self) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $s) = substr($str, $pos, 2));
+    ((my  $m) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + 2)), ('bool' => 0), ('capture' => undef())));
+    if (exists($special_var{$s})) {
+        ((my  $c0) = substr($str, ($pos + 1), 1));
+        ((my  $c1) = substr($str, ($pos + 2), 1));
+        if (((((((($c0 eq '$') || ($c0 eq '@')) || ($c0 eq '%')) || ($c0 eq '*')) || ($c0 eq '&'))) && ((((((((($c1 eq '$') || ($c1 eq '@')) || ($c1 eq '%')) || ($c1 eq '*')) || ($c1 eq '&')) || ((($c1 ge 'a') && ($c1 le 'z')))) || ((($c1 ge 'A') && ($c1 le 'Z')))) || ((($c1 ge '0') && ($c1 le '9'))))))) {
+
+        }
+        else {
+            ($m->{'bool'} = 1);
+            ($m->{'capture'} = ['term', Perlito5::AST::Var->new(('sigil' => substr($s, 0, 1)), ('namespace' => ''), ('name' => substr($s, 1, 1)))])
+        }
+    };
+    return ($m)
+};
 sub Perlito5::Expression::term_sigil {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -373,7 +393,7 @@ sub Perlito5::Expression::term_sigil {
     ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
-    ((do {
+    (((do {
     (((do {
     ((my  $m2) = Perlito5::Grammar->var_sigil($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
@@ -389,7 +409,7 @@ sub Perlito5::Expression::term_sigil {
     ((((do {
     (((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
-    (((do {
+    ((((do {
     (((((do {
     ((my  $m2) = Perlito5::Grammar->optional_namespace_before_ident($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
@@ -415,6 +435,22 @@ sub Perlito5::Expression::term_sigil {
     1
 })))
 })) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((((('^' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->var_name($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Grammar.var_name'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Var->new(('sigil' => $MATCH->{'Perlito5::Grammar.var_sigil'}->flat()), ('namespace' => ''), ('name' => ('^' . $MATCH->{'Perlito5::Grammar.var_name'}->flat())))]);
+    1
+}))))
+}))) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
     ((my  $m2) = $grammar->curly_parse($str, $MATCH->{'to'}));
@@ -476,7 +512,23 @@ sub Perlito5::Expression::term_sigil {
 }))))
 })))
 })))
-}))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((do {
+    ((my  $m2) = $grammar->term_special_var($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'term_special_var'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ($MATCH->{'capture'} = $MATCH->{'term_special_var'}->flat());
+    1
+}))))
+})))
 }))));
     $MATCH
 };

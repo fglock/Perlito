@@ -38,6 +38,9 @@ TODO list for Perlito5
 -- check that \(@a) and \@a have different meanings
 
 -- symbol variables like $]
+-- $ perl -Ilib5 perlito5.pl -Cperl5 -e ' my $x; $$$x; $$ '
+   missing value after operator 'x' at lib5/Perlito5/Expression.pm line 240.
+
 
 -- double-quoted here-docs
 
@@ -49,9 +52,12 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- do EXPR (do $filename)
+-- eval EXPR (try/catch)
+
 -- emit array/hash slices: @a[@x], @a{@x}
 
--- check that @_, $_ and other special variables are in the right context (lexical, global, package global)
+-- check that @_, $_, $a, $b and other special variables are in the right context (lexical, global, package global)
 
 -- add alternate mro's
 

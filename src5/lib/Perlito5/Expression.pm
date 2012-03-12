@@ -382,6 +382,93 @@ package Perlito5::Expression;
             ]
     };
 
+
+# the special variables list
+# obtained with:
+# $ perldoc -u perlvar | perl -ne ' /^\s*$/ && next; if (/^=item\s+([^\n]+)/) { push @item, $1; print "@item - $_" } else { if (@item) { push @xx, [@item]; print "push\n"; @item = () } }; END {use Data::Dumper; print Dumper \@xx} '
+
+# $ perldoc -u perlvar | perl -ne ' /^\s*$/ && next; if (/^=item\s+([^\n]+)/) { push @item, $1; print "@item - $_" } else { if (@item) { push @xx, grep { /^[\@\$\%][^a-zA-Z0-9]$/ } @item; print "push\n"; @item = () } }; END {use Data::Dumper; print "$_  => 1,\n" for @xx} '
+
+    my %special_var = (
+        '$_'  => 1,
+        '$&'  => 1,
+        '$`'  => 1,
+        '$\''  => 1,
+        '$+'  => 1,
+        '@+'  => 1,
+        '%+'  => 1,
+        '$.'  => 1,
+        '$/'  => 1,
+        '$|'  => 1,
+        '$,'  => 1,
+        '$\\'  => 1,
+        '$"'  => 1,
+        '$;'  => 1,
+        '$%'  => 1,
+        '$='  => 1,
+        '$-'  => 1,
+        '@-'  => 1,
+        '%-'  => 1,
+        '$~'  => 1,
+        '$^'  => 1,
+        '$:'  => 1,
+        '$?'  => 1,
+        '$!'  => 1,
+        '%!'  => 1,
+        '$@'  => 1,
+        '$$'  => 1,
+        '$<'  => 1,
+        '$>'  => 1,
+        '$('  => 1,
+        '$)'  => 1,
+        '$['  => 1,
+        '$]'  => 1,
+        '@_'  => 1,
+        '$#'  => 1,
+        '$*'  => 1,
+    );
+    sub term_special_var {
+        my $self = $_[0];
+        my $str = $_[1];
+        my $pos = $_[2];
+        my $s = substr( $str, $pos, 2 );
+        my $m = Perlito5::Match->new(
+            str     => $str,
+            from    => $pos,
+            to      => $pos + 2,
+            bool    => 0,
+            capture => undef
+        );
+        if ( exists $special_var{$s} ) {
+            my $c0 = substr( $str, $pos + 1, 1 );
+            my $c1 = substr( $str, $pos + 2, 1 );
+            if  ( 
+                    ( $c0 eq '$' || $c0 eq '@' || $c0 eq '%' || $c0 eq '*' || $c0 eq '&' )
+                &&  
+                    ( $c1 eq '$' || $c1 eq '@' || $c1 eq '%' || $c1 eq '*' || $c1 eq '&' 
+                    || ( $c1 ge 'a' && $c1 le 'z' )
+                    || ( $c1 ge 'A' && $c1 le 'Z' )
+                    || ( $c1 ge '0' && $c1 le '9' )
+                    )
+                ) 
+            {
+                # TODO - this needs more testing
+                # looks like a prefix operator, not a special var
+            }
+            else {
+                $m->{"bool"} = 1;
+                $m->{"capture"} = [ 'term', 
+                                    Perlito5::AST::Var->new(
+                                            sigil       => substr($s, 0, 1),
+                                            namespace   => '',
+                                            name        => substr($s, 1, 1)
+                                        )
+                                  ];
+            }
+        }
+        return $m;
+    }
+
     token term_sigil {
         <Perlito5::Grammar.var_sigil>
             [ '{' 
@@ -392,6 +479,15 @@ package Perlito5::Expression;
                                         sigil       => $MATCH->{"Perlito5::Grammar.var_sigil"}->flat(),
                                         namespace   => $MATCH->{"Perlito5::Grammar.optional_namespace_before_ident"}->flat(),
                                         name        => $MATCH->{"Perlito5::Grammar.var_name"}->flat(),
+                                    )
+                            ]
+                        }
+                | '^' <Perlito5::Grammar.var_name> '}'
+                        { $MATCH->{"capture"} = [ 'term', 
+                                Perlito5::AST::Var->new(
+                                        sigil       => $MATCH->{"Perlito5::Grammar.var_sigil"}->flat(),
+                                        namespace   => '',
+                                        name        => '^' . $MATCH->{"Perlito5::Grammar.var_name"}->flat(),
                                     )
                             ]
                         }
@@ -424,6 +520,8 @@ package Perlito5::Expression;
                         ]
                     }
             ]
+        | <term_special_var>
+                { $MATCH->{"capture"} = $MATCH->{"term_special_var"}->flat() }
     };
 
     token term_digit {
