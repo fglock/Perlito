@@ -310,6 +310,8 @@ package Perlito5::Javascript::LexicalBlock;
             # }
             elsif (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
+                     # TODO - blocks return the last value
+                  || $last_statement->isa( 'Perlito5::AST::Lit::Block' )
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
                   )

@@ -631,8 +631,9 @@ package Perlito5::Expression;
     token map_or_sort { 'map' | 'sort' };
 
     token term_map_or_sort {
-        # Note: this is eval-block; eval-string is parsed as a normal subroutine
-        <map_or_sort> <.Perlito5::Grammar.opt_ws> <before '{'> <statement_parse> <list_parse>
+        # Note: this is map-block; map-expr is parsed as a normal subroutine
+        <map_or_sort> <.Perlito5::Grammar.opt_ws> <before '{'> <statement_parse> 
+            <list_parse>
             {
                 $MATCH->{"capture"} = [ 'term',
                      Perlito5::AST::Apply->new(
