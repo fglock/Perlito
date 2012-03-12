@@ -612,18 +612,14 @@ package Perlito5::Expression;
 
     token term_eval {
         # Note: this is eval-block; eval-string is parsed as a normal subroutine
-        'eval' <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
-                [   \}     | { die 'Syntax Error in eval block' } ]
+        'eval' <.Perlito5::Grammar.ws> <before '{'> <statement_parse>
             {
                 $MATCH->{"capture"} = [ 'term',
                      Perlito5::AST::Apply->new(
                         code      => 'eval',
                         arguments => [
-                            Perlito5::AST::Sub->new(
-                                name  => undef,
-                                namespace => undef,
-                                sig   => '',
-                                block => $MATCH->{"exp_stmts"}->flat()
+                            Perlito5::AST::Do->new(
+                                block => $MATCH->{"statement_parse"}->flat()
                             )
                         ], 
                         namespace => ''

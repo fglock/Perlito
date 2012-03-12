@@ -1034,17 +1034,8 @@ sub Perlito5::Expression::term_eval {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (((((((((('eval' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
-    if ($m2->{'bool'}) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-}))) && ((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
+    ((((((('eval' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -1053,37 +1044,29 @@ sub Perlito5::Expression::term_eval {
         0
     }
 }))) && ((do {
-    ((my  $m2) = $grammar->exp_stmts($str, $MATCH->{'to'}));
-    if ($m2->{'bool'}) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'exp_stmts'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ((my  $m2) = $grammar->opt_ws($str, $MATCH->{'to'}));
-    if ($m2->{'bool'}) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
+    ((my  $tmp) = $MATCH);
+    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
+    ($MATCH->{'bool'} = ((do {
     ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    (('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((do {
-    die('Syntax Error in eval block');
-    1
-})))
-})))
+    ((do {
+    (('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+}))
+})));
+    ($tmp->{'bool'} = ($MATCH->{'bool'} ? 1 : 0));
+    ($MATCH = $tmp);
+    ($MATCH->{'bool'} ? 1 : 0)
 }))) && ((do {
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => 'eval'), ('arguments' => [Perlito5::AST::Sub->new(('name' => undef()), ('namespace' => undef()), ('sig' => ''), ('block' => $MATCH->{'exp_stmts'}->flat()))]), ('namespace' => ''))]);
+    ((my  $m2) = $grammar->statement_parse($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'statement_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => 'eval'), ('arguments' => [Perlito5::AST::Do->new(('block' => $MATCH->{'statement_parse'}->flat()))]), ('namespace' => ''))]);
     1
 })))
 }))

@@ -55,7 +55,7 @@ my @Parsed_op = (
     },
 );
 
-my @Term_chars = (7, 5, 3, 2, 1);
+my @Term_chars = (7, 5, 4, 3, 2, 1);
 my @Term = (
     # 0 chars
     {},

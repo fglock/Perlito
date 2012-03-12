@@ -149,7 +149,11 @@ if (($backend && @ARGV)) {
     ($Perlito5::PKG_NAME = 'main');
     ($Perlito5::PROTO = {});
     if ($execute) {
-        eval($source)
+        eval($source);
+        ((my  $error) = $@);
+        if ($error) {
+            warn(('Error in eval: ' . $error))
+        }
     }
     else {
         ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
