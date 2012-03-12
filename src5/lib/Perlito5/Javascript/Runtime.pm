@@ -326,6 +326,10 @@ function perl5_to_js( source, namespace, var_env_js ) {
 
     match = NAMESPACE["Perlito5::Grammar"].exp_stmts([NAMESPACE["Perlito5::Grammar"], source, 0]);
 
+    if ( !match._hash_.bool || match._hash_.to != source.length ) {
+        CORE.die(["Syntax error in eval near pos ", match._hash_.to]);
+    }
+
     ast = NAMESPACE.CORE.bless([
         new HashRef({
             block:  NAMESPACE.CORE.bless([
