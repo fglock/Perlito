@@ -133,6 +133,11 @@ function cleanup_local(idx, value) {
     return value;
 }
 
+var p5_error = function (v) {
+    this.v = v;
+};
+p5_error.prototype = new Error;
+
 if (isNode) {
     List_ARGV = process.argv.splice(2);
 } else if (typeof arguments === "object") {

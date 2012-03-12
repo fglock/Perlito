@@ -859,8 +859,11 @@ package Perlito5::AST::Apply;
                         . "))\n"
                     . "}\n"
                     . "catch(err) {\n"
-                    .    "if ( err instanceof Error ) {\n"
-                    .        "// TODO - set \$@ with (err)\n"
+                    .    "if ( err instanceof p5_error ) {\n"
+                    .        "v_ERR = err.v; // TODO - set \$@ with (err)\n"
+                    .    "}\n"
+                    .    "else if ( err instanceof Error ) {\n"
+                    .        "v_ERR = err; // TODO - set \$@ with (err)\n"
                     .    "}\n"
                     .    "else {\n"
                     .        "throw(err);\n"   # return() value

@@ -68,7 +68,7 @@ CORE.die = function(List__) {
     for (i = 0; i < List__.length; i++) {
         s = s + string(List__[i]);
     }
-    throw(new Error("Died: " + s));
+    throw(new p5_error("Died: " + s));
 };
 
 CORE.warn = function(List__) {
