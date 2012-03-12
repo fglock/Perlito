@@ -25,10 +25,9 @@ TODO list for Perlito5
 
 * Parser
 
--- parse the regexes
+-- 'use' doesn't work inside eval-string
 
--- maybe use "prefix + proto" to represent variables, because it is more flexible; remove 'Var'
--- use an array to represent names that contain '::', because it is more flexible
+-- parse the regexes
 
 -- prototypes (signatures)
 --- done: "empty" _ $ ;$
@@ -37,41 +36,40 @@ TODO list for Perlito5
 
 -- check that \(@a) and \@a have different meanings
 
--- symbol variables like $] ${"main::\$"}
--- $ perl -Ilib5 perlito5.pl -Cperl5 -e ' my $x; $$$x; $$ '
-   missing value after operator 'x' at lib5/Perlito5/Expression.pm line 240.
-
-
 -- double-quoted here-docs
 
 -- parse "local $x[1]"
 
+-- $v{x} doesn't autoquote the index
+-- $v{x} doesn't interpolate inside double quotes
+
 
 * Perl5 backend
 
+-- ${^NAME} needs curly-escaping
+
 
 * Javascript backend
+
+-- symbol variables like $] ${"main::\$"} $#_
+-- check that @_, $_, $a, $b and other special variables are in the right context (lexical, global, package global)
 
 -- do EXPR (do $filename)
 -- eval EXPR (try/catch)
 
 -- emit array/hash slices: @a[@x], @a{@x}
 
--- check that @_, $_, $a, $b and other special variables are in the right context (lexical, global, package global)
-
 -- add alternate mro's
 
 -- add regex compiler
 -- /e modifier
 -- support all perl5 regex syntax
+-- @v = /x/g
 
 -- bug: variable redeclaration does not work
 -- javascript "var" erases the outer value within the whole current lexical scope
 -- bug: "my" variables - this doesn't work as expected: my $v = $v
    possible fix: rename variables
-
--- create target-specific versions of the runtime
--- add browser, v8, node.js runtimes
 
 -- move "substr" and others to CORE
 -- lvalue "substr"
@@ -94,6 +92,8 @@ TODO list for Perlito5
 -- finish "overload" implementation
 
 
+* Perl6 backend
+
 * Python backend
 
 * Ruby backend
@@ -102,10 +102,6 @@ TODO list for Perlito5
 
 
 * Nice to Have
-
--- subscripts inside string-interpolation
-
--- $# prefix as in $#_
 
 -- labels, "next", "last"
 
