@@ -1,20 +1,27 @@
 * Perlito5 compiler globals
 
+- context: system-wide; shared by all modules
 
-$Perlito5::PKG_NAME = "main"
-- the current package name (unescaped string)
+    $Perlito5::CORE_PROTO = { 'CORE::join' => '$@' }
+    - hashref with subroutine-full-name to prototype mappings in the CORE package only
 
-$Perlito5::PROTO = { 'main::mysub' => undef }
-- hashref with subroutine-full-name to prototype mappings
+    $Perlito5::PROTO = { 'main::mysub' => undef }
+    - hashref with subroutine-full-name to prototype mappings
 
-$Perlito5::CORE_PROTO = { 'CORE::join' => '$@' }
-- hashref with subroutine-full-name to prototype mappings in the CORE package only
+- context: module-wide
 
-$Perlito5::VAR = [ { '$_'    => { decl => 'our', namespace => 'main' } ]
-- arrayref-of-hashes with variable-short-names to (declaration type, namespace) mappings
+    $Perlito5::PKG_NAME = "main"
+    - the current package name (unescaped string)
 
-$Perlito5::THROW = 1
-- boolean value; tracks if the current subroutine needs to catch a javascript "throw" as a return-value
+- context: subroutine-wide
+
+    $Perlito5::THROW = 1
+    - boolean value; tracks if the current subroutine needs to catch a javascript "throw" as a return-value
+
+- context: lexical block
+
+    $Perlito5::VAR = [ { '$_'    => { decl => 'our', namespace => 'main' } ]
+    - arrayref-of-hashes with variable-short-names to (declaration type, namespace) mappings
 
 
 
@@ -67,7 +74,7 @@ Class
 Namespace
 - namespaces are stored in the NAMESPACE global hash
 - current namespace object is in the PKG variable
-- Namespace inherits from CORE, which inherits from CORE::GLOBAL
+- Namespace inherits from from CORE::GLOBAL, which inherits from CORE
 - Namespace is a copy of the Class, but with a different inheritance
 - Namespace and Class are updated in parallel, both when a sub is declared or when using typeglob assignment
 

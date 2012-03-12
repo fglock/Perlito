@@ -50,14 +50,19 @@ if (typeof NAMESPACE !== "object") {
     NAMESPACE.UNIVERSAL.DOES = NAMESPACE.UNIVERSAL.can;
 
     var core = function () {};
-    NAMESPACE.CORE = new core();
-    NAMESPACE.CORE._ref_ = "CORE";
+    NAMESPACE["CORE"] = new core();
+    NAMESPACE["CORE"]._ref_ = "CORE";
+
+    var core_global = function () {};
+    core_global.prototype = NAMESPACE.CORE;
+    NAMESPACE["CORE::GLOBAL"] = new core_global();
+    NAMESPACE["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";
 }
 
 function make_package(pkg_name) {
     if (!NAMESPACE.hasOwnProperty(pkg_name)) {
         var tmp = function () {};
-        tmp.prototype = NAMESPACE.CORE;
+        tmp.prototype = NAMESPACE["CORE::GLOBAL"];
         NAMESPACE[pkg_name] = new tmp();
         NAMESPACE[pkg_name]._ref_ = pkg_name;
         NAMESPACE[pkg_name]._class_ = NAMESPACE[pkg_name];  // XXX memory leak

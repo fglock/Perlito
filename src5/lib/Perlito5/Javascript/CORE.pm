@@ -258,7 +258,7 @@ CORE.split = function(List__) {
 CORE.prototype = function(List__, data) {
     var name = List__[0];
     // TODO - fully qualify "name" using information from "data"
-    // TODO - lookup in CORE::GLOBAL
+    // XXX - lookup in CORE::GLOBAL?
     NAMESPACE["Perlito5"].v_PROTO._hash_[name] || NAMESPACE["Perlito5"].v_CORE_PROTO._hash_[name]
 };
 
