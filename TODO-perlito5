@@ -141,8 +141,6 @@ TODO list for Perlito5
 
 -- *{ $name }{CODE}->();
 
--- $object->$method_name()
-
 -- local(*{$caller."::a"}) = \my $a;
 
 -- AUTOLOAD
