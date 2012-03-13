@@ -13,6 +13,8 @@ TODO list for Perlito5
 
 -- add "require"
 
+-- add "print" special parsing
+
 
 * libraries
 
@@ -97,6 +99,10 @@ TODO list for Perlito5
 -- string increment and string ranges
 
 -- finish "overload" implementation
+
+-- pack(), unpack()
+-- sprintf()
+-- y()()
 
 
 * Perl6 backend
