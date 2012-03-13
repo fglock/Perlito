@@ -655,7 +655,7 @@ package Perlito5::Expression;
             }
     };
 
-    token map_or_sort { 'map' | 'sort' };
+    token map_or_sort { 'map' | 'grep' | 'sort' };
 
     token term_map_or_sort {
         # Note: this is map-block; map-expr is parsed as a normal subroutine

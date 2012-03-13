@@ -90,6 +90,7 @@ my %Term = (
     # 4 chars
         'eval'  => sub { Perlito5::Expression->term_eval($_[0], $_[1]) },
         'sort'  => sub { Perlito5::Expression->term_map_or_sort($_[0], $_[1]) },
+        'grep'  => sub { Perlito5::Expression->term_map_or_sort($_[0], $_[1]) },
     # 5 chars
         'state' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
         'local' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },

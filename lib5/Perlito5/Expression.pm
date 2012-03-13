@@ -1126,9 +1126,12 @@ sub Perlito5::Expression::map_or_sort {
     ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
-    (((do {
+    ((((do {
     (('map' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))
 })) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('grep' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'}))))))
+}))) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((('sort' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'}))))))
 })))

@@ -2360,6 +2360,7 @@ CORE.prototype = function(List__, data) {
 					(v_self = NAMESPACE["Perlito5::AST::Use"].shift([List__]));
 					var v_level = null;
 					(v_level = NAMESPACE["Perlito5::AST::Use"].shift([List__]));
+					_call_(v_self, "compiletime_eval", []);
 					return (('// ' + string((v_self || (v_self = new HashRef({})))._hash_['code']) + ' ' + string((v_self || (v_self = new HashRef({})))._hash_['mod']) + String.fromCharCode(10)));
 			});
 		};
@@ -2502,6 +2503,8 @@ CORE.prototype = function(List__, data) {
 }, 'eval', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_eval", [List__[0],List__[1]]));
 }, 'sort', function (List__) {
+		return (_call_(NAMESPACE["Perlito5::Expression"], "term_map_or_sort", [List__[0],List__[1]]));
+}, 'grep', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_map_or_sort", [List__[0],List__[1]]));
 }, 'state', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_declarator", [List__[0],List__[1]]));
@@ -4467,9 +4470,12 @@ CORE.prototype = function(List__, data) {
 				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = (((function () {
 					var v_pos1 = null;
 					(v_pos1 = (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']);
-					return (or(((function () {
+					return (or(or(((function () {
 	return (and(('map' == NAMESPACE["Perlito5::Expression"].substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 3])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = add(3, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']))); }));
 })()), function () { return ((function () {
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
+	return (((and(('grep' == NAMESPACE["Perlito5::Expression"].substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 4])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = add(4, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']))); }))));
+})()); }), function () { return ((function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (((and(('sort' == NAMESPACE["Perlito5::Expression"].substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 4])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = add(4, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']))); }))));
 })()); }));
