@@ -41,26 +41,20 @@ sub is_ident_middle {
 }
 
 my @Parsed_op_chars = (2, 1);
-my @Parsed_op = (
-    { # 0 chars
-    },
-    { # 1 char
+my %Parsed_op = (
+      # 1 char
         '?'  => sub { Perlito5::Expression->term_ternary($_[0], $_[1]) },
         '('  => sub { Perlito5::Expression->term_paren($_[0], $_[1]) },
         '['  => sub { Perlito5::Expression->term_square($_[0], $_[1]) },
         '{'  => sub { Perlito5::Expression->term_curly($_[0], $_[1]) },
-    },
-    { # 2 chars
+      # 2 chars
         '->' => sub { Perlito5::Expression->term_arrow($_[0], $_[1]) },
-    },
 );
 
 my @Term_chars = (7, 5, 4, 3, 2, 1);
-my @Term = (
-    # 0 chars
-    {},
+my %Term = (
     # 1 char
-    {   '$'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
+        '$'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
         '@'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
         '%'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
         '&'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
@@ -84,33 +78,24 @@ my @Term = (
         chr(12) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },
         chr(13) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },
         chr(32) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },
-    },
     # 2 chars
-    {
         'my' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
         'no' => sub { Perlito5::Expression->term_use($_[0], $_[1]) },
         'do' => sub { Perlito5::Expression->term_do($_[0], $_[1]) },
-    },
     # 3 chars
-    {   'our' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
+        'our' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
         'sub' => sub { Perlito5::Expression->term_sub($_[0], $_[1]) },
         'use' => sub { Perlito5::Expression->term_use($_[0], $_[1]) },
         'map' => sub { Perlito5::Expression->term_map_or_sort($_[0], $_[1]) },
-    },
     # 4 chars
-    {
         'eval'  => sub { Perlito5::Expression->term_eval($_[0], $_[1]) },
         'sort'  => sub { Perlito5::Expression->term_map_or_sort($_[0], $_[1]) },
-    },
     # 5 chars
-    {   'state' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
+        'state' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
         'local' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
-    },
     # 6 chars
-    {},
     # 7 chars
-    {   'package' => sub { Perlito5::Expression->term_package($_[0], $_[1]) },
-    },
+        'package' => sub { Perlito5::Expression->term_package($_[0], $_[1]) },
 );
 
 sub add_term {
@@ -119,12 +104,12 @@ sub add_term {
 
     # XXX this fails unless the length is registered in @Term_chars
 
-    $Term[ length $name ]{ $name } = $param;
+    $Term{$name} = $param;
 }
 
 my $End_token;
 my $End_token_chars;
-my @Op;
+my %Op;
 my @Op_chars = (3,2,1);
 sub op_parse {
     my $self = shift;
@@ -134,7 +119,7 @@ sub op_parse {
 
     for my $len ( @$End_token_chars ) {
         my $term = substr($str, $pos, $len);
-        if (exists($End_token->[$len]{$term})) {
+        if (length($term) == $len && exists($End_token->{$term})) {
             my $c1 = substr($str, $pos+$len-1, 1);
             my $c2 = substr($str, $pos+$len, 1);
             if (!(is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ))) {
@@ -155,16 +140,9 @@ sub op_parse {
     if ( !$last_is_term ) {
         for my $len ( @Term_chars ) {
             my $term = substr($str, $pos, $len);
-            if (exists($Term[$len]{$term})) {
-                # my $c1 = substr($str, $pos+$len-1, 1);
-                # my $c2 = substr($str, $pos+$len, 1);
-                # if (!(is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ))) {
-                #     # it looks like a token, and it is not one of these cases:
-                #     #   if_more
-                #     #   if(...)
-                    my $m = $Term[$len]{$term}->($str, $pos);
-                    return $m if $m->{"bool"};
-                # }
+            if (exists($Term{$term})) {
+                my $m = $Term{$term}->($str, $pos);
+                return $m if $m->{"bool"};
             }
         }
     }
@@ -172,8 +150,8 @@ sub op_parse {
     # check for operators that need special parsing
     for my $len ( @Parsed_op_chars ) {
         my $op = substr($str, $pos, $len);
-        if (exists($Parsed_op[$len]{$op})) {
-            my $m = $Parsed_op[$len]{$op}->($str, $pos);
+        if (exists($Parsed_op{$op})) {
+            my $m = $Parsed_op{$op}->($str, $pos);
             return $m if $m->{"bool"};
         }
     }
@@ -181,7 +159,7 @@ sub op_parse {
 
     for my $len ( @Op_chars ) {
         my $op = substr($str, $pos, $len);
-        if (exists($Op[$len]{$op})) {
+        if (exists($Op{$op})) {
             my $c1 = substr($str, $pos+$len-1, 1);
             my $c2 = substr($str, $pos+$len, 1);
             if (!(is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ))) {
@@ -216,7 +194,7 @@ sub add_op {
     $Operator->{$fixity}{$name} = 1;
     $Precedence->{$name}        = $precedence;
     $Assoc->{$assoc}{$name}     = 1;
-    $Op[ length($name) ]{$name} = 1;
+    $Op{$name}                  = 1;
 }
 
 

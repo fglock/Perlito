@@ -1267,11 +1267,11 @@ sub Perlito5::Expression::has_no_comma_or_colon_after {
 }))));
     $MATCH
 };
-((my  $Argument_end_token) = [{}, {(':' => 1), (']' => 1), (')' => 1), ('}' => 1), (';' => 1), (',' => 1), ('<' => 1), ('>' => 1), ('=' => 1), ('&' => 1), ('|' => 1), ('^' => 1)}, {('or' => 1), ('if' => 1), ('=>' => 1), ('lt' => 1), ('le' => 1), ('gt' => 1), ('ge' => 1), ('<=' => 1), ('>=' => 1), ('==' => 1), ('!=' => 1), ('ne' => 1), ('eq' => 1), ('..' => 1), ('~~' => 1), ('&&' => 1), ('||' => 1), ('+=' => 1), ('-=' => 1), ('*=' => 1), ('/=' => 1), ('x=' => 1), ('|=' => 1), ('&=' => 1), ('.=' => 1), ('^=' => 1), ('%=' => 1), ('//' => 1)}, {('for' => 1), ('and' => 1), ('xor' => 1), ('...' => 1), ('<=>' => 1), ('cmp' => 1), ('<<=' => 1), ('>>=' => 1), ('||=' => 1), ('&&=' => 1), ('//=' => 1), ('**=' => 1)}, {('when' => 1)}, {('while' => 1)}, {('unless' => 1)}, {('foreach' => 1)}]);
+((my  $Argument_end_token) = {(':' => 1), (']' => 1), (')' => 1), ('}' => 1), (';' => 1), (',' => 1), ('<' => 1), ('>' => 1), ('=' => 1), ('&' => 1), ('|' => 1), ('^' => 1), ('or' => 1), ('if' => 1), ('=>' => 1), ('lt' => 1), ('le' => 1), ('gt' => 1), ('ge' => 1), ('<=' => 1), ('>=' => 1), ('==' => 1), ('!=' => 1), ('ne' => 1), ('eq' => 1), ('..' => 1), ('~~' => 1), ('&&' => 1), ('||' => 1), ('+=' => 1), ('-=' => 1), ('*=' => 1), ('/=' => 1), ('x=' => 1), ('|=' => 1), ('&=' => 1), ('.=' => 1), ('^=' => 1), ('%=' => 1), ('//' => 1), ('for' => 1), ('and' => 1), ('xor' => 1), ('...' => 1), ('<=>' => 1), ('cmp' => 1), ('<<=' => 1), ('>>=' => 1), ('||=' => 1), ('&&=' => 1), ('//=' => 1), ('**=' => 1), ('when' => 1), ('while' => 1), ('unless' => 1), ('foreach' => 1)});
 ((my  $Argument_end_token_chars) = [7, 6, 5, 4, 3, 2, 1]);
-((my  $List_end_token) = [{}, {(':' => 1), (']' => 1), (')' => 1), ('}' => 1), (';' => 1)}, {('or' => 1), ('if' => 1)}, {('for' => 1), ('and' => 1), ('xor' => 1)}, {('else' => 1), ('when' => 1)}, {('while' => 1), ('elsif' => 1)}, {('unless' => 1)}, {('foreach' => 1)}]);
+((my  $List_end_token) = {(':' => 1), (']' => 1), (')' => 1), ('}' => 1), (';' => 1), ('or' => 1), ('if' => 1), ('for' => 1), ('and' => 1), ('xor' => 1), ('else' => 1), ('when' => 1), ('while' => 1), ('elsif' => 1), ('unless' => 1), ('foreach' => 1)});
 ((my  $List_end_token_chars) = [7, 6, 5, 4, 3, 2, 1]);
-((my  $Expr_end_token) = [{}, {(']' => 1), (')' => 1), ('}' => 1), (';' => 1)}, {('if' => 1)}, {('for' => 1)}, {('else' => 1), ('when' => 1)}, {('while' => 1), ('elsif' => 1)}, {('unless' => 1)}, {('foreach' => 1)}]);
+((my  $Expr_end_token) = {(']' => 1), (')' => 1), ('}' => 1), (';' => 1), ('if' => 1), ('for' => 1), ('else' => 1), ('when' => 1), ('while' => 1), ('elsif' => 1), ('unless' => 1), ('foreach' => 1)});
 ((my  $Expr_end_token_chars) = [7, 6, 5, 4, 3, 2, 1]);
 sub Perlito5::Expression::op_parse_spc {
     ((my  $self) = $_[0]);
@@ -1434,9 +1434,9 @@ sub Perlito5::Expression::circumfix_parse {
     };
     return ($v)
 });
-    (my  @delim_token);
-    ($delim_token[length($delimiter)] = {($delimiter => 1)});
-    ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => \@delim_token), ('end_token_chars' => [length($delimiter)])));
+    (my  %delim_token);
+    ($delim_token{$delimiter} = 1);
+    ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => \%delim_token), ('end_token_chars' => [length($delimiter)])));
     ((my  $res) = $prec->precedence_parse());
     ($res = pop_term($res));
     if (!((defined($res)))) {

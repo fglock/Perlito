@@ -2290,8 +2290,8 @@ CORE.prototype = function(List__, data) {
 		});
 		var List_Parsed_op_chars = [];
 		(List_Parsed_op_chars = interpolate_array(2, 1));
-		var List_Parsed_op = [];
-		(List_Parsed_op = interpolate_array((new HashRef(array_to_hash([]))), (new HashRef(array_to_hash(interpolate_array('?', function (List__) {
+		var Hash_Parsed_op = {};
+		(Hash_Parsed_op = array_to_hash(interpolate_array('?', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_ternary", [List__[0],List__[1]]));
 }, '(', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_paren", [List__[0],List__[1]]));
@@ -2299,13 +2299,13 @@ CORE.prototype = function(List__, data) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_square", [List__[0],List__[1]]));
 }, '{', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_curly", [List__[0],List__[1]]));
-})))), (new HashRef(array_to_hash(interpolate_array('->', function (List__) {
+}, '->', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_arrow", [List__[0],List__[1]]));
-}))))));
+})));
 		var List_Term_chars = [];
 		(List_Term_chars = interpolate_array(7, 5, 4, 3, 2, 1));
-		var List_Term = [];
-		(List_Term = interpolate_array((new HashRef(array_to_hash([]))), (new HashRef(array_to_hash(interpolate_array('$', function (List__) {
+		var Hash_Term = {};
+		(Hash_Term = array_to_hash(interpolate_array('$', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_sigil", [List__[0],List__[1]]));
 }, '@', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_sigil", [List__[0],List__[1]]));
@@ -2349,13 +2349,13 @@ CORE.prototype = function(List__, data) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_space", [List__[0],List__[1]]));
 }, NAMESPACE["Perlito5::Precedence"].chr([32]), function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_space", [List__[0],List__[1]]));
-})))), (new HashRef(array_to_hash(interpolate_array('my', function (List__) {
+}, 'my', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_declarator", [List__[0],List__[1]]));
 }, 'no', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_use", [List__[0],List__[1]]));
 }, 'do', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_do", [List__[0],List__[1]]));
-})))), (new HashRef(array_to_hash(interpolate_array('our', function (List__) {
+}, 'our', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_declarator", [List__[0],List__[1]]));
 }, 'sub', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_sub", [List__[0],List__[1]]));
@@ -2363,27 +2363,27 @@ CORE.prototype = function(List__, data) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_use", [List__[0],List__[1]]));
 }, 'map', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_map_or_sort", [List__[0],List__[1]]));
-})))), (new HashRef(array_to_hash(interpolate_array('eval', function (List__) {
+}, 'eval', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_eval", [List__[0],List__[1]]));
 }, 'sort', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_map_or_sort", [List__[0],List__[1]]));
-})))), (new HashRef(array_to_hash(interpolate_array('state', function (List__) {
+}, 'state', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_declarator", [List__[0],List__[1]]));
 }, 'local', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_declarator", [List__[0],List__[1]]));
-})))), (new HashRef(array_to_hash([]))), (new HashRef(array_to_hash(interpolate_array('package', function (List__) {
+}, 'package', function (List__) {
 		return (_call_(NAMESPACE["Perlito5::Expression"], "term_package", [List__[0],List__[1]]));
-}))))));
+})));
 		make_sub("Perlito5::Precedence", "add_term", function (List__) {
 				var v_name = null;
 				(v_name = NAMESPACE["Perlito5::Precedence"].shift([List__]));
 				var v_param = null;
 				(v_param = NAMESPACE["Perlito5::Precedence"].shift([List__]));
-				return (((List_Term[NAMESPACE["Perlito5::Precedence"].length([v_name])] || (List_Term[NAMESPACE["Perlito5::Precedence"].length([v_name])] = new HashRef({})))._hash_[v_name] = v_param));
+				return ((Hash_Term[v_name] = v_param));
 		});
 		var v_End_token = null;
 		var v_End_token_chars = null;
-		var List_Op = [];
+		var Hash_Op = {};
 		var List_Op_chars = [];
 		(List_Op_chars = interpolate_array(3, 2, 1));
 		make_sub("Perlito5::Precedence", "op_parse", function (List__) {
@@ -2399,7 +2399,7 @@ CORE.prototype = function(List__, data) {
 				for (var i_ = 0, a_ = (interpolate_array((v_End_token_chars || (v_End_token_chars = new ArrayRef([])))._array_)); i_ < a_.length ; i_++) { (function (v_len) {
 					var v_term = null;
 					(v_term = NAMESPACE["Perlito5::Precedence"].substr([v_str, v_pos, v_len]));
-					if ( bool(((v_End_token || (v_End_token = new ArrayRef([])))._array_[v_len])._hash_.hasOwnProperty(v_term)) ) {
+					if ( ((num(NAMESPACE["Perlito5::Precedence"].length([v_term])) == num(v_len)) && bool((v_End_token)._hash_.hasOwnProperty(v_term))) ) {
 						(function () {
 							var v_c1 = null;
 							(v_c1 = NAMESPACE["Perlito5::Precedence"].substr([v_str, (num(add(v_pos, v_len)) - 1), 1]));
@@ -2415,10 +2415,10 @@ CORE.prototype = function(List__, data) {
 					for (var i_ = 0, a_ = (interpolate_array(List_Term_chars)); i_ < a_.length ; i_++) { (function (v_len) {
 						var v_term = null;
 						(v_term = NAMESPACE["Perlito5::Precedence"].substr([v_str, v_pos, v_len]));
-						if ( bool((List_Term[v_len])._hash_.hasOwnProperty(v_term)) ) {
+						if ( bool((Hash_Term).hasOwnProperty(v_term)) ) {
 							(function () {
 								var v_m = null;
-								(v_m = ((List_Term[v_len] || (List_Term[v_len] = new HashRef({})))._hash_[v_term])([v_str,v_pos]));
+								(v_m = (Hash_Term[v_term])([v_str,v_pos]));
 								if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
 									throw(v_m);
 								};
@@ -2429,10 +2429,10 @@ CORE.prototype = function(List__, data) {
 				for (var i_ = 0, a_ = (interpolate_array(List_Parsed_op_chars)); i_ < a_.length ; i_++) { (function (v_len) {
 					var v_op = null;
 					(v_op = NAMESPACE["Perlito5::Precedence"].substr([v_str, v_pos, v_len]));
-					if ( bool((List_Parsed_op[v_len])._hash_.hasOwnProperty(v_op)) ) {
+					if ( bool((Hash_Parsed_op).hasOwnProperty(v_op)) ) {
 						(function () {
 							var v_m = null;
-							(v_m = ((List_Parsed_op[v_len] || (List_Parsed_op[v_len] = new HashRef({})))._hash_[v_op])([v_str,v_pos]));
+							(v_m = (Hash_Parsed_op[v_op])([v_str,v_pos]));
 							if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
 								throw(v_m);
 							};
@@ -2442,7 +2442,7 @@ CORE.prototype = function(List__, data) {
 				for (var i_ = 0, a_ = (interpolate_array(List_Op_chars)); i_ < a_.length ; i_++) { (function (v_len) {
 					var v_op = null;
 					(v_op = NAMESPACE["Perlito5::Precedence"].substr([v_str, v_pos, v_len]));
-					if ( bool((List_Op[v_len])._hash_.hasOwnProperty(v_op)) ) {
+					if ( bool((Hash_Op).hasOwnProperty(v_op)) ) {
 						(function () {
 							var v_c1 = null;
 							(v_c1 = NAMESPACE["Perlito5::Precedence"].substr([v_str, (num(add(v_pos, v_len)) - 1), 1]));
@@ -2482,7 +2482,7 @@ CORE.prototype = function(List__, data) {
 				(((v_Operator || (v_Operator = new HashRef({})))._hash_[v_fixity] || ((v_Operator || (v_Operator = new HashRef({})))._hash_[v_fixity] = new HashRef({})))._hash_[v_name] = 1);
 				((v_Precedence || (v_Precedence = new HashRef({})))._hash_[v_name] = v_precedence);
 				(((v_Assoc || (v_Assoc = new HashRef({})))._hash_[v_assoc] || ((v_Assoc || (v_Assoc = new HashRef({})))._hash_[v_assoc] = new HashRef({})))._hash_[v_name] = 1);
-				return (((List_Op[NAMESPACE["Perlito5::Precedence"].length([v_name])] || (List_Op[NAMESPACE["Perlito5::Precedence"].length([v_name])] = new HashRef({})))._hash_[v_name] = 1));
+				return ((Hash_Op[v_name] = 1));
 		});
 		var v_prec = null;
 		(v_prec = 100);
@@ -4510,15 +4510,15 @@ CORE.prototype = function(List__, data) {
 				return (v_MATCH);
 		});
 		var v_Argument_end_token = null;
-		(v_Argument_end_token = (new ArrayRef(interpolate_array((new HashRef(array_to_hash([]))), (new HashRef(array_to_hash(interpolate_array(':', 1, ']', 1, ')', 1, '}', 1, ';', 1, ',', 1, '<', 1, '>', 1, '=', 1, '&', 1, '|', 1, '^', 1)))), (new HashRef(array_to_hash(interpolate_array('or', 1, 'if', 1, '=>', 1, 'lt', 1, 'le', 1, 'gt', 1, 'ge', 1, '<=', 1, '>=', 1, '==', 1, '!=', 1, 'ne', 1, 'eq', 1, '..', 1, '~~', 1, '&&', 1, '||', 1, '+=', 1, '-=', 1, '*=', 1, '/=', 1, 'x=', 1, '|=', 1, '&=', 1, '.=', 1, '^=', 1, '%=', 1, '//', 1)))), (new HashRef(array_to_hash(interpolate_array('for', 1, 'and', 1, 'xor', 1, '...', 1, '<=>', 1, 'cmp', 1, '<<=', 1, '>>=', 1, '||=', 1, '&&=', 1, '//=', 1, '**=', 1)))), (new HashRef(array_to_hash(interpolate_array('when', 1)))), (new HashRef(array_to_hash(interpolate_array('while', 1)))), (new HashRef(array_to_hash(interpolate_array('unless', 1)))), (new HashRef(array_to_hash(interpolate_array('foreach', 1))))))));
+		(v_Argument_end_token = (new HashRef(array_to_hash(interpolate_array(':', 1, ']', 1, ')', 1, '}', 1, ';', 1, ',', 1, '<', 1, '>', 1, '=', 1, '&', 1, '|', 1, '^', 1, 'or', 1, 'if', 1, '=>', 1, 'lt', 1, 'le', 1, 'gt', 1, 'ge', 1, '<=', 1, '>=', 1, '==', 1, '!=', 1, 'ne', 1, 'eq', 1, '..', 1, '~~', 1, '&&', 1, '||', 1, '+=', 1, '-=', 1, '*=', 1, '/=', 1, 'x=', 1, '|=', 1, '&=', 1, '.=', 1, '^=', 1, '%=', 1, '//', 1, 'for', 1, 'and', 1, 'xor', 1, '...', 1, '<=>', 1, 'cmp', 1, '<<=', 1, '>>=', 1, '||=', 1, '&&=', 1, '//=', 1, '**=', 1, 'when', 1, 'while', 1, 'unless', 1, 'foreach', 1)))));
 		var v_Argument_end_token_chars = null;
 		(v_Argument_end_token_chars = (new ArrayRef(interpolate_array(7, 6, 5, 4, 3, 2, 1))));
 		var v_List_end_token = null;
-		(v_List_end_token = (new ArrayRef(interpolate_array((new HashRef(array_to_hash([]))), (new HashRef(array_to_hash(interpolate_array(':', 1, ']', 1, ')', 1, '}', 1, ';', 1)))), (new HashRef(array_to_hash(interpolate_array('or', 1, 'if', 1)))), (new HashRef(array_to_hash(interpolate_array('for', 1, 'and', 1, 'xor', 1)))), (new HashRef(array_to_hash(interpolate_array('else', 1, 'when', 1)))), (new HashRef(array_to_hash(interpolate_array('while', 1, 'elsif', 1)))), (new HashRef(array_to_hash(interpolate_array('unless', 1)))), (new HashRef(array_to_hash(interpolate_array('foreach', 1))))))));
+		(v_List_end_token = (new HashRef(array_to_hash(interpolate_array(':', 1, ']', 1, ')', 1, '}', 1, ';', 1, 'or', 1, 'if', 1, 'for', 1, 'and', 1, 'xor', 1, 'else', 1, 'when', 1, 'while', 1, 'elsif', 1, 'unless', 1, 'foreach', 1)))));
 		var v_List_end_token_chars = null;
 		(v_List_end_token_chars = (new ArrayRef(interpolate_array(7, 6, 5, 4, 3, 2, 1))));
 		var v_Expr_end_token = null;
-		(v_Expr_end_token = (new ArrayRef(interpolate_array((new HashRef(array_to_hash([]))), (new HashRef(array_to_hash(interpolate_array(']', 1, ')', 1, '}', 1, ';', 1)))), (new HashRef(array_to_hash(interpolate_array('if', 1)))), (new HashRef(array_to_hash(interpolate_array('for', 1)))), (new HashRef(array_to_hash(interpolate_array('else', 1, 'when', 1)))), (new HashRef(array_to_hash(interpolate_array('while', 1, 'elsif', 1)))), (new HashRef(array_to_hash(interpolate_array('unless', 1)))), (new HashRef(array_to_hash(interpolate_array('foreach', 1))))))));
+		(v_Expr_end_token = (new HashRef(array_to_hash(interpolate_array(']', 1, ')', 1, '}', 1, ';', 1, 'if', 1, 'for', 1, 'else', 1, 'when', 1, 'while', 1, 'elsif', 1, 'unless', 1, 'foreach', 1)))));
 		var v_Expr_end_token_chars = null;
 		(v_Expr_end_token_chars = (new ArrayRef(interpolate_array(7, 6, 5, 4, 3, 2, 1))));
 		make_sub("Perlito5::Expression", "op_parse_spc", function (List__) {
@@ -4787,10 +4787,10 @@ CORE.prototype = function(List__, data) {
 						}
 					}
 				});
-				var List_delim_token = [];
-				(List_delim_token[NAMESPACE["Perlito5::Expression"].length([v_delimiter])] = (new HashRef(array_to_hash(interpolate_array(v_delimiter, 1)))));
+				var Hash_delim_token = {};
+				(Hash_delim_token[v_delimiter] = 1);
 				var v_prec = null;
-				(v_prec = _call_(NAMESPACE["Perlito5::Precedence"], "new", ['get_token', v_get_token,'reduce', v_reduce_to_ast,'end_token', (new ArrayRef(List_delim_token)),'end_token_chars', (new ArrayRef(interpolate_array(NAMESPACE["Perlito5::Expression"].length([v_delimiter]))))]));
+				(v_prec = _call_(NAMESPACE["Perlito5::Precedence"], "new", ['get_token', v_get_token,'reduce', v_reduce_to_ast,'end_token', (new HashRef(Hash_delim_token)),'end_token_chars', (new ArrayRef(interpolate_array(NAMESPACE["Perlito5::Expression"].length([v_delimiter]))))]));
 				var v_res = null;
 				(v_res = _call_(v_prec, "precedence_parse", []));
 				(v_res = NAMESPACE["Perlito5::Expression"].pop_term([v_res]));

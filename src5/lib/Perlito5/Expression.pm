@@ -663,11 +663,9 @@ package Perlito5::Expression;
         <.Perlito5::Grammar.ws> <!before [ ',' | ':' ]> .
     };
 
-    my $Argument_end_token = [ 
-        # 0 chars
-        {},
+    my $Argument_end_token = {
         # 1 chars
-        {   ':' => 1,
+            ':' => 1,
             ']' => 1,
             ')' => 1,
             '}' => 1,
@@ -679,9 +677,9 @@ package Perlito5::Expression;
             '&' => 1,   
             '|' => 1,   
             '^' => 1,   
-        },
+          
         # 2 chars
-        {   'or' => 1,
+            'or' => 1,
             'if' => 1,
             '=>' => 1,
             'lt' => 1,  
@@ -709,9 +707,9 @@ package Perlito5::Expression;
             '^=' => 1,  
             '%=' => 1,  
             '//' => 1,  
-       },
+         
         # 3 chars
-        {   'for' => 1,
+            'for' => 1,
             'and' => 1,
             'xor' => 1,
             '...' => 1, 
@@ -723,91 +721,87 @@ package Perlito5::Expression;
             '&&=' => 1, 
             '//=' => 1, 
             '**=' => 1, 
-       },
+         
         # 4 chars
-        {   # 'else' => 1,
+            # 'else' => 1,
             'when' => 1,
-        },
+          
         # 5 chars
-        {   'while' => 1,
+            'while' => 1,
             # 'elsif' => 1,
-        },
+          
         # 6 chars
-        {   'unless' => 1,
-        },
+            'unless' => 1,
+          
         # 7 chars
-        {   'foreach' => 1,
-        },
-    ];
+            'foreach' => 1,
+          
+    };
     my $Argument_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
 
-    my $List_end_token = [ 
-        # 0 chars
-        {},
+    my $List_end_token = { 
         # 1 chars
-        {   ':' => 1,
+            ':' => 1,
             ']' => 1,
             ')' => 1,
             '}' => 1,
             ';' => 1,
-        },
+          
         # 2 chars
-        {   'or' => 1,
+            'or' => 1,
             'if' => 1,
-        },
+          
         # 3 chars
-        {   'for' => 1,
+            'for' => 1,
             'and' => 1,
             'xor' => 1,
-        },
+          
         # 4 chars
-        {   'else' => 1,
+            'else' => 1,
             'when' => 1,
-        },
+          
         # 5 chars
-        {   'while' => 1,
+            'while' => 1,
             'elsif' => 1,
-        },
+          
         # 6 chars
-        {   'unless' => 1,
-        },
+            'unless' => 1,
+          
         # 7 chars
-        {   'foreach' => 1,
-        },
-    ];
+            'foreach' => 1,
+          
+    };
     my $List_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
-    my $Expr_end_token = [
-        # 0 chars
-        {},
+    my $Expr_end_token = {
         # 1 chars
-        {   ']' => 1,
+            ']' => 1,
             ')' => 1,
             '}' => 1,
             ';' => 1,
-        },
+          
         # 2 chars
-        {   'if' => 1,
-        },
+            'if' => 1,
+          
         # 3 chars
-        {   'for' => 1,
-        },
+            'for' => 1,
+          
         # 4 chars
-        {   'else' => 1,
+            'else' => 1,
             'when' => 1,
-        },
+          
         # 5 chars
-        {   'while' => 1,
+            'while' => 1,
             'elsif' => 1,
-        },
+          
         # 6 chars
-        {   'unless' => 1,
-        },
+            'unless' => 1,
+          
         # 7 chars
-        {   'foreach' => 1,
-        },
-    ];
+            'foreach' => 1,
+          
+    };
     my $Expr_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
 
@@ -1037,12 +1031,12 @@ package Perlito5::Expression;
             return $v;
         };
 
-        my @delim_token;
-        $delim_token[ length $delimiter ] = { $delimiter => 1 };
+        my %delim_token;
+        $delim_token{ $delimiter } = 1;
         my $prec = Perlito5::Precedence->new(
             get_token       => $get_token,
             reduce          => $reduce_to_ast,
-            end_token       => \@delim_token,
+            end_token       => \%delim_token,
             end_token_chars => [ length $delimiter ],
         );
         my $res = $prec->precedence_parse;
