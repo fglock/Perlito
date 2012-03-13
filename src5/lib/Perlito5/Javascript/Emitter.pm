@@ -300,18 +300,15 @@ package Perlito5::Javascript::LexicalBlock;
                         . Perlito5::Javascript::tab($level) . '}';
                 }
             }
-            # elsif ( $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return' ) {
-            #     push @str, 'return('
-            #         .   ( $last_statement->{"arguments"} && @{$last_statement->{"arguments"}} 
-            #             ? $last_statement->{"arguments"}->[0]->emit_javascript() 
-            #             : 'null'
-            #             )
-            #         . ')'
-            # }
+            elsif ( $last_statement->isa( 'Perlito5::AST::Lit::Block' ) ) {
+                my $body = Perlito5::Javascript::LexicalBlock->new( block => $last_statement->{"stmts"}, needs_return => 1 );
+                push @str,
+                      'for (var i_ = 0; i_ < 1 ; i_++) {' . "\n"
+                    .   $body->emit_javascript_indented( $level + 1 ) . "\n"
+                    . Perlito5::Javascript::tab($level) . '}'
+            }
             elsif (  $last_statement->isa( 'Perlito5::AST::For' )
                   || $last_statement->isa( 'Perlito5::AST::While' )
-                     # TODO - blocks return the last value
-                  || $last_statement->isa( 'Perlito5::AST::Lit::Block' )
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'goto'
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
                   )
@@ -436,25 +433,11 @@ package Perlito5::AST::Lit::Block;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        # my $sig = 'v__';
-        # if ($self->{"sig"}) {
-        #     $sig = $self->{"sig"}->emit_javascript_indented( $level + 1 );
-        # }
-
-
-        Perlito5::AST::For->new(
-                    # XXX - $_ is not declared
-                    # cond  => Perlito5::AST::Var->new( sigil => '$', namespace => '', name => '_' ),
-                    cond  => Perlito5::AST::Val::Int->new( int => 0 ),
-                    topic => undef,
-                    body  => Perlito5::AST::Lit::Block->new( stmts => $self->{"stmts"} )
-                 )->emit_javascript_indented( $level );
-
-
-        # return
-        #       Perlito5::Javascript::tab($level) . "(function ($sig) \{\n"
-        #     .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"stmts"}, needs_return => 1 ))->emit_javascript_indented( $level + 1 ) . "\n"
-        #     . Perlito5::Javascript::tab($level) . '})()'
+        my $body = Perlito5::Javascript::LexicalBlock->new( block => $self->{"stmts"}, needs_return => 0 );
+        return
+              'for (var i_ = 0; i_ < 1 ; i_++) {' . "\n"
+            .   $body->emit_javascript_indented( $level + 1 ) . "\n"
+            . Perlito5::Javascript::tab($level) . '}'
     }
 }
 

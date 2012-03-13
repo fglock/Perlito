@@ -210,15 +210,21 @@ for ($_) {
                 }
             }
             else {
-                if ((((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || $last_statement->isa('Perlito5::AST::Lit::Block')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')))) {
-                    push(@str, $last_statement->emit_javascript_indented($level) )
+                if ($last_statement->isa('Perlito5::AST::Lit::Block')) {
+                    ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $last_statement->{'stmts'}), ('needs_return' => 1)));
+                    push(@str, ('for (var i_ = 0; i_ < 1 ; i_++) {' . chr(10) . $body->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}') )
                 }
                 else {
-                    if ($has_local) {
-                        push(@str, ('return cleanup_local(local_idx, (' . $last_statement->emit_javascript_indented(($level + 1)) . '));') )
+                    if (((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')))) {
+                        push(@str, $last_statement->emit_javascript_indented($level) )
                     }
                     else {
-                        push(@str, ('return (' . $last_statement->emit_javascript_indented(($level + 1)) . ');') )
+                        if ($has_local) {
+                            push(@str, ('return cleanup_local(local_idx, (' . $last_statement->emit_javascript_indented(($level + 1)) . '));') )
+                        }
+                        else {
+                            push(@str, ('return (' . $last_statement->emit_javascript_indented(($level + 1)) . ');') )
+                        }
                     }
                 }
             }
@@ -309,7 +315,8 @@ for ($_) {
     sub Perlito5::AST::Lit::Block::emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        Perlito5::AST::For->new(('cond' => Perlito5::AST::Val::Int->new(('int' => 0))), ('topic' => undef()), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => $self->{'stmts'}))))->emit_javascript_indented($level)
+        ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{'stmts'}), ('needs_return' => 0)));
+        return (('for (var i_ = 0; i_ < 1 ; i_++) {' . chr(10) . $body->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
     }
 };
 package Perlito5::AST::Index;
