@@ -250,7 +250,7 @@ package Perlito5::AST::Lit::Block;
     sub emit_perl6_indented {
         my $self = shift;
         my $level = shift;
-        my $sig = 'v__';
+        my $sig = '$_';
         if ($self->{"sig"}) {
             $sig = $self->{"sig"}->emit_perl6_indented( $level + 1 );
         }
@@ -440,7 +440,7 @@ package Perlito5::AST::Apply;
                         . 'var out = []; '
                         . 'if ( a_ == null ) { return out; }; '
                         . 'for(var i = 0; i < a_.length; i++) { '
-                            . 'var v__ = a_[i]; '
+                            . 'my $_ = a_[i]; '
                             . 'out.push(' . $fun->emit_perl6 . ')'
                         . '}; '
                         . 'return out;'

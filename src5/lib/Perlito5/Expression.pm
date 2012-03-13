@@ -666,9 +666,7 @@ package Perlito5::Expression;
                      Perlito5::AST::Apply->new(
                         code      => $MATCH->{"map_or_sort"}->flat(),
                         arguments => [
-                            Perlito5::AST::Do->new(
-                                block => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{"term_curly"}->flat()->[2] ),
-                            ),
+                            Perlito5::AST::Lit::Block->new( stmts => $MATCH->{"term_curly"}->flat()->[2] ),
                             @{ expand_list($MATCH->{"list_parse"}->flat()->{"exp"}) }
                         ], 
                         namespace => ''

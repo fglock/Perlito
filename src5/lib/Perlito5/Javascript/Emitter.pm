@@ -234,6 +234,7 @@ package Perlito5::Javascript::LexicalBlock;
         my $create_context = $self->{"create_context"} && $self->has_decl("my");
         my $outer_pkg   = $Perlito5::PKG_NAME;
         my $outer_throw = $Perlito5::THROW;
+        my $outer_var   = @{ $Perlito5::VAR };
         unshift @{ $Perlito5::VAR }, {};
 
         $Perlito5::THROW = 0
@@ -257,6 +258,12 @@ package Perlito5::Javascript::LexicalBlock;
         for my $decl ( @block ) {
             if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
                 $Perlito5::PKG_NAME = $decl->{"namespace"};
+                # TODO - cleanup at end of scope
+                unshift @{ $Perlito5::VAR }, {
+                    '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+                    '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+                    '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+                }
             }
 
             if ($decl->isa( 'Perlito5::AST::Decl' )) {
@@ -357,7 +364,9 @@ package Perlito5::Javascript::LexicalBlock;
         $Perlito5::PKG_NAME = $outer_pkg;
         $Perlito5::THROW    = $outer_throw
             if $self->{"top_level"};
-        shift @{ $Perlito5::VAR };
+        while ( $outer_var < @{ $Perlito5::VAR } ) {
+            shift @{ $Perlito5::VAR };
+        }
         return $out;
     }
 
@@ -382,16 +391,13 @@ package Perlito5::AST::CompUnit;
         my $str = '';
         $Perlito5::PKG_NAME = 'main';
         $Perlito5::VAR = [
-            { '@_'    => { decl => 'my' },
-              '$_'    => { decl => 'my' },
-              '@ARGV' => { decl => 'my' },
+            { '@_'    => { decl => 'my' }, # XXX
+              '@ARGV' => { decl => 'my' }, # XXX
               '$@'    => { decl => 'our', namespace => 'main' },
+              '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+              '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+              '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
             }
-            ## TODO
-            ## { '@_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-            ##   '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-            ##   '@ARGV' => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-            ## }
         ];
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_javascript() . "\n";
@@ -895,16 +901,42 @@ package Perlito5::AST::Apply;
         if ($code eq 'map') {
             my $fun  = $self->{"arguments"}->[0];
             my $list = $self->{"arguments"}->[1];
-            return
-                    '(function (a_) { '
-                        . 'var out = []; '
-                        . 'if ( a_ == null ) { return out; }; '
-                        . 'for(var i = 0; i < a_.length; i++) { '
-                            . 'var v__ = a_[i]; '
-                            . 'out.push(' . $fun->emit_javascript_indented( $level ) . ')'
-                        . '}; '
-                        . 'return out;'
-                    . ' })(' . $list->emit_javascript() . ')'
+
+            if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
+                $fun = $fun->{'stmts'}
+            }
+            else {
+                $fun = [$fun];
+            }
+
+            return 'p5map(NAMESPACE["' . $Perlito5::PKG_NAME . '"], '
+
+                    . 'function () {' . "\n"
+                    .   (Perlito5::Javascript::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript_indented( $level + 1 ) . "\n"
+                    . Perlito5::Javascript::tab($level) . '}, '
+
+                    .   $list->emit_javascript()
+                    . ')';
+        }
+        if ($code eq 'grep') {
+            my $fun  = $self->{"arguments"}->[0];
+            my $list = $self->{"arguments"}->[1];
+
+            if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
+                $fun = $fun->{'stmts'}
+            }
+            else {
+                $fun = [$fun];
+            }
+
+            return 'p5grep(NAMESPACE["' . $Perlito5::PKG_NAME . '"], '
+
+                    . 'function () {' . "\n"
+                    .   (Perlito5::Javascript::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript_indented( $level + 1 ) . "\n"
+                    . Perlito5::Javascript::tab($level) . '}, '
+
+                    .   $list->emit_javascript()
+                    . ')';
         }
 
         if ( $code eq 'prefix:<$>' ) {
@@ -1145,20 +1177,29 @@ package Perlito5::AST::For;
         my $level = shift;
 
         my $cond = Perlito5::Javascript::to_list([$self->{"cond"}]);
-        my $body = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
-        my $sig  = 'v__';
         if ($self->{"body"}->sig()) {
-
+            my $body = Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0 );
             # XXX - cleanup: "for" parser throws away the variable declaration, so we need to create it again
             # mark the variable as "declared"
             my $v = $self->{"body"}->sig;
             $Perlito5::VAR->[0]{ $v->perl5_name } = { decl => 'my' };
 
-            $sig = $v->emit_javascript_indented( $level + 1 );
+            my $sig = $v->emit_javascript_indented( $level + 1 );
+            return 'for (var i_ = 0, a_ = (' . $cond . '); i_ < a_.length ; i_++) { ' . "(function ($sig) {\n"
+                    . $body->emit_javascript_indented( $level + 1 ) . "\n"
+                    . Perlito5::Javascript::tab($level) . '})(a_[i_]) }'
         }
-        'for (var i_ = 0, a_ = (' . $cond . '); i_ < a_.length ; i_++) { ' . "(function ($sig) {\n"
-                . $body->emit_javascript_indented( $level + 1 ) . "\n"
-        . Perlito5::Javascript::tab($level) . '})(a_[i_]) }'
+        else {
+            # use $_
+            return 'p5for(NAMESPACE["' . $Perlito5::PKG_NAME . '"], '
+
+                    . 'function () {' . "\n"
+                    .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript_indented( $level + 1 ) . "\n"
+                    . Perlito5::Javascript::tab($level) . '}, '
+
+                    .   $cond
+                    . ')'
+        }
     }
 }
 

@@ -73,6 +73,9 @@ function make_package(pkg_name) {
 
         // TODO - add the other package global variables
         NAMESPACE[pkg_name]["List_ISA"] = [];
+        NAMESPACE[pkg_name]["v_a"] = null;
+        NAMESPACE[pkg_name]["v_b"] = null;
+        NAMESPACE[pkg_name]["v__"] = null;
     }
 }
 
@@ -314,6 +317,39 @@ defined_or = function(a, fb) {
 str_replicate = function(o, n) {
     n = num(n);
     return n ? Array(n + 1).join(o) : "";
+};
+
+p5for = function(namespace, func, args) {
+    var v_old = namespace["v__"];
+    for(var i = 0; i < args.length; i++) {
+        namespace["v__"] = args[i];
+        func()
+    }
+    namespace["v__"] = v_old;
+};
+
+p5map = function(namespace, func, args) {
+    var v_old = namespace["v__"];
+    var out = [];
+    for(var i = 0; i < args.length; i++) {
+        namespace["v__"] = args[i];
+        out.push(func())
+    }
+    namespace["v__"] = v_old;
+    return out;
+};
+
+p5grep = function(namespace, func, args) {
+    var v_old = namespace["v__"];
+    var out = [];
+    for(var i = 0; i < args.length; i++) {
+        namespace["v__"] = args[i];
+        if (bool(func())) {
+            out.push(args[i])
+        }
+    }
+    namespace["v__"] = v_old;
+    return out;
 };
 
 function perl5_to_js( source, namespace, var_env_js ) {

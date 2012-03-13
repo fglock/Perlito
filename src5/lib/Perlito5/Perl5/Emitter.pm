@@ -266,8 +266,6 @@ package Perlito5::AST::Apply;
     my %op_prefix_perl5 = (
         say     => 'Perlito5::Runtime::say',
         print   => 'print',
-        grep    => 'Perlito5::Runtime::grep',
-        sort    => 'Perlito5::Runtime::sort',
         keys    => 'keys',
         values  => 'values',
         warn    => 'warn',
