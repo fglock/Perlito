@@ -1195,7 +1195,7 @@ sub Perlito5::Expression::term_map_or_sort {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $MATCH->{'map_or_sort'}->flat()), ('arguments' => [Perlito5::AST::Do->new(('block' => Perlito5::AST::Lit::Block->new(('stmts' => $MATCH->{'term_curly'}->flat()->[2])))), @{expand_list($MATCH->{'list_parse'}->flat()->{'exp'})}]), ('namespace' => ''))]);
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $MATCH->{'map_or_sort'}->flat()), ('arguments' => [Perlito5::AST::Lit::Block->new(('stmts' => $MATCH->{'term_curly'}->flat()->[2])), @{expand_list($MATCH->{'list_parse'}->flat()->{'exp'})}]), ('namespace' => ''))]);
     1
 })))
 }))

@@ -154,6 +154,7 @@ for ($_) {
         ((my  $create_context) = ($self->{'create_context'} && $self->has_decl('my')));
         ((my  $outer_pkg) = $Perlito5::PKG_NAME);
         ((my  $outer_throw) = $Perlito5::THROW);
+        ((my  $outer_var) = @{$Perlito5::VAR});
         unshift(@{$Perlito5::VAR}, {});
         if ($self->{'top_level'}) {
             ($Perlito5::THROW = 0)
@@ -175,7 +176,8 @@ for ($_) {
         };
         for my $decl (@block) {
             if (((ref($decl) eq 'Perlito5::AST::Apply') && ($decl->code() eq 'package'))) {
-                ($Perlito5::PKG_NAME = $decl->{'namespace'})
+                ($Perlito5::PKG_NAME = $decl->{'namespace'});
+                unshift(@{$Perlito5::VAR}, {('$_' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)}), ('$a' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)}), ('$b' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)})})
             };
             if ($decl->isa('Perlito5::AST::Decl')) {
                 push(@str, $decl->emit_javascript_init() )
@@ -247,7 +249,9 @@ for ($_) {
         if ($self->{'top_level'}) {
             ($Perlito5::THROW = $outer_throw)
         };
-        shift(@{$Perlito5::VAR});
+        for ( ; ($outer_var < @{$Perlito5::VAR});  ) {
+            shift(@{$Perlito5::VAR})
+        };
         return ($out)
     }
 };
@@ -267,7 +271,7 @@ for ($_) {
         ((my  $comp_units) = shift());
         ((my  $str) = '');
         ($Perlito5::PKG_NAME = 'main');
-        ($Perlito5::VAR = [{('@_' => {('decl' => 'my')}), ('$_' => {('decl' => 'my')}), ('@ARGV' => {('decl' => 'my')}), ('$@' => {('decl' => 'our'), ('namespace' => 'main')})}]);
+        ($Perlito5::VAR = [{('@_' => {('decl' => 'my')}), ('@ARGV' => {('decl' => 'my')}), ('$@' => {('decl' => 'our'), ('namespace' => 'main')}), ('$_' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)}), ('$a' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)}), ('$b' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)})}]);
         for my $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_javascript() . chr(10)))
         };
@@ -638,7 +642,24 @@ for ($_) {
         if (($code eq 'map')) {
             ((my  $fun) = $self->{'arguments'}->[0]);
             ((my  $list) = $self->{'arguments'}->[1]);
-            return (('(function (a_) { ' . 'var out = []; ' . 'if ( a_ == null ) { return out; }; ' . 'for(var i = 0; i < a_.length; i++) { ' . 'var v__ = a_[i]; ' . 'out.push(' . $fun->emit_javascript_indented($level) . ')' . '}; ' . 'return out;' . ' })(' . $list->emit_javascript() . ')'))
+            if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
+                ($fun = $fun->{'stmts'})
+            }
+            else {
+                ($fun = [$fun])
+            };
+            return (('p5map(NAMESPACE["' . $Perlito5::PKG_NAME . '"], ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list->emit_javascript() . ')'))
+        };
+        if (($code eq 'grep')) {
+            ((my  $fun) = $self->{'arguments'}->[0]);
+            ((my  $list) = $self->{'arguments'}->[1]);
+            if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
+                ($fun = $fun->{'stmts'})
+            }
+            else {
+                ($fun = [$fun])
+            };
+            return (('p5grep(NAMESPACE["' . $Perlito5::PKG_NAME . '"], ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list->emit_javascript() . ')'))
         };
         if (($code eq 'prefix:<$>')) {
             ((my  $arg) = $self->{'arguments'}->[0]);
@@ -818,14 +839,16 @@ for ($_) {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $cond) = Perlito5::Javascript::to_list([$self->{'cond'}]));
-        ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{'body'}->stmts()), ('needs_return' => 0)));
-        ((my  $sig) = 'v__');
         if ($self->{'body'}->sig()) {
+            ((my  $body) = Perlito5::Javascript::LexicalBlock->new(('block' => $self->{'body'}->stmts()), ('needs_return' => 0)));
             ((my  $v) = $self->{'body'}->sig());
             ($Perlito5::VAR->[0]->{$v->perl5_name()} = {('decl' => 'my')});
-            ($sig = $v->emit_javascript_indented(($level + 1)))
-        };
-        ('for (var i_ = 0, a_ = (' . $cond . '); i_ < a_.length ; i_++) { ' . ('(function (' . $sig . ') {' . chr(10)) . $body->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '})(a_[i_]) }')
+            ((my  $sig) = $v->emit_javascript_indented(($level + 1)));
+            return (('for (var i_ = 0, a_ = (' . $cond . '); i_ < a_.length ; i_++) { ' . ('(function (' . $sig . ') {' . chr(10)) . $body->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '})(a_[i_]) }'))
+        }
+        else {
+            return (('p5for(NAMESPACE["' . $Perlito5::PKG_NAME . '"], ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{'body'}->stmts()), ('needs_return' => 0), ('top_level' => 0)))->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $cond . ')'))
+        }
     }
 };
 package Perlito5::AST::Sub;

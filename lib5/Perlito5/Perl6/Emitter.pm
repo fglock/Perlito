@@ -229,7 +229,7 @@ for ($_) {
     sub Perlito5::AST::Lit::Block::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        ((my  $sig) = 'v__');
+        ((my  $sig) = '$_');
         if ($self->{'sig'}) {
             ($sig = $self->{'sig'}->emit_perl6_indented(($level + 1)))
         };
@@ -370,7 +370,7 @@ for ($_) {
         if (($code eq 'map')) {
             ((my  $fun) = $self->{'arguments'}->[0]);
             ((my  $list) = $self->{'arguments'}->[1]);
-            return (('(function (a_) { ' . 'var out = []; ' . 'if ( a_ == null ) { return out; }; ' . 'for(var i = 0; i < a_.length; i++) { ' . 'var v__ = a_[i]; ' . 'out.push(' . $fun->emit_perl6() . ')' . '}; ' . 'return out;' . ' })(' . $list->emit_perl6() . ')'))
+            return (('(function (a_) { ' . 'var out = []; ' . 'if ( a_ == null ) { return out; }; ' . 'for(var i = 0; i < a_.length; i++) { ' . 'my $_ = a_[i]; ' . 'out.push(' . $fun->emit_perl6() . ')' . '}; ' . 'return out;' . ' })(' . $list->emit_perl6() . ')'))
         };
         if ((($code eq 'bless') || ($code eq 'ref'))) {
             return (('Perlito5::Perl6::Runtime::' . $code . '( ' . join(', ', map($_->emit_perl6(), @{$self->{'arguments'}})) . ')'))
