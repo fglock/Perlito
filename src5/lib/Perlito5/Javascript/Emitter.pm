@@ -1021,7 +1021,7 @@ package Perlito5::AST::Apply;
                 }
             }
         }
-        if ($code eq 'ternary:<?? !!>') {
+        if ($code eq 'ternary:<? :>') {
             return
                    '( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] )
                  . ' ? ' . ($self->{"arguments"}->[1])->emit_javascript()

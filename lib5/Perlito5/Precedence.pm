@@ -263,7 +263,6 @@ add_op('infix', '&&', $prec);
 add_op('infix', '||', $prec);
 add_op('infix', '//', $prec);
 ($prec = ($prec - 1));
-add_op('ternary', '?? !!', $prec);
 add_op('ternary', '? :', $prec);
 ($prec = ($prec - 1));
 add_op('infix', '=', $prec, {('assoc' => 'right')});

@@ -574,7 +574,7 @@ package Perlito5::Expression;
 
     token term_ternary {
         '?'  <ternary5_parse> ':'
-                    { $MATCH->{"capture"} = [ 'op',          '?? !!', $MATCH->{"ternary5_parse"}->flat()  ] }
+                    { $MATCH->{"capture"} = [ 'op',          '? :', $MATCH->{"ternary5_parse"}->flat()  ] }
     };
     
     token term_paren {

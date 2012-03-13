@@ -1999,7 +1999,7 @@ CORE.prototype = function(List__, data) {
 							};
 							})();
 					};
-					if ( (v_code == 'ternary:<?? !!>') ) {
+					if ( (v_code == 'ternary:<? :>') ) {
 						throw(('( ' + string(NAMESPACE["Perlito5::Javascript"].to_bool([((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]])) + ' ? ' + string(_call_((((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[1]), "emit_javascript", [])) + ' : ' + string(_call_((((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[2]), "emit_javascript", [])) + ')'));
 					};
 					if ( (v_code == 'circumfix:<( )>') ) {
@@ -2570,7 +2570,6 @@ CORE.prototype = function(List__, data) {
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '||', v_prec]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '//', v_prec]);
 		(v_prec = (num(v_prec) - 1));
-		NAMESPACE["Perlito5::Precedence"].add_op(['ternary', '?? !!', v_prec]);
 		NAMESPACE["Perlito5::Precedence"].add_op(['ternary', '? :', v_prec]);
 		(v_prec = (num(v_prec) - 1));
 		NAMESPACE["Perlito5::Precedence"].add_op(['infix', '=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right'))))]);
@@ -3780,7 +3779,7 @@ CORE.prototype = function(List__, data) {
 		return (0);
 	}
 })()); }), function () { return (and((':' == NAMESPACE["Perlito5::Expression"].substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1])), function () { return (((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = add(1, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']))); })); }), function () { return ((function () {
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['capture'] = (new ArrayRef(interpolate_array('op', '?? !!', _call_((v_MATCH || (v_MATCH = new HashRef({})))._hash_['ternary5_parse'], "flat", [])))));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['capture'] = (new ArrayRef(interpolate_array('op', '? :', _call_((v_MATCH || (v_MATCH = new HashRef({})))._hash_['ternary5_parse'], "flat", [])))));
 	return (1);
 })()); }));
 						})()));

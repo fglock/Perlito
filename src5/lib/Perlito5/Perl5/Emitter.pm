@@ -404,7 +404,7 @@ package Perlito5::AST::Apply;
 
         if ($code eq 'infix:<..>') { return Perlito5::Perl5::tab($level) . '('  . join(' .. ', map( $_->emit_perl5, @{$self->{"arguments"}} ))  . ")" }
 
-        if ($code eq 'ternary:<?? !!>') {
+        if ($code eq 'ternary:<? :>') {
             return Perlito5::Perl5::tab($level)
                 .  '('  . $self->{"arguments"}->[0]->emit_perl5
                 . ' ? ' . $self->{"arguments"}->[1]->emit_perl5

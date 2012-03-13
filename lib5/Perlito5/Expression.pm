@@ -677,7 +677,7 @@ sub Perlito5::Expression::term_ternary {
         0
     }
 }))) && (((':' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = ['op', '?? !!', $MATCH->{'ternary5_parse'}->flat()]);
+    ($MATCH->{'capture'} = ['op', '? :', $MATCH->{'ternary5_parse'}->flat()]);
     1
 })))
 }))

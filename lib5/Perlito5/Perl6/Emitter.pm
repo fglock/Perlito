@@ -425,7 +425,7 @@ for ($_) {
         if (($code eq 'list:<.>')) {
             return (('(' . join(' ~ ', map(Perlito5::Perl6::to_str($_), @{$self->{'arguments'}})) . ')'))
         };
-        if (($code eq 'ternary:<?? !!>')) {
+        if (($code eq 'ternary:<? :>')) {
             return ((Perlito5::Perl6::tab($level) . '( ' . Perlito5::Perl6::to_bool($self->{'arguments'}->[0]) . ' ?? ' . ($self->{'arguments'}->[1])->emit_perl6() . ' !! ' . ($self->{'arguments'}->[2])->emit_perl6() . ')'))
         };
         if (($code eq 'circumfix:<( )>')) {
