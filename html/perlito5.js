@@ -347,6 +347,21 @@ p5grep = function(namespace, func, args) {
     return out;
 };
 
+p5sort = function(namespace, func, args) {
+    var a_old = namespace["v_a"];
+    var b_old = namespace["v_b"];
+    var out = args.sort(
+        function(a, b) {
+            namespace["v_a"] = a;
+            namespace["v_b"] = b;
+            return func();
+        }
+    );
+    namespace["v_a"] = a_old;
+    namespace["v_b"] = b_old;
+    return out;
+};
+
 function perl5_to_js( source, namespace, var_env_js ) {
     // say( "source: [" + source + "]" );
 
@@ -1994,6 +2009,21 @@ CORE.prototype = function(List__, data) {
 								(v_fun = (new ArrayRef(interpolate_array(v_fun))));
 							};
 							throw(('p5grep(NAMESPACE["' + string(NAMESPACE["Perlito5"].v_PKG_NAME) + '"], ' + 'function () {' + String.fromCharCode(10) + string(_call_((_call_(NAMESPACE["Perlito5::Javascript::LexicalBlock"], "new", ['block', v_fun,'needs_return', 1,'top_level', 0])), "emit_javascript_indented", [add(v_level, 1)])) + String.fromCharCode(10) + string(NAMESPACE["Perlito5::Javascript"].tab([v_level])) + '}, ' + string(_call_(v_list, "emit_javascript", [])) + ')'));
+							})();
+					};
+					if ( (v_code == 'sort') ) {
+						(function () {
+							var v_fun = null;
+							(v_fun = ((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]);
+							var v_list = null;
+							(v_list = ((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[1]);
+							if ( (NAMESPACE["Perlito5::AST::Apply"].ref([v_fun]) == 'Perlito5::AST::Lit::Block') ) {
+								(v_fun = (v_fun || (v_fun = new HashRef({})))._hash_['stmts']);
+							}
+							else {
+								(v_fun = (new ArrayRef(interpolate_array(v_fun))));
+							};
+							throw(('p5sort(NAMESPACE["' + string(NAMESPACE["Perlito5"].v_PKG_NAME) + '"], ' + 'function () {' + String.fromCharCode(10) + string(_call_((_call_(NAMESPACE["Perlito5::Javascript::LexicalBlock"], "new", ['block', v_fun,'needs_return', 1,'top_level', 0])), "emit_javascript_indented", [add(v_level, 1)])) + String.fromCharCode(10) + string(NAMESPACE["Perlito5::Javascript"].tab([v_level])) + '}, ' + string(_call_(v_list, "emit_javascript", [])) + ')'));
 							})();
 					};
 					if ( (v_code == 'prefix:<$>') ) {
