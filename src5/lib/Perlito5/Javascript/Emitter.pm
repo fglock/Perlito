@@ -1249,6 +1249,7 @@ package Perlito5::AST::Use;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
+        $self->compiletime_eval;
         '// ' . $self->{"code"} . ' ' . $self->{"mod"} . "\n"
     }
 }
