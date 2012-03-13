@@ -1102,17 +1102,17 @@ sub Perlito5::Expression::term_eval {
     ($MATCH = $tmp);
     ($MATCH->{'bool'} ? 1 : 0)
 }))) && ((do {
-    ((my  $m2) = $grammar->statement_parse($str, $MATCH->{'to'}));
+    ((my  $m2) = $grammar->term_curly($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'statement_parse'} = $m2);
+        ($MATCH->{'term_curly'} = $m2);
         1
     }
     else {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => 'eval'), ('arguments' => [Perlito5::AST::Do->new(('block' => $MATCH->{'statement_parse'}->flat()))]), ('namespace' => ''))]);
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => 'eval'), ('arguments' => [Perlito5::AST::Do->new(('block' => Perlito5::AST::Lit::Block->new(('stmts' => $MATCH->{'term_curly'}->flat()->[2]))))]), ('namespace' => ''))]);
     1
 })))
 }))
@@ -1175,10 +1175,10 @@ sub Perlito5::Expression::term_map_or_sort {
     ($MATCH = $tmp);
     ($MATCH->{'bool'} ? 1 : 0)
 }))) && ((do {
-    ((my  $m2) = $grammar->statement_parse($str, $MATCH->{'to'}));
+    ((my  $m2) = $grammar->term_curly($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'statement_parse'} = $m2);
+        ($MATCH->{'term_curly'} = $m2);
         1
     }
     else {
@@ -1195,7 +1195,7 @@ sub Perlito5::Expression::term_map_or_sort {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $MATCH->{'map_or_sort'}->flat()), ('arguments' => [Perlito5::AST::Do->new(('block' => $MATCH->{'statement_parse'}->flat())), @{expand_list($MATCH->{'list_parse'}->flat()->{'exp'})}]), ('namespace' => ''))]);
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => $MATCH->{'map_or_sort'}->flat()), ('arguments' => [Perlito5::AST::Do->new(('block' => Perlito5::AST::Lit::Block->new(('stmts' => $MATCH->{'term_curly'}->flat()->[2])))), @{expand_list($MATCH->{'list_parse'}->flat()->{'exp'})}]), ('namespace' => ''))]);
     1
 })))
 }))

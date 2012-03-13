@@ -639,14 +639,14 @@ package Perlito5::Expression;
 
     token term_eval {
         # Note: this is eval-block; eval-string is parsed as a normal subroutine
-        'eval' <.Perlito5::Grammar.opt_ws> <before '{'> <statement_parse>
+        'eval' <.Perlito5::Grammar.opt_ws> <before '{'> <term_curly>
             {
                 $MATCH->{"capture"} = [ 'term',
                      Perlito5::AST::Apply->new(
                         code      => 'eval',
                         arguments => [
                             Perlito5::AST::Do->new(
-                                block => $MATCH->{"statement_parse"}->flat()
+                                block => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{"term_curly"}->flat()->[2] ),
                             )
                         ], 
                         namespace => ''
@@ -659,7 +659,7 @@ package Perlito5::Expression;
 
     token term_map_or_sort {
         # Note: this is map-block; map-expr is parsed as a normal subroutine
-        <map_or_sort> <.Perlito5::Grammar.opt_ws> <before '{'> <statement_parse> 
+        <map_or_sort> <.Perlito5::Grammar.opt_ws> <before '{'> <term_curly> 
             <list_parse>
             {
                 $MATCH->{"capture"} = [ 'term',
@@ -667,7 +667,7 @@ package Perlito5::Expression;
                         code      => $MATCH->{"map_or_sort"}->flat(),
                         arguments => [
                             Perlito5::AST::Do->new(
-                                block => $MATCH->{"statement_parse"}->flat()
+                                block => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{"term_curly"}->flat()->[2] ),
                             ),
                             @{ expand_list($MATCH->{"list_parse"}->flat()->{"exp"}) }
                         ], 
