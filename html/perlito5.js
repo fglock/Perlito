@@ -2399,12 +2399,12 @@ CORE.prototype = function(List__, data) {
 				for (var i_ = 0, a_ = (interpolate_array((v_End_token_chars || (v_End_token_chars = new ArrayRef([])))._array_)); i_ < a_.length ; i_++) { (function (v_len) {
 					var v_term = null;
 					(v_term = NAMESPACE["Perlito5::Precedence"].substr([v_str, v_pos, v_len]));
-					if ( ((num(NAMESPACE["Perlito5::Precedence"].length([v_term])) == num(v_len)) && bool((v_End_token)._hash_.hasOwnProperty(v_term))) ) {
+					if ( bool((v_End_token)._hash_.hasOwnProperty(v_term)) ) {
 						(function () {
 							var v_c1 = null;
-							(v_c1 = NAMESPACE["Perlito5::Precedence"].substr([v_str, (num(add(v_pos, v_len)) - 1), 1]));
+							(v_c1 = NAMESPACE["Perlito5::Precedence"].substr([v_str, (num(add(v_pos, NAMESPACE["Perlito5::Precedence"].length([v_term]))) - 1), 1]));
 							var v_c2 = null;
-							(v_c2 = NAMESPACE["Perlito5::Precedence"].substr([v_str, add(v_pos, v_len), 1]));
+							(v_c2 = NAMESPACE["Perlito5::Precedence"].substr([v_str, add(v_pos, NAMESPACE["Perlito5::Precedence"].length([v_term])), 1]));
 							if ( !( (bool(NAMESPACE["Perlito5::Precedence"].is_ident_middle([v_c1])) && (bool(NAMESPACE["Perlito5::Precedence"].is_ident_middle([v_c2])) || (v_c2 == '(')))) ) {
 								throw(_call_(NAMESPACE["Perlito5::Match"], "new", ['str', v_str,'from', v_pos,'to', v_pos,'bool', 1,'capture', (new ArrayRef(interpolate_array('end', v_term)))]));
 							};
@@ -2445,9 +2445,9 @@ CORE.prototype = function(List__, data) {
 					if ( bool((Hash_Op).hasOwnProperty(v_op)) ) {
 						(function () {
 							var v_c1 = null;
-							(v_c1 = NAMESPACE["Perlito5::Precedence"].substr([v_str, (num(add(v_pos, v_len)) - 1), 1]));
+							(v_c1 = NAMESPACE["Perlito5::Precedence"].substr([v_str, (num(add(v_pos, NAMESPACE["Perlito5::Precedence"].length([v_op]))) - 1), 1]));
 							var v_c2 = null;
-							(v_c2 = NAMESPACE["Perlito5::Precedence"].substr([v_str, add(v_pos, v_len), 1]));
+							(v_c2 = NAMESPACE["Perlito5::Precedence"].substr([v_str, add(v_pos, NAMESPACE["Perlito5::Precedence"].length([v_op])), 1]));
 							if ( !( (bool(NAMESPACE["Perlito5::Precedence"].is_ident_middle([v_c1])) && (bool(NAMESPACE["Perlito5::Precedence"].is_ident_middle([v_c2])) || (v_c2 == '(')))) ) {
 								throw(_call_(NAMESPACE["Perlito5::Match"], "new", ['str', v_str,'from', v_pos,'to', add(v_pos, v_len),'bool', 1,'capture', (new ArrayRef(interpolate_array('op', v_op)))]));
 							};

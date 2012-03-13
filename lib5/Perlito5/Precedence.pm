@@ -131,9 +131,9 @@ sub Perlito5::Precedence::op_parse {
     ((my  $last_is_term) = shift());
     for my $len (@{$End_token_chars}) {
         ((my  $term) = substr($str, $pos, $len));
-        if (((length($term) == $len) && exists($End_token->{$term}))) {
-            ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
-            ((my  $c2) = substr($str, ($pos + $len), 1));
+        if (exists($End_token->{$term})) {
+            ((my  $c1) = substr($str, (($pos + length($term)) - 1), 1));
+            ((my  $c2) = substr($str, ($pos + length($term)), 1));
             if (!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))))) {
                 return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => ['end', $term])))
             }
@@ -162,8 +162,8 @@ sub Perlito5::Precedence::op_parse {
     for my $len (@Op_chars) {
         ((my  $op) = substr($str, $pos, $len));
         if (exists($Op{$op})) {
-            ((my  $c1) = substr($str, (($pos + $len) - 1), 1));
-            ((my  $c2) = substr($str, ($pos + $len), 1));
+            ((my  $c1) = substr($str, (($pos + length($op)) - 1), 1));
+            ((my  $c2) = substr($str, ($pos + length($op)), 1));
             if (!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))))) {
                 return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => 1), ('capture' => ['op', $op])))
             }
