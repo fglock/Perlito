@@ -267,7 +267,7 @@ sub Perlito5::Expression::term_arrow {
     }
 }))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
-    (((((do {
+    ((((((do {
     (((((('(' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $m2) = $grammar->paren_parse($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
@@ -313,6 +313,52 @@ sub Perlito5::Expression::term_arrow {
 }))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
     ($MATCH->{'capture'} = ['postfix_or_term', '.{ }', $MATCH->{'curly_parse'}->flat()]);
     1
+}))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((((('$' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Grammar.ident'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (((((('(' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = $grammar->paren_parse($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'paren_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && (((')' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
+    ($MATCH->{'capture'} = ['postfix_or_term', 'methcall', Perlito5::AST::Var->new(('sigil' => '$'), ('namespace' => ''), ('name' => $MATCH->{'Perlito5::Grammar.ident'}->flat())), {('exp' => $MATCH->{'paren_parse'}->flat()), ('terminated' => 0)}]);
+    1
+})))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
+    ($MATCH->{'capture'} = ['postfix_or_term', 'methcall_no_params', Perlito5::AST::Var->new(('sigil' => '$'), ('namespace' => ''), ('name' => $MATCH->{'Perlito5::Grammar.ident'}->flat()))]);
+    1
+})))
+})))
 }))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);

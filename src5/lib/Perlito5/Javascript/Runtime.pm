@@ -96,6 +96,7 @@ function _method_lookup_(method, class_name, seen) {
 }
 
 function _call_(invocant, method, list) {
+    // TODO - method can have an optional namespace
     list.unshift(invocant);
     if ( invocant._class_.hasOwnProperty(method) ) {
         return invocant._class_[method](list) 

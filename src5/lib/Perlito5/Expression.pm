@@ -362,11 +362,38 @@ package Perlito5::Expression;
             | '[' <square_parse>  ']'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.[ ]',  $MATCH->{"square_parse"}->flat()  ] }
             | '{' <curly_parse>   '}'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.{ }',  $MATCH->{"curly_parse"}->flat()   ] }
 
+            | '$' <Perlito5::Grammar.ident> <.Perlito5::Grammar.opt_ws>
+                [ '(' <paren_parse> ')'
+                  { $MATCH->{"capture"} = [ 'postfix_or_term',
+                           'methcall',
+                           Perlito5::AST::Var->new(
+                                   sigil       => '$',
+                                   namespace   => '',    # TODO - namespace
+                                   name        => $MATCH->{"Perlito5::Grammar.ident"}->flat(),
+                               ),
+                           { 
+                             exp       => $MATCH->{"paren_parse"}->flat(),
+                             terminated => 0,
+                           },
+                         ]
+                  }
+                | { $MATCH->{"capture"} = [ 'postfix_or_term',
+                           'methcall_no_params',
+                           Perlito5::AST::Var->new(
+                                   sigil       => '$',
+                                   namespace   => '',    # TODO - namespace
+                                   name        => $MATCH->{"Perlito5::Grammar.ident"}->flat(),
+                               ),
+                          ]
+                  }
+                ]
+
+
             | <Perlito5::Grammar.ident> <.Perlito5::Grammar.opt_ws>
                 [ '(' <paren_parse> ')'
                   { $MATCH->{"capture"} = [ 'postfix_or_term',
                            'methcall',
-                           $MATCH->{"Perlito5::Grammar.ident"}->flat(),
+                           $MATCH->{"Perlito5::Grammar.ident"}->flat(),   # TODO - namespace
                            { 
                              exp       => $MATCH->{"paren_parse"}->flat(),
                              terminated => 0,
@@ -375,7 +402,7 @@ package Perlito5::Expression;
                   }
                 | { $MATCH->{"capture"} = [ 'postfix_or_term',
                             'methcall_no_params',
-                            $MATCH->{"Perlito5::Grammar.ident"}->flat()
+                            $MATCH->{"Perlito5::Grammar.ident"}->flat()   # TODO - namespace
                           ]
                   }
                 ]

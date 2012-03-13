@@ -679,10 +679,16 @@ package Perlito5::AST::Call;
                 for @{$self->{"arguments"}};
             return '(' . $invocant . ')([' . join(',', @args) . '])';
         }
+        if ( ref($meth) eq 'Perlito5::AST::Var' ) {
+            $meth = $meth->emit_javascript();
+        }
+        else {
+            $meth = '"' . $meth . '"';
+        }
         my @args;
         push @args, $_->emit_javascript
             for @{$self->{"arguments"}};
-        return '_call_(' . $invocant . ', "' . $meth . '", [' . join(',', @args) . '])'
+        return '_call_(' . $invocant . ', ' . $meth . ', [' . join(',', @args) . '])'
     }
 }
 

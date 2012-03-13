@@ -196,6 +196,9 @@ for ($_) {
         if (($meth eq 'postcircumfix:<( )>')) {
             ($meth = '')
         };
+        if ((ref($meth) eq 'Perlito5::AST::Var')) {
+            ($meth = $meth->emit_perl5())
+        };
         (Perlito5::Perl5::tab($level) . $invocant . '->' . $meth . '(' . join(', ', map($_->emit_perl5(), @{$self->{'arguments'}})) . ')')
     }
 };

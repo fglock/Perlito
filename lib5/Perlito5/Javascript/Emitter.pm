@@ -507,11 +507,17 @@ for ($_) {
             };
             return (('(' . $invocant . ')([' . join(',', @args) . '])'))
         };
+        if ((ref($meth) eq 'Perlito5::AST::Var')) {
+            ($meth = $meth->emit_javascript())
+        }
+        else {
+            ($meth = ('"' . $meth . '"'))
+        };
         (my  @args);
         for (@{$self->{'arguments'}}) {
             push(@args, $_->emit_javascript() )
         };
-        return (('_call_(' . $invocant . ', "' . $meth . '", [' . join(',', @args) . '])'))
+        return (('_call_(' . $invocant . ', ' . $meth . ', [' . join(',', @args) . '])'))
     }
 };
 package Perlito5::AST::Apply;
