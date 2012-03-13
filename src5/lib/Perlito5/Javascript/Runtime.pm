@@ -352,6 +352,21 @@ p5grep = function(namespace, func, args) {
     return out;
 };
 
+p5sort = function(namespace, func, args) {
+    var a_old = namespace["v_a"];
+    var b_old = namespace["v_b"];
+    var out = args.sort(
+        function(a, b) {
+            namespace["v_a"] = a;
+            namespace["v_b"] = b;
+            return func();
+        }
+    );
+    namespace["v_a"] = a_old;
+    namespace["v_b"] = b_old;
+    return out;
+};
+
 function perl5_to_js( source, namespace, var_env_js ) {
     // say( "source: [" + source + "]" );
 
