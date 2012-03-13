@@ -512,7 +512,7 @@ package Perlito5::AST::Var;
         else {
             die "Global symbol \"$perl5_name\" requires explicit package name"
                 unless $self->{"namespace"}
-                    || $self->{"sigil"} eq '*';
+                    || $self->{"sigil"} eq '*' || !$Perlito5::STRICT;
         }
 
         if ( $self->{"sigil"} eq '*' ) {

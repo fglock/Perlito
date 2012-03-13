@@ -227,5 +227,12 @@ sub Perlito5::AST::Use::new {
 sub Perlito5::AST::Use::mod {
     $_[0]->{'mod'}
 };
+sub Perlito5::AST::Use::compiletime_eval {
+    ((my  $self) = shift());
+    if (($self->mod() eq 'strict')) {
+        ($Perlito5::STRICT = 1)
+    };
+    return ($self)
+};
 
 1;

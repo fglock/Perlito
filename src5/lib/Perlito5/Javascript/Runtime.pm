@@ -319,6 +319,7 @@ str_replicate = function(o, n) {
 function perl5_to_js( source, namespace, var_env_js ) {
     // say( "source: [" + source + "]" );
 
+    var strict_old = NAMESPACE["Perlito5"].v_STRICT;
     var var_env_js_old = NAMESPACE["Perlito5"].v_VAR;
     NAMESPACE["Perlito5"].v_VAR = var_env_js;
 
@@ -349,6 +350,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
 
     NAMESPACE["Perlito5"].v_PKG_NAME = namespace_old;
     NAMESPACE["Perlito5"].v_VAR      = var_env_js_old;
+    NAMESPACE["Perlito5"].v_STRICT = strict_old;
     return js_code;
 }
 ';

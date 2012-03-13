@@ -365,7 +365,7 @@ for ($_) {
             ($decl_type = $decl->{'decl'})
         }
         else {
-            if (($self->{'namespace'} || ($self->{'sigil'} eq '*'))) {
+            if ((($self->{'namespace'} || ($self->{'sigil'} eq '*')) || !($Perlito5::STRICT))) {
 
             }
             else {

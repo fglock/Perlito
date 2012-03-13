@@ -617,7 +617,7 @@ package Perlito5::Expression;
                     Perlito5::AST::Use->new( 
                         code => $MATCH->{"use_decl"}->flat(),
                         mod  => $MATCH->{"Perlito5::Grammar.full_ident"}->flat() 
-                    ) 
+                    )->compiletime_eval 
                   ] 
             }
     };

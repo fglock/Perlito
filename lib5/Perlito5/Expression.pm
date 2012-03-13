@@ -1028,7 +1028,7 @@ sub Perlito5::Expression::term_use {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Use->new(('code' => $MATCH->{'use_decl'}->flat()), ('mod' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat()))]);
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Use->new(('code' => $MATCH->{'use_decl'}->flat()), ('mod' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat()))->compiletime_eval()]);
     1
 })))
 }))

@@ -141,6 +141,13 @@ sub block { $_[0]->{'block'} }
 package Perlito5::AST::Use;
 sub new { my $class = shift; bless {@_}, $class }
 sub mod { $_[0]->{'mod'} }
+sub compiletime_eval {
+    my $self = shift;
+    if ($self->mod eq 'strict') {
+       $Perlito5::STRICT = 1; 
+    }
+    return $self;
+}
 
 
 =begin
