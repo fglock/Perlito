@@ -149,6 +149,7 @@ if (($backend && @ARGV)) {
     ($Perlito5::PKG_NAME = 'main');
     ($Perlito5::PROTO = {});
     if ($execute) {
+        package main;
         eval($source);
         ((my  $error) = $@);
         if ($error) {
