@@ -355,13 +355,16 @@ p5grep = function(namespace, func, args) {
 p5sort = function(namespace, func, args) {
     var a_old = namespace["v_a"];
     var b_old = namespace["v_b"];
-    var out = args.sort(
-        function(a, b) {
-            namespace["v_a"] = a;
-            namespace["v_b"] = b;
-            return func();
-        }
-    );
+    var out = 
+        func == null
+        ? args.sort()
+        : args.sort(
+            function(a, b) {
+                namespace["v_a"] = a;
+                namespace["v_b"] = b;
+                return func();
+            }
+        );
     namespace["v_a"] = a_old;
     namespace["v_b"] = b_old;
     return out;

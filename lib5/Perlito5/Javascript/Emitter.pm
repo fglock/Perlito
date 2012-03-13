@@ -662,15 +662,22 @@ for ($_) {
             return (('p5grep(NAMESPACE["' . $Perlito5::PKG_NAME . '"], ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list->emit_javascript() . ')'))
         };
         if (($code eq 'sort')) {
-            ((my  $fun) = $self->{'arguments'}->[0]);
-            ((my  $list) = $self->{'arguments'}->[1]);
-            if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
-                ($fun = $fun->{'stmts'})
+            (my  $fun);
+            (my  $list);
+            if ((@{$self->{'arguments'}} > 1)) {
+                ($fun = $self->{'arguments'}->[0]);
+                ($list = $self->{'arguments'}->[1])
             }
             else {
-                ($fun = [$fun])
+                ($list = $self->{'arguments'}->[0])
             };
-            return (('p5sort(NAMESPACE["' . $Perlito5::PKG_NAME . '"], ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list->emit_javascript() . ')'))
+            if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
+                ($fun = ('function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun->{'stmts'}), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript_indented(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
+            }
+            else {
+                ($fun = 'null')
+            };
+            return (('p5sort(NAMESPACE["' . $Perlito5::PKG_NAME . '"], ' . $fun . ', ' . $list->emit_javascript() . ')'))
         };
         if (($code eq 'prefix:<$>')) {
             ((my  $arg) = $self->{'arguments'}->[0]);
