@@ -46,6 +46,8 @@ TODO list for Perlito5
 -- $v{x} doesn't autoquote the index
 -- $v{x} doesn't interpolate inside double quotes
 
+-- this should give a syntax error: $x->meth 123
+
 
 * Perl5 backend
 
