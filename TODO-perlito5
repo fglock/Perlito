@@ -2,14 +2,10 @@ TODO list for Perlito5
 
 * Perlito5
 
-- fix regex delimiters, or escape the regexes 
+- fix warning message after eval
 
 
 * basic functionality
-
--- add "map" block
-
--- add "grep", "sort"
 
 -- add "require"
 
@@ -35,6 +31,7 @@ TODO list for Perlito5
 --- done: "empty" _ $ ;$
 --- check that undeclared barewords give the right error
 --- *foo = sub () { ... }   # does prototype work here?
+--- check signature in sort()
 
 -- check that \(@a) and \@a have different meanings
 
@@ -52,6 +49,8 @@ TODO list for Perlito5
 * Perl5 backend
 
 -- ${^NAME} needs curly-escaping
+
+- fix regex delimiters, or escape the regexes 
 
 
 * Javascript backend
@@ -71,6 +70,7 @@ TODO list for Perlito5
 -- emit array/hash slices: @a[@x], @a{@x}
 
 -- add alternate mro's
+-- cache the mro
 
 -- add regex compiler
 -- /e modifier
