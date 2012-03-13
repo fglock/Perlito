@@ -123,10 +123,10 @@ CORE.scalar = function(List__) {
         return o.length;
     }
     switch (typeof o) {
-        case "string": return 1;
-        case "function": return 1;
-        case "number": return 1;
-        case "boolean": return 1;
+        case "string":   return o;
+        case "function": return o;
+        case "number":   return o;
+        case "boolean":  return o;
     }
     var l = 0;
     for (var i in o) {

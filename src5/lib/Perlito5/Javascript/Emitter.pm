@@ -234,7 +234,6 @@ package Perlito5::Javascript::LexicalBlock;
         my $create_context = $self->{"create_context"} && $self->has_decl("my");
         my $outer_pkg   = $Perlito5::PKG_NAME;
         my $outer_throw = $Perlito5::THROW;
-        my $outer_var   = @{ $Perlito5::VAR };
         unshift @{ $Perlito5::VAR }, {};
 
         $Perlito5::THROW = 0
@@ -258,12 +257,16 @@ package Perlito5::Javascript::LexicalBlock;
         for my $decl ( @block ) {
             if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
                 $Perlito5::PKG_NAME = $decl->{"namespace"};
-                # TODO - cleanup at end of scope
-                unshift @{ $Perlito5::VAR }, {
-                    '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-                    '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-                    '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-                }
+
+                ## $Perlito5::VAR->[0] = {
+                ##     '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+                ##     '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+                ##     '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
+                ## }
+
+                $Perlito5::VAR->[0]{'$_'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
+                $Perlito5::VAR->[0]{'$a'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
+                $Perlito5::VAR->[0]{'$b'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
             }
 
             if ($decl->isa( 'Perlito5::AST::Decl' )) {
@@ -364,9 +367,7 @@ package Perlito5::Javascript::LexicalBlock;
         $Perlito5::PKG_NAME = $outer_pkg;
         $Perlito5::THROW    = $outer_throw
             if $self->{"top_level"};
-        while ( $outer_var < @{ $Perlito5::VAR } ) {
-            shift @{ $Perlito5::VAR };
-        }
+        shift @{ $Perlito5::VAR };
         return $out;
     }
 
@@ -1138,13 +1139,26 @@ package Perlito5::AST::Apply;
         my $arguments = shift;
         my $level = shift;
 
-        if  (   $parameters->isa( 'Perlito5::AST::Var' ) && $parameters->sigil eq '@'
+        if  (  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '$'
+               ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '$'
+               )
+            && (   $arguments->isa( 'Perlito5::AST::Var' )   && $arguments->sigil eq '@'
+               ||  $arguments->isa( 'Perlito5::AST::Apply' ) && $arguments->code eq 'prefix:<@>'
+               ||  $arguments->isa( 'Perlito5::AST::Var' )   && $arguments->sigil eq '%'
+               ||  $arguments->isa( 'Perlito5::AST::Apply' ) && $arguments->code eq 'prefix:<%>'
+               )
+            )
+        {
+            return '(' . $parameters->emit_javascript() . ' = NAMESPACE.CORE.scalar([' . Perlito5::Javascript::to_list([$arguments]) . ']))'
+        }
+
+        if  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '@'
             ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '@'
             )
         {
             return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments]) . ')'
         }
-        elsif ( $parameters->isa( 'Perlito5::AST::Var' ) && $parameters->sigil eq '%'
+        elsif ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '%'
             ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
             )
         {
