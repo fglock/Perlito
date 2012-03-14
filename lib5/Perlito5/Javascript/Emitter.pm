@@ -372,6 +372,9 @@ for ($_) {
                 die(('Global symbol "' . $perl5_name . '" requires explicit package name'))
             }
         };
+        if (($self->{'sigil'} eq '&')) {
+            return (('NAMESPACE["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $self->{'name'} . '"]'))
+        };
         if (($self->{'sigil'} eq '*')) {
             return (('NAMESPACE["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $self->{'name'} . '"]'))
         };

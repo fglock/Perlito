@@ -523,6 +523,9 @@ package Perlito5::AST::Var;
                     && $Perlito5::STRICT;
         }
 
+        if ( $self->{"sigil"} eq '&' ) {
+            return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
+        }
         if ( $self->{"sigil"} eq '*' ) {
             return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
         }
