@@ -92,7 +92,7 @@ package Perlito5::Javascript;
                 return $cond->emit_javascript;
             }
             else {
-                return 'string(' . $cond->emit_javascript . ')';
+                return 'p5str(' . $cond->emit_javascript . ')';
             }
     }
     sub to_num {

@@ -30,7 +30,7 @@ if (isNode) {
     CORE.print = function(List__) {
         var i;
         for (i = 0; i < List__.length; i++) {
-            var s = string(List__[i]);
+            var s = p5str(List__[i]);
             process.stdout.write(s);
         }
         return 1;
@@ -40,7 +40,7 @@ if (isNode) {
     CORE.print = function(List__) {
         var i;
         for (i = 0; i < List__.length; i++) {
-            var s = string(List__[i]);
+            var s = p5str(List__[i]);
             if (s.substr(s.length - 2, 2) == "\n") {
                 print(_print_buf + s.substr(0, s.length - 2));
                 _print_buf = "";
@@ -66,7 +66,7 @@ CORE.die = function(List__) {
     var i;
     var s = "";
     for (i = 0; i < List__.length; i++) {
-        s = s + string(List__[i]);
+        s = s + p5str(List__[i]);
     }
     NAMESPACE["main"]["v_@"] = "Died: " + s;
     throw(new p5_error("Died: " + s));
@@ -76,7 +76,7 @@ CORE.warn = function(List__) {
     var i;
     var s = "";
     for (i = 0; i < List__.length; i++) {
-        s = s + string(List__[i]);
+        s = s + p5str(List__[i]);
     }
     CORE.print(["Warning: " + s + "\n"]);
 };
@@ -101,7 +101,7 @@ CORE.chr = function(List__) {
 };
 
 CORE.ord = function(List__) {
-    return string(List__[0]).charCodeAt(0);
+    return p5str(List__[0]).charCodeAt(0);
 };
 
 CORE.substr = function(List__) {
@@ -109,7 +109,7 @@ CORE.substr = function(List__) {
     var offset      = List__[1];
     var length      = List__[2];
     var replacement = List__[3];
-    return string(expr).substr(offset, length);
+    return p5str(expr).substr(offset, length);
 };
 
 CORE.scalar = function(List__) {

@@ -51,7 +51,7 @@ join("", chr(9) x $level)
             return ($cond->emit_javascript())
         }
         else {
-            return (('string(' . $cond->emit_javascript() . ')'))
+            return (('p5str(' . $cond->emit_javascript() . ')'))
         }
     };
     sub Perlito5::Javascript::to_num {

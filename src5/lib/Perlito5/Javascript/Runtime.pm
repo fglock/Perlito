@@ -224,19 +224,19 @@ interpolate_array = function() {
 array_to_hash = function(a) {
     var res = {};
     for (i = 0; i < a.length; i+=2) {
-        res[string(a[i])] = a[i+1];
+        res[p5str(a[i])] = a[i+1];
     }
     return res;
 };
 
-string = function(o) {
+p5str = function(o) {
     if (o == null) {
         return "";
     }
     if (typeof o === "object" && (o instanceof Array)) {
         var out = [];
         for (var i = 0; i < o.length; i++) {
-            out.push(string(o[i]));
+            out.push(p5str(o[i]));
         }
         return out.join(" ");
     }
@@ -260,7 +260,7 @@ num = function(o) {
         return o.num();
     }
     if (typeof o !== "number") {
-        return parseFloat(string(o));
+        return parseFloat(p5str(o));
     }
     return o;
 };
