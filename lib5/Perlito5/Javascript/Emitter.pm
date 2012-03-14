@@ -12,7 +12,7 @@ use Perlito5::AST;
 use Perlito5::Dumper;
 package Perlito5::Javascript;
 for ($_) {
-    ((my  $label_count) = 10);
+    ((my  $label_count) = 100);
     (my  %label);
     sub Perlito5::Javascript::pkg {
         ($label{($_[0] || $Perlito5::PKG_NAME)} = ($label{($_[0] || $Perlito5::PKG_NAME)} || ('p5' . ($label_count)++)))
@@ -906,7 +906,7 @@ for ($_) {
             if (($Perlito5::PKG_NAME ne $self->{'namespace'})) {
                 die(('bad sub namespace ' . $Perlito5::PKG_NAME . ' ne '), $self->{'namespace'})
             };
-            return ((Perlito5::Javascript::pkg($self->{'namespace'}) . '["' . $self->{'name'} . '"] = ' . $s))
+            return (('make_sub("' . $self->{'namespace'} . '", "' . $self->{'name'} . '", ' . $s . ')'))
         }
         else {
             return ($s)

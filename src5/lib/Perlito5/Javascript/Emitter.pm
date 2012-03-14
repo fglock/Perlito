@@ -5,7 +5,7 @@ use Perlito5::Dumper;
 
 package Perlito5::Javascript;
 {
-    my $label_count = 10;
+    my $label_count = 100;
     my %label;
     sub pkg {
         $label{ $_[0] || $Perlito5::PKG_NAME } ||= "p5" . $label_count++
@@ -1300,7 +1300,7 @@ package Perlito5::AST::Sub;
                 die "bad sub namespace $Perlito5::PKG_NAME ne ", $self->{"namespace"};
             }
 
-            return Perlito5::Javascript::pkg($self->{"namespace"}) . '["' . $self->{"name"} . '"] = ' . $s
+            return 'make_sub("' . $self->{"namespace"} . '", "' . $self->{"name"} . '", ' . $s . ')'
         }
         else {
             return $s;
