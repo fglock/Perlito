@@ -15,7 +15,14 @@ for ($_) {
     ((my  $label_count) = 100);
     (my  %label);
     sub Perlito5::Javascript::pkg {
-        ($label{$Perlito5::PKG_NAME} = ($label{$Perlito5::PKG_NAME} || ('p5' . ($label_count)++)))
+        ($label{($_[0] || $Perlito5::PKG_NAME)} = ($label{($_[0] || $Perlito5::PKG_NAME)} || ('p5' . ($label_count)++)))
+    };
+    sub Perlito5::Javascript::dump_labels {
+        ((my  $str) = '');
+        for (keys(%label)) {
+            ($str = ($str . ('var ' . $label{$_} . ' = make_package(' . chr(39) . $_ . chr(39) . ');' . chr(10))))
+        };
+        return ($str)
     };
     sub Perlito5::Javascript::tab {
         ((my  $level) = shift());
@@ -274,12 +281,12 @@ for ($_) {
     sub Perlito5::AST::CompUnit::emit_javascript_program {
         ((my  $comp_units) = shift());
         ($Perlito5::PKG_NAME = 'main');
-        ((my  $str) = ('' . 'var ' . Perlito5::Javascript::pkg() . ' = NAMESPACE[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10)));
+        ((my  $str) = '');
         ($Perlito5::VAR = [{('@_' => {('decl' => 'my')}), ('@ARGV' => {('decl' => 'my')}), ('$@' => {('decl' => 'our'), ('namespace' => 'main')}), ('$_' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)}), ('$a' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)}), ('$b' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)})}]);
         for my $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_javascript() . chr(10)))
         };
-        return ($str)
+        return ((Perlito5::Javascript::dump_labels() . $str))
     }
 };
 package Perlito5::AST::Val::Int;
@@ -378,17 +385,17 @@ for ($_) {
             }
         };
         if (($self->{'sigil'} eq '&')) {
-            return (('NAMESPACE["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $self->{'name'} . '"]'))
+            return ((Perlito5::Javascript::pkg(($self->{'namespace'} || $Perlito5::PKG_NAME)) . '["' . $self->{'name'} . '"]'))
         };
         if (($self->{'sigil'} eq '*')) {
-            return (('NAMESPACE["' . (($self->{'namespace'} || $Perlito5::PKG_NAME)) . '"]["' . $self->{'name'} . '"]'))
+            return ((Perlito5::Javascript::pkg(($self->{'namespace'} || $Perlito5::PKG_NAME)) . '["' . $self->{'name'} . '"]'))
         };
         if (($decl_type eq 'our')) {
-            return (('NAMESPACE["' . (($self->{'namespace'} || $decl->{'namespace'})) . '"]["' . $table->{$self->{'sigil'}} . $self->{'name'} . '"]'))
+            return ((Perlito5::Javascript::pkg(($self->{'namespace'} || $decl->{'namespace'})) . '["' . $table->{$self->{'sigil'}} . $self->{'name'} . '"]'))
         };
         ((my  $ns) = '');
         if ($self->{'namespace'}) {
-            ($ns = ('NAMESPACE["' . $self->{'namespace'} . '"].'))
+            ($ns = (Perlito5::Javascript::pkg($self->{'namespace'}) . '.'))
         };
         ($ns . $table->{$self->{'sigil'}} . $self->{'name'})
     };
@@ -422,7 +429,7 @@ for ($_) {
             if (($decl && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
                 ($decl_namespace = $decl->{'namespace'})
             };
-            ((my  $ns) = ('NAMESPACE["' . ((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)) . '"]'));
+            ((my  $ns) = Perlito5::Javascript::pkg((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)));
             return (('set_local(' . $ns . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'sigil'}) . '); ' . $self->{'var'}->emit_javascript_indented($level)))
         };
         $self->{'var'}->emit_javascript_indented($level)
@@ -492,7 +499,7 @@ for ($_) {
         if (($self->{'name'} eq '__PACKAGE__')) {
             return (Perlito5::Javascript::pkg())
         };
-        ('NAMESPACE["' . $self->{'name'} . '"]')
+        Perlito5::Javascript::pkg($self->{'name'})
     }
 };
 package Perlito5::AST::Call;
@@ -595,7 +602,7 @@ for ($_) {
             return (('"' . $Perlito5::PKG_NAME . '"'))
         };
         if (($code eq 'package')) {
-            return (('var ' . Perlito5::Javascript::pkg() . ' = make_package("' . $self->{'namespace'} . '")'))
+            return (('// package ' . $self->{'namespace'} . chr(10)))
         };
         if (($code eq 'infix:<=>>')) {
             return (join(', ', map($_->emit_javascript_indented($level), @{$self->{'arguments'}})))
@@ -636,7 +643,7 @@ for ($_) {
                 ((my  $var_env_js) = ('(new ArrayRef(' . Perlito5::Javascript::to_list($m) . '))'));
                 ($eval = ('eval(perl5_to_js(' . Perlito5::Javascript::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . '))'))
             };
-            return (('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'NAMESPACE["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'NAMESPACE["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()'))
+            return (('(function () {' . chr(10) . 'var r = null;' . chr(10) . Perlito5::Javascript::pkg('main') . '["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . Perlito5::Javascript::pkg('main') . '["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()'))
         };
         if (($code eq 'undef')) {
             if (($self->{'arguments'} && @{$self->{'arguments'}})) {
@@ -722,7 +729,7 @@ for ($_) {
                 };
                 if (($arg->sigil() eq '&')) {
                     if ($arg->{'namespace'}) {
-                        return (('NAMESPACE["' . $arg->{'namespace'} . '"].' . $arg->{'name'}))
+                        return ((Perlito5::Javascript::pkg($arg->{'namespace'}) . '.' . $arg->{'name'}))
                     }
                     else {
                         return ((Perlito5::Javascript::pkg() . '.' . $arg->{'name'}))
@@ -806,7 +813,7 @@ for ($_) {
                     die('JS::inline needs a string constant')
                 }
             };
-            ($code = ('NAMESPACE["' . $self->{'namespace'} . '"].' . $code))
+            ($code = (Perlito5::Javascript::pkg($self->{'namespace'}) . '.' . $code))
         }
         else {
             ($code = (Perlito5::Javascript::pkg() . '.' . $code))

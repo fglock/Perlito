@@ -8,7 +8,14 @@ package Perlito5::Javascript;
     my $label_count = 100;
     my %label;
     sub pkg {
-        $label{ $Perlito5::PKG_NAME } ||= "p5" . $label_count++
+        $label{ $_[0] || $Perlito5::PKG_NAME } ||= "p5" . $label_count++
+    }
+    sub dump_labels {
+        my $str = '';
+        for (keys %label) {
+            $str .= "var " . $label{$_} . " = make_package('" . $_ . "');\n";
+        }
+        return $str;
     }
 
     sub tab {
@@ -396,8 +403,7 @@ package Perlito5::AST::CompUnit;
     sub emit_javascript_program {
         my $comp_units = shift;
         $Perlito5::PKG_NAME = 'main';
-        my $str = ''
-                .  "var " . Perlito5::Javascript::pkg . " = NAMESPACE['" . $Perlito5::PKG_NAME . "'];\n";
+        my $str = '';
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my' }, # XXX
               '@ARGV' => { decl => 'my' }, # XXX
@@ -410,7 +416,7 @@ package Perlito5::AST::CompUnit;
         for my $comp_unit ( @$comp_units ) {
             $str = $str . $comp_unit->emit_javascript() . "\n";
         }
-        return $str;
+        return Perlito5::Javascript::dump_labels() . $str;
     }
 }
 
@@ -531,18 +537,18 @@ package Perlito5::AST::Var;
         }
 
         if ( $self->{"sigil"} eq '&' ) {
-            return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
+            return Perlito5::Javascript::pkg($self->{"namespace"} || $Perlito5::PKG_NAME) . '["' . $self->{"name"} . '"]';
         }
         if ( $self->{"sigil"} eq '*' ) {
-            return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
+            return Perlito5::Javascript::pkg($self->{"namespace"} || $Perlito5::PKG_NAME) . '["' . $self->{"name"} . '"]';
         }
         if ( $decl_type eq 'our' ) {
-            return 'NAMESPACE["' . ($self->{"namespace"} || $decl->{"namespace"}) . '"]["' . $table->{$self->{"sigil"}} . $self->{"name"} . '"]';
+            return Perlito5::Javascript::pkg($self->{"namespace"} || $decl->{"namespace"}) . '["' . $table->{$self->{"sigil"}} . $self->{"name"} . '"]';
         }
 
         my $ns = '';
         if ($self->{"namespace"}) {
-            $ns = 'NAMESPACE["' . $self->{"namespace"} . '"].';
+            $ns = Perlito5::Javascript::pkg($self->{"namespace"}) . '.';
         }
         $ns . $table->{$self->{"sigil"}} . $self->{"name"}
     }
@@ -592,7 +598,7 @@ package Perlito5::AST::Decl;
                 $decl_namespace = $decl->{"namespace"};
             }
 
-            my $ns = 'NAMESPACE["' . ($self->{"var"}{"namespace"} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
+            my $ns = Perlito5::Javascript::pkg($self->{"var"}{"namespace"} || $decl_namespace || $Perlito5::PKG_NAME);
 
             return
                   'set_local(' . $ns . ','
@@ -666,7 +672,7 @@ package Perlito5::AST::Proto;
         my $level = shift;
         return Perlito5::Javascript::pkg()
             if $self->{"name"} eq '__PACKAGE__';
-        'NAMESPACE["' . $self->{"name"} . '"]'
+        Perlito5::Javascript::pkg($self->{"name"})
     }
 }
 
@@ -823,7 +829,7 @@ package Perlito5::AST::Apply;
             return '"' . $Perlito5::PKG_NAME . '"';
         }
         if ($code eq 'package') {
-            return "var " . Perlito5::Javascript::pkg() . ' = make_package("' . $self->{"namespace"} . '")'
+            return '// package ' . $self->{"namespace"} . "\n"
         }
         if ($code eq 'infix:<=>>') {
             return join(', ', map( $_->emit_javascript_indented( $level ), @{$self->{"arguments"}} ))
@@ -896,7 +902,7 @@ package Perlito5::AST::Apply;
             return
                 "(function () {\n"
                     . "var r = null;\n"
-                    . 'NAMESPACE["main"]["v_@"] = "";' . "\n"
+                    . Perlito5::Javascript::pkg("main") . '["v_@"] = "";' . "\n"
                     . "try {\n"
                         . 'r = ' . $eval . "\n"
                     . "}\n"
@@ -904,7 +910,7 @@ package Perlito5::AST::Apply;
                     .    "if ( err instanceof p5_error ) {\n"
                     .    "}\n"
                     .    "else if ( err instanceof Error ) {\n"
-                    .        'NAMESPACE["main"]["v_@"] = err;' . "\n"
+                    .        Perlito5::Javascript::pkg("main") . '["v_@"] = err;' . "\n"
                     .    "}\n"
                     .    "else {\n"
                     .        "throw(err);\n"   # return() value
@@ -1033,7 +1039,7 @@ package Perlito5::AST::Apply;
                 }
                 if ( $arg->sigil eq '&' ) {
                     if ($arg->{"namespace"}) {
-                        return 'NAMESPACE["' . $arg->{"namespace"} . '"].' . $arg->{"name"};
+                        return Perlito5::Javascript::pkg($arg->{"namespace"}) . '.' . $arg->{"name"};
                     }
                     else {
                         return Perlito5::Javascript::pkg() . '.' . $arg->{"name"};
@@ -1155,7 +1161,7 @@ package Perlito5::AST::Apply;
                 }
             }
 
-            $code = 'NAMESPACE["' . $self->{"namespace"} . '"].' . $code;
+            $code = Perlito5::Javascript::pkg($self->{"namespace"}) . '.' . $code;
         }
         else {
             $code = Perlito5::Javascript::pkg() . '.' . $code
