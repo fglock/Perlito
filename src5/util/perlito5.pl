@@ -186,10 +186,12 @@ perlito5 [switches] [programfile]
 
         if ( $execute ) { 
             package main;
-            eval $source;
-            my $error = $@;
-            warn "Error in eval: $error"
-                if $error;
+            eval "$source ; 1"
+            or do {
+                    my $error = $@;
+                    warn $error
+                        if $error;
+                  }
         }
         else {
 

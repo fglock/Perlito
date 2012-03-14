@@ -150,11 +150,12 @@ if (($backend && @ARGV)) {
     ($Perlito5::PROTO = {});
     if ($execute) {
         package main;
-        eval($source);
-        ((my  $error) = $@);
-        if ($error) {
-            warn(('Error in eval: ' . $error))
-        }
+        (eval(($source . ' ; 1')) or (do {
+    ((my  $error) = $@);
+    if ($error) {
+        warn($error)
+    }
+}))
     }
     else {
         ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
