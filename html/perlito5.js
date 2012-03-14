@@ -56,6 +56,7 @@ if (typeof NAMESPACE !== "object") {
     p5_error = function (v) {
         this.v = v;
     };
+    p5_error.prototype = Error;
 }
 
 function make_package(pkg_name) {
@@ -466,6 +467,7 @@ CORE.die = function(List__) {
     for (i = 0; i < List__.length; i++) {
         s = s + string(List__[i]);
     }
+    NAMESPACE["main"]["v_@"] = "Died: " + s;
     throw(new p5_error("Died: " + s));
 };
 
@@ -1597,10 +1599,7 @@ CORE.prototype = function(List__, data) {
 						(v_decl_type = (v_decl || (v_decl = new HashRef({})))._hash_['decl']);
 					}
 					else {
-						if ( ((bool((v_self || (v_self = new HashRef({})))._hash_['namespace']) || ((v_self || (v_self = new HashRef({})))._hash_['sigil'] == '*')) || !( bool(NAMESPACE["Perlito5"].v_STRICT))) ) {
-							null;
-						}
-						else {
+						if ( ((!( bool((v_self || (v_self = new HashRef({})))._hash_['namespace'])) && ((v_self || (v_self = new HashRef({})))._hash_['sigil'] != '*')) && bool(NAMESPACE["Perlito5"].v_STRICT)) ) {
 							NAMESPACE["Perlito5::AST::Var"].die([('Global symbol "' + string(v_perl5_name) + '" requires explicit package name')]);
 						};
 					};
@@ -1977,7 +1976,7 @@ CORE.prototype = function(List__, data) {
 									(v_eval = ('eval(perl5_to_js(' + string(NAMESPACE["Perlito5::Javascript"].to_str([v_arg])) + ', ' + '"' + string(NAMESPACE["Perlito5"].v_PKG_NAME) + '", ' + string(v_var_env_js) + '))'));
 									})();
 							};
-							throw(('(function () {' + String.fromCharCode(10) + 'var r = null;' + String.fromCharCode(10) + 'NAMESPACE["main"]["v_@"] = "";' + String.fromCharCode(10) + 'try {' + String.fromCharCode(10) + 'r = ' + string(v_eval) + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'catch(err) {' + String.fromCharCode(10) + 'if ( err instanceof p5_error ) {' + String.fromCharCode(10) + 'NAMESPACE["main"]["v_@"] = err.v;' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'else if ( err instanceof Error ) {' + String.fromCharCode(10) + 'NAMESPACE["main"]["v_@"] = err;' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'else {' + String.fromCharCode(10) + 'throw(err);' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'return r;' + String.fromCharCode(10) + '})()'));
+							throw(('(function () {' + String.fromCharCode(10) + 'var r = null;' + String.fromCharCode(10) + 'NAMESPACE["main"]["v_@"] = "";' + String.fromCharCode(10) + 'try {' + String.fromCharCode(10) + 'r = ' + string(v_eval) + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'catch(err) {' + String.fromCharCode(10) + 'if ( err instanceof p5_error ) {' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'else if ( err instanceof Error ) {' + String.fromCharCode(10) + 'NAMESPACE["main"]["v_@"] = err;' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'else {' + String.fromCharCode(10) + 'throw(err);' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + '}' + String.fromCharCode(10) + 'return r;' + String.fromCharCode(10) + '})()'));
 							})();
 					};
 					if ( (v_code == 'undef') ) {

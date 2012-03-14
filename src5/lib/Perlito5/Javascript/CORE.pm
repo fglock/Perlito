@@ -68,6 +68,7 @@ CORE.die = function(List__) {
     for (i = 0; i < List__.length; i++) {
         s = s + string(List__[i]);
     }
+    NAMESPACE["main"]["v_@"] = "Died: " + s;
     throw(new p5_error("Died: " + s));
 };
 

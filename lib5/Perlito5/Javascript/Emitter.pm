@@ -368,10 +368,7 @@ for ($_) {
             ($decl_type = $decl->{'decl'})
         }
         else {
-            if ((($self->{'namespace'} || ($self->{'sigil'} eq '*')) || !($Perlito5::STRICT))) {
-
-            }
-            else {
+            if (((!($self->{'namespace'}) && ($self->{'sigil'} ne '*')) && $Perlito5::STRICT)) {
                 die(('Global symbol "' . $perl5_name . '" requires explicit package name'))
             }
         };
@@ -625,7 +622,7 @@ for ($_) {
                 ((my  $var_env_js) = ('(new ArrayRef(' . Perlito5::Javascript::to_list($m) . '))'));
                 ($eval = ('eval(perl5_to_js(' . Perlito5::Javascript::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . '))'))
             };
-            return (('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'NAMESPACE["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . 'NAMESPACE["main"]["v_@"] = err.v;' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'NAMESPACE["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()'))
+            return (('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'NAMESPACE["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'NAMESPACE["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()'))
         };
         if (($code eq 'undef')) {
             if (($self->{'arguments'} && @{$self->{'arguments'}})) {

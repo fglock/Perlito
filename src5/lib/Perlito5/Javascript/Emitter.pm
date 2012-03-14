@@ -518,8 +518,9 @@ package Perlito5::AST::Var;
         }
         else {
             die "Global symbol \"$perl5_name\" requires explicit package name"
-                unless $self->{"namespace"}
-                    || $self->{"sigil"} eq '*' || !$Perlito5::STRICT;
+                if     !$self->{"namespace"}
+                    && $self->{"sigil"} ne '*' 
+                    && $Perlito5::STRICT;
         }
 
         if ( $self->{"sigil"} eq '*' ) {
@@ -886,7 +887,6 @@ package Perlito5::AST::Apply;
                     . "}\n"
                     . "catch(err) {\n"
                     .    "if ( err instanceof p5_error ) {\n"
-                    .        'NAMESPACE["main"]["v_@"] = err.v;' . "\n"
                     .    "}\n"
                     .    "else if ( err instanceof Error ) {\n"
                     .        'NAMESPACE["main"]["v_@"] = err;' . "\n"
