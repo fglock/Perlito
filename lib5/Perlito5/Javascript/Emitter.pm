@@ -535,7 +535,7 @@ for ($_) {
         for (@{$self->{'arguments'}}) {
             push(@args, $_->emit_javascript() )
         };
-        return (('_call_(' . $invocant . ', ' . $meth . ', [' . join(',', @args) . '])'))
+        return (('p5cal(' . $invocant . ', ' . $meth . ', [' . join(',', @args) . '])'))
     }
 };
 package Perlito5::AST::Apply;

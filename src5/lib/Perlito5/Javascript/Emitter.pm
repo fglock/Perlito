@@ -714,7 +714,7 @@ package Perlito5::AST::Call;
         my @args;
         push @args, $_->emit_javascript
             for @{$self->{"arguments"}};
-        return '_call_(' . $invocant . ', ' . $meth . ', [' . join(',', @args) . '])'
+        return 'p5cal(' . $invocant . ', ' . $meth . ', [' . join(',', @args) . '])'
     }
 }
 
