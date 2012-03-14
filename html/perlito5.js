@@ -565,6 +565,21 @@ CORE.keys = function(List__) {
     return out;
 };
 
+CORE.reverse = function(List__) {
+    var o = List__[0];
+    if (o == null) {
+        return "";
+    }
+    if (typeof o === "string") {
+        return o.split("").reverse().join("")
+    }
+    var out = [];
+    for(var i = 0; i < o.length; i++) {
+        out.unshift(o[i]);
+    }
+    return out;
+};
+
 CORE.pop = function(List__) {
     var o = List__[0];
     if (o.length == null) {
@@ -1602,6 +1617,9 @@ CORE.prototype = function(List__, data) {
 						if ( ((!( bool((v_self || (v_self = new HashRef({})))._hash_['namespace'])) && ((v_self || (v_self = new HashRef({})))._hash_['sigil'] != '*')) && bool(NAMESPACE["Perlito5"].v_STRICT)) ) {
 							NAMESPACE["Perlito5::AST::Var"].die([('Global symbol "' + string(v_perl5_name) + '" requires explicit package name')]);
 						};
+					};
+					if ( ((v_self || (v_self = new HashRef({})))._hash_['sigil'] == '&') ) {
+						throw(('NAMESPACE["' + string(or((v_self || (v_self = new HashRef({})))._hash_['namespace'], function () { return NAMESPACE["Perlito5"].v_PKG_NAME; })) + '"]["' + string((v_self || (v_self = new HashRef({})))._hash_['name']) + '"]'));
 					};
 					if ( ((v_self || (v_self = new HashRef({})))._hash_['sigil'] == '*') ) {
 						throw(('NAMESPACE["' + string(or((v_self || (v_self = new HashRef({})))._hash_['namespace'], function () { return NAMESPACE["Perlito5"].v_PKG_NAME; })) + '"]["' + string((v_self || (v_self = new HashRef({})))._hash_['name']) + '"]'));

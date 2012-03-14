@@ -188,7 +188,7 @@ perlito5 [switches] [programfile]
             package main;
             no strict;
             my $ok;
-            eval "$source ; $ok = 1";
+            eval "$source ; \$ok = 1";
             if ( !$ok ) {
                 my $error = $@
                     || "Unknown error";

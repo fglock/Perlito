@@ -154,7 +154,7 @@ if (($backend && @ARGV)) {
         # no strict
 ;
         (my  $ok);
-        eval(($source . ' ; ' . $ok . ' = 1'));
+        eval(($source . ' ; $ok = 1'));
         if (!($ok)) {
             ((my  $error) = ($@ || 'Unknown error'));
             warn($error)

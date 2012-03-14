@@ -166,6 +166,21 @@ CORE.keys = function(List__) {
     return out;
 };
 
+CORE.reverse = function(List__) {
+    var o = List__[0];
+    if (o == null) {
+        return "";
+    }
+    if (typeof o === "string") {
+        return o.split("").reverse().join("")
+    }
+    var out = [];
+    for(var i = 0; i < o.length; i++) {
+        out.unshift(o[i]);
+    }
+    return out;
+};
+
 CORE.pop = function(List__) {
     var o = List__[0];
     if (o.length == null) {
