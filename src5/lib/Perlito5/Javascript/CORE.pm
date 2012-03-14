@@ -181,6 +181,22 @@ CORE.reverse = function(List__) {
     return out;
 };
 
+CORE.splice = function(List__) {
+    var array  = List__.shift();
+    // CORE.say([ array ]);
+    var offset = num(List__.shift());
+    var limit  = List__.length ? num(List__.shift()) : (array.length + 1);
+
+    if (limit < 0) {
+        limit = array.length + limit - 1;
+    }
+
+    var list   = interpolate_array(offset, limit, List__);
+    out = array.splice.apply(array, list);
+    // CORE.say([ CORE.join([":",array]), " ofs=", offset, " lim=", limit, " list=", list, " out=", CORE.join([":",out])  ]);
+    return out;
+};
+
 CORE.pop = function(List__) {
     var o = List__[0];
     if (o.length == null) {
