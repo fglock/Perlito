@@ -36,6 +36,8 @@ perl perlito5.pl -Cperl5 src5/lib/Perlito5/Match.pm           > lib5-new/Perlito
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Runtime.pm         > lib5-new/Perlito5/Runtime.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Dumper.pm          > lib5-new/Perlito5/Dumper.pm
 
+perl perlito5.pl -Cperl5 src5/lib/Perlito5/strict.pm          > lib5-new/Perlito5/strict.pm
+
 perl perlito5.pl -Cperl5 src5/util/perlito5.pl                > ./perlito5-new.pl
 
 # other files we use for cross-compilation
