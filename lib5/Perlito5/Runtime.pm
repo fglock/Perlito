@@ -8,6 +8,7 @@ use Perlito5::Perl5::Runtime;
 our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Runtime;
+use Perlito5::strict;
 sub Perlito5::Runtime::_replace {
     ((my  $s) = shift());
     ((my  $old) = shift());

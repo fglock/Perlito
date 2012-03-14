@@ -1,5 +1,7 @@
 package Perlito5::Runtime;
 
+use Perlito5::strict;
+
 sub _replace {
     my $s = shift;
     my $old = shift;

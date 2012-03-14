@@ -966,12 +966,22 @@ CORE.prototype = function(List__, data) {
 		make_sub("Perlito5::AST::Use", "mod", function (List__) {
 				return ((List__[0] || (List__[0] = new HashRef({})))._hash_['mod']);
 		});
+		make_sub("Perlito5::AST::Use", "code", function (List__) {
+				return ((List__[0] || (List__[0] = new HashRef({})))._hash_['code']);
+		});
 		make_sub("Perlito5::AST::Use", "compiletime_eval", function (List__) {
 			try {
 				var v_self = null;
 				(v_self = NAMESPACE["Perlito5::AST::Use"].shift([List__]));
 				if ( (_call_(v_self, "mod", []) == 'strict') ) {
-					(NAMESPACE["Perlito5"].v_STRICT = 1);
+					if ( (_call_(v_self, "code", []) == 'use') ) {
+						_call_(NAMESPACE["Perlito5::strict"], "import", []);
+					}
+					else {
+						if ( (_call_(v_self, "code", []) == 'no') ) {
+							_call_(NAMESPACE["Perlito5::strict"], "unimport", []);
+						};
+					};
 				};
 				throw(v_self)
 			}
@@ -9501,7 +9511,20 @@ CORE.prototype = function(List__, data) {
 	// use Perlito5::Macro
 ;
 	(function () {
+		make_package("Perlito5::strict");
+		make_sub("Perlito5::strict", "import", function (List__) {
+				return ((NAMESPACE["Perlito5"].v_STRICT = 1));
+		});
+		make_sub("Perlito5::strict", "unimport", function (List__) {
+				return ((NAMESPACE["Perlito5"].v_STRICT = 0));
+		});
+		1;
+	})()
+;
+	(function () {
 		make_package("Perlito5::Runtime");
+		// use Perlito5::strict
+;
 		make_sub("Perlito5::Runtime", "_replace", function (List__) {
 				var v_s = null;
 				(v_s = NAMESPACE["Perlito5::Runtime"].shift([List__]));
