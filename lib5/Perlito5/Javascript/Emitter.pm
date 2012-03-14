@@ -484,6 +484,9 @@ for ($_) {
     sub Perlito5::AST::Proto::emit_javascript_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
+        if (($self->{'name'} eq '__PACKAGE__')) {
+            return (('NAMESPACE["' . $Perlito5::PKG_NAME . '"]'))
+        };
         ('NAMESPACE["' . $self->{'name'} . '"]')
     }
 };
@@ -582,6 +585,9 @@ for ($_) {
         };
         if (($code eq 'p5:m')) {
             return (emit_regex_javascript('=~', Perlito5::AST::Var->new(('sigil' => '$'), ('namespace' => ''), ('name' => '_')), $self))
+        };
+        if (($code eq '__PACKAGE__')) {
+            return (('"' . $Perlito5::PKG_NAME . '"'))
         };
         if (($code eq 'package')) {
             return (('make_package("' . $self->{'namespace'} . '")'))

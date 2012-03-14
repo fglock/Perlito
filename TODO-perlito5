@@ -132,7 +132,7 @@ TODO list for Perlito5
 -- use the same error messages and warnings as 'perl'
 -- no warnings 'redefine';
 
--- __PACKAGE__,  __END__, __LINE__, __DATA__, __FILE__
+-- __END__, __LINE__, __DATA__, __FILE__
 
 -- BEGIN{}, INIT{}, END{}
 

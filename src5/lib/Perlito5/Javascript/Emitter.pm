@@ -657,6 +657,8 @@ package Perlito5::AST::Proto;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
+        return 'NAMESPACE["' . $Perlito5::PKG_NAME . '"]'
+            if $self->{"name"} eq '__PACKAGE__';
         'NAMESPACE["' . $self->{"name"} . '"]'
     }
 }
@@ -810,6 +812,9 @@ package Perlito5::AST::Apply;
         }
 
 
+        if ($code eq '__PACKAGE__') {
+            return '"' . $Perlito5::PKG_NAME . '"';
+        }
         if ($code eq 'package') {
             return 'make_package("' . $self->{"namespace"} . '")';
         }

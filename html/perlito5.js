@@ -1791,11 +1791,24 @@ CORE.prototype = function(List__, data) {
 					return (_call_(List__[0], "emit_javascript_indented", [0]));
 			});
 			make_sub("Perlito5::AST::Proto", "emit_javascript_indented", function (List__) {
+				try {
 					var v_self = null;
 					(v_self = NAMESPACE["Perlito5::AST::Proto"].shift([List__]));
 					var v_level = null;
 					(v_level = NAMESPACE["Perlito5::AST::Proto"].shift([List__]));
+					if ( ((v_self || (v_self = new HashRef({})))._hash_['name'] == '__PACKAGE__') ) {
+						throw(('NAMESPACE["' + string(NAMESPACE["Perlito5"].v_PKG_NAME) + '"]'));
+					};
 					return (('NAMESPACE["' + string((v_self || (v_self = new HashRef({})))._hash_['name']) + '"]'));
+				}
+				catch(err) {
+					if ( err instanceof Error ) {
+						throw(err);
+					}
+					else {
+						return(err);
+					}
+				}
 			});
 		};
 		make_package("Perlito5::AST::Call");
@@ -1935,6 +1948,9 @@ CORE.prototype = function(List__, data) {
 					};
 					if ( (v_code == 'p5:m') ) {
 						throw(NAMESPACE["Perlito5::AST::Apply"].emit_regex_javascript(['=~', _call_(NAMESPACE["Perlito5::AST::Var"], "new", ['sigil', '$','namespace', '','name', '_']), v_self]));
+					};
+					if ( (v_code == '__PACKAGE__') ) {
+						throw(('"' + string(NAMESPACE["Perlito5"].v_PKG_NAME) + '"'));
 					};
 					if ( (v_code == 'package') ) {
 						throw(('make_package("' + string((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '")'));
