@@ -100,7 +100,7 @@ function _method_lookup_(method, class_name, seen) {
     // TODO - AUTOLOAD
 }
 
-function p5cal(invocant, method, list) {
+function _call_(invocant, method, list) {
     // TODO - method can have an optional namespace
     list.unshift(invocant);
     if ( invocant._class_.hasOwnProperty(method) ) {
@@ -382,7 +382,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
     var namespace_old = NAMESPACE["Perlito5"].v_PKG_NAME;
     NAMESPACE["Perlito5"].v_PKG_NAME = namespace;
 
-    match = p5cal(NAMESPACE["Perlito5::Grammar"], "exp_stmts", [source, 0]);
+    match = _call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", [source, 0]);
 
     if ( !match._hash_.bool || match._hash_.to != source.length ) {
         CORE.die(["Syntax error in eval near pos ", match._hash_.to]);
@@ -392,7 +392,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
         new HashRef({
             block:  NAMESPACE.CORE.bless([
                         new HashRef({
-                            stmts:   p5cal(match, "flat", []),
+                            stmts:   _call_(match, "flat", []),
                         }),
                         NAMESPACE["Perlito5::AST::Lit::Block"]
                     ]),
@@ -401,7 +401,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
     ]);
 
     // CORE.say( "ast: [" + perl(ast) + "]" );
-    js_code = p5cal(ast, "emit_javascript", []);
+    js_code = _call_(ast, "emit_javascript", []);
     // CORE.say( "js-source: [" + js_code + "]" );
 
     NAMESPACE["Perlito5"].v_PKG_NAME = namespace_old;
