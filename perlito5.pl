@@ -146,17 +146,22 @@ if (($backend && @ARGV)) {
         warn('// backend: ', $backend);
         warn('now parsing')
     };
-    ($Perlito5::PKG_NAME = 'main');
-    ($Perlito5::PROTO = {});
     if ($execute) {
         package main;
-        eval($source);
-        ((my  $error) = $@);
-        if ($error) {
-            warn(('Error in eval: ' . $error))
-        }
+
+        # no strict
+;
+        (eval(($source . ' ; 1')) or (do {
+    ((my  $error) = $@);
+    if ($error) {
+        warn(('Error in eval: ' . $error))
+    }
+}))
     }
     else {
+        ($Perlito5::PKG_NAME = 'main');
+        ($Perlito5::PROTO = {});
+        ($Perlito5::STRICT = 0);
         ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
         if (($m->{'to'} != length($source))) {
             die('Syntax Error near ', $m->{'to'})
