@@ -431,7 +431,7 @@ if (isNode) {
             var s = string(List__[i]);
             process.stdout.write(s);
         }
-        return true;
+        return 1;
     }
 } else {
     var _print_buf = "";
@@ -451,7 +451,7 @@ if (isNode) {
                 _print_buf = _print_buf + s;
             }
         }
-        return true;
+        return 1;
     };
 }
 
@@ -1938,6 +1938,13 @@ CORE.prototype = function(List__, data) {
 					};
 					if ( (v_code == 'prefix:<+>') ) {
 						throw(('(' + string(_call_(((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0], "emit_javascript", [])) + ')'));
+					};
+					if ( (v_code == 'do') ) {
+						(function () {
+							var v_ast = null;
+							(v_ast = _call_(NAMESPACE["Perlito5::AST::Apply"], "new", ['code', 'eval','namespace', '','arguments', (new ArrayRef(interpolate_array(_call_(NAMESPACE["Perlito5::AST::Apply"], "new", ['code', 'slurp','namespace', 'Perlito5::IO','arguments', (v_self || (v_self = new HashRef({})))._hash_['arguments']]))))]));
+							throw(_call_(v_ast, "emit_javascript_indented", [v_level]));
+							})();
 					};
 					if ( (v_code == 'eval') ) {
 						(function () {

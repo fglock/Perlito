@@ -836,6 +836,23 @@ package Perlito5::AST::Apply;
             return '('  . $self->{"arguments"}->[0]->emit_javascript()  . ')' 
         }
 
+        if ($code eq 'do') {
+            # Note: this is "do EXPR" - look at the "Do" AST node for "do BLOCK"
+            my $ast =
+                Perlito5::AST::Apply->new(
+                    code => 'eval',
+                    namespace => '',
+                    arguments => [
+                       Perlito5::AST::Apply->new(
+                          code => 'slurp',
+                          namespace => 'Perlito5::IO',
+                          arguments => $self->{"arguments"}
+                        )
+                    ]
+                );
+            return $ast->emit_javascript_indented( $level );
+        }
+
         if ($code eq 'eval') {
             $Perlito5::THROW = 1;   # we can return() from inside eval
 

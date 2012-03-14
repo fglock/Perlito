@@ -33,7 +33,7 @@ if (isNode) {
             var s = string(List__[i]);
             process.stdout.write(s);
         }
-        return true;
+        return 1;
     }
 } else {
     var _print_buf = "";
@@ -53,7 +53,7 @@ if (isNode) {
                 _print_buf = _print_buf + s;
             }
         }
-        return true;
+        return 1;
     };
 }
 

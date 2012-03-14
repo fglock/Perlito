@@ -607,6 +607,10 @@ for ($_) {
         if (($code eq 'prefix:<+>')) {
             return (('(' . $self->{'arguments'}->[0]->emit_javascript() . ')'))
         };
+        if (($code eq 'do')) {
+            ((my  $ast) = Perlito5::AST::Apply->new(('code' => 'eval'), ('namespace' => ''), ('arguments' => [Perlito5::AST::Apply->new(('code' => 'slurp'), ('namespace' => 'Perlito5::IO'), ('arguments' => $self->{'arguments'}))])));
+            return ($ast->emit_javascript_indented($level))
+        };
         if (($code eq 'eval')) {
             ($Perlito5::THROW = 1);
             ((my  $arg) = $self->{'arguments'}->[0]);
