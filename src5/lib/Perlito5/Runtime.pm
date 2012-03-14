@@ -1,7 +1,5 @@
 package Perlito5::Runtime;
 
-use Perlito5::strict;
-
 sub _replace {
     my $s = shift;
     my $old = shift;
@@ -21,6 +19,7 @@ sub to_go_namespace {
     my $s = shift;
     _replace($s, "::", "__");
 }
+
 
 # the special variables list
 # obtained with:
@@ -71,6 +70,7 @@ $Perlito5::SPECIAL_VAR = {
 # obtained with:
 # $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{"CORE::$_"} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } ' > ~/tmp/core.pm
 
+$Perlito5::STRICT = 0;
 $Perlito5::CORE_PROTO = {
           'CORE::shutdown' => '*$',
           'CORE::chop' => undef,

@@ -181,20 +181,17 @@ perlito5 [switches] [programfile]
             warn "now parsing";
         }
 
+        $Perlito5::PKG_NAME = 'main';
+        $Perlito5::PROTO    = {};
+
         if ( $execute ) { 
             package main;
-            no strict;
-            eval "$source ; 1"
-            or do {
-                    my $error = $@;
-                    warn "Error in eval: $error"
-                        if $error;
-                  }
+            eval $source;
+            my $error = $@;
+            warn "Error in eval: $error"
+                if $error;
         }
         else {
-            $Perlito5::PKG_NAME = 'main';
-            $Perlito5::PROTO    = {};
-            $Perlito5::STRICT   = 0;
 
             my $m = Perlito5::Grammar->exp_stmts($source, 0);
             die "Syntax Error near ", $m->{"to"}

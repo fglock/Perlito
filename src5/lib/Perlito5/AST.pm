@@ -141,16 +141,10 @@ sub block { $_[0]->{'block'} }
 package Perlito5::AST::Use;
 sub new { my $class = shift; bless {@_}, $class }
 sub mod { $_[0]->{'mod'} }
-sub code { $_[0]->{'code'} }
 sub compiletime_eval {
     my $self = shift;
     if ($self->mod eq 'strict') {
-        if ($self->code eq 'use') {
-            Perlito5::strict->import();
-        }
-        elsif ($self->code eq 'no') {
-            Perlito5::strict->unimport();
-        }
+       $Perlito5::STRICT = 1; 
     }
     return $self;
 }
