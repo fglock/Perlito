@@ -5,6 +5,12 @@ use Perlito5::Dumper;
 
 package Perlito5::Javascript;
 {
+    my $label_count = 100;
+    my %label;
+    sub pkg {
+        $label{ $Perlito5::PKG_NAME } ||= "p5" . $label_count++
+    }
+
     sub tab {
         my $level = shift;
         "\t" x $level
@@ -389,8 +395,9 @@ package Perlito5::AST::CompUnit;
     }
     sub emit_javascript_program {
         my $comp_units = shift;
-        my $str = '';
         $Perlito5::PKG_NAME = 'main';
+        my $str = ''
+                .  "var " . Perlito5::Javascript::pkg . " = NAMESPACE['" . $Perlito5::PKG_NAME . "'];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my' }, # XXX
               '@ARGV' => { decl => 'my' }, # XXX
@@ -657,7 +664,7 @@ package Perlito5::AST::Proto;
     sub emit_javascript_indented {
         my $self = shift;
         my $level = shift;
-        return 'NAMESPACE["' . $Perlito5::PKG_NAME . '"]'
+        return Perlito5::Javascript::pkg()
             if $self->{"name"} eq '__PACKAGE__';
         'NAMESPACE["' . $self->{"name"} . '"]'
     }
@@ -816,7 +823,7 @@ package Perlito5::AST::Apply;
             return '"' . $Perlito5::PKG_NAME . '"';
         }
         if ($code eq 'package') {
-            return 'make_package("' . $self->{"namespace"} . '")';
+            return "var " . Perlito5::Javascript::pkg() . ' = make_package("' . $self->{"namespace"} . '")'
         }
         if ($code eq 'infix:<=>>') {
             return join(', ', map( $_->emit_javascript_indented( $level ), @{$self->{"arguments"}} ))
@@ -919,9 +926,9 @@ package Perlito5::AST::Apply;
 
         if ($code eq 'shift')      {
             if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return 'NAMESPACE["' . $Perlito5::PKG_NAME . '"].shift([' . join(', ', map( $_->emit_javascript_indented( $level ), @{$self->{"arguments"}} )) . '])'
+                return Perlito5::Javascript::pkg() . '.shift([' . join(', ', map( $_->emit_javascript_indented( $level ), @{$self->{"arguments"}} )) . '])'
             }
-            return 'NAMESPACE["' . $Perlito5::PKG_NAME . '"].shift([List__])'
+            return Perlito5::Javascript::pkg() . '.shift([List__])'
         }
 
         if ($code eq 'map') {
@@ -935,7 +942,7 @@ package Perlito5::AST::Apply;
                 $fun = [$fun];
             }
 
-            return 'p5map(NAMESPACE["' . $Perlito5::PKG_NAME . '"], '
+            return 'p5map(' . Perlito5::Javascript::pkg() . ', '
 
                     . 'function () {' . "\n"
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript_indented( $level + 1 ) . "\n"
@@ -955,7 +962,7 @@ package Perlito5::AST::Apply;
                 $fun = [$fun];
             }
 
-            return 'p5grep(NAMESPACE["' . $Perlito5::PKG_NAME . '"], '
+            return 'p5grep(' . Perlito5::Javascript::pkg() . ', '
 
                     . 'function () {' . "\n"
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript_indented( $level + 1 ) . "\n"
@@ -986,7 +993,7 @@ package Perlito5::AST::Apply;
                 $fun = 'null';
             }
 
-            return 'p5sort(NAMESPACE["' . $Perlito5::PKG_NAME . '"], '
+            return 'p5sort(' . Perlito5::Javascript::pkg() . ', '
                     .   $fun . ', '
                     .   $list->emit_javascript()
                     . ')';
@@ -1029,7 +1036,7 @@ package Perlito5::AST::Apply;
                         return 'NAMESPACE["' . $arg->{"namespace"} . '"].' . $arg->{"name"};
                     }
                     else {
-                        return 'NAMESPACE["' . $Perlito5::PKG_NAME . '"].' . $arg->{"name"};
+                        return Perlito5::Javascript::pkg() . '.' . $arg->{"name"};
                     }
                 }
             }
@@ -1151,7 +1158,7 @@ package Perlito5::AST::Apply;
             $code = 'NAMESPACE["' . $self->{"namespace"} . '"].' . $code;
         }
         else {
-            $code = 'NAMESPACE["' . $Perlito5::PKG_NAME . '"].' . $code
+            $code = Perlito5::Javascript::pkg() . '.' . $code
         }
         my @args = ();
         push @args, $_->emit_javascript_indented( $level )
@@ -1257,7 +1264,7 @@ package Perlito5::AST::For;
         }
         else {
             # use $_
-            return 'p5for(NAMESPACE["' . $Perlito5::PKG_NAME . '"], '
+            return 'p5for(' . Perlito5::Javascript::pkg() . ', '
 
                     . 'function () {' . "\n"
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"body"}->stmts, needs_return => 0, top_level => 0 ))->emit_javascript_indented( $level + 1 ) . "\n"

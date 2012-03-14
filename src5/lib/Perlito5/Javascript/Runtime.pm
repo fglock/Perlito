@@ -78,6 +78,7 @@ function make_package(pkg_name) {
         NAMESPACE[pkg_name]["v_b"] = null;
         NAMESPACE[pkg_name]["v__"] = null;
     }
+    return NAMESPACE[pkg_name];
 }
 
 function _method_lookup_(method, class_name, seen) {
