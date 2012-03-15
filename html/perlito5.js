@@ -1692,6 +1692,9 @@ var p5100 = NAMESPACE['main'];
 					if ( bool((v_self || (v_self = new HashRef({})))._hash_['namespace']) ) {
 						(v_ns = ('NAMESPACE["' + p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '"].'));
 					};
+					if ( ((v_self || (v_self = new HashRef({})))._hash_['sigil'] == '$#') ) {
+						throw(('(' + p5str(v_ns) + p5str((v_table || (v_table = new HashRef({})))._hash_['@']) + p5str((v_self || (v_self = new HashRef({})))._hash_['name']) + '.length - 1)'));
+					};
 					return ((p5str(v_ns) + p5str((v_table || (v_table = new HashRef({})))._hash_[(v_self || (v_self = new HashRef({})))._hash_['sigil']]) + p5str((v_self || (v_self = new HashRef({})))._hash_['name'])));
 				}
 				catch(err) {
@@ -1706,7 +1709,12 @@ var p5100 = NAMESPACE['main'];
 			make_sub("Perlito5::AST::Var", "perl5_name", function (List__) {
 					var v_self = null;
 					(v_self = p5110.shift([List__]));
-					return ((p5str((v_self || (v_self = new HashRef({})))._hash_['sigil']) + p5str(( bool((v_self || (v_self = new HashRef({})))._hash_['namespace']) ? (p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '::') : '')) + p5str((v_self || (v_self = new HashRef({})))._hash_['name'])));
+					var v_sigil = null;
+					(v_sigil = (v_self || (v_self = new HashRef({})))._hash_['sigil']);
+					if ( (v_sigil == '$#') ) {
+						(v_sigil = '@');
+					};
+					return ((p5str(v_sigil) + p5str(( bool((v_self || (v_self = new HashRef({})))._hash_['namespace']) ? (p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '::') : '')) + p5str((v_self || (v_self = new HashRef({})))._hash_['name'])));
 			});
 			make_sub("Perlito5::AST::Var", "perl5_get_decl", function (List__) {
 				try {

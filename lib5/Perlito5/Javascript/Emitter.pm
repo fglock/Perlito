@@ -390,11 +390,18 @@ for ($_) {
         if ($self->{'namespace'}) {
             ($ns = ('NAMESPACE["' . $self->{'namespace'} . '"].'))
         };
+        if (($self->{'sigil'} eq '$#')) {
+            return (('(' . $ns . $table->{'@'} . $self->{'name'} . '.length - 1)'))
+        };
         ($ns . $table->{$self->{'sigil'}} . $self->{'name'})
     };
     sub Perlito5::AST::Var::perl5_name {
         ((my  $self) = shift());
-        ($self->{'sigil'} . (($self->{'namespace'} ? ($self->{'namespace'} . '::') : '')) . $self->{'name'})
+        ((my  $sigil) = $self->{'sigil'});
+        if (($sigil eq '$#')) {
+            ($sigil = '@')
+        };
+        ($sigil . (($self->{'namespace'} ? ($self->{'namespace'} . '::') : '')) . $self->{'name'})
     };
     sub Perlito5::AST::Var::perl5_get_decl {
         ((my  $self) = shift());

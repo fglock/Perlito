@@ -545,11 +545,20 @@ package Perlito5::AST::Var;
         if ($self->{"namespace"}) {
             $ns = 'NAMESPACE["' . $self->{"namespace"} . '"].';
         }
+
+        if ($self->{"sigil"} eq '$#') {
+            return '(' . $ns . $table->{'@'} . $self->{"name"} . '.length - 1)';
+        }
+
         $ns . $table->{$self->{"sigil"}} . $self->{"name"}
     }
     sub perl5_name {
         my $self = shift;
-        $self->{"sigil"}
+
+        my $sigil = $self->{'sigil'};
+        $sigil = '@' if $sigil eq '$#';
+
+        $sigil
         . ( $self->{"namespace"}
           ? $self->{"namespace"} . '::'
           : ''
