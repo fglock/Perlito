@@ -686,28 +686,6 @@ sub Perlito5::Grammar::opt_ws3 {
 }))));
     $MATCH
 };
-sub Perlito5::Grammar::declarator {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
-    ($MATCH->{'bool'} = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((((do {
-    (('my' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((('state' eq substr($str, $MATCH->{'to'}, 5)) && (($MATCH->{'to'} = (5 + $MATCH->{'to'}))))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((('our' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((('local' eq substr($str, $MATCH->{'to'}, 5)) && (($MATCH->{'to'} = (5 + $MATCH->{'to'}))))))
-})))
-}))));
-    $MATCH
-};
 sub Perlito5::Grammar::exp_stmts2 {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);

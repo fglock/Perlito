@@ -792,6 +792,28 @@ sub Perlito5::Expression::term_curly {
 }))));
     $MATCH
 };
+sub Perlito5::Expression::declarator {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((((do {
+    (('my' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('state' eq substr($str, $MATCH->{'to'}, 5)) && (($MATCH->{'to'} = (5 + $MATCH->{'to'}))))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('our' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('local' eq substr($str, $MATCH->{'to'}, 5)) && (($MATCH->{'to'} = (5 + $MATCH->{'to'}))))))
+})))
+}))));
+    $MATCH
+};
 sub Perlito5::Expression::term_declarator {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -801,10 +823,10 @@ sub Perlito5::Expression::term_declarator {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     (((((((do {
-    ((my  $m2) = Perlito5::Grammar->declarator($str, $MATCH->{'to'}));
+    ((my  $m2) = $grammar->declarator($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar.declarator'} = $m2);
+        ($MATCH->{'declarator'} = $m2);
         1
     }
     else {
@@ -849,7 +871,7 @@ sub Perlito5::Expression::term_declarator {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new(('decl' => $MATCH->{'Perlito5::Grammar.declarator'}->flat()), ('type' => $MATCH->{'Perlito5::Grammar.opt_type'}->flat()), ('var' => $MATCH->{'Perlito5::Grammar.var_ident'}->flat()))]);
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Decl->new(('decl' => $MATCH->{'declarator'}->flat()), ('type' => $MATCH->{'Perlito5::Grammar.opt_type'}->flat()), ('var' => $MATCH->{'Perlito5::Grammar.var_ident'}->flat()))]);
     1
 })))
 }))
@@ -1126,12 +1148,9 @@ sub Perlito5::Expression::map_or_sort {
     ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
-    ((((do {
+    (((do {
     (('map' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))
 })) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((('grep' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'}))))))
-}))) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((('sort' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'}))))))
 })))

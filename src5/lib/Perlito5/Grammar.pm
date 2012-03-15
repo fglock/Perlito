@@ -101,10 +101,6 @@ token opt_ws  {  <.ws>?  };
 token opt_ws2 {  <.ws>?  };
 token opt_ws3 {  <.ws>?  };
 
-token declarator {
-     'my' | 'state' | 'our' | 'local'
-};
-
 token exp_stmts2 { <exp_stmts> { $MATCH->{"capture"} = $MATCH->{"exp_stmts"}->flat() } };
 
 token exp {
