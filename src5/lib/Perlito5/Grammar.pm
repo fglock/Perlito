@@ -147,8 +147,10 @@ token exponent {
 };
 
 token val_num {
-    [   \. \d+    <.exponent>?
-    |   \d+     [ <.exponent>  |   \. \d+  <.exponent>? ]
+    [
+    |   \. \d+    <.exponent>?    # .10 .10e10
+    |   \.        <.exponent>     # .e10 
+    |   \d+     [ <.exponent>  |   \. \d*  <.exponent>? ]
     ]
     { $MATCH->{"capture"} = Perlito5::AST::Val::Num->new( num => $MATCH->flat() ) }
 };
@@ -158,8 +160,13 @@ token digits {
 };
 
 token val_int {
-    \d+
-    { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => $MATCH->flat() ) }
+    [ '0x' <.word>+   # XXX test for hex number
+    | '0b' [ 0 | 1 ]+
+    | '0'  \d+        # XXX test for octal number
+    ]
+        { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => oct($MATCH->flat()) ) }
+    | \d+
+        { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => $MATCH->flat() ) }
 };
 
 my @PKG;
