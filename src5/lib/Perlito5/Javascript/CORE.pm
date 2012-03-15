@@ -111,6 +111,15 @@ CORE.oct = function(List__) {
     return parseInt(v, 8);
 };
 
+CORE.abs   = function(List__) { return Math.abs(List__[0]) };
+CORE.exp   = function(List__) { return Math.exp(List__[0]) };
+CORE.log   = function(List__) { return Math.log(List__[0]) };
+CORE.cos   = function(List__) { return Math.cos(List__[0]) };
+CORE.sin   = function(List__) { return Math.sin(List__[0]) };
+CORE.sqrt  = function(List__) { return Math.sqrt(List__[0]) };
+CORE.atan2 = function(List__) { return Math.atan2(List__[0], List__[1]) };
+CORE.int   = function(List__) { return List__[0] > 0 ? Math.floor(List__[0]) : Math.ceil(List__[0]) };
+
 CORE.substr = function(List__) {
     var expr        = List__[0];
     var offset      = List__[1];
