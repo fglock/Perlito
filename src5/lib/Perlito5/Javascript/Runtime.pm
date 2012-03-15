@@ -331,6 +331,12 @@ p5for = function(namespace, func, args) {
     namespace["v__"] = v_old;
 };
 
+p5for_lex = function(func, args) {
+    for(var i = 0; i < args.length; i++) {
+        func(args[i])
+    }
+};
+
 p5map = function(namespace, func, args) {
     var v_old = namespace["v__"];
     var out = [];
