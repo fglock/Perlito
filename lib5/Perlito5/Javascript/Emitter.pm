@@ -21,6 +21,8 @@ for ($_) {
         ((my  $level) = shift());
 join("", chr(9) x $level)
     };
+    ((our  %op_infix_js_str) = (('infix:<eq>' => ' == '), ('infix:<ne>' => ' != '), ('infix:<le>' => ' <= '), ('infix:<ge>' => ' >= ')));
+    ((our  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<>>>' => ' >>> '), ('infix:<<<>' => ' << ')));
     ((my  %safe_char) = ((' ' => 1), ('!' => 1), ('"' => 1), ('#' => 1), ('$' => 1), ('%' => 1), ('&' => 1), ('(' => 1), (')' => 1), ('*' => 1), ('+' => 1), (',' => 1), ('-' => 1), ('.' => 1), ('/' => 1), (':' => 1), (';' => 1), ('<' => 1), ('=' => 1), ('>' => 1), ('?' => 1), ('@' => 1), ('[' => 1), (']' => 1), ('^' => 1), ('_' => 1), ('`' => 1), ('{' => 1), ('|' => 1), ('}' => 1), ('~' => 1)));
     sub Perlito5::Javascript::escape_string {
         ((my  $s) = shift());
@@ -503,8 +505,6 @@ for ($_) {
 };
 package Perlito5::AST::Apply;
 for ($_) {
-    ((my  %op_infix_js) = (('infix:<eq>' => ' == '), ('infix:<ne>' => ' != '), ('infix:<le>' => ' <= '), ('infix:<ge>' => ' >= ')));
-    ((my  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<>>>' => ' >>> '), ('infix:<<<>' => ' << ')));
     sub Perlito5::AST::Apply::emit_regex_javascript {
         ((my  $op) = shift());
         ((my  $var) = shift());
@@ -567,11 +567,11 @@ for ($_) {
         if (($code eq 'infix:<=>>')) {
             return (join(', ', map($_->emit_javascript($level), @{$self->{'arguments'}})))
         };
-        if (exists($op_infix_js{$code})) {
-            return (('(' . join($op_infix_js{$code}, map($_->emit_javascript($level), @{$self->{'arguments'}})) . ')'))
+        if (exists($Perlito5::Javascript::op_infix_js_str{$code})) {
+            return (('(' . join($Perlito5::Javascript::op_infix_js_str{$code}, map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')'))
         };
-        if (exists($op_infix_js_num{$code})) {
-            return (('(' . join($op_infix_js_num{$code}, map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')'))
+        if (exists($Perlito5::Javascript::op_infix_js_num{$code})) {
+            return (('(' . join($Perlito5::Javascript::op_infix_js_num{$code}, map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')'))
         };
         if (($code eq 'prefix:<!>')) {
             return (('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ')'))

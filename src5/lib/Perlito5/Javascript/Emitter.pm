@@ -16,6 +16,30 @@ package Perlito5::Javascript;
         "\t" x $level
     }
 
+    our %op_infix_js_str = (
+        'infix:<eq>' => ' == ',
+        'infix:<ne>' => ' != ',
+        'infix:<le>' => ' <= ',
+        'infix:<ge>' => ' >= ',
+    );
+    our %op_infix_js_num = (
+        'infix:<==>' => ' == ',
+        'infix:<!=>' => ' != ',
+        'infix:<+>'  => ' + ',
+        'infix:<->'  => ' - ',
+        'infix:<*>'  => ' * ',
+        'infix:</>'  => ' / ',
+        'infix:<>>'  => ' > ',
+        'infix:<<>'  => ' < ',
+        'infix:<>=>' => ' >= ',
+        'infix:<<=>' => ' <= ',
+        'infix:<&>'  => ' & ',
+        'infix:<|>'  => ' | ',
+        'infix:<^>'  => ' ^ ',
+        'infix:<>>>' => ' >>> ',
+        'infix:<<<>' => ' << ',
+    );
+
     my %safe_char = (
         ' ' => 1,
         '!' => 1,
@@ -413,34 +437,33 @@ package Perlito5::AST::CompUnit;
 
 package Perlito5::AST::Val::Int;
 {
-
     sub emit_javascript {
-        my $self = shift;
+        my $self  = shift;
         my $level = shift;
-        $self->{"int"} }
+        $self->{"int"};
+    }
 }
 
 package Perlito5::AST::Val::Num;
 {
-
     sub emit_javascript {
-        my $self = shift;
+        my $self  = shift;
         my $level = shift;
-        $self->{"num"} }
+        $self->{"num"};
+    }
 }
 
 package Perlito5::AST::Val::Buf;
 {
-
     sub emit_javascript {
-        my $self = shift;
+        my $self  = shift;
         my $level = shift;
-        Perlito5::Javascript::escape_string($self->{"buf"}) }
+        Perlito5::Javascript::escape_string( $self->{"buf"} );
+    }
 }
 
 package Perlito5::AST::Lit::Block;
 {
-
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
@@ -454,7 +477,6 @@ package Perlito5::AST::Lit::Block;
 
 package Perlito5::AST::Index;
 {
-
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
@@ -476,7 +498,6 @@ package Perlito5::AST::Index;
 
 package Perlito5::AST::Lookup;
 {
-
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
@@ -506,7 +527,6 @@ package Perlito5::AST::Var;
         '%' => 'Hash_',
         '&' => '',
     };
-
 
     sub emit_javascript {
         my $self = shift;
@@ -718,30 +738,6 @@ package Perlito5::AST::Call;
 package Perlito5::AST::Apply;
 {
 
-    my %op_infix_js = (
-        'infix:<eq>' => ' == ',
-        'infix:<ne>' => ' != ',
-        'infix:<le>' => ' <= ',
-        'infix:<ge>' => ' >= ',
-    );
-    my %op_infix_js_num = (
-        'infix:<==>' => ' == ',
-        'infix:<!=>' => ' != ',
-        'infix:<+>'  => ' + ',
-        'infix:<->'  => ' - ',
-        'infix:<*>'  => ' * ',
-        'infix:</>'  => ' / ',
-        'infix:<>>'  => ' > ',
-        'infix:<<>'  => ' < ',
-        'infix:<>=>' => ' >= ',
-        'infix:<<=>' => ' <= ',
-        'infix:<&>'  => ' & ',
-        'infix:<|>'  => ' | ',
-        'infix:<^>'  => ' ^ ',
-        'infix:<>>>' => ' >>> ',
-        'infix:<<<>' => ' << ',
-    );
-
     sub emit_regex_javascript {
         my $op = shift;
         my $var = shift;
@@ -830,14 +826,14 @@ package Perlito5::AST::Apply;
         if ($code eq 'infix:<=>>') {
             return join(', ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} ))
         }
-        if (exists $op_infix_js{$code}) {
+        if (exists $Perlito5::Javascript::op_infix_js_str{$code}) {
             return '(' 
-                . join( $op_infix_js{$code}, map( $_->emit_javascript( $level ), @{$self->{"arguments"}} ))
+                . join( $Perlito5::Javascript::op_infix_js_str{$code}, map( Perlito5::Javascript::to_str($_), @{$self->{"arguments"}} ))
                 . ')'
         }
-        if (exists $op_infix_js_num{$code}) {
+        if (exists $Perlito5::Javascript::op_infix_js_num{$code}) {
             return '(' 
-                . join( $op_infix_js_num{$code}, map( Perlito5::Javascript::to_num($_), @{$self->{"arguments"}} ))
+                . join( $Perlito5::Javascript::op_infix_js_num{$code}, map( Perlito5::Javascript::to_num($_), @{$self->{"arguments"}} ))
                 . ')'
         }
 
