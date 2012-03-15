@@ -123,11 +123,26 @@ return list (TODO)
     $ perl -e ' sub x { return 4,5 } my $x = x(); print "$x\n"; '
     5
 
-    $ perl -e ' sub x { return 4,5 } my $x = x(); print "$x\n"; $x = 6, 7; print "$x\n"; sub k { my @x = (8, 9); @x } $x = k(); print "$x\n"; sub m { my @x = 8, 9; @x } $x = m(); print "$x\n"; '
-    5
-    6
-    2
-    1
+
+    $ perl -e ' sub x { return 4,5 } my $x = x(); my ($y) = x(); my @x = x(); print "$x / $y / [@x]\n"; $x = 6, 7; @x = 6, 7; print "$x [@x]\n"; sub k { my @x = (8, 9); @x } $x = k(); @x = k(); print "$x [@x]\n"; sub n { my @x = 8, 9; @x } $x = n(); @x = n(); print "$x [@x]\n"; sub o { my @x = (8, 9); my @y = (11,12); @x, @y } $x = o(); @x = o(); print "$x [@x]\n";   '
+    5 / 4 / [4 5]
+    6 [6]
+    2 [8 9]
+    1 [8]
+    2 [8 9 11 12]
+
+
+    $ perl -e ' sub x { return 4,5 } my $x = x(); my @x = x(); print "$x [@x]\n"; $x = 6, 7; @x = 6, 7; print "$x [@x]\n"; sub k { my @x = (8, 9); @x } $x = k(); @x = k(); print "$x [@x]\n"; sub n { my @x = 8, 9; @x } $x = n(); @x = n(); print "$x [@x]\n"; '
+    5 [4 5]
+    6 [6]
+    2 [8 9]
+    1 [8]
+
+    # perlito5.js:
+    4 5 [4 5]
+    6 [6]
+    8 9 [8 9]
+    8 [8]
 
 
 * Javascript resources
