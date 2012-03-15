@@ -46,6 +46,9 @@ TODO list for Perlito5
 
 -- this should give a syntax error: $x->meth 123
 
+-- lookup for existing subroutines:
+   sub m { my @x = 8, 9; @x } $x = m();  # m() is not a "match"
+
 
 * Perl5 backend
 
