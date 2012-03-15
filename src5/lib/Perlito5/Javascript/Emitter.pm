@@ -1022,6 +1022,14 @@ package Perlito5::AST::Apply;
                 .   ' || (' . $arg->emit_javascript_indented( $level ) . ' = new ArrayRef([]))'
                 . ')._array_';
         }
+        if ( $code eq 'prefix:<$#>' ) {
+            my $arg = $self->{"arguments"}->[0];
+            return
+                  '(('
+                .   $arg->emit_javascript_indented( $level ) 
+                .   ' || (' . $arg->emit_javascript_indented( $level ) . ' = new ArrayRef([]))'
+                . ')._array_.length - 1)';
+        }
         if ( $code eq 'prefix:<%>' ) {
             my $arg = $self->{"arguments"}->[0];
             return '(' . $arg->emit_javascript_indented( $level ) . ')._hash_';

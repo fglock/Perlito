@@ -2164,6 +2164,13 @@ var p5100 = NAMESPACE['main'];
 							throw(('(' + p5str(_call_(v_arg, "emit_javascript_indented", [v_level])) + ' || (' + p5str(_call_(v_arg, "emit_javascript_indented", [v_level])) + ' = new ArrayRef([]))' + ')._array_'));
 							})();
 					};
+					if ( (v_code == 'prefix:<$#>') ) {
+						(function () {
+							var v_arg = null;
+							(v_arg = ((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]);
+							throw(('((' + p5str(_call_(v_arg, "emit_javascript_indented", [v_level])) + ' || (' + p5str(_call_(v_arg, "emit_javascript_indented", [v_level])) + ' = new ArrayRef([]))' + ')._array_.length - 1)'));
+							})();
+					};
 					if ( (v_code == 'prefix:<%>') ) {
 						(function () {
 							var v_arg = null;
@@ -2787,6 +2794,7 @@ var p5100 = NAMESPACE['main'];
 		p5125.add_op(['postfix', 'block', v_prec]);
 		p5125.add_op(['postfix', 'hash', v_prec]);
 		p5125.add_op(['prefix', '$', v_prec]);
+		p5125.add_op(['prefix', '$#', v_prec]);
 		p5125.add_op(['prefix', '&', v_prec]);
 		p5125.add_op(['prefix', '*', v_prec]);
 		p5125.add_op(['prefix', '@', v_prec]);

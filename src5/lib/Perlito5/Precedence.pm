@@ -243,6 +243,7 @@ add_op( 'postfix', 'methcall_no_params', $prec, );
 add_op( 'postfix', 'block',              $prec, );
 add_op( 'postfix', 'hash',               $prec, );
 add_op( 'prefix',   '$',   $prec );
+add_op( 'prefix',   '$#',  $prec );
 add_op( 'prefix',   '&',   $prec );
 add_op( 'prefix',   '*',   $prec );
 add_op( 'prefix',   '@',   $prec );
