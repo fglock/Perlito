@@ -39,6 +39,19 @@ package Perlito5::Javascript;
         'infix:<>>>' => ' >>> ',
         'infix:<<<>' => ' << ',
     );
+    # our %op_to_bool = map +($_ => 1), qw(
+    #     prefix:<!>
+    #     infix:<!=>
+    #     infix:<==>
+    #     infix:<<=>
+    #     infix:<>=>
+    #     infix:<>>
+    #     infix:<<>
+    #     infix:<eq>
+    #     infix:<ne>
+    #     infix:<ge>
+    #     infix:<le>
+    # );
 
     my %safe_char = (
         ' ' => 1,

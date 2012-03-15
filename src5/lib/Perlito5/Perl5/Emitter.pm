@@ -246,6 +246,7 @@ package Perlito5::AST::Apply;
     );
 
     my %op_infix_perl5 = (
+        'list:<,>'   => ', ',
         'list:<.>'   => ' . ',
         'infix:<+>'  => ' + ',
         'infix:<->'  => ' - ',
