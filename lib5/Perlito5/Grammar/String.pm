@@ -689,9 +689,9 @@ sub Perlito5::Grammar::String::here_doc_wanted {
     if (!(defined($delimiter))) {
         return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 0), ('capture' => undef())))
     };
-    ((my  $placeholder) = Perlito5::AST::Val::Buf->new(('buf' => 'HEREDOC')));
+    ((my  $placeholder) = Perlito5::AST::Apply->new(('code' => 'list:<.>'), ('namespace' => ''), ('arguments' => [])));
     push(@Here_doc, [$type, sub {
-    ($placeholder->{'buf'} = $_[0])
+    ($placeholder->{'arguments'} = $_[0])
 }, $delimiter] );
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => ['term', $placeholder])))
 };
@@ -736,24 +736,46 @@ sub Perlito5::Grammar::String::here_doc {
     };
     ((my  $p) = $pos);
     ((my  $here) = shift(@Here_doc));
+    ((my  $type) = $here->[0]);
     ((my  $delimiter) = $here->[2]);
-    for ( ; ($p < length($str));  ) {
+    if (($type eq 'single_quote')) {
+        for ( ; ($p < length($str));  ) {
+            if ((substr($str, $p, length($delimiter)) eq $delimiter)) {
+                $here->[1]->([Perlito5::AST::Val::Buf->new(('buf' => substr($str, $pos, ($p - $pos))))]);
+                ($p = ($p + length($delimiter)));
+                ((my  $m) = $self->newline($str, $p));
+                if ((($p >= length($str)) || $m->{'bool'})) {
+                    if ($m->{'bool'}) {
+                        ($p = $m->{'to'})
+                    };
+                    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => undef())))
+                }
+            };
+            for ( ; (($p < length($str)) && (((substr($str, $p, 1) ne chr(10)) && (substr($str, $p, 1) ne chr(13)))));  ) {
+                ($p)++
+            };
+            for ( ; (($p < length($str)) && (((substr($str, $p, 1) eq chr(10)) || (substr($str, $p, 1) eq chr(13)))));  ) {
+                ($p)++
+            }
+        }
+    }
+    else {
+        (my  $m);
         if ((substr($str, $p, length($delimiter)) eq $delimiter)) {
-            $here->[1]->(substr($str, $pos, ($p - $pos)));
             ($p = ($p + length($delimiter)));
-            ((my  $m) = $self->newline($str, $p));
+            ($m = $self->newline($str, $p));
             if ((($p >= length($str)) || $m->{'bool'})) {
+                $here->[1]->([Perlito5::AST::Val::Buf->new(('buf' => ''))]);
                 if ($m->{'bool'}) {
                     ($p = $m->{'to'})
                 };
                 return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => undef())))
             }
         };
-        for ( ; (($p < length($str)) && (((substr($str, $p, 1) ne chr(10)) && (substr($str, $p, 1) ne chr(13)))));  ) {
-            ($p)++
-        };
-        for ( ; (($p < length($str)) && (((substr($str, $p, 1) eq chr(10)) || (substr($str, $p, 1) eq chr(13)))));  ) {
-            ($p)++
+        ($m = $self->string_interpolation_parse($str, $pos, (chr(10) . $delimiter . chr(10)), 1));
+        if ($m->{'bool'}) {
+            $here->[1]->([$m->flat()]);
+            return ($m)
         }
     };
     die(('Can' . chr(39) . 't find string terminator "' . $delimiter . '" anywhere before EOF'))

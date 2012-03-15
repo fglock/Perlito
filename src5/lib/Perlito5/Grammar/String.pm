@@ -297,10 +297,14 @@ sub here_doc_wanted {
             'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 0, capture => undef);
     }
 
-    my $placeholder = Perlito5::AST::Val::Buf->new( buf => 'HEREDOC' );
+    my $placeholder = Perlito5::AST::Apply->new( 
+        code      => 'list:<.>',
+        namespace => '',
+        arguments => [] 
+    );
     push @Here_doc, [
         $type,
-        sub { $placeholder->{"buf"} = $_[0] },
+        sub { $placeholder->{"arguments"} = $_[0] },
         $delimiter,
     ];
 
@@ -337,34 +341,59 @@ sub here_doc {
 
     my $p = $pos;
     my $here = shift @Here_doc;
+    my $type      = $here->[0];
     my $delimiter = $here->[2];
-    # say "got a newline and we are looking for a ", $here->[0], " that ends with ", $delimiter;
-    while ( $p < length($str) ) {
+    # say "got a newline and we are looking for a $type that ends with ", $delimiter;
+    if ($type eq 'single_quote') {
+        while ( $p < length($str) ) {
+            if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
+                # this will put the text in the right place in the AST
+                $here->[1]->( [Perlito5::AST::Val::Buf->new(buf => substr($str, $pos, $p - $pos))] );
+                $p += length($delimiter);
+                # say "$p ", length($str);
+                my $m = $self->newline( $str, $p );
+                if ( $p >= length($str) || $m->{"bool"} ) {
+                    # return true
+                    $p = $m->{"to"} if $m->{"bool"};
+                    return Perlito5::Match->new(
+                        'str' => $str, 'from' => $pos, 'to' => $p, 'bool' => 1, capture => undef);
+                }
+            }
+            # ... next line
+            while (  $p < length($str)
+                  && ( substr($str, $p, 1) ne chr(10) && substr($str, $p, 1) ne chr(13) )
+                  )
+            {
+                $p++
+            }
+            while (  $p < length($str)
+                  && ( substr($str, $p, 1) eq chr(10) || substr($str, $p, 1) eq chr(13) )
+                  )
+            {
+                $p++
+            }
+        }
+    }
+    else {
+        # double_quote
+        my $m;
         if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
-            # this will put the text in the right place in the AST
-            $here->[1]->(substr($str, $pos, $p - $pos));
             $p += length($delimiter);
-            # say "$p ", length($str);
-            my $m = $self->newline( $str, $p );
+            $m = $self->newline( $str, $p );
             if ( $p >= length($str) || $m->{"bool"} ) {
-                # return true
+                $here->[1]->( [Perlito5::AST::Val::Buf->new( buf => '' )] );
                 $p = $m->{"to"} if $m->{"bool"};
                 return Perlito5::Match->new(
                     'str' => $str, 'from' => $pos, 'to' => $p, 'bool' => 1, capture => undef);
             }
         }
-        # ... next line
-        while (  $p < length($str)
-              && ( substr($str, $p, 1) ne chr(10) && substr($str, $p, 1) ne chr(13) )
-              )
-        {
-            $p++
-        }
-        while (  $p < length($str)
-              && ( substr($str, $p, 1) eq chr(10) || substr($str, $p, 1) eq chr(13) )
-              )
-        {
-            $p++
+
+        # TODO - compare to newline() instead of "\n"
+
+        $m = $self->string_interpolation_parse($str, $pos, "\n" . $delimiter . "\n", 1);
+        if ( $m->{"bool"} ) {
+            $here->[1]->( [$m->flat()] );
+            return $m;
         }
     }
     die 'Can\'t find string terminator "' . $delimiter . '" anywhere before EOF';
