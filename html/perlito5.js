@@ -1136,6 +1136,10 @@ var p5100 = NAMESPACE['main'];
 			(NAMESPACE["Perlito5::Javascript"]["Hash_op_infix_js_str"] = array_to_hash(interpolate_array('infix:<eq>', ' == ', 'infix:<ne>', ' != ', 'infix:<le>', ' <= ', 'infix:<ge>', ' >= ')));
 			// our NAMESPACE["Perlito5::Javascript"]["Hash_op_infix_js_num"]
 			(NAMESPACE["Perlito5::Javascript"]["Hash_op_infix_js_num"] = array_to_hash(interpolate_array('infix:<==>', ' == ', 'infix:<!=>', ' != ', 'infix:<+>', ' + ', 'infix:<->', ' - ', 'infix:<*>', ' * ', 'infix:</>', ' / ', 'infix:<>>', ' > ', 'infix:<<>', ' < ', 'infix:<>=>', ' >= ', 'infix:<<=>', ' <= ', 'infix:<&>', ' & ', 'infix:<|>', ' | ', 'infix:<^>', ' ^ ', 'infix:<>>>', ' >>> ', 'infix:<<<>', ' << ')));
+			// our NAMESPACE["Perlito5::Javascript"]["Hash_op_to_bool"]
+			(NAMESPACE["Perlito5::Javascript"]["Hash_op_to_bool"] = array_to_hash(interpolate_array(p5map(p5123, function () {
+	return (((NAMESPACE["Perlito5::Javascript"]["v__"], 1)));
+}, ['prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>']))));
 			var Hash_safe_char = {};
 			(Hash_safe_char = array_to_hash(interpolate_array(' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1)));
 			make_sub("Perlito5::Javascript", "escape_string", function (List__) {
@@ -1234,7 +1238,7 @@ var p5100 = NAMESPACE['main'];
 					if ( (bool(_call_(v_cond, "isa", ['Perlito5::AST::Apply'])) && ((p5str(_call_(v_cond, "code", [])) == 'infix:<||>') || (p5str(_call_(v_cond, "code", [])) == 'infix:<or>'))) ) {
 						throw(('(' + p5str(p5123.to_bool([((v_cond || (v_cond = new HashRef({})))._hash_['arguments'] || ((v_cond || (v_cond = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]])) + ' || ' + p5str(p5123.to_bool([((v_cond || (v_cond = new HashRef({})))._hash_['arguments'] || ((v_cond || (v_cond = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[1]])) + ')'));
 					};
-					if ( ((bool(_call_(v_cond, "isa", ['Perlito5::AST::Val::Int'])) || bool(_call_(v_cond, "isa", ['Perlito5::AST::Val::Num']))) || (bool(_call_(v_cond, "isa", ['Perlito5::AST::Apply'])) && (((((((((((p5str(_call_(v_cond, "code", [])) == 'prefix:<!>') || (p5str(_call_(v_cond, "code", [])) == 'infix:<!=>')) || (p5str(_call_(v_cond, "code", [])) == 'infix:<==>')) || (p5str(_call_(v_cond, "code", [])) == 'infix:<<=>')) || (p5str(_call_(v_cond, "code", [])) == 'infix:<>=>')) || (p5str(_call_(v_cond, "code", [])) == 'infix:<>>')) || (p5str(_call_(v_cond, "code", [])) == 'infix:<<>')) || (p5str(_call_(v_cond, "code", [])) == 'infix:<eq>')) || (p5str(_call_(v_cond, "code", [])) == 'infix:<ne>')) || (p5str(_call_(v_cond, "code", [])) == 'infix:<ge>')) || (p5str(_call_(v_cond, "code", [])) == 'infix:<le>')))) ) {
+					if ( ((bool(_call_(v_cond, "isa", ['Perlito5::AST::Val::Int'])) || bool(_call_(v_cond, "isa", ['Perlito5::AST::Val::Num']))) || (bool(_call_(v_cond, "isa", ['Perlito5::AST::Apply'])) && bool((NAMESPACE["Perlito5::Javascript"]["Hash_op_to_bool"]).hasOwnProperty(_call_(v_cond, "code", []))))) ) {
 						throw(_call_(v_cond, "emit_javascript", []))
 					}
 					
@@ -2195,6 +2199,11 @@ var p5100 = NAMESPACE['main'];
 						throw(('(' + p5113.join([' + ', p5map(p5113, function () {
 	return (NAMESPACE["Perlito5::Javascript"].to_str([NAMESPACE["Perlito5::AST::Apply"]["v__"]]));
 }, ((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_)]) + ')'));
+					};
+					if ( (p5str(v_code) == 'list:<,>') ) {
+						throw(('[' + p5113.join([', ', p5map(p5113, function () {
+	return (NAMESPACE["Perlito5::Javascript"].to_str([NAMESPACE["Perlito5::AST::Apply"]["v__"]]));
+}, ((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_)]) + ']'));
 					};
 					if ( (p5str(v_code) == 'infix:<..>') ) {
 						throw(('(function (a) { ' + 'for (var i=' + p5str(_call_(((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0], "emit_javascript", [])) + ', l=' + p5str(_call_(((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[1], "emit_javascript", [])) + '; ' + 'i<=l; ++i)' + '{ ' + 'a.push(i) ' + '}; ' + 'return a ' + '})([])'));

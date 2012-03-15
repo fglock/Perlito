@@ -23,6 +23,7 @@ join("", chr(9) x $level)
     };
     ((our  %op_infix_js_str) = (('infix:<eq>' => ' == '), ('infix:<ne>' => ' != '), ('infix:<le>' => ' <= '), ('infix:<ge>' => ' >= ')));
     ((our  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<>>>' => ' >>> '), ('infix:<<<>' => ' << ')));
+    ((our  %op_to_bool) = map(+((($_ => 1))), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>')));
     ((my  %safe_char) = ((' ' => 1), ('!' => 1), ('"' => 1), ('#' => 1), ('$' => 1), ('%' => 1), ('&' => 1), ('(' => 1), (')' => 1), ('*' => 1), ('+' => 1), (',' => 1), ('-' => 1), ('.' => 1), ('/' => 1), (':' => 1), (';' => 1), ('<' => 1), ('=' => 1), ('>' => 1), ('?' => 1), ('@' => 1), ('[' => 1), (']' => 1), ('^' => 1), ('_' => 1), ('`' => 1), ('{' => 1), ('|' => 1), ('}' => 1), ('~' => 1)));
     sub Perlito5::Javascript::escape_string {
         ((my  $s) = shift());
@@ -81,7 +82,7 @@ join("", chr(9) x $level)
         if (($cond->isa('Perlito5::AST::Apply') && ((($cond->code() eq 'infix:<||>') || ($cond->code() eq 'infix:<or>'))))) {
             return (('(' . to_bool($cond->{'arguments'}->[0]) . ' || ' . to_bool($cond->{'arguments'}->[1]) . ')'))
         };
-        if (((($cond->isa('Perlito5::AST::Val::Int')) || ($cond->isa('Perlito5::AST::Val::Num'))) || (($cond->isa('Perlito5::AST::Apply') && (((((((((((($cond->code() eq 'prefix:<!>') || ($cond->code() eq 'infix:<!=>')) || ($cond->code() eq 'infix:<==>')) || ($cond->code() eq 'infix:<<=>')) || ($cond->code() eq 'infix:<>=>')) || ($cond->code() eq 'infix:<>>')) || ($cond->code() eq 'infix:<<>')) || ($cond->code() eq 'infix:<eq>')) || ($cond->code() eq 'infix:<ne>')) || ($cond->code() eq 'infix:<ge>')) || ($cond->code() eq 'infix:<le>'))))))) {
+        if (((($cond->isa('Perlito5::AST::Val::Int')) || ($cond->isa('Perlito5::AST::Val::Num'))) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_bool{$cond->code()}))))) {
             return ($cond->emit_javascript())
         }
         else {

@@ -16,12 +16,14 @@ package Perlito5::Javascript;
         "\t" x $level
     }
 
+    # these operators need 2 "str" parameters
     our %op_infix_js_str = (
         'infix:<eq>' => ' == ',
         'infix:<ne>' => ' != ',
         'infix:<le>' => ' <= ',
         'infix:<ge>' => ' >= ',
     );
+    # these operators need 2 "num" parameters
     our %op_infix_js_num = (
         'infix:<==>' => ' == ',
         'infix:<!=>' => ' != ',
@@ -39,19 +41,20 @@ package Perlito5::Javascript;
         'infix:<>>>' => ' >>> ',
         'infix:<<<>' => ' << ',
     );
-    # our %op_to_bool = map +($_ => 1), qw(
-    #     prefix:<!>
-    #     infix:<!=>
-    #     infix:<==>
-    #     infix:<<=>
-    #     infix:<>=>
-    #     infix:<>>
-    #     infix:<<>
-    #     infix:<eq>
-    #     infix:<ne>
-    #     infix:<ge>
-    #     infix:<le>
-    # );
+    # these operators always return "bool"
+    our %op_to_bool = map +($_ => 1), qw(
+        prefix:<!>
+        infix:<!=>
+        infix:<==>
+        infix:<<=>
+        infix:<>=>
+        infix:<>>
+        infix:<<>
+        infix:<eq>
+        infix:<ne>
+        infix:<ge>
+        infix:<le>
+    );
 
     my %safe_char = (
         ' ' => 1,
@@ -179,20 +182,7 @@ package Perlito5::Javascript;
 
             if  (  ($cond->isa( 'Perlito5::AST::Val::Int' ))
                 || ($cond->isa( 'Perlito5::AST::Val::Num' ))
-                || ($cond->isa( 'Perlito5::AST::Apply' ) 
-                   && (  $cond->code eq 'prefix:<!>'
-                      || $cond->code eq 'infix:<!=>'
-                      || $cond->code eq 'infix:<==>'
-                      || $cond->code eq 'infix:<<=>'
-                      || $cond->code eq 'infix:<>=>'
-                      || $cond->code eq 'infix:<>>'
-                      || $cond->code eq 'infix:<<>'
-                      || $cond->code eq 'infix:<eq>'
-                      || $cond->code eq 'infix:<ne>'
-                      || $cond->code eq 'infix:<ge>'
-                      || $cond->code eq 'infix:<le>'
-                      )
-                   )
+                || ($cond->isa( 'Perlito5::AST::Apply' ) && exists $op_to_bool{ $cond->code })
                 )
             {
                 return $cond->emit_javascript;
