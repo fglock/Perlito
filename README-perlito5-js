@@ -110,6 +110,19 @@ local
 our
 - ...
 
+return list (TODO)
+
+    # $x = fun()
+    v_x = fun().pop()
+    # v_x is 'undefined' if the list is empty
+
+    # ($x, @a) = fun()
+    (function(){ var tmp = fun(); v_x = tmp.shift; List_a = tmp })()
+
+    # in scalar context, perl uses the last value returned
+    $ perl -e ' sub x { return 4,5 } my $x = x(); print "$x\n"; '
+    5
+
 
 * Javascript resources
 
