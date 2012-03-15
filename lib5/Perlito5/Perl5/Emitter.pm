@@ -45,9 +45,6 @@ join("", '    ' x $level)
 package Perlito5::AST::CompUnit;
 for ($_) {
     sub Perlito5::AST::CompUnit::emit_perl5 {
-        $_[0]->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::CompUnit::emit_perl5_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         (my  @body);
@@ -56,13 +53,13 @@ for ($_) {
                 push(@body, $_ )
             }
         };
-        (Perlito5::Perl5::tab($level) . 'package ' . $self->{'name'} . ';' . chr(10) . join(';' . chr(10), map($_->emit_perl5_indented($level), @body)) . ';' . chr(10) . chr(10))
+        (Perlito5::Perl5::tab($level) . 'package ' . $self->{'name'} . ';' . chr(10) . join(';' . chr(10), map($_->emit_perl5($level), @body)) . ';' . chr(10) . chr(10))
     };
     sub Perlito5::AST::CompUnit::emit_perl5_program {
         ((my  $comp_units) = $_[0]);
         ((my  $str) = ('' . 'use v5;' . chr(10) . 'use utf8;' . chr(10) . 'use strict;' . chr(10) . 'use warnings;' . chr(10) . 'no warnings (' . chr(39) . 'redefine' . chr(39) . ', ' . chr(39) . 'once' . chr(39) . ', ' . chr(39) . 'void' . chr(39) . ', ' . chr(39) . 'uninitialized' . chr(39) . ', ' . chr(39) . 'misc' . chr(39) . ', ' . chr(39) . 'recursion' . chr(39) . ');' . chr(10) . 'use Perlito5::Perl5::Runtime;' . chr(10) . 'our $MATCH = Perlito5::Match->new();' . chr(10)));
         for my $comp_unit (@{$comp_units}) {
-            ($str = ($str . $comp_unit->emit_perl5_indented(0)))
+            ($str = ($str . $comp_unit->emit_perl5(0)))
         };
         ($str = ($str . '1;' . chr(10)));
         return ($str)
@@ -72,10 +69,6 @@ package Perlito5::AST::Val::Int;
 for ($_) {
     sub Perlito5::AST::Val::Int::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Val::Int::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         (Perlito5::Perl5::tab($level) . $self->{'int'})
     }
@@ -83,10 +76,6 @@ for ($_) {
 package Perlito5::AST::Val::Num;
 for ($_) {
     sub Perlito5::AST::Val::Num::emit_perl5 {
-        ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Val::Num::emit_perl5_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         (Perlito5::Perl5::tab($level) . $self->{'num'})
@@ -96,10 +85,6 @@ package Perlito5::AST::Val::Buf;
 for ($_) {
     sub Perlito5::AST::Val::Buf::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Val::Buf::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         (Perlito5::Perl5::tab($level) . Perlito5::Perl5::escape_string($self->{'buf'}))
     }
@@ -108,53 +93,37 @@ package Perlito5::AST::Lit::Block;
 for ($_) {
     sub Perlito5::AST::Lit::Block::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Lit::Block::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        (Perlito5::Perl5::tab($level) . 'for ($_) {' . chr(10) . join(';' . chr(10), map($_->emit_perl5_indented(($level + 1)), @{$self->{'stmts'}})) . chr(10) . Perlito5::Perl5::tab($level) . '}')
+        (Perlito5::Perl5::tab($level) . 'for ($_) {' . chr(10) . join(';' . chr(10), map($_->emit_perl5(($level + 1)), @{$self->{'stmts'}})) . chr(10) . Perlito5::Perl5::tab($level) . '}')
     }
 };
 package Perlito5::AST::Index;
 for ($_) {
     sub Perlito5::AST::Index::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Index::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
             ((my  $v) = $self->{'obj'});
-            return (($v->emit_perl5_indented($level) . '[' . $self->{'index_exp'}->emit_perl5() . ']'))
+            return (($v->emit_perl5($level) . '[' . $self->{'index_exp'}->emit_perl5() . ']'))
         };
-        ($self->{'obj'}->emit_perl5_indented($level) . '->[' . $self->{'index_exp'}->emit_perl5() . ']')
+        ($self->{'obj'}->emit_perl5($level) . '->[' . $self->{'index_exp'}->emit_perl5() . ']')
     }
 };
 package Perlito5::AST::Lookup;
 for ($_) {
     sub Perlito5::AST::Lookup::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Lookup::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
             ((my  $v) = $self->{'obj'});
-            return (($v->emit_perl5_indented($level) . '{' . $self->{'index_exp'}->emit_perl5() . '}'))
+            return (($v->emit_perl5($level) . '{' . $self->{'index_exp'}->emit_perl5() . '}'))
         };
-        ($self->{'obj'}->emit_perl5_indented($level) . '->{' . $self->{'index_exp'}->emit_perl5() . '}')
+        ($self->{'obj'}->emit_perl5($level) . '->{' . $self->{'index_exp'}->emit_perl5() . '}')
     }
 };
 package Perlito5::AST::Var;
 for ($_) {
     sub Perlito5::AST::Var::emit_perl5 {
-        ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Var::emit_perl5_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         ((my  $ns) = '');
@@ -168,10 +137,6 @@ package Perlito5::AST::Proto;
 for ($_) {
     sub Perlito5::AST::Proto::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Proto::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         (Perlito5::Perl5::tab($level) . $self->{'name'})
     }
@@ -179,10 +144,6 @@ for ($_) {
 package Perlito5::AST::Call;
 for ($_) {
     sub Perlito5::AST::Call::emit_perl5 {
-        ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Call::emit_perl5_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         ((my  $invocant) = $self->{'invocant'}->emit_perl5());
@@ -208,14 +169,10 @@ for ($_) {
     ((my  %op_infix_perl5) = (('list:<.>' => ' . '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<**>' => ' ** '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<&&>' => ' && '), ('infix:<||>' => ' || '), ('infix:<and>' => ' and '), ('infix:<or>' => ' or '), ('infix:<//>' => ' // '), ('infix:<eq>' => ' eq '), ('infix:<ne>' => ' ne '), ('infix:<le>' => ' le '), ('infix:<ge>' => ' ge '), ('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<=>>' => ' => '), ('infix:<=~>' => ' =~ '), ('infix:<!~>' => ' !~ ')));
     sub Perlito5::AST::Apply::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Apply::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         ((my  $apply) = $self->op_assign());
         if ($apply) {
-            return ($apply->emit_perl5_indented($level))
+            return ($apply->emit_perl5($level))
         };
         ((my  $ns) = '');
         if ($self->{'namespace'}) {
@@ -328,34 +285,22 @@ package Perlito5::AST::If;
 for ($_) {
     sub Perlito5::AST::If::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::If::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
-        return ((Perlito5::Perl5::tab($level) . 'if (' . $self->{'cond'}->emit_perl5() . ') {' . chr(10) . (($self->{'body'} ? (join(';' . chr(10), map($_->emit_perl5_indented(($level + 1)), @{$self->{'body'}->stmts()})) . chr(10)) : '')) . Perlito5::Perl5::tab($level) . '}' . ((($self->{'otherwise'} && scalar(@{$self->{'otherwise'}->stmts()})) ? ((chr(10) . Perlito5::Perl5::tab($level) . 'else {' . chr(10) . join(';' . chr(10), map($_->emit_perl5_indented(($level + 1)), @{$self->{'otherwise'}->stmts()})) . chr(10) . Perlito5::Perl5::tab($level) . '}')) : ''))))
+        return ((Perlito5::Perl5::tab($level) . 'if (' . $self->{'cond'}->emit_perl5() . ') {' . chr(10) . (($self->{'body'} ? (join(';' . chr(10), map($_->emit_perl5(($level + 1)), @{$self->{'body'}->stmts()})) . chr(10)) : '')) . Perlito5::Perl5::tab($level) . '}' . ((($self->{'otherwise'} && scalar(@{$self->{'otherwise'}->stmts()})) ? ((chr(10) . Perlito5::Perl5::tab($level) . 'else {' . chr(10) . join(';' . chr(10), map($_->emit_perl5(($level + 1)), @{$self->{'otherwise'}->stmts()})) . chr(10) . Perlito5::Perl5::tab($level) . '}')) : ''))))
     }
 };
 package Perlito5::AST::While;
 for ($_) {
     sub Perlito5::AST::While::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::While::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         ((my  $cond) = $self->{'cond'});
-        (Perlito5::Perl5::tab($level) . 'for ( ' . (($self->{'init'} ? ($self->{'init'}->emit_perl5() . '; ') : '; ')) . (($cond ? ($cond->emit_perl5() . '; ') : '; ')) . (($self->{'continue'} ? ($self->{'continue'}->emit_perl5() . ' ') : ' ')) . ') {' . chr(10) . join(';' . chr(10), map($_->emit_perl5_indented(($level + 1)), @{$self->{'body'}->stmts()})) . chr(10) . Perlito5::Perl5::tab($level) . '}')
+        (Perlito5::Perl5::tab($level) . 'for ( ' . (($self->{'init'} ? ($self->{'init'}->emit_perl5() . '; ') : '; ')) . (($cond ? ($cond->emit_perl5() . '; ') : '; ')) . (($self->{'continue'} ? ($self->{'continue'}->emit_perl5() . ' ') : ' ')) . ') {' . chr(10) . join(';' . chr(10), map($_->emit_perl5(($level + 1)), @{$self->{'body'}->stmts()})) . chr(10) . Perlito5::Perl5::tab($level) . '}')
     }
 };
 package Perlito5::AST::For;
 for ($_) {
     sub Perlito5::AST::For::emit_perl5 {
-        ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::For::emit_perl5_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         ((my  $cond) = $self->{'cond'});
@@ -363,16 +308,12 @@ for ($_) {
         if ($self->{'body'}->sig()) {
             ($sig = ('my ' . $self->{'body'}->sig()->emit_perl5() . ' '))
         };
-        return ((Perlito5::Perl5::tab($level) . 'for ' . $sig . '(' . $cond->emit_perl5() . ') {' . chr(10) . join(';' . chr(10), map($_->emit_perl5_indented(($level + 1)), @{$self->{'body'}->stmts()})) . chr(10) . Perlito5::Perl5::tab($level) . '}'))
+        return ((Perlito5::Perl5::tab($level) . 'for ' . $sig . '(' . $cond->emit_perl5() . ') {' . chr(10) . join(';' . chr(10), map($_->emit_perl5(($level + 1)), @{$self->{'body'}->stmts()})) . chr(10) . Perlito5::Perl5::tab($level) . '}'))
     }
 };
 package Perlito5::AST::Decl;
 for ($_) {
     sub Perlito5::AST::Decl::emit_perl5 {
-        ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Decl::emit_perl5_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         ((my  $decl) = $self->{'decl'});
@@ -385,10 +326,6 @@ package Perlito5::AST::Sub;
 for ($_) {
     sub Perlito5::AST::Sub::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Sub::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         ((my  $name) = '');
         if ($self->{'name'}) {
@@ -396,29 +333,21 @@ for ($_) {
         };
         ((my  $sig) = $self->{'sig'});
         ((my  $i) = 0);
-        (Perlito5::Perl5::tab($level) . 'sub ' . $name . '{' . chr(10) . join(';' . chr(10), map($_->emit_perl5_indented(($level + 1)), @{$self->{'block'}})) . chr(10) . Perlito5::Perl5::tab($level) . '}')
+        (Perlito5::Perl5::tab($level) . 'sub ' . $name . '{' . chr(10) . join(';' . chr(10), map($_->emit_perl5(($level + 1)), @{$self->{'block'}})) . chr(10) . Perlito5::Perl5::tab($level) . '}')
     }
 };
 package Perlito5::AST::Do;
 for ($_) {
     sub Perlito5::AST::Do::emit_perl5 {
         ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Do::emit_perl5_indented {
-        ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         ((my  $block) = $self->simplify()->block());
-        (Perlito5::Perl5::tab($level) . '(do {' . chr(10) . join(';' . chr(10), map((defined($_) && $_->emit_perl5_indented(($level + 1))), @{$block})) . chr(10) . Perlito5::Perl5::tab($level) . '})')
+        (Perlito5::Perl5::tab($level) . '(do {' . chr(10) . join(';' . chr(10), map((defined($_) && $_->emit_perl5(($level + 1))), @{$block})) . chr(10) . Perlito5::Perl5::tab($level) . '})')
     }
 };
 package Perlito5::AST::Use;
 for ($_) {
     sub Perlito5::AST::Use::emit_perl5 {
-        ((my  $self) = $_[0]);
-        $self->emit_perl5_indented(0)
-    };
-    sub Perlito5::AST::Use::emit_perl5_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         if ((($self->{'mod'} eq 'strict') || ($self->{'mod'} eq 'feature'))) {

@@ -85,14 +85,11 @@ for ($_) {
         $_[0]->{'top_level'}
     };
     sub Perlito5::Perl6::LexicalBlock::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::Perl6::LexicalBlock::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         if ($self->{'top_level'}) {
             ((my  $block) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->block()), ('needs_return' => $self->needs_return()), ('top_level' => 0)));
-            return (($block->emit_perl6_indented(($level + 1)) . ';' . chr(10)))
+            return (($block->emit_perl6(($level + 1)) . ';' . chr(10)))
         };
         (my  @block);
         for (@{$self->{'block'}}) {
@@ -117,7 +114,7 @@ for ($_) {
         };
         for my $decl (@block) {
             if (!((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my'))))) {
-                push(@str, ($decl->emit_perl6_indented($level) . ';') )
+                push(@str, ($decl->emit_perl6($level) . ';') )
             }
         };
         return ((join(chr(10), @str) . ';'))
@@ -126,10 +123,6 @@ for ($_) {
 package Perlito5::AST::CompUnit;
 for ($_) {
     sub Perlito5::AST::CompUnit::emit_perl6 {
-        ((my  $self) = $_[0]);
-        $self->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::CompUnit::emit_perl6_indented {
         ((my  $self) = $_[0]);
         ((my  $level) = $_[1]);
         (my  @body);
@@ -168,12 +161,12 @@ for ($_) {
         };
         for my $decl (@body) {
             if ($decl->isa('Perlito5::AST::Sub')) {
-                ($str = ($str . ($decl)->emit_perl6_indented(($level + 1)) . ';' . chr(10)))
+                ($str = ($str . ($decl)->emit_perl6(($level + 1)) . ';' . chr(10)))
             }
         };
         for my $decl (@body) {
             if (((defined($decl) && (!((($decl->isa('Perlito5::AST::Decl') && ($decl->decl() eq 'my')))))) && (!(($decl->isa('Perlito5::AST::Sub')))))) {
-                ($str = ($str . ($decl)->emit_perl6_indented(($level + 1)) . ';' . chr(10)))
+                ($str = ($str . ($decl)->emit_perl6(($level + 1)) . ';' . chr(10)))
             }
         };
         ($str . '}' . chr(10))
@@ -191,9 +184,6 @@ for ($_) {
 package Perlito5::AST::Val::Int;
 for ($_) {
     sub Perlito5::AST::Val::Int::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Val::Int::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . $self->{'int'})
@@ -202,9 +192,6 @@ for ($_) {
 package Perlito5::AST::Val::Num;
 for ($_) {
     sub Perlito5::AST::Val::Num::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Val::Num::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . $self->{'num'})
@@ -213,9 +200,6 @@ for ($_) {
 package Perlito5::AST::Val::Buf;
 for ($_) {
     sub Perlito5::AST::Val::Buf::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Val::Buf::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . Perlito5::Perl6::escape_string($self->{'buf'}))
@@ -224,29 +208,23 @@ for ($_) {
 package Perlito5::AST::Lit::Block;
 for ($_) {
     sub Perlito5::AST::Lit::Block::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Lit::Block::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $sig) = '$_');
         if ($self->{'sig'}) {
-            ($sig = $self->{'sig'}->emit_perl6_indented(($level + 1)))
+            ($sig = $self->{'sig'}->emit_perl6(($level + 1)))
         };
-        return ((Perlito5::Perl6::tab($level) . ('(function (' . $sig . ') {' . chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{'stmts'}), ('needs_return' => 1)))->emit_perl6_indented(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '})'))
+        return ((Perlito5::Perl6::tab($level) . ('(function (' . $sig . ') {' . chr(10)) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{'stmts'}), ('needs_return' => 1)))->emit_perl6(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '})'))
     }
 };
 package Perlito5::AST::Index;
 for ($_) {
     sub Perlito5::AST::Index::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Index::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
             ((my  $v) = Perlito5::AST::Var->new(('sigil' => '@'), ('namespace' => $self->{'obj'}->namespace()), ('name' => $self->{'obj'}->name())));
-            return (($v->emit_perl6_indented($level) . '[' . $self->{'index_exp'}->emit_perl6() . ']'))
+            return (($v->emit_perl6($level) . '[' . $self->{'index_exp'}->emit_perl6() . ']'))
         };
         (Perlito5::Perl6::tab($level) . $self->{'obj'}->emit_perl6() . '[' . $self->{'index_exp'}->emit_perl6() . ']')
     }
@@ -254,24 +232,18 @@ for ($_) {
 package Perlito5::AST::Lookup;
 for ($_) {
     sub Perlito5::AST::Lookup::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Lookup::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         if (($self->{'obj'}->isa('Perlito5::AST::Var') && ($self->{'obj'}->sigil() eq '$'))) {
             ((my  $v) = Perlito5::AST::Var->new(('sigil' => '%'), ('namespace' => $self->{'obj'}->namespace()), ('name' => $self->{'obj'}->name())));
-            return (($v->emit_perl6_indented($level) . '{' . $self->{'index_exp'}->emit_perl6() . '}'))
+            return (($v->emit_perl6($level) . '{' . $self->{'index_exp'}->emit_perl6() . '}'))
         };
-        return (($self->{'obj'}->emit_perl6_indented($level) . '{' . $self->{'index_exp'}->emit_perl6() . '}'))
+        return (($self->{'obj'}->emit_perl6($level) . '{' . $self->{'index_exp'}->emit_perl6() . '}'))
     }
 };
 package Perlito5::AST::Var;
 for ($_) {
     sub Perlito5::AST::Var::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Var::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         if (($self->{'sigil'} eq '*')) {
@@ -291,9 +263,6 @@ for ($_) {
 package Perlito5::AST::Proto;
 for ($_) {
     sub Perlito5::AST::Proto::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Proto::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . $self->{'name'})
@@ -302,9 +271,6 @@ for ($_) {
 package Perlito5::AST::Call;
 for ($_) {
     sub Perlito5::AST::Call::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Call::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $invocant) = $self->{'invocant'}->emit_perl6());
@@ -333,14 +299,11 @@ package Perlito5::AST::Apply;
 for ($_) {
     ((my  %op_infix_js) = (('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:<x>' => ' x '), ('infix:<+>' => ' + '), ('infix:<.>' => ' ~ '), ('infix:</>' => ' / '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<eq>' => ' eq '), ('infix:<ne>' => ' ne '), ('infix:<le>' => ' le '), ('infix:<ge>' => ' ge '), ('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<..>' => ' .. '), ('infix:<&&>' => ' && '), ('infix:<||>' => ' || '), ('infix:<and>' => ' and '), ('infix:<or>' => ' or '), ('infix:<//>' => ' // ')));
     sub Perlito5::AST::Apply::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Apply::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $apply) = $self->op_assign());
         if ($apply) {
-            return ($apply->emit_perl6_indented($level))
+            return ($apply->emit_perl6($level))
         };
         ((my  $code) = $self->{'code'});
         if ((ref($code) ne '')) {
@@ -464,9 +427,6 @@ for ($_) {
 package Perlito5::AST::If;
 for ($_) {
     sub Perlito5::AST::If::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::If::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $cond) = $self->{'cond'});
@@ -474,10 +434,10 @@ for ($_) {
             ($cond = Perlito5::AST::Apply->new(('code' => 'prefix:<@>'), ('arguments' => [$cond])))
         };
         ((my  $body) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{'body'}->stmts()), ('needs_return' => 0)));
-        ((my  $s) = (Perlito5::Perl6::tab($level) . 'if ( ' . Perlito5::Perl6::to_bool($cond) . ' ) {' . chr(10) . $body->emit_perl6_indented(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '}'));
+        ((my  $s) = (Perlito5::Perl6::tab($level) . 'if ( ' . Perlito5::Perl6::to_bool($cond) . ' ) {' . chr(10) . $body->emit_perl6(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '}'));
         if (@{$self->{'otherwise'}->stmts()}) {
             ((my  $otherwise) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{'otherwise'}->stmts()), ('needs_return' => 0)));
-            ($s = ($s . chr(10) . Perlito5::Perl6::tab($level) . 'else {' . chr(10) . $otherwise->emit_perl6_indented(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '}'))
+            ($s = ($s . chr(10) . Perlito5::Perl6::tab($level) . 'else {' . chr(10) . $otherwise->emit_perl6(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '}'))
         };
         return ($s)
     }
@@ -485,38 +445,29 @@ for ($_) {
 package Perlito5::AST::While;
 for ($_) {
     sub Perlito5::AST::While::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::While::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $body) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{'body'}->stmts()), ('needs_return' => 0)));
-        return ((Perlito5::Perl6::tab($level) . 'loop ( ' . (($self->{'init'} ? ($self->{'init'}->emit_perl6() . '; ') : '; ')) . (($self->{'cond'} ? (Perlito5::Perl6::to_bool($self->{'cond'}) . '; ') : '; ')) . (($self->{'continue'} ? ($self->{'continue'}->emit_perl6() . ' ') : ' ')) . ') {' . chr(10) . $body->emit_perl6_indented(($level + 1)) . ' }'))
+        return ((Perlito5::Perl6::tab($level) . 'loop ( ' . (($self->{'init'} ? ($self->{'init'}->emit_perl6() . '; ') : '; ')) . (($self->{'cond'} ? (Perlito5::Perl6::to_bool($self->{'cond'}) . '; ') : '; ')) . (($self->{'continue'} ? ($self->{'continue'}->emit_perl6() . ' ') : ' ')) . ') {' . chr(10) . $body->emit_perl6(($level + 1)) . ' }'))
     }
 };
 package Perlito5::AST::For;
 for ($_) {
     sub Perlito5::AST::For::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::For::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $cond) = $self->{'cond'});
         ((my  $body) = Perlito5::Perl6::LexicalBlock->new(('block' => $self->{'body'}->stmts()), ('needs_return' => 0)));
         ((my  $sig) = '$_');
         if ($self->{'body'}->sig()) {
-            ($sig = $self->{'body'}->sig()->emit_perl6_indented(($level + 1)))
+            ($sig = $self->{'body'}->sig()->emit_perl6(($level + 1)))
         };
-        (Perlito5::Perl6::tab($level) . 'for ' . $cond->emit_perl6() . ' -> ' . $sig . ' { ' . $body->emit_perl6_indented(($level + 1)) . '}' . chr(10))
+        (Perlito5::Perl6::tab($level) . 'for ' . $cond->emit_perl6() . ' -> ' . $sig . ' { ' . $body->emit_perl6(($level + 1)) . '}' . chr(10))
     }
 };
 package Perlito5::AST::Decl;
 for ($_) {
     sub Perlito5::AST::Decl::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Decl::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         (Perlito5::Perl6::tab($level) . $self->{'var'}->emit_perl6())
@@ -529,32 +480,23 @@ for ($_) {
 package Perlito5::AST::Sub;
 for ($_) {
     sub Perlito5::AST::Sub::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Sub::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        (Perlito5::Perl6::tab($level) . 'sub ' . (($self->{'name'} ? $self->{'name'} : '')) . '(*@_) {' . chr(10) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{'block'}), ('needs_return' => 1), ('top_level' => 1)))->emit_perl6_indented(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '}')
+        (Perlito5::Perl6::tab($level) . 'sub ' . (($self->{'name'} ? $self->{'name'} : '')) . '(*@_) {' . chr(10) . (Perlito5::Perl6::LexicalBlock->new(('block' => $self->{'block'}), ('needs_return' => 1), ('top_level' => 1)))->emit_perl6(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '}')
     }
 };
 package Perlito5::AST::Do;
 for ($_) {
     sub Perlito5::AST::Do::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Do::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $block) = $self->simplify()->block());
-        return ((Perlito5::Perl6::tab($level) . '(do {' . chr(10) . (Perlito5::Perl6::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_perl6_indented(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '})'))
+        return ((Perlito5::Perl6::tab($level) . '(do {' . chr(10) . (Perlito5::Perl6::LexicalBlock->new(('block' => $block), ('needs_return' => 1)))->emit_perl6(($level + 1)) . chr(10) . Perlito5::Perl6::tab($level) . '})'))
     }
 };
 package Perlito5::AST::Use;
 for ($_) {
     sub Perlito5::AST::Use::emit_perl6 {
-        $_[0]->emit_perl6_indented(0)
-    };
-    sub Perlito5::AST::Use::emit_perl6_indented {
         ((my  $self) = shift());
         ((my  $level) = shift());
         ((my  $mod) = $self->{'mod'});
