@@ -120,6 +120,23 @@ CORE.sqrt  = function(List__) { return Math.sqrt(List__[0]) };
 CORE.atan2 = function(List__) { return Math.atan2(List__[0], List__[1]) };
 CORE.int   = function(List__) { return List__[0] > 0 ? Math.floor(List__[0]) : Math.ceil(List__[0]) };
 
+CORE.lc      = function(List__) { return List__[0].toLowerCase() };
+CORE.uc      = function(List__) { return List__[0].toUpperCase() };
+
+CORE.lcfirst = function(List__) {
+    var s = List__[0];
+    var c = s.length > 0 ? s.slice(0,1).toLowerCase() : "";
+    s = s.length > 1 ? substr(s, 1) : "";
+    return c + s
+};
+
+CORE.ucfirst = function(List__) {
+    var s = List__[0];
+    var c = s.length > 0 ? s.slice(0,1).toUpperCase() : "";
+    s = s.length > 1 ? substr(s, 1) : "";
+    return c + s
+};
+
 CORE.substr = function(List__) {
     var expr        = List__[0];
     var offset      = List__[1];
