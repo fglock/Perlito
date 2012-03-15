@@ -720,6 +720,9 @@ for ($_) {
         if (($code eq 'list:<.>')) {
             return (('(' . join(' + ', map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')'))
         };
+        if (($code eq 'list:<,>')) {
+            return (('[' . join(', ', map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ']'))
+        };
         if (($code eq 'infix:<..>')) {
             return (('(function (a) { ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript() . ', l=' . $self->{'arguments'}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])'))
         };

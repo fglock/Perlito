@@ -1069,13 +1069,19 @@ package Perlito5::AST::Apply;
 
         if ($code eq 'infix:<x>')  { return 'str_replicate(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
 
-        if ($code eq 'list:<.>')
-        { 
+        if ($code eq 'list:<.>') { 
             return '('  
                 . join( ' + ',
                         map( Perlito5::Javascript::to_str($_), @{$self->{"arguments"}} )
                       )
                 . ')' 
+        }
+        if ($code eq 'list:<,>') { 
+            return '['  
+                . join( ', ',
+                        map( Perlito5::Javascript::to_str($_), @{$self->{"arguments"}} )
+                      )
+                . ']' 
         }
 
         if ($code eq 'infix:<..>') {
