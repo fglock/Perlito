@@ -661,13 +661,28 @@ sub Perlito5::Grammar::String::here_doc_wanted {
     ((my  $p) = $pos);
     if ((substr($str, $p, 2) eq '<<')) {
         ($p = ($p + 2));
-        if ((substr($str, $p, 1) eq chr(39))) {
+        ((my  $quote) = substr($str, $p, 1));
+        if ((($quote eq chr(39)) || ($quote eq '"'))) {
             ($p = ($p + 1));
-            ((my  $m) = Perlito5::Grammar::String->single_quote_parse($str, $p));
+            ((my  $m) = $self->string_interpolation_parse($str, $p, $quote, 0));
             if ($m->{'bool'}) {
                 ($p = $m->{'to'});
                 ($delimiter = $m->flat()->{'buf'});
-                ($type = 'single_quote')
+                ($type = (($quote eq chr(39)) ? 'single_quote' : 'double_quote'))
+            }
+        }
+        else {
+            if (($quote eq chr(92))) {
+                ($p = ($p + 1))
+            };
+            ((my  $m) = Perlito5::Grammar->ident($str, $p));
+            if ($m->{'bool'}) {
+                ($p = $m->{'to'});
+                ($delimiter = $m->flat());
+                ($type = (($quote eq chr(92)) ? 'single_quote' : 'double_quote'))
+            }
+            else {
+                die('Use of bare << to mean <<"" is deprecated')
             }
         }
     };

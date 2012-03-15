@@ -265,14 +265,28 @@ sub here_doc_wanted {
     my $p = $pos;
     if ( substr($str, $p, 2) eq '<<' ) {
         $p += 2;
-        if ( substr($str, $p, 1) eq "'" ) {
+        my $quote = substr($str, $p, 1);
+        if ( $quote eq "'" || $quote eq '"' ) {
             $p += 1;
-            my $m = Perlito5::Grammar::String->single_quote_parse( $str, $p );
+            my $m = $self->string_interpolation_parse($str, $p, $quote, 0);
             if ( $m->{"bool"} ) {
                 $p = $m->{"to"};
                 $delimiter = $m->flat()->{"buf"};
-                $type = 'single_quote';
-                # say "got a here-doc delimiter: [$delimiter]";
+                $type = $quote eq "'" ? 'single_quote' : 'double_quote';
+                # say "got a $type here-doc delimiter: [$delimiter]";
+            }
+        }
+        else {
+            $p += 1 if $quote eq '\\';
+            my $m = Perlito5::Grammar->ident($str, $p);
+            if ( $m->{"bool"} ) {
+                $p = $m->{"to"};
+                $delimiter = $m->flat();
+                $type = $quote eq '\\' ? 'single_quote' : 'double_quote';
+                # say "got a $type here-doc delimiter: [$delimiter]";
+            }
+            else {
+                die 'Use of bare << to mean <<"" is deprecated';
             }
         }
     }

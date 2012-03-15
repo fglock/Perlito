@@ -7103,19 +7103,40 @@ var p5100 = NAMESPACE['main'];
 				var v_p = null;
 				(v_p = v_pos);
 				if ( (p5129.substr([v_str, v_p, 2]) == '<<') ) {
-					(v_p = add(v_p, 2));
-					if ( (p5129.substr([v_str, v_p, 1]) == String.fromCharCode(39)) ) {
-						(function () {
-							(v_p = add(v_p, 1));
-							var v_m = null;
-							(v_m = _call_(NAMESPACE["Perlito5::Grammar::String"], "single_quote_parse", [v_str,v_p]));
-							if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
-								(v_p = (v_m || (v_m = new HashRef({})))._hash_['to']);
-								(v_delimiter = (_call_(v_m, "flat", []) || (_call_(v_m, "flat", []) = new HashRef({})))._hash_['buf']);
-								(v_type = 'single_quote');
-							};
-							})();
-					};
+					(function () {
+						(v_p = add(v_p, 2));
+						var v_quote = null;
+						(v_quote = p5129.substr([v_str, v_p, 1]));
+						if ( ((v_quote == String.fromCharCode(39)) || (v_quote == '"')) ) {
+							(function () {
+								(v_p = add(v_p, 1));
+								var v_m = null;
+								(v_m = _call_(v_self, "string_interpolation_parse", [v_str,v_p,v_quote,0]));
+								if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+									(v_p = (v_m || (v_m = new HashRef({})))._hash_['to']);
+									(v_delimiter = (_call_(v_m, "flat", []) || (_call_(v_m, "flat", []) = new HashRef({})))._hash_['buf']);
+									(v_type = ( (v_quote == String.fromCharCode(39)) ? 'single_quote' : 'double_quote'));
+								};
+								})();
+						}
+						else {
+							(function () {
+								if ( (v_quote == String.fromCharCode(92)) ) {
+									(v_p = add(v_p, 1));
+								};
+								var v_m = null;
+								(v_m = _call_(NAMESPACE["Perlito5::Grammar"], "ident", [v_str,v_p]));
+								if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+									(v_p = (v_m || (v_m = new HashRef({})))._hash_['to']);
+									(v_delimiter = _call_(v_m, "flat", []));
+									(v_type = ( (v_quote == String.fromCharCode(92)) ? 'single_quote' : 'double_quote'));
+								}
+								else {
+									p5129.die(['Use of bare << to mean <<"" is deprecated']);
+								};
+								})();
+						};
+						})();
 				};
 				if ( !( bool((v_delimiter != null))) ) {
 					throw(_call_(NAMESPACE["Perlito5::Match"], "new", ['str', v_str,'from', v_pos,'to', v_pos,'bool', 0,'capture', null]));
