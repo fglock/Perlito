@@ -72,6 +72,7 @@ function make_package(pkg_name) {
         NAMESPACE[pkg_name]["v_a"] = null;
         NAMESPACE[pkg_name]["v_b"] = null;
         NAMESPACE[pkg_name]["v__"] = null;
+        NAMESPACE[pkg_name]["v_^O"] = isNode ? "node.js" : "javascript";
     }
     return NAMESPACE[pkg_name];
 }
@@ -1483,7 +1484,7 @@ var p5100 = NAMESPACE['main'];
 					(NAMESPACE["Perlito5"].v_PKG_NAME = 'main');
 					var v_str = null;
 					(v_str = ('' + 'var ' + p5str(NAMESPACE["Perlito5::Javascript"].pkg([])) + ' = NAMESPACE[' + String.fromCharCode(39) + p5str(NAMESPACE["Perlito5"].v_PKG_NAME) + String.fromCharCode(39) + '];' + String.fromCharCode(10)));
-					(NAMESPACE["Perlito5"].v_VAR = (new ArrayRef(interpolate_array((new HashRef(array_to_hash(interpolate_array('@_', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '@ARGV', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '$@', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$_', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"].v_PKG_NAME)))), '$a', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"].v_PKG_NAME)))), '$b', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"].v_PKG_NAME))))))))))));
+					(NAMESPACE["Perlito5"].v_VAR = (new ArrayRef(interpolate_array((new HashRef(array_to_hash(interpolate_array('@_', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '@ARGV', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '$@', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$^O', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$_', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"].v_PKG_NAME)))), '$a', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"].v_PKG_NAME)))), '$b', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"].v_PKG_NAME))))))))))));
 					for (var i_ = 0, a_ = (interpolate_array((v_comp_units || (v_comp_units = new ArrayRef([])))._array_)); i_ < a_.length ; i_++) { (function (v_comp_unit) {
 						(v_str = (p5str(v_str) + p5str(_call_(v_comp_unit, "emit_javascript", [])) + String.fromCharCode(10)));
 					})(a_[i_]) };

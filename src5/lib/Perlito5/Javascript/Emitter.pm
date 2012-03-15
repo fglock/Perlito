@@ -402,6 +402,7 @@ package Perlito5::AST::CompUnit;
             { '@_'    => { decl => 'my' }, # XXX
               '@ARGV' => { decl => 'my' }, # XXX
               '$@'    => { decl => 'our', namespace => 'main' },
+              '$^O'   => { decl => 'our', namespace => 'main' },
               '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
               '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
               '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
