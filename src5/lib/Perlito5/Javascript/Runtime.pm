@@ -73,14 +73,26 @@ function make_package(pkg_name) {
         NAMESPACE[pkg_name]._class_ = NAMESPACE[pkg_name];  // XXX memory leak
 
         // TODO - add the other package global variables
-        NAMESPACE[pkg_name]["List_ISA"] = [];
         NAMESPACE[pkg_name]["v_a"] = null;
         NAMESPACE[pkg_name]["v_b"] = null;
         NAMESPACE[pkg_name]["v__"] = null;
-        NAMESPACE[pkg_name]["v_^O"] = isNode ? "node.js" : "javascript";
+        NAMESPACE[pkg_name]["List_ISA"] = [];
+
+        if (pkg_name == "main") {
+            NAMESPACE[pkg_name]["v_^O"] = isNode ? "node.js" : "javascript";
+            NAMESPACE[pkg_name]["v_@"] = "";
+        }
     }
     return NAMESPACE[pkg_name];
 }
+
+make_package("main");
+NAMESPACE["main"]["List_ARGV"] = isNode ? process.argv.splice(2) : arguments;
+
+make_package("Perlito5");
+make_package("Perlito5::IO");
+make_package("Perlito5::Runtime");
+make_package("Perlito5::Grammar");
 
 function _method_lookup_(method, class_name, seen) {
     // default mro
@@ -118,14 +130,6 @@ function _call_(invocant, method, list) {
     NAMESPACE.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
 }
 
-make_package("main");
-NAMESPACE["main"]["v_@"] = [];   // $@
-
-make_package("Perlito5");
-make_package("Perlito5::IO");
-make_package("Perlito5::Runtime");
-make_package("Perlito5::Grammar");
-
 function make_sub(pkg_name, sub_name, func) {
     NAMESPACE[pkg_name][sub_name] = func;
 }
@@ -144,12 +148,6 @@ function cleanup_local(idx, value) {
         l[0][l[1]] = l[2];
     }
     return value;
-}
-
-if (isNode) {
-    List_ARGV = process.argv.splice(2);
-} else if (typeof arguments === "object") {
-    List_ARGV = arguments;
 }
 
 function HashRef(o) {
