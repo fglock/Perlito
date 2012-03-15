@@ -725,6 +725,7 @@ package Perlito5::AST::Apply;
     my %op_infix_js_num = (
         'infix:<==>' => ' == ',
         'infix:<!=>' => ' != ',
+        'infix:<+>'  => ' + ',
         'infix:<->'  => ' - ',
         'infix:<*>'  => ' * ',
         'infix:</>'  => ' / ',
@@ -1059,8 +1060,6 @@ package Perlito5::AST::Apply;
                       )
                 . ')' 
         }
-
-        if ($code eq 'infix:<+>')  { return 'add' . '('  . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
 
         if ($code eq 'infix:<..>') {
             return '(function (a) { '

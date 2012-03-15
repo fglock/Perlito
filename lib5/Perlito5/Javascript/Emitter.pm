@@ -534,7 +534,7 @@ for ($_) {
 package Perlito5::AST::Apply;
 for ($_) {
     ((my  %op_infix_js) = (('infix:<eq>' => ' == '), ('infix:<ne>' => ' != '), ('infix:<le>' => ' <= '), ('infix:<ge>' => ' >= ')));
-    ((my  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<>>>' => ' >>> '), ('infix:<<<>' => ' << ')));
+    ((my  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<>>>' => ' >>> '), ('infix:<<<>' => ' << ')));
     sub Perlito5::AST::Apply::emit_regex_javascript {
         ((my  $op) = shift());
         ((my  $var) = shift());
@@ -748,9 +748,6 @@ for ($_) {
         };
         if (($code eq 'list:<.>')) {
             return (('(' . join(' + ', map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')'))
-        };
-        if (($code eq 'infix:<+>')) {
-            return (('add' . '(' . join(', ', map($_->emit_javascript(), @{$self->{'arguments'}})) . ')'))
         };
         if (($code eq 'infix:<..>')) {
             return (('(function (a) { ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript() . ', l=' . $self->{'arguments'}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])'))

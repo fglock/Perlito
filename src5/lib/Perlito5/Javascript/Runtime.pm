@@ -267,10 +267,6 @@ num = function(o) {
     return o;
 };
 
-add = function(o1, o2) {
-    return num(o1) + num(o2)
-};
-
 bool = function(o) {
     if (o == null) {
         return o;
