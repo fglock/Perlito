@@ -1,8 +1,8 @@
 TODO list for Perlito5
 
-* Perlito5
+* perlito5 command-line
 
-- fix warning message after eval
+--
 
 
 * basic functionality
@@ -35,13 +35,14 @@ TODO list for Perlito5
 
 -- check that \(@a) and \@a have different meanings
 
--- double-quoted here-docs
-
 -- parse "local $x[1]"
 -- parse local $@
 
 -- $v{x} doesn't autoquote the index
 -- $v{x} doesn't interpolate inside double quotes
+-- deref inside double quotes:
+    $ node perlito5.js -Bjs -e ' my $x = "123"; my $y = \$x; print "[$$y]\n" '
+    [$[object Object]]
 
 -- this should give a syntax error: $x->meth 123
 
@@ -63,9 +64,6 @@ TODO list for Perlito5
 
 -- symbol variables like $] ${"main::\$"} $#_
 -- check that @_, $_, $a, $b and other special variables are in the right context (lexical, global, package global)
-
--- do EXPR (do $filename)
--- eval EXPR (try/catch)
 
 -- emit array/hash slices: @a[@x], @a{@x}
 

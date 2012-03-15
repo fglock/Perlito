@@ -834,43 +834,18 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
     ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
-    ((((((do {
-    (((('c' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    (((((('[' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->digits($str, $MATCH->{'to'}));
-    if ($m2->{'bool'}) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar.digits'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && (((']' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = chr($MATCH->{'Perlito5::Grammar.digits'}->flat()));
+    (((((((((do {
+    (((('a' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ($MATCH->{'capture'} = chr(7));
     1
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((do {
-    ((my  $m2) = Perlito5::Grammar->digits($str, $MATCH->{'to'}));
-    if ($m2->{'bool'}) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar.digits'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ($MATCH->{'capture'} = chr($MATCH->{'Perlito5::Grammar.digits'}->flat()));
+    ((((('b' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ($MATCH->{'capture'} = chr(8));
     1
 }))))
-})))
-})))
-})) || ((do {
+}))) || ((do {
     ($MATCH->{'to'} = $pos1);
     ((((('e' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ($MATCH->{'capture'} = chr(27));
@@ -878,8 +853,20 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
 }))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
+    ((((('f' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ($MATCH->{'capture'} = chr(12));
+    1
+}))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
     ((((('n' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ($MATCH->{'capture'} = chr(10));
+    1
+}))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((('r' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ($MATCH->{'capture'} = chr(13));
     1
 }))))
 }))) || ((do {

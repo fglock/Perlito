@@ -427,16 +427,33 @@ token single_quoted_unescape {
 };
 
 token double_quoted_unescape {
-    |  c
-        [   \[ <Perlito5::Grammar.digits> \]
-            { $MATCH->{"capture"} = chr( $MATCH->{"Perlito5::Grammar.digits"}->flat() ) }
-        |  <Perlito5::Grammar.digits>
-            { $MATCH->{"capture"} = chr( $MATCH->{"Perlito5::Grammar.digits"}->flat() ) }
-        ]
+
+    # TODO - "\"+octal "\x"+hex  - initial zero is optional; max 3 digit octal (377); max 2 digit hex
+    # TODO - \cC = Control-C
+    # TODO - \N{charname}     - requires "use charnames"
+    # TODO - \x{03a3}         - unicode hex
+    # TODO - \L \Q \U ... \E  - lowercase/uppercase/quote until /E
+    # TODO - \l \u            - uppercase next char
+
+    ## |  c
+    ##     [   \[ <Perlito5::Grammar.digits> \]
+    ##         { $MATCH->{"capture"} = chr( $MATCH->{"Perlito5::Grammar.digits"}->flat() ) }
+    ##     |  <Perlito5::Grammar.digits>
+    ##         { $MATCH->{"capture"} = chr( $MATCH->{"Perlito5::Grammar.digits"}->flat() ) }
+    ##     ]
+
+    |  a
+        { $MATCH->{"capture"} = chr(7) }
+    |  b
+        { $MATCH->{"capture"} = chr(8) }
     |  e
         { $MATCH->{"capture"} = chr(27) }
+    |  f
+        { $MATCH->{"capture"} = chr(12) }
     |  n
-        { $MATCH->{"capture"} = "\n" }
+        { $MATCH->{"capture"} = chr(10) }
+    |  r
+        { $MATCH->{"capture"} = chr(13) }
     |  t
         { $MATCH->{"capture"} = chr(9) }
     |  <char_any>
