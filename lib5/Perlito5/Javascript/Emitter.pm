@@ -763,7 +763,7 @@ for ($_) {
         };
         if (($code eq 'return')) {
             ($Perlito5::THROW = 1);
-            return (('throw(' . ((($self->{'arguments'} && @{$self->{'arguments'}}) ? $self->{'arguments'}->[0]->emit_javascript() : 'null')) . ')'))
+            return (('throw(' . ((($self->{'arguments'} && (@{$self->{'arguments'}} == 1)) ? $self->{'arguments'}->[0]->emit_javascript() : ('[' . join(', ', map($_->emit_javascript(), @{$self->{'arguments'}})) . ']'))) . ')'))
         };
         if (($code eq 'goto')) {
             ($Perlito5::THROW = 1);
