@@ -123,6 +123,12 @@ return list (TODO)
     $ perl -e ' sub x { return 4,5 } my $x = x(); print "$x\n"; '
     5
 
+    $ perl -e ' sub x { return 4,5 } my $x = x(); print "$x\n"; $x = 6, 7; print "$x\n"; sub k { my @x = (8, 9); @x } $x = k(); print "$x\n"; sub m { my @x = 8, 9; @x } $x = m(); print "$x\n"; '
+    5
+    6
+    2
+    1
+
 
 * Javascript resources
 
