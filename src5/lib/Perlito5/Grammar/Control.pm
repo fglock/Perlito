@@ -3,7 +3,25 @@ package Perlito5::Grammar;
 token unless {
     unless <.opt_ws> <Perlito5::Expression.term_paren>
        <.opt_ws> <Perlito5::Expression.term_curly>
-
+    [
+        <.opt_ws>
+        else <.opt_ws>
+            '{' <.opt_ws>
+                <Perlito5::Grammar.exp_stmts>
+                <.opt_ws>
+            '}'
+        {
+            my $body = $MATCH->{"Perlito5::Expression.term_curly"}->flat()->[2];
+            if (!defined($body)) {
+                die "Missing code block in 'if'";
+            }
+            $MATCH->{"capture"} = Perlito5::AST::If->new( 
+                cond      => $MATCH->{"Perlito5::Expression.term_paren"}->flat()->[2],
+                body      => Perlito5::AST::Lit::Block->new( stmts => $MATCH->{"Perlito5::Grammar.exp_stmts"}->flat() || [] ),
+                otherwise => Perlito5::AST::Lit::Block->new( stmts => $body),
+            )
+        }
+    |
         {
             my $body = $MATCH->{"Perlito5::Expression.term_curly"}->flat()->[2];
             if (!defined($body)) {
@@ -15,7 +33,7 @@ token unless {
                 otherwise => Perlito5::AST::Lit::Block->new(stmts => $body),
              )
         }
-
+    ]
 };
 
 token if {
