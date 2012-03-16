@@ -856,10 +856,12 @@ for ($_) {
             return (($code . '([' . join(', ', @out) . '], ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
         };
         ((my  @args) = ());
-        for (@{$self->{'arguments'}}) {
+        ((my  $arg_list) = Perlito5::Javascript::to_list_preprocess($self->{'arguments'}));
+        for (@{$arg_list}) {
             push(@args, $_->emit_javascript($level) )
         };
-        ($code . '([' . join(', ', @args) . '])')
+        ((my  $old_code) = ('[' . join(', ', @args) . ']'));
+        ($code . '(' . $old_code . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
     };
     sub Perlito5::AST::Apply::emit_javascript_bind {
         ((my  $parameters) = shift());
