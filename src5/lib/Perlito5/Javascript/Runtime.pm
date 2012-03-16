@@ -286,6 +286,9 @@ bool = function(o) {
     if (typeof o.length === "number") {
         return o.length;
     }
+    if (o instanceof Error) {
+        return true;
+    }
     for (var i in o) {
         return true;
     }
