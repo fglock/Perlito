@@ -467,6 +467,7 @@ package Perlito5::AST::CompUnit;
         my $comp_units = shift;
         $Perlito5::PKG_NAME = 'main';
         my $str = ''
+                .  "var p5want = null;\n"
                 .  "var " . Perlito5::Javascript::pkg . " = NAMESPACE['" . $Perlito5::PKG_NAME . "'];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my' }, # XXX
@@ -819,8 +820,9 @@ package Perlito5::AST::Apply;
     }
 
     sub emit_javascript {
-        my $self = shift;
+        my $self  = shift;
         my $level = shift;
+        my $wantarray = shift;
 
         my $apply = $self->op_assign();
         if ($apply) {
