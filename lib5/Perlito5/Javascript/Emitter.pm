@@ -860,7 +860,7 @@ for ($_) {
         for (@{$arg_list}) {
             push(@args, $_->emit_javascript($level) )
         };
-        ((my  $old_code) = Perlito5::Javascript::to_list($arg_list));
+        ((my  $old_code) = ('[' . join(', ', @args) . ']'));
         ($code . '(' . $old_code . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')')
     };
     sub Perlito5::AST::Apply::emit_javascript_bind {
