@@ -92,7 +92,6 @@ package Perlito5::AST::CompUnit;
         my $str = ''
             . "use v5;\n"
             . "use utf8;\n"
-            . "use strict;\n"
             . "use warnings;\n"
             . "no warnings ('redefine', 'once', 'void', 'uninitialized', 'misc', 'recursion');\n"
             . "use Perlito5::Perl5::Runtime;\n"
@@ -243,6 +242,7 @@ package Perlito5::AST::Apply;
         'prefix:<++>'   => '++',
         'prefix:<-->'   => '--',
         'prefix:<+>'    => '+',
+        'prefix:<->'    => '-',
     );
 
     my %op_infix_perl5 = (
