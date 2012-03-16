@@ -837,8 +837,24 @@ for ($_) {
                 push(@out, Perlito5::Javascript::to_list(\@in) )
             }
             else {
-                for (@in) {
-                    push(@out, $_->emit_javascript($level, 'scalar') )
+                if ((($sig eq chr(92) . '[@%]') || ($sig eq ';' . chr(92) . '@'))) {
+                    push(@out, shift(@in)->emit_javascript($level, 'list') )
+                }
+                else {
+                    if (($sig eq '$@')) {
+                        push(@out, shift(@in)->emit_javascript($level, 'scalar') );
+                        push(@out, Perlito5::Javascript::to_list(\@in) )
+                    }
+                    else {
+                        if (($sig eq '@')) {
+                            push(@out, Perlito5::Javascript::to_list(\@in) )
+                        }
+                        else {
+                            for (@in) {
+                                push(@out, $_->emit_javascript($level, 'scalar') )
+                            }
+                        }
+                    }
                 }
             };
             return (($code . '([' . join(', ', @out) . '], ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))

@@ -1251,17 +1251,17 @@ package Perlito5::AST::Apply;
                 push @out, shift(@in)->emit_javascript( $level, 'list' );
                 push @out, Perlito5::Javascript::to_list(\@in);
             }
-            # elsif ( $sig eq '\\[@%]'        # keys
-            #     ||  $sig eq ';\\@' ) {      # pop
-            #     push @out, shift(@in)->emit_javascript( $level, 'list' );
-            # }
-            # elsif ( $sig eq '$@' ) {        # join
-            #     push @out, shift(@in)->emit_javascript( $level, 'scalar' );
-            #     push @out, Perlito5::Javascript::to_list(\@in);
-            # }
-            # elsif ( $sig eq '@' ) {         # warn
-            #     push @out, Perlito5::Javascript::to_list(\@in);
-            # }
+            elsif ( $sig eq '\\[@%]'        # keys, values, each
+                ||  $sig eq ';\\@' ) {      # pop, shift
+                push @out, shift(@in)->emit_javascript( $level, 'list' );
+            }
+            elsif ( $sig eq '$@' ) {        # join
+                push @out, shift(@in)->emit_javascript( $level, 'scalar' );
+                push @out, Perlito5::Javascript::to_list(\@in);
+            }
+            elsif ( $sig eq '@' ) {         # warn
+                push @out, Perlito5::Javascript::to_list(\@in);
+            }
             else {
                 # just a list of scalars:
                 #   bless      $;$ 
