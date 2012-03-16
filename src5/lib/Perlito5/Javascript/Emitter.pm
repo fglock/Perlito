@@ -825,10 +825,11 @@ package Perlito5::AST::Apply;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
 
         my $apply = $self->op_assign();
         if ($apply) {
-            return $apply->emit_javascript( $level );
+            return $apply->emit_javascript( $level, $wantarray );
         }
 
         my $code = $self->{"code"};
