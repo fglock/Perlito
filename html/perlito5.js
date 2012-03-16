@@ -281,6 +281,9 @@ bool = function(o) {
     if (typeof o.length === "number") {
         return o.length;
     }
+    if (o instanceof Error) {
+        return true;
+    }
     for (var i in o) {
         return true;
     }
@@ -2812,7 +2815,7 @@ var p5100 = NAMESPACE['main'];
 		p5125.add_op(['infix', '||', v_prec]);
 		p5125.add_op(['infix', '//', v_prec]);
 		(v_prec = (num(v_prec) - 1));
-		p5125.add_op(['ternary', '? :', v_prec]);
+		p5125.add_op(['ternary', '? :', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right'))))]);
 		(v_prec = (num(v_prec) - 1));
 		p5125.add_op(['infix', '=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right'))))]);
 		p5125.add_op(['infix', '**=', v_prec, (new HashRef(array_to_hash(interpolate_array('assoc', 'right'))))]);
