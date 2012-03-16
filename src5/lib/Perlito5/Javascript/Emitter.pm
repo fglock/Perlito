@@ -194,9 +194,12 @@ package Perlito5::Javascript;
 
     sub to_list {
         my $items = to_list_preprocess( $_[0] );
+        my $level = $_[1];
+        my $wantarray = 'list';
+
         @$items
         ? 'interpolate_array('
-          .   join(', ', map( $_->emit_javascript, @$items ))
+          .   join(', ', map( $_->emit_javascript($level, $wantarray), @$items ))
           . ')'
         : '[]'
     }
@@ -760,20 +763,17 @@ package Perlito5::AST::Call;
                   '('
                 .   $invocant 
                 .   ' || (' . $invocant . ' = new ArrayRef([]))'
-                . ')._array_[' . $self->{"arguments"}->emit_javascript() . ']';
+                . ')._array_[' . $self->{"arguments"}->emit_javascript($level, 'list') . ']';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
             return
                   '('
                 .   $invocant 
                 .   ' || (' . $invocant . ' = new HashRef({}))'
-                . ')._hash_[' . $self->{"arguments"}->emit_javascript() . ']';
+                . ')._hash_[' . $self->{"arguments"}->emit_javascript($level, 'list') . ']';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
-            my @args = ();
-            push @args, $_->emit_javascript
-                for @{$self->{"arguments"}};
-            return '(' . $invocant . ')([' . join(',', @args) . '])';
+            return '(' . $invocant . ')(' . Perlito5::Javascript::to_list($self->{"arguments"}) . ')';
         }
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
             $meth = $meth->emit_javascript();

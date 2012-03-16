@@ -90,7 +90,9 @@ join("", chr(9) x $level)
     };
     sub Perlito5::Javascript::to_list {
         ((my  $items) = to_list_preprocess($_[0]));
-        (@{$items} ? ('interpolate_array(' . join(', ', map($_->emit_javascript(), @{$items})) . ')') : '[]')
+        ((my  $level) = $_[1]);
+        ((my  $wantarray) = 'list');
+        (@{$items} ? ('interpolate_array(' . join(', ', map($_->emit_javascript($level, $wantarray), @{$items})) . ')') : '[]')
     };
     sub Perlito5::Javascript::to_list_preprocess {
         (my  @items);
@@ -509,17 +511,13 @@ for ($_) {
         ((my  $invocant) = $self->{'invocant'}->emit_javascript());
         ((my  $meth) = $self->{'method'});
         if (($meth eq 'postcircumfix:<[ ]>')) {
-            return (('(' . $invocant . ' || (' . $invocant . ' = new ArrayRef([]))' . ')._array_[' . $self->{'arguments'}->emit_javascript() . ']'))
+            return (('(' . $invocant . ' || (' . $invocant . ' = new ArrayRef([]))' . ')._array_[' . $self->{'arguments'}->emit_javascript($level, 'list') . ']'))
         };
         if (($meth eq 'postcircumfix:<{ }>')) {
-            return (('(' . $invocant . ' || (' . $invocant . ' = new HashRef({}))' . ')._hash_[' . $self->{'arguments'}->emit_javascript() . ']'))
+            return (('(' . $invocant . ' || (' . $invocant . ' = new HashRef({}))' . ')._hash_[' . $self->{'arguments'}->emit_javascript($level, 'list') . ']'))
         };
         if (($meth eq 'postcircumfix:<( )>')) {
-            ((my  @args) = ());
-            for (@{$self->{'arguments'}}) {
-                push(@args, $_->emit_javascript() )
-            };
-            return (('(' . $invocant . ')([' . join(',', @args) . '])'))
+            return (('(' . $invocant . ')(' . Perlito5::Javascript::to_list($self->{'arguments'}) . ')'))
         };
         if ((ref($meth) eq 'Perlito5::AST::Var')) {
             ($meth = $meth->emit_javascript())
