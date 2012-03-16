@@ -506,6 +506,7 @@ for ($_) {
     sub Perlito5::AST::Call::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
+        ((my  $wantarray) = shift());
         ((my  $invocant) = $self->{'invocant'}->emit_javascript());
         ((my  $meth) = $self->{'method'});
         if (($meth eq 'postcircumfix:<[ ]>')) {
@@ -527,11 +528,7 @@ for ($_) {
         else {
             ($meth = ('"' . $meth . '"'))
         };
-        (my  @args);
-        for (@{$self->{'arguments'}}) {
-            push(@args, $_->emit_javascript() )
-        };
-        return (('_call_(' . $invocant . ', ' . $meth . ', [' . join(',', @args) . '])'))
+        return (('_call_(' . $invocant . ', ' . $meth . ', ' . Perlito5::Javascript::to_list($self->{'arguments'}) . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
     }
 };
 package Perlito5::AST::Apply;

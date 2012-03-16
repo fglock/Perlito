@@ -750,6 +750,8 @@ package Perlito5::AST::Call;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
+
         my $invocant = $self->{"invocant"}->emit_javascript;
         my $meth = $self->{"method"};
 
@@ -779,10 +781,15 @@ package Perlito5::AST::Call;
         else {
             $meth = '"' . $meth . '"';
         }
-        my @args;
-        push @args, $_->emit_javascript
-            for @{$self->{"arguments"}};
-        return '_call_(' . $invocant . ', ' . $meth . ', [' . join(',', @args) . '])'
+        return '_call_(' . $invocant . ', ' 
+                         . $meth . ', ' 
+                         . Perlito5::Javascript::to_list($self->{"arguments"}) . ', '
+                         .   ($wantarray eq 'list'   ? '1' 
+                             :$wantarray eq 'scalar' ? '0' 
+                             :$wantarray eq 'void'   ? 'null'
+                             :                         'p5want'
+                             ) 
+                  . ')'
     }
 }
 
@@ -1284,6 +1291,16 @@ package Perlito5::AST::Apply;
         push @args, $_->emit_javascript( $level )
             for @{$self->{"arguments"}};
         $code . '([' . join(', ', @args) . '])';
+
+        # $code . '('
+        #         . Perlito5::Javascript::to_list($self->{"arguments"}) . ', '
+        #         .   ($wantarray eq 'list'   ? '1' 
+        #             :$wantarray eq 'scalar' ? '0' 
+        #             :$wantarray eq 'void'   ? 'null'
+        #             :                         'p5want'
+        #             ) 
+        #       . ')';
+
     }
 
     sub emit_javascript_bind {
