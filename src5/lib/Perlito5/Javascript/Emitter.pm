@@ -1288,18 +1288,17 @@ package Perlito5::AST::Apply;
         }
 
         my @args = ();
-
         my $arg_list = Perlito5::Javascript::to_list_preprocess( $self->{"arguments"} );
-
         push @args, $_->emit_javascript( $level )
             for @$arg_list;
 
-        my $old_code = '[' . join(', ', @args) . ']';
-
-        # my $new_code = Perlito5::Javascript::to_list($self->{"arguments"});
+        my $arg_code = 
+            $self->{"code"} eq 'scalar'      # scalar() is special
+            ? '[' . join(', ', @args) . ']'
+            : Perlito5::Javascript::to_list($arg_list);
 
         $code . '('
-                . $old_code . ', '
+                . $arg_code . ', '
                 .   ($wantarray eq 'list'   ? '1' 
                     :$wantarray eq 'scalar' ? '0' 
                     :$wantarray eq 'void'   ? 'null'
