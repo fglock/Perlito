@@ -1248,11 +1248,8 @@ package Perlito5::AST::Apply;
 
 
             if ( $sig eq '\\@@' ) {         # push, unshift
-		my $v = shift(@in);
-                push @out, $v->emit_javascript( $level, 'list' );
-                push @out, Perlito5::Javascript::to_list([@in]);
-                # push @out, shift(@in)->emit_javascript( $level, 'list' );
-                # push @out, Perlito5::Javascript::to_list(\@in);
+                push @out, shift(@in)->emit_javascript( $level, 'list' );
+                push @out, Perlito5::Javascript::to_list(\@in);
             }
             # elsif ( $sig eq '\\[@%]'        # keys
             #     ||  $sig eq ';\\@' ) {      # pop

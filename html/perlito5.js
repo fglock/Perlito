@@ -2368,12 +2368,8 @@ var p5100 = NAMESPACE['main'];
 							var List_in = [];
 							(List_in = interpolate_array((or((v_self || (v_self = new HashRef({})))._hash_['arguments'], function () { return (new ArrayRef([])); }) || (or((v_self || (v_self = new HashRef({})))._hash_['arguments'], function () { return (new ArrayRef([])); }) = new ArrayRef([])))._array_));
 							if ( (p5str(v_sig) == String.fromCharCode(92) + '@@') ) {
-								(function () {
-									var v_v = null;
-									(v_v = p5113.shift([List_in]));
-									p5113.push([List_out, interpolate_array(_call_(v_v, "emit_javascript", [v_level,'list']))], p5want);
-									p5113.push([List_out, interpolate_array(NAMESPACE["Perlito5::Javascript"].to_list([(new ArrayRef(interpolate_array(List_in)))]))], p5want);
-									})();
+								p5113.push([List_out, interpolate_array(_call_(p5113.shift([List_in]), "emit_javascript", [v_level,'list']))], p5want);
+								p5113.push([List_out, interpolate_array(NAMESPACE["Perlito5::Javascript"].to_list([(new ArrayRef(List_in))]))], p5want);
 							}
 							else {
 								p5for(p5113, function () {
