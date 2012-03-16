@@ -1294,9 +1294,10 @@ package Perlito5::AST::Apply;
         push @args, $_->emit_javascript( $level )
             for @$arg_list;
 
-        my $old_code = '[' . join(', ', @args) . ']';
+        # my $old_code = '[' . join(', ', @args) . ']';
 
-        # my $new_code = Perlito5::Javascript::to_list($self->{"arguments"});
+        # my $old_code = Perlito5::Javascript::to_list($self->{"arguments"});
+        my $old_code = Perlito5::Javascript::to_list($arg_list);
 
         $code . '('
                 . $old_code . ', '

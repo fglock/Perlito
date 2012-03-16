@@ -26,6 +26,9 @@ sub Dumper {
         # TODO find out what kind of reference this is (ARRAY, HASH, ...)
         return 'bless(' . "..." . ", '$ref')";
     }
+    elsif (!defined $obj) {
+        return 'undef';
+    }
 
     return "'$obj'";
 
