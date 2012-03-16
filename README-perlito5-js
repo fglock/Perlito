@@ -81,6 +81,21 @@ Namespace
 Calling context ("wantarray", caller)
 - TODO
 
+- these are the possible compile-time contexts:
+    'scalar'
+    'list'
+    'void'
+    'runtime' (unknown)
+
+    'str'
+    'bool'
+    'num'
+
+- at run-time the contexts are in wantarray ("p5want" variable):
+    1
+    0
+    undef
+
 Alias
 - TODO
 - using String/Boolean/Number (boxed types) as SCALARs doesn't seem to work
