@@ -184,34 +184,19 @@ CORE.values = function(List__) {
     return out;
 };
 
-CORE.keys = function(List__, p5want) {
+CORE.keys = function(List__) {
     var o = List__[0];
-    if (p5want) {
-        if (o == null) {
-            return [];
-        }
-        if (typeof o.keys === "function") {
-            return o.keys();
-        }
-        var out = [];
-        for (var i in o) {
-            out.push(i);
-        }
-        return out;
+    if (o == null) {
+        return [];
     }
-    else {
-        if (o == null) {
-            return 0;
-        }
-        if (typeof o.keys === "function") {
-            return CORE.scalar([o.keys()]);
-        }
-        var out = 0;
-        for (var i in o) {
-            out++;
-        }
-        return out;
+    if (typeof o.keys === "function") {
+        return o.keys();
     }
+    var out = [];
+    for (var i in o) {
+        out.push(i);
+    }
+    return out;
 };
 
 CORE.reverse = function(List__) {
@@ -264,19 +249,13 @@ CORE.shift = function(List__) {
 CORE.push = function(List__) {
     var o = List__[0];
     var v = List__[1];
-    for(var i = 0; i < v.length; i++) {
-        o.push(v[i]);
-    }
-    return o.length;
+    return o.push(v);
 };
 
 CORE.unshift = function(List__) {
     var o = List__[0];
     var v = List__[1];
-    for(var i = v.length-1; i >= 0; i--) {
-        o.unshift(v[i]);
-    }
-    return o.length;
+    return o.unshift(v);
 };
 
 CORE.join = function(List__) {
