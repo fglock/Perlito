@@ -554,7 +554,7 @@ CORE.substr = function(List__) {
 CORE.scalar = function(List__) {
     var o = List__[0];
     if (o == null) {
-        return 1;
+        return o;
     };
     if (typeof o.scalar === "function") {
         return o.scalar();
