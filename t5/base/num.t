@@ -71,14 +71,14 @@ print $a + 1 == 2     ? "ok 18\n" : "not ok 18 #" . $a + 1 . "\n";
 $a = -1.; "$a";
 print $a + 1 == 0     ? "ok 19\n" : "not ok 19 #" . $a + 1 . "\n";
 
-## sub ok { # Can't assume too much of floating point numbers.
-##     my ($a, $b, $c) = @_;
-##     abs($a - $b) <= $c;
-## }
-## 
-## $a = 0.1; "$a";
-## print ok($a + 1,  1.1,  0.05)   ? "ok 20\n" : "not ok 20 #" . $a + 1 . "\n";
-## 
+sub ok { # Can't assume too much of floating point numbers.
+    my ($a, $b, $c) = @_;
+    abs($a - $b) <= $c;
+}
+
+$a = 0.1; "$a";
+print ok($a + 1,  1.1,  0.05)   ? "ok 20\n" : "not ok 20 #" . $a + 1 . "\n";
+
 ## $a = -0.1; "$a";
 ## print ok($a + 1,  0.9,  0.05)   ? "ok 21\n" : "not ok 21 #" . $a + 1 . "\n";
 ## 
