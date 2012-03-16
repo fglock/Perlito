@@ -467,6 +467,7 @@ package Perlito5::AST::CompUnit;
         my $comp_units = shift;
         $Perlito5::PKG_NAME = 'main';
         my $str = ''
+                .  "var p5want = null;\n"
                 .  "var " . Perlito5::Javascript::pkg . " = NAMESPACE['" . $Perlito5::PKG_NAME . "'];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my' }, # XXX
@@ -581,6 +582,7 @@ package Perlito5::AST::Var;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
 
         my $perl5_name = $self->perl5_name;
         # say "looking up $perl5_name";
@@ -647,6 +649,8 @@ package Perlito5::AST::Decl;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
+
         if ($self->{"decl"} eq 'local') {
 
             # TODO - add grammar support
@@ -869,6 +873,9 @@ package Perlito5::AST::Apply;
 
         if ($code eq '__PACKAGE__') {
             return '"' . $Perlito5::PKG_NAME . '"';
+        }
+        if ($code eq 'wantarray') {
+            return 'p5want';
         }
         if ($code eq 'package') {
             return "var " . Perlito5::Javascript::pkg() . ' = make_package("' . $self->{"namespace"} . '")'
