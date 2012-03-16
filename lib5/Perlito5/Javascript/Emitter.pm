@@ -106,6 +106,36 @@ join("", chr(9) x $level)
             }
         };
         return (\@items)
+    };
+    sub Perlito5::Javascript::to_scalar {
+        ((my  $items) = to_scalar_preprocess($_[0]));
+        ((my  $level) = $_[1]);
+        ((my  $wantarray) = 'scalar');
+        (@{$items} ? ('(' . join(', ', map($_->emit_javascript($level, $wantarray), @{$items})) . ')') : 'null')
+    };
+    sub Perlito5::Javascript::to_scalar_preprocess {
+        (my  @items);
+        for my $item (@{$_[0]}) {
+            if (($item->isa('Perlito5::AST::Apply') && ((($item->code() eq 'list:<,>') || ($item->code() eq 'infix:<=>>'))))) {
+                for my $arg (@{to_scalar_preprocess($item->arguments())}) {
+                    push(@items, $arg )
+                }
+            }
+            else {
+                push(@items, $item )
+            }
+        };
+        return (\@items)
+    };
+    sub Perlito5::Javascript::to_runtime_context {
+        ((my  $list) = to_list($_[0], $_[1]));
+        ((my  $scalar) = to_scalar($_[0], $_[1]));
+        if (($list eq $scalar)) {
+            return ($list)
+        }
+        else {
+            ('(p5want ? ' . $list . ' : ' . $scalar . ')')
+        }
     }
 };
 package Perlito5::Javascript::LexicalBlock;
@@ -270,7 +300,7 @@ for ($_) {
     sub Perlito5::AST::CompUnit::emit_javascript_program {
         ((my  $comp_units) = shift());
         ($Perlito5::PKG_NAME = 'main');
-        ((my  $str) = ('' . 'var ' . Perlito5::Javascript::pkg() . ' = NAMESPACE[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10)));
+        ((my  $str) = ('' . 'var p5want = null;' . chr(10) . 'var ' . Perlito5::Javascript::pkg() . ' = NAMESPACE[' . chr(39) . $Perlito5::PKG_NAME . chr(39) . '];' . chr(10)));
         ($Perlito5::VAR = [{('@_' => {('decl' => 'my')}), ('@ARGV' => {('decl' => 'my')}), ('$@' => {('decl' => 'our'), ('namespace' => 'main')}), ('$^O' => {('decl' => 'our'), ('namespace' => 'main')}), ('$_' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)}), ('$a' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)}), ('$b' => {('decl' => 'our'), ('namespace' => $Perlito5::PKG_NAME)})}]);
         for my $comp_unit (@{$comp_units}) {
             ($str = ($str . $comp_unit->emit_javascript() . chr(10)))
@@ -535,6 +565,7 @@ for ($_) {
     sub Perlito5::AST::Apply::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
+        ((my  $wantarray) = shift());
         ((my  $apply) = $self->op_assign());
         if ($apply) {
             return ($apply->emit_javascript($level))
@@ -782,6 +813,36 @@ for ($_) {
         }
         else {
             ($code = (Perlito5::Javascript::pkg() . '.' . $code))
+        };
+        (my  $sig);
+        for ($_) {
+            ((my  $name) = $self->{'code'});
+            (+((my  $namespace)) = $self->{'namespace'});
+            ((my  $effective_name) = ($self->{'code'} . '::' . $self->{'namespace'}));
+            if (exists($Perlito5::PROTO->{$effective_name})) {
+                ($sig = $Perlito5::PROTO->{$effective_name})
+            }
+            else {
+                if ((((!($namespace) || ($namespace eq 'CORE'))) && exists($Perlito5::CORE_PROTO->{('CORE::' . $name)}))) {
+                    ($effective_name = ('CORE::' . $name));
+                    ($sig = $Perlito5::CORE_PROTO->{$effective_name})
+                }
+            }
+        };
+        if ($sig) {
+            ((my  @out) = ());
+            ((my  @in) = @{($self->{'arguments'} || [])});
+            if (($sig eq chr(92) . '@@')) {
+                ((my  $v) = shift(@in));
+                push(@out, $v->emit_javascript($level, 'list') );
+                push(@out, Perlito5::Javascript::to_list([@in]) )
+            }
+            else {
+                for (@in) {
+                    push(@out, $_->emit_javascript($level, 'scalar') )
+                }
+            };
+            return (($code . '([' . join(', ', @out) . '], ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
         };
         ((my  @args) = ());
         for (@{$self->{'arguments'}}) {

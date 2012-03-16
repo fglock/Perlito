@@ -249,13 +249,19 @@ CORE.shift = function(List__) {
 CORE.push = function(List__) {
     var o = List__[0];
     var v = List__[1];
-    return o.push(v);
+    for(var i = 0; i < v.length; i++) {
+        o.push(v[i]);
+    }
+    return o.length;
 };
 
 CORE.unshift = function(List__) {
     var o = List__[0];
     var v = List__[1];
-    return o.unshift(v);
+    for(var i = v.length-1; i >= 0; i--) {
+        o.unshift(v[i]);
+    }
+    return o.length;
 };
 
 CORE.join = function(List__) {
