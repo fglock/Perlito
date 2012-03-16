@@ -218,6 +218,53 @@ package Perlito5::Javascript;
         }
         return \@items;
     }
+
+    sub to_scalar {
+        my $items = to_scalar_preprocess( $_[0] );
+        my $level = $_[1];
+        my $wantarray = 'scalar';
+
+        # Note: v = 1,2,5  // 5
+
+        @$items
+        ?   '('
+          .   join(', ', map( $_->emit_javascript($level, $wantarray), @$items ))
+          . ')'
+        : 'null'
+    }
+
+    sub to_scalar_preprocess {
+        my @items;
+        for my $item ( @{$_[0]} ) {
+            if (  $item->isa( 'Perlito5::AST::Apply' ) 
+               && ( $item->code eq 'list:<,>' || $item->code eq 'infix:<=>>' )
+               )
+            {
+                for my $arg ( @{ to_scalar_preprocess($item->arguments) } ) {
+                    push( @items, $arg);
+                }
+            }
+            else {
+                push( @items, $item);
+            }
+        }
+        return \@items;
+    }
+
+    sub to_runtime_context {
+        # check "p5want"
+
+        my $list   = to_list($_[0], $_[1]);
+        my $scalar = to_scalar($_[0], $_[1]);
+
+        if ($list eq $scalar) {
+            return $list;
+        }
+        else {
+            '(p5want ? ' . $list . ' : ' . $scalar . ')'
+        }
+    }
+
 }
 
 package Perlito5::Javascript::LexicalBlock;
