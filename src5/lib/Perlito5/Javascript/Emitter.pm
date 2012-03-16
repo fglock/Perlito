@@ -116,87 +116,119 @@ package Perlito5::Javascript;
     }
 
     sub to_str {
-            my $cond = shift;
+        my $cond = $_[0];
+        my $level = $_[1];
+        my $wantarray = 'scalar';
 
-            if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
-               && $cond->{"arguments"} && @{$cond->{"arguments"}}
-               ) 
-            {
-                return to_str( $cond->{"arguments"}[0] )
-            }
+        if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
+           && $cond->{"arguments"} && @{$cond->{"arguments"}}
+           ) 
+        {
+            return to_str( $cond->{"arguments"}[0] )
+        }
 
 
-            if  (  ($cond->isa( 'Perlito5::AST::Val::Buf' ))
-                || ($cond->isa( 'Perlito5::AST::Apply' ) 
-                   && (  $cond->code eq 'substr'
-                      || $cond->code eq 'join'
-                      || $cond->code eq 'list:<.>'
-                      )
-                   )
-                )
-            {
-                return $cond->emit_javascript;
-            }
-            else {
-                return 'p5str(' . $cond->emit_javascript . ')';
-            }
+        if  (  ($cond->isa( 'Perlito5::AST::Val::Buf' ))
+            || ($cond->isa( 'Perlito5::AST::Apply' ) 
+               && (  $cond->code eq 'substr'
+                  || $cond->code eq 'join'
+                  || $cond->code eq 'list:<.>'
+                  )
+               )
+            )
+        {
+            return $cond->emit_javascript($level, $wantarray);
+        }
+        else {
+            return 'p5str(' . $cond->emit_javascript($level, $wantarray) . ')';
+        }
     }
     sub to_num {
-            my $cond = shift;
-            if ($cond->isa( 'Perlito5::AST::Val::Int' ) || $cond->isa( 'Perlito5::AST::Val::Num' )) {
-                return $cond->emit_javascript;
-            }
-            else {
-                return 'num(' . $cond->emit_javascript . ')';
-            }
+        my $cond = $_[0];
+        my $level = $_[1];
+        my $wantarray = 'scalar';
+
+        if (  $cond->isa( 'Perlito5::AST::Var' )  && $cond->sigil eq '%'
+           || $cond->isa( 'Perlito5::AST::Decl' ) && $cond->var->sigil eq '%'
+           || $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'prefix:<%>'
+           )
+        {
+            return Perlito5::AST::Apply->new(
+                        code => 'keys',
+                        namespace => '',
+                        arguments => [ $cond ]
+                   )->emit_javascript($level, $wantarray);
+        }
+        if ($cond->isa( 'Perlito5::AST::Val::Int' ) || $cond->isa( 'Perlito5::AST::Val::Num' )) {
+            return $cond->emit_javascript($level, $wantarray);
+        }
+        else {
+            return 'num(' . $cond->emit_javascript($level, $wantarray) . ')';
+        }
     }
     sub to_bool {
-            my $cond = shift;
+        my $cond = $_[0];
+        my $level = $_[1];
+        my $wantarray = 'scalar';
 
-            if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
-               && $cond->{"arguments"} && @{$cond->{"arguments"}}
-               ) 
-            {
-                return to_bool( $cond->{"arguments"}[0] )
-            }
+        if (  $cond->isa( 'Perlito5::AST::Var' )  && $cond->sigil eq '%'
+           || $cond->isa( 'Perlito5::AST::Decl' ) && $cond->var->sigil eq '%'
+           || $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'prefix:<%>'
+           )
+        {
+            return Perlito5::AST::Apply->new(
+                        code => 'keys',
+                        namespace => '',
+                        arguments => [ $cond ]
+                   )->emit_javascript($level, $wantarray);
+        }
 
-            # Note: 'infix:<||>' and 'infix:<&&>' can only be optimized here because we know we want "bool"
-            if (  $cond->isa( 'Perlito5::AST::Apply' ) 
-               && (  $cond->code eq 'infix:<&&>'
-                  || $cond->code eq 'infix:<and>'
-                  )
-               ) 
-            {
-                return '(' . to_bool($cond->{"arguments"}->[0]) . ' && '
-                           . to_bool($cond->{"arguments"}->[1]) . ')'
-            }
-            if (  $cond->isa( 'Perlito5::AST::Apply' ) 
-               && (  $cond->code eq 'infix:<||>'
-                  || $cond->code eq 'infix:<or>'
-                  )
-               ) 
-            {
-                return '(' . to_bool($cond->{"arguments"}->[0]) . ' || '
-                           . to_bool($cond->{"arguments"}->[1]) . ')'
-            }
+        if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
+           && $cond->{"arguments"} && @{$cond->{"arguments"}}
+           ) 
+        {
+            return to_bool( $cond->{"arguments"}[0] )
+        }
 
-            if  (  ($cond->isa( 'Perlito5::AST::Val::Int' ))
-                || ($cond->isa( 'Perlito5::AST::Val::Num' ))
-                || ($cond->isa( 'Perlito5::AST::Apply' ) && exists $op_to_bool{ $cond->code })
-                )
-            {
-                return $cond->emit_javascript;
-            }
-            else {
-                return 'bool(' . $cond->emit_javascript . ')';
-            }
+        # Note: 'infix:<||>' and 'infix:<&&>' can only be optimized here because we know we want "bool"
+        if (  $cond->isa( 'Perlito5::AST::Apply' ) 
+           && (  $cond->code eq 'infix:<&&>'
+              || $cond->code eq 'infix:<and>'
+              )
+           ) 
+        {
+            return '(' . to_bool($cond->{"arguments"}->[0]) . ' && '
+                       . to_bool($cond->{"arguments"}->[1]) . ')'
+        }
+        if (  $cond->isa( 'Perlito5::AST::Apply' ) 
+           && (  $cond->code eq 'infix:<||>'
+              || $cond->code eq 'infix:<or>'
+              )
+           ) 
+        {
+            return '(' . to_bool($cond->{"arguments"}->[0]) . ' || '
+                       . to_bool($cond->{"arguments"}->[1]) . ')'
+        }
+
+        if  (  ($cond->isa( 'Perlito5::AST::Val::Int' ))
+            || ($cond->isa( 'Perlito5::AST::Val::Num' ))
+            || ($cond->isa( 'Perlito5::AST::Apply' ) && exists $op_to_bool{ $cond->code })
+            )
+        {
+            return $cond->emit_javascript($level, $wantarray);
+        }
+        else {
+            return 'bool(' . $cond->emit_javascript($level, $wantarray) . ')';
+        }
     }
 
     sub to_list {
         my $items = to_list_preprocess( $_[0] );
+        my $level = $_[1];
+        my $wantarray = 'list';
         @$items
         ? 'interpolate_array('
-          .   join(', ', map( $_->emit_javascript, @$items ))
+          .   join(', ', map( $_->emit_javascript($level, $wantarray), @$items ))
           . ')'
         : '[]'
     }
@@ -359,7 +391,7 @@ package Perlito5::Javascript::LexicalBlock;
             }
 
             if (!( $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my' )) {
-                push @str, $decl->emit_javascript($level) . ';';
+                push @str, $decl->emit_javascript($level, "void") . ';';
             }
         }
         if ($self->{"needs_return"} && $last_statement) {
@@ -403,14 +435,14 @@ package Perlito5::Javascript::LexicalBlock;
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
                   )
             {
-                push @str, $last_statement->emit_javascript($level)
+                push @str, $last_statement->emit_javascript($level, 'runtime')
             }
             else {
                 if ( $has_local ) {
-                    push @str, 'return cleanup_local(local_idx, (' . $last_statement->emit_javascript($level+1) . '));';
+                    push @str, 'return cleanup_local(local_idx, (' . $last_statement->emit_javascript($level+1, 'runtime') . '));';
                 }
                 else {
-                    push @str, 'return (' . $last_statement->emit_javascript($level+1) . ');';
+                    push @str, 'return (' . $last_statement->emit_javascript($level+1, 'runtime') . ');';
                 }
             }
         }
@@ -618,7 +650,12 @@ package Perlito5::AST::Var;
             return '(' . $ns . $table->{'@'} . $self->{"name"} . '.length - 1)';
         }
 
-        $ns . $table->{$self->{"sigil"}} . $self->{"name"}
+        my $str = $ns . $table->{$self->{"sigil"}} . $self->{"name"};
+        if ($wantarray eq 'scalar') {
+            return '"1/8"'         if $self->{"sigil"} eq '%';
+            return "($str).length" if $self->{"sigil"} eq '@';
+        }
+        return $str;
     }
     sub perl5_name {
         my $self = shift;
@@ -677,9 +714,9 @@ package Perlito5::AST::Decl;
                   'set_local(' . $ns . ','
                                . Perlito5::Javascript::escape_string($self->{"var"}{"name"}) . ','
                                . Perlito5::Javascript::escape_string($self->{"var"}{"sigil"}) . '); ' 
-                . $self->{"var"}->emit_javascript( $level );
+                . $self->{"var"}->emit_javascript($level, $wantarray);
         }
-        $self->{"var"}->emit_javascript( $level );
+        $self->{"var"}->emit_javascript($level, $wantarray);
     }
     sub emit_javascript_init {
         my $self = shift;
@@ -753,7 +790,9 @@ package Perlito5::AST::Call;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
-        my $invocant = $self->{"invocant"}->emit_javascript;
+        my $wantarray = shift;
+
+        my $invocant = $self->{"invocant"}->emit_javascript($level, 'scalar');
         my $meth = $self->{"method"};
 
         if ( $meth eq 'postcircumfix:<[ ]>' ) {
@@ -761,31 +800,36 @@ package Perlito5::AST::Call;
                   '('
                 .   $invocant 
                 .   ' || (' . $invocant . ' = new ArrayRef([]))'
-                . ')._array_[' . $self->{"arguments"}->emit_javascript() . ']';
+                . ')._array_[' . $self->{"arguments"}->emit_javascript($level, 'list') . ']';
         }
         if ( $meth eq 'postcircumfix:<{ }>' ) {
             return
                   '('
                 .   $invocant 
                 .   ' || (' . $invocant . ' = new HashRef({}))'
-                . ')._hash_[' . $self->{"arguments"}->emit_javascript() . ']';
+                . ')._hash_[' . $self->{"arguments"}->emit_javascript($level, 'list') . ']';
         }
         if  ($meth eq 'postcircumfix:<( )>')  {
             my @args = ();
-            push @args, $_->emit_javascript
+            push @args, $_->emit_javascript($level, 'list')
                 for @{$self->{"arguments"}};
             return '(' . $invocant . ')([' . join(',', @args) . '])';
         }
         if ( ref($meth) eq 'Perlito5::AST::Var' ) {
-            $meth = $meth->emit_javascript();
+            $meth = $meth->emit_javascript($level, 'scalar');
         }
         else {
             $meth = '"' . $meth . '"';
         }
-        my @args;
-        push @args, $_->emit_javascript
-            for @{$self->{"arguments"}};
-        return '_call_(' . $invocant . ', ' . $meth . ', [' . join(',', @args) . '])'
+        return '_call_(' . $invocant . ', ' 
+                         . $meth . ', ' 
+                         . Perlito5::Javascript::to_list($self->{"arguments"}) . ', '
+                         .   ($wantarray eq 'list'   ? '1' 
+                             :$wantarray eq 'scalar' ? '0' 
+                             :$wantarray eq 'void'   ? 'null'
+                             :                         'p5want'
+                             ) 
+                  . ')'
     }
 }
 
@@ -796,17 +840,18 @@ package Perlito5::AST::Apply;
         my $op = shift;
         my $var = shift;
         my $regex = shift;
+        my $level = shift;
 
         my $str;
         my $code = $regex->{"code"};
         my $regex_args = $regex->{"arguments"};
         if ($code eq 'p5:s') {
-            $str = $var->emit_javascript() 
-                 . ' = ' . $var->emit_javascript() . '.replace(/' . $regex_args->[0]->{"buf"} . '/' . $regex_args->[2] . ', '
+            $str = $var->emit_javascript($level, 'list') 
+                 . ' = ' . $var->emit_javascript($level, 'scalar') . '.replace(/' . $regex_args->[0]->{"buf"} . '/' . $regex_args->[2] . ', '
                  .  $regex_args->[1]->emit_javascript() . ')';
         }
         elsif ($code eq 'p5:m') {
-            $str = '(' . $var->emit_javascript() . '.match(/' . $regex_args->[0]->{"buf"} . '/' . $regex_args->[1] . ')'
+            $str = '(' . $var->emit_javascript($level, 'scalar') . '.match(/' . $regex_args->[0]->{"buf"} . '/' . $regex_args->[1] . ')'
                     . ' ? 1 : 0)';
         }
         else {
@@ -823,7 +868,7 @@ package Perlito5::AST::Apply;
     }
 
     sub emit_javascript {
-        my $self = shift;
+        my $self  = shift;
         my $level = shift;
         my $wantarray = shift;
 
@@ -836,9 +881,9 @@ package Perlito5::AST::Apply;
 
         if (ref $code ne '') {
             my @args = ();
-            push @args, $_->emit_javascript
+            push @args, $_->emit_javascript( $level, 'list' )
                 for @{$self->{"arguments"}};
-            return '(' . $self->{"code"}->emit_javascript( $level ) . ')(' . join(',', @args) . ')';
+            return '(' . $self->{"code"}->emit_javascript( $level, 'scalar' ) . ')(' . join(',', @args) . ')';
         }
 
 
@@ -881,9 +926,6 @@ package Perlito5::AST::Apply;
         if ($code eq 'package') {
             return "var " . Perlito5::Javascript::pkg() . ' = make_package("' . $self->{"namespace"} . '")'
         }
-        if ($code eq 'infix:<=>>') {
-            return join(', ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} ))
-        }
         if (exists $Perlito5::Javascript::op_infix_js_str{$code}) {
             return '(' 
                 . join( $Perlito5::Javascript::op_infix_js_str{$code}, map( Perlito5::Javascript::to_str($_), @{$self->{"arguments"}} ))
@@ -902,10 +944,10 @@ package Perlito5::AST::Apply;
             return '~( ' . Perlito5::Javascript::to_num( $self->{"arguments"}->[0] ) . ')';
         }
         if ( $code eq 'prefix:<->' ) {
-            return '-( ' . $self->{"arguments"}->[0]->emit_javascript() . ')';
+            return '-( ' . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar') . ')';
         }
         if ($code eq 'prefix:<+>') { 
-            return '('  . $self->{"arguments"}->[0]->emit_javascript()  . ')' 
+            return '('  . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar')  . ')' 
         }
 
         if ($code eq 'do') {
@@ -922,7 +964,7 @@ package Perlito5::AST::Apply;
                         )
                     ]
                 );
-            return $ast->emit_javascript( $level );
+            return $ast->emit_javascript( $level, $wantarray );
         }
 
         if ($code eq 'eval') {
@@ -931,7 +973,7 @@ package Perlito5::AST::Apply;
             my $arg = $self->{"arguments"}->[0];
             my $eval;
             if ($arg->isa( "Perlito5::AST::Do" )) {
-                $eval = $arg->emit_javascript( $level + 1 );
+                $eval = $arg->emit_javascript( $level + 1, $wantarray );
             }
             else {
                 my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::VAR );
@@ -973,16 +1015,16 @@ package Perlito5::AST::Apply;
 
         if ($code eq 'undef')      {
             if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return '(' . $self->{"arguments"}->[0]->emit_javascript . ' = null)'
+                return '(' . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar') . ' = null)'
             }
             return 'null'
         }
 
-        if ($code eq 'defined')    { return '('  . join(' ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} ))    . ' != null)' }
+        if ($code eq 'defined')    { return '('  . join(' ', map( $_->emit_javascript( $level, 'scalar' ), @{$self->{"arguments"}} ))    . ' != null)' }
 
         if ($code eq 'shift')      {
             if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return Perlito5::Javascript::pkg() . '.shift([' . join(', ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} )) . '])'
+                return Perlito5::Javascript::pkg() . '.shift([' . join(', ', map( $_->emit_javascript( $level, 'list' ), @{$self->{"arguments"}} )) . '])'
             }
             return Perlito5::Javascript::pkg() . '.shift([List__])'
         }
@@ -1004,7 +1046,7 @@ package Perlito5::AST::Apply;
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
                     . Perlito5::Javascript::tab($level) . '}, '
 
-                    .   $list->emit_javascript()
+                    .   $list->emit_javascript($level, 'list')
                     . ')';
         }
         if ($code eq 'grep') {
@@ -1024,7 +1066,7 @@ package Perlito5::AST::Apply;
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
                     . Perlito5::Javascript::tab($level) . '}, '
 
-                    .   $list->emit_javascript()
+                    .   $list->emit_javascript($level, 'list')
                     . ')';
         }
         if ($code eq 'sort') {
@@ -1051,33 +1093,33 @@ package Perlito5::AST::Apply;
 
             return 'p5sort(' . Perlito5::Javascript::pkg() . ', '
                     .   $fun . ', '
-                    .   $list->emit_javascript()
+                    .   $list->emit_javascript($level, 'list')
                     . ')';
         }
 
         if ( $code eq 'prefix:<$>' ) {
             my $arg = $self->{"arguments"}->[0];
-            return '(' . $arg->emit_javascript . ')._scalar_';
+            return '(' . $arg->emit_javascript($level, 'scalar') . ')._scalar_';
         }
         if ( $code eq 'prefix:<@>' ) {
             my $arg = $self->{"arguments"}->[0];
             return
                   '('
-                .   $arg->emit_javascript( $level ) 
-                .   ' || (' . $arg->emit_javascript( $level ) . ' = new ArrayRef([]))'
+                .   $arg->emit_javascript($level, 'scalar') 
+                .   ' || (' . $arg->emit_javascript($level, 'scalar') . ' = new ArrayRef([]))'
                 . ')._array_';
         }
         if ( $code eq 'prefix:<$#>' ) {
             my $arg = $self->{"arguments"}->[0];
             return
                   '(('
-                .   $arg->emit_javascript( $level ) 
-                .   ' || (' . $arg->emit_javascript( $level ) . ' = new ArrayRef([]))'
+                .   $arg->emit_javascript($level, 'list') 
+                .   ' || (' . $arg->emit_javascript($level, 'list') . ' = new ArrayRef([]))'
                 . ')._array_.length - 1)';
         }
         if ( $code eq 'prefix:<%>' ) {
             my $arg = $self->{"arguments"}->[0];
-            return '(' . $arg->emit_javascript( $level ) . ')._hash_';
+            return '(' . $arg->emit_javascript($level, 'list') . ')._hash_';
         }
 
         if ( $code eq 'circumfix:<[ ]>' ) {
@@ -1090,10 +1132,10 @@ package Perlito5::AST::Apply;
             my $arg = $self->{"arguments"}->[0];
             if ( $arg->isa('Perlito5::AST::Var') ) {
                 if ( $arg->sigil eq '@' ) {
-                    return '(new ArrayRef(' . $arg->emit_javascript( $level ) . '))';
+                    return '(new ArrayRef(' . $arg->emit_javascript($level, 'list') . '))';
                 }
                 if ( $arg->sigil eq '%' ) {
-                    return '(new HashRef(' . $arg->emit_javascript( $level ) . '))';
+                    return '(new HashRef(' . $arg->emit_javascript($level, 'list') . '))';
                 }
                 if ( $arg->sigil eq '&' ) {
                     if ($arg->{"namespace"}) {
@@ -1104,15 +1146,15 @@ package Perlito5::AST::Apply;
                     }
                 }
             }
-            return '(new ScalarRef(' . $arg->emit_javascript( $level ) . '))';
+            return '(new ScalarRef(' . $arg->emit_javascript($level, 'scalar') . '))';
         }
 
-        if ($code eq 'postfix:<++>') { return '('   . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')++' }
-        if ($code eq 'postfix:<-->') { return '('   . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')--' }
-        if ($code eq 'prefix:<++>')  { return '++(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
-        if ($code eq 'prefix:<-->')  { return '--(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
+        if ($code eq 'postfix:<++>') { return '('   . join(' ', map( $_->emit_javascript($level, 'scalar'), @{$self->{"arguments"}} ))  . ')++' }
+        if ($code eq 'postfix:<-->') { return '('   . join(' ', map( $_->emit_javascript($level, 'scalar'), @{$self->{"arguments"}} ))  . ')--' }
+        if ($code eq 'prefix:<++>')  { return '++(' . join(' ', map( $_->emit_javascript($level, 'scalar'), @{$self->{"arguments"}} ))  . ')' }
+        if ($code eq 'prefix:<-->')  { return '--(' . join(' ', map( $_->emit_javascript($level, 'scalar'), @{$self->{"arguments"}} ))  . ')' }
 
-        if ($code eq 'infix:<x>')  { return 'str_replicate(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
+        if ($code eq 'infix:<x>')  { return 'str_replicate(' . join(', ', map( $_->emit_javascript($level, 'scalar'), @{$self->{"arguments"}} ))  . ')' }
 
         if ($code eq 'list:<.>') { 
             return '('  
@@ -1121,18 +1163,26 @@ package Perlito5::AST::Apply;
                       )
                 . ')' 
         }
-        if ($code eq 'list:<,>') { 
-            return '['  
-                . join( ', ',
-                        map( Perlito5::Javascript::to_str($_), @{$self->{"arguments"}} )
-                      )
-                . ']' 
+
+        if (  $code eq 'list:<,>' 
+           || $code eq 'infix:<=>>'
+           )
+        {
+            if ($wantarray eq 'list') {
+                return Perlito5::Javascript::to_list([$self]);
+            }
+            elsif ($wantarray eq 'scalar' || $wantarray eq 'void') {
+                return Perlito5::Javascript::to_scalar([$self]);
+            }
+            else {
+                return Perlito5::Javascript::to_runtime_context([$self]);
+            }
         }
 
         if ($code eq 'infix:<..>') {
             return '(function (a) { '
-                    . 'for (var i=' . $self->{"arguments"}->[0]->emit_javascript()
-                           . ', l=' . $self->{"arguments"}->[1]->emit_javascript() . '; '
+                    . 'for (var i=' . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar')
+                           . ', l=' . $self->{"arguments"}->[1]->emit_javascript($level, 'scalar') . '; '
                        . 'i<=l; ++i)'
                     . '{ '
                         . 'a.push(i) '
@@ -1146,20 +1196,20 @@ package Perlito5::AST::Apply;
            )
         {
             return 'and' . '('
-                . $self->{"arguments"}->[0]->emit_javascript() . ', '
-                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript() . '; })'
+                . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar') . ', '
+                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript($level, 'scalar') . '; })'
         }
         if (  $code eq 'infix:<||>'
            || $code eq 'infix:<or>'
            )
         {
             return 'or' . '('
-                . $self->{"arguments"}->[0]->emit_javascript() . ', '
-                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript() . '; })'
+                . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar') . ', '
+                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript($level, 'scalar') . '; })'
         }
         if ($code eq 'infix:<//>') { return 'defined_or' . '('
-                . $self->{"arguments"}->[0]->emit_javascript() . ', '
-                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript() . '; })'
+                . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar') . ', '
+                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript($level, 'scalar') . '; })'
         }
 
         if ($code eq 'exists') {
@@ -1192,20 +1242,17 @@ package Perlito5::AST::Apply;
             return '(' . join(', ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} )) . ')';
         }
         if ($code eq 'infix:<=>') {
-            return emit_javascript_bind( $self->{"arguments"}->[0], $self->{"arguments"}->[1], $level );
+            return emit_javascript_bind( $self->{"arguments"}->[0], $self->{"arguments"}->[1], $level, $wantarray );
         }
         if ($code eq 'return') {
             $Perlito5::THROW = 1;
             return 'throw('
-                .   ( $self->{"arguments"} && @{$self->{"arguments"}} == 1
-                    ? $self->{"arguments"}->[0]->emit_javascript() 
-                    : '[' . join( ', ', map( $_->emit_javascript(), @{$self->{"arguments"}} ) ) . ']'
-                    )
+                .   Perlito5::Javascript::to_runtime_context($self->{"arguments"} || [])
                 . ')'
         }
         if ($code eq 'goto') {
             $Perlito5::THROW = 1;
-            return 'throw((' . $self->{"arguments"}->[0]->emit_javascript() . ')([List__]))'
+            return 'throw((' . $self->{"arguments"}->[0]->emit_javascript() . ')([List__], p5want))'
         }
 
         if ($self->{"namespace"}) {
@@ -1280,13 +1327,13 @@ package Perlito5::AST::Apply;
                     for @in;
             }
 
-            return $code . '([' . join(', ', @out) . '], '
-                .   ($wantarray eq 'list'   ? '1' 
-                    :$wantarray eq 'scalar' ? '0' 
-                    :$wantarray eq 'void'   ? 'null'
-                    :                         'p5want'
-                    ) 
-                . ')';
+            ## return $code . '([' . join(', ', @out) . '], '
+            ##     .   ($wantarray eq 'list'   ? '1' 
+            ##         :$wantarray eq 'scalar' ? '0' 
+            ##         :$wantarray eq 'void'   ? 'null'
+            ##         :                         'p5want'
+            ##         ) 
+            ##     . ')';
         }
 
         $code . '('
@@ -1303,32 +1350,29 @@ package Perlito5::AST::Apply;
         my $parameters = shift;
         my $arguments = shift;
         my $level = shift;
+        my $wantarray = shift;
 
-        if  (  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '$'
-               ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '$'
-               )
-            && (   $arguments->isa( 'Perlito5::AST::Var' )   && $arguments->sigil eq '@'
-               ||  $arguments->isa( 'Perlito5::AST::Apply' ) && $arguments->code eq 'prefix:<@>'
-               ||  $arguments->isa( 'Perlito5::AST::Var' )   && $arguments->sigil eq '%'
-               ||  $arguments->isa( 'Perlito5::AST::Apply' ) && $arguments->code eq 'prefix:<%>'
-               )
+        if  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '$'
+            ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '$'
             )
         {
-            return '(' . $parameters->emit_javascript() . ' = NAMESPACE.CORE.scalar([' . Perlito5::Javascript::to_list([$arguments]) . ']))'
+            return '(' . $parameters->emit_javascript($level) . ' = ' . Perlito5::Javascript::to_scalar([$arguments]) . ')';
         }
 
         if  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '@'
             ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '@'
             )
         {
-            return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments]) . ')'
+            return '(' . $parameters->emit_javascript($level) . ' = ' . Perlito5::Javascript::to_list([$arguments]) . ')'
         }
         elsif ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '%'
             ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
             )
         {
-            return '(' . $parameters->emit_javascript() . ' = array_to_hash(' . Perlito5::Javascript::to_list([$arguments]) . '))' 
+            return '(' . $parameters->emit_javascript($level) . ' = array_to_hash(' . Perlito5::Javascript::to_list([$arguments]) . '))' 
         }
+
+        # TODO - other lvalue
         '(' . $parameters->emit_javascript( $level ) . ' = ' . $arguments->emit_javascript( $level ) . ')';
     }
 }
@@ -1413,7 +1457,7 @@ package Perlito5::AST::Sub;
         my $self = shift;
         my $level = shift;
 
-        my $s =                     'function (List__) {' . "\n"
+        my $s =                     'function (List__, p5want) {' . "\n"
         .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"block"}, needs_return => 1, top_level => 1 ))->emit_javascript( $level + 1 ) . "\n"
         . Perlito5::Javascript::tab($level) . '}';
 
