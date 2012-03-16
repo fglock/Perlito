@@ -1220,10 +1220,75 @@ package Perlito5::AST::Apply;
         else {
             $code = Perlito5::Javascript::pkg() . '.' . $code
         }
-        my @args = ();
-        push @args, $_->emit_javascript( $level )
-            for @{$self->{"arguments"}};
-        $code . '([' . join(', ', @args) . '])';
+
+
+        my $sig;
+        {
+            my $name = $self->{"code"};
+            my $namespace = $self->{"namespace"};
+            my $effective_name = $self->{"code"} . "::" . $self->{"namespace"};
+            if ( exists $Perlito5::PROTO->{$effective_name} ) {
+                $sig = $Perlito5::PROTO->{$effective_name};
+            }
+            elsif ( (!$namespace || $namespace eq 'CORE')
+                  && exists $Perlito5::CORE_PROTO->{"CORE::$name"}
+                  )
+            {
+                $effective_name = "CORE::$name";
+                $sig = $Perlito5::CORE_PROTO->{$effective_name};
+            }
+        }
+
+        if ($sig) {
+            # warn "sig $effective_name $sig\n";
+            my @out = ();
+            my @in  = @{$self->{"arguments"}};
+
+            # TODO - generate the right prototype
+
+
+            if ( $sig eq '\\@@' ) {         # push
+                push @out, shift(@in)->emit_javascript( $level, 'list' );
+                push @out, Perlito5::Javascript::to_list(\@in);
+            }
+            elsif ( $sig eq '\\[@%]'        # keys
+                ||  $sig eq ';\\@' ) {      # pop
+                push @out, shift(@in)->emit_javascript( $level, 'list' );
+            }
+            elsif ( $sig eq '$@' ) {        # join
+                push @out, shift(@in)->emit_javascript( $level, 'scalar' );
+                push @out, Perlito5::Javascript::to_list(\@in);
+            }
+            elsif ( $sig eq '@' ) {         # warn
+                push @out, Perlito5::Javascript::to_list(\@in);
+            }
+            else {
+                # just a list of scalars:
+                #   bless      $;$ 
+                #   substr     $$;$$ 
+                #   length     _ 
+                #   index      $$;$ 
+                push @out, $_->emit_javascript( $level, 'scalar' )
+                    for @in;
+            }
+
+            return $code . '([' . join(', ', @out) . '], '
+                .   ($wantarray eq 'list'   ? '1' 
+                    :$wantarray eq 'scalar' ? '0' 
+                    :$wantarray eq 'void'   ? 'null'
+                    :                         'p5want'
+                    ) 
+                . ')';
+        }
+
+        $code . '('
+                . Perlito5::Javascript::to_list($self->{"arguments"}) . ', '
+                .   ($wantarray eq 'list'   ? '1' 
+                    :$wantarray eq 'scalar' ? '0' 
+                    :$wantarray eq 'void'   ? 'null'
+                    :                         'p5want'
+                    ) 
+              . ')';
     }
 
     sub emit_javascript_bind {
