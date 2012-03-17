@@ -985,8 +985,9 @@ package Perlito5::AST::Apply;
         }
 
         if ($code eq 'map') {
-            my $fun  = $self->{"arguments"}->[0];
-            my $list = $self->{"arguments"}->[1];
+            my @in  = @{$self->{"arguments"}};
+            my $fun  = shift @in;
+            my $list = Perlito5::Javascript::to_list(\@in);
 
             if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
                 $fun = $fun->{'stmts'}
@@ -1001,12 +1002,13 @@ package Perlito5::AST::Apply;
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
                     . Perlito5::Javascript::tab($level) . '}, '
 
-                    .   $list->emit_javascript()
+                    .   $list
                     . ')';
         }
         if ($code eq 'grep') {
-            my $fun  = $self->{"arguments"}->[0];
-            my $list = $self->{"arguments"}->[1];
+            my @in  = @{$self->{"arguments"}};
+            my $fun  = shift @in;
+            my $list = Perlito5::Javascript::to_list(\@in);
 
             if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
                 $fun = $fun->{'stmts'}
@@ -1021,20 +1023,18 @@ package Perlito5::AST::Apply;
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
                     . Perlito5::Javascript::tab($level) . '}, '
 
-                    .   $list->emit_javascript()
+                    .   $list
                     . ')';
         }
         if ($code eq 'sort') {
-            my $fun;
-            my $list;
-            if ( @{ $self->{"arguments"} } > 1 ) { 
-                $fun  = $self->{"arguments"}->[0];
-                $list = $self->{"arguments"}->[1];
-            }
-            else {
+            my @in  = @{$self->{"arguments"}};
+            my $fun  = shift @in;
+            my $list = Perlito5::Javascript::to_list(\@in);
+            if ( @in > 1 ) { 
                 # the sort function is optional
-                $list = $self->{"arguments"}->[0];
+                $fun  = shift @in;
             }
+            $list = Perlito5::Javascript::to_list(\@in);
 
             if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
                 $fun =
@@ -1048,7 +1048,7 @@ package Perlito5::AST::Apply;
 
             return 'p5sort(' . Perlito5::Javascript::pkg() . ', '
                     .   $fun . ', '
-                    .   $list->emit_javascript()
+                    .   $list
                     . ')';
         }
 
@@ -1119,11 +1119,7 @@ package Perlito5::AST::Apply;
                 . ')' 
         }
         if ($code eq 'list:<,>') { 
-            return '['  
-                . join( ', ',
-                        map( Perlito5::Javascript::to_str($_), @{$self->{"arguments"}} )
-                      )
-                . ']' 
+            return Perlito5::Javascript::to_list($self->{"arguments"}) 
         }
 
         if ($code eq 'infix:<..>') {

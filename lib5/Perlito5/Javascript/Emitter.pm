@@ -650,44 +650,44 @@ for ($_) {
             return ((Perlito5::Javascript::pkg() . '.shift([List__])'))
         };
         if (($code eq 'map')) {
-            ((my  $fun) = $self->{'arguments'}->[0]);
-            ((my  $list) = $self->{'arguments'}->[1]);
+            ((my  @in) = @{$self->{'arguments'}});
+            ((my  $fun) = shift(@in));
+            ((my  $list) = Perlito5::Javascript::to_list(\@in));
             if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
                 ($fun = $fun->{'stmts'})
             }
             else {
                 ($fun = [$fun])
             };
-            return (('p5map(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list->emit_javascript() . ')'))
+            return (('p5map(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')'))
         };
         if (($code eq 'grep')) {
-            ((my  $fun) = $self->{'arguments'}->[0]);
-            ((my  $list) = $self->{'arguments'}->[1]);
+            ((my  @in) = @{$self->{'arguments'}});
+            ((my  $fun) = shift(@in));
+            ((my  $list) = Perlito5::Javascript::to_list(\@in));
             if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
                 ($fun = $fun->{'stmts'})
             }
             else {
                 ($fun = [$fun])
             };
-            return (('p5grep(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list->emit_javascript() . ')'))
+            return (('p5grep(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')'))
         };
         if (($code eq 'sort')) {
-            (my  $fun);
-            (my  $list);
-            if ((@{$self->{'arguments'}} > 1)) {
-                ($fun = $self->{'arguments'}->[0]);
-                ($list = $self->{'arguments'}->[1])
-            }
-            else {
-                ($list = $self->{'arguments'}->[0])
+            ((my  @in) = @{$self->{'arguments'}});
+            ((my  $fun) = shift(@in));
+            ((my  $list) = Perlito5::Javascript::to_list(\@in));
+            if ((@in > 1)) {
+                ($fun = shift(@in))
             };
+            ($list = Perlito5::Javascript::to_list(\@in));
             if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
                 ($fun = ('function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun->{'stmts'}), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
             }
             else {
                 ($fun = 'null')
             };
-            return (('p5sort(' . Perlito5::Javascript::pkg() . ', ' . $fun . ', ' . $list->emit_javascript() . ')'))
+            return (('p5sort(' . Perlito5::Javascript::pkg() . ', ' . $fun . ', ' . $list . ')'))
         };
         if (($code eq 'prefix:<$>')) {
             ((my  $arg) = $self->{'arguments'}->[0]);
@@ -750,7 +750,7 @@ for ($_) {
             return (('(' . join(' + ', map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')'))
         };
         if (($code eq 'list:<,>')) {
-            return (('[' . join(', ', map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ']'))
+            return (Perlito5::Javascript::to_list($self->{'arguments'}))
         };
         if (($code eq 'infix:<..>')) {
             return (('(function (a) { ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript() . ', l=' . $self->{'arguments'}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])'))
