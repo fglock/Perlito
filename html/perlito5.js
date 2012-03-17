@@ -1169,6 +1169,9 @@ var p5100 = NAMESPACE['main'];
 			make_sub("Perlito5::Javascript", "pkg", function (List__, p5want) {
 					return (p5context([(Hash_label[NAMESPACE["Perlito5"].v_PKG_NAME] = or(Hash_label[NAMESPACE["Perlito5"].v_PKG_NAME], function () { return ('p5' + p5str((v_label_count)++)); }))], p5want));
 			});
+			make_sub("Perlito5::Javascript", "get_label", function (List__, p5want) {
+					return (p5context([(v_label_count)++], p5want));
+			});
 			make_sub("Perlito5::Javascript", "tab", function (List__, p5want) {
 					var v_level = null;
 					(v_level = (p5123.shift([List__])));
@@ -2442,6 +2445,15 @@ var p5100 = NAMESPACE['main'];
 					(v_arguments = (p5113.shift([List__])));
 					var v_level = null;
 					(v_level = (p5113.shift([List__])));
+					if ( (bool(_call_(v_parameters, "isa", interpolate_array('Perlito5::AST::Apply'), p5want)) && ((p5str(_call_(v_parameters, "code", [], p5want)) == 'my') || (p5str(_call_(v_parameters, "code", [], p5want)) == 'circumfix:<( )>'))) ) {
+						(function () {
+							var v_tmp = null;
+							(v_tmp = (('tmp' + p5str(NAMESPACE["Perlito5::Javascript"].get_label([], p5want)))));
+							throw(p5context([('(function () { ' + 'var ' + p5str(v_tmp) + ' = ' + p5str(NAMESPACE["Perlito5::Javascript"].to_list(interpolate_array((new ArrayRef(interpolate_array(v_arguments)))), p5want)) + '; ' + p5113.join(['; ', interpolate_array(p5map(p5113, function () {
+	return (p5context([(p5str(_call_(NAMESPACE["Perlito5::AST::Apply"]["v__"], "emit_javascript", [], p5want)) + ' = ' + p5str(v_tmp) + '.shift()')], p5want));
+}, interpolate_array((_call_(v_parameters, "arguments", [], p5want) || (_call_(v_parameters, "arguments", [], p5want) = new ArrayRef([])))._array_)))], p5want) + ' })()')], p5want));
+							})();
+					};
 					if ( ((bool(_call_(v_parameters, "isa", interpolate_array('Perlito5::AST::Var'), p5want)) && (p5str(_call_(v_parameters, "sigil", [], p5want)) == '$')) || (bool(_call_(v_parameters, "isa", interpolate_array('Perlito5::AST::Decl'), p5want)) && (p5str(_call_(_call_(v_parameters, "var", [], p5want), "sigil", [], p5want)) == '$'))) ) {
 						throw(p5context([('(' + p5str(_call_(v_parameters, "emit_javascript", [], p5want)) + ' = ' + p5str(NAMESPACE["Perlito5::Javascript"].to_scalar(interpolate_array((new ArrayRef(interpolate_array(v_arguments)))), p5want)) + ')')], p5want));
 					};

@@ -10,6 +10,9 @@ package Perlito5::Javascript;
     sub pkg {
         $label{ $Perlito5::PKG_NAME } ||= "p5" . $label_count++
     }
+    sub get_label {
+        $label_count++
+    }
 
     sub tab {
         my $level = shift;
@@ -1302,6 +1305,25 @@ package Perlito5::AST::Apply;
         my $parameters = shift;
         my $arguments = shift;
         my $level = shift;
+
+        if (   $parameters->isa( 'Perlito5::AST::Apply' )
+           &&  ( $parameters->code eq 'my' || $parameters->code eq 'circumfix:<( )>' )
+           )
+        {
+            # my ($x, $y) = ...
+            # ($x, $y) = ...
+
+            my $tmp = 'tmp' . Perlito5::Javascript::get_label();
+
+            return
+              '(function () { '
+                . 'var ' . $tmp . ' = ' . Perlito5::Javascript::to_list([$arguments]) . '; '
+                . join( '; ',
+                        map $_->emit_javascript() . ' = ' . $tmp . '.shift()',
+                            @{ $parameters->arguments }
+                      )
+            . ' })()'
+        }
 
         if (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '$'
            ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '$'

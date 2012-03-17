@@ -16,6 +16,9 @@ for ($_) {
     sub Perlito5::Javascript::pkg {
         ($label{$Perlito5::PKG_NAME} = ($label{$Perlito5::PKG_NAME} || ('p5' . ($label_count)++)))
     };
+    sub Perlito5::Javascript::get_label {
+        ($label_count)++
+    };
     sub Perlito5::Javascript::tab {
         ((my  $level) = shift());
 join("", chr(9) x $level)
@@ -864,6 +867,10 @@ for ($_) {
         ((my  $parameters) = shift());
         ((my  $arguments) = shift());
         ((my  $level) = shift());
+        if (($parameters->isa('Perlito5::AST::Apply') && ((($parameters->code() eq 'my') || ($parameters->code() eq 'circumfix:<( )>'))))) {
+            ((my  $tmp) = ('tmp' . Perlito5::Javascript::get_label()));
+            return (('(function () { ' . 'var ' . $tmp . ' = ' . Perlito5::Javascript::to_list([$arguments]) . '; ' . join('; ', map(($_->emit_javascript() . ' = ' . $tmp . '.shift()'), @{$parameters->arguments()})) . ' })()'))
+        };
         if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '$')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '$')))) {
             return (('(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_scalar([$arguments]) . ')'))
         };
