@@ -169,34 +169,52 @@ CORE.scalar = function(List__) {
     return l;
 };
 
-CORE.values = function(List__) {
-    var o = List__[0];
-    if (o == null) {
-        return [];
-    };
-    if (typeof o.values === "function") {
-        return o.values();
+CORE.values = function(List__, p5want) {
+    if (p5want) {
+        var o = List__[0];
+        if (o == null) {
+            return [];
+        };
+        if (typeof o.values === "function") {
+            return o.values();
+        }
+        var out = [];
+        for (var i in o) {
+            out.push(o[i]);
+        }
+        return out;
     }
-    var out = [];
-    for (var i in o) {
-        out.push(o[i]);
-    }
-    return out;
+    return CORE.keys(List__, p5want);
 };
 
-CORE.keys = function(List__) {
+CORE.keys = function(List__, p5want) {
     var o = List__[0];
-    if (o == null) {
-        return [];
+    if (p5want) {
+        if (o == null) {
+            return [];
+        }
+        if (typeof o.keys === "function") {
+            return o.keys();
+        }
+        var out = [];
+        for (var i in o) {
+            out.push(i);
+        }
+        return out;
     }
-    if (typeof o.keys === "function") {
-        return o.keys();
+    else {
+        if (o == null) {
+            return 0;
+        }
+        if (typeof o.keys === "function") {
+            return CORE.scalar([o.keys()]);
+        }
+        var out = 0;
+        for (var i in o) {
+            out++;
+        }
+        return out;
     }
-    var out = [];
-    for (var i in o) {
-        out.push(i);
-    }
-    return out;
 };
 
 CORE.reverse = function(List__) {

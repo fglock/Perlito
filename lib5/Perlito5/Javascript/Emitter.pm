@@ -868,8 +868,8 @@ for ($_) {
         ((my  $parameters) = shift());
         ((my  $arguments) = shift());
         ((my  $level) = shift());
-        if ((((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '$')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '$')))) && ((((($arguments->isa('Perlito5::AST::Var') && ($arguments->sigil() eq '@')) || ($arguments->isa('Perlito5::AST::Apply') && ($arguments->code() eq 'prefix:<@>'))) || ($arguments->isa('Perlito5::AST::Var') && ($arguments->sigil() eq '%'))) || ($arguments->isa('Perlito5::AST::Apply') && ($arguments->code() eq 'prefix:<%>')))))) {
-            return (('(' . $parameters->emit_javascript() . ' = NAMESPACE.CORE.scalar([' . Perlito5::Javascript::to_list([$arguments]) . ']))'))
+        if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '$')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '$')))) {
+            return (('(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_scalar([$arguments]) . ')'))
         };
         if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '@')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '@')))) {
             return (('(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments]) . ')'))
