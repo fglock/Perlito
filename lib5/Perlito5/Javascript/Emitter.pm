@@ -129,14 +129,10 @@ join("", chr(9) x $level)
         return (\@items)
     };
     sub Perlito5::Javascript::to_runtime_context {
-        ((my  $list) = to_list($_[0], $_[1]));
-        ((my  $scalar) = to_scalar($_[0], $_[1]));
-        if (($list eq $scalar)) {
-            return ($list)
-        }
-        else {
-            ('(p5want ? ' . $list . ' : ' . $scalar . ')')
-        }
+        ((my  $items) = to_scalar_preprocess($_[0]));
+        ((my  $level) = $_[1]);
+        ((my  $wantarray) = 'runtime');
+        ('p5context(' . '[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$items})) . ']' . ', p5want)')
     }
 };
 package Perlito5::Javascript::LexicalBlock;
@@ -259,10 +255,10 @@ for ($_) {
                     }
                     else {
                         if ($has_local) {
-                            push(@str, ('return cleanup_local(local_idx, (' . $last_statement->emit_javascript(($level + 1), 'runtime') . '));') )
+                            push(@str, ('return cleanup_local(local_idx, (' . Perlito5::Javascript::to_runtime_context([$last_statement]) . '));') )
                         }
                         else {
-                            push(@str, ('return (' . $last_statement->emit_javascript(($level + 1)) . ');') )
+                            push(@str, ('return (' . Perlito5::Javascript::to_runtime_context([$last_statement]) . ');') )
                         }
                     }
                 }
@@ -791,11 +787,11 @@ for ($_) {
         };
         if (($code eq 'return')) {
             ($Perlito5::THROW = 1);
-            return (('throw(' . ((($self->{'arguments'} && (@{$self->{'arguments'}} == 1)) ? $self->{'arguments'}->[0]->emit_javascript() : ('[' . join(', ', map($_->emit_javascript(), @{$self->{'arguments'}})) . ']'))) . ')'))
+            return (('throw(' . Perlito5::Javascript::to_runtime_context($self->{'arguments'}) . ')'))
         };
         if (($code eq 'goto')) {
             ($Perlito5::THROW = 1);
-            return (('throw((' . $self->{'arguments'}->[0]->emit_javascript() . ')([List__]))'))
+            return (('throw((' . $self->{'arguments'}->[0]->emit_javascript() . ')([List__, p5want]))'))
         };
         if ($self->{'namespace'}) {
             if ((($self->{'namespace'} eq 'JS') && ($code eq 'inline'))) {

@@ -189,6 +189,14 @@ if (isNode) {
     });
 }
 
+p5context = function(List__, p5want) {
+    return p5want 
+        ? interpolate_array(List__)
+        : List__.length
+        ? List__[List__.length-1]
+        : null
+}
+
 interpolate_array = function() {
     var res = [];
     for (i = 0; i < arguments.length; i++) {
