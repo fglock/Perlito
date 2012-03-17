@@ -340,13 +340,6 @@ package Perlito5::Javascript::LexicalBlock;
         for my $decl ( @block ) {
             if ( ref($decl) eq 'Perlito5::AST::Apply' && $decl->code eq 'package' ) {
                 $Perlito5::PKG_NAME = $decl->{"namespace"};
-
-                ## $Perlito5::VAR->[0] = {
-                ##     '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-                ##     '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-                ##     '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
-                ## }
-
                 $Perlito5::VAR->[0]{'$_'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
                 $Perlito5::VAR->[0]{'$a'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
                 $Perlito5::VAR->[0]{'$b'} = { decl => 'our', namespace => $Perlito5::PKG_NAME };
@@ -362,7 +355,7 @@ package Perlito5::Javascript::LexicalBlock;
             }
 
             if (!( $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq 'my' )) {
-                push @str, $decl->emit_javascript($level) . ';';
+                push @str, $decl->emit_javascript($level, 'void') . ';';
             }
         }
         if ($self->{"needs_return"} && $last_statement) {
@@ -406,11 +399,11 @@ package Perlito5::Javascript::LexicalBlock;
                   || $last_statement->isa( 'Perlito5::AST::Apply' ) && $last_statement->code eq 'return'
                   )
             {
-                push @str, $last_statement->emit_javascript($level)
+                push @str, $last_statement->emit_javascript($level, 'runtime')
             }
             else {
                 if ( $has_local ) {
-                    push @str, 'return cleanup_local(local_idx, (' . $last_statement->emit_javascript($level+1) . '));';
+                    push @str, 'return cleanup_local(local_idx, (' . $last_statement->emit_javascript($level+1, 'runtime') . '));';
                 }
                 else {
                     push @str, 'return (' . $last_statement->emit_javascript($level+1) . ');';
@@ -879,6 +872,9 @@ package Perlito5::AST::Apply;
         if ($code eq '__PACKAGE__') {
             return '"' . $Perlito5::PKG_NAME . '"';
         }
+        if ($code eq 'wantarray') {
+            return 'p5want';
+        }
         if ($code eq 'package') {
             return "var " . Perlito5::Javascript::pkg() . ' = make_package("' . $self->{"namespace"} . '")'
         }
@@ -903,10 +899,10 @@ package Perlito5::AST::Apply;
             return '~( ' . Perlito5::Javascript::to_num( $self->{"arguments"}->[0] ) . ')';
         }
         if ( $code eq 'prefix:<->' ) {
-            return '-( ' . $self->{"arguments"}->[0]->emit_javascript() . ')';
+            return '-( ' . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar') . ')';
         }
         if ($code eq 'prefix:<+>') { 
-            return '('  . $self->{"arguments"}->[0]->emit_javascript()  . ')' 
+            return '('  . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar')  . ')' 
         }
 
         if ($code eq 'do') {
@@ -932,7 +928,7 @@ package Perlito5::AST::Apply;
             my $arg = $self->{"arguments"}->[0];
             my $eval;
             if ($arg->isa( "Perlito5::AST::Do" )) {
-                $eval = $arg->emit_javascript( $level + 1 );
+                $eval = $arg->emit_javascript( $level + 1, $wantarray );
             }
             else {
                 my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::VAR );
@@ -1422,7 +1418,8 @@ package Perlito5::AST::Sub;
         my $self = shift;
         my $level = shift;
 
-        my $s =                     'function (List__) {' . "\n"
+        my $s =
+          'function (List__, p5want) {' . "\n"
         .   (Perlito5::Javascript::LexicalBlock->new( block => $self->{"block"}, needs_return => 1, top_level => 1 ))->emit_javascript( $level + 1 ) . "\n"
         . Perlito5::Javascript::tab($level) . '}';
 
