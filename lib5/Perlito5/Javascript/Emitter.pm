@@ -777,10 +777,10 @@ for ($_) {
             }
         };
         if (($code eq 'ternary:<? :>')) {
-            return (('( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ' ? ' . ($self->{'arguments'}->[1])->emit_javascript() . ' : ' . ($self->{'arguments'}->[2])->emit_javascript() . ')'))
+            return (('( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ' ? ' . ($self->{'arguments'}->[1])->emit_javascript($level, $wantarray) . ' : ' . ($self->{'arguments'}->[2])->emit_javascript($level, $wantarray) . ')'))
         };
         if (($code eq 'circumfix:<( )>')) {
-            return (('(' . join(', ', map($_->emit_javascript($level), @{$self->{'arguments'}})) . ')'))
+            return (('p5context(' . '[' . join(', ', map($_->emit_javascript($level, $wantarray), @{$self->{'arguments'}})) . '], ' . ((($wantarray eq 'runtime') ? 'p5want' : (($wantarray eq 'list') ? 1 : 0))) . ')'))
         };
         if (($code eq 'infix:<=>')) {
             return (emit_javascript_bind($self->{'arguments'}->[0], $self->{'arguments'}->[1], $level))

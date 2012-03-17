@@ -190,11 +190,17 @@ if (isNode) {
 }
 
 p5context = function(List__, p5want) {
-    return p5want 
-        ? interpolate_array(List__)
-        : List__.length
-        ? List__[List__.length-1]
-        : null
+    if (p5want) {
+        return interpolate_array.apply(null, List__);
+    }
+    // scalar: return the last value
+    var o = List__;
+    while (o instanceof Array) {
+        o =   o.length
+            ? o[o.length-1]
+            : null;
+    }
+    return o;
 }
 
 interpolate_array = function() {
