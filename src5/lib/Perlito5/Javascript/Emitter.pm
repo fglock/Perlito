@@ -1349,8 +1349,17 @@ package Perlito5::AST::Apply;
               '(function () { '
                 . 'var ' . $tmp . ' = ' . Perlito5::Javascript::to_list([$arguments]) . '; '
                 . join( '; ',
-                        map $_->emit_javascript() . ' = ' . $tmp . '.shift()',
-                            @{ $parameters->arguments }
+                        map +( $_->isa('Perlito5::AST::Apply') && $_->code eq 'undef'
+                             ? $tmp . '.shift()' 
+                             : $_->sigil eq '$' 
+                             ? $_->emit_javascript() . ' = ' . $tmp . '.shift()'
+                             : $_->sigil eq '@' 
+                             ? $_->emit_javascript() . ' = ' . $tmp . '; ' . $tmp . ' = []'
+                             : $_->sigil eq '%' 
+                             ? $_->emit_javascript() . ' = array_to_hash(' . $tmp . '); ' . $tmp . ' = []'
+                             : die("not implemented")
+                             ),
+                             @{ $parameters->arguments }
                       )
             . ' })()'
         }

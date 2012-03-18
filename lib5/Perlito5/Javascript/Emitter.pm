@@ -885,7 +885,7 @@ for ($_) {
         ((my  $level) = shift());
         if (($parameters->isa('Perlito5::AST::Apply') && ((($parameters->code() eq 'my') || ($parameters->code() eq 'circumfix:<( )>'))))) {
             ((my  $tmp) = ('tmp' . Perlito5::Javascript::get_label()));
-            return (('(function () { ' . 'var ' . $tmp . ' = ' . Perlito5::Javascript::to_list([$arguments]) . '; ' . join('; ', map(($_->emit_javascript() . ' = ' . $tmp . '.shift()'), @{$parameters->arguments()})) . ' })()'))
+            return (('(function () { ' . 'var ' . $tmp . ' = ' . Perlito5::Javascript::to_list([$arguments]) . '; ' . join('; ', map(+(((($_->isa('Perlito5::AST::Apply') && ($_->code() eq 'undef')) ? ($tmp . '.shift()') : (($_->sigil() eq '$') ? ($_->emit_javascript() . ' = ' . $tmp . '.shift()') : (($_->sigil() eq '@') ? ($_->emit_javascript() . ' = ' . $tmp . '; ' . $tmp . ' = []') : (($_->sigil() eq '%') ? ($_->emit_javascript() . ' = array_to_hash(' . $tmp . '); ' . $tmp . ' = []') : die('not implemented'))))))), @{$parameters->arguments()})) . ' })()'))
         };
         if ((($parameters->isa('Perlito5::AST::Var') && ($parameters->sigil() eq '$')) || ($parameters->isa('Perlito5::AST::Decl') && ($parameters->var()->sigil() eq '$')))) {
             return (('(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_scalar([$arguments]) . ')'))
