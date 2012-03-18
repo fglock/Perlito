@@ -220,8 +220,10 @@ for ($_) {
             };
             if (($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'my'))) {
                 for (@{$decl->{'arguments'}}) {
-                    ((my  $d) = Perlito5::AST::Decl->new(('decl' => $decl->code()), ('var' => $_)));
-                    push(@str, $d->emit_javascript_init() )
+                    if ($_->isa('Perlito5::AST::Var')) {
+                        ((my  $d) = Perlito5::AST::Decl->new(('decl' => $decl->code()), ('var' => $_)));
+                        push(@str, $d->emit_javascript_init() )
+                    }
                 }
             };
             if (($decl->isa('Perlito5::AST::Apply') && ($decl->code() eq 'infix:<=>'))) {
@@ -231,8 +233,10 @@ for ($_) {
                 };
                 if (($arg->isa('Perlito5::AST::Apply') && ($arg->code() eq 'my'))) {
                     for (@{$arg->{'arguments'}}) {
-                        ((my  $d) = Perlito5::AST::Decl->new(('decl' => $arg->code()), ('var' => $_)));
-                        push(@str, $d->emit_javascript_init() )
+                        if ($_->isa('Perlito5::AST::Var')) {
+                            ((my  $d) = Perlito5::AST::Decl->new(('decl' => $arg->code()), ('var' => $_)));
+                            push(@str, $d->emit_javascript_init() )
+                        }
                     }
                 }
             };

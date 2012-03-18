@@ -1489,9 +1489,13 @@ var p5100 = NAMESPACE['main'];
 						};
 						if ( (bool(_call_(v_decl, "isa", interpolate_array('Perlito5::AST::Apply'), p5want)) && (p5str(_call_(v_decl, "code", [], p5want)) == 'my')) ) {
 							p5for(p5124, function () {
-								var v_d = null;
-								(v_d = (_call_(NAMESPACE["Perlito5::AST::Decl"], "new", interpolate_array('decl', _call_(v_decl, "code", [], 1), 'var', NAMESPACE["Perlito5::Javascript::LexicalBlock"]["v__"]), 0)));
-								p5124.push([List_str, interpolate_array(_call_(v_d, "emit_javascript_init", [], 1))], null);
+								if ( bool(_call_(NAMESPACE["Perlito5::Javascript::LexicalBlock"]["v__"], "isa", interpolate_array('Perlito5::AST::Var'), p5want)) ) {
+									(function () {
+										var v_d = null;
+										(v_d = (_call_(NAMESPACE["Perlito5::AST::Decl"], "new", interpolate_array('decl', _call_(v_decl, "code", [], 1), 'var', NAMESPACE["Perlito5::Javascript::LexicalBlock"]["v__"]), 0)));
+										p5124.push([List_str, interpolate_array(_call_(v_d, "emit_javascript_init", [], 1))], null);
+										})();
+								};
 							}, interpolate_array(((v_decl || (v_decl = new HashRef({})))._hash_['arguments'] || ((v_decl || (v_decl = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_));
 						};
 						if ( (bool(_call_(v_decl, "isa", interpolate_array('Perlito5::AST::Apply'), p5want)) && (p5str(_call_(v_decl, "code", [], p5want)) == 'infix:<=>')) ) {
@@ -1503,9 +1507,13 @@ var p5100 = NAMESPACE['main'];
 								};
 								if ( (bool(_call_(v_arg, "isa", interpolate_array('Perlito5::AST::Apply'), p5want)) && (p5str(_call_(v_arg, "code", [], p5want)) == 'my')) ) {
 									p5for(p5124, function () {
-										var v_d = null;
-										(v_d = (_call_(NAMESPACE["Perlito5::AST::Decl"], "new", interpolate_array('decl', _call_(v_arg, "code", [], 1), 'var', NAMESPACE["Perlito5::Javascript::LexicalBlock"]["v__"]), 0)));
-										p5124.push([List_str, interpolate_array(_call_(v_d, "emit_javascript_init", [], 1))], null);
+										if ( bool(_call_(NAMESPACE["Perlito5::Javascript::LexicalBlock"]["v__"], "isa", interpolate_array('Perlito5::AST::Var'), p5want)) ) {
+											(function () {
+												var v_d = null;
+												(v_d = (_call_(NAMESPACE["Perlito5::AST::Decl"], "new", interpolate_array('decl', _call_(v_arg, "code", [], 1), 'var', NAMESPACE["Perlito5::Javascript::LexicalBlock"]["v__"]), 0)));
+												p5124.push([List_str, interpolate_array(_call_(v_d, "emit_javascript_init", [], 1))], null);
+												})();
+										};
 									}, interpolate_array(((v_arg || (v_arg = new HashRef({})))._hash_['arguments'] || ((v_arg || (v_arg = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_));
 								};
 								})();
