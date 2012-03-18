@@ -284,12 +284,18 @@ package Perlito5::Javascript::LexicalBlock;
         my $type = $_[1];
         for my $decl ( @{$self->{"block"}} ) {
             if (defined $decl) {
-                if ($decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq $type) {
+                if (  $decl->isa( 'Perlito5::AST::Decl' ) && $decl->decl eq $type
+                   || $decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq $type
+                   )
+                {
                     return 1;
                 }
                 if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
                     my $var = $decl->arguments[0];
-                    if ($var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq $type) {
+                    if (  $var->isa( 'Perlito5::AST::Decl' ) && $var->decl eq $type
+                       || $decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq $type
+                       ) 
+                    {
                         return 1;
                     }
                 }
@@ -349,9 +355,24 @@ package Perlito5::Javascript::LexicalBlock;
             if ($decl->isa( 'Perlito5::AST::Decl' )) {
                 push @str, $decl->emit_javascript_init;
             }
+            # TODO - local, our
+            if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'my' ) {
+                for (@{$decl->{"arguments"}}) {
+                    my $d = Perlito5::AST::Decl->new( decl => $decl->code, var => $_ );
+                    push @str, $d->emit_javascript_init;
+                }
+            }
             if ($decl->isa( 'Perlito5::AST::Apply' ) && $decl->code eq 'infix:<=>') {
-                if ($decl->{"arguments"}[0]->isa( 'Perlito5::AST::Decl' )) {
-                    push @str, $decl->{"arguments"}[0]->emit_javascript_init;
+                my $arg = $decl->{"arguments"}[0];
+                if ($arg->isa( 'Perlito5::AST::Decl' )) {
+                    push @str, $arg->emit_javascript_init;
+                }
+                # TODO - local, our
+                if ($arg->isa( 'Perlito5::AST::Apply' ) && $arg->code eq 'my' ) {
+                    for (@{$arg->{"arguments"}}) {
+                        my $d = Perlito5::AST::Decl->new( decl => $arg->code, var => $_ );
+                        push @str, $d->emit_javascript_init;
+                    }
                 }
             }
 
@@ -1182,6 +1203,13 @@ package Perlito5::AST::Apply;
                  . ' : ' . ($self->{"arguments"}->[2])->emit_javascript($level, $wantarray)
                  . ')'
         }
+        if ($code eq 'my') {
+            # TODO - bug: this is a side-effect of my($x,$y)
+            return 'p5context('
+                .   '[' . join(', ', map( $_->emit_javascript( $level, $wantarray ), @{$self->{"arguments"}} )) . '], ' 
+                .   ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0)
+                . ')';
+        }
         if ($code eq 'circumfix:<( )>') {
             return 'p5context('
                 .   '[' . join(', ', map( $_->emit_javascript( $level, $wantarray ), @{$self->{"arguments"}} )) . '], ' 
@@ -1314,6 +1342,8 @@ package Perlito5::AST::Apply;
             # ($x, $y) = ...
 
             my $tmp = 'tmp' . Perlito5::Javascript::get_label();
+
+            # TODO - array assignment
 
             return
               '(function () { '
