@@ -9205,7 +9205,21 @@ var p5100 = NAMESPACE['main'];
 	}
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
-	return (p5context([p5context([and(and(p5context([and(('.' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], p5want)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
+	return (p5context([p5context([and(and(and(p5context([and(('.' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], p5want)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
+	var v_tmp = null;
+	(v_tmp = (v_MATCH));
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
+		var v_pos1 = null;
+		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		return (p5context([p5context([(function () {
+	return (p5context([and(('.' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], p5want)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
+})()], p5want)], p5want));
+	})()], 0));
+	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = !( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'])));
+	(v_MATCH = (v_tmp));
+	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0); }), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
 	var v_last_pos = null;

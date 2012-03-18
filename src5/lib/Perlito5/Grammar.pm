@@ -146,7 +146,7 @@ token val_num {
     [
     |   \. \d+    <.exponent>?    # .10 .10e10
     |   \.        <.exponent>     # .e10 
-    |   \d+     [ <.exponent>  |   \. \d*  <.exponent>? ]
+    |   \d+     [ <.exponent>  |   \. <!before \. > \d*  <.exponent>? ]
     ]
     { $MATCH->{"capture"} = Perlito5::AST::Val::Num->new( num => $MATCH->flat() ) }
 };

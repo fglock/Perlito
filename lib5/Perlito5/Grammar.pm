@@ -1101,7 +1101,19 @@ sub Perlito5::Grammar::val_num {
     }
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
-    (((((('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((((((('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $tmp) = $MATCH);
+    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
+    ($MATCH->{'bool'} = ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (('.' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+}))
+})));
+    ($tmp->{'bool'} = !($MATCH->{'bool'}));
+    ($MATCH = $tmp);
+    ($MATCH->{'bool'} ? 1 : 0)
+}))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->{'to'});
     for ( ; (((do {
