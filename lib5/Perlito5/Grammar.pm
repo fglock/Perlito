@@ -1210,7 +1210,15 @@ sub Perlito5::Grammar::val_int {
     (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((do {
-    (((('0x' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
+    ((((('0' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('x' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('X' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+})))
+}))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->{'to'});
     ((my  $count) = 0);
@@ -1238,7 +1246,15 @@ sub Perlito5::Grammar::val_int {
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((('0b' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
+    (((((('0' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    (((do {
+    (('b' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((('B' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
+})))
+}))) && ((do {
     ((my  $last_match_null) = 0);
     ((my  $last_pos) = $MATCH->{'to'});
     ((my  $count) = 0);

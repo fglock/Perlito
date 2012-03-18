@@ -156,8 +156,8 @@ token digits {
 };
 
 token val_int {
-    [ '0x' <.word>+   # XXX test for hex number
-    | '0b' [ 0 | 1 ]+
+    [ '0' ['x'|'X'] <.word>+   # XXX test for hex number
+    | '0' ['b'|'B'] [ 0 | 1 ]+
     | '0'  \d+        # XXX test for octal number
     ]
         { $MATCH->{"capture"} = Perlito5::AST::Val::Int->new( int => oct($MATCH->flat()) ) }
