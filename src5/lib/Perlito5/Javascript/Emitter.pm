@@ -941,7 +941,7 @@ package Perlito5::AST::Apply;
             return '-( ' . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar') . ')';
         }
         if ($code eq 'prefix:<+>') { 
-            return '('  . $self->{"arguments"}->[0]->emit_javascript($level, 'scalar')  . ')' 
+            return '('  . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray)  . ')' 
         }
 
         if ($code eq 'do') {
