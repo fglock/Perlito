@@ -1037,7 +1037,7 @@ package Perlito5::AST::Apply;
 
             return 'p5map(' . Perlito5::Javascript::pkg() . ', '
 
-                    . 'function () {' . "\n"
+                    . 'function (p5want) {' . "\n"
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
                     . Perlito5::Javascript::tab($level) . '}, '
 
@@ -1058,7 +1058,7 @@ package Perlito5::AST::Apply;
 
             return 'p5grep(' . Perlito5::Javascript::pkg() . ', '
 
-                    . 'function () {' . "\n"
+                    . 'function (p5want) {' . "\n"
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $fun, needs_return => 1, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
                     . Perlito5::Javascript::tab($level) . '}, '
 
@@ -1074,7 +1074,7 @@ package Perlito5::AST::Apply;
                 # the sort function is optional
                 $fun = shift @in;
                 $fun =
-                      'function () {' . "\n"
+                      'function (p5want) {' . "\n"
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $fun->{'stmts'}, needs_return => 1, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
                     . Perlito5::Javascript::tab($level) . '}'
             }

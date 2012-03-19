@@ -360,7 +360,10 @@ p5map = function(namespace, func, args) {
     var out = [];
     for(var i = 0; i < args.length; i++) {
         namespace["v__"] = args[i];
-        out.push(func())
+        var o = interpolate_array(func(1));
+        for(var j = 0; j < o.length; j++) {
+            out.push(o[j]);
+        }
     }
     namespace["v__"] = v_old;
     return out;
@@ -371,7 +374,7 @@ p5grep = function(namespace, func, args) {
     var out = [];
     for(var i = 0; i < args.length; i++) {
         namespace["v__"] = args[i];
-        if (bool(func())) {
+        if (bool(func(0))) {
             out.push(args[i])
         }
     }
@@ -389,7 +392,7 @@ p5sort = function(namespace, func, args) {
             function(a, b) {
                 namespace["v_a"] = a;
                 namespace["v_b"] = b;
-                return func();
+                return func(0);
             }
         );
     namespace["v_a"] = a_old;

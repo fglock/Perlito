@@ -681,7 +681,7 @@ for ($_) {
             else {
                 ($fun = [$fun])
             };
-            return (('p5map(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')'))
+            return (('p5map(' . Perlito5::Javascript::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')'))
         };
         if (($code eq 'grep')) {
             ((my  @in) = @{$self->{'arguments'}});
@@ -693,7 +693,7 @@ for ($_) {
             else {
                 ($fun = [$fun])
             };
-            return (('p5grep(' . Perlito5::Javascript::pkg() . ', ' . 'function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')'))
+            return (('p5grep(' . Perlito5::Javascript::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')'))
         };
         if (($code eq 'sort')) {
             ((my  @in) = @{$self->{'arguments'}});
@@ -701,7 +701,7 @@ for ($_) {
             (my  $list);
             if ((ref($in[0]) eq 'Perlito5::AST::Lit::Block')) {
                 ($fun = shift(@in));
-                ($fun = ('function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun->{'stmts'}), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
+                ($fun = ('function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun->{'stmts'}), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
             }
             else {
                 ($fun = 'null')

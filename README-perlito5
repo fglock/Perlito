@@ -1,20 +1,20 @@
 Running the tests using perl:
 
-    find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cperl5 $_ > x && perl -Ilib5 x  ` '
+    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cperl5 $_ > x && perl -Ilib5 x  ` '
 
 Running the tests using v8:
 
-    find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cjs $_ > tmp.js && ~/bin/d8 tmp.js  ` '
+    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cjs $_ > tmp.js && ~/bin/d8 tmp.js  ` '
 
 Running the tests using perl6:
 
     . util-perl6/setup-perlito5-perl6.sh
-    find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
+    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
 
 Running the tests using node.js:
 
     # see below how to create perlito5.js
-    node perlito5.js -Bjs t5/01-sanity.t
+    node perlito5.js -Bjs t5/01-perlito/01-sanity.t
 
     prove -e 'node perlito5.js -Bjs' t5
 
