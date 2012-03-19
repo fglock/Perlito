@@ -119,7 +119,8 @@ function _call_(invocant, method, list) {
 }
 
 make_package("main");
-NAMESPACE["main"]["v_@"] = [];   // $@
+NAMESPACE["main"]["v_@"] = [];      // $@
+NAMESPACE["main"]["List_#"] = [];   // @#
 
 make_package("Perlito5");
 make_package("Perlito5::IO");
