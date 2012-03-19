@@ -918,6 +918,17 @@ package Perlito5::AST::Apply;
                 . ')'
         }
 
+        if ($code eq 'infix:<cmp>') {
+            return 'p5cmp(' 
+                . join( ', ', map( Perlito5::Javascript::to_str($_), @{$self->{"arguments"}} ))
+                . ')'
+        }
+        if ($code eq 'infix:<<=>>') {
+            return 'p5cmp(' 
+                . join( ', ', map( Perlito5::Javascript::to_num($_), @{$self->{"arguments"}} ))
+                . ')'
+        }
+
         if ( $code eq 'prefix:<!>' ) {
             return '!( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] ) . ')';
         }

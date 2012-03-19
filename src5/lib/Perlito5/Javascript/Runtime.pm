@@ -330,6 +330,10 @@ defined_or = function(a, fb) {
     return a;
 };
 
+p5cmp = function(a, b) {
+    return a > b ? 1 : a < b ? -1 : 0 
+};
+
 str_replicate = function(o, n) {
     n = num(n);
     return n ? Array(n + 1).join(o) : "";
