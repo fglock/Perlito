@@ -260,6 +260,9 @@ p5str = function(o) {
     if (typeof o.string === "function") {
         return o.string();
     }
+    if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {
+        return o.toExponential().replace(/e-(\d)$/,"e-0$1");
+    }
     if (typeof o !== "string") {
         return "" + o;
     }
