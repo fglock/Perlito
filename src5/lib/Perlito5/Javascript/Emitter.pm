@@ -1065,15 +1065,12 @@ package Perlito5::AST::Apply;
         }
         if ($code eq 'sort') {
             my @in  = @{$self->{"arguments"}};
-            my $fun  = shift @in;
-            my $list = Perlito5::Javascript::to_list(\@in);
-            if ( @in > 1 ) { 
-                # the sort function is optional
-                $fun  = shift @in;
-            }
-            $list = Perlito5::Javascript::to_list(\@in);
+            my $fun;
+            my $list;
 
-            if (ref($fun) eq 'Perlito5::AST::Lit::Block') {
+            if (ref($in[0]) eq 'Perlito5::AST::Lit::Block') {
+                # the sort function is optional
+                $fun = shift @in;
                 $fun =
                       'function () {' . "\n"
                     .   (Perlito5::Javascript::LexicalBlock->new( block => $fun->{'stmts'}, needs_return => 1, top_level => 0 ))->emit_javascript( $level + 1 ) . "\n"
@@ -1082,6 +1079,7 @@ package Perlito5::AST::Apply;
             else {
                 $fun = 'null';
             }
+            $list = Perlito5::Javascript::to_list(\@in);
 
             return 'p5sort(' . Perlito5::Javascript::pkg() . ', '
                     .   $fun . ', '

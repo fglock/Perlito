@@ -697,18 +697,16 @@ for ($_) {
         };
         if (($code eq 'sort')) {
             ((my  @in) = @{$self->{'arguments'}});
-            ((my  $fun) = shift(@in));
-            ((my  $list) = Perlito5::Javascript::to_list(\@in));
-            if ((@in > 1)) {
-                ($fun = shift(@in))
-            };
-            ($list = Perlito5::Javascript::to_list(\@in));
-            if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
+            (my  $fun);
+            (my  $list);
+            if ((ref($in[0]) eq 'Perlito5::AST::Lit::Block')) {
+                ($fun = shift(@in));
                 ($fun = ('function () {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun->{'stmts'}), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
             }
             else {
                 ($fun = 'null')
             };
+            ($list = Perlito5::Javascript::to_list(\@in));
             return (('p5sort(' . Perlito5::Javascript::pkg() . ', ' . $fun . ', ' . $list . ')'))
         };
         if (($code eq 'prefix:<$>')) {
