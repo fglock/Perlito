@@ -660,7 +660,7 @@ token term_eval {
         }
 };
 
-token map_or_sort { 'map' | 'sort' };
+token map_or_sort { 'map' | 'sort' | 'grep' };
 
 token term_map_or_sort {
     # Note: this is map-block; map-expr is parsed as a normal subroutine

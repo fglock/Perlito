@@ -34,6 +34,7 @@ package Perlito5::Javascript;
         'infix:<->'  => ' - ',
         'infix:<*>'  => ' * ',
         'infix:</>'  => ' / ',
+        'infix:<%>'  => ' % ',
         'infix:<>>'  => ' > ',
         'infix:<<>'  => ' < ',
         'infix:<>=>' => ' >= ',
