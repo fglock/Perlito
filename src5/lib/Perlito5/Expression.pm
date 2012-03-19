@@ -601,6 +601,20 @@ token term_declarator {
         { $MATCH->{"capture"} = [ 'term', Perlito5::AST::Decl->new( decl => $MATCH->{"declarator"}->flat(), type => $MATCH->{"Perlito5::Grammar.opt_type"}->flat(), var => $MATCH->{"Perlito5::Grammar.var_ident"}->flat() ) ] }
 };
 
+token term_return {
+    'return' <.Perlito5::Grammar.opt_ws> <list_parse>
+        {
+            my $args = $MATCH->{"list_parse"}->flat()->{"exp"};
+            $MATCH->{"capture"} = [ 'term',
+                 Perlito5::AST::Apply->new(
+                    code      => 'return',
+                    arguments => $args eq '*undef*' ? [] : [$args],
+                    namespace => ''
+                 )
+               ]
+        }
+};
+
 token term_sub {
     'sub' <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.anon_sub_def>
                 { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.anon_sub_def"}->flat()     ] }

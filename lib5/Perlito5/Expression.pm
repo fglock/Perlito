@@ -877,6 +877,42 @@ sub Perlito5::Expression::term_declarator {
 }))));
     $MATCH
 };
+sub Perlito5::Expression::term_return {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((((('return' eq substr($str, $MATCH->{'to'}, 6)) && (($MATCH->{'to'} = (6 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = $grammar->list_parse($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'list_parse'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $args) = $MATCH->{'list_parse'}->flat()->{'exp'});
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Apply->new(('code' => 'return'), ('arguments' => (($args eq '*undef*') ? [] : [$args])), ('namespace' => ''))]);
+    1
+})))
+}))
+}))));
+    $MATCH
+};
 sub Perlito5::Expression::term_sub {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);

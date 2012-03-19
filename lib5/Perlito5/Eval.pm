@@ -104,7 +104,7 @@ sub Perlito5::AST::Apply::eval {
     ((my  $code) = ($ns . $self->{'code'}));
     for my $e (@{$env}) {
         if (exists($e->{$code})) {
-            return ($e->{$code}->($env, @{$self->{'arguments'}}))
+            return (($e->{$code}->($env, @{$self->{'arguments'}})))
         }
     };
     warn('Interpreter runtime error: subroutine ' . chr(39), $code, '()' . chr(39) . ' not found')

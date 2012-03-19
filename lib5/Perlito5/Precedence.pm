@@ -44,7 +44,7 @@ sub Perlito5::Precedence::is_ident_middle {
 }), ('->' => sub {
     Perlito5::Expression->term_arrow($_[0], $_[1])
 })));
-((my  @Term_chars) = (7, 5, 4, 3, 2, 1));
+((my  @Term_chars) = (7, 6, 5, 4, 3, 2, 1));
 ((my  %Term) = (('$' => sub {
     Perlito5::Expression->term_sigil($_[0], $_[1])
 }), ('@' => sub {
@@ -113,6 +113,8 @@ sub Perlito5::Precedence::is_ident_middle {
     Perlito5::Expression->term_declarator($_[0], $_[1])
 }), ('local' => sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
+}), ('return' => sub {
+    Perlito5::Expression->term_return($_[0], $_[1])
 }), ('package' => sub {
     Perlito5::Expression->term_package($_[0], $_[1])
 })));

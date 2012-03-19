@@ -51,7 +51,7 @@ my %Parsed_op = (
         '->' => sub { Perlito5::Expression->term_arrow($_[0], $_[1]) },
 );
 
-my @Term_chars = (7, 5, 4, 3, 2, 1);
+my @Term_chars = (7, 6, 5, 4, 3, 2, 1);
 my %Term = (
     # 1 char
         '$'  => sub { Perlito5::Expression->term_sigil($_[0], $_[1]) },
@@ -95,6 +95,7 @@ my %Term = (
         'state' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
         'local' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
     # 6 chars
+        'return' => sub { Perlito5::Expression->term_return($_[0], $_[1]) },
     # 7 chars
         'package' => sub { Perlito5::Expression->term_package($_[0], $_[1]) },
 );
