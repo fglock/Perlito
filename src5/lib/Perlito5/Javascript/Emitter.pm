@@ -121,6 +121,8 @@ package Perlito5::Javascript;
 
     sub to_str {
             my $cond = shift;
+            my $level = shift;
+            my $wantarray = 'scalar';
 
             if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
                && $cond->{"arguments"} && @{$cond->{"arguments"}}
@@ -139,23 +141,27 @@ package Perlito5::Javascript;
                    )
                 )
             {
-                return $cond->emit_javascript;
+                return $cond->emit_javascript($level, $wantarray);
             }
             else {
-                return 'p5str(' . $cond->emit_javascript . ')';
+                return 'p5str(' . $cond->emit_javascript($level, $wantarray) . ')';
             }
     }
     sub to_num {
             my $cond = shift;
+            my $level = shift;
+            my $wantarray = 'scalar';
             if ($cond->isa( 'Perlito5::AST::Val::Int' ) || $cond->isa( 'Perlito5::AST::Val::Num' )) {
-                return $cond->emit_javascript;
+                return $cond->emit_javascript($level, $wantarray);
             }
             else {
-                return 'num(' . $cond->emit_javascript . ')';
+                return 'num(' . $cond->emit_javascript($level, $wantarray) . ')';
             }
     }
     sub to_bool {
             my $cond = shift;
+            my $level = shift;
+            my $wantarray = 'scalar';
 
             if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
                && $cond->{"arguments"} && @{$cond->{"arguments"}}
@@ -189,10 +195,10 @@ package Perlito5::Javascript;
                 || ($cond->isa( 'Perlito5::AST::Apply' ) && exists $op_to_bool{ $cond->code })
                 )
             {
-                return $cond->emit_javascript;
+                return $cond->emit_javascript($level, $wantarray);
             }
             else {
-                return 'bool(' . $cond->emit_javascript . ')';
+                return 'bool(' . $cond->emit_javascript($level, $wantarray) . ')';
             }
     }
 
