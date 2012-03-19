@@ -1357,9 +1357,6 @@ package Perlito5::AST::Apply;
             # ($x, $y) = ...
 
             my $tmp = 'tmp' . Perlito5::Javascript::get_label();
-
-            # TODO - array assignment
-
             return
               '(function () { '
                 . 'var ' . $tmp . ' = ' . Perlito5::Javascript::to_list([$arguments]) . '; '

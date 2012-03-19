@@ -143,6 +143,7 @@ TODO list for Perlito5
 -- *{ $name }{CODE}->();
 
 -- local(*{$caller."::a"}) = \my $a;
+-- *{$pkg . "::foo"} = \&bar;
 
 -- AUTOLOAD
 
