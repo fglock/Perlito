@@ -461,49 +461,40 @@ token double_quoted_unescape {
 };
 
 token double_quoted_buf {
-    | <before \$ >
-        [ <Perlito5::Expression.term_sigil>
+    | <before \$ > <Perlito5::Expression.term_sigil>
+        [
 
-            [
+            # TODO - this only covers simple expressions
+            # TODO - syntax errors are allowed here - this should backtrack
 
-                # TODO - this only covers simple expressions
-                # TODO - syntax errors are allowed here - this should backtrack
-
-            |   <Perlito5::Expression.term_square>
-                { $MATCH->{"capture"} = Perlito5::AST::Index->new(
-                        obj       => $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1],
-                        index_exp => $MATCH->{"Perlito5::Expression.term_square"}->flat()->[2],
-                    )
-                }
-
-            |   <Perlito5::Expression.term_curly>
-                { $MATCH->{"capture"} = Perlito5::AST::Lookup->new(
-                        obj       => $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1],
-                        index_exp => $MATCH->{"Perlito5::Expression.term_curly"}->flat()->[2][0],
-                    )
-                }
-
-
-            |   { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1] }
-            ]
-
-        | <char_any>
-            { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
-        ]
-    | <before \@ >
-        [ <Perlito5::Expression.term_sigil>
-            { $MATCH->{"capture"} = Perlito5::AST::Apply->new(
-                    namespace => '',
-                    code      => 'join',
-                    arguments => [
-                        Perlito5::AST::Val::Buf->new( buf => ' ' ),
-                        ($MATCH->{"Perlito5::Expression.term_sigil"}->flat())[1]
-                    ],
+        |   <Perlito5::Expression.term_square>
+            { $MATCH->{"capture"} = Perlito5::AST::Index->new(
+                    obj       => $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1],
+                    index_exp => $MATCH->{"Perlito5::Expression.term_square"}->flat()->[2],
                 )
             }
-        | <char_any>
-            { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
+
+        |   <Perlito5::Expression.term_curly>
+            { $MATCH->{"capture"} = Perlito5::AST::Lookup->new(
+                    obj       => $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1],
+                    index_exp => $MATCH->{"Perlito5::Expression.term_curly"}->flat()->[2][0],
+                )
+            }
+
+
+        |   { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1] }
         ]
+
+    | <before \@ > <Perlito5::Expression.term_sigil>
+        { $MATCH->{"capture"} = Perlito5::AST::Apply->new(
+                namespace => '',
+                code      => 'join',
+                arguments => [
+                    Perlito5::AST::Val::Buf->new( buf => ' ' ),
+                    ($MATCH->{"Perlito5::Expression.term_sigil"}->flat())[1]
+                ],
+            )
+        }
     | \\ <double_quoted_unescape>
         { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"double_quoted_unescape"}->flat() ) }
 };

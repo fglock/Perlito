@@ -902,7 +902,7 @@ sub Perlito5::Grammar::String::double_quoted_buf {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((do {
-    (((do {
+    ((((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
     ($MATCH->{'bool'} = ((do {
@@ -915,9 +915,6 @@ sub Perlito5::Grammar::String::double_quoted_buf {
     ($MATCH = $tmp);
     ($MATCH->{'bool'} ? 1 : 0)
 })) && ((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    (((do {
     ((my  $m2) = Perlito5::Expression->term_sigil($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -927,7 +924,7 @@ sub Perlito5::Grammar::String::double_quoted_buf {
     else {
         0
     }
-})) && ((do {
+}))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((do {
     (((do {
@@ -970,25 +967,7 @@ sub Perlito5::Grammar::String::double_quoted_buf {
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
-    ((((do {
-    ((my  $m2) = $grammar->char_any($str, $MATCH->{'to'}));
-    if ($m2->{'bool'}) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'char_any'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Buf->new(('buf' => $MATCH->{'char_any'}->flat())));
-    1
-}))))
-})))
-})))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((do {
+    (((((do {
     ((my  $tmp) = $MATCH);
     ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
     ($MATCH->{'bool'} = ((do {
@@ -1001,9 +980,6 @@ sub Perlito5::Grammar::String::double_quoted_buf {
     ($MATCH = $tmp);
     ($MATCH->{'bool'} ? 1 : 0)
 })) && ((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    (((do {
     ((my  $m2) = Perlito5::Expression->term_sigil($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -1013,27 +989,9 @@ sub Perlito5::Grammar::String::double_quoted_buf {
     else {
         0
     }
-})) && ((do {
+}))) && ((do {
     ($MATCH->{'capture'} = Perlito5::AST::Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => [Perlito5::AST::Val::Buf->new(('buf' => ' ')), ($MATCH->{'Perlito5::Expression.term_sigil'}->flat())->[1]])));
     1
-})))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((do {
-    ((my  $m2) = $grammar->char_any($str, $MATCH->{'to'}));
-    if ($m2->{'bool'}) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'char_any'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Buf->new(('buf' => $MATCH->{'char_any'}->flat())));
-    1
-}))))
-})))
 }))))
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
