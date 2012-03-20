@@ -102,7 +102,6 @@ function _method_lookup_(method, class_name, seen) {
 }
 
 function _call_(invocant, method, list) {
-    // TODO - method can have an optional namespace
     list.unshift(invocant);
     if ( invocant._class_.hasOwnProperty(method) ) {
         return invocant._class_[method](list) 
@@ -114,6 +113,20 @@ function _call_(invocant, method, list) {
     if ( NAMESPACE.UNIVERSAL.hasOwnProperty(method) ) {
         return NAMESPACE.UNIVERSAL[method](list) 
     }
+
+    // method can have an optional namespace
+    var package = method.split(/::/);
+    if (package.length > 1) {
+        var name = package.pop();
+        package = package.join("::");
+        m = _method_lookup_(name, package, {});
+        // CORE.say([ name, " ", package ]);
+        if (m) {
+            return m(list)
+        }
+        NAMESPACE.CORE.die(["method not found: ", name, " in class ", package]);
+    }
+
     // TODO - cache the methods that were already looked up
     NAMESPACE.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
 }

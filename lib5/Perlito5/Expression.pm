@@ -362,10 +362,10 @@ sub Perlito5::Expression::term_arrow {
 }))) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
-    ((my  $m2) = Perlito5::Grammar->ident($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar->full_ident($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'Perlito5::Grammar.ident'} = $m2);
+        ($MATCH->{'Perlito5::Grammar.full_ident'} = $m2);
         1
     }
     else {
@@ -394,13 +394,13 @@ sub Perlito5::Expression::term_arrow {
         0
     }
 }))) && (((')' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = ['postfix_or_term', 'methcall', $MATCH->{'Perlito5::Grammar.ident'}->flat(), {('exp' => $MATCH->{'paren_parse'}->flat()), ('terminated' => 0)}]);
+    ($MATCH->{'capture'} = ['postfix_or_term', 'methcall', $MATCH->{'Perlito5::Grammar.full_ident'}->flat(), {('exp' => $MATCH->{'paren_parse'}->flat()), ('terminated' => 0)}]);
     1
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((do {
-    ($MATCH->{'capture'} = ['postfix_or_term', 'methcall_no_params', $MATCH->{'Perlito5::Grammar.ident'}->flat()]);
+    ($MATCH->{'capture'} = ['postfix_or_term', 'methcall_no_params', $MATCH->{'Perlito5::Grammar.full_ident'}->flat()]);
     1
 })))
 })))

@@ -389,11 +389,11 @@ token term_arrow {
             ]
 
 
-        | <Perlito5::Grammar.ident> <.Perlito5::Grammar.opt_ws>
+        | <Perlito5::Grammar.full_ident> <.Perlito5::Grammar.opt_ws>
             [ '(' <paren_parse> ')'
               { $MATCH->{"capture"} = [ 'postfix_or_term',
                        'methcall',
-                       $MATCH->{"Perlito5::Grammar.ident"}->flat(),   # TODO - namespace
+                       $MATCH->{"Perlito5::Grammar.full_ident"}->flat(),   # TODO - split namespace
                        { 
                          exp       => $MATCH->{"paren_parse"}->flat(),
                          terminated => 0,
@@ -402,7 +402,7 @@ token term_arrow {
               }
             | { $MATCH->{"capture"} = [ 'postfix_or_term',
                         'methcall_no_params',
-                        $MATCH->{"Perlito5::Grammar.ident"}->flat()   # TODO - namespace
+                        $MATCH->{"Perlito5::Grammar.full_ident"}->flat()   # TODO - split namespace
                       ]
               }
             ]
