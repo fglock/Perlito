@@ -124,10 +124,9 @@ sub op_parse {
         if (exists($End_token->{$term})) {
             my $c1 = substr($str, $pos + length($term) - 1, 1);
             my $c2 = substr($str, $pos + length($term), 1);
-            if (!(is_ident_middle($c1) && ( is_ident_middle($c2) || $c2 eq '(' ))) {
+            if (!(is_ident_middle($c1) && is_ident_middle($c2) )) {
                 # it looks like an end token, and it is not one of these cases:
                 #   if_more
-                #   if(...)
                 return Perlito5::Match->new(
                     str     => $str,
                     from    => $pos,
@@ -418,8 +417,8 @@ sub precedence_parse {
         }
         elsif (is_term($token)) {
             if (is_term($last)) {
-                say "#      last:  ", $last;
-                say "#      token: ", $token;
+                say "#      last:  ", Perlito5::Dumper::Dumper($last);
+                say "#      token: ", Perlito5::Dumper::Dumper($token);
                 die "Value tokens must be separated by an operator";
             }
             $token->[0] = 'term';

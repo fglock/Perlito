@@ -2882,7 +2882,7 @@ var p5100 = NAMESPACE['main'];
 							(v_c1 = (p5125.substr([v_str, (num((num(v_pos) + num(p5125.length([v_term], 0)))) - 1), 1], 0)));
 							var v_c2 = null;
 							(v_c2 = (p5125.substr([v_str, (num(v_pos) + num(p5125.length([v_term], 0))), 1], 0)));
-							if ( !( (bool(p5125.is_ident_middle(interpolate_array(v_c1), 0)) && (bool(p5125.is_ident_middle(interpolate_array(v_c2), 0)) || (p5str(v_c2) == '(')))) ) {
+							if ( !( (bool(p5125.is_ident_middle(interpolate_array(v_c1), 0)) && bool(p5125.is_ident_middle(interpolate_array(v_c2), 0)))) ) {
 								throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1, 'capture', (new ArrayRef(interpolate_array('end', v_term)))), p5want)], p5want));
 							};
 							})();
@@ -3133,8 +3133,8 @@ var p5100 = NAMESPACE['main'];
 							else {
 								if ( bool(p5125.is_term(interpolate_array(v_token), 0)) ) {
 									if ( bool(p5125.is_term(interpolate_array(v_last), 0)) ) {
-										p5125.say(interpolate_array('#      last:  ', v_last), null);
-										p5125.say(interpolate_array('#      token: ', v_token), null);
+										p5125.say(interpolate_array('#      last:  ', NAMESPACE["Perlito5::Dumper"].Dumper(interpolate_array(v_last), 1)), null);
+										p5125.say(interpolate_array('#      token: ', NAMESPACE["Perlito5::Dumper"].Dumper(interpolate_array(v_token), 1)), null);
 										p5125.die([interpolate_array('Value tokens must be separated by an operator')], null);
 									};
 									((v_token || (v_token = new ArrayRef([])))._array_[0] = 'term');

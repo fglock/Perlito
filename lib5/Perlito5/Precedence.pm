@@ -137,7 +137,7 @@ sub Perlito5::Precedence::op_parse {
         if (exists($End_token->{$term})) {
             ((my  $c1) = substr($str, (($pos + length($term)) - 1), 1));
             ((my  $c2) = substr($str, ($pos + length($term)), 1));
-            if (!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))))) {
+            if (!(((is_ident_middle($c1) && is_ident_middle($c2))))) {
                 return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => ['end', $term])))
             }
         }
@@ -346,8 +346,8 @@ sub Perlito5::Precedence::precedence_parse {
                 else {
                     if (is_term($token)) {
                         if (is_term($last)) {
-                            Perlito5::Runtime::say('#      last:  ', $last);
-                            Perlito5::Runtime::say('#      token: ', $token);
+                            Perlito5::Runtime::say('#      last:  ', Perlito5::Dumper::Dumper($last));
+                            Perlito5::Runtime::say('#      token: ', Perlito5::Dumper::Dumper($token));
                             die('Value tokens must be separated by an operator')
                         };
                         ($token->[0] = 'term');
