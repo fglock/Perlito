@@ -168,7 +168,12 @@ sub Perlito5::Precedence::op_parse {
             ((my  $c1) = substr($str, (($pos + length($op)) - 1), 1));
             ((my  $c2) = substr($str, ($pos + length($op)), 1));
             if (!(((is_ident_middle($c1) && ((is_ident_middle($c2) || ($c2 eq '('))))))) {
-                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => 1), ('capture' => ['op', $op])))
+                if (((exists($Operator->{'infix'}->{$op}) && !(exists($Operator->{'prefix'}->{$op}))) && !($last_is_term))) {
+
+                }
+                else {
+                    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => 1), ('capture' => ['op', $op])))
+                }
             }
         }
     };

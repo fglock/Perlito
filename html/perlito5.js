@@ -2926,7 +2926,12 @@ var p5100 = NAMESPACE['main'];
 							var v_c2 = null;
 							(v_c2 = (p5125.substr([v_str, (num(v_pos) + num(p5125.length([v_op], 0))), 1], 0)));
 							if ( !( (bool(p5125.is_ident_middle(interpolate_array(v_c1), 0)) && (bool(p5125.is_ident_middle(interpolate_array(v_c2), 0)) || (p5str(v_c2) == '(')))) ) {
-								throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', (num(v_pos) + num(v_len)), 'bool', 1, 'capture', (new ArrayRef(interpolate_array('op', v_op)))), p5want)], p5want));
+								if ( ((bool(((v_Operator || (v_Operator = new HashRef({})))._hash_['infix'])._hash_.hasOwnProperty(v_op)) && !( bool(((v_Operator || (v_Operator = new HashRef({})))._hash_['prefix'])._hash_.hasOwnProperty(v_op)))) && !( bool(v_last_is_term))) ) {
+									null;
+								}
+								else {
+									throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', (num(v_pos) + num(v_len)), 'bool', 1, 'capture', (new ArrayRef(interpolate_array('op', v_op)))), p5want)], p5want));
+								};
 							};
 							})();
 					};

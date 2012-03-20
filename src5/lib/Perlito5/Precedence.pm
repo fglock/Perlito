@@ -166,13 +166,23 @@ sub op_parse {
                 # it looks like an operator, and it is not one of these cases:
                 #   and_more
                 #   and(...)
-                return Perlito5::Match->new(
-                    str     => $str,
-                    from    => $pos,
-                    to      => $pos + $len,
-                    bool    => 1,
-                    capture => [ 'op', $op ]
-                );
+
+                if (  exists($Operator->{"infix"}{$op}) 
+                   && !exists($Operator->{"prefix"}{$op})
+                   && !$last_is_term
+                   )
+                {
+                    # only allows an infix after last_is_term
+                }
+                else {
+                    return Perlito5::Match->new(
+                        str     => $str,
+                        from    => $pos,
+                        to      => $pos + $len,
+                        bool    => 1,
+                        capture => [ 'op', $op ]
+                    );
+                }
             }
         }
     }
