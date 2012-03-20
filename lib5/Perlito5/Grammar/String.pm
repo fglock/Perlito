@@ -603,7 +603,7 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
     (my  @args);
     ((my  $buf) = '');
     for ( ; (($p < length($str)) && (substr($str, $p, length($delimiter)) ne $delimiter));  ) {
-        ((my  $m) = ($interpolate ? Perlito5::Grammar::String->double_quoted_buf($str, $p) : Perlito5::Grammar::String->single_quoted_unescape($str, $p)));
+        ((my  $m) = ($interpolate ? Perlito5::Grammar::String->double_quoted_buf($str, $p, $delimiter) : Perlito5::Grammar::String->single_quoted_unescape($str, $p)));
         if ($m->{'bool'}) {
             ((my  $obj) = $m->flat());
             if ((ref($obj) eq 'Perlito5::AST::Val::Buf')) {
@@ -830,7 +830,8 @@ sub Perlito5::Grammar::String::double_quoted_buf {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    if (((substr($str, $pos, 1) eq '$') || (substr($str, $pos, 1) eq '@'))) {
+    ((my  $delimiter) = $_[3]);
+    if (((((substr($str, $pos, 1) eq '$') || (substr($str, $pos, 1) eq '@'))) && (substr($str, ($pos + 1), length($delimiter)) ne $delimiter))) {
         ((my  $m) = Perlito5::Expression->term_sigil($str, $pos));
         if ($m->{'bool'}) {
 
