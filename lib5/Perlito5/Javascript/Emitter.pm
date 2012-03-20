@@ -876,17 +876,31 @@ for ($_) {
                     push(@out, shift(@in)->emit_javascript($level, 'list') )
                 }
                 else {
-                    if (($sig eq '$@')) {
-                        push(@out, shift(@in)->emit_javascript($level, 'scalar') );
-                        push(@out, Perlito5::Javascript::to_list(\@in) )
+                    if (($sig eq chr(92) . '@;$$@')) {
+                        push(@out, shift(@in)->emit_javascript($level, 'list') );
+                        if (@in) {
+                            push(@out, shift(@in)->emit_javascript($level, 'scalar') )
+                        };
+                        if (@in) {
+                            push(@out, shift(@in)->emit_javascript($level, 'scalar') )
+                        };
+                        if (@in) {
+                            push(@out, Perlito5::Javascript::to_list(\@in) )
+                        }
                     }
                     else {
-                        if (($sig eq '@')) {
+                        if (($sig eq '$@')) {
+                            push(@out, shift(@in)->emit_javascript($level, 'scalar') );
                             push(@out, Perlito5::Javascript::to_list(\@in) )
                         }
                         else {
-                            for (@in) {
-                                push(@out, $_->emit_javascript($level, 'scalar') )
+                            if (($sig eq '@')) {
+                                push(@out, Perlito5::Javascript::to_list(\@in) )
+                            }
+                            else {
+                                for (@in) {
+                                    push(@out, $_->emit_javascript($level, 'scalar') )
+                                }
                             }
                         }
                     }

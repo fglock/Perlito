@@ -1317,6 +1317,13 @@ package Perlito5::AST::Apply;
                 ||  $sig eq ';\\@' ) {      # pop, shift
                 push @out, shift(@in)->emit_javascript( $level, 'list' );
             }
+            elsif ( $sig eq '\\@;$$@'       # splice
+                ) {
+                push @out, shift(@in)->emit_javascript( $level, 'list' );
+                push @out, shift(@in)->emit_javascript( $level, 'scalar' ) if @in;
+                push @out, shift(@in)->emit_javascript( $level, 'scalar' ) if @in;
+                push @out, Perlito5::Javascript::to_list(\@in) if @in;
+            }
             elsif ( $sig eq '$@' ) {        # join
                 push @out, shift(@in)->emit_javascript( $level, 'scalar' );
                 push @out, Perlito5::Javascript::to_list(\@in);
