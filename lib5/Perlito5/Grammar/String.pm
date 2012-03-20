@@ -826,6 +826,27 @@ sub Perlito5::Grammar::String::single_quoted_unescape {
 }))));
     $MATCH
 };
+sub Perlito5::Grammar::String::double_quoted_buf {
+    ((my  $self) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    if ((substr($str, $pos, 1) eq '$')) {
+        return ($self->double_quoted_buf_dollar($str, $pos))
+    }
+    else {
+        if ((substr($str, $pos, 1) eq '@')) {
+            return ($self->double_quoted_buf_at($str, $pos))
+        }
+        else {
+            if ((substr($str, $pos, 1) eq chr(92))) {
+                ((my  $m) = $self->double_quoted_unescape($str, ($pos + 1)));
+                ($m->{'capture'} = Perlito5::AST::Val::Buf->new(('buf' => $m->flat())));
+                return ($m)
+            }
+        }
+    };
+    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 0), ('capture' => undef())))
+};
 sub Perlito5::Grammar::String::double_quoted_unescape {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -894,27 +915,15 @@ sub Perlito5::Grammar::String::double_quoted_unescape {
 }))));
     $MATCH
 };
-sub Perlito5::Grammar::String::double_quoted_buf {
+sub Perlito5::Grammar::String::double_quoted_buf_dollar {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
     ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
-    ((((do {
-    ((((do {
-    ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
-    ($MATCH->{'bool'} = ((do {
-    ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (('$' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-}))
-})));
-    ($tmp->{'bool'} = ($MATCH->{'bool'} ? 1 : 0));
-    ($MATCH = $tmp);
-    ($MATCH->{'bool'} ? 1 : 0)
-})) && ((do {
+    (((do {
     ((my  $m2) = Perlito5::Expression->term_sigil($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -924,7 +933,7 @@ sub Perlito5::Grammar::String::double_quoted_buf {
     else {
         0
     }
-}))) && ((do {
+})) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((do {
     (((do {
@@ -965,21 +974,19 @@ sub Perlito5::Grammar::String::double_quoted_buf {
 })))
 })))
 })))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((((do {
-    ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'}), ('bool' => 1)));
-    ($MATCH->{'bool'} = ((do {
+}))
+}))));
+    $MATCH
+};
+sub Perlito5::Grammar::String::double_quoted_buf_at {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1)));
+    ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    (('@' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-}))
-})));
-    ($tmp->{'bool'} = ($MATCH->{'bool'} ? 1 : 0));
-    ($MATCH = $tmp);
-    ($MATCH->{'bool'} ? 1 : 0)
-})) && ((do {
+    (((do {
     ((my  $m2) = Perlito5::Expression->term_sigil($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -989,27 +996,11 @@ sub Perlito5::Grammar::String::double_quoted_buf {
     else {
         0
     }
-}))) && ((do {
+})) && ((do {
     ($MATCH->{'capture'} = Perlito5::AST::Apply->new(('namespace' => ''), ('code' => 'join'), ('arguments' => [Perlito5::AST::Val::Buf->new(('buf' => ' ')), ($MATCH->{'Perlito5::Expression.term_sigil'}->flat())->[1]])));
     1
-}))))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((((chr(92) eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = $grammar->double_quoted_unescape($str, $MATCH->{'to'}));
-    if ($m2->{'bool'}) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        ($MATCH->{'double_quoted_unescape'} = $m2);
-        1
-    }
-    else {
-        0
-    }
-}))) && ((do {
-    ($MATCH->{'capture'} = Perlito5::AST::Val::Buf->new(('buf' => $MATCH->{'double_quoted_unescape'}->flat())));
-    1
-}))))
 })))
+}))
 }))));
     $MATCH
 };

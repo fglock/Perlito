@@ -426,6 +426,28 @@ token single_quoted_unescape {
         { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => '\'' ) }
 };
 
+sub double_quoted_buf {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+
+    if (substr($str, $pos, 1) eq '$') {
+        # TODO
+        return $self->double_quoted_buf_dollar($str, $pos);
+    }
+    elsif (substr($str, $pos, 1) eq '@') {
+        # TODO
+        return $self->double_quoted_buf_at($str, $pos);
+    }
+    elsif (substr($str, $pos, 1) eq '\\') {
+        my $m = $self->double_quoted_unescape($str, $pos+1);
+        $m->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $m->flat() );
+        return $m;
+    }
+    return Perlito5::Match->new(
+        'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 0, capture => undef);
+}
+
 token double_quoted_unescape {
 
     # TODO - "\"+octal "\x"+hex  - initial zero is optional; max 3 digit octal (377); max 2 digit hex
@@ -460,8 +482,8 @@ token double_quoted_unescape {
         { $MATCH->{"capture"} = $MATCH->{"char_any"}->flat() }
 };
 
-token double_quoted_buf {
-    | <before \$ > <Perlito5::Expression.term_sigil>
+token double_quoted_buf_dollar {
+    <Perlito5::Expression.term_sigil>
         [
 
             # TODO - this only covers simple expressions
@@ -484,8 +506,10 @@ token double_quoted_buf {
 
         |   { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1] }
         ]
+};
 
-    | <before \@ > <Perlito5::Expression.term_sigil>
+token double_quoted_buf_at {
+    <Perlito5::Expression.term_sigil>
         { $MATCH->{"capture"} = Perlito5::AST::Apply->new(
                 namespace => '',
                 code      => 'join',
@@ -495,8 +519,6 @@ token double_quoted_buf {
                 ],
             )
         }
-    | \\ <double_quoted_unescape>
-        { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"double_quoted_unescape"}->flat() ) }
 };
 
 1;
