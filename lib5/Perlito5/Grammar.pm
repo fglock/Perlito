@@ -266,7 +266,21 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
     else {
         0
     }
-})) && ((('::' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'})))))) && ((do {
+})) && ((do {
+    ((my  $last_match_null) = 0);
+    ((my  $last_pos) = $MATCH->{'to'});
+    for ( ; (((('::' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && (($last_match_null < 2)));  ) {
+        if (($last_pos == $MATCH->{'to'})) {
+            ($last_match_null = ($last_match_null + 1))
+        }
+        else {
+            ($last_match_null = 0)
+        };
+        ($last_pos = $MATCH->{'to'})
+    };
+    ($MATCH->{'to'} = $last_pos);
+    1
+}))) && ((do {
     ($MATCH->{'capture'} = $MATCH->{'namespace_before_ident'}->flat());
     1
 })))
