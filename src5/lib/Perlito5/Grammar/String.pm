@@ -356,7 +356,7 @@ sub here_doc {
                     # return true
                     $p = $m->{"to"} if $m->{"bool"};
                     return Perlito5::Match->new(
-                        'str' => $str, 'from' => $pos, 'to' => $p, 'bool' => 1, capture => undef);
+                        'str' => $str, 'from' => $pos, 'to' => $p - 1, 'bool' => 1, capture => undef);
                 }
             }
             # ... next line

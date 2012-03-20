@@ -7599,7 +7599,7 @@ var p5100 = NAMESPACE['main'];
 									if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
 										(v_p = ((v_m || (v_m = new HashRef({})))._hash_['to']));
 									};
-									throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'bool', 1, 'capture', null), p5want)], p5want));
+									throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', (num(v_p) - 1), 'bool', 1, 'capture', null), p5want)], p5want));
 								};
 								})();
 						};

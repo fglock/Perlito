@@ -747,7 +747,7 @@ sub Perlito5::Grammar::String::here_doc {
                     if ($m->{'bool'}) {
                         ($p = $m->{'to'})
                     };
-                    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('bool' => 1), ('capture' => undef())))
+                    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($p - 1)), ('bool' => 1), ('capture' => undef())))
                 }
             };
             for ( ; (($p < length($str)) && (((substr($str, $p, 1) ne chr(10)) && (substr($str, $p, 1) ne chr(13)))));  ) {
