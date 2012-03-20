@@ -233,7 +233,7 @@ CORE.reverse = function(List__) {
     return out;
 };
 
-CORE.splice = function(List__) {
+CORE.splice = function(List__, p5want) {
     var array  = List__.shift();
     // CORE.say([ array ]);
     var offset = num(List__.shift());
@@ -243,10 +243,14 @@ CORE.splice = function(List__) {
         limit = array.length + limit - 1;
     }
 
-    var list   = interpolate_array(offset, limit, List__);
+    var list = [offset, limit];
+    for(var i = 0; i < List__.length; i++) {
+        list = interpolate_array( list, List__[i]);
+    }
+
     out = array.splice.apply(array, list);
     // CORE.say([ CORE.join([":",array]), " ofs=", offset, " lim=", limit, " list=", list, " out=", CORE.join([":",out])  ]);
-    return out;
+    return p5want ? out : out.pop();
 };
 
 CORE.pop = function(List__) {

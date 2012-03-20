@@ -664,7 +664,7 @@ CORE.reverse = function(List__) {
     return out;
 };
 
-CORE.splice = function(List__) {
+CORE.splice = function(List__, p5want) {
     var array  = List__.shift();
     // CORE.say([ array ]);
     var offset = num(List__.shift());
@@ -674,10 +674,14 @@ CORE.splice = function(List__) {
         limit = array.length + limit - 1;
     }
 
-    var list   = interpolate_array(offset, limit, List__);
+    var list = [offset, limit];
+    for(var i = 0; i < List__.length; i++) {
+        list = interpolate_array( list, List__[i]);
+    }
+
     out = array.splice.apply(array, list);
     // CORE.say([ CORE.join([":",array]), " ofs=", offset, " lim=", limit, " list=", list, " out=", CORE.join([":",out])  ]);
-    return out;
+    return p5want ? out : out.pop();
 };
 
 CORE.pop = function(List__) {
@@ -2469,18 +2473,32 @@ var p5100 = NAMESPACE['main'];
 									p5113.push([List_out, interpolate_array(_call_(p5113.shift([List_in]), "emit_javascript", interpolate_array(v_level, 'list'), 1))], null);
 								}
 								else {
-									if ( (p5str(v_sig) == '$@') ) {
-										p5113.push([List_out, interpolate_array(_call_(p5113.shift([List_in]), "emit_javascript", interpolate_array(v_level, 'scalar'), 1))], null);
-										p5113.push([List_out, interpolate_array(NAMESPACE["Perlito5::Javascript"].to_list(interpolate_array((new ArrayRef(List_in))), 1))], null);
+									if ( (p5str(v_sig) == String.fromCharCode(92) + '@;$$@') ) {
+										p5113.push([List_out, interpolate_array(_call_(p5113.shift([List_in]), "emit_javascript", interpolate_array(v_level, 'list'), 1))], null);
+										if ( bool(List_in.length) ) {
+											p5113.push([List_out, interpolate_array(_call_(p5113.shift([List_in]), "emit_javascript", interpolate_array(v_level, 'scalar'), 1))], null);
+										};
+										if ( bool(List_in.length) ) {
+											p5113.push([List_out, interpolate_array(_call_(p5113.shift([List_in]), "emit_javascript", interpolate_array(v_level, 'scalar'), 1))], null);
+										};
+										if ( bool(List_in.length) ) {
+											p5113.push([List_out, interpolate_array(NAMESPACE["Perlito5::Javascript"].to_list(interpolate_array((new ArrayRef(List_in))), 1))], null);
+										};
 									}
 									else {
-										if ( (p5str(v_sig) == '@') ) {
+										if ( (p5str(v_sig) == '$@') ) {
+											p5113.push([List_out, interpolate_array(_call_(p5113.shift([List_in]), "emit_javascript", interpolate_array(v_level, 'scalar'), 1))], null);
 											p5113.push([List_out, interpolate_array(NAMESPACE["Perlito5::Javascript"].to_list(interpolate_array((new ArrayRef(List_in))), 1))], null);
 										}
 										else {
-											p5for(p5113, function () {
-												p5113.push([List_out, interpolate_array(_call_(NAMESPACE["Perlito5::AST::Apply"]["v__"], "emit_javascript", interpolate_array(v_level, 'scalar'), 1))], null);
-											}, interpolate_array(List_in));
+											if ( (p5str(v_sig) == '@') ) {
+												p5113.push([List_out, interpolate_array(NAMESPACE["Perlito5::Javascript"].to_list(interpolate_array((new ArrayRef(List_in))), 1))], null);
+											}
+											else {
+												p5for(p5113, function () {
+													p5113.push([List_out, interpolate_array(_call_(NAMESPACE["Perlito5::AST::Apply"]["v__"], "emit_javascript", interpolate_array(v_level, 'scalar'), 1))], null);
+												}, interpolate_array(List_in));
+											};
 										};
 									};
 								};
