@@ -467,6 +467,7 @@ token double_quoted_buf {
             [
 
                 # TODO - this only covers simple expressions
+                # TODO - syntax errors are allowed here - this should backtrack
 
             |   <Perlito5::Expression.term_square>
                 { $MATCH->{"capture"} = Perlito5::AST::Index->new(
