@@ -253,6 +253,10 @@ perlito5 [switches] [programfile]
                     eval "use Data::Dumper";
                     print Dumper( $comp_units );
                 }
+                elsif ($backend eq 'ast-pretty') {
+                    eval 'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1';
+                    print $@;
+                }
             }
         }
     }
