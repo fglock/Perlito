@@ -312,6 +312,10 @@ CORE.length = function(List__) {
     return o.length;
 };
 
+CORE.pack    = function(List__) { CORE.warn([ "CORE::pack not implemented" ]) };
+CORE.unpack  = function(List__) { CORE.warn([ "CORE::unpack not implemented" ]) };
+CORE.sprintf = function(List__) { CORE.warn([ "CORE::sprintf not implemented" ]) };
+
 CORE.ref = function(List__) {
     var o = List__[0];
     if (o == null) {
