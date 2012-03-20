@@ -928,8 +928,45 @@ sub Perlito5::Grammar::String::double_quoted_buf {
         0
     }
 })) && ((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((((do {
+    (((do {
+    ((my  $m2) = Perlito5::Expression->term_square($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Expression.term_square'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ($MATCH->{'capture'} = Perlito5::AST::Index->new(('obj' => $MATCH->{'Perlito5::Expression.term_sigil'}->flat()->[1]), ('index_exp' => $MATCH->{'Perlito5::Expression.term_square'}->flat()->[2])));
+    1
+})))
+})) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    ((((do {
+    ((my  $m2) = Perlito5::Expression->term_curly($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Expression.term_curly'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
+    ($MATCH->{'capture'} = Perlito5::AST::Lookup->new(('obj' => $MATCH->{'Perlito5::Expression.term_sigil'}->flat()->[1]), ('index_exp' => $MATCH->{'Perlito5::Expression.term_curly'}->flat()->[2]->[0])));
+    1
+}))))
+}))) || ((do {
+    ($MATCH->{'to'} = $pos1);
+    (((do {
     ($MATCH->{'capture'} = $MATCH->{'Perlito5::Expression.term_sigil'}->flat()->[1]);
     1
+})))
+})))
 })))
 })) || ((do {
     ($MATCH->{'to'} = $pos1);

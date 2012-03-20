@@ -463,7 +463,29 @@ token double_quoted_unescape {
 token double_quoted_buf {
     | <before \$ >
         [ <Perlito5::Expression.term_sigil>
-            { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1] }
+
+            [
+
+                # TODO - this only covers simple expressions
+
+            |   <Perlito5::Expression.term_square>
+                { $MATCH->{"capture"} = Perlito5::AST::Index->new(
+                        obj       => $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1],
+                        index_exp => $MATCH->{"Perlito5::Expression.term_square"}->flat()->[2],
+                    )
+                }
+
+            |   <Perlito5::Expression.term_curly>
+                { $MATCH->{"capture"} = Perlito5::AST::Lookup->new(
+                        obj       => $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1],
+                        index_exp => $MATCH->{"Perlito5::Expression.term_curly"}->flat()->[2][0],
+                    )
+                }
+
+
+            |   { $MATCH->{"capture"} = $MATCH->{"Perlito5::Expression.term_sigil"}->flat()->[1] }
+            ]
+
         | <char_any>
             { $MATCH->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $MATCH->{"char_any"}->flat() ) }
         ]
