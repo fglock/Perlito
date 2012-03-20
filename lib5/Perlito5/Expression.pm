@@ -477,7 +477,7 @@ sub Perlito5::Expression::term_sigil {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     (((do {
-    (((do {
+    ((((do {
     ((my  $m2) = $grammar->var_sigil_or_pseudo($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -488,6 +488,15 @@ sub Perlito5::Expression::term_sigil {
         0
     }
 })) && ((do {
+    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((((do {
     (((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {

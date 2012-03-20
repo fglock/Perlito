@@ -513,7 +513,7 @@ sub term_special_var {
 token var_sigil_or_pseudo     { '$#' | \$ |\% |\@ |\& | \* };
 
 token term_sigil {
-    <var_sigil_or_pseudo>
+    <var_sigil_or_pseudo> <.Perlito5::Grammar.opt_ws>
         [ '{' 
             [
             | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name> '}'
