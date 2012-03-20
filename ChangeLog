@@ -7,6 +7,7 @@ Dev  2012-02-29
 - here-docs
 - new Perl5-in-Perl6 backend (experimental)
 - new option -Bjs
+- runs some tests from the perl5 test suite (pmurias++)
 
 - perl5 backend:
 -- use native data structures and ops
