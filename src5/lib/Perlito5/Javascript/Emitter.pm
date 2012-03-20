@@ -1504,12 +1504,6 @@ package Perlito5::AST::Sub;
         . Perlito5::Javascript::tab($level) . '}';
 
         if ( $self->{"name"} ) {
-
-            if ( $Perlito5::PKG_NAME ne $self->{"namespace"} ) {
-                # diagnostics: we are migrating from emit-time namespace to parse-time namespace resolution
-                die "bad sub namespace $Perlito5::PKG_NAME ne ", $self->{"namespace"};
-            }
-
             return 'make_sub("' . $self->{"namespace"} . '", "' . $self->{"name"} . '", ' . $s . ')'
         }
         else {

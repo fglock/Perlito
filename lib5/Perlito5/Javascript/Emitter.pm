@@ -972,9 +972,6 @@ for ($_) {
         ((my  $level) = shift());
         ((my  $s) = ('function (List__, p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{'block'}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'));
         if ($self->{'name'}) {
-            if (($Perlito5::PKG_NAME ne $self->{'namespace'})) {
-                die(('bad sub namespace ' . $Perlito5::PKG_NAME . ' ne '), $self->{'namespace'})
-            };
             return (('make_sub("' . $self->{'namespace'} . '", "' . $self->{'name'} . '", ' . $s . ')'))
         }
         else {
