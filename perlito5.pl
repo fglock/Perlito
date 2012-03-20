@@ -33,7 +33,7 @@ use Perlito5::Runtime;
 ((my  $expand_use) = 1);
 if ($verbose) {
     warn('// Perlito5 compiler');
-    warn(('// ARGV: ' . join(' ', @ARGV)))
+    warn(('// ARGV: ' . @ARGV))
 };
 (my  %module_seen);
 sub Perlito::modulename_to_filename {
