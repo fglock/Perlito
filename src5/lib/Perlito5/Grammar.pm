@@ -204,13 +204,13 @@ token anon_sub_def {
 
 
 token named_sub_def {
-    <ident> <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
+    <optional_namespace_before_ident> <ident> <prototype> <.opt_ws> \{ <.opt_ws> <exp_stmts> <.opt_ws>
     [   \}     | { die 'Syntax Error in sub \'', $MATCH->{"ident"}->flat(), '\'' } ]
     {
         my $name = $MATCH->{"ident"}->flat();
         my $sig  = $MATCH->{"prototype"}->flat();
         $sig = undef if $sig eq '*undef*';
-        my $namespace;  # TODO
+        my $namespace = $MATCH->{"optional_namespace_before_ident"}->flat();
         if ( $name ) {
             # say "sub $Perlito5::PKG_NAME :: $name ( $sig )";
             $namespace = $Perlito5::PKG_NAME unless $namespace;

@@ -1599,7 +1599,17 @@ sub Perlito5::Grammar::named_sub_def {
     ($MATCH->{'bool'} = (((do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
-    ((((((((((do {
+    (((((((((((do {
+    ((my  $m2) = $grammar->optional_namespace_before_ident($str, $MATCH->{'to'}));
+    if ($m2->{'bool'}) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'optional_namespace_before_ident'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+})) && ((do {
     ((my  $m2) = $grammar->ident($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -1609,7 +1619,7 @@ sub Perlito5::Grammar::named_sub_def {
     else {
         0
     }
-})) && ((do {
+}))) && ((do {
     ((my  $m2) = $grammar->prototype($str, $MATCH->{'to'}));
     if ($m2->{'bool'}) {
         ($MATCH->{'to'} = $m2->{'to'});
@@ -1673,7 +1683,7 @@ sub Perlito5::Grammar::named_sub_def {
     if (($sig eq '*undef*')) {
         ($sig = undef())
     };
-    (my  $namespace);
+    ((my  $namespace) = $MATCH->{'optional_namespace_before_ident'}->flat());
     if ($name) {
         if ($namespace) {
 

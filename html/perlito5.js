@@ -9905,7 +9905,19 @@ var p5100 = NAMESPACE['main'];
 					var v_pos1 = null;
 					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 					return (p5context([p5context([(function () {
-	return (p5context([and(and(and(and(and(and(and(and(p5context([(function () {
+	return (p5context([and(and(and(and(and(and(and(and(and(p5context([(function () {
+	var v_m2 = null;
+	(v_m2 = (_call_(v_grammar, "optional_namespace_before_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
+	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
+		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['optional_namespace_before_ident'] = v_m2);
+		return (p5context([1], p5want));
+	}
+	
+	else {
+		return (p5context([0], p5want));
+	}
+})()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
@@ -9917,7 +9929,7 @@ var p5100 = NAMESPACE['main'];
 	else {
 		return (p5context([0], p5want));
 	}
-})()], 0), function () { return p5context([(function () {
+})()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "prototype", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
 	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
@@ -9995,6 +10007,7 @@ var p5100 = NAMESPACE['main'];
 		(v_sig = (null));
 	};
 	var v_namespace = null;
+	(v_namespace = (_call_((v_MATCH || (v_MATCH = new HashRef({})))._hash_['optional_namespace_before_ident'], "flat", [], 0)));
 	if ( bool(v_name) ) {
 		(function () {
 			if ( bool(v_namespace) ) {
