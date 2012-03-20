@@ -612,6 +612,7 @@ package Perlito5::AST::Var;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
+        my $wantarray = shift;
 
         my $perl5_name = $self->perl5_name;
         # say "looking up $perl5_name";
@@ -626,6 +627,18 @@ package Perlito5::AST::Var;
                 if     !$self->{"namespace"}
                     && $self->{"sigil"} ne '*' 
                     && $Perlito5::STRICT;
+        }
+
+        if ( $self->{"sigil"} eq '@' ) {
+            if ( $wantarray eq 'scalar' ) {
+                return $self->emit_javascript($level, 'list') . '.length';
+            }
+            if ( $wantarray eq 'runtime' ) {
+                return '(p5want'
+                    . ' ? ' . $self->emit_javascript($level, 'list')
+                    . ' : ' . $self->emit_javascript($level, 'list') . '.length'
+                    . ')';
+            }
         }
 
         if ( $self->{"sigil"} eq '&' ) {
