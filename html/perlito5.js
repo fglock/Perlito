@@ -1888,37 +1888,11 @@ var p5100 = NAMESPACE['main'];
 		var p5117 = make_package("Perlito5::AST::Decl");
 		for (var i_ = 0; i_ < 1 ; i_++) {
 			make_sub("Perlito5::AST::Decl", "emit_javascript", function (List__, p5want) {
-				try {
 					var v_self = null;
 					(v_self = (p5117.shift([List__])));
 					var v_level = null;
 					(v_level = (p5117.shift([List__])));
-					if ( (p5str((v_self || (v_self = new HashRef({})))._hash_['decl']) == 'local') ) {
-						(function () {
-							var v_perl5_name = null;
-							(v_perl5_name = (_call_((v_self || (v_self = new HashRef({})))._hash_['var'], "perl5_name", [], 0)));
-							var v_decl_namespace = null;
-							(v_decl_namespace = (''));
-							var v_decl = null;
-							(v_decl = (_call_((v_self || (v_self = new HashRef({})))._hash_['var'], "perl5_get_decl", interpolate_array(v_perl5_name), 0)));
-							if ( (bool(v_decl) && ((p5str((v_decl || (v_decl = new HashRef({})))._hash_['decl']) == 'our') || (p5str((v_decl || (v_decl = new HashRef({})))._hash_['decl']) == 'local'))) ) {
-								(v_decl_namespace = ((v_decl || (v_decl = new HashRef({})))._hash_['namespace']));
-							};
-							var v_ns = null;
-							(v_ns = (('NAMESPACE["' + p5str(or(or(((v_self || (v_self = new HashRef({})))._hash_['var'] || ((v_self || (v_self = new HashRef({})))._hash_['var'] = new HashRef({})))._hash_['namespace'], function () { return v_decl_namespace; }), function () { return NAMESPACE["Perlito5"].v_PKG_NAME; })) + '"]')));
-							throw(p5context([('set_local(' + p5str(v_ns) + ',' + p5str(NAMESPACE["Perlito5::Javascript"].escape_string(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_['var'] || ((v_self || (v_self = new HashRef({})))._hash_['var'] = new HashRef({})))._hash_['name']), 0)) + ',' + p5str(NAMESPACE["Perlito5::Javascript"].escape_string(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_['var'] || ((v_self || (v_self = new HashRef({})))._hash_['var'] = new HashRef({})))._hash_['sigil']), 0)) + '); ' + p5str(_call_((v_self || (v_self = new HashRef({})))._hash_['var'], "emit_javascript", interpolate_array(v_level), 0)))], p5want));
-							})();
-					};
 					return (p5context([_call_((v_self || (v_self = new HashRef({})))._hash_['var'], "emit_javascript", interpolate_array(v_level), p5want)], p5want));
-				}
-				catch(err) {
-					if ( err instanceof Error ) {
-						throw(err);
-					}
-					else {
-						return(err);
-					}
-				}
 			});
 			make_sub("Perlito5::AST::Decl", "emit_javascript_init", function (List__, p5want) {
 				try {
@@ -1971,7 +1945,18 @@ var p5100 = NAMESPACE['main'];
 						
 						else {
 							if ( (p5str((v_self || (v_self = new HashRef({})))._hash_['decl']) == 'local') ) {
-								throw(p5context([('// local ' + p5str(_call_((v_self || (v_self = new HashRef({})))._hash_['var'], "emit_javascript", [], 0)))], p5want))
+								var v_perl5_name = null;
+								(v_perl5_name = (_call_((v_self || (v_self = new HashRef({})))._hash_['var'], "perl5_name", [], 0)));
+								var v_decl_namespace = null;
+								(v_decl_namespace = (''));
+								var v_decl = null;
+								(v_decl = (_call_((v_self || (v_self = new HashRef({})))._hash_['var'], "perl5_get_decl", interpolate_array(v_perl5_name), 0)));
+								if ( (bool(v_decl) && ((p5str((v_decl || (v_decl = new HashRef({})))._hash_['decl']) == 'our') || (p5str((v_decl || (v_decl = new HashRef({})))._hash_['decl']) == 'local'))) ) {
+									(v_decl_namespace = ((v_decl || (v_decl = new HashRef({})))._hash_['namespace']));
+								};
+								var v_ns = null;
+								(v_ns = (('NAMESPACE["' + p5str(or(or(((v_self || (v_self = new HashRef({})))._hash_['var'] || ((v_self || (v_self = new HashRef({})))._hash_['var'] = new HashRef({})))._hash_['namespace'], function () { return v_decl_namespace; }), function () { return NAMESPACE["Perlito5"].v_PKG_NAME; })) + '"]')));
+								throw(p5context([('set_local(' + p5str(v_ns) + ',' + p5str(NAMESPACE["Perlito5::Javascript"].escape_string(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_['var'] || ((v_self || (v_self = new HashRef({})))._hash_['var'] = new HashRef({})))._hash_['name']), 0)) + ',' + p5str(NAMESPACE["Perlito5::Javascript"].escape_string(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_['var'] || ((v_self || (v_self = new HashRef({})))._hash_['var'] = new HashRef({})))._hash_['sigil']), 0)) + '); ')], p5want))
 							}
 							
 							else {

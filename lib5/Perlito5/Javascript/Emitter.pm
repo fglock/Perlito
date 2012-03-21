@@ -456,16 +456,6 @@ for ($_) {
     sub Perlito5::AST::Decl::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        if (($self->{'decl'} eq 'local')) {
-            ((my  $perl5_name) = $self->{'var'}->perl5_name());
-            ((my  $decl_namespace) = '');
-            ((my  $decl) = $self->{'var'}->perl5_get_decl($perl5_name));
-            if (($decl && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
-                ($decl_namespace = $decl->{'namespace'})
-            };
-            ((my  $ns) = ('NAMESPACE["' . ((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)) . '"]'));
-            return (('set_local(' . $ns . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'sigil'}) . '); ' . $self->{'var'}->emit_javascript($level)))
-        };
         $self->{'var'}->emit_javascript($level)
     };
     sub Perlito5::AST::Decl::emit_javascript_init {
@@ -508,7 +498,14 @@ for ($_) {
             }
             else {
                 if (($self->{'decl'} eq 'local')) {
-                    return (('// local ' . $self->{'var'}->emit_javascript()))
+                    ((my  $perl5_name) = $self->{'var'}->perl5_name());
+                    ((my  $decl_namespace) = '');
+                    ((my  $decl) = $self->{'var'}->perl5_get_decl($perl5_name));
+                    if (($decl && ((($decl->{'decl'} eq 'our') || ($decl->{'decl'} eq 'local'))))) {
+                        ($decl_namespace = $decl->{'namespace'})
+                    };
+                    ((my  $ns) = ('NAMESPACE["' . ((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)) . '"]'));
+                    return (('set_local(' . $ns . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'sigil'}) . '); '))
                 }
                 else {
                     if (($self->{'decl'} eq 'state')) {

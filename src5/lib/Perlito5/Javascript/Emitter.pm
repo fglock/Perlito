@@ -691,34 +691,6 @@ package Perlito5::AST::Decl;
     sub emit_javascript {
         my $self = shift;
         my $level = shift;
-        if ($self->{"decl"} eq 'local') {
-
-            # TODO - add grammar support
-            # if ($self->var->isa("Lookup")) {
-            #     return 
-            #         'set_local(' . $self->var->{"obj"}->emit_javascript() . ', '
-            #                      . $self->var->{"index_exp"}->emit_javascript() . ', '
-            #                      . '""); '
-            #         . $self->{"var"}->emit_javascript( $level );
-            # }
-
-            my $perl5_name = $self->{"var"}->perl5_name;
-            # say "looking up $perl5_name";
-            my $decl_namespace = '';
-            my $decl = $self->{"var"}->perl5_get_decl( $perl5_name );
-            if ( $decl && ($decl->{"decl"} eq 'our' || $decl->{"decl"} eq 'local')) {
-                # say "found ", $decl->{"decl"}, " namespace: ", $decl->{"namespace"};
-                $decl_namespace = $decl->{"namespace"};
-            }
-
-            my $ns = 'NAMESPACE["' . ($self->{"var"}{"namespace"} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
-
-            return
-                  'set_local(' . $ns . ','
-                               . Perlito5::Javascript::escape_string($self->{"var"}{"name"}) . ','
-                               . Perlito5::Javascript::escape_string($self->{"var"}{"sigil"}) . '); ' 
-                . $self->{"var"}->emit_javascript( $level );
-        }
         $self->{"var"}->emit_javascript( $level );
     }
     sub emit_javascript_init {
@@ -764,8 +736,30 @@ package Perlito5::AST::Decl;
             return '// our ' . $self->{"var"}->emit_javascript();
         }
         elsif ($self->{"decl"} eq 'local') {
-            # TODO
-            return '// local ' . $self->{"var"}->emit_javascript();
+            # TODO - add grammar support
+            # if ($self->var->isa("Lookup")) {
+            #     return 
+            #         'set_local(' . $self->var->{"obj"}->emit_javascript() . ', '
+            #                      . $self->var->{"index_exp"}->emit_javascript() . ', '
+            #                      . '""); '
+            #         . $self->{"var"}->emit_javascript( $level );
+            # }
+
+            my $perl5_name = $self->{"var"}->perl5_name;
+            # say "looking up $perl5_name";
+            my $decl_namespace = '';
+            my $decl = $self->{"var"}->perl5_get_decl( $perl5_name );
+            if ( $decl && ($decl->{"decl"} eq 'our' || $decl->{"decl"} eq 'local')) {
+                # say "found ", $decl->{"decl"}, " namespace: ", $decl->{"namespace"};
+                $decl_namespace = $decl->{"namespace"};
+            }
+
+            my $ns = 'NAMESPACE["' . ($self->{"var"}{"namespace"} || $decl_namespace || $Perlito5::PKG_NAME) . '"]';
+
+            return
+                  'set_local(' . $ns . ','
+                               . Perlito5::Javascript::escape_string($self->{"var"}{"name"}) . ','
+                               . Perlito5::Javascript::escape_string($self->{"var"}{"sigil"}) . '); ' 
         }
         elsif ($self->{"decl"} eq 'state') {
             # TODO
