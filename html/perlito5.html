@@ -138,6 +138,10 @@ say "it was indeed" if $s =~ /was/;
                 time = end - start;
 			    document.getElementById('log-result').value += "Running time: " + time + "ms\n";
 
+                // if ( NAMESPACE["main"]["v_@"] ) {
+                //     document.getElementById('log-result').value += NAMESPACE["main"]["v_@"], "\n";
+                // }
+
                 NAMESPACE.CORE.print(["\nDone.\n"]);
             }
             catch(err) {

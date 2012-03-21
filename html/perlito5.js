@@ -55,8 +55,9 @@ if (typeof NAMESPACE !== "object") {
 
     p5_error = function (v) {
         this.v = v;
+        this.toString = function(){ return this.v };
     };
-    p5_error.prototype = Error;
+    p5_error.prototype = Error.prototype;
 }
 
 function make_package(pkg_name) {
