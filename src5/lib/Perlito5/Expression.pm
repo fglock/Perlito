@@ -473,13 +473,6 @@ sub term_special_var {
             $len = 2;
         }
     }
-    my $m = Perlito5::Match->new(
-        str     => $str,
-        from    => $pos,
-        to      => $pos + $len,
-        bool    => 0,
-        capture => undef
-    );
     if ( $len ) {
         my $c0 = substr( $str, $pos + $len - 1, 1 );
         my $c1 = substr( $str, $pos + $len, 1 );
@@ -497,17 +490,21 @@ sub term_special_var {
             # looks like a prefix operator, not a special var
         }
         else {
-            $m->{"bool"} = 1;
-            $m->{"capture"} = [ 'term', 
+            return Perlito5::Match->new(
+               str     => $str,
+               from    => $pos,
+               to      => $pos + $len,
+               capture => [ 'term', 
                                 Perlito5::AST::Var->new(
                                         sigil       => substr($s, 0, $len - 1),
                                         namespace   => '',
                                         name        => substr($s, $len - 1, 1)
                                     )
-                              ];
+                          ]
+            );
         }
     }
-    return $m;
+    return 0;
 }
 
 token var_sigil_or_pseudo     { '$#' | \$ |\% |\@ |\& | \* };
@@ -856,11 +853,11 @@ sub op_parse_spc {
     my $last_is_term = $_[3];
 
     my $m = Perlito5::Precedence->op_parse($str, $pos, $last_is_term);
-    if (!$m->{"bool"}) {
+    if (!$m) {
         return $m;
     }
     my $spc = Perlito5::Grammar->ws($str, $m->{"to"});
-    if ($spc->{"bool"}) {
+    if ($spc) {
         $m->{"to"} = $spc->{"to"};
     }
     return $m;
@@ -895,7 +892,7 @@ sub argument_parse {
         else {
             my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
             # say "# list lexer got: " . $m->perl;
-            if (!$m->bool) {
+            if (!$m) {
                 return [ 'end', '*end*' ];
             }
             $v = $m->flat();
@@ -921,12 +918,12 @@ sub argument_parse {
             && $last_token_was_space
            )
         {
-            if ($self->has_newline_after($str, $last_pos)->bool) {
+            if ($self->has_newline_after($str, $last_pos)) {
                 # a block followed by newline terminates the expression
                 $terminated = 1;
                 push( @$lexer_stack,  [ 'end', '*end*' ] );
             }
-            elsif ($self->has_no_comma_or_colon_after($str, $last_pos)->bool) {
+            elsif ($self->has_no_comma_or_colon_after($str, $last_pos)) {
                 # a sequence ( block - space - not_comma_or_colon ) terminates the list
                 $terminated = 1;
                 push( @$lexer_stack,  [ 'end', '*end*' ] );
@@ -947,7 +944,7 @@ sub argument_parse {
     # say "# list_lexer return: ", $res->perl;
     if (scalar(@$res) == 0) {
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
+            'str' => $str, 'from' => $pos, 'to' => $last_pos,
             capture => {
                 exp        => '*undef*',
                 terminated => undef } )
@@ -966,7 +963,7 @@ sub argument_parse {
         # say "# list exp terminated with a block (2): ", $block->perl;
     }
     return Perlito5::Match->new(
-        'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
+        'str' => $str, 'from' => $pos, 'to' => $last_pos,
         capture => {
             exp        => $result,
             terminated => $terminated } )
@@ -1002,7 +999,7 @@ sub list_parse {
         else {
             my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
             # say "# list lexer got: " . $m->perl;
-            if (!$m->bool) {
+            if (!$m) {
                 return [ 'end', '*end*' ];
             }
             $v = $m->flat();
@@ -1038,14 +1035,14 @@ sub list_parse {
     # say "# list_lexer return: ", $res->perl;
     if (scalar(@$res) == 0) {
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
+            'str' => $str, 'from' => $pos, 'to' => $last_pos,
             capture => {
                 exp        => '*undef*',
                 terminated => undef } )
     }
     my $result = pop_term($res);
     return Perlito5::Match->new(
-        'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
+        'str' => $str, 'from' => $pos, 'to' => $last_pos,
         capture => {
             exp        => $result,
             terminated => $terminated } )
@@ -1063,7 +1060,7 @@ sub circumfix_parse {
     my $last_is_term;
     my $get_token = sub {
         my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
-        if (!$m->bool) {
+        if (!$m) {
             die "Expected closing delimiter: ", $delimiter, ' near ', $last_pos;
         }
         my $v = $m->flat();
@@ -1091,7 +1088,7 @@ sub circumfix_parse {
         $res = '*undef*';
     }
     return Perlito5::Match->new(
-        'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1, capture => $res);
+        'str' => $str, 'from' => $pos, 'to' => $last_pos, capture => $res);
 }
 
 sub ternary5_parse {
@@ -1142,7 +1139,7 @@ sub exp_parse {
         else {
             my $m = Perlito5::Expression->op_parse_spc($str, $last_pos, $last_is_term);
             # say "# exp lexer got: " . $m->perl;
-            if (!$m->bool) {
+            if (!$m) {
                 return [ 'end', '*end*' ];
             }
             $v = $m->flat();
@@ -1164,12 +1161,12 @@ sub exp_parse {
     # say "# exp terminated";
     if (scalar(@$res) == 0) {
         # say "# exp terminated with false";
-        return Perlito5::Match->new(bool => 0);
+        return 0;
     }
     my $result = pop_term($res);
     # say "# exp_parse result: ", $result->perl;
     return Perlito5::Match->new(
-        'str' => $str, 'from' => $pos, 'to' => $last_pos, 'bool' => 1,
+        'str' => $str, 'from' => $pos, 'to' => $last_pos,
         capture => {
             exp        => $result,
             terminated => $terminated } )
@@ -1213,7 +1210,7 @@ sub statement_parse {
     # anonymous subs are plain terms.
 
     $res = $self->exp_stmt($str, $pos);
-    if ($res->{"bool"}) {
+    if ($res) {
         # say "# statement result: ", $res->perl;
         return $res;
     }
@@ -1222,7 +1219,7 @@ sub statement_parse {
         # do we recognize a bare block in this position?
         # warn "maybe bareblock at $pos";
         my $m = $self->term_curly($str, $pos);
-        if ($m->{"bool"}) {
+        if ($m) {
             my $v = $m->flat();
 
             # TODO - this is not recognized as a statement: { 123 => 4;}
@@ -1239,7 +1236,7 @@ sub statement_parse {
     }
 
     $res = $self->exp_parse($str, $pos);
-    if (!$res->bool) {
+    if (!$res) {
         # say "# not a statement or expression";
         return $res;
     }
@@ -1254,7 +1251,7 @@ sub statement_parse {
     }
     # say "# look for a statement modifier";
     my $modifier = $self->statement_modifier($str, $res->to);
-    if (!$modifier->bool) {
+    if (!$modifier) {
         # say "# statement expression no modifier result: ", $res->perl;
         # TODO - require a statement terminator
         $res->{"capture"} = $res->flat()->{'exp'};
@@ -1262,7 +1259,7 @@ sub statement_parse {
     }
     my $modifier_exp = $self->exp_parse($str, $modifier->to);
     # say "# statement modifier [", $modifier->flat(), "] exp: ", $modifier_exp->perl;
-    if (!$modifier_exp->bool) {
+    if (!$modifier_exp) {
         die "Expected expression after '", $modifier->flat(), "'";
     }
     # TODO - require a statement terminator
@@ -1272,7 +1269,7 @@ sub statement_parse {
 
     if ($modifier eq 'if') {
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
             capture => Perlito5::AST::If->new(
                 cond      => $modifier_exp->flat()->{'exp'},
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ $res->flat()->{'exp'} ]),
@@ -1280,7 +1277,7 @@ sub statement_parse {
     }
     if ($modifier eq 'unless') {
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
             capture => Perlito5::AST::If->new(
                 cond      => $modifier_exp->flat()->{'exp'},
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ ]),
@@ -1288,7 +1285,7 @@ sub statement_parse {
     }
     if ($modifier eq 'while') {
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
             capture => Perlito5::AST::While->new(
                 cond    => $modifier_exp->flat()->{'exp'},
                 body    => Perlito5::AST::Lit::Block->new(stmts => [ $res->flat()->{'exp'} ] ) ) );
@@ -1298,7 +1295,7 @@ sub statement_parse {
         ) 
     {
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to, 'bool' => 1,
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
             capture => Perlito5::AST::For->new(
                 cond    => $modifier_exp->flat()->{'exp'},
                 body    => Perlito5::AST::Lit::Block->new(stmts => [ $res->flat()->{'exp'} ] ) ) );

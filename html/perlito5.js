@@ -423,7 +423,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
 
     match = _call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", [source, 0]);
 
-    if ( !match._hash_.bool || match._hash_.to != source.length ) {
+    if ( !match || match._hash_.to != source.length ) {
         CORE.die(["Syntax error in eval near pos ", match._hash_.to]);
     }
 
@@ -826,9 +826,6 @@ var p5100 = NAMESPACE['main'];
 		make_sub("Perlito5::Match", "str", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['str']], p5want));
 		});
-		make_sub("Perlito5::Match", "bool", function (List__, p5want) {
-				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['bool']], p5want));
-		});
 		make_sub("Perlito5::Match", "capture", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['capture']], p5want));
 		});
@@ -836,16 +833,10 @@ var p5100 = NAMESPACE['main'];
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
-				if ( bool((v_self || (v_self = new HashRef({})))._hash_['bool']) ) {
-					if ( bool(((v_self || (v_self = new HashRef({})))._hash_['capture'] != null)) ) {
-						throw(p5context([(v_self || (v_self = new HashRef({})))._hash_['capture']], p5want));
-					};
-					throw(p5context([p5102.substr([(v_self || (v_self = new HashRef({})))._hash_['str'], (v_self || (v_self = new HashRef({})))._hash_['from'], p5context([(num((v_self || (v_self = new HashRef({})))._hash_['to']) - num((v_self || (v_self = new HashRef({})))._hash_['from']))], 0)], p5want)], p5want))
-				}
-				
-				else {
-					throw(p5context([''], p5want))
-				}
+				if ( bool(((v_self || (v_self = new HashRef({})))._hash_['capture'] != null)) ) {
+					throw(p5context([(v_self || (v_self = new HashRef({})))._hash_['capture']], p5want));
+				};
+				throw(p5context([p5102.substr([(v_self || (v_self = new HashRef({})))._hash_['str'], (v_self || (v_self = new HashRef({})))._hash_['from'], p5context([(num((v_self || (v_self = new HashRef({})))._hash_['to']) - num((v_self || (v_self = new HashRef({})))._hash_['from']))], 0)], p5want)], p5want))
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -2915,7 +2906,7 @@ var p5100 = NAMESPACE['main'];
 							var v_c2 = null;
 							(v_c2 = (p5125.substr([v_str, (num(v_pos) + num(p5125.length([v_term], 0))), 1], 0)));
 							if ( !( (bool(p5125.is_ident_middle(interpolate_array(v_c1), 0)) && bool(p5125.is_ident_middle(interpolate_array(v_c2), 0)))) ) {
-								throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1, 'capture', (new ArrayRef(interpolate_array('end', v_term)))), p5want)], p5want));
+								throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'capture', (new ArrayRef(interpolate_array('end', v_term)))), p5want)], p5want));
 							};
 							})();
 					};
@@ -2928,7 +2919,7 @@ var p5100 = NAMESPACE['main'];
 							(function () {
 								var v_m = null;
 								(v_m = ((Hash_Term[v_term])(interpolate_array(v_str, v_pos))));
-								if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+								if ( bool(v_m) ) {
 									throw(p5context([v_m], p5want));
 								};
 								})();
@@ -2942,7 +2933,7 @@ var p5100 = NAMESPACE['main'];
 						(function () {
 							var v_m = null;
 							(v_m = ((Hash_Parsed_op[v_op])(interpolate_array(v_str, v_pos))));
-							if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+							if ( bool(v_m) ) {
 								throw(p5context([v_m], p5want));
 							};
 							})();
@@ -2962,7 +2953,7 @@ var p5100 = NAMESPACE['main'];
 									null;
 								}
 								else {
-									throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', (num(v_pos) + num(v_len)), 'bool', 1, 'capture', (new ArrayRef(interpolate_array('op', v_op)))), p5want)], p5want));
+									throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', (num(v_pos) + num(v_len)), 'capture', (new ArrayRef(interpolate_array('op', v_op)))), p5want)], p5want));
 								};
 							};
 							})();
@@ -3257,7 +3248,7 @@ var p5100 = NAMESPACE['main'];
 				(v_p = ((v_m_namespace || (v_m_namespace = new HashRef({})))._hash_['to']));
 				var v_m_name = null;
 				(v_m_name = (_call_(NAMESPACE["Perlito5::Grammar"], "ident", interpolate_array(v_str, v_p), 0)));
-				if ( bool((v_m_name || (v_m_name = new HashRef({})))._hash_['bool']) ) {
+				if ( bool(v_m_name) ) {
 					null;
 				}
 				else {
@@ -3275,7 +3266,7 @@ var p5100 = NAMESPACE['main'];
 				};
 				var v_m = null;
 				(v_m = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, v_p), 0)));
-				if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+				if ( bool(v_m) ) {
 					(v_p = ((v_m || (v_m = new HashRef({})))._hash_['to']));
 				};
 				if ( (p5126.substr([v_str, v_p, 2], 0) == '=>') ) {
@@ -3310,7 +3301,7 @@ var p5100 = NAMESPACE['main'];
 								(v_p)++;
 								var v_m = null;
 								(v_m = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, v_p), 0)));
-								if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+								if ( bool(v_m) ) {
 									(v_p = ((v_m || (v_m = new HashRef({})))._hash_['to']));
 								};
 								if ( (p5126.substr([v_str, v_p, 1], 0) != ')') ) {
@@ -3330,7 +3321,7 @@ var p5100 = NAMESPACE['main'];
 							if ( (p5126.substr([v_str, v_p, 1], 0) == '(') ) {
 								(function () {
 									(v_m = (_call_(NAMESPACE["Perlito5::Expression"], "term_paren", interpolate_array(v_str, v_p), 0)));
-									if ( !( bool((v_m || (v_m = new HashRef({})))._hash_['bool'])) ) {
+									if ( !( bool(v_m)) ) {
 										throw(p5context([v_m], p5want));
 									};
 									(v_p = ((v_m || (v_m = new HashRef({})))._hash_['to']));
@@ -3383,7 +3374,7 @@ var p5100 = NAMESPACE['main'];
 				if ( (p5126.substr([v_str, v_p, 1], 0) == '(') ) {
 					(function () {
 						(v_m = (_call_(NAMESPACE["Perlito5::Expression"], "term_paren", interpolate_array(v_str, v_p), 0)));
-						if ( !( bool((v_m || (v_m = new HashRef({})))._hash_['bool'])) ) {
+						if ( !( bool(v_m)) ) {
 							throw(p5context([v_m], p5want));
 						};
 						var v_arg = null;
@@ -3395,7 +3386,7 @@ var p5100 = NAMESPACE['main'];
 				};
 				var v_m_list = null;
 				(v_m_list = (_call_(NAMESPACE["Perlito5::Expression"], "list_parse", interpolate_array(v_str, v_p), 0)));
-				if ( bool((v_m_list || (v_m_list = new HashRef({})))._hash_['bool']) ) {
+				if ( bool(v_m_list) ) {
 					((v_m_name || (v_m_name = new HashRef({})))._hash_['capture'] = (new ArrayRef(interpolate_array('postfix_or_term', 'funcall', v_namespace, v_name, _call_(v_m_list, "flat", [], 1)))));
 					((v_m_name || (v_m_name = new HashRef({})))._hash_['to'] = (v_m_list || (v_m_list = new HashRef({})))._hash_['to']);
 					throw(p5context([v_m_name], p5want));
@@ -3771,15 +3762,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(p5context([and(('->' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -3794,7 +3786,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(and(and(p5context([and(('(' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "paren_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['paren_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -3812,7 +3804,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(and(p5context([and(('[' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "square_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['square_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -3830,7 +3822,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(and(p5context([and(('{' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "curly_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['curly_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -3848,7 +3840,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(and(p5context([and(('$' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -3860,7 +3852,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -3875,7 +3867,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(and(and(p5context([and(('(' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "paren_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['paren_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -3901,7 +3893,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "full_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.full_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -3913,7 +3905,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -3928,7 +3920,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(and(and(p5context([and(('(' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "paren_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['paren_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -3952,8 +3944,8 @@ var p5100 = NAMESPACE['main'];
 })()], 0); })], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		var Hash_special_var = {};
 		(Hash_special_var = array_to_hash(interpolate_array('$_', 1, '$&', 1, '$`', 1, '$' + String.fromCharCode(39), 1, '$+', 1, '@+', 1, '%+', 1, '$.', 1, '$/', 1, '$|', 1, '$,', 1, '$' + String.fromCharCode(92), 1, '$"', 1, '$;', 1, '$%', 1, '$=', 1, '$-', 1, '@-', 1, '%-', 1, '$~', 1, '$^', 1, '$:', 1, '$?', 1, '$!', 1, '%!', 1, '$@', 1, '$$', 1, '$<', 1, '$>', 1, '$(', 1, '$)', 1, '$[', 1, '$]', 1, '@_', 1, '$#', 1, '$*', 1, '$#+', 1, '$#-', 1, '$#_', 1)));
@@ -3978,8 +3970,6 @@ var p5100 = NAMESPACE['main'];
 						(v_len = (2));
 					};
 				};
-				var v_m = null;
-				(v_m = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', (num(v_pos) + num(v_len)), 'bool', 0, 'capture', null), 0)));
 				if ( bool(v_len) ) {
 					(function () {
 						var v_c0 = null;
@@ -3990,12 +3980,11 @@ var p5100 = NAMESPACE['main'];
 							null;
 						}
 						else {
-							((v_m || (v_m = new HashRef({})))._hash_['bool'] = 1);
-							((v_m || (v_m = new HashRef({})))._hash_['capture'] = (new ArrayRef(interpolate_array('term', _call_(NAMESPACE["Perlito5::AST::Var"], "new", interpolate_array('sigil', p5127.substr([v_s, 0, (num(v_len) - 1)], 1), 'namespace', '', 'name', p5127.substr([v_s, (num(v_len) - 1), 1], 1)), 1)))));
+							throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', (num(v_pos) + num(v_len)), 'capture', (new ArrayRef(interpolate_array('term', _call_(NAMESPACE["Perlito5::AST::Var"], "new", interpolate_array('sigil', p5127.substr([v_s, 0, (num(v_len) - 1)], 1), 'namespace', '', 'name', p5127.substr([v_s, (num(v_len) - 1), 1], 1)), 1))))), p5want)], p5want));
 						};
 						})();
 				};
-				throw(p5context([v_m], p5want))
+				throw(p5context([0], p5want))
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -4014,11 +4003,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(or(or(or(or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(or(or(or(or(p5context([(function () {
 	return (p5context([and(('$#' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
@@ -4036,8 +4026,8 @@ var p5100 = NAMESPACE['main'];
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (p5context([p5context([p5context([and(('*' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_sigil", function (List__, p5want) {
 				var v_grammar = null;
@@ -4047,15 +4037,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "var_sigil_or_pseudo", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['var_sigil_or_pseudo'] = v_m2);
 		return (p5context([1], p5want));
@@ -4067,7 +4058,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4086,7 +4077,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "optional_namespace_before_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.optional_namespace_before_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -4098,7 +4089,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "var_name", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.var_name'] = v_m2);
 		return (p5context([1], p5want));
@@ -4116,7 +4107,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(and(p5context([and(('^' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "var_name", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.var_name'] = v_m2);
 		return (p5context([1], p5want));
@@ -4134,7 +4125,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "curly_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['curly_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -4154,7 +4145,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([and(('^' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "word", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.word'] = v_m2);
 		return (p5context([1], p5want));
@@ -4172,7 +4163,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "optional_namespace_before_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.optional_namespace_before_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -4184,7 +4175,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "var_name", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.var_name'] = v_m2);
 		return (p5context([1], p5want));
@@ -4204,7 +4195,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "term_special_var", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['term_special_var'] = v_m2);
 		return (p5context([1], p5want));
@@ -4218,8 +4209,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_digit", function (List__, p5want) {
 				var v_grammar = null;
@@ -4229,15 +4220,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "val_num", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.val_num'] = v_m2);
 		return (p5context([1], p5want));
@@ -4255,7 +4247,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "val_int", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.val_int'] = v_m2);
 		return (p5context([1], p5want));
@@ -4269,8 +4261,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_ternary", function (List__, p5want) {
 				var v_grammar = null;
@@ -4280,15 +4272,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('?' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ternary5_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['ternary5_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -4302,8 +4295,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_paren", function (List__, p5want) {
 				var v_grammar = null;
@@ -4313,15 +4306,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('(' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "paren_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['paren_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -4335,8 +4329,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_square", function (List__, p5want) {
 				var v_grammar = null;
@@ -4346,15 +4340,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('[' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "square_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['square_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -4368,8 +4363,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_curly", function (List__, p5want) {
 				var v_grammar = null;
@@ -4379,18 +4374,19 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(and(p5context([and(('{' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4399,13 +4395,13 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.exp_stmts'] = v_m2);
 		return (p5context([1], p5want));
@@ -4415,12 +4411,12 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], 0); }), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4429,7 +4425,7 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([and(('}' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
@@ -4437,8 +4433,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "declarator", function (List__, p5want) {
 				var v_grammar = null;
@@ -4448,11 +4444,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(or(or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(or(or(p5context([(function () {
 	return (p5context([and(('my' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
@@ -4464,8 +4461,8 @@ var p5100 = NAMESPACE['main'];
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (p5context([p5context([p5context([and(('local' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 5], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (5 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_declarator", function (List__, p5want) {
 				var v_grammar = null;
@@ -4475,15 +4472,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "declarator", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['declarator'] = v_m2);
 		return (p5context([1], p5want));
@@ -4495,7 +4493,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4506,7 +4504,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_type", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.opt_type'] = v_m2);
 		return (p5context([1], p5want));
@@ -4518,7 +4516,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4529,7 +4527,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "var_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.var_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -4543,8 +4541,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_return", function (List__, p5want) {
 				var v_grammar = null;
@@ -4554,15 +4552,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('return' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 6], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (6 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4573,7 +4572,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "list_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['list_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -4589,8 +4588,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_sub", function (List__, p5want) {
 				var v_grammar = null;
@@ -4600,15 +4599,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('sub' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 3], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (3 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4619,7 +4619,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "anon_sub_def", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.anon_sub_def'] = v_m2);
 		return (p5context([1], p5want));
@@ -4633,8 +4633,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_do", function (List__, p5want) {
 				var v_grammar = null;
@@ -4644,15 +4644,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(p5context([and(('do' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4663,21 +4664,20 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(('{' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = ( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? v_tmp : 0)))], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "statement_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['statement_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -4691,8 +4691,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "use_decl", function (List__, p5want) {
 				var v_grammar = null;
@@ -4702,18 +4702,19 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(('use' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 3], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (3 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (p5context([p5context([p5context([and(('no' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_use", function (List__, p5want) {
 				var v_grammar = null;
@@ -4723,15 +4724,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "use_decl", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['use_decl'] = v_m2);
 		return (p5context([1], p5want));
@@ -4743,7 +4745,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4754,7 +4756,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "full_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.full_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -4764,8 +4766,8 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], 0); }), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -4773,7 +4775,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(p5context([and(('-' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		if ( bool((v_MATCH)._hash_.hasOwnProperty('Perlito5::Grammar.ident')) ) {
 			p5127.push([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.ident'] || ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.ident'] = new ArrayRef([])))._array_, interpolate_array(v_m2)], null);
@@ -4790,13 +4792,13 @@ var p5100 = NAMESPACE['main'];
 })()], 0); })], p5want));
 })()], p5want)], p5want));
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "list_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['list_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -4810,8 +4812,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_package", function (List__, p5want) {
 				var v_grammar = null;
@@ -4821,15 +4823,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('package' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 7], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (7 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4840,7 +4843,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "full_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.full_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -4857,8 +4860,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_eval", function (List__, p5want) {
 				var v_grammar = null;
@@ -4868,15 +4871,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(p5context([and(('eval' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 4], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (4 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4887,21 +4891,20 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(('{' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = ( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? v_tmp : 0)))], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "term_curly", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['term_curly'] = v_m2);
 		return (p5context([1], p5want));
@@ -4915,8 +4918,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "map_or_sort", function (List__, p5want) {
 				var v_grammar = null;
@@ -4926,11 +4929,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(or(p5context([(function () {
 	return (p5context([and(('map' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 3], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (3 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
@@ -4939,8 +4943,8 @@ var p5100 = NAMESPACE['main'];
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (p5context([p5context([p5context([and(('grep' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 4], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (4 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_map_or_sort", function (List__, p5want) {
 				var v_grammar = null;
@@ -4950,15 +4954,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "map_or_sort", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['map_or_sort'] = v_m2);
 		return (p5context([1], p5want));
@@ -4970,7 +4975,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -4981,21 +4986,20 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(('{' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = ( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? v_tmp : 0)))], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "term_curly", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['term_curly'] = v_m2);
 		return (p5context([1], p5want));
@@ -5007,7 +5011,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "list_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['list_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -5021,8 +5025,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "term_space", function (List__, p5want) {
 				var v_grammar = null;
@@ -5032,15 +5036,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -5053,8 +5058,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "has_newline_after", function (List__, p5want) {
 				var v_grammar = null;
@@ -5064,18 +5069,19 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(or(p5context([(function () {
 	return (p5context([and(('#' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (p5context([p5context([p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "is_newline", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -5089,7 +5095,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "space", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -5100,7 +5106,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "has_newline_after", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -5110,8 +5116,8 @@ var p5100 = NAMESPACE['main'];
 	}
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "has_no_comma_or_colon_after", function (List__, p5want) {
 				var v_grammar = null;
@@ -5121,15 +5127,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -5140,11 +5147,12 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	return (p5context([or(p5context([(function () {
@@ -5154,14 +5162,12 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([p5context([and((':' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = !( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'])));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? 0 : v_tmp)))], p5want));
 })()], 0); }), function () { return p5context([and(('' != p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		var v_Argument_end_token = null;
 		(v_Argument_end_token = ((new HashRef(array_to_hash(interpolate_array(':', 1, ']', 1, ')', 1, '}', 1, ';', 1, ',', 1, '<', 1, '>', 1, '=', 1, '&', 1, '|', 1, '^', 1, 'or', 1, 'if', 1, '=>', 1, 'lt', 1, 'le', 1, 'gt', 1, 'ge', 1, '<=', 1, '>=', 1, '==', 1, '!=', 1, 'ne', 1, 'eq', 1, '..', 1, '~~', 1, '&&', 1, '||', 1, '+=', 1, '-=', 1, '*=', 1, '/=', 1, 'x=', 1, '|=', 1, '&=', 1, '.=', 1, '^=', 1, '%=', 1, '//', 1, 'for', 1, 'and', 1, 'xor', 1, '...', 1, '<=>', 1, 'cmp', 1, '<<=', 1, '>>=', 1, '||=', 1, '&&=', 1, '//=', 1, '**=', 1, 'when', 1, 'while', 1, 'unless', 1, 'foreach', 1))))));
@@ -5187,12 +5193,12 @@ var p5100 = NAMESPACE['main'];
 				(v_last_is_term = (List__[3]));
 				var v_m = null;
 				(v_m = (_call_(NAMESPACE["Perlito5::Precedence"], "op_parse", interpolate_array(v_str, v_pos, v_last_is_term), 0)));
-				if ( !( bool((v_m || (v_m = new HashRef({})))._hash_['bool'])) ) {
+				if ( !( bool(v_m)) ) {
 					throw(p5context([v_m], p5want));
 				};
 				var v_spc = null;
 				(v_spc = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_m || (v_m = new HashRef({})))._hash_['to']), 0)));
-				if ( bool((v_spc || (v_spc = new HashRef({})))._hash_['bool']) ) {
+				if ( bool(v_spc) ) {
 					((v_m || (v_m = new HashRef({})))._hash_['to'] = (v_spc || (v_spc = new HashRef({})))._hash_['to']);
 				};
 				throw(p5context([v_m], p5want))
@@ -5240,7 +5246,7 @@ var p5100 = NAMESPACE['main'];
 			(function () {
 				var v_m = null;
 				(v_m = (_call_(NAMESPACE["Perlito5::Expression"], "op_parse_spc", interpolate_array(v_str, v_last_pos, v_last_is_term), 0)));
-				if ( !( bool(_call_(v_m, "bool", [], 0))) ) {
+				if ( !( bool(v_m)) ) {
 					throw(p5context([(new ArrayRef(interpolate_array('end', '*end*')))], p5want));
 				};
 				(v_v = (_call_(v_m, "flat", [], 0)));
@@ -5259,12 +5265,12 @@ var p5100 = NAMESPACE['main'];
 				})();
 		};
 		if ( (((p5str((v_v || (v_v = new ArrayRef([])))._array_[0]) == 'postfix_or_term') && (p5str((v_v || (v_v = new ArrayRef([])))._array_[1]) == 'block')) && bool(v_last_token_was_space)) ) {
-			if ( bool(_call_(_call_(v_self, "has_newline_after", interpolate_array(v_str, v_last_pos), p5want), "bool", [], 0)) ) {
+			if ( bool(_call_(v_self, "has_newline_after", interpolate_array(v_str, v_last_pos), 0)) ) {
 				(v_terminated = (1));
 				p5127.push([(v_lexer_stack || (v_lexer_stack = new ArrayRef([])))._array_, interpolate_array((new ArrayRef(interpolate_array('end', '*end*'))))], null);
 			}
 			else {
-				if ( bool(_call_(_call_(v_self, "has_no_comma_or_colon_after", interpolate_array(v_str, v_last_pos), p5want), "bool", [], 0)) ) {
+				if ( bool(_call_(v_self, "has_no_comma_or_colon_after", interpolate_array(v_str, v_last_pos), 0)) ) {
 					(v_terminated = (1));
 					p5127.push([(v_lexer_stack || (v_lexer_stack = new ArrayRef([])))._array_, interpolate_array((new ArrayRef(interpolate_array('end', '*end*'))))], null);
 				};
@@ -5288,7 +5294,7 @@ var p5100 = NAMESPACE['main'];
 				var v_res = null;
 				(v_res = (_call_(v_prec, "precedence_parse", [], 0)));
 				if ( (num(p5127.scalar([(v_res || (v_res = new ArrayRef([])))._array_], 0)) == 0) ) {
-					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'bool', 1, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', '*undef*', 'terminated', null))))), p5want)], p5want));
+					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', '*undef*', 'terminated', null))))), p5want)], p5want));
 				};
 				var v_block = null;
 				if ( (num(p5127.scalar([(v_res || (v_res = new ArrayRef([])))._array_], 0)) > 1) ) {
@@ -5301,7 +5307,7 @@ var p5100 = NAMESPACE['main'];
 					(v_block = (p5127.pop([(v_res || (v_res = new ArrayRef([])))._array_], 0)));
 					(v_block = (_call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (v_block || (v_block = new ArrayRef([])))._array_[2], 'sig', (v_block || (v_block = new ArrayRef([])))._array_[3]), 0)));
 				};
-				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'bool', 1, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', v_result, 'terminated', v_terminated))))), p5want)], p5want))
+				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', v_result, 'terminated', v_terminated))))), p5want)], p5want))
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -5346,7 +5352,7 @@ var p5100 = NAMESPACE['main'];
 			(function () {
 				var v_m = null;
 				(v_m = (_call_(NAMESPACE["Perlito5::Expression"], "op_parse_spc", interpolate_array(v_str, v_last_pos, v_last_is_term), 0)));
-				if ( !( bool(_call_(v_m, "bool", [], 0))) ) {
+				if ( !( bool(v_m)) ) {
 					throw(p5context([(new ArrayRef(interpolate_array('end', '*end*')))], p5want));
 				};
 				(v_v = (_call_(v_m, "flat", [], 0)));
@@ -5382,11 +5388,11 @@ var p5100 = NAMESPACE['main'];
 				var v_res = null;
 				(v_res = (_call_(v_prec, "precedence_parse", [], 0)));
 				if ( (num(p5127.scalar([(v_res || (v_res = new ArrayRef([])))._array_], 0)) == 0) ) {
-					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'bool', 1, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', '*undef*', 'terminated', null))))), p5want)], p5want));
+					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', '*undef*', 'terminated', null))))), p5want)], p5want));
 				};
 				var v_result = null;
 				(v_result = (p5127.pop_term(interpolate_array(v_res), 0)));
-				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'bool', 1, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', v_result, 'terminated', v_terminated))))), p5want)], p5want))
+				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', v_result, 'terminated', v_terminated))))), p5want)], p5want))
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -5416,7 +5422,7 @@ var p5100 = NAMESPACE['main'];
 	try {
 		var v_m = null;
 		(v_m = (_call_(NAMESPACE["Perlito5::Expression"], "op_parse_spc", interpolate_array(v_str, v_last_pos, v_last_is_term), 0)));
-		if ( !( bool(_call_(v_m, "bool", [], 0))) ) {
+		if ( !( bool(v_m)) ) {
 			p5127.die([interpolate_array('Expected closing delimiter: ', v_delimiter, ' near ', v_last_pos)], null);
 		};
 		var v_v = null;
@@ -5451,7 +5457,7 @@ var p5100 = NAMESPACE['main'];
 				if ( !( bool((v_res != null))) ) {
 					(v_res = ('*undef*'));
 				};
-				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'bool', 1, 'capture', v_res), p5want)], p5want))
+				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', v_res), p5want)], p5want))
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -5565,7 +5571,7 @@ var p5100 = NAMESPACE['main'];
 			(function () {
 				var v_m = null;
 				(v_m = (_call_(NAMESPACE["Perlito5::Expression"], "op_parse_spc", interpolate_array(v_str, v_last_pos, v_last_is_term), 0)));
-				if ( !( bool(_call_(v_m, "bool", [], 0))) ) {
+				if ( !( bool(v_m)) ) {
 					throw(p5context([(new ArrayRef(interpolate_array('end', '*end*')))], p5want));
 				};
 				(v_v = (_call_(v_m, "flat", [], 0)));
@@ -5596,11 +5602,11 @@ var p5100 = NAMESPACE['main'];
 				var v_res = null;
 				(v_res = (_call_(v_prec, "precedence_parse", [], 0)));
 				if ( (num(p5127.scalar([(v_res || (v_res = new ArrayRef([])))._array_], 0)) == 0) ) {
-					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('bool', 0), p5want)], p5want));
+					throw(p5context([0], p5want));
 				};
 				var v_result = null;
 				(v_result = (p5127.pop_term(interpolate_array(v_res), 0)));
-				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'bool', 1, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', v_result, 'terminated', v_terminated))))), p5want)], p5want))
+				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', v_result, 'terminated', v_terminated))))), p5want)], p5want))
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -5619,15 +5625,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(or(or(or(or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(or(or(or(or(p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "if", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.if'] = v_m2);
 		return (p5context([1], p5want));
@@ -5645,7 +5652,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "unless", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.unless'] = v_m2);
 		return (p5context([1], p5want));
@@ -5663,7 +5670,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "when", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.when'] = v_m2);
 		return (p5context([1], p5want));
@@ -5681,7 +5688,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "for", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.for'] = v_m2);
 		return (p5context([1], p5want));
@@ -5699,7 +5706,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "while", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.while'] = v_m2);
 		return (p5context([1], p5want));
@@ -5717,7 +5724,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(and(p5context([and(('sub' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 3], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (3 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -5728,7 +5735,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "named_sub_def", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.named_sub_def'] = v_m2);
 		return (p5context([1], p5want));
@@ -5742,8 +5749,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "statement_modifier", function (List__, p5want) {
 				var v_grammar = null;
@@ -5753,11 +5760,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(or(or(or(or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(or(or(or(or(p5context([(function () {
 	return (p5context([and(('if' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
@@ -5775,8 +5783,8 @@ var p5100 = NAMESPACE['main'];
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (p5context([p5context([p5context([and(('while' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 5], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (5 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "delimited_statement", function (List__, p5want) {
 				var v_grammar = null;
@@ -5786,18 +5794,19 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -5806,7 +5815,7 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0), function () { return p5context([(function () {
@@ -5814,12 +5823,12 @@ var p5100 = NAMESPACE['main'];
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	return (p5context([or(p5context([(function () {
 	return (p5context([and(p5context([and((';' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -5828,7 +5837,7 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
@@ -5837,7 +5846,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "statement_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['statement_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -5847,21 +5856,21 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], 0), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	return (p5context([and((';' == p5127.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -5870,7 +5879,7 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([(function () {
@@ -5880,8 +5889,8 @@ var p5100 = NAMESPACE['main'];
 })()], 0); })], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Expression", "statement_parse", function (List__, p5want) {
 			try {
@@ -5898,14 +5907,14 @@ var p5100 = NAMESPACE['main'];
 				(v_lexer_stack = ((new ArrayRef([]))));
 				var v_res = null;
 				(v_res = (_call_(v_self, "exp_stmt", interpolate_array(v_str, v_pos), 0)));
-				if ( bool((v_res || (v_res = new HashRef({})))._hash_['bool']) ) {
+				if ( bool(v_res) ) {
 					throw(p5context([v_res], p5want));
 				};
 				if ( (p5127.substr([v_str, v_pos, 1], 0) == '{') ) {
 					(function () {
 						var v_m = null;
 						(v_m = (_call_(v_self, "term_curly", interpolate_array(v_str, v_pos), 0)));
-						if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+						if ( bool(v_m) ) {
 							(function () {
 								var v_v = null;
 								(v_v = (_call_(v_m, "flat", [], 0)));
@@ -5920,7 +5929,7 @@ var p5100 = NAMESPACE['main'];
 						})();
 				};
 				(v_res = (_call_(v_self, "exp_parse", interpolate_array(v_str, v_pos), 0)));
-				if ( !( bool(_call_(v_res, "bool", [], 0))) ) {
+				if ( !( bool(v_res)) ) {
 					throw(p5context([v_res], p5want));
 				};
 				if ( (p5str(p5127.ref([(_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp']], 0)) == 'Perlito5::AST::Lit::Block') ) {
@@ -5932,27 +5941,27 @@ var p5100 = NAMESPACE['main'];
 				};
 				var v_modifier = null;
 				(v_modifier = (_call_(v_self, "statement_modifier", interpolate_array(v_str, _call_(v_res, "to", [], 1)), 0)));
-				if ( !( bool(_call_(v_modifier, "bool", [], 0))) ) {
+				if ( !( bool(v_modifier)) ) {
 					((v_res || (v_res = new HashRef({})))._hash_['capture'] = (_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp']);
 					throw(p5context([v_res], p5want));
 				};
 				var v_modifier_exp = null;
 				(v_modifier_exp = (_call_(v_self, "exp_parse", interpolate_array(v_str, _call_(v_modifier, "to", [], 1)), 0)));
-				if ( !( bool(_call_(v_modifier_exp, "bool", [], 0))) ) {
+				if ( !( bool(v_modifier_exp)) ) {
 					p5127.die([interpolate_array('Expected expression after ' + String.fromCharCode(39), _call_(v_modifier, "flat", [], 1), String.fromCharCode(39))], null);
 				};
 				(v_modifier = (_call_(v_modifier, "flat", [], 0)));
 				if ( (p5str(v_modifier) == 'if') ) {
-					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', _call_(v_modifier_exp, "to", [], 1), 'bool', 1, 'capture', _call_(NAMESPACE["Perlito5::AST::If"], "new", interpolate_array('cond', (_call_(v_modifier_exp, "flat", [], p5want) || (_call_(v_modifier_exp, "flat", [], p5want) = new HashRef({})))._hash_['exp'], 'body', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef(interpolate_array((_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp'])))), 1), 'otherwise', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef([]))), 1)), 1)), p5want)], p5want));
+					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', _call_(v_modifier_exp, "to", [], 1), 'capture', _call_(NAMESPACE["Perlito5::AST::If"], "new", interpolate_array('cond', (_call_(v_modifier_exp, "flat", [], p5want) || (_call_(v_modifier_exp, "flat", [], p5want) = new HashRef({})))._hash_['exp'], 'body', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef(interpolate_array((_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp'])))), 1), 'otherwise', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef([]))), 1)), 1)), p5want)], p5want));
 				};
 				if ( (p5str(v_modifier) == 'unless') ) {
-					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', _call_(v_modifier_exp, "to", [], 1), 'bool', 1, 'capture', _call_(NAMESPACE["Perlito5::AST::If"], "new", interpolate_array('cond', (_call_(v_modifier_exp, "flat", [], p5want) || (_call_(v_modifier_exp, "flat", [], p5want) = new HashRef({})))._hash_['exp'], 'body', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef([]))), 1), 'otherwise', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef(interpolate_array((_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp'])))), 1)), 1)), p5want)], p5want));
+					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', _call_(v_modifier_exp, "to", [], 1), 'capture', _call_(NAMESPACE["Perlito5::AST::If"], "new", interpolate_array('cond', (_call_(v_modifier_exp, "flat", [], p5want) || (_call_(v_modifier_exp, "flat", [], p5want) = new HashRef({})))._hash_['exp'], 'body', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef([]))), 1), 'otherwise', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef(interpolate_array((_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp'])))), 1)), 1)), p5want)], p5want));
 				};
 				if ( (p5str(v_modifier) == 'while') ) {
-					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', _call_(v_modifier_exp, "to", [], 1), 'bool', 1, 'capture', _call_(NAMESPACE["Perlito5::AST::While"], "new", interpolate_array('cond', (_call_(v_modifier_exp, "flat", [], p5want) || (_call_(v_modifier_exp, "flat", [], p5want) = new HashRef({})))._hash_['exp'], 'body', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef(interpolate_array((_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp'])))), 1)), 1)), p5want)], p5want));
+					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', _call_(v_modifier_exp, "to", [], 1), 'capture', _call_(NAMESPACE["Perlito5::AST::While"], "new", interpolate_array('cond', (_call_(v_modifier_exp, "flat", [], p5want) || (_call_(v_modifier_exp, "flat", [], p5want) = new HashRef({})))._hash_['exp'], 'body', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef(interpolate_array((_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp'])))), 1)), 1)), p5want)], p5want));
 				};
 				if ( ((p5str(v_modifier) == 'for') || (p5str(v_modifier) == 'foreach')) ) {
-					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', _call_(v_modifier_exp, "to", [], 1), 'bool', 1, 'capture', _call_(NAMESPACE["Perlito5::AST::For"], "new", interpolate_array('cond', (_call_(v_modifier_exp, "flat", [], p5want) || (_call_(v_modifier_exp, "flat", [], p5want) = new HashRef({})))._hash_['exp'], 'body', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef(interpolate_array((_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp'])))), 1)), 1)), p5want)], p5want));
+					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', _call_(v_modifier_exp, "to", [], 1), 'capture', _call_(NAMESPACE["Perlito5::AST::For"], "new", interpolate_array('cond', (_call_(v_modifier_exp, "flat", [], p5want) || (_call_(v_modifier_exp, "flat", [], p5want) = new HashRef({})))._hash_['exp'], 'body', _call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (new ArrayRef(interpolate_array((_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp'])))), 1)), 1)), p5want)], p5want));
 				};
 				return (p5context([p5127.die([interpolate_array(('Unexpected statement modifier ' + String.fromCharCode(39) + p5str(v_modifier) + String.fromCharCode(39)))], p5want)], p5want));
 			}
@@ -5978,15 +5987,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(and(and(and(and(and(and(p5context([and(('u' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([and(('n' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('l' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('e' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('s' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('s' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -5997,7 +6007,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Expression"], "term_paren", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.term_paren'] = v_m2);
 		return (p5context([1], p5want));
@@ -6009,7 +6019,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6020,7 +6030,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Expression"], "term_curly", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.term_curly'] = v_m2);
 		return (p5context([1], p5want));
@@ -6036,7 +6046,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(and(and(and(and(and(and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6047,7 +6057,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([and(('e' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('l' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('s' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('e' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6058,7 +6068,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and(('{' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6069,7 +6079,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.exp_stmts'] = v_m2);
 		return (p5context([1], p5want));
@@ -6081,7 +6091,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6112,8 +6122,8 @@ var p5100 = NAMESPACE['main'];
 })()], 0); })], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "if", function (List__, p5want) {
 				var v_grammar = null;
@@ -6123,15 +6133,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(and(and(p5context([and(('i' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([and(('f' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6142,7 +6153,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Expression"], "term_paren", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.term_paren'] = v_m2);
 		return (p5context([1], p5want));
@@ -6154,7 +6165,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6165,7 +6176,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Expression"], "term_curly", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.term_curly'] = v_m2);
 		return (p5context([1], p5want));
@@ -6181,7 +6192,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(and(and(and(and(and(and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6192,7 +6203,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([and(('e' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('l' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('s' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('e' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6203,7 +6214,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and(('{' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6214,7 +6225,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.exp_stmts'] = v_m2);
 		return (p5context([1], p5want));
@@ -6226,7 +6237,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6248,7 +6259,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6259,7 +6270,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([and(('e' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('l' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('s' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "if", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['if'] = v_m2);
 		return (p5context([1], p5want));
@@ -6291,8 +6302,8 @@ var p5100 = NAMESPACE['main'];
 })()], 0); })], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "when", function (List__, p5want) {
 				var v_grammar = null;
@@ -6302,15 +6313,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(and(and(p5context([and(('w' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([and(('h' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('e' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('n' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6321,7 +6333,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "exp", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['exp'] = v_m2);
 		return (p5context([1], p5want));
@@ -6341,8 +6353,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "for", function (List__, p5want) {
 				var v_grammar = null;
@@ -6352,18 +6364,19 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(p5context([and(('f' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([and(('o' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('r' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	return (p5context([and(('each' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 4], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (4 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([(function () {
@@ -6373,7 +6386,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(and(and(and(and(and(and(and(and(and(and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6384,7 +6397,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([and(('m' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('y' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6395,7 +6408,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "var_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.var_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -6407,7 +6420,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6418,7 +6431,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and(('(' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Expression"], "paren_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.paren_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -6430,7 +6443,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and((')' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6441,7 +6454,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and(('{' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6452,7 +6465,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.exp_stmts'] = v_m2);
 		return (p5context([1], p5want));
@@ -6464,7 +6477,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6481,7 +6494,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(and(and(and(and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6492,7 +6505,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([and(('(' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Expression"], "paren_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.paren_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -6504,7 +6517,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and((')' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6515,7 +6528,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and(('{' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6526,7 +6539,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.exp_stmts'] = v_m2);
 		return (p5context([1], p5want));
@@ -6538,7 +6551,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6553,8 +6566,8 @@ var p5100 = NAMESPACE['main'];
 })()], 0); })], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "while", function (List__, p5want) {
 				var v_grammar = null;
@@ -6564,15 +6577,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(and(and(and(and(and(and(and(and(and(and(and(p5context([and(('w' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([and(('h' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('i' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('l' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([and(('e' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6583,7 +6597,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and(('(' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Expression"], "paren_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.paren_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -6595,7 +6609,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and((')' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6606,7 +6620,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and(('{' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6617,7 +6631,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.exp_stmts'] = v_m2);
 		return (p5context([1], p5want));
@@ -6629,7 +6643,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6642,8 +6656,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 	})()
 ;
@@ -6688,15 +6702,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(p5context([and(('"' == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "double_quote_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['double_quote_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -6710,8 +6725,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar::String", "term_single_quote", function (List__, p5want) {
 				var v_grammar = null;
@@ -6721,15 +6736,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(p5context([and((String.fromCharCode(39) == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "single_quote_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['single_quote_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -6743,8 +6759,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar::String", "term_q_quote", function (List__, p5want) {
 				var v_grammar = null;
@@ -6754,11 +6770,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('q' == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -6769,7 +6786,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6780,14 +6797,15 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "word", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6796,14 +6814,12 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = !( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'])));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? 0 : v_tmp)))], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "char_any", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['char_any'] = v_m2);
 		return (p5context([1], p5want));
@@ -6817,7 +6833,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "q_quote_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['q_quote_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -6831,8 +6847,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar::String", "term_qq_quote", function (List__, p5want) {
 				var v_grammar = null;
@@ -6842,11 +6858,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('qq' == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -6857,7 +6874,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6868,14 +6885,15 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "word", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6884,14 +6902,12 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = !( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'])));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? 0 : v_tmp)))], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "char_any", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['char_any'] = v_m2);
 		return (p5context([1], p5want));
@@ -6905,7 +6921,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "qq_quote_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['qq_quote_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -6919,8 +6935,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar::String", "term_qw_quote", function (List__, p5want) {
 				var v_grammar = null;
@@ -6930,11 +6946,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('qw' == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -6945,7 +6962,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6956,14 +6973,15 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "word", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -6972,14 +6990,12 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = !( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'])));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? 0 : v_tmp)))], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "char_any", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['char_any'] = v_m2);
 		return (p5context([1], p5want));
@@ -6993,7 +7009,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "qw_quote_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['qw_quote_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -7007,8 +7023,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar::String", "term_slash_quote", function (List__, p5want) {
 				var v_grammar = null;
@@ -7018,15 +7034,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(p5context([and(('/' == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "m_quote_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['m_quote_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -7040,8 +7057,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar::String", "term_m_quote", function (List__, p5want) {
 				var v_grammar = null;
@@ -7051,11 +7068,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('m' == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -7066,7 +7084,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -7077,14 +7095,15 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "word", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -7093,14 +7112,12 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = !( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'])));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? 0 : v_tmp)))], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "char_any", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['char_any'] = v_m2);
 		return (p5context([1], p5want));
@@ -7114,7 +7131,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "m_quote_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['m_quote_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -7128,8 +7145,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar::String", "term_s_quote", function (List__, p5want) {
 				var v_grammar = null;
@@ -7139,11 +7156,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([and(('s' == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -7154,7 +7172,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -7165,14 +7183,15 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar"], "word", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -7181,14 +7200,12 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = !( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'])));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? 0 : v_tmp)))], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "char_any", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['char_any'] = v_m2);
 		return (p5context([1], p5want));
@@ -7202,7 +7219,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "s_quote_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['s_quote_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -7216,8 +7233,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		var Hash_pair = {};
 		(Hash_pair = array_to_hash(interpolate_array('{', '}', '(', ')', '[', ']', '<', '>')));
@@ -7284,7 +7301,7 @@ var p5100 = NAMESPACE['main'];
 				};
 				var v_m = null;
 				(v_m = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_pos, v_delimiter, 0), 0)));
-				if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+				if ( bool(v_m) ) {
 					((v_m || (v_m = new HashRef({})))._hash_['capture'] = _call_(NAMESPACE["Perlito5::AST::Apply"], "new", interpolate_array('code', 'list:<,>', 'arguments', (new ArrayRef(interpolate_array(p5map(p5129, function (p5want) {
 	return (p5context([_call_(NAMESPACE["Perlito5::AST::Val::Buf"], "new", interpolate_array('buf', NAMESPACE["Perlito5::Grammar::String"]["v__"]), p5want)], p5want));
 }, interpolate_array(p5129.split(interpolate_array(' ', (_call_(v_m, "flat", [], p5want) || (_call_(v_m, "flat", [], p5want) = new HashRef({})))._hash_['buf']), 1)))))), 'namespace', ''), p5want));
@@ -7317,7 +7334,7 @@ var p5100 = NAMESPACE['main'];
 				};
 				var v_part1 = null;
 				(v_part1 = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_pos, v_closing_delimiter, 1), 0)));
-				if ( bool((v_part1 || (v_part1 = new HashRef({})))._hash_['bool']) ) {
+				if ( bool(v_part1) ) {
 					null;
 				}
 				else {
@@ -7331,7 +7348,7 @@ var p5100 = NAMESPACE['main'];
 				var v_modifiers = null;
 				(v_modifiers = (''));
 				(v_m = (_call_(NAMESPACE["Perlito5::Grammar"], "ident", interpolate_array(v_str, v_p), 0)));
-				if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+				if ( bool(v_m) ) {
 					(v_modifiers = (_call_(v_m, "flat", [], 0)));
 					((v_part1 || (v_part1 = new HashRef({})))._hash_['to'] = (v_m || (v_m = new HashRef({})))._hash_['to']);
 				};
@@ -7364,7 +7381,7 @@ var p5100 = NAMESPACE['main'];
 				};
 				var v_part1 = null;
 				(v_part1 = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_pos, v_closing_delimiter, 1), 0)));
-				if ( bool((v_part1 || (v_part1 = new HashRef({})))._hash_['bool']) ) {
+				if ( bool(v_part1) ) {
 					null;
 				}
 				else {
@@ -7386,7 +7403,7 @@ var p5100 = NAMESPACE['main'];
 						(v_closing_delimiter = (Hash_pair[v_delimiter]));
 					};
 					(v_part2 = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_p, v_closing_delimiter, 1), 0)));
-					if ( bool((v_part2 || (v_part2 = new HashRef({})))._hash_['bool']) ) {
+					if ( bool(v_part2) ) {
 						null;
 					}
 					else {
@@ -7395,7 +7412,7 @@ var p5100 = NAMESPACE['main'];
 				}
 				else {
 					(v_part2 = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_p, v_closing_delimiter, 1), 0)));
-					if ( bool((v_part2 || (v_part2 = new HashRef({})))._hash_['bool']) ) {
+					if ( bool(v_part2) ) {
 						null;
 					}
 					else {
@@ -7406,7 +7423,7 @@ var p5100 = NAMESPACE['main'];
 				var v_modifiers = null;
 				(v_modifiers = (''));
 				(v_m = (_call_(NAMESPACE["Perlito5::Grammar"], "ident", interpolate_array(v_str, v_p), 0)));
-				if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+				if ( bool(v_m) ) {
 					(v_modifiers = (_call_(v_m, "flat", [], 0)));
 					((v_part2 || (v_part2 = new HashRef({})))._hash_['to'] = (v_m || (v_m = new HashRef({})))._hash_['to']);
 				};
@@ -7442,8 +7459,8 @@ var p5100 = NAMESPACE['main'];
 				for ( ; ((num(v_p) < num(p5129.length([v_str], 0))) && (p5129.substr([v_str, v_p, p5129.length([v_delimiter], 0)], 0) != p5str(v_delimiter)));  ) {
 					(function () {
 						var v_m = null;
-						(v_m = (( bool(v_interpolate) ? _call_(NAMESPACE["Perlito5::Grammar::String"], "double_quoted_buf", interpolate_array(v_str, v_p), 0) : _call_(NAMESPACE["Perlito5::Grammar::String"], "single_quoted_unescape", interpolate_array(v_str, v_p), 0))));
-						if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+						(v_m = (( bool(v_interpolate) ? _call_(NAMESPACE["Perlito5::Grammar::String"], "double_quoted_buf", interpolate_array(v_str, v_p, v_delimiter), 0) : _call_(NAMESPACE["Perlito5::Grammar::String"], "single_quoted_unescape", interpolate_array(v_str, v_p), 0))));
+						if ( bool(v_m) ) {
 							(function () {
 								var v_obj = null;
 								(v_obj = (_call_(v_m, "flat", [], 0)));
@@ -7497,7 +7514,7 @@ var p5100 = NAMESPACE['main'];
 						(v_ast = (_call_(NAMESPACE["Perlito5::AST::Apply"], "new", interpolate_array('namespace', '', 'code', 'list:<.>', 'arguments', (new ArrayRef(List_args))), 0)));
 					};
 				};
-				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'bool', 1, 'capture', v_ast), p5want)], p5want))
+				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'capture', v_ast), p5want)], p5want))
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -7532,7 +7549,7 @@ var p5100 = NAMESPACE['main'];
 								(v_p = ((num(v_p) + 1)));
 								var v_m = null;
 								(v_m = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_p, v_quote, 0), 0)));
-								if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+								if ( bool(v_m) ) {
 									(v_p = ((v_m || (v_m = new HashRef({})))._hash_['to']));
 									(v_delimiter = ((_call_(v_m, "flat", [], p5want) || (_call_(v_m, "flat", [], p5want) = new HashRef({})))._hash_['buf']));
 									(v_type = (( (p5str(v_quote) == String.fromCharCode(39)) ? 'single_quote' : 'double_quote')));
@@ -7546,7 +7563,7 @@ var p5100 = NAMESPACE['main'];
 								};
 								var v_m = null;
 								(v_m = (_call_(NAMESPACE["Perlito5::Grammar"], "ident", interpolate_array(v_str, v_p), 0)));
-								if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+								if ( bool(v_m) ) {
 									(v_p = ((v_m || (v_m = new HashRef({})))._hash_['to']));
 									(v_delimiter = (_call_(v_m, "flat", [], 0)));
 									(v_type = (( (p5str(v_quote) == String.fromCharCode(92)) ? 'single_quote' : 'double_quote')));
@@ -7559,14 +7576,14 @@ var p5100 = NAMESPACE['main'];
 						})();
 				};
 				if ( !( bool((v_delimiter != null))) ) {
-					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 0, 'capture', null), p5want)], p5want));
+					throw(p5context([0], p5want));
 				};
 				var v_placeholder = null;
 				(v_placeholder = (_call_(NAMESPACE["Perlito5::AST::Apply"], "new", interpolate_array('code', 'list:<.>', 'namespace', '', 'arguments', (new ArrayRef([]))), 0)));
 				p5129.push([List_Here_doc, interpolate_array((new ArrayRef(interpolate_array(v_type, function (List__, p5want) {
 		return (p5context([((v_placeholder || (v_placeholder = new HashRef({})))._hash_['arguments'] = List__[0])], p5want));
 }, v_delimiter))))], null);
-				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'bool', 1, 'capture', (new ArrayRef(interpolate_array('term', v_placeholder)))), p5want)], p5want))
+				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'capture', (new ArrayRef(interpolate_array('term', v_placeholder)))), p5want)], p5want))
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -7585,36 +7602,37 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(p5context([and((String.fromCharCode(10) == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	return (p5context([and((String.fromCharCode(13) == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (p5context([p5context([and(p5context([and((String.fromCharCode(13) == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	return (p5context([and((String.fromCharCode(10) == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar::String", "here_doc", function (List__, p5want) {
 			try {
@@ -7625,7 +7643,7 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				if ( !( bool(List_Here_doc.length)) ) {
-					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1, 'capture', null), p5want)], p5want));
+					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'capture', null), p5want)], p5want));
 				};
 				var v_p = null;
 				(v_p = (v_pos));
@@ -7643,11 +7661,11 @@ var p5100 = NAMESPACE['main'];
 								(v_p = ((num(v_p) + num(p5129.length([v_delimiter], 0)))));
 								var v_m = null;
 								(v_m = (_call_(v_self, "newline", interpolate_array(v_str, v_p), 0)));
-								if ( ((num(v_p) >= num(p5129.length([v_str], 0))) || bool((v_m || (v_m = new HashRef({})))._hash_['bool'])) ) {
-									if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+								if ( ((num(v_p) >= num(p5129.length([v_str], 0))) || bool(v_m)) ) {
+									if ( bool(v_m) ) {
 										(v_p = ((v_m || (v_m = new HashRef({})))._hash_['to']));
 									};
-									throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', (num(v_p) - 1), 'bool', 1, 'capture', null), p5want)], p5want));
+									throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', (num(v_p) - 1), 'capture', null), p5want)], p5want));
 								};
 								})();
 						};
@@ -7665,16 +7683,16 @@ var p5100 = NAMESPACE['main'];
 						if ( (p5129.substr([v_str, v_p, p5129.length([v_delimiter], 0)], 0) == p5str(v_delimiter)) ) {
 							(v_p = ((num(v_p) + num(p5129.length([v_delimiter], 0)))));
 							(v_m = (_call_(v_self, "newline", interpolate_array(v_str, v_p), 0)));
-							if ( ((num(v_p) >= num(p5129.length([v_str], 0))) || bool((v_m || (v_m = new HashRef({})))._hash_['bool'])) ) {
+							if ( ((num(v_p) >= num(p5129.length([v_str], 0))) || bool(v_m)) ) {
 								((v_here || (v_here = new ArrayRef([])))._array_[1])(interpolate_array((new ArrayRef(interpolate_array(_call_(NAMESPACE["Perlito5::AST::Val::Buf"], "new", interpolate_array('buf', ''), 1))))));
-								if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+								if ( bool(v_m) ) {
 									(v_p = ((v_m || (v_m = new HashRef({})))._hash_['to']));
 								};
-								throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'bool', 1, 'capture', null), p5want)], p5want));
+								throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'capture', null), p5want)], p5want));
 							};
 						};
 						(v_m = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_pos, (String.fromCharCode(10) + p5str(v_delimiter) + String.fromCharCode(10)), 1), 0)));
-						if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+						if ( bool(v_m) ) {
 							((v_here || (v_here = new ArrayRef([])))._array_[1])(interpolate_array((new ArrayRef(interpolate_array(_call_(v_m, "flat", [], 1))))));
 							throw(p5context([v_m], p5want));
 						};
@@ -7737,15 +7755,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(('' != p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar::String", "single_quoted_unescape", function (List__, p5want) {
 				var v_grammar = null;
@@ -7755,11 +7774,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(and(p5context([and((String.fromCharCode(92) == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([and((String.fromCharCode(92) == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['capture'] = _call_(NAMESPACE["Perlito5::AST::Val::Buf"], "new", interpolate_array('buf', String.fromCharCode(92)), p5want));
 	return (p5context([1], p5want));
@@ -7771,8 +7791,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar::String", "double_quoted_buf", function (List__, p5want) {
 			try {
@@ -7782,11 +7802,13 @@ var p5100 = NAMESPACE['main'];
 				(v_str = (List__[1]));
 				var v_pos = null;
 				(v_pos = (List__[2]));
-				if ( ((p5129.substr([v_str, v_pos, 1], 0) == '$') || (p5129.substr([v_str, v_pos, 1], 0) == '@')) ) {
+				var v_delimiter = null;
+				(v_delimiter = (List__[3]));
+				if ( (((p5129.substr([v_str, v_pos, 1], 0) == '$') || (p5129.substr([v_str, v_pos, 1], 0) == '@')) && (p5129.substr([v_str, (num(v_pos) + 1), p5129.length([v_delimiter], 0)], 0) != p5str(v_delimiter))) ) {
 					(function () {
 						var v_m = null;
 						(v_m = (_call_(NAMESPACE["Perlito5::Expression"], "term_sigil", interpolate_array(v_str, v_pos), 0)));
-						if ( bool((v_m || (v_m = new HashRef({})))._hash_['bool']) ) {
+						if ( bool(v_m) ) {
 							null;
 						}
 						else {
@@ -7800,7 +7822,7 @@ var p5100 = NAMESPACE['main'];
 						if ( (p5129.substr([v_str, v_p, 1], 0) == '[') ) {
 							(v_p)++;
 							(v_m_index = (_call_(NAMESPACE["Perlito5::Expression"], "list_parse", interpolate_array(v_str, v_p), 0)));
-							if ( bool((v_m_index || (v_m_index = new HashRef({})))._hash_['bool']) ) {
+							if ( bool(v_m_index) ) {
 								(function () {
 									var v_exp = null;
 									(v_exp = (((v_m_index || (v_m_index = new HashRef({})))._hash_['capture'] || ((v_m_index || (v_m_index = new HashRef({})))._hash_['capture'] = new HashRef({})))._hash_['exp']));
@@ -7815,7 +7837,7 @@ var p5100 = NAMESPACE['main'];
 							};
 						};
 						(v_m_index = (_call_(NAMESPACE["Perlito5::Expression"], "term_curly", interpolate_array(v_str, (v_m || (v_m = new HashRef({})))._hash_['to']), 0)));
-						if ( bool((v_m_index || (v_m_index = new HashRef({})))._hash_['bool']) ) {
+						if ( bool(v_m_index) ) {
 							((v_m_index || (v_m_index = new HashRef({})))._hash_['capture'] = _call_(NAMESPACE["Perlito5::AST::Lookup"], "new", interpolate_array('obj', v_var, 'index_exp', ((_call_(v_m_index, "flat", [], p5want) || (_call_(v_m_index, "flat", [], p5want) = new ArrayRef([])))._array_[2] || ((_call_(v_m_index, "flat", [], p5want) || (_call_(v_m_index, "flat", [], p5want) = new ArrayRef([])))._array_[2] = new ArrayRef([])))._array_[0]), p5want));
 							throw(p5context([v_m_index], p5want));
 						};
@@ -7833,7 +7855,7 @@ var p5100 = NAMESPACE['main'];
 							})();
 					};
 				};
-				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 0, 'capture', null), p5want)], p5want))
+				throw(p5context([0], p5want))
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -7852,11 +7874,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(or(or(or(or(or(or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(or(or(or(or(or(or(p5context([(function () {
 	return (p5context([and(p5context([and(('a' == p5129.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['capture'] = p5129.chr([7], p5want));
 	return (p5context([1], p5want));
@@ -7902,7 +7925,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "char_any", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['char_any'] = v_m2);
 		return (p5context([1], p5want));
@@ -7916,8 +7939,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		1;
 	})()
@@ -7931,13 +7954,13 @@ var p5100 = NAMESPACE['main'];
 		// use Perlito5::Grammar::String
 ;
 		make_sub("Perlito5::Grammar", "word", function (List__, p5want) {
-				return (p5context([p5128.bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', (num(List__[2]) + 1), 'bool', (p5128.substr([List__[1], List__[2], 1], p5want).match(/\w/) ? 1 : 0))))), 'Perlito5::Match'], p5want)], p5want));
+				return (p5context([( bool((p5128.substr([List__[1], List__[2], 1], p5want).match(/\w/) ? 1 : 0)) ? p5128.bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', (num(List__[2]) + 1))))), 'Perlito5::Match'], p5want) : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "digit", function (List__, p5want) {
-				return (p5context([p5128.bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', (num(List__[2]) + 1), 'bool', (p5128.substr([List__[1], List__[2], 1], p5want).match(/\d/) ? 1 : 0))))), 'Perlito5::Match'], p5want)], p5want));
+				return (p5context([( bool((p5128.substr([List__[1], List__[2], 1], p5want).match(/\d/) ? 1 : 0)) ? p5128.bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', (num(List__[2]) + 1))))), 'Perlito5::Match'], p5want) : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "space", function (List__, p5want) {
-				return (p5context([p5128.bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', (num(List__[2]) + 1), 'bool', (p5128.substr([List__[1], List__[2], 1], p5want).match(/\s/) ? 1 : 0))))), 'Perlito5::Match'], p5want)], p5want));
+				return (p5context([( bool((p5128.substr([List__[1], List__[2], 1], p5want).match(/\s/) ? 1 : 0)) ? p5128.bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', (num(List__[2]) + 1))))), 'Perlito5::Match'], p5want) : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "is_newline", function (List__, p5want) {
 				var v_grammar = null;
@@ -7947,18 +7970,19 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and((String.fromCharCode(10) == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (p5context([p5context([p5context([and((String.fromCharCode(13) == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "not_newline", function (List__, p5want) {
 				var v_grammar = null;
@@ -7968,22 +7992,24 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "is_newline", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -7992,14 +8018,12 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = !( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'])));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? 0 : v_tmp)))], p5want));
 })()], 0), function () { return p5context([and(('' != p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "ident", function (List__, p5want) {
 				var v_grammar = null;
@@ -8009,22 +8033,24 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "digit", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8033,21 +8059,21 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = !( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'])));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? 0 : v_tmp)))], p5want));
 })()], 0), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	var v_count = null;
 	(v_count = (0));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "word", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8056,21 +8082,23 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 		(v_count = ((num(v_count) + 1)));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([(num(v_count) > 0)], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "full_ident", function (List__, p5want) {
 				var v_grammar = null;
@@ -8080,15 +8108,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8099,8 +8128,10 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; (bool((function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -8108,7 +8139,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(p5context([and(('::' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8119,20 +8150,22 @@ var p5100 = NAMESPACE['main'];
 })()], 0); })], p5want));
 })()], p5want)], p5want));
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "namespace_before_ident", function (List__, p5want) {
 				var v_grammar = null;
@@ -8142,15 +8175,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8161,22 +8195,23 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(('::' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = ( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? v_tmp : 0)))], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; (bool((function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -8184,7 +8219,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(and(p5context([and(('::' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8195,34 +8230,35 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(('::' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = ( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? v_tmp : 0)))], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "optional_namespace_before_ident", function (List__, p5want) {
 				var v_grammar = null;
@@ -8232,15 +8268,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(or(p5context([(function () {
 	return (p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "namespace_before_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['namespace_before_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -8252,18 +8289,22 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; ((('::' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)) && bool(((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']))))) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['capture'] = _call_((v_MATCH || (v_MATCH = new HashRef({})))._hash_['namespace_before_ident'], "flat", [], p5want));
@@ -8282,8 +8323,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "pod_pod_begin", function (List__, p5want) {
 				var v_grammar = null;
@@ -8293,15 +8334,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "is_newline", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8312,12 +8354,14 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([and(('=cut' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 4], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (4 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "not_newline", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8326,15 +8370,17 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
@@ -8342,12 +8388,14 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([and(('' != p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "not_newline", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8356,20 +8404,22 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "pod_pod_begin", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8379,8 +8429,8 @@ var p5100 = NAMESPACE['main'];
 	}
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "pod_begin", function (List__, p5want) {
 				var v_grammar = null;
@@ -8390,15 +8440,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "is_newline", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8409,12 +8460,14 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([and(('=end' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 4], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (4 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "not_newline", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8423,15 +8476,17 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
@@ -8439,12 +8494,14 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(p5context([and(('' != p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "not_newline", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8453,20 +8510,22 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "pod_begin", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8476,8 +8535,8 @@ var p5100 = NAMESPACE['main'];
 	}
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "ws", function (List__, p5want) {
 				var v_grammar = null;
@@ -8487,15 +8546,18 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	var v_count = null;
 	(v_count = (0));
 	for ( ; (bool((function () {
@@ -8505,12 +8567,14 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(p5context([and(('#' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "not_newline", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8519,15 +8583,17 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
@@ -8537,24 +8603,24 @@ var p5100 = NAMESPACE['main'];
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	return (p5context([or(p5context([(function () {
 	return (p5context([and(p5context([and((String.fromCharCode(10) == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	return (p5context([and((String.fromCharCode(13) == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (p5context([p5context([and(p5context([and((String.fromCharCode(13) == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	return (p5context([and((String.fromCharCode(10) == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
@@ -8562,7 +8628,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Grammar::String"], "here_doc", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8581,7 +8647,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(p5context([and(('pod' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 3], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (3 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "pod_pod_begin", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8595,7 +8661,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([and(('head1' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 5], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (5 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "pod_pod_begin", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8609,7 +8675,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([and(('begin' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 5], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (5 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "pod_begin", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8623,7 +8689,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([and(('for' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 3], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (3 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "pod_begin", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8644,7 +8710,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "space", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8655,20 +8721,22 @@ var p5100 = NAMESPACE['main'];
 })()], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 		(v_count = ((num(v_count) + 1)));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([(num(v_count) > 0)], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "opt_ws", function (List__, p5want) {
 				var v_grammar = null;
@@ -8678,17 +8746,18 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8697,12 +8766,12 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "opt_ws2", function (List__, p5want) {
 				var v_grammar = null;
@@ -8712,17 +8781,18 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8731,12 +8801,12 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "opt_ws3", function (List__, p5want) {
 				var v_grammar = null;
@@ -8746,17 +8816,18 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -8765,12 +8836,12 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "exp_stmts2", function (List__, p5want) {
 				var v_grammar = null;
@@ -8780,15 +8851,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "exp_stmts", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['exp_stmts'] = v_m2);
 		return (p5context([1], p5want));
@@ -8802,8 +8874,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "exp", function (List__, p5want) {
 				var v_grammar = null;
@@ -8813,15 +8885,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Expression"], "exp_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.exp_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -8835,8 +8908,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "exp2", function (List__, p5want) {
 				var v_grammar = null;
@@ -8846,15 +8919,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Expression"], "exp_parse", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.exp_parse'] = v_m2);
 		return (p5context([1], p5want));
@@ -8868,8 +8942,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "opt_ident", function (List__, p5want) {
 				var v_grammar = null;
@@ -8879,15 +8953,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -8907,8 +8982,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "opt_type", function (List__, p5want) {
 				var v_grammar = null;
@@ -8918,24 +8993,25 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(and(p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	return (p5context([and(('::' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 2], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (2 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "full_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['full_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -8955,8 +9031,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "var_sigil", function (List__, p5want) {
 				var v_grammar = null;
@@ -8966,11 +9042,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(or(or(or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(or(or(or(p5context([(function () {
 	return (p5context([and(('$' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
@@ -8985,8 +9062,8 @@ var p5100 = NAMESPACE['main'];
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_pos1);
 	return (p5context([p5context([p5context([and(('*' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "var_name", function (List__, p5want) {
 				var v_grammar = null;
@@ -8996,14 +9073,15 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "full_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['full_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -9017,7 +9095,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "digit", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['digit'] = v_m2);
 		return (p5context([1], p5want));
@@ -9028,8 +9106,8 @@ var p5100 = NAMESPACE['main'];
 	}
 })()], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "var_ident", function (List__, p5want) {
 				var v_grammar = null;
@@ -9039,15 +9117,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "var_sigil", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['var_sigil'] = v_m2);
 		return (p5context([1], p5want));
@@ -9059,7 +9138,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "optional_namespace_before_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['optional_namespace_before_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -9071,7 +9150,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "var_name", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['var_name'] = v_m2);
 		return (p5context([1], p5want));
@@ -9085,8 +9164,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "exponent", function (List__, p5want) {
 				var v_grammar = null;
@@ -9096,11 +9175,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(p5context([(function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -9125,14 +9205,16 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	var v_count = null;
 	(v_count = (0));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "digit", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9141,21 +9223,23 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 		(v_count = ((num(v_count) + 1)));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([(num(v_count) > 0)], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "val_num", function (List__, p5want) {
 				var v_grammar = null;
@@ -9165,11 +9249,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -9177,14 +9262,16 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([and(and(p5context([and(('.' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	var v_count = null;
 	(v_count = (0));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "digit", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9193,24 +9280,26 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 		(v_count = ((num(v_count) + 1)));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([(num(v_count) > 0)], p5want));
 })()], 0); }), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "exponent", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9219,7 +9308,7 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
@@ -9228,7 +9317,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([and(('.' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "exponent", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9242,14 +9331,16 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	var v_count = null;
 	(v_count = (0));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "digit", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9258,16 +9349,18 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 		(v_count = ((num(v_count) + 1)));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([(num(v_count) > 0)], p5want));
 })()], 0), function () { return p5context([(function () {
 	var v_pos1 = null;
@@ -9275,7 +9368,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([or(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "exponent", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9288,26 +9381,27 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(and(and(p5context([and(('.' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_tmp = null;
 	(v_tmp = (v_MATCH));
-	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'bool', 1), 0)));
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([(function () {
-		var v_pos1 = null;
-		(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-		return (p5context([p5context([(function () {
+	(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', (v_tmp || (v_tmp = new HashRef({})))._hash_['to'], 'to', (v_tmp || (v_tmp = new HashRef({})))._hash_['to']), 0)));
+	var v_res = null;
+	(v_res = (p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(('.' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want));
 })()], p5want)], p5want));
-	})()], 0));
-	((v_tmp || (v_tmp = new HashRef({})))._hash_['bool'] = !( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'])));
-	(v_MATCH = (v_tmp));
-	return (p5context([( bool((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool']) ? 1 : 0)], p5want));
+})()], 0)));
+	return (p5context([(v_MATCH = (( bool(v_res) ? 0 : v_tmp)))], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "digit", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9316,23 +9410,25 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([(function () {
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
 	if ( !( bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "exponent", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9341,7 +9437,7 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })())) ) {
-		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+		(v_MATCH = (v_m));
 	};
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
@@ -9353,8 +9449,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "digits", function (List__, p5want) {
 				var v_grammar = null;
@@ -9364,21 +9460,24 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	var v_count = null;
 	(v_count = (0));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "digit", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9387,20 +9486,22 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 		(v_count = ((num(v_count) + 1)));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([(num(v_count) > 0)], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "val_int", function (List__, p5want) {
 				var v_grammar = null;
@@ -9410,11 +9511,12 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(p5context([(function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -9431,14 +9533,16 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	var v_count = null;
 	(v_count = (0));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "word", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9447,16 +9551,18 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 		(v_count = ((num(v_count) + 1)));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([(num(v_count) > 0)], p5want));
 })()], 0); })], p5want));
 })()], 0), function () { return p5context([(function () {
@@ -9473,8 +9579,10 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	var v_count = null;
 	(v_count = (0));
 	for ( ; (bool((function () {
@@ -9487,16 +9595,18 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([p5context([and(('1' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 		(v_count = ((num(v_count) + 1)));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([(num(v_count) > 0)], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); }), function () { return p5context([(function () {
@@ -9504,14 +9614,16 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([and(('0' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	var v_count = null;
 	(v_count = (0));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "digit", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9520,16 +9632,18 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 		(v_count = ((num(v_count) + 1)));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([(num(v_count) > 0)], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
@@ -9542,14 +9656,16 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([and(p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	var v_count = null;
 	(v_count = (0));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "digit", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9558,24 +9674,26 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 		(v_count = ((num(v_count) + 1)));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([(num(v_count) > 0)], p5want));
 })()], 0), function () { return p5context([(function () {
 	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['capture'] = _call_(NAMESPACE["Perlito5::AST::Val::Int"], "new", interpolate_array('int', _call_(v_MATCH, "flat", [], 1)), p5want));
 	return (p5context([1], p5want));
 })()], 0); })], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		var List_PKG = [];
 		make_sub("Perlito5::Grammar", "exp_stmts", function (List__, p5want) {
@@ -9586,23 +9704,26 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(p5context([(function () {
 	p5128.push([List_PKG, interpolate_array(NAMESPACE["Perlito5"].v_PKG_NAME)], null);
 	return (p5context([1], p5want));
 })()], 0), function () { return p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; (bool((function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(NAMESPACE["Perlito5::Expression"], "delimited_statement", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		if ( bool((v_MATCH)._hash_.hasOwnProperty('Perlito5::Expression.delimited_statement')) ) {
 			p5128.push([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.delimited_statement'] || ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Expression.delimited_statement'] = new ArrayRef([])))._array_, interpolate_array(v_m2)], null);
@@ -9617,15 +9738,17 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], 0); }), function () { return p5context([(function () {
 	(NAMESPACE["Perlito5"].v_PKG_NAME = (p5128.pop([List_PKG], 0)));
@@ -9635,8 +9758,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "args_sig", function (List__, p5want) {
 				var v_grammar = null;
@@ -9646,15 +9769,18 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	var v_last_match_null = null;
 	(v_last_match_null = (0));
-	var v_last_pos = null;
-	(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	var v_m = null;
+	(v_m = (v_MATCH));
+	var v_to = null;
+	(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	for ( ; (bool((function () {
 	var v_pos1 = null;
 	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
@@ -9689,19 +9815,21 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5context([p5context([and(('&' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
 })()) && (num(v_last_match_null) < 2));  ) {
-		if ( (num(v_last_pos) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
+		if ( (num(v_to) == num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])) ) {
 			(v_last_match_null = ((num(v_last_match_null) + 1)));
 		}
 		else {
 			(v_last_match_null = (0));
 		};
-		(v_last_pos = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+		(v_m = (v_MATCH));
+		(v_to = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
 	};
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_last_pos);
+	(v_MATCH = (v_m));
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = v_to);
 	return (p5context([1], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "prototype", function (List__, p5want) {
 				var v_grammar = null;
@@ -9711,15 +9839,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([or(p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([or(p5context([(function () {
 	return (p5context([and(and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9730,7 +9859,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([and(('(' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9741,7 +9870,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "args_sig", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['args_sig'] = v_m2);
 		return (p5context([1], p5want));
@@ -9753,7 +9882,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9772,8 +9901,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], p5want)], p5want)], p5want));
 })()], 0); })], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "anon_sub_def", function (List__, p5want) {
 				var v_grammar = null;
@@ -9783,15 +9912,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "prototype", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['prototype'] = v_m2);
 		return (p5context([1], p5want));
@@ -9803,7 +9933,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9814,7 +9944,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and(('{' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9825,7 +9955,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "exp_stmts", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['exp_stmts'] = v_m2);
 		return (p5context([1], p5want));
@@ -9837,7 +9967,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9867,8 +9997,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		make_sub("Perlito5::Grammar", "named_sub_def", function (List__, p5want) {
 				var v_grammar = null;
@@ -9878,15 +10008,16 @@ var p5100 = NAMESPACE['main'];
 				var v_pos = null;
 				(v_pos = (List__[2]));
 				var v_MATCH = null;
-				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos, 'bool', 1), 0)));
-				((v_MATCH || (v_MATCH = new HashRef({})))._hash_['bool'] = p5context([p5context([(function () {
-					var v_pos1 = null;
-					(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
-					return (p5context([p5context([(function () {
+				(v_MATCH = (_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
+				var v_tmp = null;
+				(v_tmp = (p5context([p5context([(function () {
+	var v_pos1 = null;
+	(v_pos1 = ((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']));
+	return (p5context([p5context([(function () {
 	return (p5context([and(and(and(and(and(and(and(and(and(p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "optional_namespace_before_ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['optional_namespace_before_ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -9898,7 +10029,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "ident", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['ident'] = v_m2);
 		return (p5context([1], p5want));
@@ -9910,7 +10041,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "prototype", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['prototype'] = v_m2);
 		return (p5context([1], p5want));
@@ -9922,7 +10053,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9933,7 +10064,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([and(('{' == p5128.substr([v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'], 1], 0)), function () { return p5context([((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (1 + num((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'])))], 0); })], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -9944,7 +10075,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "exp_stmts", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['exp_stmts'] = v_m2);
 		return (p5context([1], p5want));
@@ -9956,7 +10087,7 @@ var p5100 = NAMESPACE['main'];
 })()], 0); }), function () { return p5context([(function () {
 	var v_m2 = null;
 	(v_m2 = (_call_(v_grammar, "opt_ws", interpolate_array(v_str, (v_MATCH || (v_MATCH = new HashRef({})))._hash_['to']), 0)));
-	if ( bool((v_m2 || (v_m2 = new HashRef({})))._hash_['bool']) ) {
+	if ( bool(v_m2) ) {
 		((v_MATCH || (v_MATCH = new HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new HashRef({})))._hash_['to']);
 		return (p5context([1], p5want));
 	}
@@ -10006,8 +10137,8 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([1], p5want));
 })()], 0); })], p5want));
 })()], p5want)], p5want));
-				})()], 0)], 0));
-				return (p5context([v_MATCH], p5want));
+})()], 0)], 0)));
+				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 	})()
 ;

@@ -19,11 +19,11 @@ token token {
                 'my $grammar = $_[0]; ' .
                 'my $str     = $_[1]; ' .
                 'my $pos     = $_[2]; ' .
-                'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos, bool => 1 ); ' .
-                '$MATCH->{"bool"} = ( ' .
+                'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos ); ' .
+                'my $tmp = ( ' .
                     $MATCH->{"Perlito5::Grammar::Regex.rule"}->flat()->emit_perl5() .
                 '); ' .
-                '$MATCH; '
+                '$tmp ? $MATCH : 0; '
             . '}';
         #say 'Intermediate code: ', $source;
         my $ast = Perlito5::Grammar->named_sub_def( $source, 0 );

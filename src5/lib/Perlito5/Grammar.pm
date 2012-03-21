@@ -6,33 +6,36 @@ use Perlito5::Grammar::Control;
 use Perlito5::Grammar::String;
 
 sub word {
-    bless {
+    substr( $_[1], $_[2], 1 ) =~ m/\w/
+    ? bless {
         str  => $_[1],
         from => $_[2],
         to   => $_[2] + 1,
-        bool => substr( $_[1], $_[2], 1 ) =~ m/\w/,
       },
-      'Perlito5::Match';
+      'Perlito5::Match'
+    : 0;
 }
 
 sub digit {
-    bless {
+    substr( $_[1], $_[2], 1 ) =~ m/\d/
+    ? bless {
         str  => $_[1],
         from => $_[2],
         to   => $_[2] + 1,
-        bool => substr( $_[1], $_[2], 1 ) =~ m/\d/,
       },
-      'Perlito5::Match';
+      'Perlito5::Match'
+    : 0;
 }
 
 sub space {
-    bless {
+    substr( $_[1], $_[2], 1 ) =~ m/\s/
+    ? bless {
         str  => $_[1],
         from => $_[2],
         to   => $_[2] + 1,
-        bool => substr( $_[1], $_[2], 1 ) =~ m/\s/,
       },
-      'Perlito5::Match';
+      'Perlito5::Match'
+    : 0;
 }
 
 token is_newline {

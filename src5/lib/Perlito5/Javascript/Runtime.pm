@@ -428,7 +428,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
 
     match = _call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", [source, 0]);
 
-    if ( !match._hash_.bool || match._hash_.to != source.length ) {
+    if ( !match || match._hash_.to != source.length ) {
         CORE.die(["Syntax error in eval near pos ", match._hash_.to]);
     }
 

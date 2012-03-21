@@ -21,23 +21,15 @@ sub Perlito5::Match::to {
 sub Perlito5::Match::str {
     $_[0]->{'str'}
 };
-sub Perlito5::Match::bool {
-    $_[0]->{'bool'}
-};
 sub Perlito5::Match::capture {
     $_[0]->{'capture'}
 };
 sub Perlito5::Match::flat {
     ((my  $self) = $_[0]);
-    if ($self->{'bool'}) {
-        if (defined($self->{'capture'})) {
-            return ($self->{'capture'})
-        };
-        return (substr($self->{'str'}, $self->{'from'}, (($self->{'to'} - $self->{'from'}))))
-    }
-    else {
-        return ('')
-    }
+    if (defined($self->{'capture'})) {
+        return ($self->{'capture'})
+    };
+    return (substr($self->{'str'}, $self->{'from'}, (($self->{'to'} - $self->{'from'}))))
 };
 
 1;

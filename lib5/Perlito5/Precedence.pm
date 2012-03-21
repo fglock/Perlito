@@ -138,7 +138,7 @@ sub Perlito5::Precedence::op_parse {
             ((my  $c1) = substr($str, (($pos + length($term)) - 1), 1));
             ((my  $c2) = substr($str, ($pos + length($term)), 1));
             if (!(((is_ident_middle($c1) && is_ident_middle($c2))))) {
-                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('bool' => 1), ('capture' => ['end', $term])))
+                return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos), ('capture' => ['end', $term])))
             }
         }
     };
@@ -147,7 +147,7 @@ sub Perlito5::Precedence::op_parse {
             ((my  $term) = substr($str, $pos, $len));
             if (exists($Term{$term})) {
                 ((my  $m) = $Term{$term}->($str, $pos));
-                if ($m->{'bool'}) {
+                if ($m) {
                     return ($m)
                 }
             }
@@ -157,7 +157,7 @@ sub Perlito5::Precedence::op_parse {
         ((my  $op) = substr($str, $pos, $len));
         if (exists($Parsed_op{$op})) {
             ((my  $m) = $Parsed_op{$op}->($str, $pos));
-            if ($m->{'bool'}) {
+            if ($m) {
                 return ($m)
             }
         }
@@ -172,7 +172,7 @@ sub Perlito5::Precedence::op_parse {
 
                 }
                 else {
-                    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('bool' => 1), ('capture' => ['op', $op])))
+                    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => ($pos + $len)), ('capture' => ['op', $op])))
                 }
             }
         }

@@ -17,7 +17,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     ((my  $m_namespace) = Perlito5::Grammar->optional_namespace_before_ident($str, $p));
     ($p = $m_namespace->{'to'});
     ((my  $m_name) = Perlito5::Grammar->ident($str, $p));
-    if ($m_name->{'bool'}) {
+    if ($m_name) {
 
     }
     else {
@@ -31,7 +31,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         ($full_name = ($namespace . '::' . $name))
     };
     ((my  $m) = Perlito5::Grammar->ws($str, $p));
-    if ($m->{'bool'}) {
+    if ($m) {
         ($p = $m->{'to'})
     };
     if ((substr($str, $p, 2) eq '=>')) {
@@ -63,7 +63,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             if ((substr($str, $p, 1) eq '(')) {
                 ($p)++;
                 ((my  $m) = Perlito5::Grammar->ws($str, $p));
-                if ($m->{'bool'}) {
+                if ($m) {
                     ($p = $m->{'to'})
                 };
                 if ((substr($str, $p, 1) ne ')')) {
@@ -80,7 +80,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
             (my  $arg);
             if ((substr($str, $p, 1) eq '(')) {
                 ($m = Perlito5::Expression->term_paren($str, $p));
-                if (!($m->{'bool'})) {
+                if (!($m)) {
                     return ($m)
                 };
                 ($p = $m->{'to'});
@@ -126,7 +126,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     };
     if ((substr($str, $p, 1) eq '(')) {
         ($m = Perlito5::Expression->term_paren($str, $p));
-        if (!($m->{'bool'})) {
+        if (!($m)) {
             return ($m)
         };
         ((my  $arg) = $m->{'capture'}->[2]);
@@ -135,7 +135,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         return ($m)
     };
     ((my  $m_list) = Perlito5::Expression->list_parse($str, $p));
-    if ($m_list->{'bool'}) {
+    if ($m_list) {
         ($m_name->{'capture'} = ['postfix_or_term', 'funcall', $namespace, $name, $m_list->flat()]);
         ($m_name->{'to'} = $m_list->{'to'});
         return ($m_name)

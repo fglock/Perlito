@@ -131,7 +131,6 @@ sub op_parse {
                     str     => $str,
                     from    => $pos,
                     to      => $pos,
-                    bool    => 1,
                     capture => [ 'end', $term ]
                 );
             }
@@ -143,7 +142,7 @@ sub op_parse {
             my $term = substr($str, $pos, $len);
             if (exists($Term{$term})) {
                 my $m = $Term{$term}->($str, $pos);
-                return $m if $m->{"bool"};
+                return $m if $m;
             }
         }
     }
@@ -153,7 +152,7 @@ sub op_parse {
         my $op = substr($str, $pos, $len);
         if (exists($Parsed_op{$op})) {
             my $m = $Parsed_op{$op}->($str, $pos);
-            return $m if $m->{"bool"};
+            return $m if $m;
         }
     }
 
@@ -179,7 +178,6 @@ sub op_parse {
                         str     => $str,
                         from    => $pos,
                         to      => $pos + $len,
-                        bool    => 1,
                         capture => [ 'op', $op ]
                     );
                 }

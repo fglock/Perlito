@@ -85,7 +85,7 @@ sub qw_quote_parse {
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
 
     my $m = $self->string_interpolation_parse($str, $pos, $delimiter, 0);
-    if ( $m->{"bool"} ) {
+    if ( $m ) {
         $m->{"capture"} = Perlito5::AST::Apply->new(
                 code      => 'list:<,>',
                 arguments => [ map( Perlito5::AST::Val::Buf->new( buf => $_ ), split(' ', $m->flat()->{"buf"})) ],
@@ -102,7 +102,7 @@ sub m_quote_parse {
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
     my $part1 = $self->string_interpolation_parse($str, $pos, $closing_delimiter, 1);
-    return $part1 unless $part1->{"bool"};
+    return $part1 unless $part1;
 
     # TODO - call the regex compiler
     my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{"to"} - $pos - 1 ) );
@@ -112,7 +112,7 @@ sub m_quote_parse {
 
     my $modifiers = '';
     $m = Perlito5::Grammar->ident($str, $p);
-    if ( $m->{"bool"} ) {
+    if ( $m ) {
         $modifiers = $m->flat();
         $part1->{"to"} = $m->{"to"};
     }
@@ -132,7 +132,7 @@ sub s_quote_parse {
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
     my $part1 = $self->string_interpolation_parse($str, $pos, $closing_delimiter, 1);
-    return $part1 unless $part1->{"bool"};
+    return $part1 unless $part1;
 
     # TODO - call the regex compiler
     my $str_regex = Perlito5::AST::Val::Buf->new( buf => substr( $str, $pos, $part1->{"to"} - $pos - 1 ) );
@@ -150,17 +150,17 @@ sub s_quote_parse {
         $closing_delimiter = $delimiter;
         $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
         $part2 = $self->string_interpolation_parse($str, $p, $closing_delimiter, 1);
-        return $part2 unless $part2->{"bool"};
+        return $part2 unless $part2;
     }
     else {
         $part2 = $self->string_interpolation_parse($str, $p, $closing_delimiter, 1);
-        return $part2 unless $part2->{"bool"};
+        return $part2 unless $part2;
     }
 
     $p = $part2->{"to"};
     my $modifiers = '';
     $m = Perlito5::Grammar->ident($str, $p);
-    if ( $m->{"bool"} ) {
+    if ( $m ) {
         $modifiers = $m->flat();
         $part2->{"to"} = $m->{"to"};
     }
@@ -191,7 +191,7 @@ sub string_interpolation_parse {
         my $m = $interpolate
                 ? Perlito5::Grammar::String->double_quoted_buf( $str, $p, $delimiter )
                 : Perlito5::Grammar::String->single_quoted_unescape( $str, $p );
-        if ( $m->{"bool"} ) {
+        if ( $m ) {
             my $obj = $m->flat();
             if ( ref($obj) eq 'Perlito5::AST::Val::Buf' ) {
                 $buf .= $obj->{"buf"};
@@ -245,7 +245,6 @@ sub string_interpolation_parse {
         'str' => $str, 
         'from' => $pos, 
         'to' => $p, 
-        'bool' => 1, 
         capture => $ast
     );
 }
@@ -269,7 +268,7 @@ sub here_doc_wanted {
         if ( $quote eq "'" || $quote eq '"' ) {
             $p += 1;
             my $m = $self->string_interpolation_parse($str, $p, $quote, 0);
-            if ( $m->{"bool"} ) {
+            if ( $m ) {
                 $p = $m->{"to"};
                 $delimiter = $m->flat()->{"buf"};
                 $type = $quote eq "'" ? 'single_quote' : 'double_quote';
@@ -279,7 +278,7 @@ sub here_doc_wanted {
         else {
             $p += 1 if $quote eq '\\';
             my $m = Perlito5::Grammar->ident($str, $p);
-            if ( $m->{"bool"} ) {
+            if ( $m ) {
                 $p = $m->{"to"};
                 $delimiter = $m->flat();
                 $type = $quote eq '\\' ? 'single_quote' : 'double_quote';
@@ -293,8 +292,7 @@ sub here_doc_wanted {
 
     if ( !defined $delimiter ) {
         # not a here-doc request, return false
-        return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 0, capture => undef);
+        return 0;
     }
 
     my $placeholder = Perlito5::AST::Apply->new( 
@@ -312,7 +310,6 @@ sub here_doc_wanted {
         'str' => $str,
         'from' => $pos,
         'to' => $p,
-        'bool' => 1,
         capture => [
                 'term',
                 $placeholder
@@ -336,7 +333,7 @@ sub here_doc {
     if ( !@Here_doc ) {
         # we are not expecting a here-doc, return true without moving the pointer
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 1, capture => undef);
+            'str' => $str, 'from' => $pos, 'to' => $pos, capture => undef);
     }
 
     my $p = $pos;
@@ -352,11 +349,11 @@ sub here_doc {
                 $p += length($delimiter);
                 # say "$p ", length($str);
                 my $m = $self->newline( $str, $p );
-                if ( $p >= length($str) || $m->{"bool"} ) {
+                if ( $p >= length($str) || $m ) {
                     # return true
-                    $p = $m->{"to"} if $m->{"bool"};
+                    $p = $m->{"to"} if $m;
                     return Perlito5::Match->new(
-                        'str' => $str, 'from' => $pos, 'to' => $p - 1, 'bool' => 1, capture => undef);
+                        'str' => $str, 'from' => $pos, 'to' => $p - 1, capture => undef);
                 }
             }
             # ... next line
@@ -380,18 +377,18 @@ sub here_doc {
         if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
             $p += length($delimiter);
             $m = $self->newline( $str, $p );
-            if ( $p >= length($str) || $m->{"bool"} ) {
+            if ( $p >= length($str) || $m ) {
                 $here->[1]->( [Perlito5::AST::Val::Buf->new( buf => '' )] );
-                $p = $m->{"to"} if $m->{"bool"};
+                $p = $m->{"to"} if $m;
                 return Perlito5::Match->new(
-                    'str' => $str, 'from' => $pos, 'to' => $p, 'bool' => 1, capture => undef);
+                    'str' => $str, 'from' => $pos, 'to' => $p, capture => undef);
             }
         }
 
         # TODO - compare to newline() instead of "\n"
 
         $m = $self->string_interpolation_parse($str, $pos, "\n" . $delimiter . "\n", 1);
-        if ( $m->{"bool"} ) {
+        if ( $m ) {
             $here->[1]->( [$m->flat()] );
             return $m;
         }
@@ -440,7 +437,7 @@ sub double_quoted_buf {
         # TODO - syntax errors are allowed here - this should backtrack
 
         my $m = Perlito5::Expression->term_sigil($str, $pos);
-        return $m unless $m->{"bool"};
+        return $m unless $m;
 
         my $var = $m->flat()->[1];
 
@@ -449,7 +446,7 @@ sub double_quoted_buf {
         if (substr($str, $p, 1) eq '[') {
             $p++;
             $m_index = Perlito5::Expression->list_parse($str, $p);
-            if ($m_index->{"bool"}) {
+            if ($m_index) {
                 my $exp = $m_index->{"capture"}{"exp"};
                 $p = $m_index->{"to"};
                 if ($exp ne '*undef*' && substr($str, $p, 1) eq ']') {
@@ -465,7 +462,7 @@ sub double_quoted_buf {
             }
         }
         $m_index = Perlito5::Expression->term_curly($str, $m->{"to"});
-        if ($m_index->{"bool"}) {
+        if ($m_index) {
             $m_index->{"capture"} = Perlito5::AST::Lookup->new(
                     obj       => $var,
                     index_exp => $m_index->flat()->[2][0],
@@ -480,8 +477,7 @@ sub double_quoted_buf {
         $m->{"capture"} = Perlito5::AST::Val::Buf->new( buf => $m->flat() );
         return $m;
     }
-    return Perlito5::Match->new(
-        'str' => $str, 'from' => $pos, 'to' => $pos, 'bool' => 0, capture => undef);
+    return 0;
 }
 
 token double_quoted_unescape {

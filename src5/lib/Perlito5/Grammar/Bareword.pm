@@ -13,7 +13,7 @@ package Perlito5::Grammar::Bareword;
         $p = $m_namespace->{"to"};
         my $m_name      = Perlito5::Grammar->ident( $str, $p );
         return $m_name
-            unless $m_name->{"bool"};
+            unless $m_name;
         $p = $m_name->{"to"};
 
         my $name = $m_name->flat();
@@ -25,7 +25,7 @@ package Perlito5::Grammar::Bareword;
 
         # my $has_space_after;
         my $m = Perlito5::Grammar->ws( $str, $p );
-        if ( $m->{"bool"} ) {
+        if ( $m ) {
             # $has_space_after = 1;
             $p = $m->{"to"};
         }
@@ -118,7 +118,7 @@ package Perlito5::Grammar::Bareword;
                 if ( substr($str, $p, 1) eq '(' ) {
                     $p++;
                     my $m = Perlito5::Grammar->ws( $str, $p );
-                    if ($m->{"bool"}) {
+                    if ($m) {
                         $p = $m->{"to"}
                     }
                     if ( substr($str, $p, 1) ne ')' ) {
@@ -143,7 +143,7 @@ package Perlito5::Grammar::Bareword;
                 my $arg;
                 if ( substr($str, $p, 1) eq '(' ) {
                     $m = Perlito5::Expression->term_paren( $str, $p );
-                    if ( !$m->{"bool"} ) { return $m };
+                    if ( !$m ) { return $m };
                     $p = $m->{"to"};
                     $arg = $m->{"capture"}[2];
                     $arg = Perlito5::Expression::expand_list( $arg );
@@ -200,7 +200,7 @@ package Perlito5::Grammar::Bareword;
 
         if ( substr($str, $p, 1) eq '(' ) {
             $m = Perlito5::Expression->term_paren( $str, $p );
-            if ( !$m->{"bool"} ) { return $m };
+            if ( !$m ) { return $m };
             my $arg = $m->{"capture"}[2];
             $arg = Perlito5::Expression::expand_list( $arg );
             $m->{"capture"} = [ 'term', 
@@ -215,7 +215,7 @@ package Perlito5::Grammar::Bareword;
 
 
         my $m_list = Perlito5::Expression->list_parse( $str, $p );
-        if ( $m_list->{"bool"} ) {
+        if ( $m_list ) {
             $m_name->{"capture"} = [ 'postfix_or_term', 'funcall',
                     $namespace,
                     $name,
