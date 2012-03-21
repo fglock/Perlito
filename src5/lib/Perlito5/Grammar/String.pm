@@ -66,25 +66,28 @@ sub q_quote_parse {
     my $str = $_[1];
     my $pos = $_[2];
     my $delimiter = substr( $str, $pos-1, 1 );
+    my $open_delimiter = $delimiter;
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
-    return $self->string_interpolation_parse($str, $pos, $delimiter, 0);
+    return $self->string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
 }
 sub qq_quote_parse {
     my $self = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
     my $delimiter = substr( $str, $pos-1, 1 );
+    my $open_delimiter = $delimiter;
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
-    return $self->string_interpolation_parse($str, $pos, $delimiter, 1);
+    return $self->string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 1);
 }
 sub qw_quote_parse {
     my $self = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
     my $delimiter = substr( $str, $pos-1, 1 );
+    my $open_delimiter = $delimiter;
     $delimiter = $pair{$delimiter} if exists $pair{$delimiter};
 
-    my $m = $self->string_interpolation_parse($str, $pos, $delimiter, 0);
+    my $m = $self->string_interpolation_parse($str, $pos, $open_delimiter, $delimiter, 0);
     if ( $m ) {
         $m->{"capture"} = Perlito5::AST::Apply->new(
                 code      => 'list:<,>',
@@ -99,9 +102,10 @@ sub m_quote_parse {
     my $str = $_[1];
     my $pos = $_[2];
     my $delimiter = substr( $str, $pos-1, 1 );
+    my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
-    my $part1 = $self->string_interpolation_parse($str, $pos, $closing_delimiter, 1);
+    my $part1 = $self->string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 1);
     return $part1 unless $part1;
 
     # TODO - call the regex compiler
@@ -129,9 +133,10 @@ sub s_quote_parse {
     my $str = $_[1];
     my $pos = $_[2];
     my $delimiter = substr( $str, $pos-1, 1 );
+    my $open_delimiter = $delimiter;
     my $closing_delimiter = $delimiter;
     $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
-    my $part1 = $self->string_interpolation_parse($str, $pos, $closing_delimiter, 1);
+    my $part1 = $self->string_interpolation_parse($str, $pos, $open_delimiter, $closing_delimiter, 1);
     return $part1 unless $part1;
 
     # TODO - call the regex compiler
@@ -145,15 +150,16 @@ sub s_quote_parse {
         $m = Perlito5::Grammar->opt_ws($str, $p);
         $p = $m->{"to"};
         $delimiter = substr( $str, $p, 1 );
+        my $open_delimiter = $delimiter;
         $p++;
         # warn "second delimiter $delimiter";
         $closing_delimiter = $delimiter;
         $closing_delimiter = $pair{$delimiter} if exists $pair{$delimiter};
-        $part2 = $self->string_interpolation_parse($str, $p, $closing_delimiter, 1);
+        $part2 = $self->string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 1);
         return $part2 unless $part2;
     }
     else {
-        $part2 = $self->string_interpolation_parse($str, $p, $closing_delimiter, 1);
+        $part2 = $self->string_interpolation_parse($str, $p, $open_delimiter, $closing_delimiter, 1);
         return $part2 unless $part2;
     }
 
@@ -174,11 +180,12 @@ sub s_quote_parse {
 }
 
 sub string_interpolation_parse {
-    my $self = $_[0];
-    my $str = $_[1];
-    my $pos = $_[2];
-    my $delimiter = $_[3];
-    my $interpolate = $_[4];
+    my $self           = $_[0];
+    my $str            = $_[1];
+    my $pos            = $_[2];
+    my $open_delimiter = $_[3];
+    my $delimiter      = $_[4];
+    my $interpolate    = $_[5];
 
     my $p = $pos;
 
@@ -267,7 +274,7 @@ sub here_doc_wanted {
         my $quote = substr($str, $p, 1);
         if ( $quote eq "'" || $quote eq '"' ) {
             $p += 1;
-            my $m = $self->string_interpolation_parse($str, $p, $quote, 0);
+            my $m = $self->string_interpolation_parse($str, $p, $quote, $quote, 0);
             if ( $m ) {
                 $p = $m->{"to"};
                 $delimiter = $m->flat()->{"buf"};
@@ -387,7 +394,7 @@ sub here_doc {
 
         # TODO - compare to newline() instead of "\n"
 
-        $m = $self->string_interpolation_parse($str, $pos, "\n" . $delimiter . "\n", 1);
+        $m = $self->string_interpolation_parse($str, $pos, '', "\n" . $delimiter . "\n", 1);
         if ( $m ) {
             $here->[1]->( [$m->flat()] );
             return $m;
@@ -401,14 +408,14 @@ sub single_quote_parse {
     my $self = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
-    return $self->string_interpolation_parse($str, $pos, "'", 0);
+    return $self->string_interpolation_parse($str, $pos, "'", "'", 0);
 }
 
 sub double_quote_parse {
     my $self = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
-    return $self->string_interpolation_parse($str, $pos, '"', 1);
+    return $self->string_interpolation_parse($str, $pos, '"', '"', 1);
 }
  
 
