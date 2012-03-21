@@ -655,6 +655,11 @@ package Perlito5::AST::Var;
             return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
         }
         if ( $decl_type eq 'our' ) {
+            if ($self->{"sigil"} eq '$#') {
+                return '('
+                    .   'NAMESPACE["' . ($self->{"namespace"} || $decl->{"namespace"}) . '"]["' . $table->{'@'} . $self->{"name"} . '"]'
+                    . '.length - 1)';
+            }
             return 'NAMESPACE["' . ($self->{"namespace"} || $decl->{"namespace"}) . '"]["' . $table->{$self->{"sigil"}} . $self->{"name"} . '"]';
         }
 
