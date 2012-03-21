@@ -1814,11 +1814,25 @@ var p5100 = NAMESPACE['main'];
 					}
 					else {
 						if ( (!( bool((v_self || (v_self = new HashRef({})))._hash_['namespace'])) && (p5str((v_self || (v_self = new HashRef({})))._hash_['sigil']) != '*')) ) {
-							if ( bool(NAMESPACE["Perlito5"].v_STRICT) ) {
-								p5110.die([interpolate_array(('Global symbol "' + p5str(v_perl5_name) + '" requires explicit package name'))], null);
-							};
-							(v_decl_type = ('our'));
-							((v_self || (v_self = new HashRef({})))._hash_['namespace'] = NAMESPACE["Perlito5"].v_PKG_NAME);
+							(function () {
+								if ( bool(NAMESPACE["Perlito5"].v_STRICT) ) {
+									p5110.die([interpolate_array(('Global symbol "' + p5str(v_perl5_name) + '" requires explicit package name'))], null);
+								};
+								(v_decl_type = ('our'));
+								((v_self || (v_self = new HashRef({})))._hash_['namespace'] = NAMESPACE["Perlito5"].v_PKG_NAME);
+								var v_sigil = null;
+								(v_sigil = (( (p5str((v_self || (v_self = new HashRef({})))._hash_['sigil']) == '$#') ? '@' : (v_self || (v_self = new HashRef({})))._hash_['sigil'])));
+								var v_s = null;
+								(v_s = (('NAMESPACE["' + p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '"]["' + p5str((v_table || (v_table = new HashRef({})))._hash_[v_sigil]) + p5str((v_self || (v_self = new HashRef({})))._hash_['name']) + '"]')));
+								if ( (p5str(v_sigil) == '@') ) {
+									(v_s = ((p5str(v_s) + ' || (' + p5str(v_s) + ' = [])')));
+									(v_s = (('NAMESPACE[' + p5str(v_s) + ', "' + p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '"]["' + p5str((v_table || (v_table = new HashRef({})))._hash_[v_sigil]) + p5str((v_self || (v_self = new HashRef({})))._hash_['name']) + '"]')));
+								};
+								if ( (p5str((v_self || (v_self = new HashRef({})))._hash_['sigil']) == '$#') ) {
+									throw(p5context([('(' + p5str(v_s) + '.length - 1)')], p5want));
+								};
+								throw(p5context([v_s], p5want));
+								})();
 						};
 					};
 					if ( (p5str((v_self || (v_self = new HashRef({})))._hash_['sigil']) == '@') ) {
@@ -1836,7 +1850,16 @@ var p5100 = NAMESPACE['main'];
 						throw(p5context([('NAMESPACE["' + p5str(or((v_self || (v_self = new HashRef({})))._hash_['namespace'], function () { return NAMESPACE["Perlito5"].v_PKG_NAME; })) + '"]["' + p5str((v_self || (v_self = new HashRef({})))._hash_['name']) + '"]')], p5want));
 					};
 					if ( (p5str(v_decl_type) == 'our') ) {
-						throw(p5context([('NAMESPACE["' + p5str(or((v_self || (v_self = new HashRef({})))._hash_['namespace'], function () { return (v_decl || (v_decl = new HashRef({})))._hash_['namespace']; })) + '"]["' + p5str((v_table || (v_table = new HashRef({})))._hash_[(v_self || (v_self = new HashRef({})))._hash_['sigil']]) + p5str((v_self || (v_self = new HashRef({})))._hash_['name']) + '"]')], p5want));
+						(function () {
+							var v_sigil = null;
+							(v_sigil = (( (p5str((v_self || (v_self = new HashRef({})))._hash_['sigil']) == '$#') ? '@' : (v_self || (v_self = new HashRef({})))._hash_['sigil'])));
+							var v_s = null;
+							(v_s = (('NAMESPACE["' + p5str(or((v_self || (v_self = new HashRef({})))._hash_['namespace'], function () { return (v_decl || (v_decl = new HashRef({})))._hash_['namespace']; })) + '"]["' + p5str((v_table || (v_table = new HashRef({})))._hash_[v_sigil]) + p5str((v_self || (v_self = new HashRef({})))._hash_['name']) + '"]')));
+							if ( (p5str((v_self || (v_self = new HashRef({})))._hash_['sigil']) == '$#') ) {
+								throw(p5context([('(' + p5str(v_s) + '.length - 1)')], p5want));
+							};
+							throw(p5context([v_s], p5want));
+							})();
 					};
 					var v_ns = null;
 					(v_ns = (''));

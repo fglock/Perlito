@@ -633,6 +633,23 @@ package Perlito5::AST::Var;
                 # no strict - "auto-declare" the var
                 $decl_type = 'our';
                 $self->{"namespace"} = $Perlito5::PKG_NAME;
+
+
+
+                my $sigil = $self->{"sigil"} eq '$#' ? '@' : $self->{"sigil"};
+                my $s = 'NAMESPACE["' . $self->{"namespace"} . '"]["' . $table->{$sigil} . $self->{"name"} . '"]';
+
+                if ($sigil eq '@') {
+                    $s = $s . ' || (' . $s . ' = [])';  # init
+                    $s = 'NAMESPACE[' . $s . ', "' . $self->{"namespace"} . '"]["' . $table->{$sigil} . $self->{"name"} . '"]';
+                }
+
+                if ($self->{"sigil"} eq '$#') {
+                    return '(' . $s . '.length - 1)';
+                }
+                return $s;
+
+
             }
         }
 
@@ -655,12 +672,14 @@ package Perlito5::AST::Var;
             return 'NAMESPACE["' . ($self->{"namespace"} || $Perlito5::PKG_NAME) . '"]["' . $self->{"name"} . '"]';
         }
         if ( $decl_type eq 'our' ) {
+
+            my $sigil = $self->{"sigil"} eq '$#' ? '@' : $self->{"sigil"};
+            my $s = 'NAMESPACE["' . ($self->{"namespace"} || $decl->{"namespace"}) . '"]["' . $table->{$sigil} . $self->{"name"} . '"]';
+
             if ($self->{"sigil"} eq '$#') {
-                return '('
-                    .   'NAMESPACE["' . ($self->{"namespace"} || $decl->{"namespace"}) . '"]["' . $table->{'@'} . $self->{"name"} . '"]'
-                    . '.length - 1)';
+                return '(' . $s . '.length - 1)';
             }
-            return 'NAMESPACE["' . ($self->{"namespace"} || $decl->{"namespace"}) . '"]["' . $table->{$self->{"sigil"}} . $self->{"name"} . '"]';
+            return $s;
         }
 
         my $ns = '';
