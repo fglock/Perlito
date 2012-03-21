@@ -409,7 +409,10 @@ sub here_doc {
 
         $m = $self->string_interpolation_parse($str, $pos, '', "\n" . $delimiter . "\n", 1);
         if ( $m ) {
-            $here->[1]->( [$m->flat()] );
+            $here->[1]->( [
+                    $m->flat(), 
+                    Perlito5::AST::Val::Buf->new( buf => "\n" ),
+                ] );
             return $m;
         }
     }
