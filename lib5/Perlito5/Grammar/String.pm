@@ -597,10 +597,22 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
     ((my  $delimiter) = $_[4]);
     ((my  $interpolate) = $_[5]);
     ((my  $p) = $pos);
+    ((my  $balanced) = ($open_delimiter && exists($pair{$open_delimiter})));
     (my  @args);
     ((my  $buf) = '');
     for ( ; (($p < length($str)) && (substr($str, $p, length($delimiter)) ne $delimiter));  ) {
-        ((my  $m) = ($interpolate ? Perlito5::Grammar::String->double_quoted_buf($str, $p, $delimiter) : Perlito5::Grammar::String->single_quoted_unescape($str, $p)));
+        ((my  $c) = substr($str, $p, 1));
+        (my  $m);
+        ((my  $more) = '');
+        if (($balanced && ($c eq $open_delimiter))) {
+            ($buf = ($buf . $c));
+            ($p)++;
+            ($m = $self->string_interpolation_parse($str, $p, $open_delimiter, $delimiter, $interpolate));
+            ($more = $delimiter)
+        }
+        else {
+            ($m = ($interpolate ? Perlito5::Grammar::String->double_quoted_buf($str, $p, $delimiter) : Perlito5::Grammar::String->single_quoted_unescape($str, $p)))
+        };
         if ($m) {
             ((my  $obj) = $m->flat());
             if ((ref($obj) eq 'Perlito5::AST::Val::Buf')) {
@@ -614,10 +626,10 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
                 };
                 push(@args, $obj )
             };
-            ($p = $m->{'to'})
+            ($p = $m->{'to'});
+            ($buf = ($buf . $more))
         }
         else {
-            ((my  $c) = substr($str, $p, 1));
             ($buf = ($buf . $c));
             ($p)++;
             if ((($c eq chr(10)) || ($c eq chr(13)))) {
