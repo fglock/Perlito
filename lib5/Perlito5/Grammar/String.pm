@@ -851,7 +851,12 @@ sub Perlito5::Grammar::String::double_quoted_buf {
             ($m_index->{'capture'} = Perlito5::AST::Lookup->new(('obj' => $var), ('index_exp' => $m_index->flat()->[2]->[0])));
             return ($m_index)
         };
-        ($m->{'capture'} = $var);
+        if ((substr($str, $pos, 1) eq '@')) {
+            ($m->{'capture'} = Perlito5::AST::Apply->new(('code' => 'join'), ('arguments' => [Perlito5::AST::Val::Buf->new(('buf' => ' ')), $var]), ('namespace' => '')))
+        }
+        else {
+            ($m->{'capture'} = $var)
+        };
         return ($m)
     }
     else {

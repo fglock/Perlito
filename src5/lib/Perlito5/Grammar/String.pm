@@ -469,7 +469,18 @@ sub double_quoted_buf {
                 );
             return $m_index;
         }
-        $m->{"capture"} = $var;
+
+        if (substr($str, $pos, 1) eq '@') {
+            $m->{"capture"} = 
+                 Perlito5::AST::Apply->new(
+                    code      => 'join',
+                    arguments => [ Perlito5::AST::Val::Buf->new( buf => ' ' ), $var ],
+                    namespace => ''
+                 );
+        }
+        else {
+            $m->{"capture"} = $var;
+        }
         return $m;
     }
     elsif (substr($str, $pos, 1) eq '\\') {

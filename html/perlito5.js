@@ -7841,7 +7841,12 @@ var p5100 = NAMESPACE['main'];
 							((v_m_index || (v_m_index = new HashRef({})))._hash_['capture'] = _call_(NAMESPACE["Perlito5::AST::Lookup"], "new", interpolate_array('obj', v_var, 'index_exp', ((_call_(v_m_index, "flat", [], p5want) || (_call_(v_m_index, "flat", [], p5want) = new ArrayRef([])))._array_[2] || ((_call_(v_m_index, "flat", [], p5want) || (_call_(v_m_index, "flat", [], p5want) = new ArrayRef([])))._array_[2] = new ArrayRef([])))._array_[0]), p5want));
 							throw(p5context([v_m_index], p5want));
 						};
-						((v_m || (v_m = new HashRef({})))._hash_['capture'] = v_var);
+						if ( (p5129.substr([v_str, v_pos, 1], 0) == '@') ) {
+							((v_m || (v_m = new HashRef({})))._hash_['capture'] = _call_(NAMESPACE["Perlito5::AST::Apply"], "new", interpolate_array('code', 'join', 'arguments', (new ArrayRef(interpolate_array(_call_(NAMESPACE["Perlito5::AST::Val::Buf"], "new", interpolate_array('buf', ' '), 1), v_var))), 'namespace', ''), p5want));
+						}
+						else {
+							((v_m || (v_m = new HashRef({})))._hash_['capture'] = v_var);
+						};
 						throw(p5context([v_m], p5want));
 						})();
 				}
