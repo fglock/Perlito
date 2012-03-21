@@ -265,11 +265,7 @@ p5str = function(o) {
         return "";
     }
     if (typeof o === "object" && (o instanceof Array)) {
-        var out = [];
-        for (var i = 0; i < o.length; i++) {
-            out.push(p5str(o[i]));
-        }
-        return out.join(" ");
+        return "" + o.length;
     }
     if (typeof o.string === "function") {
         return o.string();
