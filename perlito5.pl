@@ -148,12 +148,8 @@ if (($backend && @ARGV)) {
     ($Perlito5::PKG_NAME = 'main');
     ($Perlito5::PROTO = {});
     if ($execute) {
-        package main;
-
-        # no strict
-;
         (my  $ok);
-        eval(($source . ' ; $ok = 1'));
+        eval(('package main; no strict; ' . $source . ' ; $ok = 1'));
         if (!($ok)) {
             ((my  $error) = ($@ || 'Unknown error'));
             warn($error)
