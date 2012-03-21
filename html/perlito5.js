@@ -7733,7 +7733,7 @@ var p5100 = NAMESPACE['main'];
 						};
 						(v_m = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_pos, '', (String.fromCharCode(10) + p5str(v_delimiter) + String.fromCharCode(10)), 1), 0)));
 						if ( bool(v_m) ) {
-							((v_here || (v_here = new ArrayRef([])))._array_[1])(interpolate_array((new ArrayRef(interpolate_array(_call_(v_m, "flat", [], 1))))));
+							((v_here || (v_here = new ArrayRef([])))._array_[1])(interpolate_array((new ArrayRef(interpolate_array(_call_(v_m, "flat", [], 1), _call_(NAMESPACE["Perlito5::AST::Val::Buf"], "new", interpolate_array('buf', String.fromCharCode(10)), 1))))));
 							throw(p5context([v_m], p5want));
 						};
 						})();
