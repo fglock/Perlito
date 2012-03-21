@@ -1813,8 +1813,12 @@ var p5100 = NAMESPACE['main'];
 						(v_decl_type = ((v_decl || (v_decl = new HashRef({})))._hash_['decl']));
 					}
 					else {
-						if ( ((!( bool((v_self || (v_self = new HashRef({})))._hash_['namespace'])) && (p5str((v_self || (v_self = new HashRef({})))._hash_['sigil']) != '*')) && bool(NAMESPACE["Perlito5"].v_STRICT)) ) {
-							p5110.die([interpolate_array(('Global symbol "' + p5str(v_perl5_name) + '" requires explicit package name'))], null);
+						if ( (!( bool((v_self || (v_self = new HashRef({})))._hash_['namespace'])) && (p5str((v_self || (v_self = new HashRef({})))._hash_['sigil']) != '*')) ) {
+							if ( bool(NAMESPACE["Perlito5"].v_STRICT) ) {
+								p5110.die([interpolate_array(('Global symbol "' + p5str(v_perl5_name) + '" requires explicit package name'))], null);
+							};
+							(v_decl_type = ('our'));
+							((v_self || (v_self = new HashRef({})))._hash_['namespace'] = NAMESPACE["Perlito5"].v_PKG_NAME);
 						};
 					};
 					if ( (p5str((v_self || (v_self = new HashRef({})))._hash_['sigil']) == '@') ) {
@@ -2439,14 +2443,14 @@ var p5100 = NAMESPACE['main'];
 					for (var i_ = 0; i_ < 1 ; i_++) {
 						var v_name = null;
 						(v_name = ((v_self || (v_self = new HashRef({})))._hash_['code']));
-						((v_namespace) = (v_self || (v_self = new HashRef({})))._hash_['namespace']);
+						((NAMESPACE["Perlito5::AST::Apply"]["v_namespace"]) = (v_self || (v_self = new HashRef({})))._hash_['namespace']);
 						var v_effective_name = null;
 						(v_effective_name = ((p5str((v_self || (v_self = new HashRef({})))._hash_['code']) + '::' + p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']))));
 						if ( bool((NAMESPACE["Perlito5"].v_PROTO)._hash_.hasOwnProperty(v_effective_name)) ) {
 							(v_sig = ((NAMESPACE["Perlito5"].v_PROTO || (NAMESPACE["Perlito5"].v_PROTO = new HashRef({})))._hash_[v_effective_name]));
 						}
 						else {
-							if ( ((!( bool(v_namespace)) || (p5str(v_namespace) == 'CORE')) && bool((NAMESPACE["Perlito5"].v_CORE_PROTO)._hash_.hasOwnProperty(('CORE::' + p5str(v_name))))) ) {
+							if ( ((!( bool(NAMESPACE["Perlito5::AST::Apply"]["v_namespace"])) || (p5str(NAMESPACE["Perlito5::AST::Apply"]["v_namespace"]) == 'CORE')) && bool((NAMESPACE["Perlito5"].v_CORE_PROTO)._hash_.hasOwnProperty(('CORE::' + p5str(v_name))))) ) {
 								(v_effective_name = (('CORE::' + p5str(v_name))));
 								(v_sig = ((NAMESPACE["Perlito5"].v_CORE_PROTO || (NAMESPACE["Perlito5"].v_CORE_PROTO = new HashRef({})))._hash_[v_effective_name]));
 							};

@@ -623,10 +623,17 @@ package Perlito5::AST::Var;
             $decl_type = $decl->{"decl"};
         }
         else {
-            die "Global symbol \"$perl5_name\" requires explicit package name"
-                if     !$self->{"namespace"}
-                    && $self->{"sigil"} ne '*' 
-                    && $Perlito5::STRICT;
+            if ( !$self->{"namespace"}
+               && $self->{"sigil"} ne '*' 
+               )
+            {
+                if ( $Perlito5::STRICT ) {
+                    die "Global symbol \"$perl5_name\" requires explicit package name"
+                }
+                # no strict - "auto-declare" the var
+                $decl_type = 'our';
+                $self->{"namespace"} = $Perlito5::PKG_NAME;
+            }
         }
 
         if ( $self->{"sigil"} eq '@' ) {
