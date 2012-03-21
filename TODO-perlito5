@@ -59,6 +59,11 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- t/base/lex.t
+    - local with initializer
+    - no strict + global array
+    - "p5100" namespace initialization problem
+
 -- no global error handler when running in node.js;
    there is no catch for the syntax error in:
     $ node perlito5.js -Bjs -e ' { '
