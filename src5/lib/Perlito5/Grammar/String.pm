@@ -322,15 +322,21 @@ sub here_doc_wanted {
         return 0;
     }
 
-    my $placeholder = Perlito5::AST::Apply->new( 
+    my $placeholder = Perlito5::AST::Apply->new(
         code      => 'list:<.>',
         namespace => '',
-        arguments => [] 
+        arguments => [
+            Perlito5::AST::Apply->new(
+                code      => 'list:<.>',
+                namespace => '',
+                arguments => []
+              )
+        ]
     );
 
     push @Here_doc, [
         $type,
-        $placeholder->{"arguments"},
+        $placeholder->{"arguments"}[0]{"arguments"},
         $delimiter,
     ];
 

@@ -704,8 +704,8 @@ sub Perlito5::Grammar::String::here_doc_wanted {
     if (!(defined($delimiter))) {
         return (0)
     };
-    ((my  $placeholder) = Perlito5::AST::Apply->new(('code' => 'list:<.>'), ('namespace' => ''), ('arguments' => [])));
-    push(@Here_doc, [$type, $placeholder->{'arguments'}, $delimiter] );
+    ((my  $placeholder) = Perlito5::AST::Apply->new(('code' => 'list:<.>'), ('namespace' => ''), ('arguments' => [Perlito5::AST::Apply->new(('code' => 'list:<.>'), ('namespace' => ''), ('arguments' => []))])));
+    push(@Here_doc, [$type, $placeholder->{'arguments'}->[0]->{'arguments'}, $delimiter] );
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('capture' => ['term', $placeholder])))
 };
 sub Perlito5::Grammar::String::newline {
