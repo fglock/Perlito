@@ -326,6 +326,9 @@ sub here_doc_wanted {
         code      => 'list:<.>',
         namespace => '',
         arguments => [
+
+            # XXX - test 12 t/base/lex.t fails if we don't use this "double-pointer"
+
             Perlito5::AST::Apply->new(
                 code      => 'list:<.>',
                 namespace => '',
