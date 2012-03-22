@@ -526,7 +526,7 @@ token term_sigil {
                     { $MATCH->{"capture"} = [ 'term', 
                             Perlito5::AST::Var->new(
                                     sigil       => $MATCH->{"var_sigil_or_pseudo"}->flat(),
-                                    namespace   => '',
+                                    namespace   => 'main',
                                     name        => '^' . $MATCH->{"Perlito5::Grammar.var_name"}->flat(),
                                 )
                         ]
@@ -545,7 +545,7 @@ token term_sigil {
                 { $MATCH->{"capture"} = [ 'term', 
                         Perlito5::AST::Var->new(
                                 sigil       => $MATCH->{"var_sigil_or_pseudo"}->flat(),
-                                namespace   => '',
+                                namespace   => 'main',
                                 name        => '^' . $MATCH->{"Perlito5::Grammar.word"}->flat(),
                             )
                     ]

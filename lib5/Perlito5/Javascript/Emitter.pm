@@ -444,7 +444,11 @@ for ($_) {
         };
         ((my  $ns) = '');
         if ($self->{'namespace'}) {
-            ($ns = ('NAMESPACE["' . $self->{'namespace'} . '"].'))
+            ($ns = ('NAMESPACE["' . $self->{'namespace'} . '"]'));
+            if (($self->{'sigil'} eq '$#')) {
+                return (('(' . $ns . '["' . $table->{'@'} . $self->{'name'} . '"].length - 1)'))
+            };
+            return (($ns . '["' . $table->{$self->{'sigil'}} . $self->{'name'} . '"]'))
         };
         if (($self->{'sigil'} eq '$#')) {
             return (('(' . $ns . $table->{'@'} . $self->{'name'} . '.length - 1)'))

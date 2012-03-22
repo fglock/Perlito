@@ -121,7 +121,8 @@ E1
 ## # Tests for new extended control-character variables
 ## # MJD 19990227
 ## 
-## { my $CX = "\cX";
+{
+##   my $CX = "\cX";
 ##   my $CXY  ="\cXY";
 ##   $ {$CX} = 17;
 ##   $ {$CXY} = 23;
@@ -166,21 +167,21 @@ E1
 ##   print "ok 38\n";
 ## #  print "($@)\n" if $@;
 ## 
-## # Now let's make sure that caret variables are all forced into the main package.
-##   package Someother;
-##   $^Q = 'Someother';
-##   $ {^Quixote} = 'Someother 2';
-##   $ {^M} = 'Someother 3';
-##   package main;
-##   print "not " unless $^Q eq 'Someother';
-##   print "ok 39\n";
-##   print "not " unless $ {^Quixote} eq 'Someother 2';
-##   print "ok 40\n";
-##   print "not " unless $ {^M} eq 'Someother 3';
-##   print "ok 41\n";
-## 
-##   
-## }
+# Now let's make sure that caret variables are all forced into the main package.
+  package Someother;
+  $^Q = 'Someother';
+  $ {^Quixote} = 'Someother 2';
+  $ {^M} = 'Someother 3';
+  package main;
+  print "not " unless $^Q eq 'Someother';
+  print "ok 39\n";
+  print "not " unless $ {^Quixote} eq 'Someother 2';
+  print "ok 40\n";
+  print "not " unless $ {^M} eq 'Someother 3';
+  print "ok 41\n";
+
+  
+}
 ## 
 ## # see if eval '', s///e, and heredocs mix
 ## 
@@ -208,45 +209,45 @@ E1
 ##     print "# $@\nnot ok $test\n" if $@;
 ##     T '^main:plink:53$', $test++;
 ## }
-## 
-## # tests 47--51 start here
-## # tests for new array interpolation semantics:
-## # arrays now *always* interpolate into "..." strings.
-## # 20000522 MJD (mjd@plover.com)
-## {
-##   my $test = 47;
-##   eval(q(">@nosuch<" eq "><")) || print "# $@", "not ";
-##   print "ok $test\n";
-##   ++$test;
-## 
-##   # Look at this!  This is going to be a common error in the future:
-##   eval(q("fred@example.com" eq "fred.com")) || print "# $@", "not ";
-##   print "ok $test\n";
-##   ++$test;
-## 
-##   # Let's make sure that normal array interpolation still works right
-##   # For some reason, this appears not to be tested anywhere else.
-##   my @a = (1,2,3);
-##   print +((">@a<" eq ">1 2 3<") ? '' : 'not '), "ok $test\n";
-##   ++$test;
-## 
-##   # Ditto.
-##   eval(q{@nosuch = ('a', 'b', 'c'); ">@nosuch<" eq ">a b c<"}) 
-##       || print "# $@", "not ";
-##   print "ok $test\n";
-##   ++$test;
-## 
-##   # This isn't actually a lex test, but it's testing the same feature
-##   sub makearray {
-##     my @array = ('fish', 'dog', 'carrot');
-##     *R::crackers = \@array;
-##   }
-## 
-##   eval(q{makearray(); ">@R::crackers<" eq ">fish dog carrot<"})
-##     || print "# $@", "not ";
-##   print "ok $test\n";
-##   ++$test;
-## }
+
+# tests 47--51 start here
+# tests for new array interpolation semantics:
+# arrays now *always* interpolate into "..." strings.
+# 20000522 MJD (mjd@plover.com)
+{
+  my $test = 47;
+  eval(q(">@nosuch<" eq "><")) || print "# $@", "not ";
+  print "ok $test\n";
+  ++$test;
+
+  # Look at this!  This is going to be a common error in the future:
+  eval(q("fred@example.com" eq "fred.com")) || print "# $@", "not ";
+  print "ok $test\n";
+  ++$test;
+
+  # Let's make sure that normal array interpolation still works right
+  # For some reason, this appears not to be tested anywhere else.
+  my @a = (1,2,3);
+  print +((">@a<" eq ">1 2 3<") ? '' : 'not '), "ok $test\n";
+  ++$test;
+
+  # Ditto.
+  eval(q{@nosuch = ('a', 'b', 'c'); ">@nosuch<" eq ">a b c<"}) 
+      || print "# $@", "not ";
+  print "ok $test\n";
+  ++$test;
+
+##  # This isn't actually a lex test, but it's testing the same feature
+##  sub makearray {
+##    my @array = ('fish', 'dog', 'carrot');
+##    *R::crackers = \@array;
+##  }
+##
+##  eval(q{makearray(); ">@R::crackers<" eq ">fish dog carrot<"})
+##    || print "# $@", "not ";
+##  print "ok $test\n";
+##  ++$test;
+}
 ## 
 ## # Tests 52-54
 ## # => should only quote foo::bar if it isn't a real sub. AMS, 20010621

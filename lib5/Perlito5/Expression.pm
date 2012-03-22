@@ -537,7 +537,7 @@ sub Perlito5::Expression::term_sigil {
         0
     }
 }))) && ((('}' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'})))))) && ((do {
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Var->new(('sigil' => $MATCH->{'var_sigil_or_pseudo'}->flat()), ('namespace' => ''), ('name' => ('^' . $MATCH->{'Perlito5::Grammar.var_name'}->flat())))]);
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Var->new(('sigil' => $MATCH->{'var_sigil_or_pseudo'}->flat()), ('namespace' => 'main'), ('name' => ('^' . $MATCH->{'Perlito5::Grammar.var_name'}->flat())))]);
     1
 }))))
 }))) || ((do {
@@ -571,7 +571,7 @@ sub Perlito5::Expression::term_sigil {
         0
     }
 }))) && ((do {
-    ($MATCH->{'capture'} = ['term', Perlito5::AST::Var->new(('sigil' => $MATCH->{'var_sigil_or_pseudo'}->flat()), ('namespace' => ''), ('name' => ('^' . $MATCH->{'Perlito5::Grammar.word'}->flat())))]);
+    ($MATCH->{'capture'} = ['term', Perlito5::AST::Var->new(('sigil' => $MATCH->{'var_sigil_or_pseudo'}->flat()), ('namespace' => 'main'), ('name' => ('^' . $MATCH->{'Perlito5::Grammar.word'}->flat())))]);
     1
 }))))
 }))) || ((do {
