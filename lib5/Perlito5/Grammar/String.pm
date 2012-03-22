@@ -698,10 +698,11 @@ sub Perlito5::Grammar::String::here_doc_wanted {
         return (0)
     };
     ((my  $placeholder) = Perlito5::AST::Apply->new(('code' => 'list:<.>'), ('namespace' => ''), ('arguments' => [])));
+    ((my  $placeholder2) = Perlito5::AST::Apply->new(('code' => 'list:<.>'), ('namespace' => ''), ('arguments' => [$placeholder])));
     push(@Here_doc, [$type, sub {
     ($placeholder->{'arguments'} = $_[0])
 }, $delimiter] );
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('capture' => ['term', $placeholder])))
+    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('capture' => ['term', $placeholder2])))
 };
 sub Perlito5::Grammar::String::newline {
     ((my  $grammar) = $_[0]);
