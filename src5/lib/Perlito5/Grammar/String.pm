@@ -327,14 +327,10 @@ sub here_doc_wanted {
         namespace => '',
         arguments => [] 
     );
-    my $placeholder2 = Perlito5::AST::Apply->new( 
-        code      => 'list:<.>',
-        namespace => '',
-        arguments => [$placeholder] 
-    );
+
     push @Here_doc, [
         $type,
-        sub { $placeholder->{"arguments"} = $_[0] },
+        $placeholder->{"arguments"},
         $delimiter,
     ];
 
@@ -344,7 +340,7 @@ sub here_doc_wanted {
         'to' => $p,
         capture => [
                 'term',
-                $placeholder2
+                $placeholder
             ]
     );
 }
@@ -371,13 +367,14 @@ sub here_doc {
     my $p = $pos;
     my $here = shift @Here_doc;
     my $type      = $here->[0];
+    my $result    = $here->[1];
     my $delimiter = $here->[2];
     # say "got a newline and we are looking for a $type that ends with ", $delimiter;
     if ($type eq 'single_quote') {
         while ( $p < length($str) ) {
             if ( substr($str, $p, length($delimiter)) eq $delimiter ) {
                 # this will put the text in the right place in the AST
-                $here->[1]->( [Perlito5::AST::Val::Buf->new(buf => substr($str, $pos, $p - $pos))] );
+                push @$result, Perlito5::AST::Val::Buf->new(buf => substr($str, $pos, $p - $pos));
                 $p += length($delimiter);
                 # say "$p ", length($str);
                 my $m = $self->newline( $str, $p );
@@ -410,7 +407,7 @@ sub here_doc {
             $p += length($delimiter);
             $m = $self->newline( $str, $p );
             if ( $p >= length($str) || $m ) {
-                $here->[1]->( [Perlito5::AST::Val::Buf->new( buf => '' )] );
+                push @$result, Perlito5::AST::Val::Buf->new( buf => '' );
                 $p = $m->{"to"} if $m;
                 return Perlito5::Match->new(
                     'str' => $str, 'from' => $pos, 'to' => $p, capture => undef);
@@ -421,10 +418,8 @@ sub here_doc {
 
         $m = $self->string_interpolation_parse($str, $pos, '', "\n" . $delimiter . "\n", 1);
         if ( $m ) {
-            $here->[1]->( [
-                    $m->flat(), 
-                    Perlito5::AST::Val::Buf->new( buf => "\n" ),
-                ] );
+            push @$result, $m->flat();
+            push @$result, Perlito5::AST::Val::Buf->new( buf => "\n" );
             $m->{"to"} = $m->{"to"} - 1;
             return $m;
         }

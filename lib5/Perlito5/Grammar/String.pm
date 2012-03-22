@@ -705,11 +705,8 @@ sub Perlito5::Grammar::String::here_doc_wanted {
         return (0)
     };
     ((my  $placeholder) = Perlito5::AST::Apply->new(('code' => 'list:<.>'), ('namespace' => ''), ('arguments' => [])));
-    ((my  $placeholder2) = Perlito5::AST::Apply->new(('code' => 'list:<.>'), ('namespace' => ''), ('arguments' => [$placeholder])));
-    push(@Here_doc, [$type, sub {
-    ($placeholder->{'arguments'} = $_[0])
-}, $delimiter] );
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('capture' => ['term', $placeholder2])))
+    push(@Here_doc, [$type, $placeholder->{'arguments'}, $delimiter] );
+    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('capture' => ['term', $placeholder])))
 };
 sub Perlito5::Grammar::String::newline {
     ((my  $grammar) = $_[0]);
@@ -753,11 +750,12 @@ sub Perlito5::Grammar::String::here_doc {
     ((my  $p) = $pos);
     ((my  $here) = shift(@Here_doc));
     ((my  $type) = $here->[0]);
+    ((my  $result) = $here->[1]);
     ((my  $delimiter) = $here->[2]);
     if (($type eq 'single_quote')) {
         for ( ; ($p < length($str));  ) {
             if ((substr($str, $p, length($delimiter)) eq $delimiter)) {
-                $here->[1]->([Perlito5::AST::Val::Buf->new(('buf' => substr($str, $pos, ($p - $pos))))]);
+                push(@{$result}, Perlito5::AST::Val::Buf->new(('buf' => substr($str, $pos, ($p - $pos)))) );
                 ($p = ($p + length($delimiter)));
                 ((my  $m) = $self->newline($str, $p));
                 if ((($p >= length($str)) || $m)) {
@@ -781,7 +779,7 @@ sub Perlito5::Grammar::String::here_doc {
             ($p = ($p + length($delimiter)));
             ($m = $self->newline($str, $p));
             if ((($p >= length($str)) || $m)) {
-                $here->[1]->([Perlito5::AST::Val::Buf->new(('buf' => ''))]);
+                push(@{$result}, Perlito5::AST::Val::Buf->new(('buf' => '')) );
                 if ($m) {
                     ($p = $m->{'to'})
                 };
@@ -790,7 +788,8 @@ sub Perlito5::Grammar::String::here_doc {
         };
         ($m = $self->string_interpolation_parse($str, $pos, '', (chr(10) . $delimiter . chr(10)), 1));
         if ($m) {
-            $here->[1]->([$m->flat(), Perlito5::AST::Val::Buf->new(('buf' => chr(10)))]);
+            push(@{$result}, $m->flat() );
+            push(@{$result}, Perlito5::AST::Val::Buf->new(('buf' => chr(10))) );
             ($m->{'to'} = ($m->{'to'} - 1));
             return ($m)
         }
