@@ -16,7 +16,7 @@ Running the tests using node.js:
     # see below how to create perlito5.js
     node perlito5.js -Bjs t5/01-perlito/01-sanity.t
 
-    prove -e 'node perlito5.js -Bjs' t5
+    prove -r -e 'node perlito5.js -Bjs' t5
 
 Compile the compiler to Javascript into perlito5.js:
 
