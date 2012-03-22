@@ -24,6 +24,20 @@ sub Dumper {
     }
     elsif ($ref) {
         # TODO find out what kind of reference this is (ARRAY, HASH, ...)
+        # local $@;
+        # eval {
+        #     my @data = @$obj;
+        #     say "is array";
+        #     return 'bless(' . "..." . ", '$ref')";
+        # }
+        # or eval {
+        #     $@ = '';
+        #     my %data = %$obj;
+        #     say "is hash";
+        #     return 'bless(' . "..." . ", '$ref')";
+        # };
+        # $@ = '';
+
         return 'bless(' . "..." . ", '$ref')";
     }
 

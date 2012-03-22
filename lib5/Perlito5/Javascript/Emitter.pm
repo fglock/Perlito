@@ -603,6 +603,16 @@ for ($_) {
         };
         die('Error: regex emitter')
     };
+    sub Perlito5::AST::Apply::emit_function_javascript {
+        ((my  $self) = shift());
+        ((my  $level) = shift());
+        ((my  $wantarray) = shift());
+        ((my  $argument) = shift());
+        if (($argument->isa('Perlito5::AST::Apply') && ($argument->code() eq 'return'))) {
+            return (('function () { ' . $argument->emit_javascript($level, $wantarray) . ' }'))
+        };
+        return (('function () { return ' . $argument->emit_javascript($level, $wantarray) . ' }'))
+    };
     sub Perlito5::AST::Apply::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -807,13 +817,13 @@ for ($_) {
             return (('(function (a) { ' . 'for (var i=' . $self->{'arguments'}->[0]->emit_javascript() . ', l=' . $self->{'arguments'}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])'))
         };
         if ((($code eq 'infix:<&&>') || ($code eq 'infix:<and>'))) {
-            return (('and' . '(' . $self->{'arguments'}->[0]->emit_javascript() . ', ' . 'function () { return ' . $self->{'arguments'}->[1]->emit_javascript() . '; })'))
+            return (('and' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . $self->emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
         };
         if ((($code eq 'infix:<||>') || ($code eq 'infix:<or>'))) {
-            return (('or' . '(' . $self->{'arguments'}->[0]->emit_javascript() . ', ' . 'function () { return ' . $self->{'arguments'}->[1]->emit_javascript() . '; })'))
+            return (('or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . $self->emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
         };
         if (($code eq 'infix:<//>')) {
-            return (('defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript() . ', ' . 'function () { return ' . $self->{'arguments'}->[1]->emit_javascript() . '; })'))
+            return (('defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . $self->emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
         };
         if (($code eq 'exists')) {
             ((my  $arg) = $self->{'arguments'}->[0]);

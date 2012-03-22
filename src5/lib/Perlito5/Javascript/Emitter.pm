@@ -891,6 +891,20 @@ package Perlito5::AST::Apply;
         die "Error: regex emitter";
     }
 
+
+    sub emit_function_javascript {
+        my $self  = shift;
+        my $level = shift;
+        my $wantarray = shift;
+        my $argument = shift;
+
+        if ( $argument->isa( 'Perlito5::AST::Apply' ) && $argument->code eq 'return' ) {
+            return 'function () { ' . $argument->emit_javascript($level, $wantarray) . ' }';
+        }
+        return 'function () { return ' . $argument->emit_javascript($level, $wantarray) . ' }';
+    }
+
+
     sub emit_javascript {
         my $self  = shift;
         my $level = shift;
@@ -1220,20 +1234,23 @@ package Perlito5::AST::Apply;
            )
         {
             return 'and' . '('
-                . $self->{"arguments"}->[0]->emit_javascript() . ', '
-                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript() . '; })'
+                . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray) . ', '
+                . $self->emit_function_javascript($level, $wantarray, $self->{"arguments"}->[1]) 
+                . ')'
         }
         if (  $code eq 'infix:<||>'
            || $code eq 'infix:<or>'
            )
         {
             return 'or' . '('
-                . $self->{"arguments"}->[0]->emit_javascript() . ', '
-                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript() . '; })'
+                . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray) . ', '
+                . $self->emit_function_javascript($level, $wantarray, $self->{"arguments"}->[1]) 
+                . ')'
         }
         if ($code eq 'infix:<//>') { return 'defined_or' . '('
-                . $self->{"arguments"}->[0]->emit_javascript() . ', '
-                . 'function () { return ' . $self->{"arguments"}->[1]->emit_javascript() . '; })'
+                . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray) . ', '
+                . $self->emit_function_javascript($level, $wantarray, $self->{"arguments"}->[1]) 
+                . ')'
         }
 
         if ($code eq 'exists') {
