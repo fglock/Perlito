@@ -7646,8 +7646,8 @@ var p5100 = NAMESPACE['main'];
 					throw(p5context([0], p5want));
 				};
 				var v_placeholder = null;
-				(v_placeholder = (_call_(NAMESPACE["Perlito5::AST::Apply"], "new", interpolate_array('code', 'list:<.>', 'namespace', '', 'arguments', (new ArrayRef([]))), 0)));
-				p5129.push([List_Here_doc, interpolate_array((new ArrayRef(interpolate_array(v_type, (v_placeholder || (v_placeholder = new HashRef({})))._hash_['arguments'], v_delimiter))))], null);
+				(v_placeholder = (_call_(NAMESPACE["Perlito5::AST::Apply"], "new", interpolate_array('code', 'list:<.>', 'namespace', '', 'arguments', (new ArrayRef(interpolate_array(_call_(NAMESPACE["Perlito5::AST::Apply"], "new", interpolate_array('code', 'list:<.>', 'namespace', '', 'arguments', (new ArrayRef([]))), 1))))), 0)));
+				p5129.push([List_Here_doc, interpolate_array((new ArrayRef(interpolate_array(v_type, (((v_placeholder || (v_placeholder = new HashRef({})))._hash_['arguments'] || ((v_placeholder || (v_placeholder = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0] || (((v_placeholder || (v_placeholder = new HashRef({})))._hash_['arguments'] || ((v_placeholder || (v_placeholder = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0] = new HashRef({})))._hash_['arguments'], v_delimiter))))], null);
 				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'capture', (new ArrayRef(interpolate_array('term', v_placeholder)))), p5want)], p5want))
 			}
 			catch(err) {
