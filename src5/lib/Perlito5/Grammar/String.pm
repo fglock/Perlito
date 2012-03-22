@@ -228,12 +228,19 @@ sub string_interpolation_parse {
             $buf .= $more;
         }
         else {
-            $buf .= $c;
             $p++;
             if ( $c eq chr(10) || $c eq chr(13) ) {
                 # after a newline, check for here-docs
                 my $m = $self->here_doc( $str, $p );
-                $p = $m->{"to"};
+                if ( $p != $m->{"to"} ) {
+                    $p = $m->{"to"};
+                }
+                else {
+                    $buf .= $c;
+                }
+            }
+            else {
+                $buf .= $c;
             }
         }
     }

@@ -630,11 +630,18 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
             ($buf = ($buf . $more))
         }
         else {
-            ($buf = ($buf . $c));
             ($p)++;
             if ((($c eq chr(10)) || ($c eq chr(13)))) {
                 ((my  $m) = $self->here_doc($str, $p));
-                ($p = $m->{'to'})
+                if (($p != $m->{'to'})) {
+                    ($p = $m->{'to'})
+                }
+                else {
+                    ($buf = ($buf . $c))
+                }
+            }
+            else {
+                ($buf = ($buf . $c))
             }
         }
     };

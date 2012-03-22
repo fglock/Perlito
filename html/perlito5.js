@@ -7543,14 +7543,21 @@ var p5100 = NAMESPACE['main'];
 								})();
 						}
 						else {
-							(v_buf = ((p5str(v_buf) + p5str(v_c))));
 							(v_p)++;
 							if ( ((p5str(v_c) == p5str(p5129.chr([10], 0))) || (p5str(v_c) == p5str(p5129.chr([13], 0)))) ) {
 								(function () {
 									var v_m = null;
 									(v_m = (_call_(v_self, "here_doc", interpolate_array(v_str, v_p), 0)));
-									(v_p = ((v_m || (v_m = new HashRef({})))._hash_['to']));
+									if ( (num(v_p) != num((v_m || (v_m = new HashRef({})))._hash_['to'])) ) {
+										(v_p = ((v_m || (v_m = new HashRef({})))._hash_['to']));
+									}
+									else {
+										(v_buf = ((p5str(v_buf) + p5str(v_c))));
+									};
 									})();
+							}
+							else {
+								(v_buf = ((p5str(v_buf) + p5str(v_c))));
 							};
 						};
 						})();
@@ -7640,10 +7647,12 @@ var p5100 = NAMESPACE['main'];
 				};
 				var v_placeholder = null;
 				(v_placeholder = (_call_(NAMESPACE["Perlito5::AST::Apply"], "new", interpolate_array('code', 'list:<.>', 'namespace', '', 'arguments', (new ArrayRef([]))), 0)));
+				var v_placeholder2 = null;
+				(v_placeholder2 = (_call_(NAMESPACE["Perlito5::AST::Apply"], "new", interpolate_array('code', 'list:<.>', 'namespace', '', 'arguments', (new ArrayRef(interpolate_array(v_placeholder)))), 0)));
 				p5129.push([List_Here_doc, interpolate_array((new ArrayRef(interpolate_array(v_type, function (List__, p5want) {
 		return (p5context([((v_placeholder || (v_placeholder = new HashRef({})))._hash_['arguments'] = List__[0])], p5want));
 }, v_delimiter))))], null);
-				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'capture', (new ArrayRef(interpolate_array('term', v_placeholder)))), p5want)], p5want))
+				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'capture', (new ArrayRef(interpolate_array('term', v_placeholder2)))), p5want)], p5want))
 			}
 			catch(err) {
 				if ( err instanceof Error ) {
@@ -7754,6 +7763,7 @@ var p5100 = NAMESPACE['main'];
 						(v_m = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_pos, '', (String.fromCharCode(10) + p5str(v_delimiter) + String.fromCharCode(10)), 1), 0)));
 						if ( bool(v_m) ) {
 							((v_here || (v_here = new ArrayRef([])))._array_[1])(interpolate_array((new ArrayRef(interpolate_array(_call_(v_m, "flat", [], 1), _call_(NAMESPACE["Perlito5::AST::Val::Buf"], "new", interpolate_array('buf', String.fromCharCode(10)), 1))))));
+							((v_m || (v_m = new HashRef({})))._hash_['to'] = (num((v_m || (v_m = new HashRef({})))._hash_['to']) - 1));
 							throw(p5context([v_m], p5want));
 						};
 						})();
