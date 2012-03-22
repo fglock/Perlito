@@ -871,11 +871,11 @@ package Perlito5::AST::Apply;
         my $regex_args = $regex->{"arguments"};
         if ($code eq 'p5:s') {
             $str = $var->emit_javascript() 
-                 . ' = ' . $var->emit_javascript() . '.replace(/' . $regex_args->[0]->{"buf"} . '/' . $regex_args->[2] . ', '
+                 . ' = p5str(' . $var->emit_javascript() . ').replace(/' . $regex_args->[0]->{"buf"} . '/' . $regex_args->[2] . ', '
                  .  $regex_args->[1]->emit_javascript() . ')';
         }
         elsif ($code eq 'p5:m') {
-            $str = '(' . $var->emit_javascript() . '.match(/' . $regex_args->[0]->{"buf"} . '/' . $regex_args->[1] . ')'
+            $str = '(p5str(' . $var->emit_javascript() . ').match(/' . $regex_args->[0]->{"buf"} . '/' . $regex_args->[1] . ')'
                     . ' ? 1 : 0)';
         }
         else {
