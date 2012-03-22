@@ -1,7 +1,7 @@
 #!./perl
 
 #print "1..57\n";
-print "1..18\n";
+print "1..20\n";
 
 $x = 'x';
 
@@ -76,20 +76,20 @@ print "ok 18 - was the test for the deprecated use of bare << to mean <<\"\"\n";
 #
 ## previous line intentionally left blank.
 
-## print <<E1 eq "foo\n\n" ? "ok 19\n" : "not ok 19\n";
-## @{[ <<E2 ]}
-## foo
-## E2
-## E1
-## 
-## print <<E1 eq "foo\n\n" ? "ok 20\n" : "not ok 20\n";
-## @{[
-##   <<E2
-## foo
-## E2
-## ]}
-## E1
-## 
+print <<E1 eq "foo\n\n" ? "ok 19\n" : "not ok 19\n";
+@{[ <<E2 ]}
+foo
+E2
+E1
+
+print <<E1 eq "foo\n\n" ? "ok 20\n" : "not ok 20\n";
+@{[
+  <<E2
+foo
+E2
+]}
+E1
+
 ## $foo = FOO;
 ## $bar = BAR;
 ## $foo{$bar} = BAZ;
