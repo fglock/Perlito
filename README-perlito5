@@ -20,19 +20,15 @@ Running the tests using node.js:
 
 Compile the compiler to Javascript into perlito5.js:
 
--- using perlito5.pl:
+-- using perl and perlito5.pl:
 
     perl -Ilib5 perlito5.pl -Cjs src5/util/perlito5.pl > perlito5.js
 
--- using perlito5.js:
+-- using node.js and perlito5.js:
 
-    ~/bin/d8 perlito5.js -- -Cjs src5/util/perlito5.pl > perlito5-new.js
+    node perlito5.js -Cjs src5/util/perlito5.pl > perlito5-new.js
 
-Running the tests using perlito5.js and v8:
-
-    find t5/*.t | perl -ne ' print "*** $_"; chomp; print ` ~/bin/d8 perlito5.js -- -Cjs $_ > x && ~/bin/d8 x  ` '
-
-Bootstrap using v8:
+-- using d8 shell and perlito5.js:
 
     ~/bin/d8 perlito5.js -- -Cjs src5/util/perlito5.pl > perlito5-new.js
 
