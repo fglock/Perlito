@@ -320,6 +320,11 @@ sub here_doc_wanted {
         namespace => '',
         arguments => [] 
     );
+    my $placeholder2 = Perlito5::AST::Apply->new( 
+        code      => 'list:<.>',
+        namespace => '',
+        arguments => [$placeholder] 
+    );
     push @Here_doc, [
         $type,
         sub { $placeholder->{"arguments"} = $_[0] },
@@ -332,7 +337,7 @@ sub here_doc_wanted {
         'to' => $p,
         capture => [
                 'term',
-                $placeholder
+                $placeholder2
             ]
     );
 }
