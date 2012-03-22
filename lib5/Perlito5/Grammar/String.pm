@@ -784,6 +784,7 @@ sub Perlito5::Grammar::String::here_doc {
         ($m = $self->string_interpolation_parse($str, $pos, '', (chr(10) . $delimiter . chr(10)), 1));
         if ($m) {
             $here->[1]->([$m->flat(), Perlito5::AST::Val::Buf->new(('buf' => chr(10)))]);
+            ($m->{'to'} = ($m->{'to'} - 1));
             return ($m)
         }
     };

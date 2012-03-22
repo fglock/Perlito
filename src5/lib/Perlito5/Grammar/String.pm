@@ -418,6 +418,7 @@ sub here_doc {
                     $m->flat(), 
                     Perlito5::AST::Val::Buf->new( buf => "\n" ),
                 ] );
+            $m->{"to"} = $m->{"to"} - 1;
             return $m;
         }
     }
