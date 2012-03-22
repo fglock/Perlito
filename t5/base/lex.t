@@ -270,8 +270,8 @@ print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
 ## eval "\$x =\xE2foo";
 ## if ($@ =~ /Unrecognized character \\xE2; marked by <-- HERE after \$x =<-- HERE near column 5/) { print "ok $test\n"; } else { print "not ok $test\n"; }
 ## $test++;
-## 
-## # Is "[~" scanned correctly?
-## @a = (1,2,3);
-## print "not " unless($a[~~2] == 3);
-## print "ok 57\n";
+
+# Is "[~" scanned correctly?
+@a = (1,2,3);
+print "not " unless($a[~~2] == 3);
+print "ok 57\n";
