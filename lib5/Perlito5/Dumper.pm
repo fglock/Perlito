@@ -18,7 +18,7 @@ sub Perlito5::Dumper::Dumper {
     }
     else {
         if (($ref eq 'HASH')) {
-            return (('{' . chr(10) . join('', map(($tab1 . (chr(39) . $_ . chr(39) . ' => ') . Dumper($obj->{$_}, ($level + 1)) . ',' . chr(10)), keys(%{$obj}))) . $tab . '}'))
+            return (('{' . chr(10) . join('', map(($tab1 . (chr(39) . $_ . chr(39) . ' => ') . Dumper($obj->{$_}, ($level + 1)) . ',' . chr(10)), sort(keys(%{$obj})))) . $tab . '}'))
         }
         else {
             if ($ref) {

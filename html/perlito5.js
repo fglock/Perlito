@@ -1153,7 +1153,7 @@ var p5100 = NAMESPACE['main'];
 					if ( (p5str(v_ref) == 'HASH') ) {
 						throw(p5context([('{' + String.fromCharCode(10) + p5122.join(['', interpolate_array(p5map(p5122, function (p5want) {
 	return (p5context([(p5str(v_tab1) + (String.fromCharCode(39) + p5str(NAMESPACE["Perlito5::Dumper"]["v__"]) + String.fromCharCode(39) + ' => ') + p5str(p5122.Dumper(interpolate_array((v_obj || (v_obj = new HashRef({})))._hash_[NAMESPACE["Perlito5::Dumper"]["v__"]], (num(v_level) + 1)), 0)) + ',' + String.fromCharCode(10))], p5want));
-}, interpolate_array(p5122.keys([(v_obj)._hash_], 1))))], 0) + p5str(v_tab) + '}')], p5want));
+}, interpolate_array(p5sort(p5122, null, interpolate_array(p5122.keys([(v_obj)._hash_], 1))))))], 0) + p5str(v_tab) + '}')], p5want));
 					}
 					else {
 						if ( bool(v_ref) ) {

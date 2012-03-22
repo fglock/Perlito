@@ -18,7 +18,7 @@ sub Dumper {
     elsif ($ref eq 'HASH') {
         return "{\n"
             . join( "", 
-                    map($tab1 . "'$_' => " . Dumper($obj->{$_}, $level+1) . ",\n", keys %$obj)
+                    map($tab1 . "'$_' => " . Dumper($obj->{$_}, $level+1) . ",\n", sort keys %$obj)
                   )
             . $tab . '}';
     }
