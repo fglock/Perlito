@@ -108,10 +108,10 @@ E1
 ## ($X, @X) = qw(a b c d); 
 ## print "d" =~ /^$X[-1]$/ ? "ok 27\n" : "not ok 27\n";
 ## print "a1" !~ /^$X[-1]$/ ? "ok 28\n" : "not ok 28\n";
-## 
-## print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
-## 
-## 
+
+print (((q{{\{\(}} . q{{\)\}}}) eq '{{\(}{\)}}') ? "ok 29\n" : "not ok 29\n");
+
+
 ## $foo = "not ok 30\n";
 ## $foo =~ s/^not /substr(<<EOF, 0, 0)/e;
 ##   Ignored

@@ -7515,17 +7515,25 @@ var p5100 = NAMESPACE['main'];
 					(function () {
 						var v_c = null;
 						(v_c = (p5129.substr([v_str, v_p, 1], 0)));
+						var v_c2 = null;
+						(v_c2 = (p5129.substr([v_str, (num(v_p) + 1), 1], 0)));
 						var v_m = null;
 						var v_more = null;
 						(v_more = (''));
-						if ( (bool(v_balanced) && (p5str(v_c) == p5str(v_open_delimiter))) ) {
-							(v_buf = ((p5str(v_buf) + p5str(v_c))));
+						if ( ((bool(v_balanced) && (p5str(v_c) == String.fromCharCode(92))) && ((p5str(v_c2) == p5str(v_open_delimiter)) || (p5str(v_c2) == p5str(v_delimiter)))) ) {
 							(v_p)++;
-							(v_m = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_p, v_open_delimiter, v_delimiter, v_interpolate), 0)));
-							(v_more = (v_delimiter));
+							(v_c = (v_c2));
 						}
 						else {
-							(v_m = (( bool(v_interpolate) ? _call_(NAMESPACE["Perlito5::Grammar::String"], "double_quoted_buf", interpolate_array(v_str, v_p, v_delimiter), 0) : _call_(NAMESPACE["Perlito5::Grammar::String"], "single_quoted_unescape", interpolate_array(v_str, v_p), 0))));
+							if ( (bool(v_balanced) && (p5str(v_c) == p5str(v_open_delimiter))) ) {
+								(v_buf = ((p5str(v_buf) + p5str(v_c))));
+								(v_p)++;
+								(v_m = (_call_(v_self, "string_interpolation_parse", interpolate_array(v_str, v_p, v_open_delimiter, v_delimiter, v_interpolate), 0)));
+								(v_more = (v_delimiter));
+							}
+							else {
+								(v_m = (( bool(v_interpolate) ? _call_(NAMESPACE["Perlito5::Grammar::String"], "double_quoted_buf", interpolate_array(v_str, v_p, v_delimiter), 0) : _call_(NAMESPACE["Perlito5::Grammar::String"], "single_quoted_unescape", interpolate_array(v_str, v_p), 0))));
+							};
 						};
 						if ( bool(v_m) ) {
 							(function () {

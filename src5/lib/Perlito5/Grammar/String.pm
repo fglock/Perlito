@@ -198,9 +198,14 @@ sub string_interpolation_parse {
           )
     {
         my $c = substr($str, $p, 1);
+        my $c2 = substr($str, $p+1, 1);
         my $m;
         my $more = '';
-        if ($balanced && $c eq $open_delimiter) {
+        if ($balanced && $c eq '\\' && ($c2 eq $open_delimiter || $c2 eq $delimiter)) {
+            $p++;
+            $c = $c2;
+        }
+        elsif ($balanced && $c eq $open_delimiter) {
             $buf .= $c;
             $p++;
             $m = $self->string_interpolation_parse($str, $p, $open_delimiter, $delimiter, $interpolate);

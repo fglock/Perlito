@@ -602,16 +602,23 @@ sub Perlito5::Grammar::String::string_interpolation_parse {
     ((my  $buf) = '');
     for ( ; (($p < length($str)) && (substr($str, $p, length($delimiter)) ne $delimiter));  ) {
         ((my  $c) = substr($str, $p, 1));
+        ((my  $c2) = substr($str, ($p + 1), 1));
         (my  $m);
         ((my  $more) = '');
-        if (($balanced && ($c eq $open_delimiter))) {
-            ($buf = ($buf . $c));
+        if ((($balanced && ($c eq chr(92))) && ((($c2 eq $open_delimiter) || ($c2 eq $delimiter))))) {
             ($p)++;
-            ($m = $self->string_interpolation_parse($str, $p, $open_delimiter, $delimiter, $interpolate));
-            ($more = $delimiter)
+            ($c = $c2)
         }
         else {
-            ($m = ($interpolate ? Perlito5::Grammar::String->double_quoted_buf($str, $p, $delimiter) : Perlito5::Grammar::String->single_quoted_unescape($str, $p)))
+            if (($balanced && ($c eq $open_delimiter))) {
+                ($buf = ($buf . $c));
+                ($p)++;
+                ($m = $self->string_interpolation_parse($str, $p, $open_delimiter, $delimiter, $interpolate));
+                ($more = $delimiter)
+            }
+            else {
+                ($m = ($interpolate ? Perlito5::Grammar::String->double_quoted_buf($str, $p, $delimiter) : Perlito5::Grammar::String->single_quoted_unescape($str, $p)))
+            }
         };
         if ($m) {
             ((my  $obj) = $m->flat());
