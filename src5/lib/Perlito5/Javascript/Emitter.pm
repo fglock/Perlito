@@ -19,6 +19,16 @@ package Perlito5::Javascript;
         "\t" x $level
     }
 
+    # prefix operators that take a "str" parameter
+    our %op_prefix_js_str = (
+        'prefix:<-A>' => 'p5atime',
+        'prefix:<-M>' => 'p5mtime',
+        'prefix:<-C>' => 'p5ctime',
+        'prefix:<-s>' => 'p5size',
+        'prefix:<-f>' => 'p5is_file',
+        'prefix:<-d>' => 'p5is_directory',
+    );
+
     # these operators need 2 "str" parameters
     our %op_infix_js_str = (
         'infix:<eq>' => ' == ',
@@ -982,6 +992,11 @@ package Perlito5::AST::Apply;
         if (exists $Perlito5::Javascript::op_infix_js_num{$code}) {
             return '(' 
                 . join( $Perlito5::Javascript::op_infix_js_num{$code}, map( Perlito5::Javascript::to_num($_), @{$self->{"arguments"}} ))
+                . ')'
+        }
+        if (exists $Perlito5::Javascript::op_prefix_js_str{$code}) {
+            return $Perlito5::Javascript::op_prefix_js_str{$code} . '(' 
+                . Perlito5::Javascript::to_str($self->{"arguments"}[0])
                 . ')'
         }
 

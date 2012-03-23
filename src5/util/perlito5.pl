@@ -10,6 +10,7 @@ use Perlito5::Grammar;
 use Perlito5::Javascript::Emitter;
 use Perlito5::Javascript::Runtime;
 use Perlito5::Javascript::CORE;
+use Perlito5::Javascript::IO;
 use Perlito5::Macro;
 use Perlito5::Perl5::Emitter;
 use Perlito5::Perl6::Emitter;
@@ -181,6 +182,7 @@ if ($backend && @ARGV) {
                 if ( $expand_use ) {
                     print Perlito5::Javascript::Runtime->emit_javascript();
                     print Perlito5::Javascript::CORE->emit_javascript();
+                    print Perlito5::Javascript::IO->emit_javascript();
                 }
                 print Perlito5::AST::CompUnit::emit_javascript_program( $comp_units );
             }

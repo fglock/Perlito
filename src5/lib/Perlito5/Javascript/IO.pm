@@ -28,23 +28,23 @@ if (isNode) {
 
     var fs = require("fs");
 
-    p5atime = function(List__) {
-        var stat = fs.statSync(p5str(List__[0])); return stat["atime"];
+    p5atime = function(s) {
+        var stat = fs.statSync(s); return stat["atime"];
     }
-    p5mtime = function(List__) {
-        var stat = fs.statSync(p5str(List__[0])); return stat["mtime"];
+    p5mtime = function(s) {
+        var stat = fs.statSync(s); return stat["mtime"];
     }
-    p5ctime = function(List__) {
-        var stat = fs.statSync(p5str(List__[0])); return stat["ctime"];
+    p5ctime = function(s) {
+        var stat = fs.statSync(s); return stat["ctime"];
     }
-    p5size = function(List__) {
-        var stat = fs.statSync(p5str(List__[0])); return stat["size"];
+    p5size = function(s) {
+        var stat = fs.statSync(s); return stat["size"];
     }
-    p5is_file = function(List__) {
-        var stat = fs.statSync(p5str(List__[0])); return stat.isFile();
+    p5is_file = function(s) {
+        var stat = fs.statSync(s); return stat.isFile();
     }
-    p5is_directory = function(List__) {
-        var stat = fs.statSync(p5str(List__[0])); return stat.isDirectory();
+    p5is_directory = function(s) {
+        var stat = fs.statSync(s); return stat.isDirectory();
     }
 
 }

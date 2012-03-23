@@ -23,6 +23,7 @@ for ($_) {
         ((my  $level) = shift());
 join("", chr(9) x $level)
     };
+    ((our  %op_prefix_js_str) = (('prefix:<-A>' => 'p5atime'), ('prefix:<-M>' => 'p5mtime'), ('prefix:<-C>' => 'p5ctime'), ('prefix:<-s>' => 'p5size'), ('prefix:<-f>' => 'p5is_file'), ('prefix:<-d>' => 'p5is_directory')));
     ((our  %op_infix_js_str) = (('infix:<eq>' => ' == '), ('infix:<ne>' => ' != '), ('infix:<le>' => ' <= '), ('infix:<ge>' => ' >= ')));
     ((our  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<%>' => ' % '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<>>>' => ' >>> '), ('infix:<<<>' => ' << ')));
     ((our  %op_to_bool) = map(+((($_ => 1))), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>')));
@@ -662,6 +663,9 @@ for ($_) {
         };
         if (exists($Perlito5::Javascript::op_infix_js_num{$code})) {
             return (('(' . join($Perlito5::Javascript::op_infix_js_num{$code}, map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')'))
+        };
+        if (exists($Perlito5::Javascript::op_prefix_js_str{$code})) {
+            return (($Perlito5::Javascript::op_prefix_js_str{$code} . '(' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ')'))
         };
         if (($code eq 'infix:<cmp>')) {
             return (('p5cmp(' . join(', ', map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')'))

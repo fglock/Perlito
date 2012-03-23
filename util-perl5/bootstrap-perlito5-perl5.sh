@@ -30,6 +30,7 @@ perl perlito5.pl -Cperl5 src5/lib/Perlito5/Precedence.pm      > lib5-new/Perlito
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Javascript/Emitter.pm > lib5-new/Perlito5/Javascript/Emitter.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Javascript/Runtime.pm > lib5-new/Perlito5/Javascript/Runtime.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Javascript/CORE.pm    > lib5-new/Perlito5/Javascript/CORE.pm
+perl perlito5.pl -Cperl5 src5/lib/Perlito5/Javascript/IO.pm      > lib5-new/Perlito5/Javascript/IO.pm
 
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Perl5/Emitter.pm   > lib5-new/Perlito5/Perl5/Emitter.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Perl6/Emitter.pm   > lib5-new/Perlito5/Perl6/Emitter.pm
