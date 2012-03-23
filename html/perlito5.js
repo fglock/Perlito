@@ -7893,6 +7893,9 @@ var p5100 = NAMESPACE['main'];
 		NAMESPACE["Perlito5::Precedence"].add_term(interpolate_array('use', function (List__, p5want) {
 		return (p5context([_call_(NAMESPACE["Perlito5::Grammar::Use"], "term_use", interpolate_array(List__[0], List__[1]), p5want)], p5want));
 }), null);
+		var v_perl5lib = null;
+		(v_perl5lib = ('./src5/lib'));
+		var Hash_module_seen = {};
 		make_sub("Perlito5::Grammar::Use", "use_decl", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
@@ -8062,6 +8065,92 @@ var p5100 = NAMESPACE['main'];
 				else {
 					null;
 				}
+		});
+		make_sub("Perlito5::Grammar::Use", "modulename_to_filename", function (List__, p5want) {
+			try {
+				var v_s = null;
+				(v_s = (p5130.shift([List__])));
+				throw(p5context([NAMESPACE["Perlito5::Runtime"]._replace(interpolate_array(v_s, '::', '/'), p5want)], p5want))
+			}
+			catch(err) {
+				if ( err instanceof Error ) {
+					throw(err);
+				}
+				else {
+					return(err);
+				}
+			}
+		});
+		make_sub("Perlito5::Grammar::Use", "expand_use", function (List__, p5want) {
+			try {
+				var v_comp_units = null;
+				(v_comp_units = (p5130.shift([List__])));
+				var v_stmt = null;
+				(v_stmt = (p5130.shift([List__])));
+				var v_module_name = null;
+				(v_module_name = (_call_(v_stmt, "mod", [], 0)));
+				if ( (((p5str(v_module_name) == 'v5') || (p5str(v_module_name) == 'strict')) || (p5str(v_module_name) == 'feature')) ) {
+					throw(p5context([], p5want));
+				};
+				if ( !( bool(Hash_module_seen[v_module_name])) ) {
+					(Hash_module_seen[v_module_name] = 1);
+					var v_filename = null;
+					(v_filename = (v_module_name));
+					(v_filename = ((p5str(v_perl5lib) + '/' + p5str(p5130.modulename_to_filename(interpolate_array(v_filename), 0)) + '.pm')));
+					var v_source = null;
+					(v_source = (NAMESPACE["Perlito5::IO"].slurp(interpolate_array(v_filename), 0)));
+					var v_m = null;
+					(v_m = (_call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", interpolate_array(v_source, 0), 0)));
+					if ( (num((v_m || (v_m = new HashRef({})))._hash_['to']) != num(p5130.length([v_source], 0))) ) {
+						p5130.die([interpolate_array('Syntax Error near ', (v_m || (v_m = new HashRef({})))._hash_['to'])], null);
+					};
+					return (p5context([p5130.push([(v_comp_units || (v_comp_units = new ArrayRef([])))._array_, interpolate_array((p5130.add_comp_unit(interpolate_array((new ArrayRef(interpolate_array(_call_(NAMESPACE["Perlito5::AST::CompUnit"], "new", interpolate_array('name', 'main', 'body', _call_(v_m, "flat", [], 1)), 1))))), p5want) || (p5130.add_comp_unit(interpolate_array((new ArrayRef(interpolate_array(_call_(NAMESPACE["Perlito5::AST::CompUnit"], "new", interpolate_array('name', 'main', 'body', _call_(v_m, "flat", [], 1)), 1))))), p5want) = new ArrayRef([])))._array_)], p5want)], p5want));
+				}
+				
+				else {
+					null;
+				}
+			}
+			catch(err) {
+				if ( err instanceof Error ) {
+					throw(err);
+				}
+				else {
+					return(err);
+				}
+			}
+		});
+		make_sub("Perlito5::Grammar::Use", "add_comp_unit", function (List__, p5want) {
+			try {
+				var v_parse = null;
+				(v_parse = (p5130.shift([List__])));
+				var v_comp_units = null;
+				(v_comp_units = ((new ArrayRef([]))));
+				p5for_lex(function (v_comp_unit) {
+					if ( bool(_call_(v_comp_unit, "isa", interpolate_array('Perlito5::AST::Use'), 0)) ) {
+						p5130.expand_use(interpolate_array(v_comp_units, v_comp_unit), null);
+					}
+					else {
+						if ( bool(_call_(v_comp_unit, "isa", interpolate_array('Perlito5::AST::CompUnit'), 0)) ) {
+							p5for_lex(function (v_stmt) {
+								if ( bool(_call_(v_stmt, "isa", interpolate_array('Perlito5::AST::Use'), 0)) ) {
+									p5130.expand_use(interpolate_array(v_comp_units, v_stmt), null);
+								};
+							}, interpolate_array((_call_(v_comp_unit, "body", [], p5want) || (_call_(v_comp_unit, "body", [], p5want) = new ArrayRef([])))._array_));
+						};
+					};
+					p5130.push([(v_comp_units || (v_comp_units = new ArrayRef([])))._array_, interpolate_array(v_comp_unit)], null);
+				}, interpolate_array((v_parse || (v_parse = new ArrayRef([])))._array_));
+				throw(p5context([v_comp_units], p5want))
+			}
+			catch(err) {
+				if ( err instanceof Error ) {
+					throw(err);
+				}
+				else {
+					return(err);
+				}
+			}
 		});
 		1;
 	})()

@@ -24,82 +24,11 @@ my $source      = '';
 my $backend     = '';
 my $execute     = 0;
 my $verbose     = 0;
-my $comp_units  = [];
-my $perl5lib    = './src5/lib';
 my $expand_use  = 1;
 
 if ($verbose) {
     warn "// Perlito5 compiler";
     warn "// ARGV: @ARGV";
-}
-
-my %module_seen;
-
-sub modulename_to_filename {
-    my $s = shift;
-    return Perlito5::Runtime::_replace( $s, '::', '/' );
-}
-
-sub expand_use {
-    my $stmt = shift;
-    my $module_name = $stmt->mod;
-    return
-        if $module_name eq 'v5'
-        || $module_name eq 'strict'
-        || $module_name eq 'feature';
-    if (!($module_seen{$module_name})) {
-        $module_seen{$module_name} = 1;
-        # say "  now use: ", $module_name;
-        if ($backend eq 'perl5' || $backend eq 'ast-perl5') {
-            # skip 'use' statements for this backend
-        }
-        else {
-            # TODO - look for a precompiled version
-            # build the filename
-            my $filename = $module_name;
-            $filename = $perl5lib . '/' . modulename_to_filename($filename) . '.pm';
-            if ( $verbose ) {
-                warn "// now loading: ", $filename;
-            }
-            # load source
-            my $source = Perlito5::IO::slurp( $filename );
-
-            # compile; push AST into comp_units
-            # warn $source;
-            my $m = Perlito5::Grammar->exp_stmts($source, 0);
-            die "Syntax Error near ", $m->{"to"}
-                if $m->{"to"} != length($source);
-            add_comp_unit(
-                [
-                    Perlito5::AST::CompUnit->new(
-                        name => 'main',
-                        body => $m->flat(),
-                    )
-                ]
-            );
-        }
-    }
-}
-
-sub add_comp_unit {
-    my $parse = shift;
-    for my $comp_unit (@$parse) {
-        if ($expand_use && $comp_unit->isa('Perlito5::AST::Use')) {
-            expand_use($comp_unit);
-        }
-        elsif ($comp_unit->isa('Perlito5::AST::CompUnit')) {
-            if ($verbose) {
-                warn "parsed comp_unit: '", $comp_unit->name, "'";
-            }
-            for my $stmt (@{ $comp_unit->body }) {
-                if ($expand_use && $stmt->isa('Perlito5::AST::Use')) {
-                    expand_use($stmt);
-                }
-            }
-        }
-        push @$comp_units, $comp_unit;
-        # say "comp_unit done";
-    }
 }
 
     if (($ARGV[0] eq '-v') || ($ARGV[0] eq '--verbose')) {
@@ -213,7 +142,13 @@ perlito5 [switches] [programfile]
                 warn $error;
             }
             else {
-                add_comp_unit($m->flat());
+                my $comp_units;
+                if ($expand_use) {
+                    $comp_units = Perlito5::Grammar::Use::add_comp_unit($m->flat())
+                }
+                else {
+                    $comp_units = $m->flat();
+                }
 
                 $comp_units = [
                         Perlito5::AST::CompUnit->new(
