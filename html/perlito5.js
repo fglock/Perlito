@@ -3001,12 +3001,9 @@ var p5100 = NAMESPACE['main'];
 		p5125.add_op(interpolate_array('postfix', 'methcall_no_params', v_prec), null);
 		p5125.add_op(interpolate_array('postfix', 'block', v_prec), null);
 		p5125.add_op(interpolate_array('postfix', 'hash', v_prec), null);
-		p5125.add_op(interpolate_array('prefix', '$', v_prec), null);
-		p5125.add_op(interpolate_array('prefix', '$#', v_prec), null);
-		p5125.add_op(interpolate_array('prefix', '&', v_prec), null);
-		p5125.add_op(interpolate_array('prefix', '*', v_prec), null);
-		p5125.add_op(interpolate_array('prefix', '@', v_prec), null);
-		p5125.add_op(interpolate_array('prefix', '%', v_prec), null);
+		p5for(p5125, function () {
+			p5125.add_op(interpolate_array('prefix', NAMESPACE["Perlito5::Precedence"]["v__"], v_prec), null);
+		}, interpolate_array('$', '$#', '&', '*', '@', '%', '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C'));
 		(v_prec = ((num(v_prec) - 1)));
 		p5125.add_op(interpolate_array('prefix', '++', v_prec), null);
 		p5125.add_op(interpolate_array('prefix', '--', v_prec), null);

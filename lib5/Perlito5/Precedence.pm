@@ -201,12 +201,9 @@ add_op('postfix', 'methcall', $prec);
 add_op('postfix', 'methcall_no_params', $prec);
 add_op('postfix', 'block', $prec);
 add_op('postfix', 'hash', $prec);
-add_op('prefix', '$', $prec);
-add_op('prefix', '$#', $prec);
-add_op('prefix', '&', $prec);
-add_op('prefix', '*', $prec);
-add_op('prefix', '@', $prec);
-add_op('prefix', '%', $prec);
+for (('$', '$#', '&', '*', '@', '%', '-r', '-w', '-x', '-o', '-R', '-W', '-X', '-O', '-e', '-z', '-s', '-f', '-d', '-l', '-p', '-S', '-b', '-c', '-t', '-u', '-g', '-k', '-T', '-B', '-M', '-A', '-C')) {
+    add_op('prefix', $_, $prec)
+};
 ($prec = ($prec - 1));
 add_op('prefix', '++', $prec);
 add_op('prefix', '--', $prec);

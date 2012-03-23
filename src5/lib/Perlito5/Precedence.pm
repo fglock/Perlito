@@ -248,12 +248,18 @@ add_op( 'postfix', 'methcall',           $prec, );
 add_op( 'postfix', 'methcall_no_params', $prec, );
 add_op( 'postfix', 'block',              $prec, );
 add_op( 'postfix', 'hash',               $prec, );
-add_op( 'prefix',   '$',   $prec );
-add_op( 'prefix',   '$#',  $prec );
-add_op( 'prefix',   '&',   $prec );
-add_op( 'prefix',   '*',   $prec );
-add_op( 'prefix',   '@',   $prec );
-add_op( 'prefix',   '%',   $prec );
+
+add_op( 'prefix', $_, $prec)
+    for qw(
+        $  $#  &  *  @  %
+        -r -w -x -o
+        -R -W -X -O
+        -e -z -s
+        -f -d -l -p -S -b -c -t
+        -u -g -k
+        -T -B
+        -M -A -C
+    );
 
 $prec = $prec - 1;
 add_op( 'prefix',   '++',  $prec );
@@ -370,6 +376,7 @@ add_op( 'infix',    'or',  $prec );
 add_op( 'infix',    'xor', $prec );
 $prec = $prec - 1;
 add_op( 'infix',    '*start*', $prec );
+
 
 sub precedence_parse {
     my $self = shift;
