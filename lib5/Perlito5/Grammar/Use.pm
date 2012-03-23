@@ -108,7 +108,7 @@ sub Perlito5::Grammar::Use::term_use {
     ((my  $ast) = Perlito5::AST::Use->new(('code' => $MATCH->{'use_decl'}->flat()), ('mod' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat())));
     parse_time_eval($ast);
     ($MATCH->{'capture'} = ['term', $ast]);
-0;
+;
     1
 })))
 }))

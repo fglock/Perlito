@@ -1103,31 +1103,6 @@ var p5100 = NAMESPACE['main'];
 		make_sub("Perlito5::AST::Use", "code", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['code']], p5want));
 		});
-		make_sub("Perlito5::AST::Use", "compiletime_eval", function (List__, p5want) {
-			try {
-				var v_self = null;
-				(v_self = (p5121.shift([List__])));
-				if ( (p5str(_call_(v_self, "mod", [], 0)) == 'strict') ) {
-					if ( (p5str(_call_(v_self, "code", [], 0)) == 'use') ) {
-						_call_(NAMESPACE["Perlito5::strict"], "import", [], null);
-					}
-					else {
-						if ( (p5str(_call_(v_self, "code", [], 0)) == 'no') ) {
-							_call_(NAMESPACE["Perlito5::strict"], "unimport", [], null);
-						};
-					};
-				};
-				throw(p5context([v_self], p5want))
-			}
-			catch(err) {
-				if ( err instanceof Error ) {
-					throw(err);
-				}
-				else {
-					return(err);
-				}
-			}
-		});
 	})()
 ;
 	(function () {
@@ -2756,7 +2731,7 @@ var p5100 = NAMESPACE['main'];
 					(v_self = (p5121.shift([List__])));
 					var v_level = null;
 					(v_level = (p5121.shift([List__])));
-					_call_(v_self, "compiletime_eval", [], null);
+					NAMESPACE["Perlito5::Grammar::Use"].emit_time_eval(interpolate_array(v_self), null);
 					return (p5context([('// ' + p5str((v_self || (v_self = new HashRef({})))._hash_['code']) + ' ' + p5str((v_self || (v_self = new HashRef({})))._hash_['mod']) + String.fromCharCode(10))], p5want));
 			});
 		};
@@ -8032,12 +8007,61 @@ var p5100 = NAMESPACE['main'];
 		return (p5context([0], p5want));
 	}
 })()], p5want) }), function () { return p5context([(function () {
-	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['capture'] = (new ArrayRef(interpolate_array('term', _call_(_call_(NAMESPACE["Perlito5::AST::Use"], "new", interpolate_array('code', _call_((v_MATCH || (v_MATCH = new HashRef({})))._hash_['use_decl'], "flat", [], 1), 'mod', _call_((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.full_ident'], "flat", [], 1)), p5want), "compiletime_eval", [], 1)))));
+	var v_ast = null;
+	(v_ast = (_call_(NAMESPACE["Perlito5::AST::Use"], "new", interpolate_array('code', _call_((v_MATCH || (v_MATCH = new HashRef({})))._hash_['use_decl'], "flat", [], 1), 'mod', _call_((v_MATCH || (v_MATCH = new HashRef({})))._hash_['Perlito5::Grammar.full_ident'], "flat", [], 1)), 0)));
+	p5130.parse_time_eval(interpolate_array(v_ast), null);
+	((v_MATCH || (v_MATCH = new HashRef({})))._hash_['capture'] = (new ArrayRef(interpolate_array('term', v_ast))));
 	return (p5context([1], p5want));
 })()], p5want) })], p5want));
 })()], p5want)], p5want));
 })()], 0)], 0)));
 				return (p5context([( bool(v_tmp) ? v_MATCH : 0)], p5want));
+		});
+		make_sub("Perlito5::Grammar::Use", "parse_time_eval", function (List__, p5want) {
+				var v_self = null;
+				(v_self = (p5130.shift([List__])));
+				if ( (p5str(_call_(v_self, "mod", [], 0)) == 'strict') ) {
+					if ( (p5str(_call_(v_self, "code", [], 0)) == 'use') ) {
+						return (p5context([_call_(NAMESPACE["Perlito5::strict"], "import", [], p5want)], p5want));
+					}
+					
+					else {
+						if ( (p5str(_call_(v_self, "code", [], 0)) == 'no') ) {
+							return (p5context([_call_(NAMESPACE["Perlito5::strict"], "unimport", [], p5want)], p5want));
+						}
+						
+						else {
+							null;
+						}
+					}
+				}
+				
+				else {
+					null;
+				}
+		});
+		make_sub("Perlito5::Grammar::Use", "emit_time_eval", function (List__, p5want) {
+				var v_self = null;
+				(v_self = (p5130.shift([List__])));
+				if ( (p5str(_call_(v_self, "mod", [], 0)) == 'strict') ) {
+					if ( (p5str(_call_(v_self, "code", [], 0)) == 'use') ) {
+						return (p5context([_call_(NAMESPACE["Perlito5::strict"], "import", [], p5want)], p5want));
+					}
+					
+					else {
+						if ( (p5str(_call_(v_self, "code", [], 0)) == 'no') ) {
+							return (p5context([_call_(NAMESPACE["Perlito5::strict"], "unimport", [], p5want)], p5want));
+						}
+						
+						else {
+							null;
+						}
+					}
+				}
+				
+				else {
+					null;
+				}
 		});
 		1;
 	})()
