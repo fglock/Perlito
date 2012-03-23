@@ -26,9 +26,25 @@ sub emit_javascript {
 var isNode = typeof require != "undefined";
 if (isNode) {
 
+    var fs = require("fs");
+
     p5atime = function(List__) {
-        var stat = fs.statSync(p5str(List__[0]));
-        return stat["atime"];
+        var stat = fs.statSync(p5str(List__[0])); return stat["atime"];
+    }
+    p5mtime = function(List__) {
+        var stat = fs.statSync(p5str(List__[0])); return stat["mtime"];
+    }
+    p5ctime = function(List__) {
+        var stat = fs.statSync(p5str(List__[0])); return stat["ctime"];
+    }
+    p5size = function(List__) {
+        var stat = fs.statSync(p5str(List__[0])); return stat["size"];
+    }
+    p5is_file = function(List__) {
+        var stat = fs.statSync(p5str(List__[0])); return stat.isFile();
+    }
+    p5is_directory = function(List__) {
+        var stat = fs.statSync(p5str(List__[0])); return stat.isDirectory();
     }
 
 }
