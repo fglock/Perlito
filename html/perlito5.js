@@ -475,28 +475,15 @@ if (isNode) {
     CORE.print = function(List__) {
         var i;
         for (i = 0; i < List__.length; i++) {
-            var s = p5str(List__[i]);
-            process.stdout.write(s);
+            process.stdout.write(p5str(List__[i]));
         }
         return 1;
     }
 } else {
-    var _print_buf = "";
     CORE.print = function(List__) {
         var i;
         for (i = 0; i < List__.length; i++) {
-            var s = p5str(List__[i]);
-            if (s.substr(s.length - 2, 2) == "\n") {
-                print(_print_buf + s.substr(0, s.length - 2));
-                _print_buf = "";
-            }
-            else if (s.substr(s.length - 1, 1) == "\n") {
-                print(_print_buf + s.substr(0, s.length - 1));
-                _print_buf = "";
-            }
-            else {
-                _print_buf = _print_buf + s;
-            }
+            write(p5str(List__[i]));
         }
         return 1;
     };
