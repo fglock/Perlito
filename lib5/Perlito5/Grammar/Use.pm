@@ -119,13 +119,20 @@ sub Perlito5::Grammar::Use::term_use {
 };
 sub Perlito5::Grammar::Use::parse_time_eval {
     ((my  $self) = shift());
-    if (($self->mod() eq 'strict')) {
-        if (($self->code() eq 'use')) {
-            Perlito5::strict->import()
-        }
-        else {
-            if (($self->code() eq 'no')) {
-                Perlito5::strict->unimport()
+    ((my  $module_name) = $self->mod());
+    ((my  $use_or_not) = $self->code());
+    if ((($module_name eq 'v5') || ($module_name eq 'feature'))) {
+
+    }
+    else {
+        if (($module_name eq 'strict')) {
+            if (($use_or_not eq 'use')) {
+                Perlito5::strict->import()
+            }
+            else {
+                if (($use_or_not eq 'no')) {
+                    Perlito5::strict->unimport()
+                }
             }
         }
     }

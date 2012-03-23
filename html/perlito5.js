@@ -8023,24 +8023,34 @@ var p5100 = NAMESPACE['main'];
 		make_sub("Perlito5::Grammar::Use", "parse_time_eval", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (p5130.shift([List__])));
-				if ( (p5str(_call_(v_self, "mod", [], 0)) == 'strict') ) {
-					if ( (p5str(_call_(v_self, "code", [], 0)) == 'use') ) {
-						return (p5context([_call_(NAMESPACE["Perlito5::strict"], "import", [], p5want)], p5want));
-					}
-					
-					else {
-						if ( (p5str(_call_(v_self, "code", [], 0)) == 'no') ) {
-							return (p5context([_call_(NAMESPACE["Perlito5::strict"], "unimport", [], p5want)], p5want));
-						}
-						
-						else {
-							null;
-						}
-					}
+				var v_module_name = null;
+				(v_module_name = (_call_(v_self, "mod", [], 0)));
+				var v_use_or_not = null;
+				(v_use_or_not = (_call_(v_self, "code", [], 0)));
+				if ( ((p5str(v_module_name) == 'v5') || (p5str(v_module_name) == 'feature')) ) {
+					null;
 				}
 				
 				else {
-					null;
+					if ( (p5str(v_module_name) == 'strict') ) {
+						if ( (p5str(v_use_or_not) == 'use') ) {
+							return (p5context([_call_(NAMESPACE["Perlito5::strict"], "import", [], p5want)], p5want));
+						}
+						
+						else {
+							if ( (p5str(v_use_or_not) == 'no') ) {
+								return (p5context([_call_(NAMESPACE["Perlito5::strict"], "unimport", [], p5want)], p5want));
+							}
+							
+							else {
+								null;
+							}
+						}
+					}
+					
+					else {
+						null;
+					}
 				}
 		});
 		make_sub("Perlito5::Grammar::Use", "emit_time_eval", function (List__, p5want) {

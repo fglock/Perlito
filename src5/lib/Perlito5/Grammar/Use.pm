@@ -30,18 +30,39 @@ token term_use {
 
 sub parse_time_eval {
     my $self = shift;
-    if ($self->mod eq 'strict') {
-        if ($self->code eq 'use') {
+
+    my $module_name = $self->mod;
+    my $use_or_not  = $self->code;
+
+    if (  $module_name eq 'v5' 
+       || $module_name eq 'feature'
+       )
+    {
+        # not implemented
+    }
+    elsif ($module_name eq 'strict') {
+        if ($use_or_not eq 'use') {
             Perlito5::strict->import();
         }
-        elsif ($self->code eq 'no') {
+        elsif ($use_or_not eq 'no') {
             Perlito5::strict->unimport();
         }
+    }
+    else {
+        # require
+
+        # TODO
+
+        # call import/unimport
+
+        # TODO
+
     }
 }
 
 sub emit_time_eval {
     my $self = shift;
+
     if ($self->mod eq 'strict') {
         if ($self->code eq 'use') {
             Perlito5::strict->import();
