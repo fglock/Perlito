@@ -91,16 +91,12 @@ sub Perlito5::Precedence::is_ident_middle {
     Perlito5::Expression->term_space($_[0], $_[1])
 }), ('my' => sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
-}), ('no' => sub {
-    Perlito5::Expression->term_use($_[0], $_[1])
 }), ('do' => sub {
     Perlito5::Expression->term_do($_[0], $_[1])
 }), ('our' => sub {
     Perlito5::Expression->term_declarator($_[0], $_[1])
 }), ('sub' => sub {
     Perlito5::Expression->term_sub($_[0], $_[1])
-}), ('use' => sub {
-    Perlito5::Expression->term_use($_[0], $_[1])
 }), ('map' => sub {
     Perlito5::Expression->term_map_or_sort($_[0], $_[1])
 }), ('eval' => sub {

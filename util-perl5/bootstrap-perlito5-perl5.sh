@@ -23,6 +23,7 @@ perl perlito5.pl -Cperl5 src5/lib/Perlito5/Grammar/Control.pm > lib5-new/Perlito
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Grammar/Regex.pm   > lib5-new/Perlito5/Grammar/Regex.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Grammar/String.pm  > lib5-new/Perlito5/Grammar/String.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Grammar/Bareword.pm  > lib5-new/Perlito5/Grammar/Bareword.pm
+perl perlito5.pl -Cperl5 src5/lib/Perlito5/Grammar/Use.pm  > lib5-new/Perlito5/Grammar/Use.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Macro.pm           > lib5-new/Perlito5/Macro.pm
 perl perlito5.pl -Cperl5 src5/lib/Perlito5/Precedence.pm      > lib5-new/Perlito5/Precedence.pm
 

@@ -10,6 +10,7 @@ package Perlito5::Grammar;
 use Perlito5::Expression;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::String;
+use Perlito5::Grammar::Use;
 sub Perlito5::Grammar::word {
     ((substr($_[1], $_[2], 1) =~ m!\w!) ? bless({('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))}, 'Perlito5::Match') : 0)
 };

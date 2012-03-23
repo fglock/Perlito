@@ -4,6 +4,7 @@ use Perlito5::Expression;
 # use Perlito5::Grammar::Regex;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::String;
+use Perlito5::Grammar::Use;
 
 sub word {
     substr( $_[1], $_[2], 1 ) =~ m/\w/
