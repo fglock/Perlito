@@ -138,8 +138,10 @@ NAMESPACE["main"]["v_^O"] = isNode ? "node.js" : "javascript";
 NAMESPACE["main"]["List_INC"] = [];
 NAMESPACE["main"]["Hash_INC"] = {};
 NAMESPACE["main"]["List_ARGV"] = [];
+NAMESPACE["main"]["Hash_ENV"] = {};
 if (isNode) {
     NAMESPACE["main"]["List_ARGV"] = process.argv.splice(2);
+    NAMESPACE["main"]["Hash_ENV"]  = process.env;
 } else if (typeof arguments === "object") {
     NAMESPACE["main"]["List_ARGV"] = arguments;
 }

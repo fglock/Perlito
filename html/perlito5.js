@@ -133,8 +133,10 @@ NAMESPACE["main"]["v_^O"] = isNode ? "node.js" : "javascript";
 NAMESPACE["main"]["List_INC"] = [];
 NAMESPACE["main"]["Hash_INC"] = {};
 NAMESPACE["main"]["List_ARGV"] = [];
+NAMESPACE["main"]["Hash_ENV"] = {};
 if (isNode) {
     NAMESPACE["main"]["List_ARGV"] = process.argv.splice(2);
+    NAMESPACE["main"]["Hash_ENV"]  = process.env;
 } else if (typeof arguments === "object") {
     NAMESPACE["main"]["List_ARGV"] = arguments;
 }
@@ -1643,7 +1645,7 @@ var p5100 = NAMESPACE['main'];
 					(NAMESPACE["Perlito5"]["v_PKG_NAME"] = ('main'));
 					var v_str = null;
 					(v_str = (('' + 'var p5want = null;' + String.fromCharCode(10) + 'var ' + p5str(NAMESPACE["Perlito5::Javascript"].pkg([], 0)) + ' = NAMESPACE[' + String.fromCharCode(39) + p5str(NAMESPACE["Perlito5"]["v_PKG_NAME"]) + String.fromCharCode(39) + '];' + String.fromCharCode(10))));
-					(NAMESPACE["Perlito5"]["v_VAR"] = ((new ArrayRef(interpolate_array((new HashRef(array_to_hash(interpolate_array('@_', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '@ARGV', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$@', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '@#', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$^O', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '@INC', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '%INC', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$_', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"]["v_PKG_NAME"])))), '$a', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"]["v_PKG_NAME"])))), '$b', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"]["v_PKG_NAME"])))))))))))));
+					(NAMESPACE["Perlito5"]["v_VAR"] = ((new ArrayRef(interpolate_array((new HashRef(array_to_hash(interpolate_array('@_', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '$@', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$^O', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '%ENV', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '%INC', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '@#', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '@ARGV', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '@INC', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$_', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"]["v_PKG_NAME"])))), '$a', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"]["v_PKG_NAME"])))), '$b', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', NAMESPACE["Perlito5"]["v_PKG_NAME"])))))))))))));
 					p5for_lex(function (v_comp_unit) {
 						(v_str = ((p5str(v_str) + p5str(_call_(v_comp_unit, "emit_javascript", [], 0)) + String.fromCharCode(10))));
 					}, interpolate_array((v_comp_units || (v_comp_units = new ArrayRef([])))._array_));
