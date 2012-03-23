@@ -1037,7 +1037,7 @@ for ($_) {
     sub Perlito5::AST::Use::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
-        $self->compiletime_eval();
+        Perlito5::Grammar::Use::emit_time_eval($self);
         ('// ' . $self->{'code'} . ' ' . $self->{'mod'} . chr(10))
     }
 };

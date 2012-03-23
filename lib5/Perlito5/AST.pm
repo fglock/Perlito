@@ -229,19 +229,5 @@ sub Perlito5::AST::Use::mod {
 sub Perlito5::AST::Use::code {
     $_[0]->{'code'}
 };
-sub Perlito5::AST::Use::compiletime_eval {
-    ((my  $self) = shift());
-    if (($self->mod() eq 'strict')) {
-        if (($self->code() eq 'use')) {
-            Perlito5::strict->import()
-        }
-        else {
-            if (($self->code() eq 'no')) {
-                Perlito5::strict->unimport()
-            }
-        }
-    };
-    return ($self)
-};
 
 1;

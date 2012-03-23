@@ -14,14 +14,40 @@ token term_use {
     <use_decl> <.Perlito5::Grammar.ws>
         <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Expression.list_parse>
         {
-            $MATCH->{"capture"} = [ 'term',
-                Perlito5::AST::Use->new(
+            my $ast = Perlito5::AST::Use->new(
                     code => $MATCH->{"use_decl"}->flat(),
                     mod  => $MATCH->{"Perlito5::Grammar.full_ident"}->flat()
-                )->compiletime_eval
-              ]
+                );
+
+            parse_time_eval($ast);
+
+            $MATCH->{"capture"} = [ 'term', $ast ];
         }
 };
+
+sub parse_time_eval {
+    my $self = shift;
+    if ($self->mod eq 'strict') {
+        if ($self->code eq 'use') {
+            Perlito5::strict->import();
+        }
+        elsif ($self->code eq 'no') {
+            Perlito5::strict->unimport();
+        }
+    }
+}
+
+sub emit_time_eval {
+    my $self = shift;
+    if ($self->mod eq 'strict') {
+        if ($self->code eq 'use') {
+            Perlito5::strict->import();
+        }
+        elsif ($self->code eq 'no') {
+            Perlito5::strict->unimport();
+        }
+    }
+}
 
 
 1;
@@ -34,7 +60,7 @@ Perlito5::Grammar::Use - Parser and AST generator for Perlito
 
 =head1 SYNOPSIS
 
-    term_bareword($str)
+    term_use($str)
 
 =head1 DESCRIPTION
 
