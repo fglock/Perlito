@@ -37,6 +37,11 @@ if (((($ARGV[0] eq '-v')) || (($ARGV[0] eq '--verbose')))) {
     ($verbose = 1);
     shift(@ARGV)
 };
+for ( ; (substr($ARGV[0], 0, 2) eq '-I');  ) {
+    ($lib = substr($ARGV[0], 2, 10));
+    unshift(@INC, $lib);
+    shift(@ARGV)
+};
 if ((substr($ARGV[0], 0, 2) eq '-C')) {
     ($backend = substr($ARGV[0], 2, 10));
     ($execute = 0);
@@ -61,7 +66,7 @@ if (((($ARGV[0] eq '-V')) || (($ARGV[0] eq '--version')))) {
 else {
     if ((((($ARGV[0] eq '-h')) || (($ARGV[0] eq '--help'))) || (($backend eq '')))) {
         ($backend = '');
-        Perlito5::Runtime::say($_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION, chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6' . chr(10) . '    -Btarget        execute using the backend: js' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10));
+        Perlito5::Runtime::say($_V5_COMPILER_NAME, ' ', $_V5_COMPILER_VERSION, (chr(10) . 'perlito5 [switches] [programfile]' . chr(10) . '  switches:' . chr(10) . '    -h --help' . chr(10) . '    -v --verbose' . chr(10) . '    -V --version' . chr(10) . '    -Idirectory     specify ' . join(' ', @INC) . '/include directory (several -I' . chr(39) . 's allowed)' . chr(10) . '    -Ctarget        target backend: js, perl5, perl6' . chr(10) . '    -Btarget        execute using the backend: js' . chr(10) . '    --expand_use --noexpand_use' . chr(10) . '                    expand ' . chr(39) . 'use' . chr(39) . ' statements at compile time' . chr(10) . '    -e program      one line of program (omit programfile)' . chr(10)));
         shift(@ARGV)
     }
 };

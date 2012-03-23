@@ -31,168 +31,174 @@ if ($verbose) {
     warn "// ARGV: @ARGV";
 }
 
-    if (($ARGV[0] eq '-v') || ($ARGV[0] eq '--verbose')) {
-        $verbose = 1;
-        shift @ARGV;
+if (($ARGV[0] eq '-v') || ($ARGV[0] eq '--verbose')) {
+    $verbose = 1;
+    shift @ARGV;
+}
+while (substr($ARGV[0], 0, 2) eq '-I') {
+    $lib = substr($ARGV[0], 2, 10);
+    unshift @INC, $lib;
+    shift @ARGV;
+}
+if (substr($ARGV[0], 0, 2) eq '-C') {
+    $backend = substr($ARGV[0], 2, 10);
+    $execute = 0;
+    shift @ARGV;
+    if (  $backend eq 'perl5' 
+       || $backend eq 'python' 
+       || $backend eq 'ruby'
+       || $backend eq 'perl6'
+       )
+    {
+        $expand_use = 0;
     }
-    if (substr($ARGV[0], 0, 2) eq '-C') {
-        $backend = substr($ARGV[0], 2, 10);
-        $execute = 0;
-        shift @ARGV;
-        if (  $backend eq 'perl5' 
-           || $backend eq 'python' 
-           || $backend eq 'ruby'
-           || $backend eq 'perl6'
-           )
-        {
-            $expand_use = 0;
-        }
+}
+if (substr($ARGV[0], 0, 2) eq '-B') {
+    $backend = substr($ARGV[0], 2, 10);
+    $execute = 1;
+    shift @ARGV;
+    if (  $backend eq 'perl5'
+       || $backend eq 'python'
+       || $backend eq 'ruby'
+       || $backend eq 'js'
+       )
+    {
+        $expand_use = 0;
     }
-    if (substr($ARGV[0], 0, 2) eq '-B') {
-        $backend = substr($ARGV[0], 2, 10);
-        $execute = 1;
-        shift @ARGV;
-        if (  $backend eq 'perl5'
-           || $backend eq 'python'
-           || $backend eq 'ruby'
-           || $backend eq 'js'
-           )
-        {
-            $expand_use = 0;
-        }
-    }
-    if (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
-        $backend = '';
-        say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
-        shift @ARGV;
-    }
-    elsif (($ARGV[0] eq '-h') || ($ARGV[0] eq '--help') || ($backend eq '')) {
-        $backend = '';
-        say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION, "
+}
+if (($ARGV[0] eq '-V') || ($ARGV[0] eq '--version')) {
+    $backend = '';
+    say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
+    shift @ARGV;
+}
+elsif (($ARGV[0] eq '-h') || ($ARGV[0] eq '--help') || ($backend eq '')) {
+    $backend = '';
+    say $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION, "
 perlito5 [switches] [programfile]
   switches:
     -h --help
     -v --verbose
     -V --version
+    -Idirectory     specify \@INC/include directory (several -I's allowed)
     -Ctarget        target backend: js, perl5, perl6
     -Btarget        execute using the backend: js
     --expand_use --noexpand_use
                     expand 'use' statements at compile time
     -e program      one line of program (omit programfile)
 ";
+    shift @ARGV;
+}
+if ($ARGV[0] eq '--expand_use') {
+    $expand_use = 1;
+    shift @ARGV;
+}
+if ($ARGV[0] eq '--noexpand_use') {
+    $expand_use = 0;
+    shift @ARGV;
+}
+if ($backend && @ARGV) {
+    if ($ARGV[0] eq '-e') {
         shift @ARGV;
-    }
-    if ($ARGV[0] eq '--expand_use') {
-        $expand_use = 1;
-        shift @ARGV;
-    }
-    if ($ARGV[0] eq '--noexpand_use') {
-        $expand_use = 0;
-        shift @ARGV;
-    }
-    if ($backend && @ARGV) {
-        if ($ARGV[0] eq '-e') {
-            shift @ARGV;
-            if ($verbose) {
-                warn "// source from command line: ", $ARGV[0];
-            }
-            $source = shift @ARGV;
-        }
-        else {
-            if ($verbose) {
-                warn "// source from file: ", $ARGV[0];
-            }
-            $source = Perlito5::IO::slurp( shift @ARGV );
-        }
-
         if ($verbose) {
-            warn "// backend: ", $backend;
-            warn "now parsing";
+            warn "// source from command line: ", $ARGV[0];
         }
+        $source = shift @ARGV;
+    }
+    else {
+        if ($verbose) {
+            warn "// source from file: ", $ARGV[0];
+        }
+        $source = Perlito5::IO::slurp( shift @ARGV );
+    }
 
-        $Perlito5::PKG_NAME = 'main';
-        $Perlito5::PROTO    = {};
+    if ($verbose) {
+        warn "// backend: ", $backend;
+        warn "now parsing";
+    }
 
-        if ( $execute ) { 
-            my $ok;
-            eval "package main; no strict; $source ; \$ok = 1";
-            if ( !$ok ) {
-                my $error = $@
-                    || "Unknown error";
-                warn $error;
-            }
+    $Perlito5::PKG_NAME = 'main';
+    $Perlito5::PROTO    = {};
+
+    if ( $execute ) { 
+        my $ok;
+        eval "package main; no strict; $source ; \$ok = 1";
+        if ( !$ok ) {
+            my $error = $@
+                || "Unknown error";
+            warn $error;
+        }
+    }
+    else {
+
+        my $m;
+        my $ok;
+        eval {
+            $m = Perlito5::Grammar->exp_stmts($source, 0);
+            $ok = 1;
+        };
+        if (  !$ok
+           || $m->{"to"} != length($source)
+           )
+        {
+            my $error = $@
+                || (  $m->{"to"} != length($source)
+                   && "Syntax Error near " . $m->{"to"}
+                   )
+                || "Unknown error";
+            warn $error;
         }
         else {
-
-            my $m;
-            my $ok;
-            eval {
-                $m = Perlito5::Grammar->exp_stmts($source, 0);
-                $ok = 1;
-            };
-            if (  !$ok
-               || $m->{"to"} != length($source)
-               )
-            {
-                my $error = $@
-                    || (  $m->{"to"} != length($source)
-                       && "Syntax Error near " . $m->{"to"}
-                       )
-                    || "Unknown error";
-                warn $error;
+            my $comp_units;
+            if ($expand_use) {
+                $comp_units = Perlito5::Grammar::Use::add_comp_unit($m->flat())
             }
             else {
-                my $comp_units;
-                if ($expand_use) {
-                    $comp_units = Perlito5::Grammar::Use::add_comp_unit($m->flat())
-                }
-                else {
-                    $comp_units = $m->flat();
-                }
+                $comp_units = $m->flat();
+            }
 
-                $comp_units = [
-                        Perlito5::AST::CompUnit->new(
-                            name => 'main',
-                            body => $comp_units,
-                        ),
-                    ];
+            $comp_units = [
+                    Perlito5::AST::CompUnit->new(
+                        name => 'main',
+                        body => $comp_units,
+                    ),
+                ];
 
-                # if ($backend eq 'ast-perl5') {
-                #     say "# AST dump - do not edit this file - Generated by ", $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
-                #     # TODO - use Data::Dumper
-                #     say "$comp_units";
-                # }
-                if ($backend eq 'perl5') {
-                    say "# Do not edit this file - Generated by ", $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
-                    print Perlito5::AST::CompUnit::emit_perl5_program( $comp_units );
+            # if ($backend eq 'ast-perl5') {
+            #     say "# AST dump - do not edit this file - Generated by ", $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
+            #     # TODO - use Data::Dumper
+            #     say "$comp_units";
+            # }
+            if ($backend eq 'perl5') {
+                say "# Do not edit this file - Generated by ", $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
+                print Perlito5::AST::CompUnit::emit_perl5_program( $comp_units );
+            }
+            if ($backend eq 'perl6') {
+                say "# Do not edit this file - Generated by ", $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
+                print Perlito5::AST::CompUnit::emit_perl6_program( $comp_units );
+            }
+            if ($backend eq 'js') {
+                say "// Do not edit this file - Generated by ", $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
+                if ( $expand_use ) {
+                    print Perlito5::Javascript::Runtime->emit_javascript();
+                    print Perlito5::Javascript::CORE->emit_javascript();
                 }
-                if ($backend eq 'perl6') {
-                    say "# Do not edit this file - Generated by ", $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
-                    print Perlito5::AST::CompUnit::emit_perl6_program( $comp_units );
-                }
-                if ($backend eq 'js') {
-                    say "// Do not edit this file - Generated by ", $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
-                    if ( $expand_use ) {
-                        print Perlito5::Javascript::Runtime->emit_javascript();
-                        print Perlito5::Javascript::CORE->emit_javascript();
-                    }
-                    print Perlito5::AST::CompUnit::emit_javascript_program( $comp_units );
-                }
-                # if ($backend eq 'java') {
-                #     say "// Do not edit this file - Generated by ", $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
-                #     print Perlito5::AST::CompUnit::emit_java_program( $comp_units );
-                # }
-                if ($backend eq 'ast-perl5') {
-                    eval "use Data::Dumper";
-                    print Dumper( $comp_units );
-                }
-                elsif ($backend eq 'ast-pretty') {
-                    eval 'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1';
-                    print $@;
-                }
+                print Perlito5::AST::CompUnit::emit_javascript_program( $comp_units );
+            }
+            # if ($backend eq 'java') {
+            #     say "// Do not edit this file - Generated by ", $_V5_COMPILER_NAME, " ", $_V5_COMPILER_VERSION;
+            #     print Perlito5::AST::CompUnit::emit_java_program( $comp_units );
+            # }
+            if ($backend eq 'ast-perl5') {
+                eval "use Data::Dumper";
+                print Dumper( $comp_units );
+            }
+            elsif ($backend eq 'ast-pretty') {
+                eval 'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1';
+                print $@;
             }
         }
     }
+}
 
 =pod
 
