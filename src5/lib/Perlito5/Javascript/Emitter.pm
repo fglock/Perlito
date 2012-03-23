@@ -500,10 +500,12 @@ package Perlito5::AST::CompUnit;
                 .  "var " . Perlito5::Javascript::pkg . " = NAMESPACE['" . $Perlito5::PKG_NAME . "'];\n";
         $Perlito5::VAR = [
             { '@_'    => { decl => 'my' }, # XXX
-              '@ARGV' => { decl => 'my' }, # XXX
+              '@ARGV' => { decl => 'our', namespace => 'main' },
               '$@'    => { decl => 'our', namespace => 'main' },
               '@#'    => { decl => 'our', namespace => 'main' },
               '$^O'   => { decl => 'our', namespace => 'main' },
+              '@INC'  => { decl => 'our', namespace => 'main' },
+              '%INC'  => { decl => 'our', namespace => 'main' },
               '$_'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
               '$a'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },
               '$b'    => { decl => 'our', namespace => $Perlito5::PKG_NAME },

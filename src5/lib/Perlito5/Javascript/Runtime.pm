@@ -78,7 +78,6 @@ function make_package(pkg_name) {
         NAMESPACE[pkg_name]["v_a"] = null;
         NAMESPACE[pkg_name]["v_b"] = null;
         NAMESPACE[pkg_name]["v__"] = null;
-        NAMESPACE[pkg_name]["v_^O"] = isNode ? "node.js" : "javascript";
     }
     return NAMESPACE[pkg_name];
 }
@@ -135,6 +134,15 @@ function _call_(invocant, method, list) {
 make_package("main");
 NAMESPACE["main"]["v_@"] = [];      // $@
 NAMESPACE["main"]["List_#"] = [];   // @#
+NAMESPACE["main"]["v_^O"] = isNode ? "node.js" : "javascript";
+NAMESPACE["main"]["List_INC"] = [];
+NAMESPACE["main"]["Hash_INC"] = {};
+NAMESPACE["main"]["List_ARGV"] = [];
+if (isNode) {
+    NAMESPACE["main"]["List_ARGV"] = process.argv.splice(2);
+} else if (typeof arguments === "object") {
+    NAMESPACE["main"]["List_ARGV"] = arguments;
+}
 
 make_package("Perlito5");
 make_package("Perlito5::IO");
@@ -159,12 +167,6 @@ function cleanup_local(idx, value) {
         l[0][l[1]] = l[2];
     }
     return value;
-}
-
-if (isNode) {
-    List_ARGV = process.argv.splice(2);
-} else if (typeof arguments === "object") {
-    List_ARGV = arguments;
 }
 
 function HashRef(o) {
