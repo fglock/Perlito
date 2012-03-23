@@ -59,6 +59,8 @@ TODO list for Perlito5
 
 * Javascript backend
 
+-- initialize @INC from $ENV{PERL5LIB}
+
 -- javascript errors don't show in the global error handler when running in node.js
 
 -- "autoload" the compiler if eval-string is used (eval-string needs the compiler at run-time)
