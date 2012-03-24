@@ -75,7 +75,7 @@ sub emit_time_eval {
 
 sub modulename_to_filename {
     my $s = shift;
-    return Perlito5::Runtime::_replace( $s, '::', '/' );
+    return Perlito5::Runtime::_replace( $s, '::', '/' ) . '.pm';
 }
 
 sub expand_use {
@@ -94,7 +94,7 @@ sub expand_use {
         # TODO - look for a precompiled version
         # build the filename
         my $filename = $module_name;
-        $filename = $perl5lib . '/' . modulename_to_filename($filename) . '.pm';
+        $filename = $perl5lib . '/' . modulename_to_filename($filename);
         # warn "// now loading: ", $filename;
         # load source
         my $source = Perlito5::IO::slurp( $filename );

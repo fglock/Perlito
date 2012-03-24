@@ -152,7 +152,7 @@ sub Perlito5::Grammar::Use::emit_time_eval {
 };
 sub Perlito5::Grammar::Use::modulename_to_filename {
     ((my  $s) = shift());
-    return (Perlito5::Runtime::_replace($s, '::', '/'))
+    return ((Perlito5::Runtime::_replace($s, '::', '/') . '.pm'))
 };
 sub Perlito5::Grammar::Use::expand_use {
     ((my  $comp_units) = shift());
@@ -164,7 +164,7 @@ sub Perlito5::Grammar::Use::expand_use {
     if (!(($module_seen{$module_name}))) {
         ($module_seen{$module_name} = 1);
         ((my  $filename) = $module_name);
-        ($filename = ($perl5lib . '/' . modulename_to_filename($filename) . '.pm'));
+        ($filename = ($perl5lib . '/' . modulename_to_filename($filename)));
         ((my  $source) = Perlito5::IO::slurp($filename));
         ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
         if (($m->{'to'} != length($source))) {
