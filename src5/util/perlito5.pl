@@ -131,7 +131,10 @@ if ($backend && @ARGV) {
     }
     else {
 
-        %INC = ();  # since we are generating code, we need to reload everything
+        # since we are generating code that will run from scratch,
+        # we need to start with an empty %INC so that all modules are "used"
+        %INC = ();
+
         my $m;
         my $ok;
         eval {

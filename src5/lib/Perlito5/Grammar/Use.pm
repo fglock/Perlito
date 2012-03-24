@@ -48,9 +48,10 @@ sub parse_time_eval {
         }
     }
     else {
-        # require
-
-        # TODO
+        # "require" the module
+        # my $filename = modulename_to_filename($module_name);
+        # warn "# require $filename\n";
+        # require $filename;
 
         # call import/unimport
 
