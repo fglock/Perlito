@@ -264,6 +264,9 @@ for ($_) {
         if (($code eq 'infix:<=>')) {
             return ((Perlito5::Perl5::tab($level) . emit_perl5_bind($self->{'arguments'}->[0], $self->{'arguments'}->[1])))
         };
+        if (($code eq 'require')) {
+            return (('Perlito5::Grammar::Use::require(' . $self->{'arguments'}->[0]->emit_perl5() . ')'))
+        };
         if (($code eq 'do')) {
             ((my  $ast) = Perlito5::AST::Apply->new(('code' => 'eval'), ('namespace' => ''), ('arguments' => [Perlito5::AST::Apply->new(('code' => 'slurp'), ('namespace' => 'Perlito5::IO'), ('arguments' => $self->{'arguments'}))])));
             return ($ast->emit_perl5($level))

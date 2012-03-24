@@ -207,7 +207,7 @@ sub Perlito5::Grammar::Use::require {
         ($realfilename = ($prefix . '/' . $filename));
         if ((!($found) && -f($realfilename))) {
             ($INC{$filename} = $realfilename);
-            ($result = do($realfilename));
+            ($result = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     Perlito5::IO::slurp($realfilename) . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;}));
             ($found = 1)
         }
     };
