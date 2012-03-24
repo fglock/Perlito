@@ -101,7 +101,7 @@ if (($backend && @ARGV)) {
     ($Perlito5::PROTO = {});
     if ($execute) {
         (my  $ok);
-        eval(('package main; no strict; ' . $source . ' ; $ok = 1'));
+        (do { my $m = Perlito5::Grammar->exp_stmts("do {" .             ('package main; no strict; ' . $source . ' ; $ok = 1') . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;});
         if (!($ok)) {
             ((my  $error) = ($@ || 'Unknown error'));
             warn($error)
@@ -111,10 +111,10 @@ if (($backend && @ARGV)) {
         (%INC = ());
         (my  $m);
         (my  $ok);
-        eval((do {
-    ($m = Perlito5::Grammar->exp_stmts($source, 0));
-    ($ok = 1)
-}));
+                    (do {
+                ($m = Perlito5::Grammar->exp_stmts($source, 0));
+                ($ok = 1)
+            });
         if ((!($ok) || ($m->{'to'} != length($source)))) {
             ((my  $error) = (($@ || ((($m->{'to'} != length($source)) && ('Syntax Error near ' . $m->{'to'})))) || 'Unknown error'));
             warn($error)
@@ -146,12 +146,12 @@ if (($backend && @ARGV)) {
                 print(Perlito5::AST::CompUnit::emit_javascript_program($comp_units))
             };
             if (($backend eq 'ast-perl5')) {
-                eval('use Data::Dumper');
+                (do { my $m = Perlito5::Grammar->exp_stmts("do {" .                     'use Data::Dumper' . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;});
                 print(Dumper($comp_units))
             }
             else {
                 if (($backend eq 'ast-pretty')) {
-                    eval('use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1');
+                    (do { my $m = Perlito5::Grammar->exp_stmts("do {" .                         'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1' . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;});
                     print($@)
                 }
             }

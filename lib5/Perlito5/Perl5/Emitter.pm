@@ -264,6 +264,17 @@ for ($_) {
         if (($code eq 'infix:<=>')) {
             return ((Perlito5::Perl5::tab($level) . emit_perl5_bind($self->{'arguments'}->[0], $self->{'arguments'}->[1])))
         };
+        if (($code eq 'eval')) {
+            ((my  $arg) = $self->{'arguments'}->[0]);
+            (my  $eval);
+            if ($arg->isa('Perlito5::AST::Do')) {
+                ($eval = $arg->emit_perl5(($level + 1), $wantarray))
+            }
+            else {
+                ($eval = ('(do { ' . 'my $m = Perlito5::Grammar->exp_stmts(' . '"do {" . ' . $arg->emit_perl5(($level + 1), 'scalar') . ' . "}", 0);' . 'my $source = $m->flat()->[0]->emit_perl5(0, "scalar");' . 'eval $source;' . '})'))
+            };
+            return ((Perlito5::Perl5::tab($level) . $eval))
+        };
         if (($code eq 'return')) {
             return ((Perlito5::Perl5::tab($level) . 'return (' . join(', ', map($_->emit_perl5(), @{$self->{'arguments'}})) . ')'))
         };
