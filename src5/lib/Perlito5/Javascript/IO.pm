@@ -41,10 +41,10 @@ if (isNode) {
         var stat = fs.statSync(s); return stat["size"];
     }
     p5is_file = function(s) {
-        var stat = fs.statSync(s); return stat.isFile();
+        var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;
     }
     p5is_directory = function(s) {
-        var stat = fs.statSync(s); return stat.isDirectory();
+        var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
     }
 
 }

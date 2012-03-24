@@ -792,6 +792,51 @@ CORE.prototype = function(List__, data) {
     NAMESPACE["Perlito5"].v_PROTO._hash_[name] || NAMESPACE["Perlito5"].v_CORE_PROTO._hash_[name]
 };
 
+//
+//
+// lib/Perlito5/Javascript/IO.js
+//
+// I/O functions for "Perlito" Perl5-in-Javascript
+//
+// AUTHORS
+//
+// Flavio Soibelmann Glock  fglock@gmail.com
+//
+// COPYRIGHT
+//
+// Copyright 2009, 2010, 2011, 2012 by Flavio Soibelmann Glock and others.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the same terms as Perl itself.
+//
+// See http://www.perl.com/perl/misc/Artistic.html
+
+var isNode = typeof require != "undefined";
+if (isNode) {
+
+    var fs = require("fs");
+
+    p5atime = function(s) {
+        var stat = fs.statSync(s); return stat["atime"];
+    }
+    p5mtime = function(s) {
+        var stat = fs.statSync(s); return stat["mtime"];
+    }
+    p5ctime = function(s) {
+        var stat = fs.statSync(s); return stat["ctime"];
+    }
+    p5size = function(s) {
+        var stat = fs.statSync(s); return stat["size"];
+    }
+    p5is_file = function(s) {
+        var stat = fs.statSync(s); return stat.isFile() ? 1 : 0;
+    }
+    p5is_directory = function(s) {
+        var stat = fs.statSync(s); return stat.isDirectory() ? 1 : 0;
+    }
+
+}
+
 var p5want = null;
 var p5100 = NAMESPACE['main'];
 (function () {
@@ -1164,6 +1209,8 @@ var p5100 = NAMESPACE['main'];
 					(v_level = (p5123.shift([List__])));
 					return (p5context([str_replicate(String.fromCharCode(9), v_level)], p5want));
 			});
+			// our NAMESPACE["Perlito5::Javascript"]["Hash_op_prefix_js_str"]
+			(NAMESPACE["Perlito5::Javascript"]["Hash_op_prefix_js_str"] = array_to_hash(interpolate_array('prefix:<-A>', 'p5atime', 'prefix:<-M>', 'p5mtime', 'prefix:<-C>', 'p5ctime', 'prefix:<-s>', 'p5size', 'prefix:<-f>', 'p5is_file', 'prefix:<-d>', 'p5is_directory')));
 			// our NAMESPACE["Perlito5::Javascript"]["Hash_op_infix_js_str"]
 			(NAMESPACE["Perlito5::Javascript"]["Hash_op_infix_js_str"] = array_to_hash(interpolate_array('infix:<eq>', ' == ', 'infix:<ne>', ' != ', 'infix:<le>', ' <= ', 'infix:<ge>', ' >= ')));
 			// our NAMESPACE["Perlito5::Javascript"]["Hash_op_infix_js_num"]
@@ -2166,6 +2213,9 @@ var p5100 = NAMESPACE['main'];
 						throw(p5context([('(' + p5113.join([NAMESPACE["Perlito5::Javascript"]["Hash_op_infix_js_num"][v_code], interpolate_array(p5map(p5113, function (p5want) {
 	return (p5context([NAMESPACE["Perlito5::Javascript"].to_num(interpolate_array(NAMESPACE["Perlito5::AST::Apply"]["v__"]), p5want)], p5want));
 }, interpolate_array(((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_)))], 0) + ')')], p5want));
+					};
+					if ( bool((NAMESPACE["Perlito5::Javascript"]["Hash_op_prefix_js_str"]).hasOwnProperty(v_code)) ) {
+						throw(p5context([(p5str(NAMESPACE["Perlito5::Javascript"]["Hash_op_prefix_js_str"][v_code]) + '(' + p5str(NAMESPACE["Perlito5::Javascript"].to_str(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]), 0)) + ')')], p5want));
 					};
 					if ( (p5str(v_code) == 'infix:<cmp>') ) {
 						throw(p5context([('p5cmp(' + p5113.join([', ', interpolate_array(p5map(p5113, function (p5want) {
