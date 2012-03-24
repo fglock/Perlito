@@ -8,7 +8,6 @@ Perlito5::Precedence::add_term( 'no'  => sub { Perlito5::Grammar::Use->term_use(
 Perlito5::Precedence::add_term( 'use' => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
 
 my $perl5lib    = './src5/lib';
-my %module_seen;
 
 
 token use_decl { 'use' | 'no' };
@@ -87,17 +86,18 @@ sub expand_use {
         if $module_name eq 'v5'
         || $module_name eq 'strict'
         || $module_name eq 'feature';
-    if (!($module_seen{$module_name})) {
-        $module_seen{$module_name} = 1;
+    my $filename = modulename_to_filename($module_name);
+    if ( !exists $INC{$filename} ) {
+
         # say "  now use: ", $module_name;
      
         # TODO - look for a precompiled version
         # build the filename
-        my $filename = $module_name;
-        $filename = $perl5lib . '/' . modulename_to_filename($filename);
-        # warn "// now loading: ", $filename;
+        my $realfilename = $perl5lib . '/' . $filename;
+        $INC{$filename} = $realfilename;
+        # warn "// now loading: ", $realfilename;
         # load source
-        my $source = Perlito5::IO::slurp( $filename );
+        my $source = Perlito5::IO::slurp( $realfilename );
 
         # compile; push AST into comp_units
         # warn $source;

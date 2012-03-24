@@ -16,7 +16,6 @@ Perlito5::Precedence::add_term(('use' => sub {
     Perlito5::Grammar::Use->term_use($_[0], $_[1])
 }));
 ((my  $perl5lib) = './src5/lib');
-(my  %module_seen);
 sub Perlito5::Grammar::Use::use_decl {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -161,11 +160,11 @@ sub Perlito5::Grammar::Use::expand_use {
     if (((($module_name eq 'v5') || ($module_name eq 'strict')) || ($module_name eq 'feature'))) {
         return ()
     };
-    if (!(($module_seen{$module_name}))) {
-        ($module_seen{$module_name} = 1);
-        ((my  $filename) = $module_name);
-        ($filename = ($perl5lib . '/' . modulename_to_filename($filename)));
-        ((my  $source) = Perlito5::IO::slurp($filename));
+    ((my  $filename) = modulename_to_filename($module_name));
+    if (!(exists($INC{$filename}))) {
+        ((my  $realfilename) = ($perl5lib . '/' . $filename));
+        ($INC{$filename} = $realfilename);
+        ((my  $source) = Perlito5::IO::slurp($realfilename));
         ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
         if (($m->{'to'} != length($source))) {
             die('Syntax Error near ', $m->{'to'})

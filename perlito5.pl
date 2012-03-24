@@ -108,6 +108,7 @@ if (($backend && @ARGV)) {
         }
     }
     else {
+        (%INC = ());
         (my  $m);
         (my  $ok);
         eval((do {

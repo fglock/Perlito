@@ -131,6 +131,7 @@ if ($backend && @ARGV) {
     }
     else {
 
+        %INC = ();  # since we are generating code, we need to reload everything
         my $m;
         my $ok;
         eval {
