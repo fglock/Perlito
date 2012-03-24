@@ -2239,6 +2239,9 @@ var p5100 = NAMESPACE['main'];
 					if ( (p5str(v_code) == 'prefix:<+>') ) {
 						throw(p5context([('(' + p5str(_call_(((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0], "emit_javascript", interpolate_array(v_level, v_wantarray), 0)) + ')')], p5want));
 					};
+					if ( (p5str(v_code) == 'require') ) {
+						throw(p5context([('NAMESPACE["Perlito5::Grammar::Use"]["require"]([' + p5str(NAMESPACE["Perlito5::Javascript"].to_str(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]), 0)) + '])')], p5want));
+					};
 					if ( (p5str(v_code) == 'do') ) {
 						(function () {
 							var v_ast = null;
@@ -8190,6 +8193,75 @@ var p5100 = NAMESPACE['main'];
 					p5130.push([(v_comp_units || (v_comp_units = new ArrayRef([])))._array_, interpolate_array(v_comp_unit)], null);
 				}, interpolate_array((v_parse || (v_parse = new ArrayRef([])))._array_));
 				throw(p5context([v_comp_units], p5want))
+			}
+			catch(err) {
+				if ( err instanceof Error ) {
+					throw(err);
+				}
+				else {
+					return(err);
+				}
+			}
+		});
+		make_sub("Perlito5::Grammar::Use", "require", function (List__, p5want) {
+			try {
+				var v_filename = null;
+				(v_filename = (p5130.shift([List__])));
+				if ( bool((NAMESPACE["main"]["Hash_INC"]).hasOwnProperty(v_filename)) ) {
+					if ( bool(NAMESPACE["main"]["Hash_INC"][v_filename]) ) {
+						throw(p5context([1], p5want));
+					};
+					p5130.die([interpolate_array('Compilation failed in require')], null);
+				};
+				var v_realfilename = null;
+				var v_result = null;
+				var v_found = null;
+				p5for_lex(function (v_prefix) {
+					(v_realfilename = ((p5str(v_prefix) + '/' + p5str(v_filename))));
+					if ( (!( bool(v_found)) && bool(p5is_file(p5str(v_realfilename)))) ) {
+						(NAMESPACE["main"]["Hash_INC"][v_filename] = v_realfilename);
+						(v_result = ((function () {
+var r = null;
+NAMESPACE["main"]["v_@"] = "";
+try {
+r = eval(perl5_to_js(p5str(NAMESPACE["Perlito5::IO"].slurp(interpolate_array(v_realfilename), 0)), "Perlito5::Grammar::Use", (new ArrayRef(interpolate_array((new HashRef(array_to_hash([]))), (new HashRef(array_to_hash([]))), (new HashRef(array_to_hash(interpolate_array('$filename', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '$found', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '$prefix', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '$realfilename', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '$result', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))))))), (new HashRef(array_to_hash(interpolate_array('$_', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'Perlito5::Grammar::Use')))), '$a', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'Perlito5::Grammar::Use')))), '$b', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'Perlito5::Grammar::Use')))), '$perl5lib', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))), '%module_seen', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))))))), (new HashRef(array_to_hash(interpolate_array('$_', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'Perlito5')))), '$a', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'Perlito5')))), '$b', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'Perlito5')))))))), (new HashRef(array_to_hash(interpolate_array('$@', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$^O', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$_', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$a', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '$b', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '%ENV', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '%INC', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '@#', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '@ARGV', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '@INC', (new HashRef(array_to_hash(interpolate_array('decl', 'our', 'namespace', 'main')))), '@_', (new HashRef(array_to_hash(interpolate_array('decl', 'my')))))))))))))
+}
+catch(err) {
+if ( err instanceof p5_error ) {
+}
+else if ( err instanceof Error ) {
+NAMESPACE["main"]["v_@"] = err;
+}
+else {
+throw(err);
+}
+}
+return r;
+})()));
+						(v_found = (1));
+					};
+				}, interpolate_array(NAMESPACE["main"]["List_INC"]));
+				if ( bool(v_found) ) {
+					null;
+				}
+				else {
+					p5130.die([interpolate_array(('Can' + String.fromCharCode(39) + 't find ' + p5str(v_filename) + ' in @INC'))], null);
+				};
+				if ( bool(NAMESPACE["main"]["v_@"]) ) {
+					(NAMESPACE["main"]["Hash_INC"][v_filename] = null);
+					return (p5context([p5130.die([interpolate_array(NAMESPACE["main"]["v_@"])], p5want)], p5want));
+				}
+				
+				else {
+					if ( !( bool(v_result)) ) {
+						p5130.delete(interpolate_array(NAMESPACE["main"]["Hash_INC"][v_filename]), null);
+						return (p5context([p5130.die([interpolate_array((p5str(v_filename) + ' did not return true value'))], p5want)], p5want));
+					}
+					
+					else {
+						throw(p5context([v_result], p5want))
+					}
+				}
 			}
 			catch(err) {
 				if ( err instanceof Error ) {

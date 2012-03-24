@@ -243,6 +243,7 @@ package Perlito5::AST::Apply;
         'prefix:<-->'   => '--',
         'prefix:<+>'    => '+',
         'prefix:<->'    => '-',
+        'prefix:<-f>'   => '-f',
     );
 
     my %op_infix_perl5 = (

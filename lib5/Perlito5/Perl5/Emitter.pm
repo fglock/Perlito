@@ -164,7 +164,7 @@ for ($_) {
 };
 package Perlito5::AST::Apply;
 for ($_) {
-    ((my  %op_prefix_perl5) = (('say' => 'Perlito5::Runtime::say'), ('print' => 'print'), ('keys' => 'keys'), ('values' => 'values'), ('warn' => 'warn'), ('prefix:<!>' => '!'), ('prefix:<++>' => '++'), ('prefix:<-->' => '--'), ('prefix:<+>' => '+'), ('prefix:<->' => '-')));
+    ((my  %op_prefix_perl5) = (('say' => 'Perlito5::Runtime::say'), ('print' => 'print'), ('keys' => 'keys'), ('values' => 'values'), ('warn' => 'warn'), ('prefix:<!>' => '!'), ('prefix:<++>' => '++'), ('prefix:<-->' => '--'), ('prefix:<+>' => '+'), ('prefix:<->' => '-'), ('prefix:<-f>' => '-f')));
     ((my  %op_infix_perl5) = (('list:<,>' => ', '), ('list:<.>' => ' . '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<**>' => ' ** '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<&&>' => ' && '), ('infix:<||>' => ' || '), ('infix:<and>' => ' and '), ('infix:<or>' => ' or '), ('infix:<//>' => ' // '), ('infix:<eq>' => ' eq '), ('infix:<ne>' => ' ne '), ('infix:<le>' => ' le '), ('infix:<ge>' => ' ge '), ('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<=>>' => ' => '), ('infix:<=~>' => ' =~ '), ('infix:<!~>' => ' !~ ')));
     sub Perlito5::AST::Apply::emit_perl5 {
         ((my  $self) = $_[0]);

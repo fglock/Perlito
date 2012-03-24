@@ -137,6 +137,37 @@ sub add_comp_unit {
     return $comp_units;
 }
 
+sub require {
+    my $filename = shift;
+    if ( exists $INC{$filename} ) {
+        return 1 if $INC{$filename};
+        die "Compilation failed in require";
+    }
+    my $realfilename;
+    my $result;
+    my $found;
+    for my $prefix (@INC) {
+        $realfilename = "$prefix/$filename";
+        if (!$found && -f $realfilename) {
+            $INC{$filename} = $realfilename;
+            $result = do $realfilename;
+            $found = 1;
+        }
+    }
+    die "Can't find $filename in \@INC" 
+          unless $found;
+    
+    if ($@) {
+        $INC{$filename} = undef;
+        die $@;
+    } elsif (!$result) {
+        delete $INC{$filename};
+        die "$filename did not return true value";
+    } else {
+        return $result;
+    }
+}
+
 1;
 
 =begin

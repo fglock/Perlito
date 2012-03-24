@@ -1024,6 +1024,9 @@ package Perlito5::AST::Apply;
             return '('  . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray)  . ')' 
         }
 
+        if ($code eq 'require') {
+            return 'NAMESPACE["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript::to_str($self->{"arguments"}[0]) . '])'
+        }
         if ($code eq 'do') {
             # Note: this is "do EXPR" - look at the "Do" AST node for "do BLOCK"
             my $ast =

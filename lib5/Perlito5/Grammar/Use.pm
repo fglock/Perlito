@@ -193,6 +193,45 @@ sub Perlito5::Grammar::Use::add_comp_unit {
     };
     return ($comp_units)
 };
+sub Perlito5::Grammar::Use::require {
+    ((my  $filename) = shift());
+    if (exists($INC{$filename})) {
+        if ($INC{$filename}) {
+            return (1)
+        };
+        die('Compilation failed in require')
+    };
+    (my  $realfilename);
+    (my  $result);
+    (my  $found);
+    for my $prefix (@INC) {
+        ($realfilename = ($prefix . '/' . $filename));
+        if ((!($found) && -f($realfilename))) {
+            ($INC{$filename} = $realfilename);
+            ($result = do($realfilename));
+            ($found = 1)
+        }
+    };
+    if ($found) {
+
+    }
+    else {
+        die(('Can' . chr(39) . 't find ' . $filename . ' in @INC'))
+    };
+    if ($@) {
+        ($INC{$filename} = undef());
+        die($@)
+    }
+    else {
+        if (!($result)) {
+            delete($INC{$filename});
+            die(($filename . ' did not return true value'))
+        }
+        else {
+            return ($result)
+        }
+    }
+};
 1;
 
 1;
