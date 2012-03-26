@@ -77,6 +77,22 @@ function make_package(pkg_name) {
     return NAMESPACE[pkg_name];
 }
 
+function p5code_lookup_by_name(package, sub_name) {
+    // sub_name can have an optional namespace
+    var parts = sub_name.split(/::/);
+    if (parts.length > 1) {
+        sub_name = parts.pop();
+        package = parts.join("::");
+    }
+    if (NAMESPACE.hasOwnProperty(package)) {
+        var c = NAMESPACE[package];
+        if ( c.hasOwnProperty(sub_name) ) {
+            return c[sub_name]
+        }
+    }
+    return null;
+}
+
 function _method_lookup_(method, class_name, seen) {
     // default mro
     c = NAMESPACE[class_name];
@@ -2390,6 +2406,13 @@ var p5100 = NAMESPACE['main'];
 							var v_arg = null;
 							(v_arg = (((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]));
 							throw(p5context([('(' + p5str(_call_(v_arg, "emit_javascript", interpolate_array(v_level), 0)) + ')._hash_')], p5want));
+							})();
+					};
+					if ( (p5str(v_code) == 'prefix:<&>') ) {
+						(function () {
+							var v_arg = null;
+							(v_arg = (((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]));
+							throw(p5context([('p5code_lookup_by_name("' + p5str(NAMESPACE["Perlito5"]["v_PKG_NAME"]) + '", ' + p5str(_call_(v_arg, "emit_javascript", interpolate_array(v_level), 0)) + ')')], p5want));
 							})();
 					};
 					if ( (p5str(v_code) == 'circumfix:<[ ]>') ) {
