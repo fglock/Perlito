@@ -59,6 +59,8 @@ sub parse_time_eval {
 
             # call import/unimport
 
+            # temporarily set caller() to the current module under compilation
+
             # TODO
 
         }
