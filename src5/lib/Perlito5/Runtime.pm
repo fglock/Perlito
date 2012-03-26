@@ -23,6 +23,9 @@ sub to_go_namespace {
 }
 
 
+$Perlito5::EXPAND_USE = 1;
+
+
 # the special variables list
 # obtained with:
 # $ perldoc -u perlvar | perl -ne ' /^\s*$/ && next; if (/^=item\s+([^\n]+)/) { push @item, $1; print "@item - $_" } else { if (@item) { push @xx, [@item]; print "push\n"; @item = () } }; END {use Data::Dumper; print Dumper \@xx} '

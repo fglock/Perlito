@@ -48,14 +48,20 @@ sub parse_time_eval {
         }
     }
     else {
-        # "require" the module
-        # my $filename = modulename_to_filename($module_name);
-        # warn "# require $filename\n";
-        # require $filename;
 
-        # call import/unimport
+        if ( $Perlito5::EXPAND_USE ) {
+            # normal "use" is not disabled, go for it
 
-        # TODO
+            # "require" the module
+            my $filename = modulename_to_filename($module_name);
+            # warn "# require $filename\n";
+            require $filename;
+
+            # call import/unimport
+
+            # TODO
+
+        }
 
     }
 }

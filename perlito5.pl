@@ -97,6 +97,7 @@ if (($backend && @ARGV)) {
     ($Perlito5::PKG_NAME = 'main');
     ($Perlito5::PROTO = {});
     if ($execute) {
+        ($Perlito5::EXPAND_USE = 1);
         (my  $ok);
         (do { my $m = Perlito5::Grammar->exp_stmts("do {" .             ('package main; no strict; ' . $source . ' ; $ok = 1') . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;});
         if (!($ok)) {
@@ -106,6 +107,7 @@ if (($backend && @ARGV)) {
     }
     else {
         (%INC = ());
+        ($Perlito5::EXPAND_USE = 0);
         (my  $m);
         (my  $ok);
                     (do {

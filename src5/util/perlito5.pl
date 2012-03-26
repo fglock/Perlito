@@ -121,6 +121,7 @@ if ($backend && @ARGV) {
     $Perlito5::PROTO    = {};
 
     if ( $execute ) { 
+        $Perlito5::EXPAND_USE = 1;
         my $ok;
         eval "package main; no strict; $source ; \$ok = 1";
         if ( !$ok ) {
@@ -134,6 +135,9 @@ if ($backend && @ARGV) {
         # since we are generating code that will run from scratch,
         # we need to start with an empty %INC so that all modules are "used"
         %INC = ();
+
+        # partially disable "use"
+        $Perlito5::EXPAND_USE = 0;
 
         my $m;
         my $ok;

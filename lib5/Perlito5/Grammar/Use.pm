@@ -131,6 +131,12 @@ sub Perlito5::Grammar::Use::parse_time_eval {
                 }
             }
         }
+        else {
+            if ($Perlito5::EXPAND_USE) {
+                ((my  $filename) = modulename_to_filename($module_name));
+Perlito5::Grammar::Use::require($filename)
+            }
+        }
     }
 };
 sub Perlito5::Grammar::Use::emit_time_eval {
