@@ -187,3 +187,5 @@ sub test_ends {
     $testing_started      = 0;
 }
 
+1;
+
