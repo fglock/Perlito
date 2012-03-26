@@ -498,7 +498,8 @@ CORE.die = function(List__) {
     var i;
     var s = "";
     for (i = 0; i < List__.length; i++) {
-        s = s + p5str(List__[i]);
+        s = s + List__[i];
+        // s = s + p5str(List__[i]);
     }
     NAMESPACE["main"]["v_@"] = "Died: " + s;
     throw(new p5_error("Died: " + s));
@@ -508,7 +509,8 @@ CORE.warn = function(List__) {
     var i;
     var s = "";
     for (i = 0; i < List__.length; i++) {
-        s = s + p5str(List__[i]);
+        s = s + List__[i];
+        // s = s + p5str(List__[i]);
     }
     CORE.print(["Warning: " + s + "\n"]);
 };
@@ -2466,6 +2468,9 @@ var p5100 = NAMESPACE['main'];
 								};
 							};
 							})();
+					};
+					if ( (p5str(v_code) == 'delete') ) {
+						throw(p5context([('(delete ' + p5str(_call_(((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0], "emit_javascript", [], 0)) + ')')], p5want));
 					};
 					if ( (p5str(v_code) == 'ternary:<? :>') ) {
 						throw(p5context([('( ' + p5str(NAMESPACE["Perlito5::Javascript"].to_bool(interpolate_array(((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[0]), 0)) + ' ? ' + p5str(_call_(p5context([((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[1]], 0), "emit_javascript", interpolate_array(v_level, v_wantarray), 0)) + ' : ' + p5str(_call_(p5context([((v_self || (v_self = new HashRef({})))._hash_['arguments'] || ((v_self || (v_self = new HashRef({})))._hash_['arguments'] = new ArrayRef([])))._array_[2]], 0), "emit_javascript", interpolate_array(v_level, v_wantarray), 0)) + ')')], p5want));
@@ -8262,7 +8267,7 @@ return r;
 				
 				else {
 					if ( !( bool(v_result)) ) {
-						p5130.delete(interpolate_array(NAMESPACE["main"]["Hash_INC"][v_filename]), null);
+						(delete NAMESPACE["main"]["Hash_INC"][v_filename]);
 						return (p5context([p5130.die([interpolate_array((p5str(v_filename) + ' did not return true value'))], p5want)], p5want));
 					}
 					

@@ -849,6 +849,9 @@ for ($_) {
                 }
             }
         };
+        if (($code eq 'delete')) {
+            return (('(delete ' . $self->{'arguments'}->[0]->emit_javascript() . ')'))
+        };
         if (($code eq 'ternary:<? :>')) {
             return (('( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ' ? ' . ($self->{'arguments'}->[1])->emit_javascript($level, $wantarray) . ' : ' . ($self->{'arguments'}->[2])->emit_javascript($level, $wantarray) . ')'))
         };

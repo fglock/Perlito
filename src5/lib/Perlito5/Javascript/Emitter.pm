@@ -1297,6 +1297,11 @@ package Perlito5::AST::Apply;
                 }
             }
         }
+
+        if ($code eq 'delete') {
+            return '(delete ' . $self->{"arguments"}[0]->emit_javascript() . ')';
+        }
+
         if ($code eq 'ternary:<? :>') {
             return
                    '( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] )
