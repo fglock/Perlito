@@ -277,6 +277,9 @@ p5str = function(o) {
     if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {
         return o.toExponential().replace(/e-(\d)$/,"e-0$1");
     }
+    if (typeof o === "boolean") {
+        return o ? "1" : "";
+    }
     if (typeof o !== "string") {
         return "" + o;
     }
