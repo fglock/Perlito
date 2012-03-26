@@ -62,6 +62,12 @@ sub parse_time_eval {
             # temporarily set caller() to the current module under compilation
 
             # TODO
+            # if ($use_or_not eq 'use') {
+            #     $module_name->import();
+            # }
+            # elsif ($use_or_not eq 'no') {
+            #     Perlito5::strict->unimport();
+            # }
 
         }
 

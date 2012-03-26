@@ -143,5 +143,6 @@ sub Perlito5::Test::test_ends {
     ($num_of_tests_planned = 0);
     ($testing_started = 0)
 };
+1;
 
 1;

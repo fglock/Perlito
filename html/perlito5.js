@@ -98,32 +98,47 @@ function _method_lookup_(method, class_name, seen) {
 
 function _call_(invocant, method, list) {
     list.unshift(invocant);
-    if ( invocant._class_.hasOwnProperty(method) ) {
-        return invocant._class_[method](list) 
-    }
-    var m = _method_lookup_(method, invocant._class_._ref_, {});
-    if (m) {
-        return m(list)
-    }
-    if ( NAMESPACE.UNIVERSAL.hasOwnProperty(method) ) {
-        return NAMESPACE.UNIVERSAL[method](list) 
-    }
 
-    // method can have an optional namespace
-    var package = method.split(/::/);
-    if (package.length > 1) {
-        var name = package.pop();
-        package = package.join("::");
-        m = _method_lookup_(name, package, {});
-        // CORE.say([ name, " ", package ]);
+    if ( invocant.hasOwnProperty("_class_") ) {
+
+        if ( invocant._class_.hasOwnProperty(method) ) {
+            return invocant._class_[method](list)
+        }
+        var m = _method_lookup_(method, invocant._class_._ref_, {});
         if (m) {
             return m(list)
         }
-        NAMESPACE.CORE.die(["method not found: ", name, " in class ", package]);
+        if ( NAMESPACE.UNIVERSAL.hasOwnProperty(method) ) {
+            return NAMESPACE.UNIVERSAL[method](list)
+        }
+
+        // method can have an optional namespace
+        var package = method.split(/::/);
+        if (package.length > 1) {
+            var name = package.pop();
+            package = package.join("::");
+            m = _method_lookup_(name, package, {});
+            // CORE.say([ name, " ", package ]);
+            if (m) {
+                return m(list)
+            }
+            NAMESPACE.CORE.die(["method not found: ", name, " in class ", package]);
+        }
+
+        // TODO - cache the methods that were already looked up
+        NAMESPACE.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
+
     }
 
-    // TODO - cache the methods that were already looked up
-    NAMESPACE.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
+    // the invocant doesn't have a class
+
+    if (typeof invocant === "string") {
+        var aclass = make_package(invocant);
+        return _call_(aclass, method, list);
+    }
+
+    NAMESPACE.CORE.die(["Can't call method ", method, " on unblessed reference"]);
+
 }
 
 make_package("main");
@@ -271,6 +286,9 @@ p5str = function(o) {
     }
     if (typeof o == "number" && Math.abs(o) < 0.0001 && o != 0) {
         return o.toExponential().replace(/e-(\d)$/,"e-0$1");
+    }
+    if (typeof o === "boolean") {
+        return o ? "1" : "";
     }
     if (typeof o !== "string") {
         return "" + o;
@@ -449,6 +467,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
     NAMESPACE["Perlito5"].v_STRICT = strict_old;
     return js_code;
 }
+
 //
 //
 // lib/Perlito5/Javascript/CORE.js
