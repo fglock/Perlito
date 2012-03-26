@@ -19,6 +19,9 @@ token term_use {
             my $ast = Perlito5::AST::Use->new(
                     code => $MATCH->{"use_decl"}->flat(),
                     mod  => $MATCH->{"Perlito5::Grammar.full_ident"}->flat()
+
+                    # TODO - add the import list arguments
+
                 );
 
             parse_time_eval($ast);
@@ -59,15 +62,20 @@ sub parse_time_eval {
 
             # call import/unimport
 
-            # temporarily set caller() to the current module under compilation
+            # TODO - temporarily set caller() to the current module under compilation
+            # TODO - pass the import list arguments
+            # TODO - test for "empty list" (and don't call import)
 
-            # TODO
-            # if ($use_or_not eq 'use') {
-            #     $module_name->import();
-            # }
-            # elsif ($use_or_not eq 'no') {
-            #     $module_name->unimport();
-            # }
+            if ($use_or_not eq 'use') {
+                if (defined &{$module_name . '::import'}) {
+                    $module_name->import();
+                }
+            }
+            elsif ($use_or_not eq 'no') {
+                if (defined &{$module_name . '::unimport'}) {
+                    $module_name->unimport();
+                }
+            }
 
         }
 

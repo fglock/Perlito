@@ -134,7 +134,19 @@ sub Perlito5::Grammar::Use::parse_time_eval {
         else {
             if ($Perlito5::EXPAND_USE) {
                 ((my  $filename) = modulename_to_filename($module_name));
-Perlito5::Grammar::Use::require($filename)
+Perlito5::Grammar::Use::require($filename);
+                if (($use_or_not eq 'use')) {
+                    if (defined(&{($module_name . '::import')})) {
+                        $module_name->import()
+                    }
+                }
+                else {
+                    if (($use_or_not eq 'no')) {
+                        if (defined(&{($module_name . '::unimport')})) {
+                            $module_name->unimport()
+                        }
+                    }
+                }
             }
         }
     }

@@ -8139,7 +8139,32 @@ var p5100 = NAMESPACE['main'];
 						if ( bool(NAMESPACE["Perlito5"]["v_EXPAND_USE"]) ) {
 							var v_filename = null;
 							(v_filename = (p5130.modulename_to_filename(interpolate_array(v_module_name), 0)));
-							return (p5context([NAMESPACE["Perlito5::Grammar::Use"]["require"]([p5str(v_filename)])], p5want));
+							NAMESPACE["Perlito5::Grammar::Use"]["require"]([p5str(v_filename)]);
+							if ( (p5str(v_use_or_not) == 'use') ) {
+								if ( bool((p5code_lookup_by_name("Perlito5::Grammar::Use", (p5str(v_module_name) + '::import')) != null)) ) {
+									return (p5context([_call_(v_module_name, "import", [], p5want)], p5want));
+								}
+								
+								else {
+									null;
+								}
+							}
+							
+							else {
+								if ( (p5str(v_use_or_not) == 'no') ) {
+									if ( bool((p5code_lookup_by_name("Perlito5::Grammar::Use", (p5str(v_module_name) + '::unimport')) != null)) ) {
+										return (p5context([_call_(v_module_name, "unimport", [], p5want)], p5want));
+									}
+									
+									else {
+										null;
+									}
+								}
+								
+								else {
+									null;
+								}
+							}
 						}
 						
 						else {
