@@ -13,6 +13,7 @@ Dev  2012-02-29
 -- use native data structures and ops
 
 - javascript backend:
+-- dropped support for d8 shell (v8 javascript)
 -- the runtime also works on node-js (pmurias++)
 -- @ISA
 -- regexes (using javascript native regex)
