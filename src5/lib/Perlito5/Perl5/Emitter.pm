@@ -365,6 +365,8 @@ package Perlito5::AST::Apply;
         if ($code eq 'prefix:<$>') { return Perlito5::Perl5::tab($level) . '${' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))     . '}' }
         if ($code eq 'prefix:<@>') { return Perlito5::Perl5::tab($level) . '@{' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))     . '}' }
         if ($code eq 'prefix:<%>') { return Perlito5::Perl5::tab($level) . '%{' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))     . '}' }
+        if ($code eq 'prefix:<&>') { return Perlito5::Perl5::tab($level) . '&{' . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))     . '}' }
+
 
         if ($code eq 'postfix:<++>') { return Perlito5::Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))  . ')++' }
         if ($code eq 'postfix:<-->') { return Perlito5::Perl5::tab($level) . '('   . join(' ', map( $_->emit_perl5, @{$self->{"arguments"}} ))  . ')--' }

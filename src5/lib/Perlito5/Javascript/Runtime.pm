@@ -83,6 +83,22 @@ function make_package(pkg_name) {
     return NAMESPACE[pkg_name];
 }
 
+function p5code_lookup_by_name(package, sub_name) {
+    // sub_name can have an optional namespace
+    var parts = sub_name.split(/::/);
+    if (parts.length > 1) {
+        sub_name = parts.pop();
+        package = parts.join("::");
+    }
+    if (NAMESPACE.hasOwnProperty(package)) {
+        var c = NAMESPACE[package];
+        if ( c.hasOwnProperty(sub_name) ) {
+            return c[sub_name]
+        }
+    }
+    return null;
+}
+
 function _method_lookup_(method, class_name, seen) {
     // default mro
     c = NAMESPACE[class_name];

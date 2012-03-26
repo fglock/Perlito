@@ -774,6 +774,10 @@ for ($_) {
             ((my  $arg) = $self->{'arguments'}->[0]);
             return (('(' . $arg->emit_javascript($level) . ')._hash_'))
         };
+        if (($code eq 'prefix:<&>')) {
+            ((my  $arg) = $self->{'arguments'}->[0]);
+            return (('p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript($level) . ')'))
+        };
         if (($code eq 'circumfix:<[ ]>')) {
             return (('(new ArrayRef(' . Perlito5::Javascript::to_list($self->{'arguments'}) . '))'))
         };

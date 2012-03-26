@@ -66,7 +66,7 @@ sub parse_time_eval {
             #     $module_name->import();
             # }
             # elsif ($use_or_not eq 'no') {
-            #     Perlito5::strict->unimport();
+            #     $module_name->unimport();
             # }
 
         }
