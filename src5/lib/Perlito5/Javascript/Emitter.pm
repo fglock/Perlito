@@ -1458,11 +1458,14 @@ package Perlito5::AST::Apply;
             # my ($x, $y) = ...
             # ($x, $y) = ...
 
-            my $tmp = 'tmp' . Perlito5::Javascript::get_label();
+            my $tmp  = 'tmp' . Perlito5::Javascript::get_label();
+            my $tmp2 = 'tmp' . Perlito5::Javascript::get_label();
             return
               '(function () { '
-                . 'var ' . $tmp . ' = ' . Perlito5::Javascript::to_list([$arguments]) . '; '
+                . 'var ' . $tmp  . ' = ' . Perlito5::Javascript::to_list([$arguments]) . '; '
+                . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0); '
                 . join( '; ',
+                        (
                         map +( $_->isa('Perlito5::AST::Apply') && $_->code eq 'undef'
                              ? $tmp . '.shift()' 
                              : $_->sigil eq '$' 
@@ -1474,6 +1477,8 @@ package Perlito5::AST::Apply;
                              : die("not implemented")
                              ),
                              @{ $parameters->arguments }
+                        ),
+                        'return ' . $tmp2
                       )
             . ' })()'
         }
