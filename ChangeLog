@@ -1,30 +1,46 @@
 Dev  2012-02-29
 
 * Perlito Perl 5:
-- parser optimizations
-- it is now possible to add new words to the grammar from inside perl5 modules
--- moved the non-standard "token" grammar to a module
-- here-docs
-- new Perl5-in-Perl6 backend (experimental)
-- new option -Bjs
-- runs some tests from the perl5 test suite (pmurias++)
+
+- parser:
+
+-- optimized a bit
+-- it is now possible to add new words to the grammar from inside perl5 modules;
+   The non-standard "token" grammar was moved to a module
+-- here-docs
+-- new Perl5-in-Perl6 backend (experimental)
+-- new option -Bjs/-Bperl5
+-- added option -I
+   Note: -I./src5/lib is needed to compile the compiler and to run some of the tests
+-- runs some tests from the perl5 test suite (pmurias++)
+-- implemented prototypes (function signatures)
+-- "use", import/unimport; "use strict"/"no strict"
 
 - perl5 backend:
+
 -- use native data structures and ops
 
 - javascript backend:
--- dropped support for d8 shell (v8 javascript)
+
 -- the runtime also works on node-js (pmurias++)
--- @ISA
+-- @ISA and inheritance
+-- %ENV, @ARGV
 -- regexes (using javascript native regex)
--- symbol tables; typeglobs
+-- symbol tables/typeglobs
 -- references
 -- "local", "our"; goto &sub
--- perlito5 calling convention is incompatible with native javascript
-   The last commit using native javascript data is "e1e3316b"
+-- wantarray; each; __PACKAGE__
 -- native javascript can be accessed with JS::inline('string')
 -- reduced generated code size by 4x
    The browser backend doesn't load the grammar compiler
+
+  javascript backend regressions:
+
+-- dropped support for d8 shell (v8 javascript), because it doesn't 
+   support some file system functions needed by the compiler
+-- perlito5 calling convention is incompatible with native javascript
+   The last commit using native javascript calls is "e1e3316b"
+-- there is some slowdown caused by the runtime context (wantarray) implementation
 
 * Perlito Perl 6:
 - compiler namespace moved from Perlito to Perlito6
