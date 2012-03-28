@@ -160,8 +160,9 @@ CORE.scalar = function(List__) {
 };
 
 CORE.values = function(List__, p5want) {
+    var o = List__[0];
+    delete o["_each_"];
     if (p5want) {
-        var o = List__[0];
         if (o == null) {
             return [];
         };
@@ -179,6 +180,7 @@ CORE.values = function(List__, p5want) {
 
 CORE.keys = function(List__, p5want) {
     var o = List__[0];
+    delete o["_each_"];
     if (p5want) {
         if (o == null) {
             return [];
@@ -205,6 +207,24 @@ CORE.keys = function(List__, p5want) {
         }
         return out;
     }
+};
+
+CORE.each = function(List__, p5want) {
+    var o = List__[0];
+    if (o.hasOwnProperty("_each_")) {
+        return o._each_(p5want)
+    }
+    var keys = CORE.keys([o], 1);
+    var i = 0;
+    o._each_ = function () {
+        if (i <= keys.length) {
+            i++;
+            return p5want ? [keys[i-1], o[keys[i-1]]] : keys[i-1];
+        }
+        i = 0;
+        return p5want ? [] : null;
+    };
+    return o._each_(p5want);
 };
 
 CORE.reverse = function(List__) {
