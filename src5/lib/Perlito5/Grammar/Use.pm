@@ -14,8 +14,25 @@ token term_use {
     <use_decl> <.Perlito5::Grammar.ws>
         <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Expression.list_parse>
         {
+
             my $list = $MATCH->{"Perlito5::Expression.list_parse"}->flat()->{"exp"};
-            $list = undef if $list eq '*undef*';
+            if ($list eq '*undef*') {
+                $list = undef
+            }
+            else {
+
+                # BUG - "()" gives an error
+                # BUG - "(4+5,7)" evaluates to [9]
+
+                my $m = $MATCH->{"Perlito5::Expression.list_parse"};
+                my $list_code = substr( $str, $m->{"from"}, $m->{"to"} - $m->{"from"} );
+
+                # TODO - set the lexical context for eval
+
+                my @list = eval $list_code;  # this must be evaluated in list context
+                $list = \@list;
+            }
+
             my $ast = Perlito5::AST::Use->new(
                     code      => $MATCH->{"use_decl"}->flat(),
                     mod       => $MATCH->{"Perlito5::Grammar.full_ident"}->flat(),
@@ -33,6 +50,12 @@ sub parse_time_eval {
 
     my $module_name = $self->mod;
     my $use_or_not  = $self->code;
+    my $arguments   = $self->{"arguments"};
+
+    # test for "empty list" (and don't call import)
+    my $skip_import = defined($arguments) && @$arguments == 0;
+
+    $arguments = [] unless defined $arguments;
 
     if (  $module_name eq 'v5' 
        || $module_name eq 'feature'
@@ -58,20 +81,20 @@ sub parse_time_eval {
             # warn "# require $filename\n";
             require $filename;
 
-            # call import/unimport
+            if (!$skip_import) {
 
-            # TODO - temporarily set caller() to the current module under compilation
-            # TODO - pass the import list arguments
-            # TODO - test for "empty list" (and don't call import)
+                # TODO - temporarily set caller() to the current module under compilation
 
-            if ($use_or_not eq 'use') {
-                if (defined &{$module_name . '::import'}) {
-                    $module_name->import();
+                # call import/unimport
+                if ($use_or_not eq 'use') {
+                    if (defined &{$module_name . '::import'}) {
+                        $module_name->import(@$arguments);
+                    }
                 }
-            }
-            elsif ($use_or_not eq 'no') {
-                if (defined &{$module_name . '::unimport'}) {
-                    $module_name->unimport();
+                elsif ($use_or_not eq 'no') {
+                    if (defined &{$module_name . '::unimport'}) {
+                        $module_name->unimport(@$arguments);
+                    }
                 }
             }
 

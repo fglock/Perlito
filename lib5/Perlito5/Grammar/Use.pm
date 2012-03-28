@@ -105,6 +105,12 @@ sub Perlito5::Grammar::Use::term_use {
     ((my  $list) = $MATCH->{'Perlito5::Expression.list_parse'}->flat()->{'exp'});
     if (($list eq '*undef*')) {
         ($list = undef())
+    }
+    else {
+        ((my  $m) = $MATCH->{'Perlito5::Expression.list_parse'});
+        ((my  $list_code) = substr($str, $m->{'from'}, ($m->{'to'} - $m->{'from'})));
+        ((my  @list) = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     $list_code . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;}));
+        ($list = \@list)
     };
     ((my  $ast) = Perlito5::AST::Use->new(('code' => $MATCH->{'use_decl'}->flat()), ('mod' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat()), ('arguments' => $list)));
     parse_time_eval($ast);
@@ -120,6 +126,14 @@ sub Perlito5::Grammar::Use::parse_time_eval {
     ((my  $self) = shift());
     ((my  $module_name) = $self->mod());
     ((my  $use_or_not) = $self->code());
+    ((my  $arguments) = $self->{'arguments'});
+    ((my  $skip_import) = (defined($arguments) && (@{$arguments} == 0)));
+    if (defined($arguments)) {
+
+    }
+    else {
+        ($arguments = [])
+    };
     if ((($module_name eq 'v5') || ($module_name eq 'feature'))) {
 
     }
@@ -138,15 +152,17 @@ sub Perlito5::Grammar::Use::parse_time_eval {
             if ($Perlito5::EXPAND_USE) {
                 ((my  $filename) = modulename_to_filename($module_name));
 Perlito5::Grammar::Use::require($filename);
-                if (($use_or_not eq 'use')) {
-                    if (defined(&{($module_name . '::import')})) {
-                        $module_name->import()
+                if (!($skip_import)) {
+                    if (($use_or_not eq 'use')) {
+                        if (defined(&{($module_name . '::import')})) {
+                            $module_name->import(@{$arguments})
+                        }
                     }
-                }
-                else {
-                    if (($use_or_not eq 'no')) {
-                        if (defined(&{($module_name . '::unimport')})) {
-                            $module_name->unimport()
+                    else {
+                        if (($use_or_not eq 'no')) {
+                            if (defined(&{($module_name . '::unimport')})) {
+                                $module_name->unimport(@{$arguments})
+                            }
                         }
                     }
                 }
