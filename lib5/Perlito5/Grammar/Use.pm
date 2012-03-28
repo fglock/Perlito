@@ -12,7 +12,6 @@ Perlito5::Precedence::add_term(('no' => sub {
 Perlito5::Precedence::add_term(('use' => sub {
     Perlito5::Grammar::Use->term_use($_[0], $_[1])
 }));
-((my  $perl5lib) = './src5/lib');
 sub Perlito5::Grammar::Use::use_decl {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -103,7 +102,11 @@ sub Perlito5::Grammar::Use::term_use {
         0
     }
 }))) && ((do {
-    ((my  $ast) = Perlito5::AST::Use->new(('code' => $MATCH->{'use_decl'}->flat()), ('mod' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat())));
+    ((my  $list) = $MATCH->{'Perlito5::Expression.list_parse'}->flat()->{'exp'});
+    if (($list eq '*undef*')) {
+        ($list = undef())
+    };
+    ((my  $ast) = Perlito5::AST::Use->new(('code' => $MATCH->{'use_decl'}->flat()), ('mod' => $MATCH->{'Perlito5::Grammar.full_ident'}->flat()), ('arguments' => $list)));
     parse_time_eval($ast);
     ($MATCH->{'capture'} = ['term', $ast]);
 ;
@@ -168,6 +171,23 @@ sub Perlito5::Grammar::Use::modulename_to_filename {
     ((my  $s) = shift());
     return ((Perlito5::Runtime::_replace($s, '::', '/') . '.pm'))
 };
+sub Perlito5::Grammar::Use::filename_lookup {
+    ((my  $filename) = shift());
+    if (exists($INC{$filename})) {
+        if ($INC{$filename}) {
+            return ('done')
+        };
+        die('Compilation failed in require')
+    };
+    for my $prefix (@INC) {
+        ((my  $realfilename) = ($prefix . '/' . $filename));
+        if (-f($realfilename)) {
+            ($INC{$filename} = $realfilename);
+            return ('todo')
+        }
+    };
+    die(('Can' . chr(39) . 't find ' . $filename . ' in @INC'))
+};
 sub Perlito5::Grammar::Use::expand_use {
     ((my  $comp_units) = shift());
     ((my  $stmt) = shift());
@@ -176,16 +196,16 @@ sub Perlito5::Grammar::Use::expand_use {
         return ()
     };
     ((my  $filename) = modulename_to_filename($module_name));
-    if (!(exists($INC{$filename}))) {
-        ((my  $realfilename) = ($perl5lib . '/' . $filename));
-        ($INC{$filename} = $realfilename);
-        ((my  $source) = Perlito5::IO::slurp($realfilename));
-        ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
-        if (($m->{'to'} != length($source))) {
-            die('Syntax Error near ', $m->{'to'})
-        };
-        push(@{$comp_units}, @{add_comp_unit([Perlito5::AST::CompUnit->new(('name' => 'main'), ('body' => $m->flat()))])} )
-    }
+    if ((filename_lookup($filename) eq 'done')) {
+        return ()
+    };
+    ((my  $realfilename) = $INC{$filename});
+    ((my  $source) = Perlito5::IO::slurp($realfilename));
+    ((my  $m) = Perlito5::Grammar->exp_stmts($source, 0));
+    if (($m->{'to'} != length($source))) {
+        die('Syntax Error near ', $m->{'to'})
+    };
+    push(@{$comp_units}, @{add_comp_unit([Perlito5::AST::CompUnit->new(('name' => 'main'), ('body' => $m->flat()))])} )
 };
 sub Perlito5::Grammar::Use::add_comp_unit {
     ((my  $parse) = shift());
@@ -209,29 +229,10 @@ sub Perlito5::Grammar::Use::add_comp_unit {
 };
 sub Perlito5::Grammar::Use::require {
     ((my  $filename) = shift());
-    if (exists($INC{$filename})) {
-        if ($INC{$filename}) {
-            return (1)
-        };
-        die('Compilation failed in require')
+    if ((filename_lookup($filename) eq 'done')) {
+        return ()
     };
-    (my  $realfilename);
-    (my  $result);
-    (my  $found);
-    for my $prefix (@INC) {
-        ($realfilename = ($prefix . '/' . $filename));
-        if ((!($found) && -f($realfilename))) {
-            ($INC{$filename} = $realfilename);
-            ($result = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     Perlito5::IO::slurp($realfilename) . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;}));
-            ($found = 1)
-        }
-    };
-    if ($found) {
-
-    }
-    else {
-        die(('Can' . chr(39) . 't find ' . $filename . ' in @INC'))
-    };
+    ($result = (do { my $m = Perlito5::Grammar->exp_stmts("do {" .     Perlito5::IO::slurp($INC{$filename}) . "}", 0);my $source = $m->flat()->[0]->emit_perl5(0, "scalar");eval $source;}));
     if ($@) {
         ($INC{$filename} = undef());
         die($@)

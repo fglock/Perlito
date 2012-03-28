@@ -1,26 +1,26 @@
 Running the tests using perl:
 
-    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cperl5 $_ > x && perl -Ilib5 x  ` '
+    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -I./src5/lib -Cperl5 $_ > x && perl -Ilib5 x  ` '
 
 Running the tests using perl6:
 
     . util-perl6/setup-perlito5-perl6.sh
-    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
+    find t5/01-perlito/*.t | perl -ne ' print "*** $_"; chomp; print ` perl -Ilib5 perlito5.pl -I./src5/lib -Cperl6 $_ > tmp.p6 && perl6 tmp.p6  ` '
 
 Running the tests using node.js:
 
     # see below how to create perlito5.js
     node perlito5.js -Bjs t5/01-perlito/01-sanity.t
 
-    prove -r -e 'node perlito5.js -Bjs' t5
+    prove -r -e 'node perlito5.js -I./src5/lib -Bjs' t5
 
 Compile the compiler to Javascript into perlito5.js:
 
 -- using perl and perlito5.pl:
 
-    perl -Ilib5 perlito5.pl -Cjs src5/util/perlito5.pl > perlito5.js
+    perl -Ilib5 perlito5.pl -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5.js
 
 -- using node.js and perlito5.js:
 
-    node perlito5.js -Cjs src5/util/perlito5.pl > perlito5-new.js
+    node perlito5.js -I./src5/lib -Cjs src5/util/perlito5.pl > perlito5-new.js
 

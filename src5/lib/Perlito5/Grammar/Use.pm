@@ -7,8 +7,6 @@ use Perlito5::Grammar;
 Perlito5::Precedence::add_term( 'no'  => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
 Perlito5::Precedence::add_term( 'use' => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
 
-my $perl5lib    = './src5/lib';
-
 
 token use_decl { 'use' | 'no' };
 
@@ -16,12 +14,12 @@ token term_use {
     <use_decl> <.Perlito5::Grammar.ws>
         <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Expression.list_parse>
         {
+            my $list = $MATCH->{"Perlito5::Expression.list_parse"}->flat()->{"exp"};
+            $list = undef if $list eq '*undef*';
             my $ast = Perlito5::AST::Use->new(
-                    code => $MATCH->{"use_decl"}->flat(),
-                    mod  => $MATCH->{"Perlito5::Grammar.full_ident"}->flat()
-
-                    # TODO - add the import list arguments
-
+                    code      => $MATCH->{"use_decl"}->flat(),
+                    mod       => $MATCH->{"Perlito5::Grammar.full_ident"}->flat(),
+                    arguments => $list
                 );
 
             parse_time_eval($ast);
@@ -100,6 +98,24 @@ sub modulename_to_filename {
     return Perlito5::Runtime::_replace( $s, '::', '/' ) . '.pm';
 }
 
+sub filename_lookup {
+    my $filename = shift;
+
+    if ( exists $INC{$filename} ) {
+        return "done" if $INC{$filename};
+        die "Compilation failed in require";
+    }
+
+    for my $prefix (@INC) {
+        my $realfilename = "$prefix/$filename";
+        if (-f $realfilename) {
+            $INC{$filename} = $realfilename;
+            return "todo";
+        }
+    }
+    die "Can't find $filename in \@INC";
+}
+
 sub expand_use {
     my $comp_units = shift;
     my $stmt = shift;
@@ -110,32 +126,33 @@ sub expand_use {
         || $module_name eq 'strict'
         || $module_name eq 'feature';
     my $filename = modulename_to_filename($module_name);
-    if ( !exists $INC{$filename} ) {
 
-        # say "  now use: ", $module_name;
+    return 
+        if filename_lookup($filename) eq "done";
+
+    # say "  now use: ", $module_name;
      
-        # TODO - look for a precompiled version
-        # build the filename
-        my $realfilename = $perl5lib . '/' . $filename;
-        $INC{$filename} = $realfilename;
-        # warn "// now loading: ", $realfilename;
-        # load source
-        my $source = Perlito5::IO::slurp( $realfilename );
+    # TODO - look for a precompiled version
 
-        # compile; push AST into comp_units
-        # warn $source;
-        my $m = Perlito5::Grammar->exp_stmts($source, 0);
-        die "Syntax Error near ", $m->{"to"}
-            if $m->{"to"} != length($source);
-        push @$comp_units, @{ add_comp_unit(
-            [
-                Perlito5::AST::CompUnit->new(
-                    name => 'main',
-                    body => $m->flat(),
-                )
-            ]
-        ) };
-    }
+    my $realfilename = $INC{$filename};
+
+    # warn "// now loading: ", $realfilename;
+    # load source
+    my $source = Perlito5::IO::slurp( $realfilename );
+
+    # compile; push AST into comp_units
+    # warn $source;
+    my $m = Perlito5::Grammar->exp_stmts($source, 0);
+    die "Syntax Error near ", $m->{"to"}
+        if $m->{"to"} != length($source);
+    push @$comp_units, @{ add_comp_unit(
+        [
+            Perlito5::AST::CompUnit->new(
+                name => 'main',
+                body => $m->flat(),
+            )
+        ]
+    ) };
 }
 
 sub add_comp_unit {
@@ -162,24 +179,12 @@ sub add_comp_unit {
 
 sub require {
     my $filename = shift;
-    if ( exists $INC{$filename} ) {
-        return 1 if $INC{$filename};
-        die "Compilation failed in require";
-    }
-    my $realfilename;
-    my $result;
-    my $found;
-    for my $prefix (@INC) {
-        $realfilename = "$prefix/$filename";
-        if (!$found && -f $realfilename) {
-            $INC{$filename} = $realfilename;
-            $result = do $realfilename;
-            $found = 1;
-        }
-    }
-    die "Can't find $filename in \@INC" 
-          unless $found;
-    
+
+    return 
+        if filename_lookup($filename) eq "done";
+
+    $result = do $INC{$filename};
+
     if ($@) {
         $INC{$filename} = undef;
         die $@;
