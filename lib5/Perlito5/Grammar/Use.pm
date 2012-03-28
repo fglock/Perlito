@@ -139,12 +139,14 @@ sub Perlito5::Grammar::Use::parse_time_eval {
     }
     else {
         if (($module_name eq 'strict')) {
-            if (($use_or_not eq 'use')) {
-                Perlito5::strict->import()
-            }
-            else {
-                if (($use_or_not eq 'no')) {
-                    Perlito5::strict->unimport()
+            if (!($skip_import)) {
+                if (($use_or_not eq 'use')) {
+                    Perlito5::strict->import(@{$arguments})
+                }
+                else {
+                    if (($use_or_not eq 'no')) {
+                        Perlito5::strict->unimport(@{$arguments})
+                    }
                 }
             }
         }

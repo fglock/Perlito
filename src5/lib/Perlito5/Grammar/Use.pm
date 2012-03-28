@@ -20,10 +20,6 @@ token term_use {
                 $list = undef
             }
             else {
-
-                # BUG - "()" gives an error
-                # BUG - "(4+5,7)" evaluates to [9]
-
                 my $m = $MATCH->{"Perlito5::Expression.list_parse"};
                 my $list_code = substr( $str, $m->{"from"}, $m->{"to"} - $m->{"from"} );
 
@@ -64,11 +60,13 @@ sub parse_time_eval {
         # not implemented
     }
     elsif ($module_name eq 'strict') {
-        if ($use_or_not eq 'use') {
-            Perlito5::strict->import();
-        }
-        elsif ($use_or_not eq 'no') {
-            Perlito5::strict->unimport();
+        if (!$skip_import) {
+            if ($use_or_not eq 'use') {
+                Perlito5::strict->import(@$arguments);
+            }
+            elsif ($use_or_not eq 'no') {
+                Perlito5::strict->unimport(@$arguments);
+            }
         }
     }
     else {

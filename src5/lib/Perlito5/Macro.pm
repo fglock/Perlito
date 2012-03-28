@@ -54,7 +54,10 @@ sub simplify {
         my $stmt = $block->[0];
         if ($stmt->isa('Perlito5::AST::Apply') && $stmt->code() eq 'circumfix:<( )>') {
             my $args = $stmt->arguments;
-            return Perlito5::AST::Do->new( block => $args->[0] )->simplify;
+            return Perlito5::AST::Do->new( block => $args->[0] )->simplify
+                if @$args == 1;
+            # do {()}
+            return Perlito5::AST::Do->new( block => $block );
         }
         if ($stmt->isa('Perlito5::AST::Do')) {
             return $stmt->simplify;
