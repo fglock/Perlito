@@ -1512,7 +1512,7 @@ sub Perlito5::Expression::exp_parse {
     ((my  $result) = pop_term($res));
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => {('exp' => $result), ('terminated' => $terminated)})))
 };
-((my  @Statement_chars) = (7, 6, 5, 4, 3, 2, 1));
+((my  @Statement_chars) = (9, 8, 7, 6, 5, 4, 3, 2, 1));
 ((my  %Statement) = (('if' => sub {
     Perlito5::Grammar->if($_[0], $_[1])
 }), ('unless' => sub {

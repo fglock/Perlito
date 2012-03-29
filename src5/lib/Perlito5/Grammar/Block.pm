@@ -5,6 +5,10 @@ use Perlito5::Expression;
 
 Perlito5::Expression::add_statement( '{'     => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
 Perlito5::Expression::add_statement( 'BEGIN' => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
+Perlito5::Expression::add_statement( 'UNITCHECK' => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
+Perlito5::Expression::add_statement( 'CHECK' => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
+Perlito5::Expression::add_statement( 'INIT'  => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
+Perlito5::Expression::add_statement( 'END'   => sub { Perlito5::Grammar::Block->term_block($_[0], $_[1]) } );
 
 
 sub term_block {
@@ -12,10 +16,23 @@ sub term_block {
     my $str = $_[1];
     my $pos = $_[2];
 
-    if ( substr($str, $pos, 1) eq '{' ) {
+    my $p = $pos;
+    my $block_name;
+    my $m_name = Perlito5::Grammar->ident( $str, $p );
+    if ($m_name) {
+        $p = $m_name->{"to"};
+        $block_name = $m_name->flat();
+    }
+
+    my $m = Perlito5::Grammar->ws( $str, $p );
+    if ( $m ) {
+        $p = $m->{"to"};
+    }
+
+    if ( substr($str, $p, 1) eq '{' ) {
         # do we recognize a bare block in this position?
-        # warn "maybe bareblock at $pos";
-        my $m = Perlito5::Expression->term_curly($str, $pos);
+        # warn "maybe bareblock at $p";
+        my $m = Perlito5::Expression->term_curly($str, $p);
         if ($m) {
             my $v = $m->flat();
 
@@ -26,6 +43,7 @@ sub term_block {
             $v = Perlito5::Expression::block_or_hash($v);
 
             if ( ref($v) eq 'Perlito5::AST::Lit::Block' ) {
+                $v->{"name"} = $block_name;
                 $m->{"capture"} = $v;
                 return $m;
             }
