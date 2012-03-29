@@ -324,6 +324,9 @@ package Perlito5::AST::Apply;
                 .  '!' . $self->{"arguments"}->[1];
         }
 
+        if ($code eq '__PACKAGE__') {
+            return '"' . $Perlito5::PKG_NAME . '"';
+        }
         if ($self->{"code"} eq 'package')    { return Perlito5::Perl5::tab($level) . 'package ' . $self->{"namespace"} }
         if ($code eq 'undef')      { return Perlito5::Perl5::tab($level) . 'undef()' }
 

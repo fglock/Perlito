@@ -190,6 +190,9 @@ for ($_) {
         if (($self->{'code'} eq 'p5:m')) {
             return ((Perlito5::Perl5::tab($level) . 'm!' . $self->{'arguments'}->[0]->{'buf'} . '!' . $self->{'arguments'}->[1]))
         };
+        if (($code eq '__PACKAGE__')) {
+            return (('"' . $Perlito5::PKG_NAME . '"'))
+        };
         if (($self->{'code'} eq 'package')) {
             return ((Perlito5::Perl5::tab($level) . 'package ' . $self->{'namespace'}))
         };

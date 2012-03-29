@@ -221,7 +221,7 @@ CORE.each = function(List__, p5want) {
     var keys = CORE.keys([o], 1);
     var i = 0;
     o._each_ = function () {
-        if (i <= keys.length) {
+        if (i < keys.length) {
             i++;
             return p5want ? [keys[i-1], o[keys[i-1]]] : keys[i-1];
         }
