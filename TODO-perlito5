@@ -23,7 +23,10 @@ TODO list for Perlito5
 
 * Parser
 
--- 'use' doesn't work inside eval-string
+-- compile-time eval() is not bound to the "program" environment, but to the "compiler" environment instead
+   my $v;
+   BEGIN { $v = "123" }
+   use Module $v;  # $v is not accessible at compile-time
 
 -- parse the regexes
 
