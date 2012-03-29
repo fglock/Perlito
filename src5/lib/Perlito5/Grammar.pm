@@ -1,10 +1,10 @@
 package Perlito5::Grammar;
 
 use Perlito5::Expression;
-# use Perlito5::Grammar::Regex;
 use Perlito5::Grammar::Control;
 use Perlito5::Grammar::String;
 use Perlito5::Grammar::Use;
+use Perlito5::Grammar::Block;
 
 sub word {
     substr( $_[1], $_[2], 1 ) =~ m/\w/

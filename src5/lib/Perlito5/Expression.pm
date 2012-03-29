@@ -1,7 +1,6 @@
 
 package Perlito5::Expression;
 use Perlito5::Precedence;
-use Perlito5::Grammar;
 use Perlito5::Grammar::Bareword;
 
 sub expand_list {
@@ -1168,6 +1167,15 @@ my %Statement = (
     'sub'    => sub { Perlito5::Grammar->named_sub($_[0], $_[1]) },
 );
 
+sub add_statement {
+    my $name = shift;
+    my $param = shift;
+
+    # XXX this fails unless the length is registered in @Statement_chars
+
+    $Statement{$name} = $param;
+}
+
 sub exp_stmt {
     my $self = $_[0];
     my $str = $_[1];
@@ -1214,26 +1222,6 @@ sub statement_parse {
     if ($res) {
         # say "# statement result: ", $res->perl;
         return $res;
-    }
-
-    if ( substr($str, $pos, 1) eq '{' ) {
-        # do we recognize a bare block in this position?
-        # warn "maybe bareblock at $pos";
-        my $m = $self->term_curly($str, $pos);
-        if ($m) {
-            my $v = $m->flat();
-
-            # TODO - this is not recognized as a statement: { 123 => 4;}
-            # TODO - this is not recognized as a syntax error: { 123 => 4 }{2}
-
-            $v = Perlito5::AST::Lit::Block->new( stmts => $v->[2], sig => $v->[3] );
-            $v = block_or_hash($v);
-
-            if ( ref($v) eq 'Perlito5::AST::Lit::Block' ) {
-                $m->{"capture"} = $v;
-                return $m;
-            }
-        }
     }
 
     $res = $self->exp_parse($str, $pos);

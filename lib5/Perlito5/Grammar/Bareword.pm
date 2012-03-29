@@ -4,8 +4,6 @@ use Perlito5::Perl5::Runtime;
 our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Grammar::Bareword;
-use Perlito5::Precedence;
-use Perlito5::Grammar;
 sub Perlito5::Grammar::Bareword::term_bareword {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);

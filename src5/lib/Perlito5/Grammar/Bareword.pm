@@ -1,7 +1,5 @@
 
 package Perlito5::Grammar::Bareword;
-    use Perlito5::Precedence;
-    use Perlito5::Grammar;
 
     sub term_bareword {
         my $self = $_[0];

@@ -5,7 +5,6 @@ our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Expression;
 use Perlito5::Precedence;
-use Perlito5::Grammar;
 use Perlito5::Grammar::Bareword;
 sub Perlito5::Expression::expand_list {
     ((my  $param_list) = shift());
@@ -1527,6 +1526,11 @@ sub Perlito5::Expression::exp_parse {
 }), ('sub' => sub {
     Perlito5::Grammar->named_sub($_[0], $_[1])
 })));
+sub Perlito5::Expression::add_statement {
+    ((my  $name) = shift());
+    ((my  $param) = shift());
+    ($Statement{$name} = $param)
+};
 sub Perlito5::Expression::exp_stmt {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
@@ -1668,18 +1672,6 @@ sub Perlito5::Expression::statement_parse {
     ($res = $self->exp_stmt($str, $pos));
     if ($res) {
         return ($res)
-    };
-    if ((substr($str, $pos, 1) eq '{')) {
-        ((my  $m) = $self->term_curly($str, $pos));
-        if ($m) {
-            ((my  $v) = $m->flat());
-            ($v = Perlito5::AST::Lit::Block->new(('stmts' => $v->[2]), ('sig' => $v->[3])));
-            ($v = block_or_hash($v));
-            if ((ref($v) eq 'Perlito5::AST::Lit::Block')) {
-                ($m->{'capture'} = $v);
-                return ($m)
-            }
-        }
     };
     ($res = $self->exp_parse($str, $pos));
     if (!($res)) {
