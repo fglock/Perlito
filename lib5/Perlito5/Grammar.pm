@@ -1769,5 +1769,40 @@ sub Perlito5::Grammar::named_sub_def {
 }))));
     ($tmp ? $MATCH : 0)
 };
+sub Perlito5::Grammar::named_sub {
+    ((my  $grammar) = $_[0]);
+    ((my  $str) = $_[1]);
+    ((my  $pos) = $_[2]);
+    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos)));
+    ((my  $tmp) = (((do {
+    ((my  $pos1) = $MATCH->{'to'});
+    ((do {
+    (((((('sub' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ((my  $m2) = Perlito5::Grammar->named_sub_def($str, $MATCH->{'to'}));
+    if ($m2) {
+        ($MATCH->{'to'} = $m2->{'to'});
+        ($MATCH->{'Perlito5::Grammar.named_sub_def'} = $m2);
+        1
+    }
+    else {
+        0
+    }
+}))) && ((do {
+    ($MATCH->{'capture'} = $MATCH->{'Perlito5::Grammar.named_sub_def'}->flat());
+    1
+})))
+}))
+}))));
+    ($tmp ? $MATCH : 0)
+};
 
 1;

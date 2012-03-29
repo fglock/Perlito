@@ -1157,15 +1157,31 @@ sub exp_parse {
             terminated => $terminated } )
 }
 
-token exp_stmt {
-    | <Perlito5::Grammar.if>     { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.if"}->flat()     }
-    | <Perlito5::Grammar.unless> { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.unless"}->flat() }
-    | <Perlito5::Grammar.when>   { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.when"}->flat()   }
-    | <Perlito5::Grammar.for>    { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.for"}->flat()    }
-    | <Perlito5::Grammar.while>  { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.while"}->flat()  }
-    | 'sub' <.Perlito5::Grammar.ws> <Perlito5::Grammar.named_sub_def>
-                          { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.named_sub_def"}->flat() }
-};
+
+my @Statement_chars = (7, 6, 5, 4, 3, 2, 1);
+my %Statement = (
+    'if'     => sub { Perlito5::Grammar->if($_[0], $_[1]) },
+    'unless' => sub { Perlito5::Grammar->unless($_[0], $_[1]) }, 
+    'when'   => sub { Perlito5::Grammar->when($_[0], $_[1]) },
+    'for'    => sub { Perlito5::Grammar->for($_[0], $_[1]) },
+    'while'  => sub { Perlito5::Grammar->while($_[0], $_[1]) },
+    'sub'    => sub { Perlito5::Grammar->named_sub($_[0], $_[1]) },
+);
+
+sub exp_stmt {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    for my $len ( @Statement_chars ) {
+        my $term = substr($str, $pos, $len);
+        if (exists($Statement{$term})) {
+            my $m = $Statement{$term}->($str, $pos);
+            return $m if $m;
+        }
+    }
+    return 0;
+}
+
 
 token statement_modifier {
     'if' | 'unless' | 'when' | 'foreach' | 'for' | 'while'

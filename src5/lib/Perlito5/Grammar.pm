@@ -234,6 +234,10 @@ token named_sub_def {
     }
 };
 
+token named_sub {
+    'sub' <.Perlito5::Grammar.ws> <Perlito5::Grammar.named_sub_def>
+        { $MATCH->{"capture"} = $MATCH->{"Perlito5::Grammar.named_sub_def"}->flat() }
+};
 
 =begin
 
