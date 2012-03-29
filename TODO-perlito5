@@ -86,10 +86,10 @@ TODO list for Perlito5
 -- bug: "my" variables - this doesn't work as expected: my $v = $v
    possible fix: rename variables
 
--- move "substr" and others to CORE
--- lvalue "substr"
--- subroutine signatures
--- array interpolation in argument lists
+-- lvalue substr(); 4-arguments substr()
+-- pos($str)
+
+-- missing some types of subroutine signatures
 
 -- bug: negative index in array doesn't work
 
