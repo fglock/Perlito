@@ -7,8 +7,6 @@ TODO list for Perlito5
 
 * basic functionality
 
--- add "require"
-
 -- add "print" special parsing
 
 
@@ -111,26 +109,22 @@ TODO list for Perlito5
 -- y()()
 
 
-* Perl6 backend
+* More backends
 
-* Python backend
+-- Perl6 backend started
 
-* Ruby backend
+-- Python backend
 
-* Java backend
+-- Ruby backend
+
+-- Java backend
 
 
 * Nice to Have
 
--- labels, "next", "last"
+-- labels, "next", "last", "continue"
 
--- run the "perl" test suite
-
--- wantarray()
-
--- import
-
--- run perltidy on the source code
+-- run more of the "perl" test suite
 
 -- proper "use strict" and "use warnings"
 -- use the same error messages and warnings as 'perl'
