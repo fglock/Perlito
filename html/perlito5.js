@@ -701,7 +701,7 @@ CORE.each = function(List__, p5want) {
     var keys = CORE.keys([o], 1);
     var i = 0;
     o._each_ = function () {
-        if (i <= keys.length) {
+        if (i < keys.length) {
             i++;
             return p5want ? [keys[i-1], o[keys[i-1]]] : keys[i-1];
         }
@@ -8240,7 +8240,7 @@ return r;
 				(v_stmt = (p5132.shift([List__])));
 				var v_module_name = null;
 				(v_module_name = (_call_(v_stmt, "mod", [], 0)));
-				if ( (((p5str(v_module_name) == 'v5') || (p5str(v_module_name) == 'strict')) || (p5str(v_module_name) == 'feature')) ) {
+				if ( ((((p5str(v_module_name) == 'v5') || (p5str(v_module_name) == 'strict')) || (p5str(v_module_name) == 'warnings')) || (p5str(v_module_name) == 'feature')) ) {
 					throw(p5context([], p5want));
 				};
 				var v_filename = null;

@@ -144,6 +144,7 @@ sub expand_use {
     return
         if $module_name eq 'v5'
         || $module_name eq 'strict'
+        || $module_name eq 'warnings'
         || $module_name eq 'feature';
     my $filename = modulename_to_filename($module_name);
 

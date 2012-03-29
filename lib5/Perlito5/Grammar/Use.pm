@@ -200,7 +200,7 @@ sub Perlito5::Grammar::Use::expand_use {
     ((my  $comp_units) = shift());
     ((my  $stmt) = shift());
     ((my  $module_name) = $stmt->mod());
-    if (((($module_name eq 'v5') || ($module_name eq 'strict')) || ($module_name eq 'feature'))) {
+    if ((((($module_name eq 'v5') || ($module_name eq 'strict')) || ($module_name eq 'warnings')) || ($module_name eq 'feature'))) {
         return ()
     };
     ((my  $filename) = modulename_to_filename($module_name));
