@@ -12,6 +12,7 @@ Perlito5::Precedence::add_term(('no' => sub {
 Perlito5::Precedence::add_term(('use' => sub {
     Perlito5::Grammar::Use->term_use($_[0], $_[1])
 }));
+((my  %Perlito_internal_module) = (('strict' => 'Perlito5::strict'), ('warnings' => 'Perlito5::warnings')));
 sub Perlito5::Grammar::Use::use_decl {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -138,33 +139,22 @@ sub Perlito5::Grammar::Use::parse_time_eval {
 
     }
     else {
-        if (($module_name eq 'strict')) {
+        if ($Perlito5::EXPAND_USE) {
+            if (exists($Perlito_internal_module{$module_name})) {
+                ($module_name = $Perlito_internal_module{$module_name})
+            };
+            ((my  $filename) = modulename_to_filename($module_name));
+Perlito5::Grammar::Use::require($filename);
             if (!($skip_import)) {
                 if (($use_or_not eq 'use')) {
-                    Perlito5::strict->import(@{$arguments})
+                    if (defined(&{($module_name . '::import')})) {
+                        $module_name->import(@{$arguments})
+                    }
                 }
                 else {
                     if (($use_or_not eq 'no')) {
-                        Perlito5::strict->unimport(@{$arguments})
-                    }
-                }
-            }
-        }
-        else {
-            if ($Perlito5::EXPAND_USE) {
-                ((my  $filename) = modulename_to_filename($module_name));
-Perlito5::Grammar::Use::require($filename);
-                if (!($skip_import)) {
-                    if (($use_or_not eq 'use')) {
-                        if (defined(&{($module_name . '::import')})) {
-                            $module_name->import(@{$arguments})
-                        }
-                    }
-                    else {
-                        if (($use_or_not eq 'no')) {
-                            if (defined(&{($module_name . '::unimport')})) {
-                                $module_name->unimport(@{$arguments})
-                            }
+                        if (defined(&{($module_name . '::unimport')})) {
+                            $module_name->unimport(@{$arguments})
                         }
                     }
                 }

@@ -8,6 +8,12 @@ Perlito5::Precedence::add_term( 'no'  => sub { Perlito5::Grammar::Use->term_use(
 Perlito5::Precedence::add_term( 'use' => sub { Perlito5::Grammar::Use->term_use($_[0], $_[1]) } );
 
 
+my %Perlito_internal_module = (
+    strict   => 'Perlito5::strict',
+    warnings => 'Perlito5::warnings',
+);
+
+
 token use_decl { 'use' | 'no' };
 
 token term_use {
@@ -59,20 +65,13 @@ sub parse_time_eval {
     {
         # not implemented
     }
-    elsif ($module_name eq 'strict') {
-        if (!$skip_import) {
-            if ($use_or_not eq 'use') {
-                Perlito5::strict->import(@$arguments);
-            }
-            elsif ($use_or_not eq 'no') {
-                Perlito5::strict->unimport(@$arguments);
-            }
-        }
-    }
     else {
 
         if ( $Perlito5::EXPAND_USE ) {
             # normal "use" is not disabled, go for it
+
+            $module_name = $Perlito_internal_module{$module_name}
+                if exists $Perlito_internal_module{$module_name};
 
             # "require" the module
             my $filename = modulename_to_filename($module_name);

@@ -24,6 +24,8 @@ sub to_go_namespace {
 
 
 $Perlito5::EXPAND_USE = 1;
+$Perlito5::STRICT     = 0;
+$Perlito5::WARNINGS   = 0;
 
 
 # the special variables list
@@ -75,7 +77,6 @@ $Perlito5::SPECIAL_VAR = {
 # obtained with:
 # $ perldoc -u PerlFunc | head -n300 | perl -ne ' push @x, /C<([^>]+)/g; END { eval { $p{"CORE::$_"} = prototype("CORE::$_") } for @x; use Data::Dumper; print Dumper \%p } ' > ~/tmp/core.pm
 
-$Perlito5::STRICT = 0;
 $Perlito5::CORE_PROTO = {
           'CORE::shutdown' => '*$',
           'CORE::chop' => undef,

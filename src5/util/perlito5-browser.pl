@@ -1,5 +1,8 @@
 package Perlito5;
 
+use Perlito5::strict ();
+use Perlito5::warnings ();
+
 use Perlito5::Match;
 use Perlito5::Javascript::Emitter;
 use Perlito5::Grammar;

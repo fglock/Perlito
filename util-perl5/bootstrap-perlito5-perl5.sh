@@ -39,6 +39,7 @@ perl perlito5.pl -I./src5/lib -Cperl5 src5/lib/Perlito5/Runtime.pm         > lib
 perl perlito5.pl -I./src5/lib -Cperl5 src5/lib/Perlito5/Dumper.pm          > lib5-new/Perlito5/Dumper.pm
 
 perl perlito5.pl -I./src5/lib -Cperl5 src5/lib/Perlito5/strict.pm          > lib5-new/Perlito5/strict.pm
+perl perlito5.pl -I./src5/lib -Cperl5 src5/lib/Perlito5/warnings.pm        > lib5-new/Perlito5/warnings.pm
 
 perl perlito5.pl -I./src5/lib -Cperl5 src5/util/perlito5.pl                > ./perlito5-new.pl
 
