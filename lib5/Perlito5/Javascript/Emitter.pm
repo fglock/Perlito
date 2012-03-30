@@ -774,6 +774,51 @@ for ($_) {
     ((my  $self) = $_[0]);
     ($Perlito5::THROW = 1);
     ('throw((' . $self->{'arguments'}->[0]->emit_javascript() . ')([List__, p5want]))')
+}), ('do' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  $ast) = Perlito5::AST::Apply->new(('code' => 'eval'), ('namespace' => ''), ('arguments' => [Perlito5::AST::Apply->new(('code' => 'slurp'), ('namespace' => 'Perlito5::IO'), ('arguments' => $self->{'arguments'}))])));
+    $ast->emit_javascript($level)
+}), ('eval' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ($Perlito5::THROW = 1);
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    (my  $eval);
+    if ($arg->isa('Perlito5::AST::Do')) {
+        ($eval = $arg->emit_javascript(($level + 1), $wantarray))
+    }
+    else {
+        ((my  $var_env_perl5) = Perlito5::Dumper::Dumper($Perlito5::VAR));
+        ((my  $m) = Perlito5::Expression->term_square($var_env_perl5, 0));
+        ($m = Perlito5::Expression::expand_list($m->flat()->[2]));
+        ((my  $var_env_js) = ('(new ArrayRef(' . Perlito5::Javascript::to_list($m) . '))'));
+        ($eval = ('eval(perl5_to_js(' . Perlito5::Javascript::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . '))'))
+    };
+    ('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'NAMESPACE["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'NAMESPACE["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()')
+}), ('undef' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    if (($self->{'arguments'} && @{$self->{'arguments'}})) {
+        return (('(' . $self->{'arguments'}->[0]->emit_javascript() . ' = null)'))
+    };
+    return ('null')
+}), ('defined' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('(' . join(' ', map($_->emit_javascript($level), @{$self->{'arguments'}})) . ' != null)')
+}), ('shift' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    if (($self->{'arguments'} && @{$self->{'arguments'}})) {
+        return ((Perlito5::Javascript::pkg() . '.shift([' . join(', ', map($_->emit_javascript($level), @{$self->{'arguments'}})) . '])'))
+    };
+    return ((Perlito5::Javascript::pkg() . '.shift([List__])'))
 })));
     sub Perlito5::AST::Apply::emit_javascript {
         ((my  $self) = shift());
@@ -802,41 +847,6 @@ for ($_) {
         };
         if (exists($Perlito5::Javascript::op_prefix_js_str{$code})) {
             return (($Perlito5::Javascript::op_prefix_js_str{$code} . '(' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ')'))
-        };
-        if (($code eq 'do')) {
-            ((my  $ast) = Perlito5::AST::Apply->new(('code' => 'eval'), ('namespace' => ''), ('arguments' => [Perlito5::AST::Apply->new(('code' => 'slurp'), ('namespace' => 'Perlito5::IO'), ('arguments' => $self->{'arguments'}))])));
-            return ($ast->emit_javascript($level))
-        };
-        if (($code eq 'eval')) {
-            ($Perlito5::THROW = 1);
-            ((my  $arg) = $self->{'arguments'}->[0]);
-            (my  $eval);
-            if ($arg->isa('Perlito5::AST::Do')) {
-                ($eval = $arg->emit_javascript(($level + 1), $wantarray))
-            }
-            else {
-                ((my  $var_env_perl5) = Perlito5::Dumper::Dumper($Perlito5::VAR));
-                ((my  $m) = Perlito5::Expression->term_square($var_env_perl5, 0));
-                ($m = Perlito5::Expression::expand_list($m->flat()->[2]));
-                ((my  $var_env_js) = ('(new ArrayRef(' . Perlito5::Javascript::to_list($m) . '))'));
-                ($eval = ('eval(perl5_to_js(' . Perlito5::Javascript::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . '))'))
-            };
-            return (('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'NAMESPACE["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'NAMESPACE["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()'))
-        };
-        if (($code eq 'undef')) {
-            if (($self->{'arguments'} && @{$self->{'arguments'}})) {
-                return (('(' . $self->{'arguments'}->[0]->emit_javascript() . ' = null)'))
-            };
-            return ('null')
-        };
-        if (($code eq 'defined')) {
-            return (('(' . join(' ', map($_->emit_javascript($level), @{$self->{'arguments'}})) . ' != null)'))
-        };
-        if (($code eq 'shift')) {
-            if (($self->{'arguments'} && @{$self->{'arguments'}})) {
-                return ((Perlito5::Javascript::pkg() . '.shift([' . join(', ', map($_->emit_javascript($level), @{$self->{'arguments'}})) . '])'))
-            };
-            return ((Perlito5::Javascript::pkg() . '.shift([List__])'))
         };
         if (($code eq 'map')) {
             ((my  @in) = @{$self->{'arguments'}});

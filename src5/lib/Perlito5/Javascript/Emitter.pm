@@ -1133,6 +1133,101 @@ package Perlito5::AST::Apply;
             'throw((' . $self->{"arguments"}->[0]->emit_javascript() . ')([List__, p5want]))';
         },
 
+        'do' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            # Note: this is "do EXPR" - look at the "Do" AST node for "do BLOCK"
+            my $ast =
+                Perlito5::AST::Apply->new(
+                    code => 'eval',
+                    namespace => '',
+                    arguments => [
+                       Perlito5::AST::Apply->new(
+                          code => 'slurp',
+                          namespace => 'Perlito5::IO',
+                          arguments => $self->{"arguments"}
+                        )
+                    ]
+                );
+            $ast->emit_javascript( $level );
+        },
+
+        'eval' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            $Perlito5::THROW = 1;   # we can return() from inside eval
+
+            my $arg = $self->{"arguments"}->[0];
+            my $eval;
+            if ($arg->isa( "Perlito5::AST::Do" )) {
+                $eval = $arg->emit_javascript( $level + 1, $wantarray );
+            }
+            else {
+                my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::VAR );
+                # say "at eval: ", $var_env_perl5;
+                my $m = Perlito5::Expression->term_square( $var_env_perl5, 0 );
+                $m = Perlito5::Expression::expand_list( $m->flat()->[2] );
+                # say Perlito5::Dumper::Dumper( $m );
+                my $var_env_js = '(new ArrayRef(' . Perlito5::Javascript::to_list($m) . '))';
+                $eval ='eval(perl5_to_js(' 
+                            . Perlito5::Javascript::to_str($arg) . ", "
+                            . '"' . $Perlito5::PKG_NAME . '", '
+                            . $var_env_js
+                        . "))";
+            }
+
+            # TODO - test return() from inside eval
+
+                "(function () {\n"
+                    . "var r = null;\n"
+                    . 'NAMESPACE["main"]["v_@"] = "";' . "\n"
+                    . "try {\n"
+                        . 'r = ' . $eval . "\n"
+                    . "}\n"
+                    . "catch(err) {\n"
+                    .    "if ( err instanceof p5_error ) {\n"
+                    .    "}\n"
+                    .    "else if ( err instanceof Error ) {\n"
+                    .        'NAMESPACE["main"]["v_@"] = err;' . "\n"
+                    .    "}\n"
+                    .    "else {\n"
+                    .        "throw(err);\n"   # return() value
+                    .    "}\n"
+                    . "}\n"
+                    . "return r;\n"
+                . "})()"
+
+        },
+
+        'undef' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
+                return '(' . $self->{"arguments"}->[0]->emit_javascript . ' = null)'
+            }
+            return 'null'
+        },
+
+        'defined' => sub { 
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            '('  . join(' ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} ))    . ' != null)' 
+        },
+
+        'shift' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
+                return Perlito5::Javascript::pkg() . '.shift([' . join(', ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} )) . '])'
+            }
+            return Perlito5::Javascript::pkg() . '.shift([List__])'
+        },
+
     );
 
 
@@ -1172,85 +1267,6 @@ package Perlito5::AST::Apply;
             return $Perlito5::Javascript::op_prefix_js_str{$code} . '(' 
                 . Perlito5::Javascript::to_str($self->{"arguments"}[0])
                 . ')'
-        }
-
-        if ($code eq 'do') {
-            # Note: this is "do EXPR" - look at the "Do" AST node for "do BLOCK"
-            my $ast =
-                Perlito5::AST::Apply->new(
-                    code => 'eval',
-                    namespace => '',
-                    arguments => [
-                       Perlito5::AST::Apply->new(
-                          code => 'slurp',
-                          namespace => 'Perlito5::IO',
-                          arguments => $self->{"arguments"}
-                        )
-                    ]
-                );
-            return $ast->emit_javascript( $level );
-        }
-
-        if ($code eq 'eval') {
-            $Perlito5::THROW = 1;   # we can return() from inside eval
-
-            my $arg = $self->{"arguments"}->[0];
-            my $eval;
-            if ($arg->isa( "Perlito5::AST::Do" )) {
-                $eval = $arg->emit_javascript( $level + 1, $wantarray );
-            }
-            else {
-                my $var_env_perl5 = Perlito5::Dumper::Dumper( $Perlito5::VAR );
-                # say "at eval: ", $var_env_perl5;
-                my $m = Perlito5::Expression->term_square( $var_env_perl5, 0 );
-                $m = Perlito5::Expression::expand_list( $m->flat()->[2] );
-                # say Perlito5::Dumper::Dumper( $m );
-                my $var_env_js = '(new ArrayRef(' . Perlito5::Javascript::to_list($m) . '))';
-                $eval ='eval(perl5_to_js(' 
-                            . Perlito5::Javascript::to_str($arg) . ", "
-                            . '"' . $Perlito5::PKG_NAME . '", '
-                            . $var_env_js
-                        . "))";
-            }
-
-            # TODO - test return() from inside eval
-
-            return
-                "(function () {\n"
-                    . "var r = null;\n"
-                    . 'NAMESPACE["main"]["v_@"] = "";' . "\n"
-                    . "try {\n"
-                        . 'r = ' . $eval . "\n"
-                    . "}\n"
-                    . "catch(err) {\n"
-                    .    "if ( err instanceof p5_error ) {\n"
-                    .    "}\n"
-                    .    "else if ( err instanceof Error ) {\n"
-                    .        'NAMESPACE["main"]["v_@"] = err;' . "\n"
-                    .    "}\n"
-                    .    "else {\n"
-                    .        "throw(err);\n"   # return() value
-                    .    "}\n"
-                    . "}\n"
-                    . "return r;\n"
-                . "})()"
-
-        }
-
-        if ($code eq 'undef')      {
-            if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return '(' . $self->{"arguments"}->[0]->emit_javascript . ' = null)'
-            }
-            return 'null'
-        }
-
-        if ($code eq 'defined')    { return '('  . join(' ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} ))    . ' != null)' }
-
-        if ($code eq 'shift')      {
-            if ( $self->{"arguments"} && @{$self->{"arguments"}} ) {
-                return Perlito5::Javascript::pkg() . '.shift([' . join(', ', map( $_->emit_javascript( $level ), @{$self->{"arguments"}} )) . '])'
-            }
-            return Perlito5::Javascript::pkg() . '.shift([List__])'
         }
 
         if ($code eq 'map') {
