@@ -617,6 +617,58 @@ for ($_) {
         };
         return (('function () { return ' . $argument->emit_javascript($level, $wantarray) . ' }'))
     };
+    ((my  %emit_js) = (('infix:<=~>' => sub {
+    ((my  $self) = $_[0]);
+    emit_regex_javascript('=~', $self->{'arguments'}->[0], $self->{'arguments'}->[1])
+}), ('infix:<!~>' => sub {
+    ((my  $self) = $_[0]);
+    emit_regex_javascript('!~', $self->{'arguments'}->[0], $self->{'arguments'}->[1])
+}), ('p5:s' => sub {
+    ((my  $self) = $_[0]);
+    emit_regex_javascript('=~', Perlito5::AST::Var->new(('sigil' => '$'), ('namespace' => ''), ('name' => '_')), $self)
+}), ('p5:m' => sub {
+    ((my  $self) = $_[0]);
+    emit_regex_javascript('=~', Perlito5::AST::Var->new(('sigil' => '$'), ('namespace' => ''), ('name' => '_')), $self)
+}), ('__PACKAGE__' => sub {
+    ((my  $self) = $_[0]);
+    ('"' . $Perlito5::PKG_NAME . '"')
+}), ('wantarray' => sub {
+    ((my  $self) = $_[0]);
+    'p5want'
+}), ('package' => sub {
+    ((my  $self) = $_[0]);
+    ('var ' . Perlito5::Javascript::pkg() . ' = make_package("' . $self->{'namespace'} . '")')
+}), ('infix:<=>>' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    join(', ', map($_->emit_javascript($level), @{$self->{'arguments'}}))
+}), ('infix:<cmp>' => sub {
+    ((my  $self) = $_[0]);
+    ('p5cmp(' . join(', ', map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')')
+}), ('infix:<<=>>' => sub {
+    ((my  $self) = $_[0]);
+    ('p5cmp(' . join(', ', map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')')
+}), ('prefix:<!>' => sub {
+    ((my  $self) = $_[0]);
+    ('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ')')
+}), ('prefix:<~>' => sub {
+    ((my  $self) = $_[0]);
+    ('~( ' . Perlito5::Javascript::to_num($self->{'arguments'}->[0]) . ')')
+}), ('prefix:<->' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('-( ' . $self->{'arguments'}->[0]->emit_javascript($level, 'scalar') . ')')
+}), ('prefix:<+>' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ')')
+}), ('require' => sub {
+    ((my  $self) = $_[0]);
+    ('NAMESPACE["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . '])')
+})));
     sub Perlito5::AST::Apply::emit_javascript {
         ((my  $self) = shift());
         ((my  $level) = shift());
@@ -633,29 +685,8 @@ for ($_) {
             };
             return (('(' . $self->{'code'}->emit_javascript($level) . ')(' . join(',', @args) . ')'))
         };
-        if (($code eq 'infix:<=~>')) {
-            return (emit_regex_javascript('=~', $self->{'arguments'}->[0], $self->{'arguments'}->[1]))
-        };
-        if (($code eq 'infix:<!~>')) {
-            return (emit_regex_javascript('!~', $self->{'arguments'}->[0], $self->{'arguments'}->[1]))
-        };
-        if (($code eq 'p5:s')) {
-            return (emit_regex_javascript('=~', Perlito5::AST::Var->new(('sigil' => '$'), ('namespace' => ''), ('name' => '_')), $self))
-        };
-        if (($code eq 'p5:m')) {
-            return (emit_regex_javascript('=~', Perlito5::AST::Var->new(('sigil' => '$'), ('namespace' => ''), ('name' => '_')), $self))
-        };
-        if (($code eq '__PACKAGE__')) {
-            return (('"' . $Perlito5::PKG_NAME . '"'))
-        };
-        if (($code eq 'wantarray')) {
-            return ('p5want')
-        };
-        if (($code eq 'package')) {
-            return (('var ' . Perlito5::Javascript::pkg() . ' = make_package("' . $self->{'namespace'} . '")'))
-        };
-        if (($code eq 'infix:<=>>')) {
-            return (join(', ', map($_->emit_javascript($level), @{$self->{'arguments'}})))
+        if (exists($emit_js{$code})) {
+            return ($emit_js{$code}->($self, $level, $wantarray))
         };
         if (exists($Perlito5::Javascript::op_infix_js_str{$code})) {
             return (('(' . join($Perlito5::Javascript::op_infix_js_str{$code}, map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')'))
@@ -665,27 +696,6 @@ for ($_) {
         };
         if (exists($Perlito5::Javascript::op_prefix_js_str{$code})) {
             return (($Perlito5::Javascript::op_prefix_js_str{$code} . '(' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ')'))
-        };
-        if (($code eq 'infix:<cmp>')) {
-            return (('p5cmp(' . join(', ', map(Perlito5::Javascript::to_str($_), @{$self->{'arguments'}})) . ')'))
-        };
-        if (($code eq 'infix:<<=>>')) {
-            return (('p5cmp(' . join(', ', map(Perlito5::Javascript::to_num($_), @{$self->{'arguments'}})) . ')'))
-        };
-        if (($code eq 'prefix:<!>')) {
-            return (('!( ' . Perlito5::Javascript::to_bool($self->{'arguments'}->[0]) . ')'))
-        };
-        if (($code eq 'prefix:<~>')) {
-            return (('~( ' . Perlito5::Javascript::to_num($self->{'arguments'}->[0]) . ')'))
-        };
-        if (($code eq 'prefix:<->')) {
-            return (('-( ' . $self->{'arguments'}->[0]->emit_javascript($level, 'scalar') . ')'))
-        };
-        if (($code eq 'prefix:<+>')) {
-            return (('(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ')'))
-        };
-        if (($code eq 'require')) {
-            return (('NAMESPACE["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . '])'))
         };
         if (($code eq 'do')) {
             ((my  $ast) = Perlito5::AST::Apply->new(('code' => 'eval'), ('namespace' => ''), ('arguments' => [Perlito5::AST::Apply->new(('code' => 'slurp'), ('namespace' => 'Perlito5::IO'), ('arguments' => $self->{'arguments'}))])));
