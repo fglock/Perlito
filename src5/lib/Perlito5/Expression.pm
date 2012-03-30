@@ -1167,9 +1167,82 @@ sub exp_stmt {
 }
 
 
-token statement_modifier {
-    'if' | 'unless' | 'when' | 'foreach' | 'for' | 'while'
-};
+my @Modifier_chars = (7, 6, 5, 4, 3, 2);
+my %Modifier = (
+    'if'     => 1, 
+    'unless' => 1,  
+    'when'   => 1, 
+    'for'    => 1, 
+    'foreach'=> 1, 
+    'while'  => 1, 
+);
+
+sub statement_modifier {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $expression = $_[3]; 
+    for my $len ( @Modifier_chars ) {
+        my $term = substr($str, $pos, $len);
+        if (exists($Modifier{$term})) {
+            my $m = $self->modifier($str, $pos + $len, $term, $expression);
+            return $m if $m;
+        }
+    }
+    return 0;
+}
+
+sub modifier {
+    my $self = $_[0];
+    my $str = $_[1];
+    my $pos = $_[2];
+    my $modifier = $_[3];
+    my $expression = $_[4]; 
+
+    my $modifier_exp = $self->exp_parse($str, $pos);
+    # say "# statement modifier [", $modifier->flat(), "] exp: ", $modifier_exp->perl;
+    if (!$modifier_exp) {
+        die "Expected expression after '", $modifier->flat(), "'";
+    }
+    # TODO - require a statement terminator
+    # say "# statement_parse modifier result: ", $modifier_exp->perl;
+
+    if ($modifier eq 'if') {
+        return Perlito5::Match->new(
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
+            capture => Perlito5::AST::If->new(
+                cond      => $modifier_exp->flat()->{'exp'},
+                body      => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]),
+                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ ]) ) );
+    }
+    if ($modifier eq 'unless') {
+        return Perlito5::Match->new(
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
+            capture => Perlito5::AST::If->new(
+                cond      => $modifier_exp->flat()->{'exp'},
+                body      => Perlito5::AST::Lit::Block->new(stmts => [ ]),
+                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]) ) );
+    }
+    if ($modifier eq 'while') {
+        return Perlito5::Match->new(
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
+            capture => Perlito5::AST::While->new(
+                cond    => $modifier_exp->flat()->{'exp'},
+                body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) );
+    }
+    if  (  $modifier eq 'for'
+        || $modifier eq 'foreach'
+        ) 
+    {
+        return Perlito5::Match->new(
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
+            capture => Perlito5::AST::For->new(
+                cond    => $modifier_exp->flat()->{'exp'},
+                body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) );
+    }
+    die "Unexpected statement modifier '$modifier'";
+}
+
 
 token delimited_statement {
     <.Perlito5::Grammar.ws>?
@@ -1199,70 +1272,26 @@ sub statement_parse {
         # say "# statement result: ", $res->perl;
         return $res;
     }
-
     $res = $self->exp_parse($str, $pos);
     if (!$res) {
         # say "# not a statement or expression";
         return $res;
     }
-    
     if ($res->flat()->{'terminated'}) {
         # say "# statement expression terminated result: ", $res->perl;
         $res->{"capture"} = $res->flat()->{'exp'};
         return $res;
     }
     # say "# look for a statement modifier";
-    my $modifier = $self->statement_modifier($str, $res->to);
+    my $modifier = $self->statement_modifier($str, $res->to, $res->flat()->{'exp'});
     if (!$modifier) {
         # say "# statement expression no modifier result: ", $res->perl;
         # TODO - require a statement terminator
         $res->{"capture"} = $res->flat()->{'exp'};
         return $res;
     }
-    my $modifier_exp = $self->exp_parse($str, $modifier->to);
-    # say "# statement modifier [", $modifier->flat(), "] exp: ", $modifier_exp->perl;
-    if (!$modifier_exp) {
-        die "Expected expression after '", $modifier->flat(), "'";
-    }
-    # TODO - require a statement terminator
-    # say "# statement_parse modifier result: ", $modifier_exp->perl;
+    return $modifier;
 
-    $modifier = $modifier->flat();
-
-    if ($modifier eq 'if') {
-        return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
-            capture => Perlito5::AST::If->new(
-                cond      => $modifier_exp->flat()->{'exp'},
-                body      => Perlito5::AST::Lit::Block->new(stmts => [ $res->flat()->{'exp'} ]),
-                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ ]) ) );
-    }
-    if ($modifier eq 'unless') {
-        return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
-            capture => Perlito5::AST::If->new(
-                cond      => $modifier_exp->flat()->{'exp'},
-                body      => Perlito5::AST::Lit::Block->new(stmts => [ ]),
-                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ $res->flat()->{'exp'} ]) ) );
-    }
-    if ($modifier eq 'while') {
-        return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
-            capture => Perlito5::AST::While->new(
-                cond    => $modifier_exp->flat()->{'exp'},
-                body    => Perlito5::AST::Lit::Block->new(stmts => [ $res->flat()->{'exp'} ] ) ) );
-    }
-    if  (  $modifier eq 'for'
-        || $modifier eq 'foreach'
-        ) 
-    {
-        return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
-            capture => Perlito5::AST::For->new(
-                cond    => $modifier_exp->flat()->{'exp'},
-                body    => Perlito5::AST::Lit::Block->new(stmts => [ $res->flat()->{'exp'} ] ) ) );
-    }
-    die "Unexpected statement modifier '$modifier'";
 }
 
 1;
