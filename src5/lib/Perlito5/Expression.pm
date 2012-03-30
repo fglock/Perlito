@@ -909,19 +909,7 @@ sub argument_parse {
                 exp        => '*undef*',
                 terminated => undef } )
     }
-    # if the expression terminates in a block, the block was pushed to num_stack
-    my $block;
-    if (scalar(@$res) > 1) {
-        $block = pop @$res; # pop_term($res);
-        $block = Perlito5::AST::Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
-        # say "# list exp terminated with a block: ", $block->perl;
-    }
     my $result = pop_term($res);
-    if (scalar(@$res) > 0) {
-        $block = pop @$res; # pop_term($res);
-        $block = Perlito5::AST::Lit::Block->new( stmts => $block->[2], sig => $block->[3] );
-        # say "# list exp terminated with a block (2): ", $block->perl;
-    }
     return Perlito5::Match->new(
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
         capture => {

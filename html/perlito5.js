@@ -5186,17 +5186,8 @@ var p5100 = NAMESPACE['main'];
 				if ( (num(p5129.scalar([(v_res || (v_res = new ArrayRef([])))._array_], 0)) == 0) ) {
 					throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', '*undef*', 'terminated', null))))), p5want)], p5want));
 				};
-				var v_block = null;
-				if ( (num(p5129.scalar([(v_res || (v_res = new ArrayRef([])))._array_], 0)) > 1) ) {
-					(v_block = (p5129.pop([(v_res || (v_res = new ArrayRef([])))._array_], 0)));
-					(v_block = (_call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (v_block || (v_block = new ArrayRef([])))._array_[2], 'sig', (v_block || (v_block = new ArrayRef([])))._array_[3]), 0)));
-				};
 				var v_result = null;
 				(v_result = (p5129.pop_term(interpolate_array(v_res), 0)));
-				if ( (num(p5129.scalar([(v_res || (v_res = new ArrayRef([])))._array_], 0)) > 0) ) {
-					(v_block = (p5129.pop([(v_res || (v_res = new ArrayRef([])))._array_], 0)));
-					(v_block = (_call_(NAMESPACE["Perlito5::AST::Lit::Block"], "new", interpolate_array('stmts', (v_block || (v_block = new ArrayRef([])))._array_[2], 'sig', (v_block || (v_block = new ArrayRef([])))._array_[3]), 0)));
-				};
 				throw(p5context([_call_(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', (new HashRef(array_to_hash(interpolate_array('exp', v_result, 'terminated', v_terminated))))), p5want)], p5want))
 			}
 			catch(err) {

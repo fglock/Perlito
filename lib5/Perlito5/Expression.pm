@@ -1255,16 +1255,7 @@ sub Perlito5::Expression::argument_parse {
     if ((scalar(@{$res}) == 0)) {
         return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => {('exp' => '*undef*'), ('terminated' => undef())})))
     };
-    (my  $block);
-    if ((scalar(@{$res}) > 1)) {
-        ($block = pop(@{$res}));
-        ($block = Perlito5::AST::Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
-    };
     ((my  $result) = pop_term($res));
-    if ((scalar(@{$res}) > 0)) {
-        ($block = pop(@{$res}));
-        ($block = Perlito5::AST::Lit::Block->new(('stmts' => $block->[2]), ('sig' => $block->[3])))
-    };
     return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => {('exp' => $result), ('terminated' => $terminated)})))
 };
 sub Perlito5::Expression::list_parse {
