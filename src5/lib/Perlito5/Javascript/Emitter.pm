@@ -995,6 +995,102 @@ package Perlito5::AST::Apply;
             'NAMESPACE["Perlito5::Grammar::Use"]["require"]([' . Perlito5::Javascript::to_str( $self->{"arguments"}[0] ) . '])';
         },
 
+        'prefix:<$>' => sub {
+            my $self = $_[0];
+            my $arg  = $self->{"arguments"}->[0];
+            '(' . $arg->emit_javascript . ')._scalar_';
+        },
+        'prefix:<@>' => sub {
+            my $self  = $_[0];
+            my $level = $_[1];
+            my $arg   = $self->{"arguments"}->[0];
+            '(' . $arg->emit_javascript($level) . ' || (' . $arg->emit_javascript($level) . ' = new ArrayRef([]))' . ')._array_';
+        },
+        'prefix:<$#>' => sub {
+            my $self  = $_[0];
+            my $level = $_[1];
+            my $arg   = $self->{"arguments"}->[0];
+            '((' . $arg->emit_javascript($level) . ' || (' . $arg->emit_javascript($level) . ' = new ArrayRef([]))' . ')._array_.length - 1)';
+        },
+        'prefix:<%>' => sub {
+            my $self  = $_[0];
+            my $level = $_[1];
+            my $arg   = $self->{"arguments"}->[0];
+            '(' . $arg->emit_javascript($level) . ')._hash_';
+        },
+        'prefix:<&>' => sub {
+            my $self  = $_[0];
+            my $level = $_[1];
+            my $arg   = $self->{"arguments"}->[0];
+            'p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript($level) . ')';
+        },
+        'circumfix:<[ ]>' => sub {
+            my $self = $_[0];
+            '(new ArrayRef(' . Perlito5::Javascript::to_list( $self->{"arguments"} ) . '))';
+        },
+        'circumfix:<{ }>' => sub {
+            my $self = $_[0];
+            '(new HashRef(array_to_hash(' . Perlito5::Javascript::to_list( $self->{"arguments"} ) . ')))';
+        },
+        'prefix:<\\>' => sub {
+            my $self  = $_[0];
+            my $level = $_[1];
+            my $arg   = $self->{"arguments"}->[0];
+            if ( $arg->isa('Perlito5::AST::Var') ) {
+                if ( $arg->sigil eq '@' ) {
+                    return '(new ArrayRef(' . $arg->emit_javascript($level) . '))';
+                }
+                if ( $arg->sigil eq '%' ) {
+                    return '(new HashRef(' . $arg->emit_javascript($level) . '))';
+                }
+                if ( $arg->sigil eq '&' ) {
+                    if ( $arg->{"namespace"} ) {
+                        return 'NAMESPACE["' . $arg->{"namespace"} . '"].' . $arg->{"name"};
+                    }
+                    else {
+                        return Perlito5::Javascript::pkg() . '.' . $arg->{"name"};
+                    }
+                }
+            }
+            return '(new ScalarRef(' . $arg->emit_javascript($level) . '))';
+        },
+
+        'postfix:<++>' => sub {
+            my $self = $_[0];
+            '(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')++';
+        },
+        'postfix:<-->' => sub {
+            my $self = $_[0];
+            '(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')--';
+        },
+        'prefix:<++>' => sub {
+            my $self = $_[0];
+            '++(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
+        },
+        'prefix:<-->' => sub {
+            my $self = $_[0];
+            '--(' . join( ' ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
+        },
+
+        'infix:<x>' => sub {
+            my $self = $_[0];
+            'str_replicate(' . join( ', ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
+        },
+
+        'list:<.>' => sub {
+            my $self = $_[0];
+            '(' . join( ' + ', map( Perlito5::Javascript::to_str($_), @{ $self->{"arguments"} } ) ) . ')';
+        },
+        'list:<,>' => sub {
+            my $self = $_[0];
+            Perlito5::Javascript::to_list( $self->{"arguments"} );
+        },
+
+        'infix:<..>' => sub {
+            my $self = $_[0];
+            '(function (a) { ' . 'for (var i=' . $self->{"arguments"}->[0]->emit_javascript() . ', l=' . $self->{"arguments"}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])';
+        },
+
     );
 
 
@@ -1181,91 +1277,6 @@ package Perlito5::AST::Apply;
                     . ')';
         }
 
-        if ( $code eq 'prefix:<$>' ) {
-            my $arg = $self->{"arguments"}->[0];
-            return '(' . $arg->emit_javascript . ')._scalar_';
-        }
-        if ( $code eq 'prefix:<@>' ) {
-            my $arg = $self->{"arguments"}->[0];
-            return
-                  '('
-                .   $arg->emit_javascript( $level ) 
-                .   ' || (' . $arg->emit_javascript( $level ) . ' = new ArrayRef([]))'
-                . ')._array_';
-        }
-        if ( $code eq 'prefix:<$#>' ) {
-            my $arg = $self->{"arguments"}->[0];
-            return
-                  '(('
-                .   $arg->emit_javascript( $level ) 
-                .   ' || (' . $arg->emit_javascript( $level ) . ' = new ArrayRef([]))'
-                . ')._array_.length - 1)';
-        }
-        if ( $code eq 'prefix:<%>' ) {
-            my $arg = $self->{"arguments"}->[0];
-            return '(' . $arg->emit_javascript( $level ) . ')._hash_';
-        }
-        if ( $code eq 'prefix:<&>' ) {
-            my $arg = $self->{"arguments"}->[0];
-            return 'p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript( $level ) . ')';
-        }
-
-        if ( $code eq 'circumfix:<[ ]>' ) {
-            return '(new ArrayRef(' . Perlito5::Javascript::to_list($self->{"arguments"}) . '))'
-        }
-        if ( $code eq 'circumfix:<{ }>' ) {
-            return '(new HashRef(array_to_hash(' . Perlito5::Javascript::to_list($self->{"arguments"}) . ')))'
-        }
-        if ( $code eq 'prefix:<\\>' ) {
-            my $arg = $self->{"arguments"}->[0];
-            if ( $arg->isa('Perlito5::AST::Var') ) {
-                if ( $arg->sigil eq '@' ) {
-                    return '(new ArrayRef(' . $arg->emit_javascript( $level ) . '))';
-                }
-                if ( $arg->sigil eq '%' ) {
-                    return '(new HashRef(' . $arg->emit_javascript( $level ) . '))';
-                }
-                if ( $arg->sigil eq '&' ) {
-                    if ($arg->{"namespace"}) {
-                        return 'NAMESPACE["' . $arg->{"namespace"} . '"].' . $arg->{"name"};
-                    }
-                    else {
-                        return Perlito5::Javascript::pkg() . '.' . $arg->{"name"};
-                    }
-                }
-            }
-            return '(new ScalarRef(' . $arg->emit_javascript( $level ) . '))';
-        }
-
-        if ($code eq 'postfix:<++>') { return '('   . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')++' }
-        if ($code eq 'postfix:<-->') { return '('   . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')--' }
-        if ($code eq 'prefix:<++>')  { return '++(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
-        if ($code eq 'prefix:<-->')  { return '--(' . join(' ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
-
-        if ($code eq 'infix:<x>')  { return 'str_replicate(' . join(', ', map( $_->emit_javascript, @{$self->{"arguments"}} ))  . ')' }
-
-        if ($code eq 'list:<.>') { 
-            return '('  
-                . join( ' + ',
-                        map( Perlito5::Javascript::to_str($_), @{$self->{"arguments"}} )
-                      )
-                . ')' 
-        }
-        if ($code eq 'list:<,>') { 
-            return Perlito5::Javascript::to_list($self->{"arguments"}) 
-        }
-
-        if ($code eq 'infix:<..>') {
-            return '(function (a) { '
-                    . 'for (var i=' . $self->{"arguments"}->[0]->emit_javascript()
-                           . ', l=' . $self->{"arguments"}->[1]->emit_javascript() . '; '
-                       . 'i<=l; ++i)'
-                    . '{ '
-                        . 'a.push(i) '
-                    . '}; '
-                    . 'return a '
-                . '})([])'
-        }
 
         if (  $code eq 'infix:<&&>'
            || $code eq 'infix:<and>'
