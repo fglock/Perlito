@@ -611,7 +611,7 @@ token term_return {
         }
 };
 
-token term_sub {
+token term_anon_sub {
     'sub' <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.anon_sub_def>
                 { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.anon_sub_def"}->flat()     ] }
 };
