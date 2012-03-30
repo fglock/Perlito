@@ -329,49 +329,38 @@ sub Perlito5::Precedence::precedence_parse {
                 unshift(@{$op_stack}, $token)
             }
             else {
-                if (((($token->[1] eq 'block')) && is_term($last))) {
-                    for ( ; scalar(@{$op_stack});  ) {
-                        $reduce->($op_stack, $num_stack)
+                if (is_term($token)) {
+                    if (is_term($last)) {
+                        Perlito5::Runtime::say('#      last:  ', Perlito5::Dumper::Dumper($last));
+                        Perlito5::Runtime::say('#      token: ', Perlito5::Dumper::Dumper($token));
+                        die('Value tokens must be separated by an operator')
                     };
-                    push(@{$num_stack}, $token );
-                    ($End_token = $last_end_token);
-                    ($End_token_chars = $last_end_token_chars);
-                    return ($num_stack)
+                    ($token->[0] = 'term');
+                    push(@{$num_stack}, $token )
                 }
                 else {
-                    if (is_term($token)) {
-                        if (is_term($last)) {
-                            Perlito5::Runtime::say('#      last:  ', Perlito5::Dumper::Dumper($last));
-                            Perlito5::Runtime::say('#      token: ', Perlito5::Dumper::Dumper($token));
-                            die('Value tokens must be separated by an operator')
-                        };
-                        ($token->[0] = 'term');
-                        push(@{$num_stack}, $token )
-                    }
-                    else {
-                        if ($Precedence->{$token->[1]}) {
-                            ((my  $pr) = $Precedence->{$token->[1]});
-                            if ($Assoc->{'right'}->{$token->[1]}) {
-                                for ( ; (scalar(@{$op_stack}) && (($pr < $Precedence->{($op_stack->[0])->[1]})));  ) {
-                                    $reduce->($op_stack, $num_stack)
-                                }
+                    if ($Precedence->{$token->[1]}) {
+                        ((my  $pr) = $Precedence->{$token->[1]});
+                        if ($Assoc->{'right'}->{$token->[1]}) {
+                            for ( ; (scalar(@{$op_stack}) && (($pr < $Precedence->{($op_stack->[0])->[1]})));  ) {
+                                $reduce->($op_stack, $num_stack)
                             }
-                            else {
-                                for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
-                                    $reduce->($op_stack, $num_stack)
-                                }
-                            };
-                            if ($Operator->{'ternary'}->{$token->[1]}) {
-                                ($token->[0] = 'ternary')
-                            }
-                            else {
-                                ($token->[0] = 'infix')
-                            };
-                            unshift(@{$op_stack}, $token)
                         }
                         else {
-                            die('Unknown token: ' . chr(39), $token->[1], chr(39))
+                            for ( ; (scalar(@{$op_stack}) && (($pr <= $Precedence->{($op_stack->[0])->[1]})));  ) {
+                                $reduce->($op_stack, $num_stack)
+                            }
+                        };
+                        if ($Operator->{'ternary'}->{$token->[1]}) {
+                            ($token->[0] = 'ternary')
                         }
+                        else {
+                            ($token->[0] = 'infix')
+                        };
+                        unshift(@{$op_stack}, $token)
+                    }
+                    else {
+                        die('Unknown token: ' . chr(39), $token->[1], chr(39))
                     }
                 }
             }

@@ -3297,52 +3297,41 @@ var p5100 = NAMESPACE['main'];
 								})();
 						}
 						else {
-							if ( ((p5str((v_token || (v_token = new ArrayRef([])))._array_[1]) == 'block') && bool(p5127.is_term(interpolate_array(v_last), 0))) ) {
-								for ( ; bool(p5127.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_], 0));  ) {
-									(v_reduce)(interpolate_array(v_op_stack, v_num_stack));
+							if ( bool(p5127.is_term(interpolate_array(v_token), 0)) ) {
+								if ( bool(p5127.is_term(interpolate_array(v_last), 0)) ) {
+									p5127.say(interpolate_array('#      last:  ', NAMESPACE["Perlito5::Dumper"].Dumper(interpolate_array(v_last), 1)), null);
+									p5127.say(interpolate_array('#      token: ', NAMESPACE["Perlito5::Dumper"].Dumper(interpolate_array(v_token), 1)), null);
+									p5127.die([interpolate_array('Value tokens must be separated by an operator')], null);
 								};
+								((v_token || (v_token = new ArrayRef([])))._array_[0] = 'term');
 								p5127.push([(v_num_stack || (v_num_stack = new ArrayRef([])))._array_, interpolate_array(v_token)], null);
-								(v_End_token = (v_last_end_token));
-								(v_End_token_chars = (v_last_end_token_chars));
-								throw(p5context([v_num_stack], p5want));
 							}
 							else {
-								if ( bool(p5127.is_term(interpolate_array(v_token), 0)) ) {
-									if ( bool(p5127.is_term(interpolate_array(v_last), 0)) ) {
-										p5127.say(interpolate_array('#      last:  ', NAMESPACE["Perlito5::Dumper"].Dumper(interpolate_array(v_last), 1)), null);
-										p5127.say(interpolate_array('#      token: ', NAMESPACE["Perlito5::Dumper"].Dumper(interpolate_array(v_token), 1)), null);
-										p5127.die([interpolate_array('Value tokens must be separated by an operator')], null);
-									};
-									((v_token || (v_token = new ArrayRef([])))._array_[0] = 'term');
-									p5127.push([(v_num_stack || (v_num_stack = new ArrayRef([])))._array_, interpolate_array(v_token)], null);
+								if ( bool((v_Precedence || (v_Precedence = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) ) {
+									(function () {
+										var v_pr = null;
+										(v_pr = ((v_Precedence || (v_Precedence = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]));
+										if ( bool(((v_Assoc || (v_Assoc = new HashRef({})))._hash_['right'] || ((v_Assoc || (v_Assoc = new HashRef({})))._hash_['right'] = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) ) {
+											for ( ; (bool(p5127.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_], 0)) && (num(v_pr) < num((v_Precedence || (v_Precedence = new HashRef({})))._hash_[(p5context([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]], 0) || (p5context([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]], 0) = new ArrayRef([])))._array_[1]])));  ) {
+												(v_reduce)(interpolate_array(v_op_stack, v_num_stack));
+											};
+										}
+										else {
+											for ( ; (bool(p5127.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_], 0)) && (num(v_pr) <= num((v_Precedence || (v_Precedence = new HashRef({})))._hash_[(p5context([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]], 0) || (p5context([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]], 0) = new ArrayRef([])))._array_[1]])));  ) {
+												(v_reduce)(interpolate_array(v_op_stack, v_num_stack));
+											};
+										};
+										if ( bool(((v_Operator || (v_Operator = new HashRef({})))._hash_['ternary'] || ((v_Operator || (v_Operator = new HashRef({})))._hash_['ternary'] = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) ) {
+											((v_token || (v_token = new ArrayRef([])))._array_[0] = 'ternary');
+										}
+										else {
+											((v_token || (v_token = new ArrayRef([])))._array_[0] = 'infix');
+										};
+										p5127.unshift([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_, interpolate_array(v_token)], null);
+										})();
 								}
 								else {
-									if ( bool((v_Precedence || (v_Precedence = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) ) {
-										(function () {
-											var v_pr = null;
-											(v_pr = ((v_Precedence || (v_Precedence = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]));
-											if ( bool(((v_Assoc || (v_Assoc = new HashRef({})))._hash_['right'] || ((v_Assoc || (v_Assoc = new HashRef({})))._hash_['right'] = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) ) {
-												for ( ; (bool(p5127.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_], 0)) && (num(v_pr) < num((v_Precedence || (v_Precedence = new HashRef({})))._hash_[(p5context([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]], 0) || (p5context([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]], 0) = new ArrayRef([])))._array_[1]])));  ) {
-													(v_reduce)(interpolate_array(v_op_stack, v_num_stack));
-												};
-											}
-											else {
-												for ( ; (bool(p5127.scalar([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_], 0)) && (num(v_pr) <= num((v_Precedence || (v_Precedence = new HashRef({})))._hash_[(p5context([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]], 0) || (p5context([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_[0]], 0) = new ArrayRef([])))._array_[1]])));  ) {
-													(v_reduce)(interpolate_array(v_op_stack, v_num_stack));
-												};
-											};
-											if ( bool(((v_Operator || (v_Operator = new HashRef({})))._hash_['ternary'] || ((v_Operator || (v_Operator = new HashRef({})))._hash_['ternary'] = new HashRef({})))._hash_[(v_token || (v_token = new ArrayRef([])))._array_[1]]) ) {
-												((v_token || (v_token = new ArrayRef([])))._array_[0] = 'ternary');
-											}
-											else {
-												((v_token || (v_token = new ArrayRef([])))._array_[0] = 'infix');
-											};
-											p5127.unshift([(v_op_stack || (v_op_stack = new ArrayRef([])))._array_, interpolate_array(v_token)], null);
-											})();
-									}
-									else {
-										p5127.die([interpolate_array('Unknown token: ' + String.fromCharCode(39), (v_token || (v_token = new ArrayRef([])))._array_[1], String.fromCharCode(39))], null);
-									};
+									p5127.die([interpolate_array('Unknown token: ' + String.fromCharCode(39), (v_token || (v_token = new ArrayRef([])))._array_[1], String.fromCharCode(39))], null);
 								};
 							};
 						};

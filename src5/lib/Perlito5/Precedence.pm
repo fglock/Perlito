@@ -417,17 +417,6 @@ sub precedence_parse {
             }
             unshift( @$op_stack, $token);
         }
-        elsif (($token->[1] eq 'block') && is_term($last)) {
-            # a block in this position terminates the current expression
-            # say "# there is a block after the expression: ", $token->perl;
-            while (scalar(@$op_stack)) {
-                $reduce->($op_stack, $num_stack);
-            }
-            push( @$num_stack, $token);  # save the block
-            $End_token = $last_end_token;  # restore previous 'end token' context
-            $End_token_chars = $last_end_token_chars;  # restore previous 'end token' context
-            return $num_stack;
-        }
         elsif (is_term($token)) {
             if (is_term($last)) {
                 say "#      last:  ", Perlito5::Dumper::Dumper($last);
