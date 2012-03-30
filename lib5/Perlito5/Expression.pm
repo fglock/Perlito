@@ -916,7 +916,7 @@ sub Perlito5::Expression::term_return {
 }))));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Expression::term_sub {
+sub Perlito5::Expression::term_anon_sub {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
@@ -1187,90 +1187,6 @@ sub Perlito5::Expression::term_space {
 }))));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Expression::has_newline_after {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos)));
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((((do {
-    (('#' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    (((do {
-    ((my  $m2) = Perlito5::Grammar->is_newline($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-})))
-}))) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((do {
-    ((my  $m2) = Perlito5::Grammar->space($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ((my  $m2) = $grammar->has_newline_after($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-}))))
-})))
-}))));
-    ($tmp ? $MATCH : 0)
-};
-sub Perlito5::Expression::has_no_comma_or_colon_after {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos)));
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    ((((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ((my  $tmp) = $MATCH);
-    ($MATCH = Perlito5::Match->new(('str' => $str), ('from' => $tmp->{'to'}), ('to' => $tmp->{'to'})));
-    ((my  $res) = ((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    (((do {
-    ((',' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))
-})) || ((do {
-    ($MATCH->{'to'} = $pos1);
-    ((((':' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-})))
-}))
-})));
-    ($MATCH = ($res ? 0 : $tmp))
-}))) && ((('' ne substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))))
-}))
-}))));
-    ($tmp ? $MATCH : 0)
-};
 ((my  $Argument_end_token) = {(':' => 1), (']' => 1), (')' => 1), ('}' => 1), (';' => 1), (',' => 1), ('<' => 1), ('>' => 1), ('=' => 1), ('&' => 1), ('|' => 1), ('^' => 1), ('or' => 1), ('if' => 1), ('=>' => 1), ('lt' => 1), ('le' => 1), ('gt' => 1), ('ge' => 1), ('<=' => 1), ('>=' => 1), ('==' => 1), ('!=' => 1), ('ne' => 1), ('eq' => 1), ('..' => 1), ('~~' => 1), ('&&' => 1), ('||' => 1), ('+=' => 1), ('-=' => 1), ('*=' => 1), ('/=' => 1), ('x=' => 1), ('|=' => 1), ('&=' => 1), ('.=' => 1), ('^=' => 1), ('%=' => 1), ('//' => 1), ('for' => 1), ('and' => 1), ('xor' => 1), ('...' => 1), ('<=>' => 1), ('cmp' => 1), ('<<=' => 1), ('>>=' => 1), ('||=' => 1), ('&&=' => 1), ('//=' => 1), ('**=' => 1), ('when' => 1), ('while' => 1), ('unless' => 1), ('foreach' => 1)});
 ((my  $Argument_end_token_chars) = [7, 6, 5, 4, 3, 2, 1]);
 ((my  $List_end_token) = {(':' => 1), (']' => 1), (')' => 1), ('}' => 1), (';' => 1), ('or' => 1), ('if' => 1), ('for' => 1), ('and' => 1), ('xor' => 1), ('else' => 1), ('when' => 1), ('while' => 1), ('elsif' => 1), ('unless' => 1), ('foreach' => 1)});
@@ -1328,18 +1244,6 @@ sub Perlito5::Expression::argument_parse {
         };
         if (($v->[0] ne 'end')) {
             ($last_pos = $m->to())
-        }
-    };
-    if (((($v->[0] eq 'postfix_or_term') && ($v->[1] eq 'block')) && $last_token_was_space)) {
-        if ($self->has_newline_after($str, $last_pos)) {
-            ($terminated = 1);
-            push(@{$lexer_stack}, ['end', '*end*'] )
-        }
-        else {
-            if ($self->has_no_comma_or_colon_after($str, $last_pos)) {
-                ($terminated = 1);
-                push(@{$lexer_stack}, ['end', '*end*'] )
-            }
         }
     };
     ($last_token_was_space = (($v->[0] eq 'space')));

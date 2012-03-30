@@ -679,14 +679,6 @@ token term_space {
     <.Perlito5::Grammar.ws>           { $MATCH->{"capture"} = [ 'space',   ' ' ] }
 };
 
-token has_newline_after {
-    |    '#'
-    |    <.Perlito5::Grammar.is_newline>
-    |    <.Perlito5::Grammar.space>  <.has_newline_after>
-};
-token has_no_comma_or_colon_after {
-    <.Perlito5::Grammar.ws> <!before [ ',' | ':' ]> .
-};
 
 my $Argument_end_token = {
     # 1 chars
@@ -897,22 +889,6 @@ sub argument_parse {
 
         # say "# list_lexer " . $v->perl;
 
-        if (   $v->[0] eq 'postfix_or_term'
-            && $v->[1] eq 'block'
-            && $last_token_was_space
-           )
-        {
-            if ($self->has_newline_after($str, $last_pos)) {
-                # a block followed by newline terminates the expression
-                $terminated = 1;
-                push( @$lexer_stack,  [ 'end', '*end*' ] );
-            }
-            elsif ($self->has_no_comma_or_colon_after($str, $last_pos)) {
-                # a sequence ( block - space - not_comma_or_colon ) terminates the list
-                $terminated = 1;
-                push( @$lexer_stack,  [ 'end', '*end*' ] );
-            }
-        }
         $last_token_was_space = ($v->[0] eq 'space');
         $is_first_token = 0;
 
