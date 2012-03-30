@@ -819,6 +819,73 @@ for ($_) {
         return ((Perlito5::Javascript::pkg() . '.shift([' . join(', ', map($_->emit_javascript($level), @{$self->{'arguments'}})) . '])'))
     };
     return ((Perlito5::Javascript::pkg() . '.shift([List__])'))
+}), ('map' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  @in) = @{$self->{'arguments'}});
+    ((my  $fun) = shift(@in));
+    ((my  $list) = Perlito5::Javascript::to_list(\@in));
+    if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
+        ($fun = $fun->{'stmts'})
+    }
+    else {
+        ($fun = [$fun])
+    };
+    ('p5map(' . Perlito5::Javascript::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')')
+}), ('grep' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  @in) = @{$self->{'arguments'}});
+    ((my  $fun) = shift(@in));
+    ((my  $list) = Perlito5::Javascript::to_list(\@in));
+    if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
+        ($fun = $fun->{'stmts'})
+    }
+    else {
+        ($fun = [$fun])
+    };
+    ('p5grep(' . Perlito5::Javascript::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')')
+}), ('sort' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  @in) = @{$self->{'arguments'}});
+    (my  $fun);
+    (my  $list);
+    if ((ref($in[0]) eq 'Perlito5::AST::Lit::Block')) {
+        ($fun = shift(@in));
+        ($fun = ('function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun->{'stmts'}), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
+    }
+    else {
+        ($fun = 'null')
+    };
+    ($list = Perlito5::Javascript::to_list(\@in));
+    ('p5sort(' . Perlito5::Javascript::pkg() . ', ' . $fun . ', ' . $list . ')')
+}), ('infix:<//>' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ('defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . $self->emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')')
+}), ('exists' => sub {
+    ((my  $self) = shift());
+    ((my  $level) = shift());
+    ((my  $wantarray) = shift());
+    ((my  $arg) = $self->{'arguments'}->[0]);
+    if ($arg->isa('Perlito5::AST::Lookup')) {
+        ((my  $v) = $arg->obj());
+        if (($v->isa('Perlito5::AST::Var') && ($v->sigil() eq '$'))) {
+            ($v = Perlito5::AST::Var->new(('sigil' => '%'), ('namespace' => $v->namespace()), ('name' => $v->name())));
+            return (('(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
+        };
+        return (('(' . $v->emit_javascript() . ')._hash_.hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
+    };
+    if ($arg->isa('Perlito5::AST::Call')) {
+        if (($arg->method() eq 'postcircumfix:<{ }>')) {
+            return (('(' . $arg->invocant()->emit_javascript() . ')._hash_.hasOwnProperty(' . $arg->{'arguments'}->emit_javascript() . ')'))
+        }
+    }
 })));
     sub Perlito5::AST::Apply::emit_javascript {
         ((my  $self) = shift());
@@ -848,68 +915,11 @@ for ($_) {
         if (exists($Perlito5::Javascript::op_prefix_js_str{$code})) {
             return (($Perlito5::Javascript::op_prefix_js_str{$code} . '(' . Perlito5::Javascript::to_str($self->{'arguments'}->[0]) . ')'))
         };
-        if (($code eq 'map')) {
-            ((my  @in) = @{$self->{'arguments'}});
-            ((my  $fun) = shift(@in));
-            ((my  $list) = Perlito5::Javascript::to_list(\@in));
-            if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
-                ($fun = $fun->{'stmts'})
-            }
-            else {
-                ($fun = [$fun])
-            };
-            return (('p5map(' . Perlito5::Javascript::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')'))
-        };
-        if (($code eq 'grep')) {
-            ((my  @in) = @{$self->{'arguments'}});
-            ((my  $fun) = shift(@in));
-            ((my  $list) = Perlito5::Javascript::to_list(\@in));
-            if ((ref($fun) eq 'Perlito5::AST::Lit::Block')) {
-                ($fun = $fun->{'stmts'})
-            }
-            else {
-                ($fun = [$fun])
-            };
-            return (('p5grep(' . Perlito5::Javascript::pkg() . ', ' . 'function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}, ' . $list . ')'))
-        };
-        if (($code eq 'sort')) {
-            ((my  @in) = @{$self->{'arguments'}});
-            (my  $fun);
-            (my  $list);
-            if ((ref($in[0]) eq 'Perlito5::AST::Lit::Block')) {
-                ($fun = shift(@in));
-                ($fun = ('function (p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $fun->{'stmts'}), ('needs_return' => 1), ('top_level' => 0)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'))
-            }
-            else {
-                ($fun = 'null')
-            };
-            ($list = Perlito5::Javascript::to_list(\@in));
-            return (('p5sort(' . Perlito5::Javascript::pkg() . ', ' . $fun . ', ' . $list . ')'))
-        };
         if ((($code eq 'infix:<&&>') || ($code eq 'infix:<and>'))) {
             return (('and' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . $self->emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
         };
         if ((($code eq 'infix:<||>') || ($code eq 'infix:<or>'))) {
             return (('or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . $self->emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
-        };
-        if (($code eq 'infix:<//>')) {
-            return (('defined_or' . '(' . $self->{'arguments'}->[0]->emit_javascript($level, $wantarray) . ', ' . $self->emit_function_javascript($level, $wantarray, $self->{'arguments'}->[1]) . ')'))
-        };
-        if (($code eq 'exists')) {
-            ((my  $arg) = $self->{'arguments'}->[0]);
-            if ($arg->isa('Perlito5::AST::Lookup')) {
-                ((my  $v) = $arg->obj());
-                if (($v->isa('Perlito5::AST::Var') && ($v->sigil() eq '$'))) {
-                    ($v = Perlito5::AST::Var->new(('sigil' => '%'), ('namespace' => $v->namespace()), ('name' => $v->name())));
-                    return (('(' . $v->emit_javascript() . ').hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
-                };
-                return (('(' . $v->emit_javascript() . ')._hash_.hasOwnProperty(' . ($arg->index_exp())->emit_javascript() . ')'))
-            };
-            if ($arg->isa('Perlito5::AST::Call')) {
-                if (($arg->method() eq 'postcircumfix:<{ }>')) {
-                    return (('(' . $arg->invocant()->emit_javascript() . ')._hash_.hasOwnProperty(' . $arg->{'arguments'}->emit_javascript() . ')'))
-                }
-            }
         };
         if ($self->{'namespace'}) {
             if ((($self->{'namespace'} eq 'JS') && ($code eq 'inline'))) {
