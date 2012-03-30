@@ -1581,9 +1581,6 @@ sub Perlito5::Expression::statement_parse {
     if (!($res)) {
         return ($res)
     };
-    if ((ref($res->flat()->{'exp'}) eq 'Perlito5::AST::Lit::Block')) {
-        ($res->flat()->{'exp'} = Perlito5::AST::Do->new(('block' => $res->flat()->{'exp'})))
-    };
     if ($res->flat()->{'terminated'}) {
         ($res->{'capture'} = $res->flat()->{'exp'});
         return ($res)

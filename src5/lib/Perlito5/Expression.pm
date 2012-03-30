@@ -1205,10 +1205,7 @@ sub statement_parse {
         # say "# not a statement or expression";
         return $res;
     }
-    if ( ref( $res->flat()->{'exp'} ) eq 'Perlito5::AST::Lit::Block' ) {
-        # standalone block
-        $res->flat()->{'exp'} = Perlito5::AST::Do->new(block => $res->flat()->{'exp'});
-    }
+    
     if ($res->flat()->{'terminated'}) {
         # say "# statement expression terminated result: ", $res->perl;
         $res->{"capture"} = $res->flat()->{'exp'};

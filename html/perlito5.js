@@ -5735,9 +5735,6 @@ var p5100 = NAMESPACE['main'];
 				if ( !( bool(v_res)) ) {
 					throw(p5context([v_res], p5want));
 				};
-				if ( (p5str(p5129.ref([(_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp']], 0)) == 'Perlito5::AST::Lit::Block') ) {
-					((_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp'] = _call_(NAMESPACE["Perlito5::AST::Do"], "new", interpolate_array('block', (_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp']), p5want));
-				};
 				if ( bool((_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['terminated']) ) {
 					((v_res || (v_res = new HashRef({})))._hash_['capture'] = (_call_(v_res, "flat", [], p5want) || (_call_(v_res, "flat", [], p5want) = new HashRef({})))._hash_['exp']);
 					throw(p5context([v_res], p5want));
