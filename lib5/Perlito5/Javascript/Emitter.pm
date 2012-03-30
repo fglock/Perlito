@@ -23,7 +23,9 @@ join("", chr(9) x $level)
     ((our  %op_prefix_js_str) = (('prefix:<-A>' => 'p5atime'), ('prefix:<-M>' => 'p5mtime'), ('prefix:<-C>' => 'p5ctime'), ('prefix:<-s>' => 'p5size'), ('prefix:<-f>' => 'p5is_file'), ('prefix:<-d>' => 'p5is_directory')));
     ((our  %op_infix_js_str) = (('infix:<eq>' => ' == '), ('infix:<ne>' => ' != '), ('infix:<le>' => ' <= '), ('infix:<ge>' => ' >= ')));
     ((our  %op_infix_js_num) = (('infix:<==>' => ' == '), ('infix:<!=>' => ' != '), ('infix:<+>' => ' + '), ('infix:<->' => ' - '), ('infix:<*>' => ' * '), ('infix:</>' => ' / '), ('infix:<%>' => ' % '), ('infix:<>>' => ' > '), ('infix:<<>' => ' < '), ('infix:<>=>' => ' >= '), ('infix:<<=>' => ' <= '), ('infix:<&>' => ' & '), ('infix:<|>' => ' | '), ('infix:<^>' => ' ^ '), ('infix:<>>>' => ' >>> '), ('infix:<<<>' => ' << ')));
-    ((our  %op_to_bool) = map(+((($_ => 1))), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>')));
+    ((our  %op_to_bool) = map(+((($_ => 1))), ('prefix:<!>', 'infix:<!=>', 'infix:<==>', 'infix:<<=>', 'infix:<>=>', 'infix:<>>', 'infix:<<>', 'infix:<eq>', 'infix:<ne>', 'infix:<ge>', 'infix:<le>', 'exists')));
+    ((our  %op_to_str) = map(+((($_ => 1))), ('substr', 'join', 'list:<.>')));
+    ((our  %op_to_num) = map(+((($_ => 1))), ('length', 'index')));
     ((my  %safe_char) = ((' ' => 1), ('!' => 1), ('"' => 1), ('#' => 1), ('$' => 1), ('%' => 1), ('&' => 1), ('(' => 1), (')' => 1), ('*' => 1), ('+' => 1), (',' => 1), ('-' => 1), ('.' => 1), ('/' => 1), (':' => 1), (';' => 1), ('<' => 1), ('=' => 1), ('>' => 1), ('?' => 1), ('@' => 1), ('[' => 1), (']' => 1), ('^' => 1), ('_' => 1), ('`' => 1), ('{' => 1), ('|' => 1), ('}' => 1), ('~' => 1)));
     sub Perlito5::Javascript::escape_string {
         ((my  $s) = shift());
@@ -57,7 +59,7 @@ join("", chr(9) x $level)
         if (((($cond->isa('Perlito5::AST::Apply') && ($cond->code() eq 'circumfix:<( )>')) && $cond->{'arguments'}) && @{$cond->{'arguments'}})) {
             return (to_str($cond->{'arguments'}->[0]))
         };
-        if ((($cond->isa('Perlito5::AST::Val::Buf')) || (($cond->isa('Perlito5::AST::Apply') && (((($cond->code() eq 'substr') || ($cond->code() eq 'join')) || ($cond->code() eq 'list:<.>'))))))) {
+        if ((($cond->isa('Perlito5::AST::Val::Buf')) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_str{$cond->code()}))))) {
             return ($cond->emit_javascript($level, $wantarray))
         }
         else {
@@ -68,7 +70,7 @@ join("", chr(9) x $level)
         ((my  $cond) = shift());
         ((my  $level) = shift());
         ((my  $wantarray) = 'scalar');
-        if (($cond->isa('Perlito5::AST::Val::Int') || $cond->isa('Perlito5::AST::Val::Num'))) {
+        if ((($cond->isa('Perlito5::AST::Val::Int') || $cond->isa('Perlito5::AST::Val::Num')) || (($cond->isa('Perlito5::AST::Apply') && exists($op_to_num{$cond->code()}))))) {
             return ($cond->emit_javascript($level, $wantarray))
         }
         else {

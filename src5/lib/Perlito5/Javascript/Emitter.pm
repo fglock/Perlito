@@ -68,6 +68,18 @@ package Perlito5::Javascript;
         infix:<ne>
         infix:<ge>
         infix:<le>
+        exists
+    );
+    # these operators always return "string"
+    our %op_to_str = map +($_ => 1), qw(
+        substr
+        join
+        list:<.>
+    );
+    # these operators always return "num"
+    our %op_to_num = map +($_ => 1), qw(
+        length
+        index
     );
 
     my %safe_char = (
@@ -133,7 +145,6 @@ package Perlito5::Javascript;
             my $cond = shift;
             my $level = shift;
             my $wantarray = 'scalar';
-
             if (  $cond->isa( 'Perlito5::AST::Apply' ) && $cond->code eq 'circumfix:<( )>'
                && $cond->{"arguments"} && @{$cond->{"arguments"}}
                ) 
@@ -141,14 +152,8 @@ package Perlito5::Javascript;
                 return to_str( $cond->{"arguments"}[0] )
             }
 
-
             if  (  ($cond->isa( 'Perlito5::AST::Val::Buf' ))
-                || ($cond->isa( 'Perlito5::AST::Apply' ) 
-                   && (  $cond->code eq 'substr'
-                      || $cond->code eq 'join'
-                      || $cond->code eq 'list:<.>'
-                      )
-                   )
+                || ($cond->isa( 'Perlito5::AST::Apply' )  && exists $op_to_str{ $cond->code } )
                 )
             {
                 return $cond->emit_javascript($level, $wantarray);
@@ -161,7 +166,11 @@ package Perlito5::Javascript;
             my $cond = shift;
             my $level = shift;
             my $wantarray = 'scalar';
-            if ($cond->isa( 'Perlito5::AST::Val::Int' ) || $cond->isa( 'Perlito5::AST::Val::Num' )) {
+            if  (  $cond->isa( 'Perlito5::AST::Val::Int' ) 
+                || $cond->isa( 'Perlito5::AST::Val::Num' )
+                || ($cond->isa( 'Perlito5::AST::Apply' )  && exists $op_to_num{ $cond->code } )
+                )
+            {
                 return $cond->emit_javascript($level, $wantarray);
             }
             else {
@@ -647,8 +656,6 @@ package Perlito5::AST::Var;
                 $decl_type = 'our';
                 $self->{"namespace"} = $Perlito5::PKG_NAME;
 
-
-
                 my $sigil = $self->{"sigil"} eq '$#' ? '@' : $self->{"sigil"};
                 my $s = 'NAMESPACE["' . $self->{"namespace"} . '"]["' . $table->{$sigil} . $self->{"name"} . '"]';
 
@@ -661,8 +668,6 @@ package Perlito5::AST::Var;
                     return '(' . $s . '.length - 1)';
                 }
                 return $s;
-
-
             }
         }
 
