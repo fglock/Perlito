@@ -1091,6 +1091,48 @@ package Perlito5::AST::Apply;
             '(function (a) { ' . 'for (var i=' . $self->{"arguments"}->[0]->emit_javascript() . ', l=' . $self->{"arguments"}->[1]->emit_javascript() . '; ' . 'i<=l; ++i)' . '{ ' . 'a.push(i) ' . '}; ' . 'return a ' . '})([])';
         },
 
+        'delete' => sub {
+            my $self = $_[0];
+            '(delete ' . $self->{"arguments"}[0]->emit_javascript() . ')';
+        },
+
+        'ternary:<? :>' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            '( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] ) . ' ? ' . ( $self->{"arguments"}->[1] )->emit_javascript( $level, $wantarray ) . ' : ' . ( $self->{"arguments"}->[2] )->emit_javascript( $level, $wantarray ) . ')';
+        },
+        'my' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+
+            # TODO - bug: this is a side-effect of my($x,$y)
+            'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{"arguments"} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+        },
+        'circumfix:<( )>' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            'p5context(' . '[' . join( ', ', map( $_->emit_javascript( $level, $wantarray ), @{ $self->{"arguments"} } ) ) . '], ' . ( $wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0 ) . ')';
+        },
+        'infix:<=>' => sub {
+            my $self      = shift;
+            my $level     = shift;
+            my $wantarray = shift;
+            emit_javascript_bind( $self->{"arguments"}->[0], $self->{"arguments"}->[1], $level );
+        },
+        'return' => sub {
+            my $self = $_[0];
+            $Perlito5::THROW = 1;
+            'throw(' . Perlito5::Javascript::to_runtime_context( $self->{"arguments"} ) . ')';
+        },
+        'goto' => sub {
+            my $self = $_[0];
+            $Perlito5::THROW = 1;
+            'throw((' . $self->{"arguments"}->[0]->emit_javascript() . ')([List__, p5want]))';
+        },
+
     );
 
 
@@ -1322,43 +1364,6 @@ package Perlito5::AST::Apply;
             }
         }
 
-        if ($code eq 'delete') {
-            return '(delete ' . $self->{"arguments"}[0]->emit_javascript() . ')';
-        }
-
-        if ($code eq 'ternary:<? :>') {
-            return
-                   '( ' . Perlito5::Javascript::to_bool( $self->{"arguments"}->[0] )
-                 . ' ? ' . ($self->{"arguments"}->[1])->emit_javascript($level, $wantarray)
-                 . ' : ' . ($self->{"arguments"}->[2])->emit_javascript($level, $wantarray)
-                 . ')'
-        }
-        if ($code eq 'my') {
-            # TODO - bug: this is a side-effect of my($x,$y)
-            return 'p5context('
-                .   '[' . join(', ', map( $_->emit_javascript( $level, $wantarray ), @{$self->{"arguments"}} )) . '], ' 
-                .   ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0)
-                . ')';
-        }
-        if ($code eq 'circumfix:<( )>') {
-            return 'p5context('
-                .   '[' . join(', ', map( $_->emit_javascript( $level, $wantarray ), @{$self->{"arguments"}} )) . '], ' 
-                .   ($wantarray eq 'runtime' ? 'p5want' : $wantarray eq 'list' ? 1 : 0)
-                . ')';
-        }
-        if ($code eq 'infix:<=>') {
-            return emit_javascript_bind( $self->{"arguments"}->[0], $self->{"arguments"}->[1], $level );
-        }
-        if ($code eq 'return') {
-            $Perlito5::THROW = 1;
-            return 'throw('
-                .   Perlito5::Javascript::to_runtime_context( $self->{"arguments"} )
-                . ')'
-        }
-        if ($code eq 'goto') {
-            $Perlito5::THROW = 1;
-            return 'throw((' . $self->{"arguments"}->[0]->emit_javascript() . ')([List__, p5want]))'
-        }
 
         if ($self->{"namespace"}) {
 
