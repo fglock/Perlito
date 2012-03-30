@@ -305,22 +305,6 @@ my $reduce_to_ast = sub {
         my $v2 = pop_term($num_stack);
         my $arg = [ pop_term($num_stack), $v2 ];
         # say "# assoc chain: ", $arg->perl;
-
-        # TODO - create a special AST node for assoc chain?
-        # if ($arg->[0])->isa('Perlito5::AST::Apply')
-        #     && Perlito5::Precedence::is_assoc_type('chain', ($arg->[1]){op} )
-        # {
-        #     push @$num_stack,
-        #         Perlito5::AST::Apply->new(
-        #             namespace => '',
-        #             code      => 'infix:<' . $last_op->[1] . '>',
-        #             arguments => {
-        #                 val   => [ $arg->[0] ],
-        #                 chain => $arg->[1]
-        #             }
-        #         );
-        #     return;
-        # }
         push @$num_stack,
                 Perlito5::AST::Apply->new(
                     namespace => '',
@@ -681,7 +665,6 @@ token term_space {
 
 
 my $Argument_end_token = {
-    # 1 chars
         ':' => 1,
         ']' => 1,
         ')' => 1,
@@ -695,7 +678,6 @@ my $Argument_end_token = {
         '|' => 1,   
         '^' => 1,   
       
-    # 2 chars
         'or' => 1,
         'if' => 1,
         '=>' => 1,
@@ -725,7 +707,6 @@ my $Argument_end_token = {
         '%=' => 1,  
         '//' => 1,  
      
-    # 3 chars
         'for' => 1,
         'and' => 1,
         'xor' => 1,
@@ -739,85 +720,64 @@ my $Argument_end_token = {
         '//=' => 1, 
         '**=' => 1, 
      
-    # 4 chars
         # 'else' => 1,
         'when' => 1,
       
-    # 5 chars
         'while' => 1,
         # 'elsif' => 1,
       
-    # 6 chars
         'unless' => 1,
       
-    # 7 chars
         'foreach' => 1,
-      
 };
 my $Argument_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
 
 my $List_end_token = { 
-    # 1 chars
         ':' => 1,
         ']' => 1,
         ')' => 1,
         '}' => 1,
         ';' => 1,
       
-    # 2 chars
         'or' => 1,
         'if' => 1,
       
-    # 3 chars
         'for' => 1,
         'and' => 1,
         'xor' => 1,
       
-    # 4 chars
         'else' => 1,
         'when' => 1,
       
-    # 5 chars
         'while' => 1,
         'elsif' => 1,
       
-    # 6 chars
         'unless' => 1,
       
-    # 7 chars
         'foreach' => 1,
-      
 };
 my $List_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
 my $Expr_end_token = {
-    # 1 chars
         ']' => 1,
         ')' => 1,
         '}' => 1,
         ';' => 1,
       
-    # 2 chars
         'if' => 1,
       
-    # 3 chars
         'for' => 1,
       
-    # 4 chars
         'else' => 1,
         'when' => 1,
       
-    # 5 chars
         'while' => 1,
         'elsif' => 1,
       
-    # 6 chars
         'unless' => 1,
       
-    # 7 chars
         'foreach' => 1,
-      
 };
 my $Expr_end_token_chars = [ 7, 6, 5, 4, 3, 2, 1 ];
 
@@ -886,7 +846,6 @@ sub argument_parse {
             }
         }
         # say "# list_lexer got " . $v->perl;
-
         # say "# list_lexer " . $v->perl;
 
         $last_token_was_space = ($v->[0] eq 'space');
@@ -1244,18 +1203,13 @@ sub statement_parse {
     my $self = $_[0];
     my $str = $_[1];
     my $pos = $_[2];
-   
     # say "# statement_parse input: ",$str," at ",$pos;
-    my $expr;
-    my $last_pos = $pos;
-    my $lexer_stack = [];
-    my $res;
 
     # the rule for subroutines seems to be: 
     # named subs are statements,
     # anonymous subs are plain terms.
 
-    $res = $self->exp_stmt($str, $pos);
+    my $res = $self->exp_stmt($str, $pos);
     if ($res) {
         # say "# statement result: ", $res->perl;
         return $res;
@@ -1279,7 +1233,6 @@ sub statement_parse {
         return $res;
     }
     return $modifier;
-
 }
 
 1;

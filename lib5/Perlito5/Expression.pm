@@ -1574,11 +1574,7 @@ sub Perlito5::Expression::statement_parse {
     ((my  $self) = $_[0]);
     ((my  $str) = $_[1]);
     ((my  $pos) = $_[2]);
-    (my  $expr);
-    ((my  $last_pos) = $pos);
-    ((my  $lexer_stack) = []);
-    (my  $res);
-    ($res = $self->exp_stmt($str, $pos));
+    ((my  $res) = $self->exp_stmt($str, $pos));
     if ($res) {
         return ($res)
     };

@@ -5745,11 +5745,6 @@ var p5100 = NAMESPACE['main'];
 				(v_str = (List__[1]));
 				var v_pos = null;
 				(v_pos = (List__[2]));
-				var v_expr = null;
-				var v_last_pos = null;
-				(v_last_pos = (v_pos));
-				var v_lexer_stack = null;
-				(v_lexer_stack = ((new ArrayRef([]))));
 				var v_res = null;
 				(v_res = (_call_(v_self, "exp_stmt", interpolate_array(v_str, v_pos), 0)));
 				if ( bool(v_res) ) {
