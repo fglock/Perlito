@@ -276,10 +276,13 @@ for ($_) {
                     push(@str, ('for (var i_ = 0; i_ < 1 ; i_++) {' . chr(10) . $body->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}') )
                 }
                 else {
-                    if (((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto'))) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return')))) {
+                    if ((($last_statement->isa('Perlito5::AST::For') || $last_statement->isa('Perlito5::AST::While')) || ($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'goto')))) {
                         push(@str, $last_statement->emit_javascript($level, 'runtime') )
                     }
                     else {
+                        if (($last_statement->isa('Perlito5::AST::Apply') && ($last_statement->code() eq 'return'))) {
+                            ($last_statement = $last_statement->{'arguments'}->[0])
+                        };
                         if ($has_local) {
                             push(@str, ('return cleanup_local(local_idx, (' . Perlito5::Javascript::to_runtime_context([$last_statement]) . '));') )
                         }
