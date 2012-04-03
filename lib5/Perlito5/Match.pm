@@ -28,5 +28,6 @@ sub Perlito5::Match::flat {
     };
     return (substr($self->{'str'}, $self->{'from'}, (($self->{'to'} - $self->{'from'}))))
 };
+1;
 
 1;

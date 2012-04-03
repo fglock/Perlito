@@ -1518,7 +1518,7 @@ package Perlito5::AST::Apply;
             my $tmp2 = 'tmp' . Perlito5::Javascript::get_label();
             return
               '(function () { '
-                . 'var ' . $tmp  . ' = ' . Perlito5::Javascript::to_list([$arguments]) . '; '
+                . 'var ' . $tmp  . ' = ' . Perlito5::Javascript::to_list([$arguments], $level+1) . '; '
                 . 'var ' . $tmp2 . ' = ' . $tmp . '.slice(0); '
                 . join( '; ',
                         (
@@ -1543,22 +1543,22 @@ package Perlito5::AST::Apply;
            ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '$'
            )
         {
-            return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_scalar([$arguments]) . ')'
+            return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_scalar([$arguments], $level+1) . ')'
         }
 
         if  (   $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '@'
             ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '@'
             )
         {
-            return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments]) . ')'
+            return '(' . $parameters->emit_javascript() . ' = ' . Perlito5::Javascript::to_list([$arguments], $level+1) . ')'
         }
         elsif ( $parameters->isa( 'Perlito5::AST::Var' )  && $parameters->sigil eq '%'
             ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
             )
         {
-            return '(' . $parameters->emit_javascript() . ' = array_to_hash(' . Perlito5::Javascript::to_list([$arguments]) . '))' 
+            return '(' . $parameters->emit_javascript() . ' = array_to_hash(' . Perlito5::Javascript::to_list([$arguments], $level+1) . '))' 
         }
-        '(' . $parameters->emit_javascript( $level ) . ' = ' . $arguments->emit_javascript( $level ) . ')';
+        '(' . $parameters->emit_javascript( $level ) . ' = ' . $arguments->emit_javascript( $level+1 ) . ')';
     }
 }
 

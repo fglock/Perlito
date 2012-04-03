@@ -242,5 +242,6 @@ sub Rul::NotBefore::emit_perl5 {
 sub Rul::NotBefore::set_captures_to_array {
     ((my  $self) = $_[0])
 };
+1;
 
 1;
