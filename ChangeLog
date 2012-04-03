@@ -10,6 +10,7 @@ Dev  2012-02-29
 -- here-docs
 -- new Perl5-in-Perl6 backend (experimental)
 -- new option -Bjs/-Bperl5
+-- new option -Cast-perl5
 -- added option -I
    Note: -I./src5/lib is needed to compile the compiler and to run some of the tests
 -- runs some tests from the perl5 test suite (pmurias++)

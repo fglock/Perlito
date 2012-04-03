@@ -18,6 +18,7 @@ use Perlito5::Precedence;
 ## use Perlito5::Python::Emitter;
 ## use Perlito5::Ruby::Emitter;
 use Perlito5::Runtime;
+use Perlito5::Dumper;
 
 my $_V5_COMPILER_NAME    = 'Perlito5';
 my $_V5_COMPILER_VERSION = '8.0';
@@ -82,6 +83,7 @@ perlito5 [switches] [programfile]
     -V --version
     -Idirectory     specify \@INC/include directory (several -I's allowed)
     -Ctarget        target backend: js, perl5, perl6
+    -Cast-perl5     emits a dump of the abstract syntax tree
     -Btarget        execute using the backend: js
     --expand_use --noexpand_use
                     expand 'use' statements at compile time
@@ -199,8 +201,7 @@ if ($backend && @ARGV) {
             #     print Perlito5::AST::CompUnit::emit_java_program( $comp_units );
             # }
             if ($backend eq 'ast-perl5') {
-                eval "use Data::Dumper";
-                print Dumper( $comp_units );
+                say Perlito5::Dumper::Dumper( $comp_units );
             }
             elsif ($backend eq 'ast-pretty') {
                 eval 'use Data::Printer {colored=>1,class=>{expand=>"all",show_methods=>"none"}};p($comp_units);1';

@@ -38,7 +38,13 @@ sub Dumper {
         # };
         # $@ = '';
 
-        return 'bless(' . "..." . ", '$ref')";
+        # assume it's a blessed HASH
+
+        return "bless({\n"
+            . join( "", 
+                    map($tab1 . "'$_' => " . Dumper($obj->{$_}, $level+1) . ",\n", sort keys %$obj)
+                  )
+            . $tab . "}, '$ref')";
     }
 
     return "'$obj'";
