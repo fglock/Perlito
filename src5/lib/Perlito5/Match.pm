@@ -20,6 +20,8 @@ sub flat {
     return substr( $self->{'str'}, $self->{'from'}, ( $self->{'to'} - $self->{'from'} ) );
 }
 
+1;
+
 =begin
 
 =head1 NAME

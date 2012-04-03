@@ -314,6 +314,7 @@ sub set_captures_to_array {
     my $self = $_[0];
 }
 
+1;
 
 =begin
 
