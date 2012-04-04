@@ -258,7 +258,7 @@ CORE.splice = function(List__, p5want) {
 
     var list = [offset, limit];
     for(var i = 0; i < List__.length; i++) {
-        list = interpolate_array( list, List__[i]);
+        list = p5list_to_a( list, List__[i]);
     }
 
     out = array.splice.apply(array, list);
