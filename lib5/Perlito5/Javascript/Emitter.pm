@@ -284,7 +284,7 @@ for ($_) {
                     }
                     else {
                         if ($has_local) {
-                            push(@str, ('return cleanup_local(local_idx, (' . Perlito5::Javascript::to_runtime_context([$last_statement]) . '));') )
+                            push(@str, ('return p5cleanup_local(local_idx, (' . Perlito5::Javascript::to_runtime_context([$last_statement]) . '));') )
                         }
                         else {
                             push(@str, ('return (' . Perlito5::Javascript::to_runtime_context([$last_statement]) . ');') )
@@ -294,7 +294,7 @@ for ($_) {
             }
         };
         if ($has_local) {
-            push(@str, 'cleanup_local(local_idx, null);' )
+            push(@str, 'p5cleanup_local(local_idx, null);' )
         };
         if ($create_context) {
             ($level)--;
@@ -302,7 +302,7 @@ for ($_) {
         };
         if (($self->{'top_level'} && $Perlito5::THROW)) {
             ($level)--;
-            ($out = ($out . (Perlito5::Javascript::tab($level) . 'try {' . chr(10) . join(chr(10), map(($tab . $_), @str)) . chr(10) . Perlito5::Javascript::tab($level) . '}' . chr(10) . Perlito5::Javascript::tab($level) . 'catch(err) {' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) {' . chr(10) . Perlito5::Javascript::tab(($level + 2)) . 'throw(err);' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . 'else {' . chr(10) . Perlito5::Javascript::tab(($level + 2)) . (($has_local ? 'return cleanup_local(local_idx, err)' : 'return(err)')) . ';' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}' . chr(10) . Perlito5::Javascript::tab($level) . '}')))
+            ($out = ($out . (Perlito5::Javascript::tab($level) . 'try {' . chr(10) . join(chr(10), map(($tab . $_), @str)) . chr(10) . Perlito5::Javascript::tab($level) . '}' . chr(10) . Perlito5::Javascript::tab($level) . 'catch(err) {' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . 'if ( err instanceof Error ) {' . chr(10) . Perlito5::Javascript::tab(($level + 2)) . 'throw(err);' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . 'else {' . chr(10) . Perlito5::Javascript::tab(($level + 2)) . (($has_local ? 'return p5cleanup_local(local_idx, err)' : 'return(err)')) . ';' . chr(10) . Perlito5::Javascript::tab(($level + 1)) . '}' . chr(10) . Perlito5::Javascript::tab($level) . '}')))
         }
         else {
             ($out = ($out . join(chr(10), map(($tab . $_), @str))))
@@ -376,7 +376,7 @@ for ($_) {
             ((my  $v) = Perlito5::AST::Var->new(('sigil' => '@'), ('namespace' => $self->{'obj'}->namespace()), ('name' => $self->{'obj'}->name())));
             return (($v->emit_javascript($level) . '[' . $self->{'index_exp'}->emit_javascript() . ']'))
         };
-        ('(' . $self->{'obj'}->emit_javascript() . ' || (' . $self->{'obj'}->emit_javascript() . ' = new ArrayRef([]))' . ')._array_[' . $self->{'index_exp'}->emit_javascript() . ']')
+        ('(' . $self->{'obj'}->emit_javascript() . ' || (' . $self->{'obj'}->emit_javascript() . ' = new p5ArrayRef([]))' . ')._array_[' . $self->{'index_exp'}->emit_javascript() . ']')
     }
 };
 package Perlito5::AST::Lookup;
@@ -388,7 +388,7 @@ for ($_) {
             ((my  $v) = Perlito5::AST::Var->new(('sigil' => '%'), ('namespace' => $self->{'obj'}->namespace()), ('name' => $self->{'obj'}->name())));
             return (($v->emit_javascript($level) . '[' . $self->{'index_exp'}->emit_javascript() . ']'))
         };
-        ('(' . $self->{'obj'}->emit_javascript() . ' || (' . $self->{'obj'}->emit_javascript() . ' = new HashRef({}))' . ')._hash_[' . $self->{'index_exp'}->emit_javascript() . ']')
+        ('(' . $self->{'obj'}->emit_javascript() . ' || (' . $self->{'obj'}->emit_javascript() . ' = new p5HashRef({}))' . ')._hash_[' . $self->{'index_exp'}->emit_javascript() . ']')
     }
 };
 package Perlito5::AST::Var;
@@ -531,7 +531,7 @@ for ($_) {
                         ($decl_namespace = $decl->{'namespace'})
                     };
                     ((my  $ns) = ('NAMESPACE["' . ((($self->{'var'}->{'namespace'} || $decl_namespace) || $Perlito5::PKG_NAME)) . '"]'));
-                    return (('set_local(' . $ns . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'sigil'}) . '); '))
+                    return (('p5set_local(' . $ns . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'name'}) . ',' . Perlito5::Javascript::escape_string($self->{'var'}->{'sigil'}) . '); '))
                 }
                 else {
                     if (($self->{'decl'} eq 'state')) {
@@ -565,10 +565,10 @@ for ($_) {
         ((my  $invocant) = $self->{'invocant'}->emit_javascript());
         ((my  $meth) = $self->{'method'});
         if (($meth eq 'postcircumfix:<[ ]>')) {
-            return (('(' . $invocant . ' || (' . $invocant . ' = new ArrayRef([]))' . ')._array_[' . $self->{'arguments'}->emit_javascript($level, 'list') . ']'))
+            return (('(' . $invocant . ' || (' . $invocant . ' = new p5ArrayRef([]))' . ')._array_[' . $self->{'arguments'}->emit_javascript($level, 'list') . ']'))
         };
         if (($meth eq 'postcircumfix:<{ }>')) {
-            return (('(' . $invocant . ' || (' . $invocant . ' = new HashRef({}))' . ')._hash_[' . $self->{'arguments'}->emit_javascript($level, 'list') . ']'))
+            return (('(' . $invocant . ' || (' . $invocant . ' = new p5HashRef({}))' . ')._hash_[' . $self->{'arguments'}->emit_javascript($level, 'list') . ']'))
         };
         if (($meth eq 'postcircumfix:<( )>')) {
             return (('(' . $invocant . ')(' . Perlito5::Javascript::to_list($self->{'arguments'}) . ')'))
@@ -679,12 +679,12 @@ for ($_) {
     ((my  $self) = $_[0]);
     ((my  $level) = $_[1]);
     ((my  $arg) = $self->{'arguments'}->[0]);
-    ('(' . $arg->emit_javascript($level) . ' || (' . $arg->emit_javascript($level) . ' = new ArrayRef([]))' . ')._array_')
+    ('(' . $arg->emit_javascript($level) . ' || (' . $arg->emit_javascript($level) . ' = new p5ArrayRef([]))' . ')._array_')
 }), ('prefix:<$#>' => sub {
     ((my  $self) = $_[0]);
     ((my  $level) = $_[1]);
     ((my  $arg) = $self->{'arguments'}->[0]);
-    ('((' . $arg->emit_javascript($level) . ' || (' . $arg->emit_javascript($level) . ' = new ArrayRef([]))' . ')._array_.length - 1)')
+    ('((' . $arg->emit_javascript($level) . ' || (' . $arg->emit_javascript($level) . ' = new p5ArrayRef([]))' . ')._array_.length - 1)')
 }), ('prefix:<%>' => sub {
     ((my  $self) = $_[0]);
     ((my  $level) = $_[1]);
@@ -697,20 +697,20 @@ for ($_) {
     ('p5code_lookup_by_name("' . $Perlito5::PKG_NAME . '", ' . $arg->emit_javascript($level) . ')')
 }), ('circumfix:<[ ]>' => sub {
     ((my  $self) = $_[0]);
-    ('(new ArrayRef(' . Perlito5::Javascript::to_list($self->{'arguments'}) . '))')
+    ('(new p5ArrayRef(' . Perlito5::Javascript::to_list($self->{'arguments'}) . '))')
 }), ('circumfix:<{ }>' => sub {
     ((my  $self) = $_[0]);
-    ('(new HashRef(p5a_to_h(' . Perlito5::Javascript::to_list($self->{'arguments'}) . ')))')
+    ('(new p5HashRef(p5a_to_h(' . Perlito5::Javascript::to_list($self->{'arguments'}) . ')))')
 }), ('prefix:<' . chr(92) . '>' => sub {
     ((my  $self) = $_[0]);
     ((my  $level) = $_[1]);
     ((my  $arg) = $self->{'arguments'}->[0]);
     if ($arg->isa('Perlito5::AST::Var')) {
         if (($arg->sigil() eq '@')) {
-            return (('(new ArrayRef(' . $arg->emit_javascript($level) . '))'))
+            return (('(new p5ArrayRef(' . $arg->emit_javascript($level) . '))'))
         };
         if (($arg->sigil() eq '%')) {
-            return (('(new HashRef(' . $arg->emit_javascript($level) . '))'))
+            return (('(new p5HashRef(' . $arg->emit_javascript($level) . '))'))
         };
         if (($arg->sigil() eq '&')) {
             if ($arg->{'namespace'}) {
@@ -721,7 +721,7 @@ for ($_) {
             }
         }
     };
-    return (('(new ScalarRef(' . $arg->emit_javascript($level) . '))'))
+    return (('(new p5ScalarRef(' . $arg->emit_javascript($level) . '))'))
 }), ('postfix:<++>' => sub {
     ((my  $self) = $_[0]);
     ('(' . join(' ', map($_->emit_javascript(), @{$self->{'arguments'}})) . ')++')
@@ -797,7 +797,7 @@ for ($_) {
         ((my  $var_env_perl5) = Perlito5::Dumper::Dumper($Perlito5::VAR));
         ((my  $m) = Perlito5::Expression->term_square($var_env_perl5, 0));
         ($m = Perlito5::Expression::expand_list($m->flat()->[2]));
-        ((my  $var_env_js) = ('(new ArrayRef(' . Perlito5::Javascript::to_list($m) . '))'));
+        ((my  $var_env_js) = ('(new p5ArrayRef(' . Perlito5::Javascript::to_list($m) . '))'));
         ($eval = ('eval(perl5_to_js(' . Perlito5::Javascript::to_str($arg) . ', ' . '"' . $Perlito5::PKG_NAME . '", ' . $var_env_js . '))'))
     };
     ('(function () {' . chr(10) . 'var r = null;' . chr(10) . 'NAMESPACE["main"]["v_@"] = "";' . chr(10) . 'try {' . chr(10) . 'r = ' . $eval . chr(10) . '}' . chr(10) . 'catch(err) {' . chr(10) . 'if ( err instanceof p5_error ) {' . chr(10) . '}' . chr(10) . 'else if ( err instanceof Error ) {' . chr(10) . 'NAMESPACE["main"]["v_@"] = err;' . chr(10) . '}' . chr(10) . 'else {' . chr(10) . 'throw(err);' . chr(10) . '}' . chr(10) . '}' . chr(10) . 'return r;' . chr(10) . '})()')

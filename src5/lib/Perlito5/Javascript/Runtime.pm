@@ -187,7 +187,7 @@ function p5make_sub(pkg_name, sub_name, func) {
     NAMESPACE[pkg_name][sub_name] = func;
 }
 
-function set_local(namespace, name, sigil) {
+function p5set_local(namespace, name, sigil) {
     var v = name;
     if (sigil == "$") {
         v = "v_"+name;
@@ -195,7 +195,7 @@ function set_local(namespace, name, sigil) {
     LOCAL.push([namespace, v, namespace[v]]);
 }
 
-function cleanup_local(idx, value) {
+function p5cleanup_local(idx, value) {
     while (LOCAL.length > idx) {
         l = LOCAL.pop();
         l[0][l[1]] = l[2];
@@ -203,19 +203,19 @@ function cleanup_local(idx, value) {
     return value;
 }
 
-function HashRef(o) {
+function p5HashRef(o) {
     this._hash_ = o;
     this._ref_ = "HASH";
     this.bool = function() { return 1 };
 }
 
-function ArrayRef(o) {
+function p5ArrayRef(o) {
     this._array_ = o;
     this._ref_ = "ARRAY";
     this.bool = function() { return 1 };
 }
 
-function ScalarRef(o) {
+function p5ScalarRef(o) {
     this._scalar_ = o;
     this._ref_ = "SCALAR";
     this.bool = function() { return 1 };
@@ -469,9 +469,9 @@ perl5_to_js = function( source, namespace, var_env_js ) {
     }
 
     ast = NAMESPACE.CORE.bless([
-        new HashRef({
+        new p5HashRef({
             block:  NAMESPACE.CORE.bless([
-                        new HashRef({
+                        new p5HashRef({
                             stmts:   p5call(match, "flat", []),
                         }),
                         NAMESPACE["Perlito5::AST::Lit::Block"]
