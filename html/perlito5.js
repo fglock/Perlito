@@ -295,7 +295,7 @@ p5str = function(o) {
         return "";
     }
     if (typeof o === "object" && (o instanceof Array)) {
-        return "" + o.length;
+        return CORE.join(["", o]);
     }
     if (typeof o.string === "function") {
         return o.string();
@@ -533,8 +533,7 @@ CORE.die = function(List__) {
     var i;
     var s = "";
     for (i = 0; i < List__.length; i++) {
-        s = s + List__[i];
-        // s = s + p5str(List__[i]);
+        s = s + p5str(List__[i]);
     }
     p5pkg["main"]["v_@"] = "Died: " + s;
     throw(new p5_error("Died: " + s));
@@ -544,8 +543,7 @@ CORE.warn = function(List__) {
     var i;
     var s = "";
     for (i = 0; i < List__.length; i++) {
-        s = s + List__[i];
-        // s = s + p5str(List__[i]);
+        s = s + p5str(List__[i]);
     }
     CORE.print(["Warning: " + s + "\n"]);
 };

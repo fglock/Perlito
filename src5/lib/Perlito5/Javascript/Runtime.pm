@@ -301,7 +301,7 @@ p5str = function(o) {
         return "";
     }
     if (typeof o === "object" && (o instanceof Array)) {
-        return "" + o.length;
+        return CORE.join(["", o]);
     }
     if (typeof o.string === "function") {
         return o.string();
