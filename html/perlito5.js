@@ -34,13 +34,13 @@ if (typeof NAMESPACE !== "object") {
         var o = List__[0];
         var s = List__[1];
         if ( s.indexOf("::") == -1 ) {
-            // TODO - use _method_lookup_
+            // TODO - use p5method_lookup
             return o._class_[s]
         }
         var c = s.split("::");
         s = c.pop(); 
-        // TODO - use _method_lookup_
-        return _method_lookup_(s, c.join("::"), {});
+        // TODO - use p5method_lookup
+        return p5method_lookup(s, c.join("::"), {});
     };
     NAMESPACE.UNIVERSAL.DOES = NAMESPACE.UNIVERSAL.can;
 
@@ -60,7 +60,7 @@ if (typeof NAMESPACE !== "object") {
     p5_error.prototype = Error.prototype;
 }
 
-function make_package(pkg_name) {
+function p5make_package(pkg_name) {
     if (!NAMESPACE.hasOwnProperty(pkg_name)) {
         var tmp = function () {};
         tmp.prototype = NAMESPACE["CORE::GLOBAL"];
@@ -93,7 +93,7 @@ function p5code_lookup_by_name(package, sub_name) {
     return null;
 }
 
-function _method_lookup_(method, class_name, seen) {
+function p5method_lookup(method, class_name, seen) {
     // default mro
     c = NAMESPACE[class_name];
     if ( c.hasOwnProperty(method) ) {
@@ -102,7 +102,7 @@ function _method_lookup_(method, class_name, seen) {
     var isa = c.List_ISA;
     for (var i = 0; i < isa.length; i++) {
         if (!seen[isa[i]]) {
-            var m = _method_lookup_(method, isa[i]);
+            var m = p5method_lookup(method, isa[i]);
             if (m) {
                 return m 
             }
@@ -120,7 +120,7 @@ function p5call(invocant, method, list) {
         if ( invocant._class_.hasOwnProperty(method) ) {
             return invocant._class_[method](list)
         }
-        var m = _method_lookup_(method, invocant._class_._ref_, {});
+        var m = p5method_lookup(method, invocant._class_._ref_, {});
         if (m) {
             return m(list)
         }
@@ -133,7 +133,7 @@ function p5call(invocant, method, list) {
         if (package.length > 1) {
             var name = package.pop();
             package = package.join("::");
-            m = _method_lookup_(name, package, {});
+            m = p5method_lookup(name, package, {});
             // CORE.say([ name, " ", package ]);
             if (m) {
                 return m(list)
@@ -149,7 +149,7 @@ function p5call(invocant, method, list) {
     // the invocant doesn't have a class
 
     if (typeof invocant === "string") {
-        var aclass = make_package(invocant);
+        var aclass = p5make_package(invocant);
         return p5call(aclass, method, list);
     }
 
@@ -157,7 +157,7 @@ function p5call(invocant, method, list) {
 
 }
 
-make_package("main");
+p5make_package("main");
 NAMESPACE["main"]["v_@"] = [];      // $@
 NAMESPACE["main"]["List_#"] = [];   // @#
 NAMESPACE["main"]["v_^O"] = isNode ? "node.js" : "javascript";
@@ -172,12 +172,12 @@ if (isNode) {
     NAMESPACE["main"]["List_ARGV"] = arguments;
 }
 
-make_package("Perlito5");
-make_package("Perlito5::IO");
-make_package("Perlito5::Runtime");
-make_package("Perlito5::Grammar");
+p5make_package("Perlito5");
+p5make_package("Perlito5::IO");
+p5make_package("Perlito5::Runtime");
+p5make_package("Perlito5::Grammar");
 
-function make_sub(pkg_name, sub_name, func) {
+function p5make_sub(pkg_name, sub_name, func) {
     NAMESPACE[pkg_name][sub_name] = func;
 }
 
@@ -217,11 +217,11 @@ function ScalarRef(o) {
 
 if (isNode) {
     var fs = require("fs");
-    make_sub("Perlito5::IO", "slurp", function(List__) {
+    p5make_sub("Perlito5::IO", "slurp", function(List__) {
         return fs.readFileSync(List__[0],"utf8");
     });
 } else {
-    make_sub("Perlito5::IO", "slurp", function(List__) {
+    p5make_sub("Perlito5::IO", "slurp", function(List__) {
         var filename = List__[0];
         if (typeof readFile == "function") {
             return readFile(filename);
@@ -559,7 +559,7 @@ CORE.bless = function(List__) {
         return o;
     }
     if (!NAMESPACE.hasOwnProperty(pkg_name)) {
-        make_package(pkg_name);
+        p5make_package(pkg_name);
     }
     o._class_ = NAMESPACE[pkg_name];
     return o;
@@ -901,13 +901,13 @@ if (isNode) {
 var p5want = null;
 var p5100 = NAMESPACE['main'];
 (function () {
-	var p5101 = make_package("Perlito5");
+	var p5101 = p5make_package("Perlito5");
 	(function () {
-		var p5102 = make_package("Perlito5::strict");
-		make_sub("Perlito5::strict", "import", function (List__, p5want) {
+		var p5102 = p5make_package("Perlito5::strict");
+		p5make_sub("Perlito5::strict", "import", function (List__, p5want) {
 				return (p5context([(NAMESPACE["Perlito5"]["v_STRICT"] = (1))], p5want));
 		});
-		make_sub("Perlito5::strict", "unimport", function (List__, p5want) {
+		p5make_sub("Perlito5::strict", "unimport", function (List__, p5want) {
 				return (p5context([(NAMESPACE["Perlito5"]["v_STRICT"] = (0))], p5want));
 		});
 		1;
@@ -916,11 +916,11 @@ var p5100 = NAMESPACE['main'];
 	// use Perlito5::strict
 ;
 	(function () {
-		var p5103 = make_package("Perlito5::warnings");
-		make_sub("Perlito5::warnings", "import", function (List__, p5want) {
+		var p5103 = p5make_package("Perlito5::warnings");
+		p5make_sub("Perlito5::warnings", "import", function (List__, p5want) {
 				return (p5context([(NAMESPACE["Perlito5"]["v_WARNINGS"] = (1))], p5want));
 		});
-		make_sub("Perlito5::warnings", "unimport", function (List__, p5want) {
+		p5make_sub("Perlito5::warnings", "unimport", function (List__, p5want) {
 				return (p5context([(NAMESPACE["Perlito5"]["v_WARNINGS"] = (0))], p5want));
 		});
 		1;
@@ -931,25 +931,25 @@ var p5100 = NAMESPACE['main'];
 	(function () {
 		// use v5
 ;
-		var p5104 = make_package("Perlito5::Match");
-		make_sub("Perlito5::Match", "new", function (List__, p5want) {
+		var p5104 = p5make_package("Perlito5::Match");
+		p5make_sub("Perlito5::Match", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5104.shift([List__])));
 				return (p5context([p5104.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::Match", "from", function (List__, p5want) {
+		p5make_sub("Perlito5::Match", "from", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['from']], p5want));
 		});
-		make_sub("Perlito5::Match", "to", function (List__, p5want) {
+		p5make_sub("Perlito5::Match", "to", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['to']], p5want));
 		});
-		make_sub("Perlito5::Match", "str", function (List__, p5want) {
+		p5make_sub("Perlito5::Match", "str", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['str']], p5want));
 		});
-		make_sub("Perlito5::Match", "capture", function (List__, p5want) {
+		p5make_sub("Perlito5::Match", "capture", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['capture']], p5want));
 		});
-		make_sub("Perlito5::Match", "flat", function (List__, p5want) {
+		p5make_sub("Perlito5::Match", "flat", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -975,97 +975,97 @@ var p5100 = NAMESPACE['main'];
 	(function () {
 		// use v5
 ;
-		var p5105 = make_package("Perlito5::AST::CompUnit");
-		make_sub("Perlito5::AST::CompUnit", "new", function (List__, p5want) {
+		var p5105 = p5make_package("Perlito5::AST::CompUnit");
+		p5make_sub("Perlito5::AST::CompUnit", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5105.shift([List__])));
 				return (p5context([p5105.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::CompUnit", "name", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::CompUnit", "name", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['name']], p5want));
 		});
-		make_sub("Perlito5::AST::CompUnit", "body", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::CompUnit", "body", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['body']], p5want));
 		});
-		var p5106 = make_package("Perlito5::AST::Val::Int");
-		make_sub("Perlito5::AST::Val::Int", "new", function (List__, p5want) {
+		var p5106 = p5make_package("Perlito5::AST::Val::Int");
+		p5make_sub("Perlito5::AST::Val::Int", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5106.shift([List__])));
 				return (p5context([p5106.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Val::Int", "int", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Val::Int", "int", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['int']], p5want));
 		});
-		var p5107 = make_package("Perlito5::AST::Val::Num");
-		make_sub("Perlito5::AST::Val::Num", "new", function (List__, p5want) {
+		var p5107 = p5make_package("Perlito5::AST::Val::Num");
+		p5make_sub("Perlito5::AST::Val::Num", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5107.shift([List__])));
 				return (p5context([p5107.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Val::Num", "num", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Val::Num", "num", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['num']], p5want));
 		});
-		var p5108 = make_package("Perlito5::AST::Val::Buf");
-		make_sub("Perlito5::AST::Val::Buf", "new", function (List__, p5want) {
+		var p5108 = p5make_package("Perlito5::AST::Val::Buf");
+		p5make_sub("Perlito5::AST::Val::Buf", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5108.shift([List__])));
 				return (p5context([p5108.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Val::Buf", "buf", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Val::Buf", "buf", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['buf']], p5want));
 		});
-		var p5109 = make_package("Perlito5::AST::Lit::Block");
-		make_sub("Perlito5::AST::Lit::Block", "new", function (List__, p5want) {
+		var p5109 = p5make_package("Perlito5::AST::Lit::Block");
+		p5make_sub("Perlito5::AST::Lit::Block", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5109.shift([List__])));
 				return (p5context([p5109.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Lit::Block", "sig", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Lit::Block", "sig", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['sig']], p5want));
 		});
-		make_sub("Perlito5::AST::Lit::Block", "stmts", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Lit::Block", "stmts", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['stmts']], p5want));
 		});
-		var p5110 = make_package("Perlito5::AST::Index");
-		make_sub("Perlito5::AST::Index", "new", function (List__, p5want) {
+		var p5110 = p5make_package("Perlito5::AST::Index");
+		p5make_sub("Perlito5::AST::Index", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5110.shift([List__])));
 				return (p5context([p5110.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Index", "obj", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Index", "obj", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['obj']], p5want));
 		});
-		make_sub("Perlito5::AST::Index", "index_exp", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Index", "index_exp", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['index_exp']], p5want));
 		});
-		var p5111 = make_package("Perlito5::AST::Lookup");
-		make_sub("Perlito5::AST::Lookup", "new", function (List__, p5want) {
+		var p5111 = p5make_package("Perlito5::AST::Lookup");
+		p5make_sub("Perlito5::AST::Lookup", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5111.shift([List__])));
 				return (p5context([p5111.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Lookup", "obj", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Lookup", "obj", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['obj']], p5want));
 		});
-		make_sub("Perlito5::AST::Lookup", "index_exp", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Lookup", "index_exp", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['index_exp']], p5want));
 		});
-		var p5112 = make_package("Perlito5::AST::Var");
-		make_sub("Perlito5::AST::Var", "new", function (List__, p5want) {
+		var p5112 = p5make_package("Perlito5::AST::Var");
+		p5make_sub("Perlito5::AST::Var", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5112.shift([List__])));
 				return (p5context([p5112.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Var", "sigil", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Var", "sigil", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['sigil']], p5want));
 		});
-		make_sub("Perlito5::AST::Var", "namespace", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Var", "namespace", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['namespace']], p5want));
 		});
-		make_sub("Perlito5::AST::Var", "name", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Var", "name", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['name']], p5want));
 		});
-		make_sub("Perlito5::AST::Var", "plain_name", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Var", "plain_name", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (p5112.shift([List__])));
@@ -1083,155 +1083,155 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		var p5113 = make_package("Perlito5::AST::Proto");
-		make_sub("Perlito5::AST::Proto", "new", function (List__, p5want) {
+		var p5113 = p5make_package("Perlito5::AST::Proto");
+		p5make_sub("Perlito5::AST::Proto", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5113.shift([List__])));
 				return (p5context([p5113.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Proto", "name", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Proto", "name", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['name']], p5want));
 		});
-		var p5114 = make_package("Perlito5::AST::Call");
-		make_sub("Perlito5::AST::Call", "new", function (List__, p5want) {
+		var p5114 = p5make_package("Perlito5::AST::Call");
+		p5make_sub("Perlito5::AST::Call", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5114.shift([List__])));
 				return (p5context([p5114.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Call", "invocant", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Call", "invocant", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['invocant']], p5want));
 		});
-		make_sub("Perlito5::AST::Call", "method", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Call", "method", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['method']], p5want));
 		});
-		make_sub("Perlito5::AST::Call", "arguments", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Call", "arguments", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['arguments']], p5want));
 		});
-		var p5115 = make_package("Perlito5::AST::Apply");
-		make_sub("Perlito5::AST::Apply", "new", function (List__, p5want) {
+		var p5115 = p5make_package("Perlito5::AST::Apply");
+		p5make_sub("Perlito5::AST::Apply", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5115.shift([List__])));
 				return (p5context([p5115.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Apply", "code", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Apply", "code", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['code']], p5want));
 		});
-		make_sub("Perlito5::AST::Apply", "arguments", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Apply", "arguments", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['arguments']], p5want));
 		});
-		make_sub("Perlito5::AST::Apply", "namespace", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Apply", "namespace", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['namespace']], p5want));
 		});
-		var p5116 = make_package("Perlito5::AST::If");
-		make_sub("Perlito5::AST::If", "new", function (List__, p5want) {
+		var p5116 = p5make_package("Perlito5::AST::If");
+		p5make_sub("Perlito5::AST::If", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5116.shift([List__])));
 				return (p5context([p5116.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::If", "cond", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::If", "cond", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['cond']], p5want));
 		});
-		make_sub("Perlito5::AST::If", "body", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::If", "body", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['body']], p5want));
 		});
-		make_sub("Perlito5::AST::If", "otherwise", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::If", "otherwise", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['otherwise']], p5want));
 		});
-		var p5117 = make_package("Perlito5::AST::While");
-		make_sub("Perlito5::AST::While", "new", function (List__, p5want) {
+		var p5117 = p5make_package("Perlito5::AST::While");
+		p5make_sub("Perlito5::AST::While", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5117.shift([List__])));
 				return (p5context([p5117.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::While", "init", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::While", "init", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['init']], p5want));
 		});
-		make_sub("Perlito5::AST::While", "cond", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::While", "cond", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['cond']], p5want));
 		});
-		make_sub("Perlito5::AST::While", "continue", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::While", "continue", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['continue']], p5want));
 		});
-		make_sub("Perlito5::AST::While", "body", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::While", "body", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['body']], p5want));
 		});
-		var p5118 = make_package("Perlito5::AST::For");
-		make_sub("Perlito5::AST::For", "new", function (List__, p5want) {
+		var p5118 = p5make_package("Perlito5::AST::For");
+		p5make_sub("Perlito5::AST::For", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5118.shift([List__])));
 				return (p5context([p5118.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::For", "cond", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::For", "cond", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['cond']], p5want));
 		});
-		make_sub("Perlito5::AST::For", "body", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::For", "body", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['body']], p5want));
 		});
-		var p5119 = make_package("Perlito5::AST::Decl");
-		make_sub("Perlito5::AST::Decl", "new", function (List__, p5want) {
+		var p5119 = p5make_package("Perlito5::AST::Decl");
+		p5make_sub("Perlito5::AST::Decl", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5119.shift([List__])));
 				return (p5context([p5119.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Decl", "decl", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Decl", "decl", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['decl']], p5want));
 		});
-		make_sub("Perlito5::AST::Decl", "type", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Decl", "type", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['type']], p5want));
 		});
-		make_sub("Perlito5::AST::Decl", "var", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Decl", "var", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['var']], p5want));
 		});
-		var p5120 = make_package("Perlito5::AST::Sig");
-		make_sub("Perlito5::AST::Sig", "new", function (List__, p5want) {
+		var p5120 = p5make_package("Perlito5::AST::Sig");
+		p5make_sub("Perlito5::AST::Sig", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5120.shift([List__])));
 				return (p5context([p5120.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Sig", "positional", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Sig", "positional", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['positional']], p5want));
 		});
-		var p5121 = make_package("Perlito5::AST::Sub");
-		make_sub("Perlito5::AST::Sub", "new", function (List__, p5want) {
+		var p5121 = p5make_package("Perlito5::AST::Sub");
+		p5make_sub("Perlito5::AST::Sub", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5121.shift([List__])));
 				return (p5context([p5121.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Sub", "name", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Sub", "name", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['name']], p5want));
 		});
-		make_sub("Perlito5::AST::Sub", "sig", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Sub", "sig", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['sig']], p5want));
 		});
-		make_sub("Perlito5::AST::Sub", "block", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Sub", "block", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['block']], p5want));
 		});
-		var p5122 = make_package("Perlito5::AST::Do");
-		make_sub("Perlito5::AST::Do", "new", function (List__, p5want) {
+		var p5122 = p5make_package("Perlito5::AST::Do");
+		p5make_sub("Perlito5::AST::Do", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5122.shift([List__])));
 				return (p5context([p5122.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Do", "block", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Do", "block", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['block']], p5want));
 		});
-		var p5123 = make_package("Perlito5::AST::Use");
-		make_sub("Perlito5::AST::Use", "new", function (List__, p5want) {
+		var p5123 = p5make_package("Perlito5::AST::Use");
+		p5make_sub("Perlito5::AST::Use", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5123.shift([List__])));
 				return (p5context([p5123.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 		});
-		make_sub("Perlito5::AST::Use", "mod", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Use", "mod", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['mod']], p5want));
 		});
-		make_sub("Perlito5::AST::Use", "code", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Use", "code", function (List__, p5want) {
 				return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['code']], p5want));
 		});
 	})()
 ;
 	(function () {
-		var p5124 = make_package("Perlito5::Dumper");
-		make_sub("Perlito5::Dumper", "Dumper", function (List__, p5want) {
+		var p5124 = p5make_package("Perlito5::Dumper");
+		p5make_sub("Perlito5::Dumper", "Dumper", function (List__, p5want) {
 			try {
 				var v_obj = null;
 				(v_obj = (List__[0]));
@@ -1283,18 +1283,18 @@ var p5100 = NAMESPACE['main'];
 ;
 		// use Perlito5::Dumper
 ;
-		var p5125 = make_package("Perlito5::Javascript");
+		var p5125 = p5make_package("Perlito5::Javascript");
 		for (var i_ = 0; i_ < 1 ; i_++) {
 			var v_label_count = null;
 			(v_label_count = (100));
 			var Hash_label = {};
-			make_sub("Perlito5::Javascript", "pkg", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "pkg", function (List__, p5want) {
 					return (p5context([(Hash_label[NAMESPACE["Perlito5"]["v_PKG_NAME"]] = or(Hash_label[NAMESPACE["Perlito5"]["v_PKG_NAME"]], function () { return ('p5' + p5str((v_label_count)++)) }))], p5want));
 			});
-			make_sub("Perlito5::Javascript", "get_label", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "get_label", function (List__, p5want) {
 					return (p5context([(v_label_count)++], p5want));
 			});
-			make_sub("Perlito5::Javascript", "tab", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "tab", function (List__, p5want) {
 					var v_level = null;
 					(v_level = (p5125.shift([List__])));
 					return (p5context([str_replicate(String.fromCharCode(9), v_level)], p5want));
@@ -1319,7 +1319,7 @@ var p5100 = NAMESPACE['main'];
 				}, interpolate_array('length', 'index')))));
 			var Hash_safe_char = {};
 			(Hash_safe_char = array_to_hash(interpolate_array(' ', 1, '!', 1, '"', 1, '#', 1, '$', 1, '%', 1, '&', 1, '(', 1, ')', 1, '*', 1, '+', 1, ',', 1, '-', 1, '.', 1, '/', 1, ':', 1, ';', 1, '<', 1, '=', 1, '>', 1, '?', 1, '@', 1, '[', 1, ']', 1, '^', 1, '_', 1, '`', 1, '{', 1, '|', 1, '}', 1, '~', 1)));
-			make_sub("Perlito5::Javascript", "escape_string", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "escape_string", function (List__, p5want) {
 				try {
 					var v_s = null;
 					(v_s = (p5125.shift([List__])));
@@ -1357,7 +1357,7 @@ var p5100 = NAMESPACE['main'];
 					}
 				}
 			});
-			make_sub("Perlito5::Javascript", "to_str", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "to_str", function (List__, p5want) {
 				try {
 					var v_cond = null;
 					(v_cond = (p5125.shift([List__])));
@@ -1385,7 +1385,7 @@ var p5100 = NAMESPACE['main'];
 					}
 				}
 			});
-			make_sub("Perlito5::Javascript", "to_num", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "to_num", function (List__, p5want) {
 				try {
 					var v_cond = null;
 					(v_cond = (p5125.shift([List__])));
@@ -1410,7 +1410,7 @@ var p5100 = NAMESPACE['main'];
 					}
 				}
 			});
-			make_sub("Perlito5::Javascript", "to_bool", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "to_bool", function (List__, p5want) {
 				try {
 					var v_cond = null;
 					(v_cond = (p5125.shift([List__])));
@@ -1444,7 +1444,7 @@ var p5100 = NAMESPACE['main'];
 					}
 				}
 			});
-			make_sub("Perlito5::Javascript", "to_list", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "to_list", function (List__, p5want) {
 					var v_items = null;
 					(v_items = (p5125.to_list_preprocess(interpolate_array(List__[0]), 0)));
 					var v_level = null;
@@ -1455,7 +1455,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5call(NAMESPACE["Perlito5::Javascript"]["v__"], "emit_javascript", interpolate_array(v_level, v_wantarray), p5want)], p5want));
 }, interpolate_array((v_items || (v_items = new ArrayRef([])))._array_)))], 0) + ')') : '[]')], p5want));
 			});
-			make_sub("Perlito5::Javascript", "to_list_preprocess", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "to_list_preprocess", function (List__, p5want) {
 					var List_items = [];
 					p5for_lex(function (v_item) {
 						if ( (p5bool(p5call(v_item, "isa", interpolate_array('Perlito5::AST::Apply'), 0)) && (((p5str(p5call(v_item, "code", [], 0)) == 'circumfix:<( )>') || (p5str(p5call(v_item, "code", [], 0)) == 'list:<,>')) || (p5str(p5call(v_item, "code", [], 0)) == 'infix:<=>>'))) ) {
@@ -1469,7 +1469,7 @@ var p5100 = NAMESPACE['main'];
 					}, interpolate_array((List__[0] || (List__[0] = new ArrayRef([])))._array_));
 					return (p5context([(new ArrayRef(List_items))], p5want));
 			});
-			make_sub("Perlito5::Javascript", "to_scalar", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "to_scalar", function (List__, p5want) {
 					var v_items = null;
 					(v_items = (p5125.to_scalar_preprocess(interpolate_array(List__[0]), 0)));
 					var v_level = null;
@@ -1480,7 +1480,7 @@ var p5100 = NAMESPACE['main'];
 	return (p5context([p5call(NAMESPACE["Perlito5::Javascript"]["v__"], "emit_javascript", interpolate_array(v_level, v_wantarray), p5want)], p5want));
 }, interpolate_array((v_items || (v_items = new ArrayRef([])))._array_)))], 0) + ')') : 'null')], p5want));
 			});
-			make_sub("Perlito5::Javascript", "to_scalar_preprocess", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "to_scalar_preprocess", function (List__, p5want) {
 					var List_items = [];
 					p5for_lex(function (v_item) {
 						if ( (p5bool(p5call(v_item, "isa", interpolate_array('Perlito5::AST::Apply'), 0)) && ((p5str(p5call(v_item, "code", [], 0)) == 'list:<,>') || (p5str(p5call(v_item, "code", [], 0)) == 'infix:<=>>'))) ) {
@@ -1494,7 +1494,7 @@ var p5100 = NAMESPACE['main'];
 					}, interpolate_array((List__[0] || (List__[0] = new ArrayRef([])))._array_));
 					return (p5context([(new ArrayRef(List_items))], p5want));
 			});
-			make_sub("Perlito5::Javascript", "to_runtime_context", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript", "to_runtime_context", function (List__, p5want) {
 					var v_items = null;
 					(v_items = (p5125.to_scalar_preprocess(interpolate_array(List__[0]), 0)));
 					var v_level = null;
@@ -1506,23 +1506,23 @@ var p5100 = NAMESPACE['main'];
 }, interpolate_array((v_items || (v_items = new ArrayRef([])))._array_)))], 0) + ']' + ', p5want)')], p5want));
 			});
 		};
-		var p5126 = make_package("Perlito5::Javascript::LexicalBlock");
+		var p5126 = p5make_package("Perlito5::Javascript::LexicalBlock");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::Javascript::LexicalBlock", "new", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript::LexicalBlock", "new", function (List__, p5want) {
 					var v_class = null;
 					(v_class = (p5126.shift([List__])));
 					return (p5context([p5126.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
 			});
-			make_sub("Perlito5::Javascript::LexicalBlock", "block", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript::LexicalBlock", "block", function (List__, p5want) {
 					return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['block']], p5want));
 			});
-			make_sub("Perlito5::Javascript::LexicalBlock", "needs_return", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript::LexicalBlock", "needs_return", function (List__, p5want) {
 					return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['needs_return']], p5want));
 			});
-			make_sub("Perlito5::Javascript::LexicalBlock", "top_level", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript::LexicalBlock", "top_level", function (List__, p5want) {
 					return (p5context([(List__[0] || (List__[0] = new HashRef({})))._hash_['top_level']], p5want));
 			});
-			make_sub("Perlito5::Javascript::LexicalBlock", "has_decl", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript::LexicalBlock", "has_decl", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (List__[0]));
@@ -1555,7 +1555,7 @@ var p5100 = NAMESPACE['main'];
 					}
 				}
 			});
-			make_sub("Perlito5::Javascript::LexicalBlock", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::Javascript::LexicalBlock", "emit_javascript", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5126.shift([List__])));
@@ -1732,9 +1732,9 @@ var p5100 = NAMESPACE['main'];
 				}
 			});
 		};
-		var p5105 = make_package("Perlito5::AST::CompUnit");
+		var p5105 = p5make_package("Perlito5::AST::CompUnit");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::CompUnit", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::CompUnit", "emit_javascript", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (List__[0]));
 					var v_level = null;
@@ -1743,7 +1743,7 @@ var p5100 = NAMESPACE['main'];
 					(v_str = (('(function () {' + String.fromCharCode(10) + p5str(p5call(p5call(NAMESPACE["Perlito5::Javascript::LexicalBlock"], "new", interpolate_array('block', (v_self || (v_self = new HashRef({})))._hash_['body'], 'needs_return', 0), p5want), "emit_javascript", interpolate_array((p5num(v_level) + 1)), 0)) + String.fromCharCode(10) + p5str(NAMESPACE["Perlito5::Javascript"].tab(interpolate_array(v_level), 0)) + '})()' + String.fromCharCode(10))));
 					return (p5context([v_str], p5want));
 			});
-			make_sub("Perlito5::AST::CompUnit", "emit_javascript_program", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::CompUnit", "emit_javascript_program", function (List__, p5want) {
 					var v_comp_units = null;
 					(v_comp_units = (p5105.shift([List__])));
 					(NAMESPACE["Perlito5"]["v_PKG_NAME"] = ('main'));
@@ -1756,9 +1756,9 @@ var p5100 = NAMESPACE['main'];
 					return (p5context([v_str], p5want));
 			});
 		};
-		var p5106 = make_package("Perlito5::AST::Val::Int");
+		var p5106 = p5make_package("Perlito5::AST::Val::Int");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Val::Int", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Val::Int", "emit_javascript", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (p5106.shift([List__])));
 					var v_level = null;
@@ -1766,9 +1766,9 @@ var p5100 = NAMESPACE['main'];
 					return (p5context([(v_self || (v_self = new HashRef({})))._hash_['int']], p5want));
 			});
 		};
-		var p5107 = make_package("Perlito5::AST::Val::Num");
+		var p5107 = p5make_package("Perlito5::AST::Val::Num");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Val::Num", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Val::Num", "emit_javascript", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (p5107.shift([List__])));
 					var v_level = null;
@@ -1776,9 +1776,9 @@ var p5100 = NAMESPACE['main'];
 					return (p5context([(v_self || (v_self = new HashRef({})))._hash_['num']], p5want));
 			});
 		};
-		var p5108 = make_package("Perlito5::AST::Val::Buf");
+		var p5108 = p5make_package("Perlito5::AST::Val::Buf");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Val::Buf", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Val::Buf", "emit_javascript", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (p5108.shift([List__])));
 					var v_level = null;
@@ -1786,9 +1786,9 @@ var p5100 = NAMESPACE['main'];
 					return (p5context([NAMESPACE["Perlito5::Javascript"].escape_string(interpolate_array((v_self || (v_self = new HashRef({})))._hash_['buf']), p5want)], p5want));
 			});
 		};
-		var p5109 = make_package("Perlito5::AST::Lit::Block");
+		var p5109 = p5make_package("Perlito5::AST::Lit::Block");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Lit::Block", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Lit::Block", "emit_javascript", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (p5109.shift([List__])));
 					var v_level = null;
@@ -1798,9 +1798,9 @@ var p5100 = NAMESPACE['main'];
 					return (p5context([('for (var i_ = 0; i_ < 1 ; i_++) {' + String.fromCharCode(10) + p5str(p5call(v_body, "emit_javascript", interpolate_array((p5num(v_level) + 1)), 0)) + String.fromCharCode(10) + p5str(NAMESPACE["Perlito5::Javascript"].tab(interpolate_array(v_level), 0)) + '}')], p5want));
 			});
 		};
-		var p5110 = make_package("Perlito5::AST::Index");
+		var p5110 = p5make_package("Perlito5::AST::Index");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Index", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Index", "emit_javascript", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5110.shift([List__])));
@@ -1825,9 +1825,9 @@ var p5100 = NAMESPACE['main'];
 				}
 			});
 		};
-		var p5111 = make_package("Perlito5::AST::Lookup");
+		var p5111 = p5make_package("Perlito5::AST::Lookup");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Lookup", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Lookup", "emit_javascript", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5111.shift([List__])));
@@ -1852,11 +1852,11 @@ var p5100 = NAMESPACE['main'];
 				}
 			});
 		};
-		var p5112 = make_package("Perlito5::AST::Var");
+		var p5112 = p5make_package("Perlito5::AST::Var");
 		for (var i_ = 0; i_ < 1 ; i_++) {
 			var v_table = null;
 			(v_table = ((new HashRef(array_to_hash(interpolate_array('$', 'v_', '@', 'List_', '%', 'Hash_', '&', ''))))));
-			make_sub("Perlito5::AST::Var", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Var", "emit_javascript", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5112.shift([List__])));
@@ -1944,7 +1944,7 @@ var p5100 = NAMESPACE['main'];
 					}
 				}
 			});
-			make_sub("Perlito5::AST::Var", "perl5_name", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Var", "perl5_name", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (p5112.shift([List__])));
 					var v_sigil = null;
@@ -1954,7 +1954,7 @@ var p5100 = NAMESPACE['main'];
 					};
 					return (p5context([(p5str(v_sigil) + p5str(( p5bool((v_self || (v_self = new HashRef({})))._hash_['namespace']) ? (p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '::') : '')) + p5str((v_self || (v_self = new HashRef({})))._hash_['name']))], p5want));
 			});
-			make_sub("Perlito5::AST::Var", "perl5_get_decl", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Var", "perl5_get_decl", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5112.shift([List__])));
@@ -1977,16 +1977,16 @@ var p5100 = NAMESPACE['main'];
 				}
 			});
 		};
-		var p5119 = make_package("Perlito5::AST::Decl");
+		var p5119 = p5make_package("Perlito5::AST::Decl");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Decl", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Decl", "emit_javascript", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (p5119.shift([List__])));
 					var v_level = null;
 					(v_level = (p5119.shift([List__])));
 					return (p5context([p5call((v_self || (v_self = new HashRef({})))._hash_['var'], "emit_javascript", interpolate_array(v_level), p5want)], p5want));
 			});
-			make_sub("Perlito5::AST::Decl", "emit_javascript_init", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Decl", "emit_javascript_init", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5119.shift([List__])));
@@ -2073,9 +2073,9 @@ var p5100 = NAMESPACE['main'];
 				}
 			});
 		};
-		var p5113 = make_package("Perlito5::AST::Proto");
+		var p5113 = p5make_package("Perlito5::AST::Proto");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Proto", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Proto", "emit_javascript", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5113.shift([List__])));
@@ -2096,9 +2096,9 @@ var p5100 = NAMESPACE['main'];
 				}
 			});
 		};
-		var p5114 = make_package("Perlito5::AST::Call");
+		var p5114 = p5make_package("Perlito5::AST::Call");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Call", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Call", "emit_javascript", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5114.shift([List__])));
@@ -2137,9 +2137,9 @@ var p5100 = NAMESPACE['main'];
 				}
 			});
 		};
-		var p5115 = make_package("Perlito5::AST::Apply");
+		var p5115 = p5make_package("Perlito5::AST::Apply");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Apply", "emit_regex_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Apply", "emit_regex_javascript", function (List__, p5want) {
 				try {
 					var v_op = null;
 					(v_op = (p5115.shift([List__])));
@@ -2180,7 +2180,7 @@ var p5100 = NAMESPACE['main'];
 					}
 				}
 			});
-			make_sub("Perlito5::AST::Apply", "emit_function_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Apply", "emit_function_javascript", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5115.shift([List__])));
@@ -2232,7 +2232,7 @@ var p5100 = NAMESPACE['main'];
 				}, 'package', function (List__, p5want) {
 						var v_self = null;
 						(v_self = (List__[0]));
-						return (p5context([('var ' + p5str(NAMESPACE["Perlito5::Javascript"].pkg([], 0)) + ' = make_package("' + p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '")')], p5want));
+						return (p5context([('var ' + p5str(NAMESPACE["Perlito5::Javascript"].pkg([], 0)) + ' = p5make_package("' + p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '")')], p5want));
 				}, 'infix:<=>>', function (List__, p5want) {
 						var v_self = null;
 						(v_self = (p5115.shift([List__])));
@@ -2660,7 +2660,7 @@ var p5100 = NAMESPACE['main'];
 						}
 					}
 				})));
-			make_sub("Perlito5::AST::Apply", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Apply", "emit_javascript", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5115.shift([List__])));
@@ -2806,7 +2806,7 @@ var p5100 = NAMESPACE['main'];
 					}
 				}
 			});
-			make_sub("Perlito5::AST::Apply", "emit_javascript_bind", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Apply", "emit_javascript_bind", function (List__, p5want) {
 				try {
 					var v_parameters = null;
 					(v_parameters = (p5115.shift([List__])));
@@ -2848,9 +2848,9 @@ var p5100 = NAMESPACE['main'];
 				}
 			});
 		};
-		var p5116 = make_package("Perlito5::AST::If");
+		var p5116 = p5make_package("Perlito5::AST::If");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::If", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::If", "emit_javascript", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (p5116.shift([List__])));
 					var v_level = null;
@@ -2871,9 +2871,9 @@ var p5100 = NAMESPACE['main'];
 					return (p5context([v_s], p5want));
 			});
 		};
-		var p5117 = make_package("Perlito5::AST::While");
+		var p5117 = p5make_package("Perlito5::AST::While");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::While", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::While", "emit_javascript", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (p5117.shift([List__])));
 					var v_level = null;
@@ -2883,9 +2883,9 @@ var p5100 = NAMESPACE['main'];
 					return (p5context([('for ( ' + p5str(( p5bool((v_self || (v_self = new HashRef({})))._hash_['init']) ? (p5str(p5call((v_self || (v_self = new HashRef({})))._hash_['init'], "emit_javascript", [], 0)) + '; ') : '; ')) + p5str(( p5bool((v_self || (v_self = new HashRef({})))._hash_['cond']) ? (p5str(NAMESPACE["Perlito5::Javascript"].to_bool(interpolate_array((v_self || (v_self = new HashRef({})))._hash_['cond']), 0)) + '; ') : '; ')) + p5str(( p5bool((v_self || (v_self = new HashRef({})))._hash_['continue']) ? (p5str(p5call((v_self || (v_self = new HashRef({})))._hash_['continue'], "emit_javascript", [], 0)) + ' ') : ' ')) + ') {' + String.fromCharCode(10) + p5str(p5call(v_body, "emit_javascript", interpolate_array((p5num(v_level) + 1)), 0)) + String.fromCharCode(10) + p5str(NAMESPACE["Perlito5::Javascript"].tab(interpolate_array(v_level), 0)) + '}')], p5want));
 			});
 		};
-		var p5118 = make_package("Perlito5::AST::For");
+		var p5118 = p5make_package("Perlito5::AST::For");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::For", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::For", "emit_javascript", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5118.shift([List__])));
@@ -2916,9 +2916,9 @@ var p5100 = NAMESPACE['main'];
 				}
 			});
 		};
-		var p5121 = make_package("Perlito5::AST::Sub");
+		var p5121 = p5make_package("Perlito5::AST::Sub");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Sub", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Sub", "emit_javascript", function (List__, p5want) {
 				try {
 					var v_self = null;
 					(v_self = (p5121.shift([List__])));
@@ -2927,7 +2927,7 @@ var p5100 = NAMESPACE['main'];
 					var v_s = null;
 					(v_s = (('function (List__, p5want) {' + String.fromCharCode(10) + p5str(p5call(p5context([p5call(NAMESPACE["Perlito5::Javascript::LexicalBlock"], "new", interpolate_array('block', (v_self || (v_self = new HashRef({})))._hash_['block'], 'needs_return', 1, 'top_level', 1), p5want)], 0), "emit_javascript", interpolate_array((p5num(v_level) + 1)), 0)) + String.fromCharCode(10) + p5str(NAMESPACE["Perlito5::Javascript"].tab(interpolate_array(v_level), 0)) + '}')));
 					if ( p5bool((v_self || (v_self = new HashRef({})))._hash_['name']) ) {
-						throw(p5context([('make_sub("' + p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '", "' + p5str((v_self || (v_self = new HashRef({})))._hash_['name']) + '", ' + p5str(v_s) + ')')], p5want))
+						throw(p5context([('p5make_sub("' + p5str((v_self || (v_self = new HashRef({})))._hash_['namespace']) + '", "' + p5str((v_self || (v_self = new HashRef({})))._hash_['name']) + '", ' + p5str(v_s) + ')')], p5want))
 					}
 					
 					else {
@@ -2944,9 +2944,9 @@ var p5100 = NAMESPACE['main'];
 				}
 			});
 		};
-		var p5122 = make_package("Perlito5::AST::Do");
+		var p5122 = p5make_package("Perlito5::AST::Do");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Do", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Do", "emit_javascript", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (p5122.shift([List__])));
 					var v_level = null;
@@ -2956,9 +2956,9 @@ var p5100 = NAMESPACE['main'];
 					return (p5context([('(function () {' + String.fromCharCode(10) + p5str(p5call(p5context([p5call(NAMESPACE["Perlito5::Javascript::LexicalBlock"], "new", interpolate_array('block', v_block, 'needs_return', 1), p5want)], 0), "emit_javascript", interpolate_array((p5num(v_level) + 1)), 0)) + String.fromCharCode(10) + p5str(NAMESPACE["Perlito5::Javascript"].tab(interpolate_array(v_level), 0)) + '})()')], p5want));
 			});
 		};
-		var p5123 = make_package("Perlito5::AST::Use");
+		var p5123 = p5make_package("Perlito5::AST::Use");
 		for (var i_ = 0; i_ < 1 ; i_++) {
-			make_sub("Perlito5::AST::Use", "emit_javascript", function (List__, p5want) {
+			p5make_sub("Perlito5::AST::Use", "emit_javascript", function (List__, p5want) {
 					var v_self = null;
 					(v_self = (p5123.shift([List__])));
 					var v_level = null;
@@ -2972,8 +2972,8 @@ var p5100 = NAMESPACE['main'];
 	// use Perlito5::Javascript::Emitter
 ;
 	(function () {
-		var p5127 = make_package("Perlito5::Precedence");
-		make_sub("Perlito5::Precedence", "new", function (List__, p5want) {
+		var p5127 = p5make_package("Perlito5::Precedence");
+		p5make_sub("Perlito5::Precedence", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5127.shift([List__])));
 				return (p5context([p5127.bless([(new HashRef(array_to_hash(interpolate_array(List__)))), v_class], p5want)], p5want));
@@ -2984,26 +2984,26 @@ var p5100 = NAMESPACE['main'];
 		(v_Precedence = ((new HashRef(array_to_hash([])))));
 		var v_Assoc = null;
 		(v_Assoc = ((new HashRef(array_to_hash([])))));
-		make_sub("Perlito5::Precedence", "is_assoc_type", function (List__, p5want) {
+		p5make_sub("Perlito5::Precedence", "is_assoc_type", function (List__, p5want) {
 				var v_assoc_type = null;
 				(v_assoc_type = (p5127.shift([List__])));
 				var v_op_name = null;
 				(v_op_name = (p5127.shift([List__])));
 				return (p5context([((v_Assoc || (v_Assoc = new HashRef({})))._hash_[v_assoc_type] || ((v_Assoc || (v_Assoc = new HashRef({})))._hash_[v_assoc_type] = new HashRef({})))._hash_[v_op_name]], p5want));
 		});
-		make_sub("Perlito5::Precedence", "is_fixity_type", function (List__, p5want) {
+		p5make_sub("Perlito5::Precedence", "is_fixity_type", function (List__, p5want) {
 				var v_fixity_type = null;
 				(v_fixity_type = (p5127.shift([List__])));
 				var v_op_name = null;
 				(v_op_name = (p5127.shift([List__])));
 				return (p5context([((v_Operator || (v_Operator = new HashRef({})))._hash_[v_fixity_type] || ((v_Operator || (v_Operator = new HashRef({})))._hash_[v_fixity_type] = new HashRef({})))._hash_[v_op_name]], p5want));
 		});
-		make_sub("Perlito5::Precedence", "is_term", function (List__, p5want) {
+		p5make_sub("Perlito5::Precedence", "is_term", function (List__, p5want) {
 				var v_token = null;
 				(v_token = (p5127.shift([List__])));
 				return (p5context([or(p5context([(p5str((v_token || (v_token = new ArrayRef([])))._array_[0]) == 'term')], p5want), function () { return p5context([(p5str((v_token || (v_token = new ArrayRef([])))._array_[0]) == 'postfix_or_term')], p5want) })], p5want));
 		});
-		make_sub("Perlito5::Precedence", "is_ident_middle", function (List__, p5want) {
+		p5make_sub("Perlito5::Precedence", "is_ident_middle", function (List__, p5want) {
 				var v_c = null;
 				(v_c = (p5127.shift([List__])));
 				return (p5context([or(or(p5context([and((p5str(v_c) >= 'a'), function () { return (p5str(v_c) <= 'z') })], p5want), function () { return p5context([and((p5str(v_c) >= '0'), function () { return (p5str(v_c) <= '9') })], p5want) }), function () { return p5context([(p5str(v_c) == '_')], p5want) })], p5want));
@@ -3094,7 +3094,7 @@ var p5100 = NAMESPACE['main'];
 			}, 'package', function (List__, p5want) {
 					return (p5context([p5call(NAMESPACE["Perlito5::Expression"], "term_package", interpolate_array(List__[0], List__[1]), p5want)], p5want));
 			})));
-		make_sub("Perlito5::Precedence", "add_term", function (List__, p5want) {
+		p5make_sub("Perlito5::Precedence", "add_term", function (List__, p5want) {
 				var v_name = null;
 				(v_name = (p5127.shift([List__])));
 				var v_param = null;
@@ -3106,7 +3106,7 @@ var p5100 = NAMESPACE['main'];
 		var Hash_Op = {};
 		var List_Op_chars = [];
 		(List_Op_chars = interpolate_array(3, 2, 1));
-		make_sub("Perlito5::Precedence", "op_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Precedence", "op_parse", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (p5127.shift([List__])));
@@ -3190,7 +3190,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Precedence", "add_op", function (List__, p5want) {
+		p5make_sub("Perlito5::Precedence", "add_op", function (List__, p5want) {
 				var v_fixity = null;
 				(v_fixity = (p5127.shift([List__])));
 				var v_name = null;
@@ -3318,7 +3318,7 @@ var p5100 = NAMESPACE['main'];
 		p5127.add_op(interpolate_array('infix', 'xor', v_prec), null);
 		(v_prec = ((p5num(v_prec) - 1)));
 		p5127.add_op(interpolate_array('infix', '*start*', v_prec), null);
-		make_sub("Perlito5::Precedence", "precedence_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Precedence", "precedence_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (p5127.shift([List__])));
 				var v_get_token = null;
@@ -3424,8 +3424,8 @@ var p5100 = NAMESPACE['main'];
 	})()
 ;
 	(function () {
-		var p5128 = make_package("Perlito5::Grammar::Bareword");
-		make_sub("Perlito5::Grammar::Bareword", "term_bareword", function (List__, p5want) {
+		var p5128 = p5make_package("Perlito5::Grammar::Bareword");
+		p5make_sub("Perlito5::Grammar::Bareword", "term_bareword", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -3599,12 +3599,12 @@ var p5100 = NAMESPACE['main'];
 	})()
 ;
 	(function () {
-		var p5129 = make_package("Perlito5::Expression");
+		var p5129 = p5make_package("Perlito5::Expression");
 		// use Perlito5::Precedence
 ;
 		// use Perlito5::Grammar::Bareword
 ;
-		make_sub("Perlito5::Expression", "expand_list", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "expand_list", function (List__, p5want) {
 			try {
 				var v_param_list = null;
 				(v_param_list = (p5129.shift([List__])));
@@ -3638,7 +3638,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "block_or_hash", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "block_or_hash", function (List__, p5want) {
 			try {
 				var v_o = null;
 				(v_o = (p5129.shift([List__])));
@@ -3683,7 +3683,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "pop_term", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "pop_term", function (List__, p5want) {
 			try {
 				var v_num_stack = null;
 				(v_num_stack = (p5129.shift([List__])));
@@ -3764,7 +3764,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "reduce_postfix", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "reduce_postfix", function (List__, p5want) {
 			try {
 				var v_op = null;
 				(v_op = (p5129.shift([List__])));
@@ -3944,7 +3944,7 @@ var p5100 = NAMESPACE['main'];
 					}
 				}
 			}));
-		make_sub("Perlito5::Expression", "term_arrow", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_arrow", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4139,7 +4139,7 @@ var p5100 = NAMESPACE['main'];
 		});
 		var Hash_special_var = {};
 		(Hash_special_var = array_to_hash(interpolate_array('$_', 1, '$&', 1, '$`', 1, '$' + String.fromCharCode(39), 1, '$+', 1, '@+', 1, '%+', 1, '$.', 1, '$/', 1, '$|', 1, '$,', 1, '$' + String.fromCharCode(92), 1, '$"', 1, '$;', 1, '$%', 1, '$=', 1, '$-', 1, '@-', 1, '%-', 1, '$~', 1, '$^', 1, '$:', 1, '$?', 1, '$!', 1, '%!', 1, '$@', 1, '$$', 1, '$<', 1, '$>', 1, '$(', 1, '$)', 1, '$[', 1, '$]', 1, '@_', 1, '$#', 1, '$*', 1, '$#+', 1, '$#-', 1, '$#_', 1)));
-		make_sub("Perlito5::Expression", "term_special_var", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_special_var", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -4185,7 +4185,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "var_sigil_or_pseudo", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "var_sigil_or_pseudo", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4219,7 +4219,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_sigil", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_sigil", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4402,7 +4402,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_digit", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_digit", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4454,7 +4454,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_ternary", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_ternary", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4488,7 +4488,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_paren", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_paren", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4522,7 +4522,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_square", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_square", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4556,7 +4556,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_curly", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_curly", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4626,7 +4626,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "declarator", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "declarator", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4654,7 +4654,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_declarator", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_declarator", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4734,7 +4734,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_return", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_return", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4781,7 +4781,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_anon_sub", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_anon_sub", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4826,7 +4826,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_do", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_do", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4884,7 +4884,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_package", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_package", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4932,7 +4932,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_eval", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_eval", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -4990,7 +4990,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "map_or_sort", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "map_or_sort", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -5015,7 +5015,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_map_or_sort", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_map_or_sort", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -5097,7 +5097,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "term_space", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "term_space", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -5142,7 +5142,7 @@ var p5100 = NAMESPACE['main'];
 		(v_Expr_end_token = ((new HashRef(array_to_hash(interpolate_array(']', 1, ')', 1, '}', 1, ';', 1, 'if', 1, 'for', 1, 'else', 1, 'when', 1, 'while', 1, 'elsif', 1, 'unless', 1, 'foreach', 1))))));
 		var v_Expr_end_token_chars = null;
 		(v_Expr_end_token_chars = ((new ArrayRef(interpolate_array(7, 6, 5, 4, 3, 2, 1)))));
-		make_sub("Perlito5::Expression", "op_parse_spc", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "op_parse_spc", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -5173,7 +5173,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "argument_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "argument_parse", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -5258,7 +5258,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "list_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "list_parse", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -5343,7 +5343,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "circumfix_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "circumfix_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -5388,7 +5388,7 @@ var p5100 = NAMESPACE['main'];
 				};
 				return (p5context([p5call(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_last_pos, 'capture', v_res), p5want)], p5want));
 		});
-		make_sub("Perlito5::Expression", "ternary5_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "ternary5_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -5397,7 +5397,7 @@ var p5100 = NAMESPACE['main'];
 				(v_pos = (List__[2]));
 				return (p5context([p5call(v_self, "circumfix_parse", interpolate_array(v_str, v_pos, ':'), p5want)], p5want));
 		});
-		make_sub("Perlito5::Expression", "curly_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "curly_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -5406,7 +5406,7 @@ var p5100 = NAMESPACE['main'];
 				(v_pos = (List__[2]));
 				return (p5context([p5call(v_self, "circumfix_parse", interpolate_array(v_str, v_pos, '}'), p5want)], p5want));
 		});
-		make_sub("Perlito5::Expression", "square_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "square_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -5415,7 +5415,7 @@ var p5100 = NAMESPACE['main'];
 				(v_pos = (List__[2]));
 				return (p5context([p5call(v_self, "circumfix_parse", interpolate_array(v_str, v_pos, ']'), p5want)], p5want));
 		});
-		make_sub("Perlito5::Expression", "paren_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "paren_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -5424,7 +5424,7 @@ var p5100 = NAMESPACE['main'];
 				(v_pos = (List__[2]));
 				return (p5context([p5call(v_self, "circumfix_parse", interpolate_array(v_str, v_pos, ')'), p5want)], p5want));
 		});
-		make_sub("Perlito5::Expression", "exp_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "exp_parse", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -5513,14 +5513,14 @@ var p5100 = NAMESPACE['main'];
 			}, 'sub', function (List__, p5want) {
 					return (p5context([p5call(NAMESPACE["Perlito5::Grammar"], "named_sub", interpolate_array(List__[0], List__[1]), p5want)], p5want));
 			})));
-		make_sub("Perlito5::Expression", "add_statement", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "add_statement", function (List__, p5want) {
 				var v_name = null;
 				(v_name = (p5129.shift([List__])));
 				var v_param = null;
 				(v_param = (p5129.shift([List__])));
 				return (p5context([(Hash_Statement[v_name] = v_param)], p5want));
 		});
-		make_sub("Perlito5::Expression", "exp_stmt", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "exp_stmt", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -5556,7 +5556,7 @@ var p5100 = NAMESPACE['main'];
 		(List_Modifier_chars = interpolate_array(7, 6, 5, 4, 3, 2));
 		var Hash_Modifier = {};
 		(Hash_Modifier = array_to_hash(interpolate_array('if', 1, 'unless', 1, 'when', 1, 'for', 1, 'foreach', 1, 'while', 1)));
-		make_sub("Perlito5::Expression", "statement_modifier", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "statement_modifier", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -5590,7 +5590,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "modifier", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "modifier", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -5630,7 +5630,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Expression", "delimited_statement", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "delimited_statement", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -5736,7 +5736,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Expression", "statement_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Expression", "statement_parse", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -5778,8 +5778,8 @@ var p5100 = NAMESPACE['main'];
 	})()
 ;
 	(function () {
-		var p5130 = make_package("Perlito5::Grammar");
-		make_sub("Perlito5::Grammar", "unless", function (List__, p5want) {
+		var p5130 = p5make_package("Perlito5::Grammar");
+		p5make_sub("Perlito5::Grammar", "unless", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -5925,7 +5925,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "if", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "if", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6105,7 +6105,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "when", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "when", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6156,7 +6156,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "for", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "for", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6369,7 +6369,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "while", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "while", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6464,7 +6464,7 @@ var p5100 = NAMESPACE['main'];
 	(function () {
 		// use v5
 ;
-		var p5131 = make_package("Perlito5::Grammar::String");
+		var p5131 = p5make_package("Perlito5::Grammar::String");
 		// use Perlito5::Precedence
 ;
 		NAMESPACE["Perlito5::Precedence"].add_term(interpolate_array(String.fromCharCode(39), function (List__, p5want) {
@@ -6494,7 +6494,7 @@ var p5100 = NAMESPACE['main'];
 		NAMESPACE["Perlito5::Precedence"].add_term(interpolate_array('s', function (List__, p5want) {
 		return (p5context([p5call(NAMESPACE["Perlito5::Grammar::String"], "term_s_quote", interpolate_array(List__[0], List__[1]), p5want)], p5want));
 }), null);
-		make_sub("Perlito5::Grammar::String", "term_double_quote", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "term_double_quote", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6528,7 +6528,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "term_single_quote", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "term_single_quote", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6562,7 +6562,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "term_q_quote", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "term_q_quote", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6650,7 +6650,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "term_qq_quote", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "term_qq_quote", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6738,7 +6738,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "term_qw_quote", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "term_qw_quote", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6826,7 +6826,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "term_slash_quote", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "term_slash_quote", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6860,7 +6860,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "term_m_quote", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "term_m_quote", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -6948,7 +6948,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "term_s_quote", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "term_s_quote", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -7038,7 +7038,7 @@ var p5100 = NAMESPACE['main'];
 		});
 		var Hash_pair = {};
 		(Hash_pair = array_to_hash(interpolate_array('{', '}', '(', ')', '[', ']', '<', '>')));
-		make_sub("Perlito5::Grammar::String", "q_quote_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "q_quote_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -7054,7 +7054,7 @@ var p5100 = NAMESPACE['main'];
 				};
 				return (p5context([p5call(v_self, "string_interpolation_parse", interpolate_array(v_str, v_pos, v_open_delimiter, v_delimiter, 0), p5want)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "qq_quote_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "qq_quote_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -7070,7 +7070,7 @@ var p5100 = NAMESPACE['main'];
 				};
 				return (p5context([p5call(v_self, "string_interpolation_parse", interpolate_array(v_str, v_pos, v_open_delimiter, v_delimiter, 1), p5want)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "qw_quote_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "qw_quote_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -7093,7 +7093,7 @@ var p5100 = NAMESPACE['main'];
 				};
 				return (p5context([v_m], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "m_quote_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "m_quote_parse", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -7142,7 +7142,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Grammar::String", "s_quote_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "s_quote_parse", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -7223,7 +7223,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Grammar::String", "string_interpolation_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "string_interpolation_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -7328,7 +7328,7 @@ var p5100 = NAMESPACE['main'];
 				return (p5context([p5call(NAMESPACE["Perlito5::Match"], "new", interpolate_array('str', v_str, 'from', v_pos, 'to', v_p, 'capture', v_ast), p5want)], p5want));
 		});
 		var List_Here_doc = [];
-		make_sub("Perlito5::Grammar::String", "here_doc_wanted", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "here_doc_wanted", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -7394,7 +7394,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Grammar::String", "newline", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "newline", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -7434,7 +7434,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "here_doc", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "here_doc", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -7513,7 +7513,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Grammar::String", "single_quote_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "single_quote_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -7522,7 +7522,7 @@ var p5100 = NAMESPACE['main'];
 				(v_pos = (List__[2]));
 				return (p5context([p5call(v_self, "string_interpolation_parse", interpolate_array(v_str, v_pos, String.fromCharCode(39), String.fromCharCode(39), 0), p5want)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "double_quote_parse", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "double_quote_parse", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (List__[0]));
 				var v_str = null;
@@ -7531,7 +7531,7 @@ var p5100 = NAMESPACE['main'];
 				(v_pos = (List__[2]));
 				return (p5context([p5call(v_self, "string_interpolation_parse", interpolate_array(v_str, v_pos, '"', '"', 1), p5want)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "char_any", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "char_any", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -7550,7 +7550,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "single_quoted_unescape", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "single_quoted_unescape", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -7578,7 +7578,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::String", "double_quoted_buf", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "double_quoted_buf", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -7655,7 +7655,7 @@ var p5100 = NAMESPACE['main'];
 				}
 			}
 		});
-		make_sub("Perlito5::Grammar::String", "double_quoted_unescape", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::String", "double_quoted_unescape", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -7735,7 +7735,7 @@ var p5100 = NAMESPACE['main'];
 	})()
 ;
 	(function () {
-		var p5132 = make_package("Perlito5::Grammar::Use");
+		var p5132 = p5make_package("Perlito5::Grammar::Use");
 		// use Perlito5::Precedence
 ;
 		// use Perlito5::Grammar
@@ -7748,7 +7748,7 @@ var p5100 = NAMESPACE['main'];
 }), null);
 		var Hash_Perlito_internal_module = {};
 		(Hash_Perlito_internal_module = array_to_hash(interpolate_array('strict', 'Perlito5::strict', 'warnings', 'Perlito5::warnings')));
-		make_sub("Perlito5::Grammar::Use", "use_decl", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::Use", "use_decl", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -7770,7 +7770,7 @@ var p5100 = NAMESPACE['main'];
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar::Use", "term_use", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::Use", "term_use", function (List__, p5want) {
 			try {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
@@ -7915,7 +7915,7 @@ return r;
 				}
 			}
 		});
-		make_sub("Perlito5::Grammar::Use", "parse_time_eval", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::Use", "parse_time_eval", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (p5132.shift([List__])));
 				var v_module_name = null;
@@ -7982,7 +7982,7 @@ return r;
 					}
 				}
 		});
-		make_sub("Perlito5::Grammar::Use", "emit_time_eval", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::Use", "emit_time_eval", function (List__, p5want) {
 				var v_self = null;
 				(v_self = (p5132.shift([List__])));
 				if ( (p5str(p5call(v_self, "mod", [], 0)) == 'strict') ) {
@@ -8005,12 +8005,12 @@ return r;
 					null;
 				}
 		});
-		make_sub("Perlito5::Grammar::Use", "modulename_to_filename", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::Use", "modulename_to_filename", function (List__, p5want) {
 				var v_s = null;
 				(v_s = (p5132.shift([List__])));
 				return (p5context([(p5str(NAMESPACE["Perlito5::Runtime"]._replace(interpolate_array(v_s, '::', '/'), 0)) + '.pm')], p5want));
 		});
-		make_sub("Perlito5::Grammar::Use", "filename_lookup", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::Use", "filename_lookup", function (List__, p5want) {
 			try {
 				var v_filename = null;
 				(v_filename = (p5132.shift([List__])));
@@ -8039,7 +8039,7 @@ return r;
 				}
 			}
 		});
-		make_sub("Perlito5::Grammar::Use", "expand_use", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::Use", "expand_use", function (List__, p5want) {
 			try {
 				var v_comp_units = null;
 				(v_comp_units = (p5132.shift([List__])));
@@ -8075,7 +8075,7 @@ return r;
 				}
 			}
 		});
-		make_sub("Perlito5::Grammar::Use", "add_comp_unit", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::Use", "add_comp_unit", function (List__, p5want) {
 				var v_parse = null;
 				(v_parse = (p5132.shift([List__])));
 				var v_comp_units = null;
@@ -8097,7 +8097,7 @@ return r;
 				}, interpolate_array((v_parse || (v_parse = new ArrayRef([])))._array_));
 				return (p5context([v_comp_units], p5want));
 		});
-		make_sub("Perlito5::Grammar::Use", "require", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::Use", "require", function (List__, p5want) {
 			try {
 				var v_filename = null;
 				(v_filename = (p5132.shift([List__])));
@@ -8151,7 +8151,7 @@ return r;
 	})()
 ;
 	(function () {
-		var p5133 = make_package("Perlito5::Grammar::Block");
+		var p5133 = p5make_package("Perlito5::Grammar::Block");
 		// use Perlito5::Expression
 ;
 		NAMESPACE["Perlito5::Expression"].add_statement(interpolate_array('{', function (List__, p5want) {
@@ -8172,7 +8172,7 @@ return r;
 		NAMESPACE["Perlito5::Expression"].add_statement(interpolate_array('END', function (List__, p5want) {
 		return (p5context([p5call(NAMESPACE["Perlito5::Grammar::Block"], "term_block", interpolate_array(List__[0], List__[1]), p5want)], p5want));
 }), null);
-		make_sub("Perlito5::Grammar::Block", "term_block", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar::Block", "term_block", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -8228,7 +8228,7 @@ return r;
 	})()
 ;
 	(function () {
-		var p5130 = make_package("Perlito5::Grammar");
+		var p5130 = p5make_package("Perlito5::Grammar");
 		// use Perlito5::Expression
 ;
 		// use Perlito5::Grammar::Control
@@ -8239,16 +8239,16 @@ return r;
 ;
 		// use Perlito5::Grammar::Block
 ;
-		make_sub("Perlito5::Grammar", "word", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "word", function (List__, p5want) {
 				return (p5context([( p5bool((p5str(p5130.substr([List__[1], List__[2], 1], p5want)).match(/\w/) ? 1 : 0)) ? p5130.bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', (p5num(List__[2]) + 1))))), 'Perlito5::Match'], p5want) : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "digit", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "digit", function (List__, p5want) {
 				return (p5context([( p5bool((p5str(p5130.substr([List__[1], List__[2], 1], p5want)).match(/\d/) ? 1 : 0)) ? p5130.bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', (p5num(List__[2]) + 1))))), 'Perlito5::Match'], p5want) : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "space", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "space", function (List__, p5want) {
 				return (p5context([( p5bool((p5str(p5130.substr([List__[1], List__[2], 1], p5want)).match(/\s/) ? 1 : 0)) ? p5130.bless([(new HashRef(array_to_hash(interpolate_array('str', List__[1], 'from', List__[2], 'to', (p5num(List__[2]) + 1))))), 'Perlito5::Match'], p5want) : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "is_newline", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "is_newline", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -8270,7 +8270,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "not_newline", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "not_newline", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -8311,7 +8311,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "ident", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "ident", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -8386,7 +8386,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "full_ident", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "full_ident", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -8453,7 +8453,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "namespace_before_ident", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "namespace_before_ident", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -8546,7 +8546,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "optional_namespace_before_ident", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "optional_namespace_before_ident", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -8612,7 +8612,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "pod_pod_begin", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "pod_pod_begin", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -8718,7 +8718,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "pod_begin", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "pod_begin", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -8824,7 +8824,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "ws", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "ws", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9024,7 +9024,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "opt_ws", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "opt_ws", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9059,7 +9059,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "opt_ws2", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "opt_ws2", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9094,7 +9094,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "opt_ws3", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "opt_ws3", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9129,7 +9129,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "exp_stmts2", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "exp_stmts2", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9163,7 +9163,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "exp", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "exp", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9197,7 +9197,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "exp2", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "exp2", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9231,7 +9231,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "opt_ident", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "opt_ident", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9271,7 +9271,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "opt_type", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "opt_type", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9320,7 +9320,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "var_sigil", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "var_sigil", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9351,7 +9351,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "var_name", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "var_name", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9395,7 +9395,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "var_ident", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "var_ident", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9453,7 +9453,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "exponent", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "exponent", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9527,7 +9527,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "val_num", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "val_num", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9738,7 +9738,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "digits", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "digits", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9789,7 +9789,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "val_int", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "val_int", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -9982,7 +9982,7 @@ return r;
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
 		var List_PKG = [];
-		make_sub("Perlito5::Grammar", "exp_stmts", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "exp_stmts", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -10047,7 +10047,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "args_sig", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "args_sig", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -10117,7 +10117,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "prototype", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "prototype", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -10190,7 +10190,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "anon_sub_def", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "anon_sub_def", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -10286,7 +10286,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "named_sub_def", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "named_sub_def", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -10426,7 +10426,7 @@ return r;
 					})()], 0)], 0)));
 				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
 		});
-		make_sub("Perlito5::Grammar", "named_sub", function (List__, p5want) {
+		p5make_sub("Perlito5::Grammar", "named_sub", function (List__, p5want) {
 				var v_grammar = null;
 				(v_grammar = (List__[0]));
 				var v_str = null;
@@ -10484,10 +10484,10 @@ return r;
 	(function () {
 		// use v5
 ;
-		var p5115 = make_package("Perlito5::AST::Apply");
+		var p5115 = p5make_package("Perlito5::AST::Apply");
 		var Hash_op = {};
 		(Hash_op = array_to_hash(interpolate_array('infix:<+=>', 'infix:<+>', 'infix:<-=>', 'infix:<->', 'infix:<*=>', 'infix:<*>', 'infix:</=>', 'infix:</>', 'infix:<||=>', 'infix:<||>', 'infix:<&&=>', 'infix:<&&>', 'infix:<|=>', 'infix:<|>', 'infix:<&=>', 'infix:<&>', 'infix:<//=>', 'infix:<//>', 'infix:<.=>', 'list:<.>')));
-		make_sub("Perlito5::AST::Apply", "op_assign", function (List__, p5want) {
+		p5make_sub("Perlito5::AST::Apply", "op_assign", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -10510,8 +10510,8 @@ return r;
 				}
 			}
 		});
-		var p5122 = make_package("Perlito5::AST::Do");
-		make_sub("Perlito5::AST::Do", "simplify", function (List__, p5want) {
+		var p5122 = p5make_package("Perlito5::AST::Do");
+		p5make_sub("Perlito5::AST::Do", "simplify", function (List__, p5want) {
 			try {
 				var v_self = null;
 				(v_self = (List__[0]));
@@ -10557,10 +10557,10 @@ return r;
 	// use Perlito5::Macro
 ;
 	(function () {
-		var p5134 = make_package("Perlito5::Runtime");
+		var p5134 = p5make_package("Perlito5::Runtime");
 		// use Perlito5::strict
 ;
-		make_sub("Perlito5::Runtime", "_replace", function (List__, p5want) {
+		p5make_sub("Perlito5::Runtime", "_replace", function (List__, p5want) {
 				var v_s = null;
 				(v_s = (p5134.shift([List__])));
 				var v_old = null;
@@ -10571,12 +10571,12 @@ return r;
 				(v_p = (p5134.index([v_s, v_old], 0)));
 				return (p5context([( (p5num(v_p) >= 0) ? (p5134.substr([v_s, 0, v_p], 0) + p5str(v_new) + p5str(p5134._replace(interpolate_array(p5134.substr([v_s, (p5num(v_p) + p5134.length([v_old], 0))], 1), v_old, v_new), 0))) : v_s)], p5want));
 		});
-		make_sub("Perlito5::Runtime", "lisp_escape_string", function (List__, p5want) {
+		p5make_sub("Perlito5::Runtime", "lisp_escape_string", function (List__, p5want) {
 				var v_s = null;
 				(v_s = (p5134.shift([List__])));
 				return (p5context([p5134._replace(interpolate_array(v_s, String.fromCharCode(92), String.fromCharCode(92) + String.fromCharCode(92)), p5want)], p5want));
 		});
-		make_sub("Perlito5::Runtime", "to_go_namespace", function (List__, p5want) {
+		p5make_sub("Perlito5::Runtime", "to_go_namespace", function (List__, p5want) {
 				var v_s = null;
 				(v_s = (p5134.shift([List__])));
 				return (p5context([p5134._replace(interpolate_array(v_s, '::', '__'), p5want)], p5want));
@@ -10591,7 +10591,7 @@ return r;
 ;
 	// use Perlito5::Runtime
 ;
-	make_sub("Perlito5", "compile_p5_to_js", function (List__, p5want) {
+	p5make_sub("Perlito5", "compile_p5_to_js", function (List__, p5want) {
 			var v_s = null;
 			(v_s = (p5101.shift([List__])));
 			(NAMESPACE["Perlito5"]["v_PKG_NAME"] = ('main'));

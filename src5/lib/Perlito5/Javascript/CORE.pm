@@ -79,7 +79,7 @@ CORE.bless = function(List__) {
         return o;
     }
     if (!NAMESPACE.hasOwnProperty(pkg_name)) {
-        make_package(pkg_name);
+        p5make_package(pkg_name);
     }
     o._class_ = NAMESPACE[pkg_name];
     return o;

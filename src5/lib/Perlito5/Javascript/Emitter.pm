@@ -961,7 +961,7 @@ package Perlito5::AST::Apply;
         },
         'package' => sub {
             my $self = $_[0];
-            "var " . Perlito5::Javascript::pkg() . ' = make_package("' . $self->{"namespace"} . '")';
+            "var " . Perlito5::Javascript::pkg() . ' = p5make_package("' . $self->{"namespace"} . '")';
         },
         'infix:<=>>' => sub {
             my $self      = shift;
@@ -1655,7 +1655,7 @@ package Perlito5::AST::Sub;
         . Perlito5::Javascript::tab($level) . '}';
 
         if ( $self->{"name"} ) {
-            return 'make_sub("' . $self->{"namespace"} . '", "' . $self->{"name"} . '", ' . $s . ')'
+            return 'p5make_sub("' . $self->{"namespace"} . '", "' . $self->{"name"} . '", ' . $s . ')'
         }
         else {
             return $s;

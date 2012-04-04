@@ -640,7 +640,7 @@ for ($_) {
     'p5want'
 }), ('package' => sub {
     ((my  $self) = $_[0]);
-    ('var ' . Perlito5::Javascript::pkg() . ' = make_package("' . $self->{'namespace'} . '")')
+    ('var ' . Perlito5::Javascript::pkg() . ' = p5make_package("' . $self->{'namespace'} . '")')
 }), ('infix:<=>>' => sub {
     ((my  $self) = shift());
     ((my  $level) = shift());
@@ -1076,7 +1076,7 @@ for ($_) {
         ((my  $level) = shift());
         ((my  $s) = ('function (List__, p5want) {' . chr(10) . (Perlito5::Javascript::LexicalBlock->new(('block' => $self->{'block'}), ('needs_return' => 1), ('top_level' => 1)))->emit_javascript(($level + 1)) . chr(10) . Perlito5::Javascript::tab($level) . '}'));
         if ($self->{'name'}) {
-            return (('make_sub("' . $self->{'namespace'} . '", "' . $self->{'name'} . '", ' . $s . ')'))
+            return (('p5make_sub("' . $self->{'namespace'} . '", "' . $self->{'name'} . '", ' . $s . ')'))
         }
         else {
             return ($s)

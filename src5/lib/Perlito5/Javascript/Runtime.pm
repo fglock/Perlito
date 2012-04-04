@@ -40,13 +40,13 @@ if (typeof NAMESPACE !== "object") {
         var o = List__[0];
         var s = List__[1];
         if ( s.indexOf("::") == -1 ) {
-            // TODO - use _method_lookup_
+            // TODO - use p5method_lookup
             return o._class_[s]
         }
         var c = s.split("::");
         s = c.pop(); 
-        // TODO - use _method_lookup_
-        return _method_lookup_(s, c.join("::"), {});
+        // TODO - use p5method_lookup
+        return p5method_lookup(s, c.join("::"), {});
     };
     NAMESPACE.UNIVERSAL.DOES = NAMESPACE.UNIVERSAL.can;
 
@@ -66,7 +66,7 @@ if (typeof NAMESPACE !== "object") {
     p5_error.prototype = Error.prototype;
 }
 
-function make_package(pkg_name) {
+function p5make_package(pkg_name) {
     if (!NAMESPACE.hasOwnProperty(pkg_name)) {
         var tmp = function () {};
         tmp.prototype = NAMESPACE["CORE::GLOBAL"];
@@ -99,7 +99,7 @@ function p5code_lookup_by_name(package, sub_name) {
     return null;
 }
 
-function _method_lookup_(method, class_name, seen) {
+function p5method_lookup(method, class_name, seen) {
     // default mro
     c = NAMESPACE[class_name];
     if ( c.hasOwnProperty(method) ) {
@@ -108,7 +108,7 @@ function _method_lookup_(method, class_name, seen) {
     var isa = c.List_ISA;
     for (var i = 0; i < isa.length; i++) {
         if (!seen[isa[i]]) {
-            var m = _method_lookup_(method, isa[i]);
+            var m = p5method_lookup(method, isa[i]);
             if (m) {
                 return m 
             }
@@ -126,7 +126,7 @@ function p5call(invocant, method, list) {
         if ( invocant._class_.hasOwnProperty(method) ) {
             return invocant._class_[method](list)
         }
-        var m = _method_lookup_(method, invocant._class_._ref_, {});
+        var m = p5method_lookup(method, invocant._class_._ref_, {});
         if (m) {
             return m(list)
         }
@@ -139,7 +139,7 @@ function p5call(invocant, method, list) {
         if (package.length > 1) {
             var name = package.pop();
             package = package.join("::");
-            m = _method_lookup_(name, package, {});
+            m = p5method_lookup(name, package, {});
             // CORE.say([ name, " ", package ]);
             if (m) {
                 return m(list)
@@ -155,7 +155,7 @@ function p5call(invocant, method, list) {
     // the invocant doesn't have a class
 
     if (typeof invocant === "string") {
-        var aclass = make_package(invocant);
+        var aclass = p5make_package(invocant);
         return p5call(aclass, method, list);
     }
 
@@ -163,7 +163,7 @@ function p5call(invocant, method, list) {
 
 }
 
-make_package("main");
+p5make_package("main");
 NAMESPACE["main"]["v_@"] = [];      // $@
 NAMESPACE["main"]["List_#"] = [];   // @#
 NAMESPACE["main"]["v_^O"] = isNode ? "node.js" : "javascript";
@@ -178,12 +178,12 @@ if (isNode) {
     NAMESPACE["main"]["List_ARGV"] = arguments;
 }
 
-make_package("Perlito5");
-make_package("Perlito5::IO");
-make_package("Perlito5::Runtime");
-make_package("Perlito5::Grammar");
+p5make_package("Perlito5");
+p5make_package("Perlito5::IO");
+p5make_package("Perlito5::Runtime");
+p5make_package("Perlito5::Grammar");
 
-function make_sub(pkg_name, sub_name, func) {
+function p5make_sub(pkg_name, sub_name, func) {
     NAMESPACE[pkg_name][sub_name] = func;
 }
 
@@ -223,11 +223,11 @@ function ScalarRef(o) {
 
 if (isNode) {
     var fs = require("fs");
-    make_sub("Perlito5::IO", "slurp", function(List__) {
+    p5make_sub("Perlito5::IO", "slurp", function(List__) {
         return fs.readFileSync(List__[0],"utf8");
     });
 } else {
-    make_sub("Perlito5::IO", "slurp", function(List__) {
+    p5make_sub("Perlito5::IO", "slurp", function(List__) {
         var filename = List__[0];
         if (typeof readFile == "function") {
             return readFile(filename);
