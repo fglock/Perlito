@@ -227,7 +227,7 @@ package Perlito5::Javascript;
         my $wantarray = 'list';
 
         @$items
-        ? 'interpolate_array('
+        ? 'p5list_to_a('
           .   join(', ', map( $_->emit_javascript($level, $wantarray), @$items ))
           . ')'
         : '[]'
@@ -1037,7 +1037,7 @@ package Perlito5::AST::Apply;
         },
         'circumfix:<{ }>' => sub {
             my $self = $_[0];
-            '(new HashRef(array_to_hash(' . Perlito5::Javascript::to_list( $self->{"arguments"} ) . ')))';
+            '(new HashRef(p5a_to_h(' . Perlito5::Javascript::to_list( $self->{"arguments"} ) . ')))';
         },
         'prefix:<\\>' => sub {
             my $self  = $_[0];
@@ -1081,7 +1081,7 @@ package Perlito5::AST::Apply;
 
         'infix:<x>' => sub {
             my $self = $_[0];
-            'str_replicate(' . join( ', ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
+            'p5str_replicate(' . join( ', ', map( $_->emit_javascript, @{ $self->{"arguments"} } ) ) . ')';
         },
 
         'list:<.>' => sub {
@@ -1314,7 +1314,7 @@ package Perlito5::AST::Apply;
             my $self      = shift;
             my $level     = shift;
             my $wantarray = shift;
-            'defined_or' . '('
+            'p5defined_or' . '('
                 . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray) . ', '
                 . $self->emit_function_javascript($level, $wantarray, $self->{"arguments"}->[1]) 
                 . ')'
@@ -1388,7 +1388,7 @@ package Perlito5::AST::Apply;
            || $code eq 'infix:<and>'
            )
         {
-            return 'and' . '('
+            return 'p5and' . '('
                 . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray) . ', '
                 . $self->emit_function_javascript($level, $wantarray, $self->{"arguments"}->[1]) 
                 . ')'
@@ -1397,7 +1397,7 @@ package Perlito5::AST::Apply;
            || $code eq 'infix:<or>'
            )
         {
-            return 'or' . '('
+            return 'p5or' . '('
                 . $self->{"arguments"}->[0]->emit_javascript($level, $wantarray) . ', '
                 . $self->emit_function_javascript($level, $wantarray, $self->{"arguments"}->[1]) 
                 . ')'
@@ -1536,7 +1536,7 @@ package Perlito5::AST::Apply;
                              : $_->sigil eq '@' 
                              ? $_->emit_javascript() . ' = ' . $tmp . '; ' . $tmp . ' = []'
                              : $_->sigil eq '%' 
-                             ? $_->emit_javascript() . ' = array_to_hash(' . $tmp . '); ' . $tmp . ' = []'
+                             ? $_->emit_javascript() . ' = p5a_to_h(' . $tmp . '); ' . $tmp . ' = []'
                              : die("not implemented")
                              ),
                              @{ $parameters->arguments }
@@ -1563,7 +1563,7 @@ package Perlito5::AST::Apply;
             ||  $parameters->isa( 'Perlito5::AST::Decl' ) && $parameters->var->sigil eq '%'
             )
         {
-            return '(' . $parameters->emit_javascript() . ' = array_to_hash(' . Perlito5::Javascript::to_list([$arguments], $level+1) . '))' 
+            return '(' . $parameters->emit_javascript() . ' = p5a_to_h(' . Perlito5::Javascript::to_list([$arguments], $level+1) . '))' 
         }
         '(' . $parameters->emit_javascript( $level ) . ' = ' . $arguments->emit_javascript( $level+1 ) . ')';
     }

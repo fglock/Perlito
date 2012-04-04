@@ -242,7 +242,7 @@ if (isNode) {
 
 p5context = function(List__, p5want) {
     if (p5want) {
-        return interpolate_array.apply(null, List__);
+        return p5list_to_a.apply(null, List__);
     }
     // scalar: return the last value
     var o = List__;
@@ -254,7 +254,7 @@ p5context = function(List__, p5want) {
     return o;
 }
 
-interpolate_array = function() {
+p5list_to_a = function() {
     var res = [];
     for (i = 0; i < arguments.length; i++) {
         var o = arguments[i];
@@ -288,7 +288,7 @@ interpolate_array = function() {
     return res;
 };
 
-array_to_hash = function(a) {
+p5a_to_h = function(a) {
     var res = {};
     for (i = 0; i < a.length; i+=2) {
         res[p5str(a[i])] = a[i+1];
@@ -362,21 +362,21 @@ p5bool = function(o) {
     return false;
 };
 
-and = function(a, fb) {
+p5and = function(a, fb) {
     if (p5bool(a)) {
         return fb();
     }
     return a;
 };
 
-or = function(a, fb) {
+p5or = function(a, fb) {
     if (p5bool(a)) {
         return a;
     }
     return fb();
 };
 
-defined_or = function(a, fb) {
+p5defined_or = function(a, fb) {
     if (a == null) {
         return fb();
     }
@@ -387,7 +387,7 @@ p5cmp = function(a, b) {
     return a > b ? 1 : a < b ? -1 : 0 
 };
 
-str_replicate = function(o, n) {
+p5str_replicate = function(o, n) {
     n = p5num(n);
     return n ? Array(n + 1).join(o) : "";
 };
@@ -412,7 +412,7 @@ p5map = function(namespace, func, args) {
     var out = [];
     for(var i = 0; i < args.length; i++) {
         namespace["v__"] = args[i];
-        var o = interpolate_array(func(1));
+        var o = p5list_to_a(func(1));
         for(var j = 0; j < o.length; j++) {
             out.push(o[j]);
         }
@@ -452,7 +452,7 @@ p5sort = function(namespace, func, args) {
     return out;
 };
 
-function perl5_to_js( source, namespace, var_env_js ) {
+perl5_to_js = function( source, namespace, var_env_js ) {
     // say( "source: [" + source + "]" );
 
     var strict_old = NAMESPACE["Perlito5"].v_STRICT;
