@@ -174,7 +174,7 @@ package Perlito5::Javascript;
                 return $cond->emit_javascript($level, $wantarray);
             }
             else {
-                return 'num(' . $cond->emit_javascript($level, $wantarray) . ')';
+                return 'p5num(' . $cond->emit_javascript($level, $wantarray) . ')';
             }
     }
     sub to_bool {
@@ -875,7 +875,7 @@ package Perlito5::AST::Call;
         else {
             $meth = '"' . $meth . '"';
         }
-        return '_call_(' . $invocant . ', ' 
+        return 'p5call(' . $invocant . ', ' 
                          . $meth . ', ' 
                          . Perlito5::Javascript::to_list($self->{"arguments"}) . ', '
                          .   ($wantarray eq 'list'   ? '1' 

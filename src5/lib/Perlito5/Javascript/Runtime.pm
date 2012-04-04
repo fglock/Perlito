@@ -118,7 +118,7 @@ function _method_lookup_(method, class_name, seen) {
     // TODO - AUTOLOAD
 }
 
-function _call_(invocant, method, list) {
+function p5call(invocant, method, list) {
     list.unshift(invocant);
 
     if ( invocant.hasOwnProperty("_class_") ) {
@@ -156,7 +156,7 @@ function _call_(invocant, method, list) {
 
     if (typeof invocant === "string") {
         var aclass = make_package(invocant);
-        return _call_(aclass, method, list);
+        return p5call(aclass, method, list);
     }
 
     NAMESPACE.CORE.die(["Can't call method ", method, " on unblessed reference"]);
@@ -318,7 +318,7 @@ p5str = function(o) {
     return o;
 };
 
-num = function(o) {
+p5num = function(o) {
     if (o == null) {
         return 0;
     }
@@ -388,7 +388,7 @@ p5cmp = function(a, b) {
 };
 
 str_replicate = function(o, n) {
-    n = num(n);
+    n = p5num(n);
     return n ? Array(n + 1).join(o) : "";
 };
 
@@ -462,7 +462,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
     var namespace_old = NAMESPACE["Perlito5"].v_PKG_NAME;
     NAMESPACE["Perlito5"].v_PKG_NAME = namespace;
 
-    match = _call_(NAMESPACE["Perlito5::Grammar"], "exp_stmts", [source, 0]);
+    match = p5call(NAMESPACE["Perlito5::Grammar"], "exp_stmts", [source, 0]);
 
     if ( !match || match._hash_.to != source.length ) {
         CORE.die(["Syntax error in eval near pos ", match._hash_.to]);
@@ -472,7 +472,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
         new HashRef({
             block:  NAMESPACE.CORE.bless([
                         new HashRef({
-                            stmts:   _call_(match, "flat", []),
+                            stmts:   p5call(match, "flat", []),
                         }),
                         NAMESPACE["Perlito5::AST::Lit::Block"]
                     ]),
@@ -481,7 +481,7 @@ function perl5_to_js( source, namespace, var_env_js ) {
     ]);
 
     // CORE.say( "ast: [" + perl(ast) + "]" );
-    js_code = _call_(ast, "emit_javascript", []);
+    js_code = p5call(ast, "emit_javascript", []);
     // CORE.say( "js-source: [" + js_code + "]" );
 
     NAMESPACE["Perlito5"].v_PKG_NAME = namespace_old;

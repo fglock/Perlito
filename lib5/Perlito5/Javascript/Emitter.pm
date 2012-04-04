@@ -74,7 +74,7 @@ join("", chr(9) x $level)
             return ($cond->emit_javascript($level, $wantarray))
         }
         else {
-            return (('num(' . $cond->emit_javascript($level, $wantarray) . ')'))
+            return (('p5num(' . $cond->emit_javascript($level, $wantarray) . ')'))
         }
     };
     sub Perlito5::Javascript::to_bool {
@@ -579,7 +579,7 @@ for ($_) {
         else {
             ($meth = ('"' . $meth . '"'))
         };
-        return (('_call_(' . $invocant . ', ' . $meth . ', ' . Perlito5::Javascript::to_list($self->{'arguments'}) . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
+        return (('p5call(' . $invocant . ', ' . $meth . ', ' . Perlito5::Javascript::to_list($self->{'arguments'}) . ', ' . ((($wantarray eq 'list') ? '1' : (($wantarray eq 'scalar') ? '0' : (($wantarray eq 'void') ? 'null' : 'p5want')))) . ')'))
     }
 };
 package Perlito5::AST::Apply;

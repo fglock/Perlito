@@ -86,7 +86,7 @@ CORE.bless = function(List__) {
 };
 
 CORE.chr = function(List__) {
-    return String.fromCharCode(num(List__[0]));
+    return String.fromCharCode(p5num(List__[0]));
 };
 
 CORE.ord = function(List__) {
@@ -249,8 +249,8 @@ CORE.reverse = function(List__) {
 CORE.splice = function(List__, p5want) {
     var array  = List__.shift();
     // CORE.say([ array ]);
-    var offset = num(List__.shift());
-    var limit  = List__.length ? num(List__.shift()) : (array.length + 1);
+    var offset = p5num(List__.shift());
+    var limit  = List__.length ? p5num(List__.shift()) : (array.length + 1);
 
     if (limit < 0) {
         limit = array.length + limit - 1;
