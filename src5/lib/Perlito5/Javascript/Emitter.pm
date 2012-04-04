@@ -217,7 +217,7 @@ package Perlito5::Javascript;
                 return $cond->emit_javascript($level, $wantarray);
             }
             else {
-                return 'bool(' . $cond->emit_javascript($level, $wantarray) . ')';
+                return 'p5bool(' . $cond->emit_javascript($level, $wantarray) . ')';
             }
     }
 

@@ -94,7 +94,7 @@ join("", chr(9) x $level)
             return ($cond->emit_javascript($level, $wantarray))
         }
         else {
-            return (('bool(' . $cond->emit_javascript($level, $wantarray) . ')'))
+            return (('p5bool(' . $cond->emit_javascript($level, $wantarray) . ')'))
         }
     };
     sub Perlito5::Javascript::to_list {

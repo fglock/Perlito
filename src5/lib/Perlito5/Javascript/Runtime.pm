@@ -334,7 +334,7 @@ num = function(o) {
     return o;
 };
 
-bool = function(o) {
+p5bool = function(o) {
     if (o == null) {
         return o;
     }
@@ -363,14 +363,14 @@ bool = function(o) {
 };
 
 and = function(a, fb) {
-    if (bool(a)) {
+    if (p5bool(a)) {
         return fb();
     }
     return a;
 };
 
 or = function(a, fb) {
-    if (bool(a)) {
+    if (p5bool(a)) {
         return a;
     }
     return fb();
@@ -426,7 +426,7 @@ p5grep = function(namespace, func, args) {
     var out = [];
     for(var i = 0; i < args.length; i++) {
         namespace["v__"] = args[i];
-        if (bool(func(0))) {
+        if (p5bool(func(0))) {
             out.push(args[i])
         }
     }
