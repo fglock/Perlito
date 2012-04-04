@@ -23,7 +23,7 @@ sub emit_javascript {
 //
 // See http://www.perl.com/perl/misc/Artistic.html
 
-var CORE = NAMESPACE.CORE;
+var CORE = p5pkg.CORE;
 
 var isNode = typeof require != "undefined";
 if (isNode) {
@@ -56,7 +56,7 @@ CORE.die = function(List__) {
         s = s + List__[i];
         // s = s + p5str(List__[i]);
     }
-    NAMESPACE["main"]["v_@"] = "Died: " + s;
+    p5pkg["main"]["v_@"] = "Died: " + s;
     throw(new p5_error("Died: " + s));
 };
 
@@ -78,10 +78,10 @@ CORE.bless = function(List__) {
         o._class_ = pkg_name;
         return o;
     }
-    if (!NAMESPACE.hasOwnProperty(pkg_name)) {
+    if (!p5pkg.hasOwnProperty(pkg_name)) {
         p5make_package(pkg_name);
     }
-    o._class_ = NAMESPACE[pkg_name];
+    o._class_ = p5pkg[pkg_name];
     return o;
 };
 
@@ -370,7 +370,7 @@ CORE.prototype = function(List__, data) {
     var name = List__[0];
     // TODO - fully qualify "name" using information from "data"
     // XXX - lookup in CORE::GLOBAL?
-    NAMESPACE["Perlito5"].v_PROTO._hash_[name] || NAMESPACE["Perlito5"].v_CORE_PROTO._hash_[name]
+    p5pkg["Perlito5"].v_PROTO._hash_[name] || p5pkg["Perlito5"].v_CORE_PROTO._hash_[name]
 };
 
 ';

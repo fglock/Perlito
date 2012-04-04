@@ -72,7 +72,7 @@ Class
 - classes inherit from UNIVERSAL
 
 Namespace
-- namespaces are stored in the NAMESPACE global hash
+- namespaces are stored in the p5pkg global hash
 - current namespace object is in the PKG variable
 - Namespace inherits from from CORE::GLOBAL, which inherits from CORE
 - Namespace is a copy of the Class, but with a different inheritance

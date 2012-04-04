@@ -25,18 +25,18 @@ sub emit_javascript {
 
 var isNode = typeof require != "undefined";
 
-if (typeof NAMESPACE !== "object") {
-    NAMESPACE = {};
+if (typeof p5pkg !== "object") {
+    p5pkg = {};
     LOCAL = [];
 
     var universal = function () {};
-    NAMESPACE.UNIVERSAL = new universal();
-    NAMESPACE.UNIVERSAL._ref_ = "UNIVERSAL";
-    NAMESPACE.UNIVERSAL.isa = function (List__) {
+    p5pkg.UNIVERSAL = new universal();
+    p5pkg.UNIVERSAL._ref_ = "UNIVERSAL";
+    p5pkg.UNIVERSAL.isa = function (List__) {
         // TODO - use @ISA
         return List__[0]._class_._ref_ == List__[1]
     };
-    NAMESPACE.UNIVERSAL.can = function (List__) {
+    p5pkg.UNIVERSAL.can = function (List__) {
         var o = List__[0];
         var s = List__[1];
         if ( s.indexOf("::") == -1 ) {
@@ -48,16 +48,16 @@ if (typeof NAMESPACE !== "object") {
         // TODO - use p5method_lookup
         return p5method_lookup(s, c.join("::"), {});
     };
-    NAMESPACE.UNIVERSAL.DOES = NAMESPACE.UNIVERSAL.can;
+    p5pkg.UNIVERSAL.DOES = p5pkg.UNIVERSAL.can;
 
     var core = function () {};
-    NAMESPACE["CORE"] = new core();
-    NAMESPACE["CORE"]._ref_ = "CORE";
+    p5pkg["CORE"] = new core();
+    p5pkg["CORE"]._ref_ = "CORE";
 
     var core_global = function () {};
-    core_global.prototype = NAMESPACE.CORE;
-    NAMESPACE["CORE::GLOBAL"] = new core_global();
-    NAMESPACE["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";
+    core_global.prototype = p5pkg.CORE;
+    p5pkg["CORE::GLOBAL"] = new core_global();
+    p5pkg["CORE::GLOBAL"]._ref_ = "CORE::GLOBAL";
 
     p5_error = function (v) {
         this.v = v;
@@ -67,20 +67,20 @@ if (typeof NAMESPACE !== "object") {
 }
 
 function p5make_package(pkg_name) {
-    if (!NAMESPACE.hasOwnProperty(pkg_name)) {
+    if (!p5pkg.hasOwnProperty(pkg_name)) {
         var tmp = function () {};
-        tmp.prototype = NAMESPACE["CORE::GLOBAL"];
-        NAMESPACE[pkg_name] = new tmp();
-        NAMESPACE[pkg_name]._ref_ = pkg_name;
-        NAMESPACE[pkg_name]._class_ = NAMESPACE[pkg_name];  // XXX memory leak
+        tmp.prototype = p5pkg["CORE::GLOBAL"];
+        p5pkg[pkg_name] = new tmp();
+        p5pkg[pkg_name]._ref_ = pkg_name;
+        p5pkg[pkg_name]._class_ = p5pkg[pkg_name];  // XXX memory leak
 
         // TODO - add the other package global variables
-        NAMESPACE[pkg_name]["List_ISA"] = [];
-        NAMESPACE[pkg_name]["v_a"] = null;
-        NAMESPACE[pkg_name]["v_b"] = null;
-        NAMESPACE[pkg_name]["v__"] = null;
+        p5pkg[pkg_name]["List_ISA"] = [];
+        p5pkg[pkg_name]["v_a"] = null;
+        p5pkg[pkg_name]["v_b"] = null;
+        p5pkg[pkg_name]["v__"] = null;
     }
-    return NAMESPACE[pkg_name];
+    return p5pkg[pkg_name];
 }
 
 function p5code_lookup_by_name(package, sub_name) {
@@ -90,8 +90,8 @@ function p5code_lookup_by_name(package, sub_name) {
         sub_name = parts.pop();
         package = parts.join("::");
     }
-    if (NAMESPACE.hasOwnProperty(package)) {
-        var c = NAMESPACE[package];
+    if (p5pkg.hasOwnProperty(package)) {
+        var c = p5pkg[package];
         if ( c.hasOwnProperty(sub_name) ) {
             return c[sub_name]
         }
@@ -101,7 +101,7 @@ function p5code_lookup_by_name(package, sub_name) {
 
 function p5method_lookup(method, class_name, seen) {
     // default mro
-    c = NAMESPACE[class_name];
+    c = p5pkg[class_name];
     if ( c.hasOwnProperty(method) ) {
         return c[method]
     }
@@ -130,8 +130,8 @@ function p5call(invocant, method, list) {
         if (m) {
             return m(list)
         }
-        if ( NAMESPACE.UNIVERSAL.hasOwnProperty(method) ) {
-            return NAMESPACE.UNIVERSAL[method](list)
+        if ( p5pkg.UNIVERSAL.hasOwnProperty(method) ) {
+            return p5pkg.UNIVERSAL[method](list)
         }
 
         // method can have an optional namespace
@@ -144,11 +144,11 @@ function p5call(invocant, method, list) {
             if (m) {
                 return m(list)
             }
-            NAMESPACE.CORE.die(["method not found: ", name, " in class ", package]);
+            p5pkg.CORE.die(["method not found: ", name, " in class ", package]);
         }
 
         // TODO - cache the methods that were already looked up
-        NAMESPACE.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
+        p5pkg.CORE.die(["method not found: ", method, " in class ", invocant._ref_]);
 
     }
 
@@ -159,23 +159,23 @@ function p5call(invocant, method, list) {
         return p5call(aclass, method, list);
     }
 
-    NAMESPACE.CORE.die(["Can't call method ", method, " on unblessed reference"]);
+    p5pkg.CORE.die(["Can't call method ", method, " on unblessed reference"]);
 
 }
 
 p5make_package("main");
-NAMESPACE["main"]["v_@"] = [];      // $@
-NAMESPACE["main"]["List_#"] = [];   // @#
-NAMESPACE["main"]["v_^O"] = isNode ? "node.js" : "javascript";
-NAMESPACE["main"]["List_INC"] = [];
-NAMESPACE["main"]["Hash_INC"] = {};
-NAMESPACE["main"]["List_ARGV"] = [];
-NAMESPACE["main"]["Hash_ENV"] = {};
+p5pkg["main"]["v_@"] = [];      // $@
+p5pkg["main"]["List_#"] = [];   // @#
+p5pkg["main"]["v_^O"] = isNode ? "node.js" : "javascript";
+p5pkg["main"]["List_INC"] = [];
+p5pkg["main"]["Hash_INC"] = {};
+p5pkg["main"]["List_ARGV"] = [];
+p5pkg["main"]["Hash_ENV"] = {};
 if (isNode) {
-    NAMESPACE["main"]["List_ARGV"] = process.argv.splice(2);
-    NAMESPACE["main"]["Hash_ENV"]  = process.env;
+    p5pkg["main"]["List_ARGV"] = process.argv.splice(2);
+    p5pkg["main"]["Hash_ENV"]  = process.env;
 } else if (typeof arguments === "object") {
-    NAMESPACE["main"]["List_ARGV"] = arguments;
+    p5pkg["main"]["List_ARGV"] = arguments;
 }
 
 p5make_package("Perlito5");
@@ -184,7 +184,7 @@ p5make_package("Perlito5::Runtime");
 p5make_package("Perlito5::Grammar");
 
 function p5make_sub(pkg_name, sub_name, func) {
-    NAMESPACE[pkg_name][sub_name] = func;
+    p5pkg[pkg_name][sub_name] = func;
 }
 
 function p5set_local(namespace, name, sigil) {
@@ -236,7 +236,7 @@ if (isNode) {
             // v8
             return read(filename);
         }
-        NAMESPACE.CORE.die(["Perlito5::IO::slurp() not implemented"]);
+        p5pkg.CORE.die(["Perlito5::IO::slurp() not implemented"]);
     });
 }
 
@@ -455,38 +455,38 @@ p5sort = function(namespace, func, args) {
 perl5_to_js = function( source, namespace, var_env_js ) {
     // say( "source: [" + source + "]" );
 
-    var strict_old = NAMESPACE["Perlito5"].v_STRICT;
-    var var_env_js_old = NAMESPACE["Perlito5"].v_VAR;
-    NAMESPACE["Perlito5"].v_VAR = var_env_js;
+    var strict_old = p5pkg["Perlito5"].v_STRICT;
+    var var_env_js_old = p5pkg["Perlito5"].v_VAR;
+    p5pkg["Perlito5"].v_VAR = var_env_js;
 
-    var namespace_old = NAMESPACE["Perlito5"].v_PKG_NAME;
-    NAMESPACE["Perlito5"].v_PKG_NAME = namespace;
+    var namespace_old = p5pkg["Perlito5"].v_PKG_NAME;
+    p5pkg["Perlito5"].v_PKG_NAME = namespace;
 
-    match = p5call(NAMESPACE["Perlito5::Grammar"], "exp_stmts", [source, 0]);
+    match = p5call(p5pkg["Perlito5::Grammar"], "exp_stmts", [source, 0]);
 
     if ( !match || match._hash_.to != source.length ) {
         CORE.die(["Syntax error in eval near pos ", match._hash_.to]);
     }
 
-    ast = NAMESPACE.CORE.bless([
+    ast = p5pkg.CORE.bless([
         new p5HashRef({
-            block:  NAMESPACE.CORE.bless([
+            block:  p5pkg.CORE.bless([
                         new p5HashRef({
                             stmts:   p5call(match, "flat", []),
                         }),
-                        NAMESPACE["Perlito5::AST::Lit::Block"]
+                        p5pkg["Perlito5::AST::Lit::Block"]
                     ]),
         }),
-        NAMESPACE["Perlito5::AST::Do"]
+        p5pkg["Perlito5::AST::Do"]
     ]);
 
     // CORE.say( "ast: [" + perl(ast) + "]" );
     js_code = p5call(ast, "emit_javascript", []);
     // CORE.say( "js-source: [" + js_code + "]" );
 
-    NAMESPACE["Perlito5"].v_PKG_NAME = namespace_old;
-    NAMESPACE["Perlito5"].v_VAR      = var_env_js_old;
-    NAMESPACE["Perlito5"].v_STRICT = strict_old;
+    p5pkg["Perlito5"].v_PKG_NAME = namespace_old;
+    p5pkg["Perlito5"].v_VAR      = var_env_js_old;
+    p5pkg["Perlito5"].v_STRICT = strict_old;
     return js_code;
 }
 
