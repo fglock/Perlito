@@ -5,14 +5,39 @@ our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Grammar::Space;
 use Perlito5::Precedence;
-sub Perlito5::Grammar::Space::term_space {
+((my  %space) = (('#' => sub {
+    ((my  $m) = Perlito5::Grammar::Space->to_eol($_[0], $_[1]));
+    $m->{'to'}
+}), (chr(9) => sub {
+    $_[1]
+}), (chr(10) => sub {
     ((my  $str) = $_[0]);
     ((my  $pos) = $_[1]);
-    ((my  $m) = Perlito5::Grammar::Space->ws($str, $pos));
-    if ($m) {
-        ($m->{'capture'} = ['space', ' '])
+    if ((substr($str, $pos, 1) eq chr(13))) {
+        ($pos)++
     };
-    $m
+    ((my  $m) = Perlito5::Grammar::Space->start_of_line($_[0], $pos));
+    $m->{'to'}
+}), (chr(12) => sub {
+    $_[1]
+}), (chr(13) => sub {
+    ((my  $str) = $_[0]);
+    ((my  $pos) = $_[1]);
+    if ((substr($str, $pos, 1) eq chr(10))) {
+        ($pos)++
+    };
+    ((my  $m) = Perlito5::Grammar::Space->start_of_line($_[0], $pos));
+    $m->{'to'}
+}), (chr(32) => sub {
+    $_[1]
+})));
+sub Perlito5::Grammar::Space::term_space {
+    ((my  $str) = $_[0]);
+    ((my  $p) = $_[1]);
+    for ( ; exists($space{substr($str, $p, 1)});  ) {
+        ($p = $space{substr($str, $p, 1)}->($str, ($p + 1)))
+    };
+    Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $p), ('capture' => ['space', ' ']))
 };
 Perlito5::Precedence::add_term(('#' => \&term_space));
 Perlito5::Precedence::add_term((chr(9) => \&term_space));
@@ -251,32 +276,6 @@ sub Perlito5::Grammar::Space::start_of_line {
 }))));
     ($tmp ? $MATCH : 0)
 };
-((my  %space) = (('#' => sub {
-    ((my  $m) = Perlito5::Grammar::Space->to_eol($_[0], $_[1]));
-    $m->{'to'}
-}), (chr(9) => sub {
-    $_[1]
-}), (chr(10) => sub {
-    ((my  $str) = $_[0]);
-    ((my  $pos) = $_[1]);
-    if ((substr($str, $pos, 1) eq chr(13))) {
-        ($pos)++
-    };
-    ((my  $m) = Perlito5::Grammar::Space->start_of_line($_[0], $pos));
-    $m->{'to'}
-}), (chr(12) => sub {
-    $_[1]
-}), (chr(13) => sub {
-    ((my  $str) = $_[0]);
-    ((my  $pos) = $_[1]);
-    if ((substr($str, $pos, 1) eq chr(10))) {
-        ($pos)++
-    };
-    ((my  $m) = Perlito5::Grammar::Space->start_of_line($_[0], $pos));
-    $m->{'to'}
-}), (chr(32) => sub {
-    $_[1]
-})));
 sub Perlito5::Grammar::Space::ws {
     ((my  $self) = shift());
     ((my  $str) = shift());
