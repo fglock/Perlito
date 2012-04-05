@@ -8193,57 +8193,24 @@ return r;
 		var p5134 = p5make_package("Perlito5::Grammar::Space");
 		// use Perlito5::Precedence
 ;
-		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a('#', function (List__, p5want) {
-		return (p5context([p5call(p5pkg["Perlito5::Grammar::Space"], "term_space", p5list_to_a(List__[0], List__[1]), p5want)], p5want));
-}), null);
-		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a(p5134.chr([9], 1), function (List__, p5want) {
-		return (p5context([p5call(p5pkg["Perlito5::Grammar::Space"], "term_space", p5list_to_a(List__[0], List__[1]), p5want)], p5want));
-}), null);
-		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a(p5134.chr([10], 1), function (List__, p5want) {
-		return (p5context([p5call(p5pkg["Perlito5::Grammar::Space"], "term_space", p5list_to_a(List__[0], List__[1]), p5want)], p5want));
-}), null);
-		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a(p5134.chr([12], 1), function (List__, p5want) {
-		return (p5context([p5call(p5pkg["Perlito5::Grammar::Space"], "term_space", p5list_to_a(List__[0], List__[1]), p5want)], p5want));
-}), null);
-		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a(p5134.chr([13], 1), function (List__, p5want) {
-		return (p5context([p5call(p5pkg["Perlito5::Grammar::Space"], "term_space", p5list_to_a(List__[0], List__[1]), p5want)], p5want));
-}), null);
-		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a(p5134.chr([32], 1), function (List__, p5want) {
-		return (p5context([p5call(p5pkg["Perlito5::Grammar::Space"], "term_space", p5list_to_a(List__[0], List__[1]), p5want)], p5want));
-}), null);
 		p5make_sub("Perlito5::Grammar::Space", "term_space", function (List__, p5want) {
-				var v_grammar = null;
-				(v_grammar = (List__[0]));
 				var v_str = null;
-				(v_str = (List__[1]));
+				(v_str = (List__[0]));
 				var v_pos = null;
-				(v_pos = (List__[2]));
-				var v_MATCH = null;
-				(v_MATCH = (p5call(p5pkg["Perlito5::Match"], "new", p5list_to_a('str', v_str, 'from', v_pos, 'to', v_pos), 0)));
-				var v_tmp = null;
-				(v_tmp = (p5context([p5context([(function () {
-						var v_pos1 = null;
-						(v_pos1 = ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']));
-						return (p5context([p5context([(function () {
-	return (p5context([p5and(p5context([(function () {
-	var v_m2 = null;
-	(v_m2 = (p5call(v_grammar, "ws", p5list_to_a(v_str, (v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to']), 0)));
-	if ( p5bool(v_m2) ) {
-		((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['to'] = (v_m2 || (v_m2 = new p5HashRef({})))._hash_['to']);
-		return (p5context([1], p5want));
-	}
-	
-	else {
-		return (p5context([0], p5want));
-	}
-})()], p5want), function () { return p5context([(function () {
-	((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('space', ' '))));
-	return (p5context([1], p5want));
-})()], p5want) })], p5want));
-})()], p5want)], p5want));
-					})()], 0)], 0)));
-				return (p5context([( p5bool(v_tmp) ? v_MATCH : 0)], p5want));
+				(v_pos = (List__[1]));
+				var v_m = null;
+				(v_m = (p5call(p5pkg["Perlito5::Grammar::Space"], "ws", p5list_to_a(v_str, v_pos), 0)));
+				if ( p5bool(v_m) ) {
+					((v_m || (v_m = new p5HashRef({})))._hash_['capture'] = (new p5ArrayRef(p5list_to_a('space', ' '))));
+				};
+				return (p5context([v_m], p5want));
 		});
+		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a('#', p5134.term_space), null);
+		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a(p5134.chr([9], 1), p5134.term_space), null);
+		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a(p5134.chr([10], 1), p5134.term_space), null);
+		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a(p5134.chr([12], 1), p5134.term_space), null);
+		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a(p5134.chr([13], 1), p5134.term_space), null);
+		p5pkg["Perlito5::Precedence"].add_term(p5list_to_a(p5134.chr([32], 1), p5134.term_space), null);
 		p5make_sub("Perlito5::Grammar::Space", "space", function (List__, p5want) {
 				return (p5context([( p5bool((p5str(p5134.substr([List__[1], List__[2], 1], p5want)).match(/\s/) ? 1 : 0)) ? p5134.bless([(new p5HashRef(p5a_to_h(p5list_to_a('str', List__[1], 'from', List__[2], 'to', (p5num(List__[2]) + 1))))), 'Perlito5::Match'], p5want) : 0)], p5want));
 		});

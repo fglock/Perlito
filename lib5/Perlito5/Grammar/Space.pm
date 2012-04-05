@@ -5,48 +5,20 @@ our $MATCH = Perlito5::Match->new();
 package main;
 package Perlito5::Grammar::Space;
 use Perlito5::Precedence;
-Perlito5::Precedence::add_term(('#' => sub {
-    Perlito5::Grammar::Space->term_space($_[0], $_[1])
-}));
-Perlito5::Precedence::add_term((chr(9) => sub {
-    Perlito5::Grammar::Space->term_space($_[0], $_[1])
-}));
-Perlito5::Precedence::add_term((chr(10) => sub {
-    Perlito5::Grammar::Space->term_space($_[0], $_[1])
-}));
-Perlito5::Precedence::add_term((chr(12) => sub {
-    Perlito5::Grammar::Space->term_space($_[0], $_[1])
-}));
-Perlito5::Precedence::add_term((chr(13) => sub {
-    Perlito5::Grammar::Space->term_space($_[0], $_[1])
-}));
-Perlito5::Precedence::add_term((chr(32) => sub {
-    Perlito5::Grammar::Space->term_space($_[0], $_[1])
-}));
+Perlito5::Precedence::add_term(('#' => \&term_space));
+Perlito5::Precedence::add_term((chr(9) => \&term_space));
+Perlito5::Precedence::add_term((chr(10) => \&term_space));
+Perlito5::Precedence::add_term((chr(12) => \&term_space));
+Perlito5::Precedence::add_term((chr(13) => \&term_space));
+Perlito5::Precedence::add_term((chr(32) => \&term_space));
 sub Perlito5::Grammar::Space::term_space {
-    ((my  $grammar) = $_[0]);
-    ((my  $str) = $_[1]);
-    ((my  $pos) = $_[2]);
-    ((my  $MATCH) = Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $pos)));
-    ((my  $tmp) = (((do {
-    ((my  $pos1) = $MATCH->{'to'});
-    ((do {
-    (((do {
-    ((my  $m2) = $grammar->ws($str, $MATCH->{'to'}));
-    if ($m2) {
-        ($MATCH->{'to'} = $m2->{'to'});
-        1
-    }
-    else {
-        0
-    }
-})) && ((do {
-    ($MATCH->{'capture'} = ['space', ' ']);
-    1
-})))
-}))
-}))));
-    ($tmp ? $MATCH : 0)
+    ((my  $str) = $_[0]);
+    ((my  $pos) = $_[1]);
+    ((my  $m) = Perlito5::Grammar::Space->ws($str, $pos));
+    if ($m) {
+        ($m->{'capture'} = ['space', ' '])
+    };
+    $m
 };
 sub Perlito5::Grammar::Space::space {
     ((substr($_[1], $_[2], 1) =~ m!\s!) ? bless({('str' => $_[1]), ('from' => $_[2]), ('to' => ($_[2] + 1))}, 'Perlito5::Match') : 0)

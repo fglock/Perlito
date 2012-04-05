@@ -2,16 +2,23 @@ package Perlito5::Grammar::Space;
 
 use Perlito5::Precedence;
 
-Perlito5::Precedence::add_term( '#'     => sub { Perlito5::Grammar::Space->term_space($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( chr(9)  => sub { Perlito5::Grammar::Space->term_space($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( chr(10) => sub { Perlito5::Grammar::Space->term_space($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( chr(12) => sub { Perlito5::Grammar::Space->term_space($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( chr(13) => sub { Perlito5::Grammar::Space->term_space($_[0], $_[1]) } );
-Perlito5::Precedence::add_term( chr(32) => sub { Perlito5::Grammar::Space->term_space($_[0], $_[1]) } );
 
-token term_space {
-    <.ws>           { $MATCH->{"capture"} = [ 'space',   ' ' ] }
-};
+sub term_space {
+    my $str = $_[0];
+    my $pos = $_[1];
+    my $m = Perlito5::Grammar::Space->ws($str, $pos);
+    if ($m) {
+        $m->{"capture"} = [ 'space',   ' ' ];
+    }
+    $m;
+}
+
+Perlito5::Precedence::add_term( '#'     => \&term_space );
+Perlito5::Precedence::add_term( chr(9)  => \&term_space );
+Perlito5::Precedence::add_term( chr(10) => \&term_space );
+Perlito5::Precedence::add_term( chr(12) => \&term_space );
+Perlito5::Precedence::add_term( chr(13) => \&term_space );
+Perlito5::Precedence::add_term( chr(32) => \&term_space );
 
 sub space {
     substr( $_[1], $_[2], 1 ) =~ m/\s/
