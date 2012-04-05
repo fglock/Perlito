@@ -9,7 +9,7 @@ use Perlito5::Precedence;
 
 
 token token {
-    <Perlito5::Grammar.ident>  <.Perlito5::Grammar.opt_ws> \{
+    <Perlito5::Grammar.ident>  <.Perlito5::Grammar::Space.opt_ws> \{
         <Perlito5::Grammar::Regex.rule>
     \}
     {
@@ -33,7 +33,7 @@ token token {
 };
 
 token term_token {
-    'token' <.Perlito5::Grammar.ws> <token>
+    'token' <.Perlito5::Grammar::Space.ws> <token>
                 { $MATCH->{"capture"} = [ 'term', $MATCH->{"token"}->flat()       ] }
 };
 
@@ -42,8 +42,6 @@ Perlito5::Precedence::add_term( 'token', sub { Perlito5::Grammar::Regex->term_to
 
 # this is the "grammar grammar"
 
-
-token ws {  <.Perlito5::Grammar.ws>  };
 
 token any { . };
 
@@ -80,10 +78,10 @@ token parsed_code {
 
 token rule_terms {
     |   '<before'
-        <.ws> <rule> \>
+        <.Perlito5::Grammar::Space.ws> <rule> \>
         { $MATCH->{"capture"} = Rul::Before->new( rule_exp => $MATCH->{"rule"}->flat() ) }
     |   '<!before'
-        <.ws> <rule> \>
+        <.Perlito5::Grammar::Space.ws> <rule> \>
         { $MATCH->{"capture"} = Rul::NotBefore->new( rule_exp => $MATCH->{"rule"}->flat() ) }
     |   \'
         <literal> \'
@@ -134,12 +132,12 @@ token quant_exp  {   \? | \* | \+  };
 token greedy_exp {   \?  |  \+  |  ''  };
 
 token quantifier {
-    <Perlito5::Grammar.opt_ws>
+    <Perlito5::Grammar::Space.opt_ws>
     <rule_term>
-    <Perlito5::Grammar.opt_ws>
+    <Perlito5::Grammar::Space.opt_ws>
     [
         <quant_exp> <greedy_exp>
-        <Perlito5::Grammar.opt_ws>
+        <Perlito5::Grammar::Space.opt_ws>
         { $MATCH->{"capture"} = Rul::Quantifier->new(
                 term    => $MATCH->{"rule_term"}->flat(),
                 quant   => $MATCH->{"quant_exp"}->flat(),
@@ -182,7 +180,7 @@ token or_list_exp {
 };
 
 token rule {
-    [ <.ws>? '|' | '' ]
+    [ <.Perlito5::Grammar::Space.ws>? '|' | '' ]
     # { say 'trying M::G::Rule on ', $s }
     <or_list_exp>
     {

@@ -255,9 +255,6 @@ sub Perlito5::Grammar::optional_namespace_before_ident {
 }))));
     ($tmp ? $MATCH : 0)
 };
-sub Perlito5::Grammar::space {
-    goto(&Perlito5::Grammar::Space::space)
-};
 sub Perlito5::Grammar::ws {
     ((my  $grammar) = $_[0]);
     ((my  $str) = $_[1]);
@@ -1363,7 +1360,7 @@ sub Perlito5::Grammar::named_sub {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     (((((('sub' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1

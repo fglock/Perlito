@@ -100,7 +100,7 @@ sub Perlito5::Grammar::String::term_q_quote {
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -170,7 +170,7 @@ sub Perlito5::Grammar::String::term_qq_quote {
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -240,7 +240,7 @@ sub Perlito5::Grammar::String::term_qw_quote {
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -336,7 +336,7 @@ sub Perlito5::Grammar::String::term_m_quote {
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -406,7 +406,7 @@ sub Perlito5::Grammar::String::term_s_quote {
 })) || ((do {
     ($MATCH->{'to'} = $pos1);
     (((((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -550,7 +550,7 @@ sub Perlito5::Grammar::String::s_quote_parse {
     (my  $m);
     ((my  $p) = $part1->{'to'});
     if (exists($pair{$delimiter})) {
-        ($m = Perlito5::Grammar->opt_ws($str, $p));
+        ($m = Perlito5::Grammar::Space->opt_ws($str, $p));
         ($p = $m->{'to'});
         ($delimiter = substr($str, $p, 1));
         ((my  $open_delimiter) = $delimiter);

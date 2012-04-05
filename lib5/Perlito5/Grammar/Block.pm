@@ -34,7 +34,7 @@ sub Perlito5::Grammar::Block::term_block {
         ($p = $m_name->{'to'});
         ($block_name = $m_name->flat())
     };
-    ((my  $m) = Perlito5::Grammar->ws($str, $p));
+    ((my  $m) = Perlito5::Grammar::Space->ws($str, $p));
     if ($m) {
         ($p = $m->{'to'})
     };

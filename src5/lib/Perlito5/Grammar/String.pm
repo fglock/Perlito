@@ -23,15 +23,15 @@ token term_single_quote {
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"single_quote_parse"}->flat() ]  }
 };
 token term_q_quote {
-    'q' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <q_quote_parse>
+    'q' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <q_quote_parse>
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"q_quote_parse"}->flat() ]  }
 };
 token term_qq_quote {
-    'qq' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qq_quote_parse>
+    'qq' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qq_quote_parse>
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"qq_quote_parse"}->flat() ]  }
 };
 token term_qw_quote {
-    'qw' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qw_quote_parse>
+    'qw' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <qw_quote_parse>
         { $MATCH->{"capture"} = [ 'term', $MATCH->{"qw_quote_parse"}->flat() ]  }
 };
 token term_slash_quote {
@@ -41,13 +41,13 @@ token term_slash_quote {
         }
 };
 token term_m_quote {
-    'm' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <m_quote_parse>
+    'm' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <m_quote_parse>
         {
             $MATCH->{"capture"} = [ 'term', $MATCH->{"m_quote_parse"}->flat() ]  
         }
 };
 token term_s_quote {
-    's' [ '#' | <.Perlito5::Grammar.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <s_quote_parse>
+    's' [ '#' | <.Perlito5::Grammar::Space.opt_ws> <!before <.Perlito5::Grammar.word> > <char_any> ] <s_quote_parse>
         { 
             $MATCH->{"capture"} = [ 'term', $MATCH->{"s_quote_parse"}->flat() ]  
         }
@@ -147,7 +147,7 @@ sub s_quote_parse {
     my $p = $part1->{"to"};
     if ( exists $pair{$delimiter} ) {
         # warn "pair delimiter $delimiter at $p";
-        $m = Perlito5::Grammar->opt_ws($str, $p);
+        $m = Perlito5::Grammar::Space->opt_ws($str, $p);
         $p = $m->{"to"};
         $delimiter = substr( $str, $p, 1 );
         my $open_delimiter = $delimiter;

@@ -17,7 +17,7 @@ my %Perlito_internal_module = (
 token use_decl { 'use' | 'no' };
 
 token term_use {
-    <use_decl> <.Perlito5::Grammar.ws>
+    <use_decl> <.Perlito5::Grammar::Space.ws>
         <Perlito5::Grammar.full_ident>  [ - <Perlito5::Grammar.ident> ]? <Perlito5::Expression.list_parse>
         {
 

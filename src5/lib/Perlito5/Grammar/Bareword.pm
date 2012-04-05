@@ -22,7 +22,7 @@ package Perlito5::Grammar::Bareword;
         # we've got a bareword
 
         # my $has_space_after;
-        my $m = Perlito5::Grammar->ws( $str, $p );
+        my $m = Perlito5::Grammar::Space->ws( $str, $p );
         if ( $m ) {
             # $has_space_after = 1;
             $p = $m->{"to"};
@@ -115,7 +115,7 @@ package Perlito5::Grammar::Bareword;
                 # empty sig - we allow (), but only if it is empty
                 if ( substr($str, $p, 1) eq '(' ) {
                     $p++;
-                    my $m = Perlito5::Grammar->ws( $str, $p );
+                    my $m = Perlito5::Grammar::Space->ws( $str, $p );
                     if ($m) {
                         $p = $m->{"to"}
                     }

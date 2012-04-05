@@ -25,7 +25,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
     if ($namespace) {
         ($full_name = ($namespace . '::' . $name))
     };
-    ((my  $m) = Perlito5::Grammar->ws($str, $p));
+    ((my  $m) = Perlito5::Grammar::Space->ws($str, $p));
     if ($m) {
         ($p = $m->{'to'})
     };
@@ -57,7 +57,7 @@ sub Perlito5::Grammar::Bareword::term_bareword {
         if (($sig eq '')) {
             if ((substr($str, $p, 1) eq '(')) {
                 ($p)++;
-                ((my  $m) = Perlito5::Grammar->ws($str, $p));
+                ((my  $m) = Perlito5::Grammar::Space->ws($str, $p));
                 if ($m) {
                     ($p = $m->{'to'})
                 };

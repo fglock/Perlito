@@ -48,7 +48,7 @@ sub Perlito5::Grammar::Use::term_use {
         0
     }
 })) && ((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1

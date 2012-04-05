@@ -24,7 +24,7 @@ sub term_block {
         $block_name = $m_name->flat();
     }
 
-    my $m = Perlito5::Grammar->ws( $str, $p );
+    my $m = Perlito5::Grammar::Space->ws( $str, $p );
     if ( $m ) {
         $p = $m->{"to"};
     }

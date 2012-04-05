@@ -339,13 +339,13 @@ my $reduce_to_ast = sub {
 };
 
 token term_arrow {
-    '->' <.Perlito5::Grammar.opt_ws>
+    '->' <.Perlito5::Grammar::Space.opt_ws>
         [
         | '(' <paren_parse>   ')'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.( )',  $MATCH->{"paren_parse"}->flat()   ] }
         | '[' <square_parse>  ']'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.[ ]',  $MATCH->{"square_parse"}->flat()  ] }
         | '{' <curly_parse>   '}'                   { $MATCH->{"capture"} = [ 'postfix_or_term',  '.{ }',  $MATCH->{"curly_parse"}->flat()   ] }
 
-        | '$' <Perlito5::Grammar.ident> <.Perlito5::Grammar.opt_ws>
+        | '$' <Perlito5::Grammar.ident> <.Perlito5::Grammar::Space.opt_ws>
             [ '(' <paren_parse> ')'
               { $MATCH->{"capture"} = [ 'postfix_or_term',
                        'methcall',
@@ -372,7 +372,7 @@ token term_arrow {
             ]
 
 
-        | <Perlito5::Grammar.full_ident> <.Perlito5::Grammar.opt_ws>
+        | <Perlito5::Grammar.full_ident> <.Perlito5::Grammar::Space.opt_ws>
             [ '(' <paren_parse> ')'
               { $MATCH->{"capture"} = [ 'postfix_or_term',
                        'methcall',
@@ -493,7 +493,7 @@ sub term_special_var {
 token var_sigil_or_pseudo     { '$#' | \$ |\% |\@ |\& | \* };
 
 token term_sigil {
-    <var_sigil_or_pseudo> <.Perlito5::Grammar.opt_ws>
+    <var_sigil_or_pseudo> <.Perlito5::Grammar::Space.opt_ws>
         [ '{' 
             [
             | <Perlito5::Grammar.optional_namespace_before_ident> <Perlito5::Grammar.var_name> '}'
@@ -566,8 +566,8 @@ token term_square {
 };
 
 token term_curly {
-    '{'  <.Perlito5::Grammar.ws>?
-           <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar.ws>? '}'
+    '{'  <.Perlito5::Grammar::Space.ws>?
+           <Perlito5::Grammar.exp_stmts> <.Perlito5::Grammar::Space.ws>? '}'
                 { $MATCH->{"capture"} = [ 'postfix_or_term', 'block', $MATCH->{"Perlito5::Grammar.exp_stmts"}->flat() ] }
 };
 
@@ -577,12 +577,12 @@ token declarator {
 };
 
 token term_declarator {
-    <declarator> <.Perlito5::Grammar.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
+    <declarator> <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.opt_type> <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.var_ident>   # my Int $variable
         { $MATCH->{"capture"} = [ 'term', Perlito5::AST::Decl->new( decl => $MATCH->{"declarator"}->flat(), type => $MATCH->{"Perlito5::Grammar.opt_type"}->flat(), var => $MATCH->{"Perlito5::Grammar.var_ident"}->flat() ) ] }
 };
 
 token term_return {
-    'return' <.Perlito5::Grammar.opt_ws> <list_parse>
+    'return' <.Perlito5::Grammar::Space.opt_ws> <list_parse>
         {
             my $args = $MATCH->{"list_parse"}->flat()->{"exp"};
             $MATCH->{"capture"} = [ 'term',
@@ -596,18 +596,18 @@ token term_return {
 };
 
 token term_anon_sub {
-    'sub' <.Perlito5::Grammar.opt_ws> <Perlito5::Grammar.anon_sub_def>
+    'sub' <.Perlito5::Grammar::Space.opt_ws> <Perlito5::Grammar.anon_sub_def>
                 { $MATCH->{"capture"} = [ 'term', $MATCH->{"Perlito5::Grammar.anon_sub_def"}->flat()     ] }
 };
 
 token term_do {
     # Note: this is do-block; do-string is parsed as a normal subroutine
-    'do' <.Perlito5::Grammar.ws> <before '{'> <statement_parse>
+    'do' <.Perlito5::Grammar::Space.ws> <before '{'> <statement_parse>
                 { $MATCH->{"capture"} = [ 'term', Perlito5::AST::Do->new( block => $MATCH->{"statement_parse"}->flat() ) ] }
 };
 
 token term_package {
-    'package' <.Perlito5::Grammar.ws> <Perlito5::Grammar.full_ident>
+    'package' <.Perlito5::Grammar::Space.ws> <Perlito5::Grammar.full_ident>
         {
             my $name = $MATCH->{"Perlito5::Grammar.full_ident"}->flat();
             $Perlito5::PKG_NAME = $name;
@@ -623,7 +623,7 @@ token term_package {
 
 token term_eval {
     # Note: this is eval-block; eval-string is parsed as a normal subroutine
-    'eval' <.Perlito5::Grammar.opt_ws> <before '{'> <term_curly>
+    'eval' <.Perlito5::Grammar::Space.opt_ws> <before '{'> <term_curly>
         {
             $MATCH->{"capture"} = [ 'term',
                  Perlito5::AST::Apply->new(
@@ -643,7 +643,7 @@ token map_or_sort { 'map' | 'sort' | 'grep' };
 
 token term_map_or_sort {
     # Note: this is map-block; map-expr is parsed as a normal subroutine
-    <map_or_sort> <.Perlito5::Grammar.opt_ws> <before '{'> <term_curly> 
+    <map_or_sort> <.Perlito5::Grammar::Space.opt_ws> <before '{'> <term_curly> 
         <list_parse>
         {
             $MATCH->{"capture"} = [ 'term',
@@ -788,7 +788,7 @@ sub op_parse_spc {
     if (!$m) {
         return $m;
     }
-    my $spc = Perlito5::Grammar->ws($str, $m->{"to"});
+    my $spc = Perlito5::Grammar::Space->ws($str, $m->{"to"});
     if ($spc) {
         $m->{"to"} = $spc->{"to"};
     }
@@ -1188,9 +1188,9 @@ sub modifier {
 
 
 token delimited_statement {
-    <.Perlito5::Grammar.ws>?
-    [ ';' <.Perlito5::Grammar.ws>?
-    | <statement_parse> ';'? <.Perlito5::Grammar.ws>?
+    <.Perlito5::Grammar::Space.ws>?
+    [ ';' <.Perlito5::Grammar::Space.ws>?
+    | <statement_parse> ';'? <.Perlito5::Grammar::Space.ws>?
         { $MATCH->{"capture"} = $MATCH->{"statement_parse"}->flat() }
     ]
 };

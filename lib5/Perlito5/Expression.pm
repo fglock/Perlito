@@ -252,7 +252,7 @@ sub Perlito5::Expression::term_arrow {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     ((((('->' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -322,7 +322,7 @@ sub Perlito5::Expression::term_arrow {
         0
     }
 }))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -368,7 +368,7 @@ sub Perlito5::Expression::term_arrow {
         0
     }
 })) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -482,7 +482,7 @@ sub Perlito5::Expression::term_sigil {
         0
     }
 })) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -749,7 +749,7 @@ sub Perlito5::Expression::term_curly {
     (((((((('{' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $m) = $MATCH);
     if (!(((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -774,7 +774,7 @@ sub Perlito5::Expression::term_curly {
 }))) && ((do {
     ((my  $m) = $MATCH);
     if (!(((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -835,7 +835,7 @@ sub Perlito5::Expression::term_declarator {
         0
     }
 })) && ((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -854,7 +854,7 @@ sub Perlito5::Expression::term_declarator {
         0
     }
 }))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -889,7 +889,7 @@ sub Perlito5::Expression::term_return {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     (((((('return' eq substr($str, $MATCH->{'to'}, 6)) && (($MATCH->{'to'} = (6 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -925,7 +925,7 @@ sub Perlito5::Expression::term_anon_sub {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     (((((('sub' eq substr($str, $MATCH->{'to'}, 3)) && (($MATCH->{'to'} = (3 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -960,7 +960,7 @@ sub Perlito5::Expression::term_do {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     ((((((('do' eq substr($str, $MATCH->{'to'}, 2)) && (($MATCH->{'to'} = (2 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -1005,7 +1005,7 @@ sub Perlito5::Expression::term_package {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     (((((('package' eq substr($str, $MATCH->{'to'}, 7)) && (($MATCH->{'to'} = (7 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -1042,7 +1042,7 @@ sub Perlito5::Expression::term_eval {
     ((my  $pos1) = $MATCH->{'to'});
     ((do {
     ((((((('eval' eq substr($str, $MATCH->{'to'}, 4)) && (($MATCH->{'to'} = (4 + $MATCH->{'to'}))))) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -1116,7 +1116,7 @@ sub Perlito5::Expression::term_map_or_sort {
         0
     }
 })) && ((do {
-    ((my  $m2) = Perlito5::Grammar->opt_ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->opt_ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -1177,7 +1177,7 @@ sub Perlito5::Expression::op_parse_spc {
     if (!($m)) {
         return ($m)
     };
-    ((my  $spc) = Perlito5::Grammar->ws($str, $m->{'to'}));
+    ((my  $spc) = Perlito5::Grammar::Space->ws($str, $m->{'to'}));
     if ($spc) {
         ($m->{'to'} = $spc->{'to'})
     };
@@ -1469,7 +1469,7 @@ sub Perlito5::Expression::delimited_statement {
     (((do {
     ((my  $m) = $MATCH);
     if (!(((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -1487,7 +1487,7 @@ sub Perlito5::Expression::delimited_statement {
     ((((';' eq substr($str, $MATCH->{'to'}, 1)) && (($MATCH->{'to'} = (1 + $MATCH->{'to'}))))) && ((do {
     ((my  $m) = $MATCH);
     if (!(((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
@@ -1523,7 +1523,7 @@ sub Perlito5::Expression::delimited_statement {
 }))) && ((do {
     ((my  $m) = $MATCH);
     if (!(((do {
-    ((my  $m2) = Perlito5::Grammar->ws($str, $MATCH->{'to'}));
+    ((my  $m2) = Perlito5::Grammar::Space->ws($str, $MATCH->{'to'}));
     if ($m2) {
         ($MATCH->{'to'} = $m2->{'to'});
         1
