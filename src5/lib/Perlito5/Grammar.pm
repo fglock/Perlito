@@ -29,26 +29,6 @@ sub digit {
     : 0;
 }
 
-sub space {
-    substr( $_[1], $_[2], 1 ) =~ m/\s/
-    ? bless {
-        str  => $_[1],
-        from => $_[2],
-        to   => $_[2] + 1,
-      },
-      'Perlito5::Match'
-    : 0;
-}
-
-token is_newline {
-    | \c10
-    | \c13
-};
-
-token not_newline {
-    <!before \n> .
-};
-
 token ident {
     <!before \d > <.word>+
 };
@@ -69,42 +49,14 @@ token optional_namespace_before_ident {
         { $MATCH->{"capture"} = '' }
 };
 
-token pod_pod_begin {
-    |   \n '=cut' \N*
-    |   . \N* <.pod_pod_begin>
-};
 
-token pod_begin {
-    |   \n '=end' \N*
-    |   . \N* <.pod_begin>
-};
-
-token ws {
-    [
-    |   '#' \N*
-    |
-        [ \c10 \c13?
-        | \c13 \c10?
-        ]
-
-        <.Perlito5::Grammar::String.here_doc>
-
-        [
-        |  '='  [
-                |  'pod'    <.pod_pod_begin>
-                |  'head1'  <.pod_pod_begin>
-                |  'begin'  <.pod_begin>
-                |  'for'    <.pod_begin>  # TODO - fixme: recognize a single paragraph (double-newline)
-                ]
-        |  ''
-        ]
-    |   \s
-    ]+
-};
-
+# TODO - use Perlito5::Grammar::Space->ws() instead
+sub space     { goto &Perlito5::Grammar::Space::space }
+token ws      { <.Perlito5::Grammar::Space.ws> };
 token opt_ws  {  <.ws>?  };
 token opt_ws2 {  <.ws>?  };
 token opt_ws3 {  <.ws>?  };
+
 
 token exp_stmts2 { <exp_stmts> { $MATCH->{"capture"} = $MATCH->{"exp_stmts"}->flat() } };
 

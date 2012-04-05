@@ -659,10 +659,6 @@ token term_map_or_sort {
         }
 };
 
-token term_space {
-    <.Perlito5::Grammar.ws>           { $MATCH->{"capture"} = [ 'space',   ' ' ] }
-};
-
 
 my $Argument_end_token = {
         ':' => 1,
