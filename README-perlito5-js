@@ -179,3 +179,20 @@ v.lookup("x");  // error if the cell in v contains something else than undef or 
 
 - see mp6_Scalar class in src6/lib/Perlito/Python/Runtime.py
 
+
+* Tail call (TODO)
+
+- a tail call can be transformed into a loop at the caller:
+
+    # sub mysub { goto &other }
+
+  can be called:
+
+    ret = new TailCall(mysub);
+    do {
+        ret = ret.f();
+    }
+    while (ret instanceof TailCall);
+
+- alternately, the loop can be run at the subroutine itself, but this creates other problems
+
