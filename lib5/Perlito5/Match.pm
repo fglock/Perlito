@@ -7,7 +7,7 @@ use v5;
 package Perlito5::Match;
 sub Perlito5::Match::new {
     ((my  $class) = shift());
-    bless({@_}, $class)
+    return ({@_})
 };
 sub Perlito5::Match::flat {
     ((my  $self) = $_[0]);

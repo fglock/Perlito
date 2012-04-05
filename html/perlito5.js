@@ -466,7 +466,7 @@ perl5_to_js = function( source, namespace, var_env_js ) {
         new p5HashRef({
             block:  p5pkg.CORE.bless([
                         new p5HashRef({
-                            stmts:   p5call(match, "flat", []),
+                            stmts:   p5pkg["Perlito5::Match"].flat([match]),
                         }),
                         p5pkg["Perlito5::AST::Lit::Block"]
                     ]),
@@ -933,7 +933,7 @@ var p5100 = p5pkg['main'];
 		p5make_sub("Perlito5::Match", "new", function (List__, p5want) {
 				var v_class = null;
 				(v_class = (p5104.shift([List__])));
-				return (p5context([p5104.bless([(new p5HashRef(p5a_to_h(p5list_to_a(List__)))), v_class], p5want)], p5want));
+				return (p5context([(new p5HashRef(p5a_to_h(p5list_to_a(List__))))], p5want));
 		});
 		p5make_sub("Perlito5::Match", "flat", function (List__, p5want) {
 				var v_self = null;

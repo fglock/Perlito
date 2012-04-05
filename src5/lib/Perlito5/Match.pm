@@ -4,7 +4,7 @@ package Perlito5::Match;
 
 sub new {
     my $class = shift;
-    bless { @_ }, $class
+    return { @_ }
 }
 
 sub flat {
