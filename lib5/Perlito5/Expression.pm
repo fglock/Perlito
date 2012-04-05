@@ -1296,7 +1296,7 @@ sub Perlito5::Expression::circumfix_parse {
     if (!($m)) {
         die('Expected closing delimiter: ', $delimiter, ' near ', $last_pos)
     };
-    ((my  $v) = $m->flat());
+    ((my  $v) = $m->{'capture'});
     if (($v->[0] eq 'space')) {
 
     }
@@ -1361,7 +1361,7 @@ sub Perlito5::Expression::exp_parse {
         if (!($m)) {
             return (['end', '*end*'])
         };
-        ($v = $m->flat());
+        ($v = $m->{'capture'});
         if (($v->[0] eq 'space')) {
 
         }
@@ -1536,7 +1536,7 @@ sub Perlito5::Expression::delimited_statement {
     };
     1
 }))) && ((do {
-    ($MATCH->{'capture'} = $MATCH->{'statement_parse'}->flat());
+    ($MATCH->{'capture'} = $MATCH->{'statement_parse'}->{'capture'});
     1
 }))))
 })))

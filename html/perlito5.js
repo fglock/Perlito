@@ -5301,7 +5301,7 @@ var p5100 = p5pkg['main'];
 								p5129.die([p5list_to_a('Expected closing delimiter: ', v_delimiter, ' near ', v_last_pos)], null);
 							};
 							var v_v = null;
-							(v_v = (p5call(v_m, "flat", [], 0)));
+							(v_v = ((v_m || (v_m = new p5HashRef({})))._hash_['capture']));
 							if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[0]) == 'space') ) {
 								null;
 							}
@@ -5391,7 +5391,7 @@ var p5100 = p5pkg['main'];
 									if ( !( p5bool(v_m)) ) {
 										throw(p5context([(new p5ArrayRef(p5list_to_a('end', '*end*')))], p5want));
 									};
-									(v_v = (p5call(v_m, "flat", [], 0)));
+									(v_v = ((v_m || (v_m = new p5HashRef({})))._hash_['capture']));
 									if ( (p5str((v_v || (v_v = new p5ArrayRef([])))._array_[0]) == 'space') ) {
 										null;
 									}
@@ -5664,7 +5664,7 @@ var p5100 = p5pkg['main'];
 	};
 	return (p5context([1], p5want));
 })()], p5want) }), function () { return p5context([(function () {
-	((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = p5call((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['statement_parse'], "flat", [], p5want));
+	((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['capture'] = ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['statement_parse'] || ((v_MATCH || (v_MATCH = new p5HashRef({})))._hash_['statement_parse'] = new p5HashRef({})))._hash_['capture']);
 	return (p5context([1], p5want));
 })()], p5want) })], p5want)], p5want));
 })()], p5want) })], p5want));

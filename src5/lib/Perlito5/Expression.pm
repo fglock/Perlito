@@ -966,7 +966,7 @@ sub circumfix_parse {
         if (!$m) {
             die "Expected closing delimiter: ", $delimiter, ' near ', $last_pos;
         }
-        my $v = $m->flat();
+        my $v = $m->{"capture"};
         $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
         if ($v->[0] ne 'end') {
             $last_pos = $m->{"to"};
@@ -1045,7 +1045,7 @@ sub exp_parse {
             if (!$m) {
                 return [ 'end', '*end*' ];
             }
-            $v = $m->flat();
+            $v = $m->{"capture"};
             $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
             if ($v->[0] ne 'end') {
                 $last_pos = $m->{"to"};
@@ -1191,7 +1191,7 @@ token delimited_statement {
     <.Perlito5::Grammar::Space.ws>?
     [ ';' <.Perlito5::Grammar::Space.ws>?
     | <statement_parse> ';'? <.Perlito5::Grammar::Space.ws>?
-        { $MATCH->{"capture"} = $MATCH->{"statement_parse"}->flat() }
+        { $MATCH->{"capture"} = $MATCH->{"statement_parse"}{"capture"} }
     ]
 };
 
