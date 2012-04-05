@@ -273,12 +273,12 @@ sub string_interpolation_parse {
         )
     }
     
-    return Perlito5::Match->new(
+    return {
         'str' => $str, 
         'from' => $pos, 
         'to' => $p, 
         capture => $ast
-    );
+    };
 }
 
 
@@ -348,7 +348,7 @@ sub here_doc_wanted {
         $delimiter,
     ];
 
-    return Perlito5::Match->new(
+    return {
         'str' => $str,
         'from' => $pos,
         'to' => $p,
@@ -356,7 +356,7 @@ sub here_doc_wanted {
                 'term',
                 $placeholder
             ]
-    );
+    };
 }
 
 token newline {
@@ -374,8 +374,9 @@ sub here_doc {
 
     if ( !@Here_doc ) {
         # we are not expecting a here-doc, return true without moving the pointer
-        return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $pos, capture => undef);
+        return {
+            'str' => $str, 'from' => $pos, 'to' => $pos
+        };
     }
 
     my $p = $pos;
@@ -395,8 +396,9 @@ sub here_doc {
                 if ( $p >= length($str) || $m ) {
                     # return true
                     $p = $m->{"to"} if $m;
-                    return Perlito5::Match->new(
-                        'str' => $str, 'from' => $pos, 'to' => $p - 1, capture => undef);
+                    return {
+                        'str' => $str, 'from' => $pos, 'to' => $p - 1
+                    }
                 }
             }
             # ... next line
@@ -423,8 +425,9 @@ sub here_doc {
             if ( $p >= length($str) || $m ) {
                 push @$result, Perlito5::AST::Val::Buf->new( buf => '' );
                 $p = $m->{"to"} if $m;
-                return Perlito5::Match->new(
-                    'str' => $str, 'from' => $pos, 'to' => $p, capture => undef);
+                return {
+                    'str' => $str, 'from' => $pos, 'to' => $p
+                };
             }
         }
 

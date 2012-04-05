@@ -19,7 +19,7 @@ token token {
                 'my $grammar = $_[0]; ' .
                 'my $str     = $_[1]; ' .
                 'my $pos     = $_[2]; ' .
-                'my $MATCH = Perlito5::Match->new( str => $str, from => $pos, to => $pos ); ' .
+                'my $MATCH = { str => $str, from => $pos, to => $pos }; ' .
                 'my $tmp = ( ' .
                     Perlito5::Match::flat($MATCH->{"Perlito5::Grammar::Regex.rule"})->emit_perl5() .
                 '); ' .

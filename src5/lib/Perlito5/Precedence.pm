@@ -119,12 +119,12 @@ sub op_parse {
             if (!(is_ident_middle($c1) && is_ident_middle($c2) )) {
                 # it looks like an end token, and it is not one of these cases:
                 #   if_more
-                return Perlito5::Match->new(
+                return {
                     str     => $str,
                     from    => $pos,
                     to      => $pos,
                     capture => [ 'end', $term ]
-                );
+                };
             }
         }
     }
@@ -166,12 +166,12 @@ sub op_parse {
                     # only allows an infix after last_is_term
                 }
                 else {
-                    return Perlito5::Match->new(
+                    return {
                         str     => $str,
                         from    => $pos,
                         to      => $pos + $len,
                         capture => [ 'op', $op ]
-                    );
+                    };
                 }
             }
         }

@@ -473,7 +473,7 @@ sub term_special_var {
             # looks like a prefix operator, not a special var
         }
         else {
-            return Perlito5::Match->new(
+            return {
                str     => $str,
                from    => $pos,
                to      => $pos + $len,
@@ -484,7 +484,7 @@ sub term_special_var {
                                         name        => substr($s, $len - 1, 1)
                                     )
                           ]
-            );
+            };
         }
     }
     return 0;
@@ -858,18 +858,20 @@ sub argument_parse {
     my $res = $prec->precedence_parse;
     # say "# list_lexer return: ", $res->perl;
     if (scalar(@$res) == 0) {
-        return Perlito5::Match->new(
+        return {
             'str' => $str, 'from' => $pos, 'to' => $last_pos,
             capture => {
                 exp        => '*undef*',
-                terminated => undef } )
+                terminated => undef } 
+        };
     }
     my $result = pop_term($res);
-    return Perlito5::Match->new(
+    return {
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
         capture => {
             exp        => $result,
-            terminated => $terminated } )
+            terminated => $terminated } 
+    };
 }
 
 
