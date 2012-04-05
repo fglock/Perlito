@@ -127,7 +127,7 @@ token exp_stmts {
     <Perlito5::Expression.delimited_statement>*
     { 
         $Perlito5::PKG_NAME = pop @PKG;
-        $MATCH->{"capture"} = [ map( $_->capture, @{ $MATCH->{"Perlito5::Expression.delimited_statement"} } ) ]
+        $MATCH->{"capture"} = [ map( $_->{"capture"}, @{ $MATCH->{"Perlito5::Expression.delimited_statement"} } ) ]
     }
 };
 

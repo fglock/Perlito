@@ -838,7 +838,7 @@ sub argument_parse {
                 $v->[0] = 'end';
             }
             if ($v->[0] ne 'end') {
-                $last_pos = $m->to;
+                $last_pos = $m->{"to"};
             }
         }
         # say "# list_lexer got " . $v->perl;
@@ -916,7 +916,7 @@ sub list_parse {
                 $v->[0] = 'end';
             }
             if ($v->[0] ne 'end') {
-                $last_pos = $m->to;
+                $last_pos = $m->{"to"};
             }
         }
         # say "# list_lexer got " . $v->perl;
@@ -969,7 +969,7 @@ sub circumfix_parse {
         my $v = $m->flat();
         $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
         if ($v->[0] ne 'end') {
-            $last_pos = $m->to;
+            $last_pos = $m->{"to"};
         }
         # say "# circumfix_lexer " . $v->perl;
         return $v;
@@ -1048,7 +1048,7 @@ sub exp_parse {
             $v = $m->flat();
             $last_is_term = Perlito5::Precedence::is_term($v) unless $v->[0] eq 'space';
             if ($v->[0] ne 'end') {
-                $last_pos = $m->to;
+                $last_pos = $m->{"to"};
             }
         }
         # say "# exp_lexer got " . $v->perl;
@@ -1152,7 +1152,7 @@ sub modifier {
 
     if ($modifier eq 'if') {
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
             capture => Perlito5::AST::If->new(
                 cond      => $modifier_exp->flat()->{'exp'},
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]),
@@ -1160,7 +1160,7 @@ sub modifier {
     }
     if ($modifier eq 'unless') {
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
             capture => Perlito5::AST::If->new(
                 cond      => $modifier_exp->flat()->{'exp'},
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ ]),
@@ -1168,7 +1168,7 @@ sub modifier {
     }
     if ($modifier eq 'while') {
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
             capture => Perlito5::AST::While->new(
                 cond    => $modifier_exp->flat()->{'exp'},
                 body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) );
@@ -1178,7 +1178,7 @@ sub modifier {
         ) 
     {
         return Perlito5::Match->new(
-            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->to,
+            'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
             capture => Perlito5::AST::For->new(
                 cond    => $modifier_exp->flat()->{'exp'},
                 body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) );
@@ -1221,7 +1221,7 @@ sub statement_parse {
         return $res;
     }
     # say "# look for a statement modifier";
-    my $modifier = $self->statement_modifier($str, $res->to, $res->flat()->{'exp'});
+    my $modifier = $self->statement_modifier($str, $res->{"to"}, $res->flat()->{'exp'});
     if (!$modifier) {
         # say "# statement expression no modifier result: ", $res->perl;
         # TODO - require a statement terminator

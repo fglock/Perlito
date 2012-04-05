@@ -7,17 +7,11 @@ sub new {
     bless { @_ }, $class
 }
 
-sub from    { $_[0]->{'from'} }
-sub to      { $_[0]->{'to'} }
-sub str     { $_[0]->{'str'} }
-sub capture { $_[0]->{'capture'} }
-
 sub flat {
     my $self = $_[0];
-    if ( defined( $self->{'capture'} ) ) {
-        return $self->{'capture'};
-    }
-    return substr( $self->{'str'}, $self->{'from'}, ( $self->{'to'} - $self->{'from'} ) );
+    defined( $self->{'capture'} )
+    ? $self->{'capture'}
+    : substr( $self->{'str'}, $self->{'from'}, ( $self->{'to'} - $self->{'from'} ) )
 }
 
 1;

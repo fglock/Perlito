@@ -9,24 +9,9 @@ sub Perlito5::Match::new {
     ((my  $class) = shift());
     bless({@_}, $class)
 };
-sub Perlito5::Match::from {
-    $_[0]->{'from'}
-};
-sub Perlito5::Match::to {
-    $_[0]->{'to'}
-};
-sub Perlito5::Match::str {
-    $_[0]->{'str'}
-};
-sub Perlito5::Match::capture {
-    $_[0]->{'capture'}
-};
 sub Perlito5::Match::flat {
     ((my  $self) = $_[0]);
-    if (defined($self->{'capture'})) {
-        return ($self->{'capture'})
-    };
-    return (substr($self->{'str'}, $self->{'from'}, (($self->{'to'} - $self->{'from'}))))
+    (defined($self->{'capture'}) ? $self->{'capture'} : substr($self->{'str'}, $self->{'from'}, (($self->{'to'} - $self->{'from'}))))
 };
 1;
 
