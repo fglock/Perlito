@@ -72,12 +72,6 @@ my %Term = (
         '8'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
         '9'  => sub { Perlito5::Expression->term_digit($_[0], $_[1]) },
 
-        '#'     => sub { Perlito5::Expression->term_space($_[0], $_[1]) }, 
-        chr(9)  => sub { Perlito5::Expression->term_space($_[0], $_[1]) }, 
-        chr(10) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },
-        chr(12) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },
-        chr(13) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },
-        chr(32) => sub { Perlito5::Expression->term_space($_[0], $_[1]) },
     # 2 chars
         'my' => sub { Perlito5::Expression->term_declarator($_[0], $_[1]) },
         'do' => sub { Perlito5::Expression->term_do($_[0], $_[1]) },
