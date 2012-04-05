@@ -1278,10 +1278,10 @@ sub Perlito5::Expression::list_parse {
     ((my  $prec) = Perlito5::Precedence->new(('get_token' => $get_token), ('reduce' => $reduce_to_ast), ('end_token' => $List_end_token), ('end_token_chars' => $List_end_token_chars)));
     ((my  $res) = $prec->precedence_parse());
     if ((scalar(@{$res}) == 0)) {
-        return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => {('exp' => '*undef*'), ('terminated' => undef())})))
+        return ({('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => {('exp' => '*undef*'), ('terminated' => undef())})})
     };
     ((my  $result) = pop_term($res));
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => {('exp' => $result), ('terminated' => $terminated)})))
+    return ({('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => {('exp' => $result), ('terminated' => $terminated)})})
 };
 sub Perlito5::Expression::circumfix_parse {
     ((my  $self) = $_[0]);
@@ -1316,7 +1316,7 @@ sub Perlito5::Expression::circumfix_parse {
     if (!((defined($res)))) {
         ($res = '*undef*')
     };
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => $res)))
+    return ({('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => $res)})
 };
 sub Perlito5::Expression::ternary5_parse {
     ((my  $self) = $_[0]);
@@ -1380,7 +1380,7 @@ sub Perlito5::Expression::exp_parse {
         return (0)
     };
     ((my  $result) = pop_term($res));
-    return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => {('exp' => $result), ('terminated' => $terminated)})))
+    return ({('str' => $str), ('from' => $pos), ('to' => $last_pos), ('capture' => {('exp' => $result), ('terminated' => $terminated)})})
 };
 ((my  @Statement_chars) = (9, 8, 7, 6, 5, 4, 3, 2, 1));
 ((my  %Statement) = (('if' => sub {
@@ -1445,16 +1445,16 @@ sub Perlito5::Expression::modifier {
         die('Expected expression after ' . chr(39), Perlito5::Match::flat($modifier), chr(39))
     };
     if (($modifier eq 'if')) {
-        return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->{'to'}), ('capture' => Perlito5::AST::If->new(('cond' => Perlito5::Match::flat($modifier_exp)->{'exp'}), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => [$expression]))), ('otherwise' => Perlito5::AST::Lit::Block->new(('stmts' => [])))))))
+        return ({('str' => $str), ('from' => $pos), ('to' => $modifier_exp->{'to'}), ('capture' => Perlito5::AST::If->new(('cond' => Perlito5::Match::flat($modifier_exp)->{'exp'}), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => [$expression]))), ('otherwise' => Perlito5::AST::Lit::Block->new(('stmts' => [])))))})
     };
     if (($modifier eq 'unless')) {
-        return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->{'to'}), ('capture' => Perlito5::AST::If->new(('cond' => Perlito5::Match::flat($modifier_exp)->{'exp'}), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => []))), ('otherwise' => Perlito5::AST::Lit::Block->new(('stmts' => [$expression])))))))
+        return ({('str' => $str), ('from' => $pos), ('to' => $modifier_exp->{'to'}), ('capture' => Perlito5::AST::If->new(('cond' => Perlito5::Match::flat($modifier_exp)->{'exp'}), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => []))), ('otherwise' => Perlito5::AST::Lit::Block->new(('stmts' => [$expression])))))})
     };
     if (($modifier eq 'while')) {
-        return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->{'to'}), ('capture' => Perlito5::AST::While->new(('cond' => Perlito5::Match::flat($modifier_exp)->{'exp'}), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => [$expression])))))))
+        return ({('str' => $str), ('from' => $pos), ('to' => $modifier_exp->{'to'}), ('capture' => Perlito5::AST::While->new(('cond' => Perlito5::Match::flat($modifier_exp)->{'exp'}), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => [$expression])))))})
     };
     if ((($modifier eq 'for') || ($modifier eq 'foreach'))) {
-        return (Perlito5::Match->new(('str' => $str), ('from' => $pos), ('to' => $modifier_exp->{'to'}), ('capture' => Perlito5::AST::For->new(('cond' => Perlito5::Match::flat($modifier_exp)->{'exp'}), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => [$expression])))))))
+        return ({('str' => $str), ('from' => $pos), ('to' => $modifier_exp->{'to'}), ('capture' => Perlito5::AST::For->new(('cond' => Perlito5::Match::flat($modifier_exp)->{'exp'}), ('body' => Perlito5::AST::Lit::Block->new(('stmts' => [$expression])))))})
     };
     die(('Unexpected statement modifier ' . chr(39) . $modifier . chr(39)))
 };

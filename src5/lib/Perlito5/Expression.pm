@@ -939,18 +939,20 @@ sub list_parse {
     my $res = $prec->precedence_parse;
     # say "# list_lexer return: ", $res->perl;
     if (scalar(@$res) == 0) {
-        return Perlito5::Match->new(
+        return {
             'str' => $str, 'from' => $pos, 'to' => $last_pos,
             capture => {
                 exp        => '*undef*',
-                terminated => undef } )
+                terminated => undef }
+        };
     }
     my $result = pop_term($res);
-    return Perlito5::Match->new(
+    return {
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
         capture => {
             exp        => $result,
-            terminated => $terminated } )
+            terminated => $terminated }
+    };
 }
 
 sub circumfix_parse {
@@ -992,8 +994,9 @@ sub circumfix_parse {
         # can't return undef in a capture (BUG in Match object?)
         $res = '*undef*';
     }
-    return Perlito5::Match->new(
-        'str' => $str, 'from' => $pos, 'to' => $last_pos, capture => $res);
+    return {
+        'str' => $str, 'from' => $pos, 'to' => $last_pos, capture => $res
+    };
 }
 
 sub ternary5_parse {
@@ -1070,11 +1073,12 @@ sub exp_parse {
     }
     my $result = pop_term($res);
     # say "# exp_parse result: ", $result->perl;
-    return Perlito5::Match->new(
+    return {
         'str' => $str, 'from' => $pos, 'to' => $last_pos,
         capture => {
             exp        => $result,
-            terminated => $terminated } )
+            terminated => $terminated }
+    };
 }
 
 
@@ -1153,37 +1157,43 @@ sub modifier {
     # say "# statement_parse modifier result: ", $modifier_exp->perl;
 
     if ($modifier eq 'if') {
-        return Perlito5::Match->new(
+        return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
             capture => Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($modifier_exp)->{'exp'},
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]),
-                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ ]) ) );
+                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ ]) 
+            ),
+        };
     }
     if ($modifier eq 'unless') {
-        return Perlito5::Match->new(
+        return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
             capture => Perlito5::AST::If->new(
                 cond      => Perlito5::Match::flat($modifier_exp)->{'exp'},
                 body      => Perlito5::AST::Lit::Block->new(stmts => [ ]),
-                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]) ) );
+                otherwise => Perlito5::AST::Lit::Block->new(stmts => [ $expression ]) 
+            ),
+        };
     }
     if ($modifier eq 'while') {
-        return Perlito5::Match->new(
+        return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
             capture => Perlito5::AST::While->new(
                 cond    => Perlito5::Match::flat($modifier_exp)->{'exp'},
-                body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) );
+                body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) 
+        };
     }
     if  (  $modifier eq 'for'
         || $modifier eq 'foreach'
         ) 
     {
-        return Perlito5::Match->new(
+        return {
             'str' => $str, 'from' => $pos, 'to' => $modifier_exp->{"to"},
             capture => Perlito5::AST::For->new(
                 cond    => Perlito5::Match::flat($modifier_exp)->{'exp'},
-                body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) );
+                body    => Perlito5::AST::Lit::Block->new(stmts => [ $expression ] ) ) 
+        };
     }
     die "Unexpected statement modifier '$modifier'";
 }
